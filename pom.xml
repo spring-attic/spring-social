@@ -27,7 +27,7 @@
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
-		</dependency> 
+		</dependency>
 
         <!-- Servlet -->
 		<dependency>
@@ -35,7 +35,7 @@
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
 			<scope>provided</scope>
-		</dependency>				
+		</dependency>
 
 		<!-- Jackson JSON Mapper -->
 		<dependency>
