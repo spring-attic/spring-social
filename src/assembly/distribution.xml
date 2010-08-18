@@ -41,7 +41,7 @@
 		<moduleSet>
 			<!-- adds module jars to the distribution archive under the 'dist' directory -->
 			<includes>
-				<include>org.springframework:spring-social</include>
+				<include>org.springframework.social:spring-social</include>
 			</includes>
 			<binaries>
 				<outputDirectory>dist</outputDirectory>
@@ -53,7 +53,7 @@
 			<!-- adds module source jars to the distribution archive under the 'src' directory
 				 see pom.xml 'maven-source-plugin' declaration -->
 			<includes>
-				<include>org.springframework:spring-social</include>
+				<include>org.springframework.social:spring-social</include>
 			</includes>
 			<binaries>
 				<attachmentClassifier>sources</attachmentClassifier>
