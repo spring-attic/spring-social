@@ -36,31 +36,12 @@
 			<directory>target/site/apidocs</directory>
 			<outputDirectory>docs/javadoc</outputDirectory>
 		</fileSet>
+        <fileSet>
+			<directory>${project.build.directory}</directory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+			<outputDirectory>dist</outputDirectory>
+        </fileSet>
 	</fileSets>
-	<moduleSets>
-		<moduleSet>
-			<!-- adds module jars to the distribution archive under the 'dist' directory -->
-			<includes>
-				<include>org.springframework.social:spring-social</include>
-			</includes>
-			<binaries>
-				<outputDirectory>dist</outputDirectory>
-				<includeDependencies>false</includeDependencies>
-				<unpack>false</unpack>
-			</binaries>
-		</moduleSet>
-		<moduleSet>
-			<!-- adds module source jars to the distribution archive under the 'src' directory
-				 see pom.xml 'maven-source-plugin' declaration -->
-			<includes>
-				<include>org.springframework.social:spring-social</include>
-			</includes>
-			<binaries>
-				<attachmentClassifier>sources</attachmentClassifier>
-				<outputDirectory>src</outputDirectory>
-				<includeDependencies>false</includeDependencies>
-				<unpack>false</unpack>
-			</binaries>
-		</moduleSet>
-	</moduleSets>
 </assembly>
