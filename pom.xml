@@ -142,8 +142,22 @@
 			<url>http://maven.springframework.org/milestone</url>
 			<snapshots><enabled>false</enabled></snapshots>		
 		</repository>
+		<repository>
+			<!-- necessary for org.springframework.build.aws.maven dependency -->
+			<id>repository.source.maven.release</id>
+			<name>SpringSource Maven Release Repository</name>
+			<url>http://repository.springsource.com/maven/bundles/release</url>
+		</repository>
 	</repositories>
 	<build>
+		<extensions>
+			<extension>
+				<!-- available only in the springframework maven repository. see <repositories> section below -->
+				<groupId>org.springframework.build.aws</groupId>
+				<artifactId>org.springframework.build.aws.maven</artifactId>
+				<version>3.0.0.RELEASE</version>
+			</extension>
+		</extensions>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
