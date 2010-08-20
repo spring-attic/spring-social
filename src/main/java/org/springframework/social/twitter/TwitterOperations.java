@@ -8,9 +8,11 @@ public interface TwitterOperations {
 
 	String getScreenName(AccessTokenProvider<?> tokenProvider);
 	
-	List<String> getFriends(String screenName);
+	List<String> getFollowed(String screenName);
 	
-	void updateStatus(String message, AccessTokenProvider<?> tokenProvider);
+	void tweet(String message, AccessTokenProvider<?> tokenProvider);
+
+	void retweet(long tweetId, AccessTokenProvider<?> tokenProvider);
 
 	SearchResults search(String query, AccessTokenProvider<?> tokenProvider);
 

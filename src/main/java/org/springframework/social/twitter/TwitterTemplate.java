@@ -45,7 +45,7 @@ public class TwitterTemplate implements TwitterOperations {
 		return response.get("screen_name");
 	}
 
-	public List<String> getFriends(String screenName) {
+	public List<String> getFollowed(String screenName) {
 		Map<String, String> parameters = Collections.singletonMap("screen_name", screenName);
 		List<Map<String, String>> response = exchangeForList(HttpMethod.GET, FRIENDS_STATUSES_URL, parameters, null);
 		List<String> friends = new ArrayList<String>(response.size());
@@ -55,9 +55,14 @@ public class TwitterTemplate implements TwitterOperations {
 		return friends;
 	}
 
-	public void updateStatus(String message, AccessTokenProvider<?> tokenProvider) {
+	public void tweet(String message, AccessTokenProvider<?> tokenProvider) {
 		Map<String, String> parameters = Collections.singletonMap("status", message);
-		exchangeForMap(HttpMethod.POST, UPDATE_STATUS_URL, parameters, tokenProvider);
+		exchangeForMap(HttpMethod.POST, TWEET_URL, parameters, tokenProvider);
+	}
+
+	public void retweet(long tweetId, AccessTokenProvider<?> tokenProvider) {
+		Map<String, String> parameters = Collections.singletonMap("tweet_id", Long.toString(tweetId));
+		exchangeForMap(HttpMethod.POST, RETWEET_URL, parameters, tokenProvider);
 	}
 
 	public SearchResults search(String query, AccessTokenProvider<?> tokenProvider) {
@@ -185,7 +190,8 @@ public class TwitterTemplate implements TwitterOperations {
 
 	static final String VERIFY_CREDENTIALS_URL = "http://api.twitter.com/1/account/verify_credentials.json";
 	static final String FRIENDS_STATUSES_URL = "http://api.twitter.com/1/statuses/friends.json?screen_name={screen_name}";
-	static final String UPDATE_STATUS_URL = "http://api.twitter.com/1/statuses/update.json";
+	static final String TWEET_URL = "http://api.twitter.com/1/statuses/update.json";
+	static final String RETWEET_URL = "http://api.twitter.com/1/statuses/retweet/{tweet_id}.format";
 	static final String SEARCH_URL = "http://search.twitter.com/search.json?q={query}&rpp={rpp}&page={page}";
 
 }

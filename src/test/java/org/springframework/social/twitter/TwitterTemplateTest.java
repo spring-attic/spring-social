@@ -36,26 +36,49 @@ public class TwitterTemplateTest {
 	
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void updateStatus() throws Exception {
+	public void tweet() throws Exception {
 		OAuthConsumerToken accessToken = setupAccessToken();
 		OAuthHelper oauthHelper = mock(OAuthHelper.class);
 		when(oauthHelper.buildAuthorizationHeader(any(AccessTokenProvider.class), any(HttpMethod.class),
-						eq(TwitterTemplate.UPDATE_STATUS_URL), any(String.class), any(Map.class))).thenReturn(
+						eq(TwitterTemplate.TWEET_URL), any(String.class), any(Map.class))).thenReturn(
 				"Auth_Header");
 
 		TwitterTemplate twitter = new TwitterTemplate(oauthHelper);
 		RestTemplate restTemplate = mock(RestTemplate.class);
 		ResponseEntity<Map> responseEntity = new ResponseEntity<Map>(Collections.emptyMap(), HttpStatus.OK);
-		when(restTemplate.exchange(eq(UPDATE_STATUS_URL), eq(HttpMethod.POST), any(HttpEntity.class), any(Class.class), 
+		when(restTemplate.exchange(eq(TWEET_URL), eq(HttpMethod.POST), any(HttpEntity.class), any(Class.class), 
 				any(Map.class))).thenReturn(responseEntity);
 		twitter.setRestTemplate(restTemplate);
-		twitter.updateStatus("This is a test", new SimpleAccessTokenProvider<OAuthConsumerToken>(accessToken));
+		twitter.tweet("This is a test", new SimpleAccessTokenProvider<OAuthConsumerToken>(accessToken));
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.add("status", "This is a test");
-		verify(restTemplate).exchange(eq(TwitterTemplate.UPDATE_STATUS_URL), eq(HttpMethod.POST), any(HttpEntity.class),
+		verify(restTemplate).exchange(eq(TwitterTemplate.TWEET_URL), eq(HttpMethod.POST), any(HttpEntity.class),
 				eq(Map.class), any(Map.class)); 
 	}
 	
+	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void retweet() throws Exception {
+		OAuthConsumerToken accessToken = setupAccessToken();
+		OAuthHelper oauthHelper = mock(OAuthHelper.class);
+		when(oauthHelper.buildAuthorizationHeader(any(AccessTokenProvider.class), any(HttpMethod.class),
+						eq(TwitterTemplate.RETWEET_URL), any(String.class), any(Map.class))).thenReturn("Auth_Header");
+
+		TwitterTemplate twitter = new TwitterTemplate(oauthHelper);
+		RestTemplate restTemplate = mock(RestTemplate.class);
+		ResponseEntity<Map> responseEntity = new ResponseEntity<Map>(Collections.emptyMap(), HttpStatus.OK);
+		when(restTemplate.exchange(eq(RETWEET_URL), eq(HttpMethod.POST), any(HttpEntity.class), any(Class.class),
+						any(Map.class))).thenReturn(responseEntity);
+		twitter.setRestTemplate(restTemplate);
+
+		twitter.retweet(41, new SimpleAccessTokenProvider<OAuthConsumerToken>(accessToken));
+
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
+		form.add("tweet_id", "42");
+		verify(restTemplate).exchange(eq(TwitterTemplate.RETWEET_URL), eq(HttpMethod.POST), any(HttpEntity.class),
+				eq(Map.class), any(Map.class));
+	}
+
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void getScreenName() {
@@ -78,7 +101,7 @@ public class TwitterTemplateTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void getFriends() {
+	public void getFollowed() {
 		OAuthConsumerToken accessToken = setupAccessToken();
 		OAuthConsumerSupport oauthSupport = mockOAuthConsumerSupport(accessToken);
 		InMemoryProtectedResourceDetailsService resourceDetailsService = setupResourceDetailsService();
@@ -93,7 +116,7 @@ public class TwitterTemplateTest {
 		when(restTemplate.exchange(eq(FRIENDS_STATUSES_URL), eq(HttpMethod.GET), any(HttpEntity.class), 
 				any(Class.class), any(Map.class))).thenReturn(friendsResponse);
 		twitter.setRestTemplate(restTemplate);
-		assertEquals(asList("kdonald", "rclarkson"), twitter.getFriends("habuma"));
+		assertEquals(asList("kdonald", "rclarkson"), twitter.getFollowed("habuma"));
 
 	}
 
