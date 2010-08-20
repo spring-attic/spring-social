@@ -2,21 +2,22 @@ package org.springframework.social.twitter;
 
 import java.util.List;
 
-import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
+import org.springframework.social.oauth.AccessTokenProvider;
 
 public interface TwitterOperations {
 
-	String getScreenName(OAuthConsumerToken accessToken);
+	String getScreenName(AccessTokenProvider<?> tokenProvider);
 	
-	List<String> getFriends(OAuthConsumerToken accessToken, String screenName);
+	List<String> getFriends(String screenName);
 	
-	void updateStatus(OAuthConsumerToken accessToken, String message);
+	void updateStatus(String message, AccessTokenProvider<?> tokenProvider);
+
+	SearchResults search(String query, AccessTokenProvider<?> tokenProvider);
 
 	SearchResults search(String query, int page, int pageSize);
 
-	SearchResults search(OAuthConsumerToken accessToken, String query);
-	
-	SearchResults search(OAuthConsumerToken accessToken, String query, int page, int resultsPerPage);
-	
-	SearchResults search(OAuthConsumerToken accessToken, String query, int page, int resultsPerPage, int sinceId, int maxId);
+	SearchResults search(String query, int page, int pageSize, AccessTokenProvider<?> tokenProvider);
+
+	SearchResults search(String query, int page, int resultsPerPage, int sinceId, int maxId,
+			AccessTokenProvider<?> tokenProvider);
 }

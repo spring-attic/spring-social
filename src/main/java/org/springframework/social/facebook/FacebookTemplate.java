@@ -14,10 +14,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-public class FacebookService implements FacebookOperations {
+public class FacebookTemplate implements FacebookOperations {
 	private RestTemplate restTemplate;
 	
-	public FacebookService() {
+	public FacebookTemplate() {
 		MappingJacksonHttpMessageConverter jsonMessageConverter = new MappingJacksonHttpMessageConverter();
 		jsonMessageConverter.setSupportedMediaTypes(asList(new MediaType("text", "javascript")) );
 		this.restTemplate = new RestTemplate();

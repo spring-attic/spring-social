@@ -253,7 +253,7 @@
 						<configuration>
 							<javadoc:aggregate>true</javadoc:aggregate>
 							<breakiterator>true</breakiterator>
-							<header>Spring Social</header>
+							<header>Spring Mobile</header>
 							<source>1.5</source>
 							<quiet>true</quiet>
 							<javadocDirectory>${project.basedir}/src/main/javadoc</javadocDirectory>

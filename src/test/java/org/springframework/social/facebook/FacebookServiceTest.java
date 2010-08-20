@@ -3,7 +3,7 @@ package org.springframework.social.facebook;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.social.facebook.FacebookService.*;
+import static org.springframework.social.facebook.FacebookTemplate.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ public class FacebookServiceTest {
 	
 	private RestTemplate restTemplate;
 	private FacebookUserInfo facebookUser;
-	private FacebookService facebook;
+	private FacebookTemplate facebook;
 
 	@Before
 	public void setup() throws Exception {
@@ -34,7 +34,7 @@ public class FacebookServiceTest {
 		when(restTemplate.getForObject(CONNECTION_URL + ACCESS_TOKEN_PARAM, Map.class, CURRENT_USER, "friends", "testToken")).
 			thenReturn(facebookFriendsMap);
 		
-		facebook = new FacebookService();
+		facebook = new FacebookTemplate();
 		facebook.setRestTemplate(restTemplate);				
 	}
 
