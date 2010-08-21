@@ -10,7 +10,7 @@
 
 	<properties>
 		<java-version>1.6</java-version>
-        <org.springframework-version>3.0.4.BUILD-SNAPSHOT</org.springframework-version>
+        <org.springframework-version>3.0.4.RELEASE</org.springframework-version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- dist.* properties are used by the antrun tasks below -->
