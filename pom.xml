@@ -251,7 +251,9 @@
 						</goals>
 						<phase>package</phase>
 						<configuration>
-							<javadoc:aggregate>true</javadoc:aggregate>
+							<!-- TODO: This isn't right...it's a javadoc:aggregate goal, not a property. 
+							See http://maven.apache.org/plugins/maven-javadoc-plugin/examples/aggregate.html
+							<javadoc:aggregate>true</javadoc:aggregate> -->
 							<breakiterator>true</breakiterator>
 							<header>Spring Mobile</header>
 							<source>1.5</source>
