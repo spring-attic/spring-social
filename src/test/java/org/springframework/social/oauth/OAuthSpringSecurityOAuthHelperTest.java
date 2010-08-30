@@ -7,10 +7,13 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,27 +48,54 @@ public class OAuthSpringSecurityOAuthHelperTest {
 		OAuthConsumerTokenServices tokenServices = mock(OAuthConsumerTokenServices.class);
 		when(tokenServices.getToken("provider", 1L)).thenReturn(accessToken);
 
-		Account account = new Account(1L, "Art", "Names", "art@names.com", "artnames", "http://someurl");
-		Authentication authentication = new TestingAuthenticationToken(account, "credentials");
-		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		oauthHelper = new OAuthSpringSecurityOAuthHelper(oauthSupport, resourceDetailsService, tokenServices);
 	}
 
+	@After
+	public void cleanup() {
+		SecurityContextHolder.getContext().setAuthentication(null);
+	}
+
 	@Test
 	public void buildAuthorizationHeader() throws Exception {
+		Account account = new Account(1L, "Art", "Names", "art@names.com", "artnames", "http://someurl");
+		Authentication authentication = new TestingAuthenticationToken(account, "credentials");
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+
 		String authHeader = oauthHelper.buildAuthorizationHeader(HttpMethod.POST, "http://someurl", "provider",
 				new HashMap<String, String>());
 
 		Assert.assertEquals("OAuth_Header", authHeader);
 	}
 
-	// @Test(expected = IllegalArgumentException.class)
-	// public void buildAuthorizationHeader_invalidAccessTokenType() throws
-	// Exception {
-	// oauthHelper.buildAuthorizationHeader(HttpMethod.POST,
-	// "http://someurl", "provider", new HashMap<String, String>());
-	// }
+	@Test(expected = AuthenticationCredentialsNotFoundException.class)
+	public void resolveAccessToken_noAuthenticationInSecurityContext() throws Exception {
+		oauthHelper.resolveAccessToken("resource");
+	}
+
+	@Test(expected = BadCredentialsException.class)
+	public void resolveAccessToken_principalIsNotAnAccount() throws Exception {
+		Authentication authentication = new TestingAuthenticationToken("String Principal", "credentials");
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		oauthHelper.resolveAccessToken("resource");
+	}
+
+	@Test(expected = ConnectedAccountNotFoundException.class)
+	public void resolveAccessToken_notConnected() throws Exception {
+		Account account = new Account(1L, "Art", "Names", "art@names.com", "artnames", "http://someurl");
+		Authentication authentication = new TestingAuthenticationToken(account, "credentials");
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		oauthHelper.resolveAccessToken("resource");
+	}
+
+	@Test
+	public void resolveAccessToken() {
+		Account account = new Account(1L, "Art", "Names", "art@names.com", "artnames", "http://someurl");
+		Authentication authentication = new TestingAuthenticationToken(account, "credentials");
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		oauthHelper.resolveAccessToken("provider");
+	}
 
 	private OAuthConsumerSupport mockOAuthConsumerSupport(OAuthConsumerToken accessToken) {
 		OAuthConsumerSupport oauthSupport = mock(OAuthConsumerSupport.class);

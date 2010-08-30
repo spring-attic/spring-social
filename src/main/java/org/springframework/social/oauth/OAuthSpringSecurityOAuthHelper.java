@@ -5,6 +5,8 @@ import java.net.URL;
 import java.util.Map;
 
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth.consumer.OAuthConsumerSupport;
@@ -37,7 +39,20 @@ public class OAuthSpringSecurityOAuthHelper implements OAuthHelper {
 
 	public OAuthConsumerToken resolveAccessToken(String resourceId) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		Account account = (Account) authentication.getPrincipal();
-		return tokenServices.getToken(resourceId, account.getId());
+		if (authentication == null) {
+			throw new AuthenticationCredentialsNotFoundException("No credentials found");
+		}
+
+		try {
+			Account account = (Account) authentication.getPrincipal();
+
+			OAuthConsumerToken accessToken = tokenServices.getToken(resourceId, account.getId());
+			if(accessToken == null) {
+				throw new ConnectedAccountNotFoundException(resourceId);
+			}
+			return accessToken;
+		} catch (ClassCastException e) {
+			throw new BadCredentialsException("Expected principal to be an Account", e);
+		}
 	}
 }
