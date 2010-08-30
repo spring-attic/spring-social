@@ -15,7 +15,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.social.oauth.AccessTokenProvider;
 import org.springframework.social.oauth.OAuthHelper;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -40,15 +39,15 @@ public class TwitterTemplate implements TwitterOperations {
 		this.restTemplate = new RestTemplate();
 	}
 
-	public String getScreenName(AccessTokenProvider<?> tokenProvider) {
+	public String getScreenName() {
 		Map<String, String> parameters = Collections.emptyMap();
-		Map<String, String> response = exchangeForMap(HttpMethod.GET, VERIFY_CREDENTIALS_URL, parameters, tokenProvider);
+		Map<String, String> response = exchangeForMap(HttpMethod.GET, VERIFY_CREDENTIALS_URL, parameters);
 		return response.get("screen_name");
 	}
 
 	public List<String> getFollowed(String screenName) {
 		Map<String, String> parameters = Collections.singletonMap("screen_name", screenName);
-		List<Map<String, String>> response = exchangeForList(HttpMethod.GET, FRIENDS_STATUSES_URL, parameters, null);
+		List<Map<String, String>> response = exchangeForList(HttpMethod.GET, FRIENDS_STATUSES_URL, parameters);
 		List<String> friends = new ArrayList<String>(response.size());
 		for (Map<String, String> item : response) {
 			friends.add(item.get("screen_name"));
@@ -56,31 +55,26 @@ public class TwitterTemplate implements TwitterOperations {
 		return friends;
 	}
 
-	public void tweet(String message, AccessTokenProvider<?> tokenProvider) {
+	public void tweet(String message) {
 		Map<String, String> parameters = Collections.singletonMap("status", message);
-		exchangeForMap(HttpMethod.POST, TWEET_URL, parameters, tokenProvider);
+		exchangeForMap(HttpMethod.POST, TWEET_URL, parameters);
 	}
 
-	public void retweet(long tweetId, AccessTokenProvider<?> tokenProvider) {
+	public void retweet(long tweetId) {
 		Map<String, String> urlVariable = Collections.singletonMap("tweet_id", Long.toString(tweetId));
 		Map<String, String> queryParameters = Collections.emptyMap();
-		exchangeForMap(HttpMethod.POST, RETWEET_URL, urlVariable, queryParameters, tokenProvider);
+		exchangeForMap(HttpMethod.POST, RETWEET_URL, urlVariable, queryParameters);
 	}
 
-	public SearchResults search(String query, AccessTokenProvider<?> tokenProvider) {
-		return search(query, 1, DEFAULT_RESULTS_PER_PAGE, 0, 0, tokenProvider);
+	public SearchResults search(String query) {
+		return search(query, 1, DEFAULT_RESULTS_PER_PAGE, 0, 0);
 	}
 
 	public SearchResults search(String query, int page, int resultsPerPage) {
-		return search(query, page, resultsPerPage, 0, 0, null);
+		return search(query, page, resultsPerPage, 0, 0);
 	}
 
-	public SearchResults search(String query, int page, int resultsPerPage, AccessTokenProvider<?> tokenProvider) {
-		return search(query, page, resultsPerPage, 0, 0, tokenProvider);
-	}
-
-	public SearchResults search(String query, int page, int resultsPerPage, int sinceId, int maxId,
-			AccessTokenProvider<?> tokenProvider) {
+	public SearchResults search(String query, int page, int resultsPerPage, int sinceId, int maxId) {
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("query", query);
 		parameters.put("rpp", String.valueOf(resultsPerPage));
@@ -96,7 +90,7 @@ public class TwitterTemplate implements TwitterOperations {
 			parameters.put("max", String.valueOf(maxId));
 		}
 
-		Map<String, Object> response = exchangeForMap(HttpMethod.GET, searchUrl, parameters, tokenProvider);
+		Map<String, Object> response = exchangeForMap(HttpMethod.GET, searchUrl, parameters);
 		List<Map<String, Object>> items = (List<Map<String, Object>>) response.get("results");
 		List<Tweet> tweets = new ArrayList<Tweet>(response.size());
 		for (Map<String, Object> item : items) {
@@ -131,27 +125,25 @@ public class TwitterTemplate implements TwitterOperations {
 
 	// internal helpers
 
-	private Map exchangeForMap(HttpMethod method, String url, Map<String, String> queryParameters,
-			AccessTokenProvider<?> tokenProvider) {
+	private Map exchangeForMap(HttpMethod method, String url, Map<String, String> queryParameters) {
 		Map<String, String> urlVariable = Collections.emptyMap();
-		return exchangeForMap(method, url, urlVariable, queryParameters, tokenProvider);
+		return exchangeForMap(method, url, urlVariable, queryParameters);
 	}
 
 	private Map exchangeForMap(HttpMethod method, String url, Map<String, String> urlVariable,
-			Map<String, String> queryParameters, AccessTokenProvider<?> tokenProvider) {
-		return exchange(method, url, urlVariable, queryParameters, Map.class, tokenProvider);
+			Map<String, String> queryParameters) {
+		return exchange(method, url, urlVariable, queryParameters, Map.class);
 	}
 
-	private List exchangeForList(HttpMethod method, String url, Map<String, String> queryParameters,
-			AccessTokenProvider<?> tokenProvider) {
+	private List exchangeForList(HttpMethod method, String url, Map<String, String> queryParameters) {
 		Map<String, String> urlVariable = Collections.emptyMap();
-		return exchange(method, url, urlVariable, queryParameters, List.class, tokenProvider);
+		return exchange(method, url, urlVariable, queryParameters, List.class);
 	}
 
 	private <T> T exchange(HttpMethod method, String twitterUrl, Map<String, String> urlVariable,
-			Map<String, String> queryParameters, Class<T> responseType, AccessTokenProvider<?> tokenProvider) {
+			Map<String, String> queryParameters, Class<T> responseType) {
 
-		HttpHeaders headers = buildRequestHeaders(method, twitterUrl, urlVariable, queryParameters, tokenProvider);
+		HttpHeaders headers = buildRequestHeaders(method, twitterUrl, urlVariable, queryParameters);
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		HashMap<String, Object> uriVariables = new HashMap<String, Object>();
 		if (method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT)) {
@@ -175,8 +167,7 @@ public class TwitterTemplate implements TwitterOperations {
 	}
 
 	private HttpHeaders buildRequestHeaders(HttpMethod method, String twitterUrl, Map<String, String> urlVariable,
-			Map<String, String> queryParameters,
-			AccessTokenProvider<?> tokenProvider) {
+			Map<String, String> queryParameters) {
 		try {
 			UriTemplate uriTemplate = new UriTemplate(twitterUrl);
 			Map<String, String> combinedParamaters = new HashMap<String, String>(urlVariable);
@@ -184,11 +175,9 @@ public class TwitterTemplate implements TwitterOperations {
 			String expandedUrl = uriTemplate.expand(combinedParamaters).toString();
 
 			HttpHeaders headers = new HttpHeaders();
-			if (tokenProvider != null) {
-				String authorizationHeader = oauthHelper.buildAuthorizationHeader(tokenProvider, method, expandedUrl,
-						"Twitter", queryParameters);
-				headers.add("Authorization", authorizationHeader);
-			}
+			String authorizationHeader = oauthHelper.buildAuthorizationHeader(method, expandedUrl, "Twitter",
+					queryParameters);
+			headers.add("Authorization", authorizationHeader);
 			headers.add("Content-Type", "application/x-www-form-urlencoded");
 			return headers;
 		} catch (MalformedURLException e) {

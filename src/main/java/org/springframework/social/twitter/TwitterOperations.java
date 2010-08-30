@@ -2,24 +2,19 @@ package org.springframework.social.twitter;
 
 import java.util.List;
 
-import org.springframework.social.oauth.AccessTokenProvider;
-
 public interface TwitterOperations {
 
-	String getScreenName(AccessTokenProvider<?> tokenProvider);
+	String getScreenName();
 	
 	List<String> getFollowed(String screenName);
 	
-	void tweet(String message, AccessTokenProvider<?> tokenProvider);
+	void tweet(String message);
 
-	void retweet(long tweetId, AccessTokenProvider<?> tokenProvider);
+	void retweet(long tweetId);
 
-	SearchResults search(String query, AccessTokenProvider<?> tokenProvider);
+	SearchResults search(String query);
 
 	SearchResults search(String query, int page, int pageSize);
 
-	SearchResults search(String query, int page, int pageSize, AccessTokenProvider<?> tokenProvider);
-
-	SearchResults search(String query, int page, int resultsPerPage, int sinceId, int maxId,
-			AccessTokenProvider<?> tokenProvider);
+	SearchResults search(String query, int page, int resultsPerPage, int sinceId, int maxId);
 }

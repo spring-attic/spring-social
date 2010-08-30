@@ -7,7 +7,6 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.social.twitter.TwitterTemplate.*;
 
-import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -18,16 +17,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth.common.signature.SharedConsumerSecret;
-import org.springframework.security.oauth.consumer.BaseProtectedResourceDetails;
-import org.springframework.security.oauth.consumer.InMemoryProtectedResourceDetailsService;
-import org.springframework.security.oauth.consumer.OAuthConsumerSupport;
-import org.springframework.security.oauth.consumer.ProtectedResourceDetails;
 import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
-import org.springframework.social.oauth.AccessTokenProvider;
+import org.springframework.social.oauth.OAuthConsumerTokenServices;
 import org.springframework.social.oauth.OAuthHelper;
 import org.springframework.social.oauth.OAuthSpringSecurityOAuthHelper;
-import org.springframework.social.oauth.SimpleAccessTokenProvider;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -37,9 +30,8 @@ public class TwitterTemplateTest {
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void tweet() throws Exception {
-		OAuthConsumerToken accessToken = setupAccessToken();
 		OAuthHelper oauthHelper = mock(OAuthHelper.class);
-		when(oauthHelper.buildAuthorizationHeader(any(AccessTokenProvider.class), any(HttpMethod.class),
+		when(oauthHelper.buildAuthorizationHeader(any(HttpMethod.class),
 						eq(TwitterTemplate.TWEET_URL), any(String.class), any(Map.class))).thenReturn(
 				"Auth_Header");
 
@@ -49,7 +41,7 @@ public class TwitterTemplateTest {
 		when(restTemplate.exchange(eq(TWEET_URL), eq(HttpMethod.POST), any(HttpEntity.class), any(Class.class), 
 				any(Map.class))).thenReturn(responseEntity);
 		twitter.setRestTemplate(restTemplate);
-		twitter.tweet("This is a test", new SimpleAccessTokenProvider<OAuthConsumerToken>(accessToken));
+		twitter.tweet("This is a test");
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.add("status", "This is a test");
 		verify(restTemplate).exchange(eq(TwitterTemplate.TWEET_URL), eq(HttpMethod.POST), any(HttpEntity.class),
@@ -59,9 +51,8 @@ public class TwitterTemplateTest {
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void retweet() throws Exception {
-		OAuthConsumerToken accessToken = setupAccessToken();
 		OAuthHelper oauthHelper = mock(OAuthHelper.class);
-		when(oauthHelper.buildAuthorizationHeader(any(AccessTokenProvider.class), any(HttpMethod.class),
+		when(oauthHelper.buildAuthorizationHeader(any(HttpMethod.class),
 						eq(TwitterTemplate.RETWEET_URL), any(String.class), any(Map.class))).thenReturn("Auth_Header");
 
 		TwitterTemplate twitter = new TwitterTemplate(oauthHelper);
@@ -71,7 +62,7 @@ public class TwitterTemplateTest {
 						any(Map.class))).thenReturn(responseEntity);
 		twitter.setRestTemplate(restTemplate);
 
-		twitter.retweet(41, new SimpleAccessTokenProvider<OAuthConsumerToken>(accessToken));
+		twitter.retweet(41);
 
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		form.add("tweet_id", "42");
@@ -83,19 +74,23 @@ public class TwitterTemplateTest {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void getScreenName() {
 		OAuthConsumerToken accessToken = setupAccessToken();
-		OAuthConsumerSupport oauthSupport = mockOAuthConsumerSupport(accessToken);		
-		InMemoryProtectedResourceDetailsService resourceDetailsService = setupResourceDetailsService();
 		Map<String, String> responseMap = new HashMap<String, String>();
 		responseMap.put("screen_name", "s2greenhouse");
 		ResponseEntity<Map> responseEntity = new ResponseEntity<Map>(responseMap , HttpStatus.OK);
 		RestTemplate restTemplate = mock(RestTemplate.class);
 		when(restTemplate.exchange(eq(VERIFY_CREDENTIALS_URL), eq(HttpMethod.GET), any(HttpEntity.class), 
 				any(Class.class), any(Map.class))).thenReturn(responseEntity);
-		TwitterTemplate twitter = new TwitterTemplate(new OAuthSpringSecurityOAuthHelper(oauthSupport,
-				resourceDetailsService));
+
+		OAuthConsumerTokenServices tokenServices = mock(OAuthConsumerTokenServices.class);
+		when(tokenServices.getToken("Twitter", "1")).thenReturn(accessToken);
+
+		OAuthSpringSecurityOAuthHelper oauthHelper = mock(OAuthSpringSecurityOAuthHelper.class);
+		when(oauthHelper.resolveAccessToken("Twitter")).thenReturn(accessToken);
+
+		TwitterTemplate twitter = new TwitterTemplate(oauthHelper);
 		twitter.setRestTemplate(restTemplate);
 		
-		String screenName = twitter.getScreenName(new SimpleAccessTokenProvider<OAuthConsumerToken>(accessToken));
+		String screenName = twitter.getScreenName();
 		assertEquals("s2greenhouse", screenName);
 	}
 
@@ -103,10 +98,14 @@ public class TwitterTemplateTest {
 	@SuppressWarnings("unchecked")
 	public void getFollowed() {
 		OAuthConsumerToken accessToken = setupAccessToken();
-		OAuthConsumerSupport oauthSupport = mockOAuthConsumerSupport(accessToken);
-		InMemoryProtectedResourceDetailsService resourceDetailsService = setupResourceDetailsService();
-		TwitterTemplate twitter = new TwitterTemplate(new OAuthSpringSecurityOAuthHelper(oauthSupport,
-				resourceDetailsService));
+
+		OAuthConsumerTokenServices tokenServices = mock(OAuthConsumerTokenServices.class);
+		when(tokenServices.getToken("Twitter", "1")).thenReturn(accessToken);
+
+		OAuthSpringSecurityOAuthHelper oauthHelper = mock(OAuthSpringSecurityOAuthHelper.class);
+		when(oauthHelper.resolveAccessToken("Twitter")).thenReturn(accessToken);
+
+		TwitterTemplate twitter = new TwitterTemplate(oauthHelper);
 		RestTemplate restTemplate = mock(RestTemplate.class);
 		List<Map<String, String>> friends = asList(
 				singletonMap("screen_name", "kdonald"),
@@ -119,25 +118,6 @@ public class TwitterTemplateTest {
 		assertEquals(asList("kdonald", "rclarkson"), twitter.getFollowed("habuma"));
 
 	}
-
-	private InMemoryProtectedResourceDetailsService setupResourceDetailsService() {
-	    InMemoryProtectedResourceDetailsService resourceDetailsService = new InMemoryProtectedResourceDetailsService();
-		Map<String, ProtectedResourceDetails> detailsStore = new HashMap<String, ProtectedResourceDetails>();
-		BaseProtectedResourceDetails twitterDetails = new BaseProtectedResourceDetails();
-		twitterDetails.setConsumerKey("twitterKey");
-		twitterDetails.setSharedSecret(new SharedConsumerSecret("twitterSecret"));		
-		detailsStore.put("twitter", twitterDetails);
-		resourceDetailsService.setResourceDetailsStore(detailsStore);
-	    return resourceDetailsService;
-    }
-
-	@SuppressWarnings("unchecked")
-	private OAuthConsumerSupport mockOAuthConsumerSupport(OAuthConsumerToken accessToken) {
-	    OAuthConsumerSupport oauthSupport = mock(OAuthConsumerSupport.class);
-		when(oauthSupport.getAuthorizationHeader(any(ProtectedResourceDetails.class), eq(accessToken), any(URL.class), 
-				eq("POST"), any(Map.class))).thenReturn("OAuth_Header");
-	    return oauthSupport;
-    }
 
 	private OAuthConsumerToken setupAccessToken() {
 	    OAuthConsumerToken accessToken = new OAuthConsumerToken();

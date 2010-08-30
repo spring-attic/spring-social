@@ -11,12 +11,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth.common.signature.SharedConsumerSecret;
 import org.springframework.security.oauth.consumer.BaseProtectedResourceDetails;
 import org.springframework.security.oauth.consumer.OAuthConsumerSupport;
 import org.springframework.security.oauth.consumer.ProtectedResourceDetails;
 import org.springframework.security.oauth.consumer.ProtectedResourceDetailsService;
 import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
+import org.springframework.social.account.Account;
 
 public class OAuthSpringSecurityOAuthHelperTest {
 	private OAuthSpringSecurityOAuthHelper oauthHelper;
@@ -38,22 +42,30 @@ public class OAuthSpringSecurityOAuthHelperTest {
 		ProtectedResourceDetailsService resourceDetailsService = mock(ProtectedResourceDetailsService.class);
 		when(resourceDetailsService.loadProtectedResourceDetailsById(any(String.class))).thenReturn(twitterDetails);
 
-		oauthHelper = new OAuthSpringSecurityOAuthHelper(oauthSupport, resourceDetailsService);
+		OAuthConsumerTokenServices tokenServices = mock(OAuthConsumerTokenServices.class);
+		when(tokenServices.getToken("provider", 1L)).thenReturn(accessToken);
+
+		Account account = new Account(1L, "Art", "Names", "art@names.com", "artnames", "http://someurl");
+		Authentication authentication = new TestingAuthenticationToken(account, "credentials");
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+
+		oauthHelper = new OAuthSpringSecurityOAuthHelper(oauthSupport, resourceDetailsService, tokenServices);
 	}
 
 	@Test
 	public void buildAuthorizationHeader() throws Exception {
-		String authHeader = oauthHelper.buildAuthorizationHeader(new SimpleAccessTokenProvider<OAuthConsumerToken>(
-				accessToken), HttpMethod.POST, "http://someurl", "provider", new HashMap<String, String>());
+		String authHeader = oauthHelper.buildAuthorizationHeader(HttpMethod.POST, "http://someurl", "provider",
+				new HashMap<String, String>());
 
 		Assert.assertEquals("OAuth_Header", authHeader);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void buildAuthorizationHeader_invalidAccessTokenType() throws Exception {
-		oauthHelper.buildAuthorizationHeader(new SimpleAccessTokenProvider<String>("Bad Token"), HttpMethod.POST,
-				"http://someurl", "provider", new HashMap<String, String>());
-	}
+	// @Test(expected = IllegalArgumentException.class)
+	// public void buildAuthorizationHeader_invalidAccessTokenType() throws
+	// Exception {
+	// oauthHelper.buildAuthorizationHeader(HttpMethod.POST,
+	// "http://someurl", "provider", new HashMap<String, String>());
+	// }
 
 	private OAuthConsumerSupport mockOAuthConsumerSupport(OAuthConsumerToken accessToken) {
 		OAuthConsumerSupport oauthSupport = mock(OAuthConsumerSupport.class);
