@@ -37,7 +37,6 @@ public class OAuthSpringSecurityOAuthHelper implements OAuthHelper {
 
 	public OAuthConsumerToken resolveAccessToken(String resourceId) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		System.out.println(authentication.getClass());
 		Account account = (Account) authentication.getPrincipal();
 		return tokenServices.getToken(resourceId, account.getId());
 	}
