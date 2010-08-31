@@ -1,4 +1,4 @@
-package org.springframework.social.oauth;
+package org.springframework.social.account;
 
 @SuppressWarnings("serial")
 public abstract class AccountException extends RuntimeException {

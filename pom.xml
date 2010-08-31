@@ -103,6 +103,13 @@
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.5.3</version>
 		</dependency>
+
+		<!-- Joda Date/Time -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>1.6</version>
+		</dependency>
 		
 		<!-- Test -->
 		<dependency>

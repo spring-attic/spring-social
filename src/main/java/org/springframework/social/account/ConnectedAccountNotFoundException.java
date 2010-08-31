@@ -1,4 +1,4 @@
-package org.springframework.social.oauth;
+package org.springframework.social.account;
 
 @SuppressWarnings("serial")
 public final class ConnectedAccountNotFoundException extends AccountException {

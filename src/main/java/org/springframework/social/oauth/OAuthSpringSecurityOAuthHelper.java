@@ -14,6 +14,7 @@ import org.springframework.security.oauth.consumer.ProtectedResourceDetails;
 import org.springframework.security.oauth.consumer.ProtectedResourceDetailsService;
 import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
 import org.springframework.social.account.Account;
+import org.springframework.social.account.ConnectedAccountNotFoundException;
 
 public class OAuthSpringSecurityOAuthHelper implements OAuthHelper {
 	private final OAuthConsumerSupport oauthSupport;
