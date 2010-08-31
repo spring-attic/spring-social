@@ -8,35 +8,26 @@ public class SearchResults {
 	private long sinceId;
 	private boolean lastPage;
 
-	public List<Tweet> getTweets() {
-		return tweets;
+	public SearchResults(List<Tweet> tweets, long maxId, long sinceId, boolean lastPage) {
+		this.tweets = tweets;
+		this.maxId = maxId;
+		this.sinceId = sinceId;
+		this.lastPage = lastPage;
 	}
 
-	public void setTweets(List<Tweet> results) {
-		this.tweets = results;
+	public List<Tweet> getTweets() {
+		return tweets;
 	}
 
 	public long getMaxId() {
 		return maxId;
 	}
 
-	public void setMaxId(long maxId) {
-		this.maxId = maxId;
-	}
-
 	public long getSinceId() {
 		return sinceId;
 	}
 
-	public void setSinceId(long sinceId) {
-		this.sinceId = sinceId;
-	}
-
 	public boolean isLastPage() {
 		return lastPage;
-	}
-
-	public void setLastPage(boolean lastPage) {
-		this.lastPage = lastPage;
 	}
 }

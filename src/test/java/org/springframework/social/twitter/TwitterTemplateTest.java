@@ -75,7 +75,7 @@ public class TwitterTemplateTest {
 	public void getScreenName() {
 		OAuthConsumerToken accessToken = setupAccessToken();
 		Map<String, String> responseMap = new HashMap<String, String>();
-		responseMap.put("screen_name", "s2greenhouse");
+		responseMap.put("screen_name", "springdude");
 		ResponseEntity<Map> responseEntity = new ResponseEntity<Map>(responseMap , HttpStatus.OK);
 		RestTemplate restTemplate = mock(RestTemplate.class);
 		when(restTemplate.exchange(eq(VERIFY_CREDENTIALS_URL), eq(HttpMethod.GET), any(HttpEntity.class), 
@@ -91,7 +91,7 @@ public class TwitterTemplateTest {
 		twitter.setRestTemplate(restTemplate);
 		
 		String screenName = twitter.getScreenName();
-		assertEquals("s2greenhouse", screenName);
+		assertEquals("springdude", screenName);
 	}
 
 	@Test

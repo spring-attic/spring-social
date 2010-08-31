@@ -97,12 +97,9 @@ public class TwitterTemplate implements TwitterOperations {
 			tweets.add(populateTweet(item));
 		}
 
-		SearchResults results = new SearchResults();
-		results.setMaxId(NumberUtils.parseNumber(ObjectUtils.nullSafeToString(response.get("max_id")), Long.class));
-		results.setSinceId(NumberUtils.parseNumber(ObjectUtils.nullSafeToString(response.get("since_id")), Long.class));
-		results.setLastPage(response.get("next_page") == null);
-		results.setTweets(tweets);
-
+		SearchResults results = new SearchResults(tweets, NumberUtils.parseNumber(
+				ObjectUtils.nullSafeToString(response.get("max_id")), Long.class), NumberUtils.parseNumber(
+				ObjectUtils.nullSafeToString(response.get("since_id")), Long.class), response.get("next_page") == null);
 		return results;
 	}
 
