@@ -2,6 +2,11 @@ package org.springframework.social.twitter;
 
 import java.util.Date;
 
+/**
+ * Represents a Twitter status update (e.g., a "tweet").
+ * 
+ * @author Craig Walls
+ */
 public class Tweet {
 	private long id;
 	private String text;
@@ -12,19 +17,6 @@ public class Tweet {
 	private long fromUserId;
 	private String languageCode;
 	private String source;
-
-	/*
-	 * TO CONSIDER: Tweets may also have extra metadata and geolocation
-	 * information. I'm leaving those out for now, because very few tweets seem
-	 * to have much useful for those fields. After some bit of searching, I
-	 * did find a few tweets that had geolocation that resembled the following:
-	 * 
-	 * geo: { type: "Point", coordinates: [14.6167, 120.9667] }
-	 * 
-	 * But I'm unclar on what other types there may be, what that data may look
-	 * like, and whether it's even important given that such a relative few
-	 * tweets will have that info in it.
-	 */
 
 	public String getText() {
 		return text;

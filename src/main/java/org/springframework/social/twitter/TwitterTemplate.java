@@ -24,6 +24,19 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
+/**
+ * Template class that simplifies interaction with Twitter. It handles the
+ * details of setting the OAuth Authorization header in the request, setting
+ * request parameters, making the Twitter API call (via {@link RestTemplate}),
+ * extracting results, and handling any errors that may occur in the process.
+ * 
+ * An implementation of OAuthTemplate must be provided at construction time to
+ * help assemble the OAuth Authorization header.
+ * 
+ * @author Craig Walls
+ * 
+ * @see OAuthTemplate
+ */
 public class TwitterTemplate implements TwitterOperations {
 
 	private static final int DEFAULT_RESULTS_PER_PAGE = 50;
