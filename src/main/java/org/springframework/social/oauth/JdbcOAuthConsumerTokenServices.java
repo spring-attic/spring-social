@@ -6,8 +6,10 @@ import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
+import org.springframework.social.account.Account;
 
 // TODO: RECONCILE THIS TOKEN SERVICES WITH THE OFFICIAL ONE
 public class JdbcOAuthConsumerTokenServices implements OAuthConsumerTokenServices {
@@ -22,7 +24,12 @@ public class JdbcOAuthConsumerTokenServices implements OAuthConsumerTokenService
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
-	public OAuthConsumerToken getToken(String resourceId, Object memberId) throws AuthenticationException {
+	public OAuthConsumerToken getToken(String resourceId, Object principal) throws AuthenticationException {
+		if (!(principal instanceof Account)) {
+			throw new BadCredentialsException("Expected principal to be an Account object");
+		}
+
+		Account account = (Account) principal;
 		List<OAuthConsumerToken> accessTokens = jdbcTemplate.query(SELECT_TOKEN_SQL, new RowMapper<OAuthConsumerToken>() {
 			public OAuthConsumerToken mapRow(ResultSet rs, int rowNum) throws SQLException {
 				OAuthConsumerToken token = new OAuthConsumerToken();
@@ -32,7 +39,7 @@ public class JdbcOAuthConsumerTokenServices implements OAuthConsumerTokenService
 				token.setSecret(rs.getString("secret"));
 				return token;
 			}
-		}, memberId, resourceId);
+				}, account.getId(), resourceId);
 		OAuthConsumerToken accessToken = null;
 		if (accessTokens.size() > 0) {
 			accessToken = accessTokens.get(0);

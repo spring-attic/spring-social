@@ -20,8 +20,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
 import org.springframework.social.oauth.OAuthConsumerTokenServices;
-import org.springframework.social.oauth.OAuthHelper;
-import org.springframework.social.oauth.OAuthSpringSecurityOAuthHelper;
+import org.springframework.social.oauth.OAuthSpringSecurityOAuthTemplate;
+import org.springframework.social.oauth.OAuthTemplate;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -31,11 +31,9 @@ public class TwitterTemplateTest {
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void tweet() throws Exception {
-		OAuthHelper oauthHelper = mock(OAuthHelper.class);
-		when(
-				oauthHelper.buildAuthorizationHeader(eq(null), any(HttpMethod.class),
-						eq(TwitterTemplate.TWEET_URL), any(String.class), any(Map.class))).thenReturn(
-				"Auth_Header");
+		OAuthTemplate oauthHelper = mock(OAuthTemplate.class);
+		when(oauthHelper.buildAuthorizationHeader(any(HttpMethod.class), eq(TwitterTemplate.TWEET_URL), any(Map.class)))
+				.thenReturn("Auth_Header");
 
 		TwitterTemplate twitter = new TwitterTemplate(oauthHelper);
 		RestTemplate restTemplate = mock(RestTemplate.class);
@@ -53,10 +51,9 @@ public class TwitterTemplateTest {
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void retweet() throws Exception {
-		OAuthHelper oauthHelper = mock(OAuthHelper.class);
-		when(
-				oauthHelper.buildAuthorizationHeader(any(Object.class), any(HttpMethod.class),
-						eq(TwitterTemplate.RETWEET_URL), any(String.class), any(Map.class))).thenReturn("Auth_Header");
+		OAuthTemplate oauthHelper = mock(OAuthTemplate.class);
+		when(oauthHelper.buildAuthorizationHeader(any(HttpMethod.class), eq(TwitterTemplate.RETWEET_URL), any(Map.class)))
+				.thenReturn("Auth_Header");
 
 		TwitterTemplate twitter = new TwitterTemplate(oauthHelper);
 		RestTemplate restTemplate = mock(RestTemplate.class);
@@ -87,8 +84,8 @@ public class TwitterTemplateTest {
 		OAuthConsumerTokenServices tokenServices = mock(OAuthConsumerTokenServices.class);
 		when(tokenServices.getToken("Twitter", "1")).thenReturn(accessToken);
 
-		OAuthSpringSecurityOAuthHelper oauthHelper = mock(OAuthSpringSecurityOAuthHelper.class);
-		when(oauthHelper.resolveAccessToken("Twitter")).thenReturn(accessToken);
+		OAuthSpringSecurityOAuthTemplate oauthHelper = mock(OAuthSpringSecurityOAuthTemplate.class);
+		// when(oauthHelper.resolveAccessToken("Twitter")).thenReturn(accessToken);
 
 		TwitterTemplate twitter = new TwitterTemplate(oauthHelper);
 		twitter.setRestTemplate(restTemplate);
@@ -105,8 +102,8 @@ public class TwitterTemplateTest {
 		OAuthConsumerTokenServices tokenServices = mock(OAuthConsumerTokenServices.class);
 		when(tokenServices.getToken("Twitter", "1")).thenReturn(accessToken);
 
-		OAuthSpringSecurityOAuthHelper oauthHelper = mock(OAuthSpringSecurityOAuthHelper.class);
-		when(oauthHelper.resolveAccessToken("Twitter")).thenReturn(accessToken);
+		OAuthSpringSecurityOAuthTemplate oauthHelper = mock(OAuthSpringSecurityOAuthTemplate.class);
+		// when(oauthHelper.resolveAccessToken("Twitter")).thenReturn(accessToken);
 
 		TwitterTemplate twitter = new TwitterTemplate(oauthHelper);
 		RestTemplate restTemplate = mock(RestTemplate.class);

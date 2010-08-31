@@ -15,7 +15,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.social.oauth.OAuthHelper;
+import org.springframework.social.oauth.OAuthTemplate;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.NumberUtils;
@@ -26,17 +26,15 @@ import org.springframework.web.util.UriTemplate;
 
 public class TwitterTemplate implements TwitterOperations {
 
-	private static final String TWITTER_PROVIDER_ID = "Twitter";
-
 	private static final int DEFAULT_RESULTS_PER_PAGE = 50;
 
 	private RestTemplate restTemplate;
 
 	private DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
 
-	private final OAuthHelper oauthHelper;
+	private final OAuthTemplate oauthHelper;
 
-	public TwitterTemplate(OAuthHelper oauthHelper) {
+	public TwitterTemplate(OAuthTemplate oauthHelper) {
 		this.oauthHelper = oauthHelper;
 		this.restTemplate = new RestTemplate();
 	}
@@ -174,19 +172,16 @@ public class TwitterTemplate implements TwitterOperations {
 	}
 
 	private void addAuthorizationHeader(HttpHeaders headers, HttpMethod method, String twitterUrl,
-			Map<String, String> urlVariable,
-			Map<String, String> queryParameters) {
+			Map<String, String> urlVariables, Map<String, String> queryParameters) {
 		try {
-			Object accessToken = oauthHelper.resolveAccessToken(TWITTER_PROVIDER_ID);
+			UriTemplate uriTemplate = new UriTemplate(twitterUrl);
+			Map<String, String> combinedParamaters = new HashMap<String, String>(urlVariables);
+			combinedParamaters.putAll(queryParameters);
+			String expandedUrl = uriTemplate.expand(combinedParamaters).toString();
 
-			if (accessToken != null) {
-				UriTemplate uriTemplate = new UriTemplate(twitterUrl);
-				Map<String, String> combinedParamaters = new HashMap<String, String>(urlVariable);
-				combinedParamaters.putAll(queryParameters);
-				String expandedUrl = uriTemplate.expand(combinedParamaters).toString();
-
-				headers.add("Authorization", oauthHelper.buildAuthorizationHeader(accessToken, method, expandedUrl,
-						TWITTER_PROVIDER_ID, queryParameters));
+			String authorizationHeader = oauthHelper.buildAuthorizationHeader(method, expandedUrl, queryParameters);
+			if (authorizationHeader != null) {
+				headers.add("Authorization", authorizationHeader);
 			}
 		} catch (MalformedURLException e) {
 			throw new RestClientException("Malformed URL: " + twitterUrl, e);
