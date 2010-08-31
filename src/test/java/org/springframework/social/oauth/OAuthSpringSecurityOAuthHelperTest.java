@@ -1,5 +1,6 @@
 package org.springframework.social.oauth;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
@@ -24,7 +25,6 @@ import org.springframework.security.oauth.consumer.ProtectedResourceDetails;
 import org.springframework.security.oauth.consumer.ProtectedResourceDetailsService;
 import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
 import org.springframework.social.account.Account;
-import org.springframework.social.account.ConnectedAccountNotFoundException;
 
 public class OAuthSpringSecurityOAuthHelperTest {
 	private OAuthSpringSecurityOAuthHelper oauthHelper;
@@ -64,8 +64,8 @@ public class OAuthSpringSecurityOAuthHelperTest {
 		Authentication authentication = new TestingAuthenticationToken(account, "credentials");
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		String authHeader = oauthHelper.buildAuthorizationHeader(HttpMethod.POST, "http://someurl", "provider",
-				new HashMap<String, String>());
+		String authHeader = oauthHelper.buildAuthorizationHeader(accessToken, HttpMethod.POST,
+				"http://someurl", "provider", new HashMap<String, String>());
 
 		Assert.assertEquals("OAuth_Header", authHeader);
 	}
@@ -82,12 +82,12 @@ public class OAuthSpringSecurityOAuthHelperTest {
 		oauthHelper.resolveAccessToken("resource");
 	}
 
-	@Test(expected = ConnectedAccountNotFoundException.class)
+	@Test
 	public void resolveAccessToken_notConnected() throws Exception {
 		Account account = new Account(1L, "Art", "Names", "art@names.com", "artnames", "http://someurl");
 		Authentication authentication = new TestingAuthenticationToken(account, "credentials");
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		oauthHelper.resolveAccessToken("resource");
+		assertNull(oauthHelper.resolveAccessToken("resource"));
 	}
 
 	@Test

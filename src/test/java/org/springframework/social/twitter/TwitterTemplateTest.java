@@ -31,7 +31,8 @@ public class TwitterTemplateTest {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void tweet() throws Exception {
 		OAuthHelper oauthHelper = mock(OAuthHelper.class);
-		when(oauthHelper.buildAuthorizationHeader(any(HttpMethod.class),
+		when(
+				oauthHelper.buildAuthorizationHeader(eq(null), any(HttpMethod.class),
 						eq(TwitterTemplate.TWEET_URL), any(String.class), any(Map.class))).thenReturn(
 				"Auth_Header");
 
@@ -52,7 +53,8 @@ public class TwitterTemplateTest {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void retweet() throws Exception {
 		OAuthHelper oauthHelper = mock(OAuthHelper.class);
-		when(oauthHelper.buildAuthorizationHeader(any(HttpMethod.class),
+		when(
+				oauthHelper.buildAuthorizationHeader(any(Object.class), any(HttpMethod.class),
 						eq(TwitterTemplate.RETWEET_URL), any(String.class), any(Map.class))).thenReturn("Auth_Header");
 
 		TwitterTemplate twitter = new TwitterTemplate(oauthHelper);

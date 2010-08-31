@@ -26,6 +26,8 @@ import org.springframework.web.util.UriTemplate;
 
 public class TwitterTemplate implements TwitterOperations {
 
+	private static final String TWITTER_PROVIDER_ID = "Twitter";
+
 	private static final int DEFAULT_RESULTS_PER_PAGE = 50;
 
 	private RestTemplate restTemplate;
@@ -140,7 +142,10 @@ public class TwitterTemplate implements TwitterOperations {
 	private <T> T exchange(HttpMethod method, String twitterUrl, Map<String, String> urlVariable,
 			Map<String, String> queryParameters, Class<T> responseType) {
 
-		HttpHeaders headers = buildRequestHeaders(method, twitterUrl, urlVariable, queryParameters);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Content-Type", "application/x-www-form-urlencoded");
+		addAuthorizationHeader(headers, method, twitterUrl, urlVariable, queryParameters);
+
 		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
 		HashMap<String, Object> uriVariables = new HashMap<String, Object>();
 		if (method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT)) {
@@ -163,20 +168,21 @@ public class TwitterTemplate implements TwitterOperations {
 		return exchange.getBody();
 	}
 
-	private HttpHeaders buildRequestHeaders(HttpMethod method, String twitterUrl, Map<String, String> urlVariable,
+	private void addAuthorizationHeader(HttpHeaders headers, HttpMethod method, String twitterUrl,
+			Map<String, String> urlVariable,
 			Map<String, String> queryParameters) {
 		try {
-			UriTemplate uriTemplate = new UriTemplate(twitterUrl);
-			Map<String, String> combinedParamaters = new HashMap<String, String>(urlVariable);
-			combinedParamaters.putAll(queryParameters);
-			String expandedUrl = uriTemplate.expand(combinedParamaters).toString();
+			Object accessToken = oauthHelper.resolveAccessToken(TWITTER_PROVIDER_ID);
 
-			HttpHeaders headers = new HttpHeaders();
-			String authorizationHeader = oauthHelper.buildAuthorizationHeader(method, expandedUrl, "Twitter",
-					queryParameters);
-			headers.add("Authorization", authorizationHeader);
-			headers.add("Content-Type", "application/x-www-form-urlencoded");
-			return headers;
+			if (accessToken != null) {
+				UriTemplate uriTemplate = new UriTemplate(twitterUrl);
+				Map<String, String> combinedParamaters = new HashMap<String, String>(urlVariable);
+				combinedParamaters.putAll(queryParameters);
+				String expandedUrl = uriTemplate.expand(combinedParamaters).toString();
+
+				headers.add("Authorization", oauthHelper.buildAuthorizationHeader(accessToken, method, expandedUrl,
+						TWITTER_PROVIDER_ID, queryParameters));
+			}
 		} catch (MalformedURLException e) {
 			throw new RestClientException("Malformed URL: " + twitterUrl, e);
 		}

@@ -14,7 +14,6 @@ import org.springframework.security.oauth.consumer.ProtectedResourceDetails;
 import org.springframework.security.oauth.consumer.ProtectedResourceDetailsService;
 import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
 import org.springframework.social.account.Account;
-import org.springframework.social.account.ConnectedAccountNotFoundException;
 
 public class OAuthSpringSecurityOAuthHelper implements OAuthHelper {
 	private final OAuthConsumerSupport oauthSupport;
@@ -28,17 +27,16 @@ public class OAuthSpringSecurityOAuthHelper implements OAuthHelper {
 		this.tokenServices = tokenServices;
 	}
 
-	public String buildAuthorizationHeader(HttpMethod method, String url, String providerId,
+	public String buildAuthorizationHeader(Object accessToken, HttpMethod method, String url, String providerId,
 			Map<String, String> parameters) throws MalformedURLException {
 
-		OAuthConsumerToken accessToken = resolveAccessToken(providerId);
 		ProtectedResourceDetails details = resourceDetailsService.loadProtectedResourceDetailsById(providerId);
 		String authorizationHeader = oauthSupport.getAuthorizationHeader(details, (OAuthConsumerToken) accessToken,
 				new URL(url), method.name(), parameters);
 		return authorizationHeader;
 	}
 
-	public OAuthConsumerToken resolveAccessToken(String resourceId) {
+	public Object resolveAccessToken(String resourceId) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication == null) {
 			throw new AuthenticationCredentialsNotFoundException("No credentials found");
@@ -48,9 +46,6 @@ public class OAuthSpringSecurityOAuthHelper implements OAuthHelper {
 			Account account = (Account) authentication.getPrincipal();
 
 			OAuthConsumerToken accessToken = tokenServices.getToken(resourceId, account.getId());
-			if(accessToken == null) {
-				throw new ConnectedAccountNotFoundException(resourceId);
-			}
 			return accessToken;
 		} catch (ClassCastException e) {
 			throw new BadCredentialsException("Expected principal to be an Account", e);
