@@ -7,6 +7,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.social.twitter.TwitterTemplate.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -121,6 +122,29 @@ public class TwitterTemplateTest {
 
 	}
 
+	@Test
+	public void buildSearchResults() {
+		TwitterTemplate twitter = new TwitterTemplate(null);
+		Map<String, Object> response = new HashMap<String, Object>();
+		response.put("max_id", "42");
+		response.put("since_id", "24");
+		response.put("next_page", "NextPage");
+		SearchResults results = twitter.buildSearchResults(response, new ArrayList<Tweet>());
+		assertEquals(42, results.getMaxId());
+		assertEquals(24, results.getSinceId());
+		assertEquals(false, results.isLastPage());
+	}
+
+	@Test
+	public void buildSearchResults_nullNumbers() {
+		TwitterTemplate twitter = new TwitterTemplate(null);
+		Map<String, Object> response = new HashMap<String, Object>();
+		response.put("next_page", "NextPage");
+		SearchResults results = twitter.buildSearchResults(response, new ArrayList<Tweet>());
+		assertEquals(0, results.getMaxId());
+		assertEquals(0, results.getSinceId());
+		assertEquals(false, results.isLastPage());
+	}
 	private OAuthConsumerToken setupAccessToken() {
 	    OAuthConsumerToken accessToken = new OAuthConsumerToken();
 		accessToken.setAccessToken(true);

@@ -99,10 +99,15 @@ public class TwitterTemplate implements TwitterOperations {
 			tweets.add(populateTweet(item));
 		}
 
-		SearchResults results = new SearchResults(tweets, NumberUtils.parseNumber(
-				ObjectUtils.nullSafeToString(response.get("max_id")), Long.class), NumberUtils.parseNumber(
-				ObjectUtils.nullSafeToString(response.get("since_id")), Long.class), response.get("next_page") == null);
-		return results;
+		return buildSearchResults(response, tweets);
+	}
+
+	SearchResults buildSearchResults(Map<String, Object> response, List<Tweet> tweets) {
+		Long maxId = response.containsKey("max_id") ? NumberUtils.parseNumber((String) response.get("max_id"),
+				Long.class) : 0;
+		Long sinceId = response.containsKey("since_id") ? NumberUtils.parseNumber((String) response.get("since_id"),
+				Long.class) : 0;
+		return new SearchResults(tweets, maxId, sinceId, response.get("next_page") == null);
 	}
 
 	private Tweet populateTweet(Map<String, Object> item) {
