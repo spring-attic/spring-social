@@ -15,12 +15,12 @@ import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
 
 public class OAuthSpringSecurityOAuthTemplate implements OAuthTemplate {
 	private final OAuthConsumerSupport oauthSupport;
-	private final OAuthConsumerTokenServices tokenServices;
+	private final AccessTokenServices tokenServices;
 	private final ProtectedResourceDetails protectedResourceDetails;
 	private final String providerId;
 
 	public OAuthSpringSecurityOAuthTemplate(String providerId, OAuthConsumerSupport oauthSupport,
-			ProtectedResourceDetailsService resourceDetailsService, OAuthConsumerTokenServices tokenServices) {
+			ProtectedResourceDetailsService resourceDetailsService, AccessTokenServices tokenServices) {
 		this.providerId = providerId;
 		this.oauthSupport = oauthSupport;
 		this.tokenServices = tokenServices;

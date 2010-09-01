@@ -3,7 +3,7 @@ package org.springframework.social.oauth;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
 
-public interface OAuthConsumerTokenServices {
+public interface AccessTokenServices {
 	/**
 	 * Get the token for the specified protected resource.
 	 * 

@@ -11,8 +11,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
 import org.springframework.social.account.Account;
 
-// TODO: RECONCILE THIS TOKEN SERVICES WITH THE OFFICIAL ONE
-public class JdbcOAuthConsumerTokenServices implements OAuthConsumerTokenServices {
+public class JdbcAccessTokenTokenServices implements AccessTokenServices {
 
 	static final String SELECT_TOKEN_SQL = "select provider, accessToken, secret from ConnectedAccount where member = ? and provider = ?";
     static final String INSERT_TOKEN_SQL = "insert into ConnectedAccount (member, provider, accessToken, secret) values (?, ?, ?, ?)";
@@ -20,14 +19,12 @@ public class JdbcOAuthConsumerTokenServices implements OAuthConsumerTokenService
 
 	private JdbcTemplate jdbcTemplate;
 	
-	public JdbcOAuthConsumerTokenServices(JdbcTemplate jdbcTemplate) {
+	public JdbcAccessTokenTokenServices(JdbcTemplate jdbcTemplate) {
 		this.jdbcTemplate = jdbcTemplate;
 	}
 
 	public OAuthConsumerToken getToken(String resourceId, Object principal) throws AuthenticationException {
-		if (!(principal instanceof Account)) {
-			throw new BadCredentialsException("Expected principal to be an Account object");
-		}
+		assertThatPrincipalIsAnAccount(principal);
 
 		Account account = (Account) principal;
 		List<OAuthConsumerToken> accessTokens = jdbcTemplate.query(SELECT_TOKEN_SQL, new RowMapper<OAuthConsumerToken>() {
@@ -47,17 +44,25 @@ public class JdbcOAuthConsumerTokenServices implements OAuthConsumerTokenService
 		return accessToken;
 	}
 
-	public void storeToken(String resourceId, Object memberId, OAuthConsumerToken token) {
-		// Don't bother storing request tokens in the DB...session-storage is
-		// fine
-		// ...but in this impl. there is no session...what do we do about
-		// request tokens???
+	public void storeToken(String resourceId, Object principal, OAuthConsumerToken token) {
+		assertThatPrincipalIsAnAccount(principal);
+		Account account = (Account) principal;
+
 		if (token.isAccessToken()) {
-			jdbcTemplate.update(INSERT_TOKEN_SQL, memberId, token.getResourceId(), token.getValue(), token.getSecret());
+			jdbcTemplate.update(INSERT_TOKEN_SQL, account.getId(), token.getResourceId(), token.getValue(),
+					token.getSecret());
 		}
 	}
 
-	public void removeToken(String resourceId, Object memberId) {
-		jdbcTemplate.update(DELETE_TOKEN_SQL, memberId, resourceId);
+	public void removeToken(String resourceId, Object principal) {
+		assertThatPrincipalIsAnAccount(principal);
+		Account account = (Account) principal;
+		jdbcTemplate.update(DELETE_TOKEN_SQL, account.getId(), resourceId);
+	}
+
+	private void assertThatPrincipalIsAnAccount(Object principal) {
+		if (!(principal instanceof Account)) {
+			throw new BadCredentialsException("Expected principal to be an Account object");
+		}
 	}
 }

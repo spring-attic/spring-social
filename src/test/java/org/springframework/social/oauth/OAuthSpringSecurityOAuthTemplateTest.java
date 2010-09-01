@@ -46,7 +46,7 @@ public class OAuthSpringSecurityOAuthTemplateTest {
 
 		account = new Account(1L, "Art", "Names", "art@names.com", "artnames", "http://someurl");
 
-		OAuthConsumerTokenServices tokenServices = mock(OAuthConsumerTokenServices.class);
+		AccessTokenServices tokenServices = mock(AccessTokenServices.class);
 		when(tokenServices.getToken("provider", account)).thenReturn(accessToken);
 
 		oauthTemplate = new OAuthSpringSecurityOAuthTemplate("provider", oauthSupport, resourceDetailsService,

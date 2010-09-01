@@ -19,7 +19,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
-import org.springframework.social.oauth.OAuthConsumerTokenServices;
+import org.springframework.social.oauth.AccessTokenServices;
 import org.springframework.social.oauth.OAuthSpringSecurityOAuthTemplate;
 import org.springframework.social.oauth.OAuthTemplate;
 import org.springframework.util.LinkedMultiValueMap;
@@ -81,7 +81,7 @@ public class TwitterTemplateTest {
 		when(restTemplate.exchange(eq(VERIFY_CREDENTIALS_URL), eq(HttpMethod.GET), any(HttpEntity.class), 
 				any(Class.class), any(Map.class))).thenReturn(responseEntity);
 
-		OAuthConsumerTokenServices tokenServices = mock(OAuthConsumerTokenServices.class);
+		AccessTokenServices tokenServices = mock(AccessTokenServices.class);
 		when(tokenServices.getToken("Twitter", "1")).thenReturn(accessToken);
 
 		OAuthSpringSecurityOAuthTemplate oauthHelper = mock(OAuthSpringSecurityOAuthTemplate.class);
@@ -99,7 +99,7 @@ public class TwitterTemplateTest {
 	public void getFollowed() {
 		OAuthConsumerToken accessToken = setupAccessToken();
 
-		OAuthConsumerTokenServices tokenServices = mock(OAuthConsumerTokenServices.class);
+		AccessTokenServices tokenServices = mock(AccessTokenServices.class);
 		when(tokenServices.getToken("Twitter", "1")).thenReturn(accessToken);
 
 		OAuthSpringSecurityOAuthTemplate oauthHelper = mock(OAuthSpringSecurityOAuthTemplate.class);
