@@ -123,8 +123,8 @@ public class TwitterTemplateTest {
 	public void buildSearchResults() {
 		TwitterTemplate twitter = new TwitterTemplate(null);
 		Map<String, Object> response = new HashMap<String, Object>();
-		response.put("max_id", "42");
-		response.put("since_id", "24");
+		response.put("max_id", 42);
+		response.put("since_id", 24);
 		response.put("next_page", "NextPage");
 		SearchResults results = twitter.buildSearchResults(response, new ArrayList<Tweet>());
 		assertEquals(42, results.getMaxId());

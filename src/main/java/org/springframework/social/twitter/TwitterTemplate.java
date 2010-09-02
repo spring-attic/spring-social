@@ -114,11 +114,9 @@ public class TwitterTemplate implements TwitterOperations {
 	}
 
 	SearchResults buildSearchResults(Map<String, Object> response, List<Tweet> tweets) {
-		Long maxId = response.containsKey("max_id") ? NumberUtils.parseNumber((String) response.get("max_id"),
-				Long.class) : 0;
-		Long sinceId = response.containsKey("since_id") ? NumberUtils.parseNumber((String) response.get("since_id"),
-				Long.class) : 0;
-		return new SearchResults(tweets, maxId, sinceId, response.get("next_page") == null);
+		Number maxId = response.containsKey("max_id") ? (Number) response.get("max_id") : 0;
+		Number sinceId = response.containsKey("since_id") ? (Number) response.get("since_id") : 0;
+		return new SearchResults(tweets, maxId.longValue(), sinceId.longValue(), response.get("next_page") == null);
 	}
 
 	private Tweet populateTweet(Map<String, Object> item) {
