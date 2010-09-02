@@ -21,12 +21,10 @@ import org.springframework.security.oauth.consumer.OAuthConsumerSupport;
 import org.springframework.security.oauth.consumer.ProtectedResourceDetails;
 import org.springframework.security.oauth.consumer.ProtectedResourceDetailsService;
 import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
-import org.springframework.social.account.Account;
 
 public class OAuthSpringSecurityOAuthTemplateTest {
 	private OAuthSpringSecurityOAuthTemplate oauthTemplate;
 	private OAuthConsumerToken accessToken;
-	private Account account;
 
 	@Before
 	public void setup() {
@@ -44,10 +42,8 @@ public class OAuthSpringSecurityOAuthTemplateTest {
 		ProtectedResourceDetailsService resourceDetailsService = mock(ProtectedResourceDetailsService.class);
 		when(resourceDetailsService.loadProtectedResourceDetailsById(any(String.class))).thenReturn(twitterDetails);
 
-		account = new Account(1L, "Art", "Names", "art@names.com", "artnames", "http://someurl");
-
 		AccessTokenServices tokenServices = mock(AccessTokenServices.class);
-		when(tokenServices.getToken("provider", account)).thenReturn(accessToken);
+		when(tokenServices.getToken(eq("provider"), any(Object.class))).thenReturn(accessToken);
 
 		oauthTemplate = new OAuthSpringSecurityOAuthTemplate("provider", oauthSupport, resourceDetailsService,
 				tokenServices);
@@ -60,7 +56,7 @@ public class OAuthSpringSecurityOAuthTemplateTest {
 
 	@Test
 	public void buildAuthorizationHeader() throws Exception {
-		Authentication authentication = new TestingAuthenticationToken(account, "credentials");
+		Authentication authentication = new TestingAuthenticationToken("principal", "credentials");
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		String authHeader = oauthTemplate.buildAuthorizationHeader(HttpMethod.POST, "http://someurl",
