@@ -29,7 +29,7 @@ public class OAuth1ClientRequestAuthorizer implements OAuthClientRequestAuthoriz
 
 	Map<String, String> extractParametersFromRequest(ClientHttpRequest request) {
 		if (request.getMethod().equals(HttpMethod.POST) || request.getMethod().equals(HttpMethod.PUT)) {
-			return extractFormParameters(request);
+			return new HashMap<String, String>();
 		} else {
 			return extractQueryParameters(request);
 		}
@@ -51,10 +51,4 @@ public class OAuth1ClientRequestAuthorizer implements OAuthClientRequestAuthoriz
 
 		return paramMap;
 	}
-
-	private Map<String, String> extractFormParameters(ClientHttpRequest request) {
-		// TODO: Figure out how to get parameters from a POST
-		return new HashMap<String, String>();
-	}
-
 }

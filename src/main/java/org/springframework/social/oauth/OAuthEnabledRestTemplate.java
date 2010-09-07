@@ -11,10 +11,10 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 public class OAuthEnabledRestTemplate extends RestTemplate {
-	private OAuthClientRequestAuthorizer requestDecorator;
+	private OAuthClientRequestAuthorizer requestAuthorizer;
 
-	public OAuthEnabledRestTemplate(OAuthClientRequestAuthorizer requestDecorator) {
-		this.requestDecorator = requestDecorator;
+	public OAuthEnabledRestTemplate(OAuthClientRequestAuthorizer requestAuthorizer) {
+		this.requestAuthorizer = requestAuthorizer;
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class OAuthEnabledRestTemplate extends RestTemplate {
 
 		@Override
 		public void doWithRequest(ClientHttpRequest request) throws IOException {
-			targetCallback.doWithRequest(requestDecorator.authorize(request));
+			targetCallback.doWithRequest(requestAuthorizer.authorize(request));
 		}
 	}
 }
