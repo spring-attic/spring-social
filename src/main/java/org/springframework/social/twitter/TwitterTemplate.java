@@ -1,6 +1,5 @@
 package org.springframework.social.twitter;
 
-import java.net.MalformedURLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,56 +10,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.social.oauth.OAuthTemplate;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.social.oauth.OAuthEnabledRestTemplate;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriTemplate;
 
-/**
- * Template class that simplifies interaction with Twitter. It handles the
- * details of setting the OAuth Authorization header in the request, setting
- * request parameters, making the Twitter API call (via {@link RestTemplate}),
- * extracting results, and handling any errors that may occur in the process.
- * 
- * An implementation of OAuthTemplate must be provided at construction time to
- * help assemble the OAuth Authorization header.
- * 
- * @author Craig Walls
- * 
- * @see OAuthTemplate
- */
 public class TwitterTemplate implements TwitterOperations {
 
-	private static final int DEFAULT_RESULTS_PER_PAGE = 50;
+	private final OAuthEnabledRestTemplate restTemplate;
 
-	private RestTemplate restTemplate;
-
-	private DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
-
-	private final OAuthTemplate oauthHelper;
-
-	public TwitterTemplate(OAuthTemplate oauthHelper) {
-		this.oauthHelper = oauthHelper;
-		this.restTemplate = new RestTemplate();
+	public TwitterTemplate(OAuthEnabledRestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
 	}
 
 	public String getScreenName() {
-		Map<String, String> parameters = Collections.emptyMap();
-		Map<String, String> response = exchangeForMap(HttpMethod.GET, VERIFY_CREDENTIALS_URL, parameters);
-		return response.get("screen_name");
+		Map<?, ?> response = restTemplate.getForObject(VERIFY_CREDENTIALS_URL, Map.class);
+		return (String) response.get("screen_name");
 	}
 
 	public List<String> getFollowed(String screenName) {
-		Map<String, String> parameters = Collections.singletonMap("screen_name", screenName);
-		List<Map<String, String>> response = exchangeForList(HttpMethod.GET, FRIENDS_STATUSES_URL, parameters);
+		List<Map<String, String>> response = restTemplate.getForObject(FRIENDS_STATUSES_URL, List.class,
+				Collections.singletonMap("screen_name", screenName));
 		List<String> friends = new ArrayList<String>(response.size());
 		for (Map<String, String> item : response) {
 			friends.add(item.get("screen_name"));
@@ -69,14 +38,12 @@ public class TwitterTemplate implements TwitterOperations {
 	}
 
 	public void tweet(String message) {
-		Map<String, String> parameters = Collections.singletonMap("status", message);
-		exchangeForMap(HttpMethod.POST, TWEET_URL, parameters);
+		restTemplate.postForObject(TWEET_URL, null, String.class, Collections.singletonMap("status", message));
 	}
 
 	public void retweet(long tweetId) {
-		Map<String, String> urlVariable = Collections.singletonMap("tweet_id", Long.toString(tweetId));
-		Map<String, String> queryParameters = Collections.emptyMap();
-		exchangeForMap(HttpMethod.POST, RETWEET_URL, urlVariable, queryParameters);
+		restTemplate.postForObject(RETWEET_URL, Collections.emptyMap(), String.class,
+				Collections.singletonMap("tweet_id", Long.toString(tweetId)));
 	}
 
 	public SearchResults search(String query) {
@@ -103,7 +70,7 @@ public class TwitterTemplate implements TwitterOperations {
 			parameters.put("max", String.valueOf(maxId));
 		}
 
-		Map<String, Object> response = exchangeForMap(HttpMethod.GET, searchUrl, parameters);
+		Map<String, Object> response = restTemplate.getForObject(searchUrl, Map.class, parameters);
 		List<Map<String, Object>> items = (List<Map<String, Object>>) response.get("results");
 		List<Tweet> tweets = new ArrayList<Tweet>(response.size());
 		for (Map<String, Object> item : items) {
@@ -136,68 +103,7 @@ public class TwitterTemplate implements TwitterOperations {
 		return tweet;
 	}
 
-	// internal helpers
-
-	private Map exchangeForMap(HttpMethod method, String url, Map<String, String> queryParameters) {
-		Map<String, String> urlVariable = Collections.emptyMap();
-		return exchangeForMap(method, url, urlVariable, queryParameters);
-	}
-
-	private Map exchangeForMap(HttpMethod method, String url, Map<String, String> urlVariable,
-			Map<String, String> queryParameters) {
-		return exchange(method, url, urlVariable, queryParameters, Map.class);
-	}
-
-	private List exchangeForList(HttpMethod method, String url, Map<String, String> queryParameters) {
-		Map<String, String> urlVariable = Collections.emptyMap();
-		return exchange(method, url, urlVariable, queryParameters, List.class);
-	}
-
-	private <T> T exchange(HttpMethod method, String twitterUrl, Map<String, String> urlVariable,
-			Map<String, String> queryParameters, Class<T> responseType) {
-
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Content-Type", "application/x-www-form-urlencoded");
-		addAuthorizationHeader(headers, method, twitterUrl, urlVariable, queryParameters);
-
-		MultiValueMap<String, String> form = new LinkedMultiValueMap<String, String>();
-		HashMap<String, Object> uriVariables = new HashMap<String, Object>();
-		if (method.equals(HttpMethod.POST) || method.equals(HttpMethod.PUT)) {
-			for (String key : queryParameters.keySet()) {
-				form.add(key, queryParameters.get(key));
-			}
-		} else {
-			for (String key : queryParameters.keySet()) {
-				uriVariables.put(key, queryParameters.get(key));
-			}
-		}
-
-		for (String key : urlVariable.keySet()) {
-			uriVariables.put(key, urlVariable.get(key));
-		}
-
-		HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<MultiValueMap<String, String>>(form,
-				headers);
-		ResponseEntity<T> exchange = restTemplate.exchange(twitterUrl, method, requestEntity, responseType, uriVariables);
-		return exchange.getBody();
-	}
-
-	private void addAuthorizationHeader(HttpHeaders headers, HttpMethod method, String twitterUrl,
-			Map<String, String> urlVariables, Map<String, String> queryParameters) {
-		try {
-			UriTemplate uriTemplate = new UriTemplate(twitterUrl);
-			Map<String, String> combinedParamaters = new HashMap<String, String>(urlVariables);
-			combinedParamaters.putAll(queryParameters);
-			String expandedUrl = uriTemplate.expand(combinedParamaters).toString();
-
-			String authorizationHeader = oauthHelper.buildAuthorizationHeader(method, expandedUrl, queryParameters);
-			if (authorizationHeader != null) {
-				headers.add("Authorization", authorizationHeader);
-			}
-		} catch (MalformedURLException e) {
-			throw new RestClientException("Malformed URL: " + twitterUrl, e);
-		}
-	}
+	private DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
 
 	private Date toDate(String dateString) {
 		try {
@@ -207,15 +113,11 @@ public class TwitterTemplate implements TwitterOperations {
 		}
 	}
 
-	// to support unit testing
-	void setRestTemplate(RestTemplate mock) {
-		this.restTemplate = mock;
-	}
+	private static final int DEFAULT_RESULTS_PER_PAGE = 50;
 
 	static final String VERIFY_CREDENTIALS_URL = "http://api.twitter.com/1/account/verify_credentials.json";
 	static final String FRIENDS_STATUSES_URL = "http://api.twitter.com/1/statuses/friends.json?screen_name={screen_name}";
-	static final String TWEET_URL = "http://api.twitter.com/1/statuses/update.json";
-	static final String RETWEET_URL = "http://api.twitter.com/1/statuses/retweet/{tweet_id}.json";
 	static final String SEARCH_URL = "http://search.twitter.com/search.json?q={query}&rpp={rpp}&page={page}";
-
+	static final String TWEET_URL = "http://api.twitter.com/1/statuses/update.json?status={status}";
+	static final String RETWEET_URL = "http://api.twitter.com/1/statuses/retweet/{tweet_id}.json";
 }

@@ -42,7 +42,7 @@ public class OAuthSpringSecurityOAuthTemplateTest {
 		ProtectedResourceDetailsService resourceDetailsService = mock(ProtectedResourceDetailsService.class);
 		when(resourceDetailsService.loadProtectedResourceDetailsById(any(String.class))).thenReturn(twitterDetails);
 
-		AccessTokenServices tokenServices = mock(AccessTokenServices.class);
+		SSOAuthAccessTokenServices tokenServices = mock(SSOAuthAccessTokenServices.class);
 		when(tokenServices.getToken(eq("provider"), any(Object.class))).thenReturn(accessToken);
 
 		oauthTemplate = new OAuthSpringSecurityOAuthTemplate("provider", oauthSupport, resourceDetailsService,
@@ -59,7 +59,7 @@ public class OAuthSpringSecurityOAuthTemplateTest {
 		Authentication authentication = new TestingAuthenticationToken("principal", "credentials");
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		String authHeader = oauthTemplate.buildAuthorizationHeader(HttpMethod.POST, "http://someurl",
+		String authHeader = oauthTemplate.buildAuthorizationHeader(HttpMethod.POST, new URL("http://someurl"),
 				new HashMap<String, String>());
 
 		Assert.assertEquals("OAuth_Header", authHeader);

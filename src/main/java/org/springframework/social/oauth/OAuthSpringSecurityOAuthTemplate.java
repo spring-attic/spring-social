@@ -1,6 +1,5 @@
 package org.springframework.social.oauth;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
@@ -15,12 +14,12 @@ import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
 
 public class OAuthSpringSecurityOAuthTemplate implements OAuthTemplate {
 	private final OAuthConsumerSupport oauthSupport;
-	private final AccessTokenServices tokenServices;
+	private final SSOAuthAccessTokenServices tokenServices;
 	private final ProtectedResourceDetails protectedResourceDetails;
 	private final String providerId;
 
 	public OAuthSpringSecurityOAuthTemplate(String providerId, OAuthConsumerSupport oauthSupport,
-			ProtectedResourceDetailsService resourceDetailsService, AccessTokenServices tokenServices) {
+			ProtectedResourceDetailsService resourceDetailsService, SSOAuthAccessTokenServices tokenServices) {
 		this.providerId = providerId;
 		this.oauthSupport = oauthSupport;
 		this.tokenServices = tokenServices;
@@ -30,16 +29,15 @@ public class OAuthSpringSecurityOAuthTemplate implements OAuthTemplate {
 		this.protectedResourceDetails = resourceDetailsService.loadProtectedResourceDetailsById(providerId);
 	}
 
-	public String buildAuthorizationHeader(HttpMethod method, String url, Map<String, String> parameters)
-			throws MalformedURLException {
+	public String buildAuthorizationHeader(HttpMethod method, URL url, Map<String, String> parameters) {
 
 		OAuthConsumerToken accessToken = resolveAccessToken(providerId);
 		if (accessToken == null) {
 			return null;
 		}
 
-		return oauthSupport.getAuthorizationHeader(protectedResourceDetails, accessToken, new URL(url),
-				method.name(), parameters);
+		return oauthSupport.getAuthorizationHeader(protectedResourceDetails, accessToken, url, method.name(),
+				parameters);
 	}
 
 	private OAuthConsumerToken resolveAccessToken(String providerId) {

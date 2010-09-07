@@ -9,7 +9,7 @@ import java.util.List;
  * 
  * @author Craig Walls
  * 
- * @see TwitterTemplate
+ * @see OldTwitterTemplate
  */
 public interface TwitterOperations {
 
