@@ -62,7 +62,7 @@ public class OAuth2ParameterClientRequestAuthorizer implements OAuthClientReques
 				return decoratedUri;
 			} catch (URISyntaxException e) {
 				// TODO: Revisit this...is this the right exception to throw???
-				throw new AuthorizationException("Unabled to decorate request with access token", e);
+				throw new AuthorizationException("Unable to decorate request with access token", e);
 			}
 		}
 
