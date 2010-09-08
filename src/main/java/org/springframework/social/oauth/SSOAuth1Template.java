@@ -11,17 +11,16 @@ import org.springframework.security.oauth.consumer.OAuthConsumerSupport;
 import org.springframework.security.oauth.consumer.ProtectedResourceDetails;
 import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
 
-public class SSOAuthClientRequestAuthorizer extends OAuth1ClientRequestAuthorizer {
-
-	private final ProtectedResourceDetails protectedResourceDetails;
+public class SSOAuth1Template implements OAuth1Template {
 	private final OAuthConsumerSupport oauthSupport;
 	private final SSOAuthAccessTokenServices tokenServices;
+	private final ProtectedResourceDetails protectedResourceDetails;
 
-	public SSOAuthClientRequestAuthorizer(OAuthConsumerSupport oauthSupport,
+	public SSOAuth1Template(OAuthConsumerSupport oauthSupport,
 			ProtectedResourceDetails protectedResourceDetails, SSOAuthAccessTokenServices tokenServices) {
 		this.oauthSupport = oauthSupport;
-		this.protectedResourceDetails = protectedResourceDetails;
 		this.tokenServices = tokenServices;
+		this.protectedResourceDetails = protectedResourceDetails;
 	}
 
 	public String buildAuthorizationHeader(HttpMethod method, URL url, Map<String, String> parameters) {
