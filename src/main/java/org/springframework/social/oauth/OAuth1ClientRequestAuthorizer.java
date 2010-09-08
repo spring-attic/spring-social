@@ -1,31 +1,28 @@
 package org.springframework.social.oauth;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 
-public class OAuth1ClientRequestAuthorizer implements OAuthClientRequestAuthorizer {
-
-	private final OAuthTemplate oauthTemplate;
-
-	public OAuth1ClientRequestAuthorizer(OAuthTemplate oauthTemplate) {
-		this.oauthTemplate = oauthTemplate;
-	}
+public abstract class OAuth1ClientRequestAuthorizer implements OAuthClientRequestAuthorizer {
 
 	@Override
 	public ClientHttpRequest authorize(ClientHttpRequest request) throws AuthorizationException {
 		try {
 			Map<String, String> params = extractParametersFromRequest(request);
 			request.getHeaders().add("Authorization",
-					oauthTemplate.buildAuthorizationHeader(request.getMethod(), request.getURI().toURL(), params));
+					buildAuthorizationHeader(request.getMethod(), request.getURI().toURL(), params));
 			return request;
 		} catch (MalformedURLException e) {
 			throw new AuthorizationException("Bad URL", e);
 		}
 	}
+
+	protected abstract String buildAuthorizationHeader(HttpMethod method, URL url, Map<String, String> params);
 
 	Map<String, String> extractParametersFromRequest(ClientHttpRequest request) {
 		if (request.getMethod().equals(HttpMethod.POST) || request.getMethod().equals(HttpMethod.PUT)) {
