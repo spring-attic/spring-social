@@ -1,4 +1,4 @@
-package org.springframework.social.oauth;
+package org.springframework.social.oauth1;
 
 import java.net.URL;
 import java.util.Map;

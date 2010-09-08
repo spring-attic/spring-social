@@ -1,4 +1,4 @@
-package org.springframework.social.oauth;
+package org.springframework.social.oauth1;
 
 import org.springframework.security.oauth.consumer.OAuthConsumerSupport;
 import org.springframework.security.oauth.consumer.ProtectedResourceDetailsService;

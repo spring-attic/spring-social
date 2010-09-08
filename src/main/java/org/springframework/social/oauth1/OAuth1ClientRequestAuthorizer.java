@@ -1,4 +1,4 @@
-package org.springframework.social.oauth;
+package org.springframework.social.oauth1;
 
 import java.net.MalformedURLException;
 import java.util.HashMap;
@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.social.oauth.AuthorizationException;
+import org.springframework.social.oauth.OAuthClientRequestAuthorizer;
 
 public class OAuth1ClientRequestAuthorizer implements OAuthClientRequestAuthorizer {
 

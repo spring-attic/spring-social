@@ -1,4 +1,4 @@
-package org.springframework.social.oauth;
+package org.springframework.social.oauth2;
 
 import static org.junit.Assert.*;
 
@@ -10,13 +10,15 @@ import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.social.oauth.FakeClientHttpRequest;
+import org.springframework.social.oauth2.OAuth2ParameterClientRequestAuthorizer;
 
 public class OAuth2ParameterClientRequestAuthorizerTest {
 	private OAuth2ParameterClientRequestAuthorizer authorizer;
 
 	@Before
 	public void setup() throws Exception {
-		AccessTokenResolver<String> tokenResolver = new AccessTokenResolver<String>() {
+		OAuth2Template<String> tokenResolver = new OAuth2Template<String>() {
 			@Override
 			public String resolveAccessToken() {
 				return "ACCESS_TOKEN";

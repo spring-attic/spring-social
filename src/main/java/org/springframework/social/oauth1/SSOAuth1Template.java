@@ -1,4 +1,4 @@
-package org.springframework.social.oauth;
+package org.springframework.social.oauth1;
 
 import java.net.URL;
 import java.util.Map;
@@ -25,7 +25,7 @@ public class SSOAuth1Template implements OAuth1Template {
 
 	public String buildAuthorizationHeader(HttpMethod method, URL url, Map<String, String> parameters) {
 
-		OAuthConsumerToken accessToken = resolveAccessToken(protectedResourceDetails.getId());
+		OAuthConsumerToken accessToken = resolveAccessToken();
 		if (accessToken == null) {
 			return null;
 		}
@@ -34,13 +34,14 @@ public class SSOAuth1Template implements OAuth1Template {
 				parameters);
 	}
 
-	private OAuthConsumerToken resolveAccessToken(String providerId) {
+	private OAuthConsumerToken resolveAccessToken() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication == null) {
 			throw new AuthenticationCredentialsNotFoundException("No credentials found");
 		}
 
-		OAuthConsumerToken accessToken = tokenServices.getToken(providerId, authentication.getPrincipal());
+		OAuthConsumerToken accessToken = tokenServices.getToken(protectedResourceDetails.getId(),
+				authentication.getPrincipal());
 		return accessToken;
 	}
 }

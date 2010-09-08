@@ -1,4 +1,4 @@
-package org.springframework.social.oauth;
+package org.springframework.social.oauth2;
 
 import java.io.IOException;
 import java.net.URI;
@@ -9,13 +9,15 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.AbstractClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.social.oauth.AuthorizationException;
+import org.springframework.social.oauth.OAuthClientRequestAuthorizer;
 
 public class OAuth2ParameterClientRequestAuthorizer implements OAuthClientRequestAuthorizer {
-	private final AccessTokenResolver<String> tokenResolver;
+	private final OAuth2Template<String> tokenResolver;
 
 	private String parameterName = "access_token";
 
-	public OAuth2ParameterClientRequestAuthorizer(AccessTokenResolver<String> tokenResolver) {
+	public OAuth2ParameterClientRequestAuthorizer(OAuth2Template<String> tokenResolver) {
 		this.tokenResolver = tokenResolver;
 	}
 
