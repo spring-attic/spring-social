@@ -25,7 +25,7 @@ public class OAuthEnabledRestTemplate extends RestTemplate {
 			RequestCallback adapter = new OAuthHttpEntityRequestCallbackAdapter(requestCallback);
 			return super.doExecute(url, method, adapter, responseExtractor);
 		} catch (AuthorizationException e) {
-			throw new RestClientException("Unable to add OAuth authorization details to request", e);
+			throw new RestClientException("Unable to add supply request with OAuth authorization details", e);
 		}
 	}
 

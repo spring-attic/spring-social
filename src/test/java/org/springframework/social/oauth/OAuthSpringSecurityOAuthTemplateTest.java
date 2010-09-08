@@ -19,7 +19,6 @@ import org.springframework.security.oauth.common.signature.SharedConsumerSecret;
 import org.springframework.security.oauth.consumer.BaseProtectedResourceDetails;
 import org.springframework.security.oauth.consumer.OAuthConsumerSupport;
 import org.springframework.security.oauth.consumer.ProtectedResourceDetails;
-import org.springframework.security.oauth.consumer.ProtectedResourceDetailsService;
 import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
 
 public class OAuthSpringSecurityOAuthTemplateTest {
@@ -31,21 +30,19 @@ public class OAuthSpringSecurityOAuthTemplateTest {
 		accessToken = new OAuthConsumerToken();
 		accessToken.setValue("value");
 		accessToken.setSecret("secret");
-		accessToken.setResourceId("resource");
+		accessToken.setResourceId("provider");
 
 		OAuthConsumerSupport oauthSupport = mockOAuthConsumerSupport(accessToken);
 
 		BaseProtectedResourceDetails twitterDetails = new BaseProtectedResourceDetails();
+		twitterDetails.setId("provider");
 		twitterDetails.setConsumerKey("twitterKey");
 		twitterDetails.setSharedSecret(new SharedConsumerSecret("twitterSecret"));
-
-		ProtectedResourceDetailsService resourceDetailsService = mock(ProtectedResourceDetailsService.class);
-		when(resourceDetailsService.loadProtectedResourceDetailsById(any(String.class))).thenReturn(twitterDetails);
 
 		SSOAuthAccessTokenServices tokenServices = mock(SSOAuthAccessTokenServices.class);
 		when(tokenServices.getToken(eq("provider"), any(Object.class))).thenReturn(accessToken);
 
-		oauthTemplate = new OAuthSpringSecurityOAuthTemplate("provider", oauthSupport, resourceDetailsService,
+		oauthTemplate = new OAuthSpringSecurityOAuthTemplate(oauthSupport, twitterDetails,
 				tokenServices);
 	}
 

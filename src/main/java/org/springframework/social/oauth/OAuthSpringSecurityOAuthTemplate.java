@@ -9,29 +9,23 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth.consumer.OAuthConsumerSupport;
 import org.springframework.security.oauth.consumer.ProtectedResourceDetails;
-import org.springframework.security.oauth.consumer.ProtectedResourceDetailsService;
 import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
 
 public class OAuthSpringSecurityOAuthTemplate implements OAuthTemplate {
 	private final OAuthConsumerSupport oauthSupport;
 	private final SSOAuthAccessTokenServices tokenServices;
 	private final ProtectedResourceDetails protectedResourceDetails;
-	private final String providerId;
 
-	public OAuthSpringSecurityOAuthTemplate(String providerId, OAuthConsumerSupport oauthSupport,
-			ProtectedResourceDetailsService resourceDetailsService, SSOAuthAccessTokenServices tokenServices) {
-		this.providerId = providerId;
+	public OAuthSpringSecurityOAuthTemplate(OAuthConsumerSupport oauthSupport,
+			ProtectedResourceDetails protectedResourceDetails, SSOAuthAccessTokenServices tokenServices) {
 		this.oauthSupport = oauthSupport;
 		this.tokenServices = tokenServices;
-
-		// TODO - Can the resource details be resolved/injected without
-		// injecting the resource details service?
-		this.protectedResourceDetails = resourceDetailsService.loadProtectedResourceDetailsById(providerId);
+		this.protectedResourceDetails = protectedResourceDetails;
 	}
 
 	public String buildAuthorizationHeader(HttpMethod method, URL url, Map<String, String> parameters) {
 
-		OAuthConsumerToken accessToken = resolveAccessToken(providerId);
+		OAuthConsumerToken accessToken = resolveAccessToken(protectedResourceDetails.getId());
 		if (accessToken == null) {
 			return null;
 		}
