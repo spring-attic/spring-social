@@ -21,8 +21,12 @@ public class OAuth1ClientRequestAuthorizer implements OAuthClientRequestAuthoriz
 	public ClientHttpRequest authorize(ClientHttpRequest request) throws AuthorizationException {
 		try {
 			Map<String, String> params = extractParametersFromRequest(request);
-			request.getHeaders().add("Authorization",
-					oauthTemplate.buildAuthorizationHeader(request.getMethod(), request.getURI().toURL(), params));
+			String authorizationHeader = oauthTemplate.buildAuthorizationHeader(request.getMethod(), request.getURI()
+					.toURL(), params);
+
+			if (authorizationHeader != null) {
+				request.getHeaders().add("Authorization", authorizationHeader);
+			}
 			return request;
 		} catch (MalformedURLException e) {
 			throw new AuthorizationException("Bad URL", e);
