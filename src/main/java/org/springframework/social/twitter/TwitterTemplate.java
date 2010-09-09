@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.social.core.ResponseStatusCodeTranslator;
+import org.springframework.social.core.SocialException;
 import org.springframework.social.oauth.OAuthEnabledRestTemplate;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
@@ -17,9 +20,14 @@ import org.springframework.util.ObjectUtils;
 public class TwitterTemplate implements TwitterOperations {
 
 	private final OAuthEnabledRestTemplate restTemplate;
+	private ResponseStatusCodeTranslator statusCodeTranslator;
 
 	public TwitterTemplate(OAuthEnabledRestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
+		// TODO: May want to make the error handler configurable or part of the
+		// factory and not do it here.
+		this.restTemplate.setErrorHandler(new TwitterErrorHandler());
+		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
 	}
 
 	public String getScreenName() {
@@ -37,13 +45,16 @@ public class TwitterTemplate implements TwitterOperations {
 		return friends;
 	}
 
-	public void tweet(String message) {
-		restTemplate.postForObject(TWEET_URL, null, String.class, Collections.singletonMap("status", message));
+	public void tweet(String message) throws SocialException {
+		ResponseEntity<Map> response = restTemplate.postForEntity(TWEET_URL, null, Map.class,
+				Collections.singletonMap("status", message));
+		handleResponseErrors(response);
 	}
 
-	public void retweet(long tweetId) {
-		restTemplate.postForObject(RETWEET_URL, Collections.emptyMap(), String.class,
+	public void retweet(long tweetId) throws SocialException {
+		ResponseEntity<Map> response = restTemplate.postForEntity(RETWEET_URL, Collections.emptyMap(), Map.class,
 				Collections.singletonMap("tweet_id", Long.toString(tweetId)));
+		handleResponseErrors(response);
 	}
 
 	public SearchResults search(String query) {
@@ -70,14 +81,16 @@ public class TwitterTemplate implements TwitterOperations {
 			parameters.put("max", String.valueOf(maxId));
 		}
 
-		Map<String, Object> response = restTemplate.getForObject(searchUrl, Map.class, parameters);
-		List<Map<String, Object>> items = (List<Map<String, Object>>) response.get("results");
-		List<Tweet> tweets = new ArrayList<Tweet>(response.size());
+		ResponseEntity<Map> response = restTemplate.getForEntity(searchUrl, Map.class, parameters);
+		// handleResponseErrors(response);
+		Map<String, Object> resultsMap = response.getBody();
+		List<Map<String, Object>> items = (List<Map<String, Object>>) resultsMap.get("results");
+		List<Tweet> tweets = new ArrayList<Tweet>(resultsMap.size());
 		for (Map<String, Object> item : items) {
 			tweets.add(populateTweet(item));
 		}
 
-		return buildSearchResults(response, tweets);
+		return buildSearchResults(resultsMap, tweets);
 	}
 
 	SearchResults buildSearchResults(Map<String, Object> response, List<Tweet> tweets) {
@@ -110,6 +123,13 @@ public class TwitterTemplate implements TwitterOperations {
 			return dateFormat.parse(dateString);
 		} catch (ParseException e) {
 			return null;
+		}
+	}
+
+	private void handleResponseErrors(ResponseEntity<Map> response) throws SocialException {
+		SocialException exception = statusCodeTranslator.translate(response);
+		if (exception != null) {
+			throw exception;
 		}
 	}
 

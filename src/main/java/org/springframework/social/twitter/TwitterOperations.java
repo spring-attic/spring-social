@@ -2,6 +2,9 @@ package org.springframework.social.twitter;
 
 import java.util.List;
 
+import org.springframework.social.core.ForbiddenSocialOperationException;
+import org.springframework.social.core.SocialException;
+
 /**
  * Interface specifying a basic set of operations for interacting with Twitter.
  * Implemented by TwitterTemplate. Not often used directly, but a useful option
@@ -28,14 +31,17 @@ public interface TwitterOperations {
 	 * @return a list of user screen names
 	 */
 	List<String> getFollowed(String screenName);
-	
+
 	/**
 	 * Updates the user's status.
 	 * 
 	 * @param message
 	 *            The status message
+	 * 
+	 * @throws ForbiddenSocialOperationException
+	 *             if and HTTP 403 is returned from Twitter.
 	 */
-	void tweet(String message);
+	void tweet(String message) throws SocialException;
 
 	/**
 	 * Posts a retweet of an existing tweet.
@@ -43,7 +49,7 @@ public interface TwitterOperations {
 	 * @param tweetId
 	 *            The ID of the tweet to be retweeted
 	 */
-	void retweet(long tweetId);
+	void retweet(long tweetId) throws SocialException;
 
 	/**
 	 * Searches Twitter, returning the first 50 matching {@link Tweet}s
