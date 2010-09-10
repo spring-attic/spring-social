@@ -12,14 +12,8 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.social.oauth.AuthorizationException;
 import org.springframework.social.oauth.OAuthClientRequestAuthorizer;
 
-public class OAuth2ParameterClientRequestAuthorizer implements OAuthClientRequestAuthorizer {
-	private final OAuth2Template<String> tokenResolver;
-
+public abstract class OAuth2ParameterClientRequestAuthorizer implements OAuthClientRequestAuthorizer {
 	private String parameterName = "access_token";
-
-	public OAuth2ParameterClientRequestAuthorizer(OAuth2Template<String> tokenResolver) {
-		this.tokenResolver = tokenResolver;
-	}
 
 	@Override
 	public ClientHttpRequest authorize(ClientHttpRequest request) throws AuthorizationException {
@@ -30,9 +24,7 @@ public class OAuth2ParameterClientRequestAuthorizer implements OAuthClientReques
 		this.parameterName = parameterName;
 	}
 
-	private String resolveAccessToken() {
-		return tokenResolver.resolveAccessToken();
-	}
+	protected abstract String resolveAccessToken();
 
 	private class OAuth2ParameterDecoratedClientHttpRequest extends AbstractClientHttpRequest {
 		private final ClientHttpRequest targetRequest;

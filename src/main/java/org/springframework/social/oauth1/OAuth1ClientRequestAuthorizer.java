@@ -1,6 +1,7 @@
 package org.springframework.social.oauth1;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,35 +11,19 @@ import org.springframework.social.oauth.AuthorizationException;
 import org.springframework.social.oauth.OAuthClientRequestAuthorizer;
 
 /**
- * Implementation of {@link OAuthClientRequestAuthorizer} that adds an OAuth 1
- * Authorization header to the request.
- * 
- * Delegates to an {@link OAuth1Template} to produce the header value.
+ * Abstract implementation of {@link OAuthClientRequestAuthorizer} that adds an
+ * OAuth 1 Authorization header to the request. Concrete implementations will
+ * generate the Authorization header by implementing the
+ * buildAuthorizationHeader() method.
  * 
  * @author Craig Walls
  */
-public class OAuth1ClientRequestAuthorizer implements OAuthClientRequestAuthorizer {
-
-	private final OAuth1Template oauthTemplate;
-
-	/**
-	 * An implementation of {@link OAuth1Template} that will produce the
-	 * Authorization header value.
-	 * 
-	 * @param oauthTemplate
-	 */
-	public OAuth1ClientRequestAuthorizer(OAuth1Template oauthTemplate) {
-		// TODO: I'm tempted to make this class abstract and have subclasses
-		// implement the buildAuthorizationHeader() functionality from the
-		// template...and then do away with the template interface and
-		// implementations.
-		this.oauthTemplate = oauthTemplate;
-	}
+public abstract class OAuth1ClientRequestAuthorizer implements OAuthClientRequestAuthorizer {
 
 	public ClientHttpRequest authorize(ClientHttpRequest request) throws AuthorizationException {
 		try {
 			Map<String, String> params = extractParametersFromRequest(request);
-			String authorizationHeader = oauthTemplate.buildAuthorizationHeader(request.getMethod(), request.getURI()
+			String authorizationHeader = buildAuthorizationHeader(request.getMethod(), request.getURI()
 					.toURL(), params);
 
 			if (authorizationHeader != null) {
@@ -49,6 +34,8 @@ public class OAuth1ClientRequestAuthorizer implements OAuthClientRequestAuthoriz
 			throw new AuthorizationException("Bad URL", e);
 		}
 	}
+
+	protected abstract String buildAuthorizationHeader(HttpMethod method, URL url, Map<String, String> parameters);
 
 	Map<String, String> extractParametersFromRequest(ClientHttpRequest request) {
 		if (request.getMethod().equals(HttpMethod.POST) || request.getMethod().equals(HttpMethod.PUT)) {

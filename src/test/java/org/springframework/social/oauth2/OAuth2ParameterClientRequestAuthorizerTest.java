@@ -11,20 +11,18 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.social.oauth.FakeClientHttpRequest;
-import org.springframework.social.oauth2.OAuth2ParameterClientRequestAuthorizer;
 
 public class OAuth2ParameterClientRequestAuthorizerTest {
 	private OAuth2ParameterClientRequestAuthorizer authorizer;
 
 	@Before
 	public void setup() throws Exception {
-		OAuth2Template<String> tokenResolver = new OAuth2Template<String>() {
-			@Override
+		authorizer = new OAuth2ParameterClientRequestAuthorizer() {
+			// stub, since this isn't what's being tested here anyway
 			public String resolveAccessToken() {
 				return "ACCESS_TOKEN";
 			}
 		};
-		authorizer = new OAuth2ParameterClientRequestAuthorizer(tokenResolver);
 	}
 
 	@Test

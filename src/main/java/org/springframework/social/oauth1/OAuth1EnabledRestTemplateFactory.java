@@ -4,6 +4,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.social.oauth.OAuthClientRequestAuthorizer;
 import org.springframework.social.oauth.OAuthEnabledRestTemplate;
 
 public abstract class OAuth1EnabledRestTemplateFactory implements FactoryBean<OAuthEnabledRestTemplate>,
@@ -16,7 +17,7 @@ public abstract class OAuth1EnabledRestTemplateFactory implements FactoryBean<OA
 	}
 
 	public OAuthEnabledRestTemplate getObject() throws Exception {
-		return new OAuthEnabledRestTemplate(new OAuth1ClientRequestAuthorizer(getOAuth1Template()));
+		return new OAuthEnabledRestTemplate(getAuthorizer());
 	}
 
 	public Class<?> getObjectType() {
@@ -27,5 +28,5 @@ public abstract class OAuth1EnabledRestTemplateFactory implements FactoryBean<OA
 		return true;
 	}
 
-	protected abstract OAuth1Template getOAuth1Template();
+	protected abstract OAuthClientRequestAuthorizer getAuthorizer();
 }

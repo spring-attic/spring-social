@@ -11,12 +11,12 @@ import org.springframework.security.oauth.consumer.OAuthConsumerSupport;
 import org.springframework.security.oauth.consumer.ProtectedResourceDetails;
 import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
 
-public class SSOAuth1Template implements OAuth1Template {
+public class SSOAuth1ClientRequestAuthorizer extends OAuth1ClientRequestAuthorizer {
 	private final OAuthConsumerSupport oauthSupport;
 	private final SSOAuthAccessTokenServices tokenServices;
 	private final ProtectedResourceDetails protectedResourceDetails;
 
-	public SSOAuth1Template(OAuthConsumerSupport oauthSupport,
+	public SSOAuth1ClientRequestAuthorizer(OAuthConsumerSupport oauthSupport,
 			ProtectedResourceDetails protectedResourceDetails, SSOAuthAccessTokenServices tokenServices) {
 		this.oauthSupport = oauthSupport;
 		this.tokenServices = tokenServices;

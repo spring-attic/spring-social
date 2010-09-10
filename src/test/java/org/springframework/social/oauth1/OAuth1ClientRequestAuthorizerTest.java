@@ -1,10 +1,9 @@
 package org.springframework.social.oauth1;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayOutputStream;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
@@ -22,23 +21,7 @@ public class OAuth1ClientRequestAuthorizerTest {
 
 	@Before
 	public void setup() throws Exception {
-		OAuth1Template oauthTemplate = mock(OAuth1Template.class);
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("a", "1");
-		parameters.put("b", "2");
-
-		Map<String, String> emptyParams = Collections.emptyMap();
-
-		when(
-				oauthTemplate.buildAuthorizationHeader(eq(HttpMethod.POST), eq(new URL("http://foo.com/bar")),
-						eq(emptyParams)))
-				.thenReturn("POST_AUTHORIZATION_HEADER");
-
-		when(
-				oauthTemplate.buildAuthorizationHeader(eq(HttpMethod.GET), eq(new URL("http://bar.com/foo?b=2&a=1")),
-						eq(parameters))).thenReturn("GET_AUTHORIZATION_HEADER");
-
-		authorizer = new OAuth1ClientRequestAuthorizer(oauthTemplate);
+		authorizer = new StubbedOAuth1ClientRequestAuthorizer();
 	}
 
 	@Test
@@ -57,4 +40,28 @@ public class OAuth1ClientRequestAuthorizerTest {
 		assertEquals("GET_AUTHORIZATION_HEADER", headers.getFirst("Authorization"));
 	}
 
+	// stub buildAuthorizationHeader(), since that's not what we're
+	// testing here anyway.
+	private class StubbedOAuth1ClientRequestAuthorizer extends OAuth1ClientRequestAuthorizer {
+		protected String buildAuthorizationHeader(HttpMethod method, URL url, Map<String, String> parameters) {
+			try {
+				if (method.equals(HttpMethod.POST) && url.equals(new URL("http://foo.com/bar"))
+						&& parameters.equals(Collections.emptyMap())) {
+					return "POST_AUTHORIZATION_HEADER";
+				}
+
+				Map<String, String> params = new HashMap<String, String>();
+				params.put("a", "1");
+				params.put("b", "2");
+				if (method.equals(HttpMethod.GET) && url.equals(new URL("http://bar.com/foo?b=2&a=1"))
+						&& parameters.equals(params)) {
+					return "GET_AUTHORIZATION_HEADER";
+				}
+
+				return null;
+			} catch (MalformedURLException willNotHappen) {
+				return null;
+			}
+		}
+	}
 }
