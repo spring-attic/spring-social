@@ -2,7 +2,6 @@ package org.springframework.social.twitter;
 
 import java.util.List;
 
-import org.springframework.social.core.ForbiddenSocialOperationException;
 import org.springframework.social.core.SocialException;
 
 /**
@@ -11,8 +10,6 @@ import org.springframework.social.core.SocialException;
  * to enhance testability, as it can easily be mocked or stubbed.
  * 
  * @author Craig Walls
- * 
- * @see OldTwitterTemplate
  */
 public interface TwitterOperations {
 
@@ -38,8 +35,8 @@ public interface TwitterOperations {
 	 * @param message
 	 *            The status message
 	 * 
-	 * @throws ForbiddenSocialOperationException
-	 *             if and HTTP 403 is returned from Twitter.
+	 * @throws SocialException
+	 *             if an error response is received from Twitter
 	 */
 	void tweet(String message) throws SocialException;
 
@@ -48,6 +45,9 @@ public interface TwitterOperations {
 	 * 
 	 * @param tweetId
 	 *            The ID of the tweet to be retweeted
+	 * 
+	 * @throws SocialException
+	 *             if an error response is received from Twitter
 	 */
 	void retweet(long tweetId) throws SocialException;
 

@@ -1,5 +1,7 @@
 package org.springframework.social.twitter;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -17,11 +19,28 @@ import org.springframework.social.oauth.OAuthEnabledRestTemplate;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
 
+/**
+ * This is the central class for interacting with Twitter.
+ * 
+ * @author Craig Walls
+ */
 public class TwitterTemplate implements TwitterOperations {
 
 	private final OAuthEnabledRestTemplate restTemplate;
 	private ResponseStatusCodeTranslator statusCodeTranslator;
 
+	/**
+	 * Create a new instance of TwitterTemplate.
+	 * 
+	 * Because many Twitter operations require an OAuth access token,
+	 * TwitterTemplate must be constructed with an
+	 * {@link OAuthEnabledRestTemplate} that can add an OAuth Authorization
+	 * header to the request.
+	 * 
+	 * @param restTemplate
+	 *            An {@link OAuthEnabledRestTemplate} that will perform the
+	 *            calls against Twitter's REST APIs.
+	 */
 	public TwitterTemplate(OAuthEnabledRestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 		// TODO: May want to make the error handler configurable or part of the
@@ -46,9 +65,12 @@ public class TwitterTemplate implements TwitterOperations {
 	}
 
 	public void tweet(String message) throws SocialException {
-		ResponseEntity<Map> response = restTemplate.postForEntity(TWEET_URL, null, Map.class,
-				Collections.singletonMap("status", message));
-		handleResponseErrors(response);
+		try {
+			ResponseEntity<Map> response = restTemplate.postForEntity(TWEET_URL, null, Map.class,
+					Collections.singletonMap("status", URLEncoder.encode(message, "UTF-8")));
+			handleResponseErrors(response);
+		} catch (UnsupportedEncodingException willNeverHappen) {
+		}
 	}
 
 	public void retweet(long tweetId) throws SocialException {

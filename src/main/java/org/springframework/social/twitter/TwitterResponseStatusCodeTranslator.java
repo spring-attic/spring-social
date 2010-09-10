@@ -9,9 +9,25 @@ import org.springframework.social.core.ResponseStatusCodeTranslator;
 import org.springframework.social.core.SocialException;
 import org.springframework.social.core.SocialSecurityException;
 
+/**
+ * Implementation of {@link ResponseStatusCodeTranslator} that reads a Twitter
+ * error response and translates it into a specific subclass of
+ * {@link SocialException}.
+ * 
+ * Per http://apiwiki.twitter.com/HTTP-Response-Codes-and-Errors, when Twitter
+ * responds with an error, the response will be a hash with two entries: request
+ * and error. These entries, along with the HTTP status code, can be used to
+ * determine the nature of an error and enable {@link TwitterTemplate} to throw
+ * a meaningful exception.
+ * 
+ * @author Craig Walls
+ */
 public class TwitterResponseStatusCodeTranslator implements ResponseStatusCodeTranslator {
 
+	static final String DUPLICATE_STATUS_TEXT = "Status is a duplicate.";
+
 	public SocialException translate(ResponseEntity<?> responseEntity) {
+		// TODO: What happens when the response body isn't a map?
 		if (!(responseEntity.getBody() instanceof Map)) {
 			return null;
 		}
@@ -29,9 +45,11 @@ public class TwitterResponseStatusCodeTranslator implements ResponseStatusCodeTr
 		// TODO: The error text is really the only clue in the response as to
 		// why the error occurred. But keying error translation off of it means
 		// that any changes to Twitter's error messages will cause this to no
-		// longer work.
+		// longer work. May want to externalize the error texts for easy
+		// override. (See SQLErrorCodeSQLExceptionTranslator as an example of
+		// how this is done for SQL error codes.)
 		if (statusCode.equals(HttpStatus.FORBIDDEN)) {
-			if (errorText.equals("Status is a duplicate.")) {
+			if (errorText.equals(DUPLICATE_STATUS_TEXT)) {
 				return new DuplicateTweetException(errorText);
 			} else {
 				return new ForbiddenSocialOperationException(errorText);

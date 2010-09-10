@@ -5,7 +5,7 @@ package org.springframework.social.core;
  * network's API.
  * 
  * In the case of Twitter, this often means that you are attempting to post a
- * duplicate tweet.
+ * duplicate tweet or have reached an update limit.
  * 
  * @author Craig Walls
  */

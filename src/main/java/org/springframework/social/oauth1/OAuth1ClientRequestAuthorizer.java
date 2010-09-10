@@ -9,15 +9,32 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.social.oauth.AuthorizationException;
 import org.springframework.social.oauth.OAuthClientRequestAuthorizer;
 
+/**
+ * Implementation of {@link OAuthClientRequestAuthorizer} that adds an OAuth 1
+ * Authorization header to the request.
+ * 
+ * Delegates to an {@link OAuth1Template} to produce the header value.
+ * 
+ * @author Craig Walls
+ */
 public class OAuth1ClientRequestAuthorizer implements OAuthClientRequestAuthorizer {
 
 	private final OAuth1Template oauthTemplate;
 
+	/**
+	 * An implementation of {@link OAuth1Template} that will produce the
+	 * Authorization header value.
+	 * 
+	 * @param oauthTemplate
+	 */
 	public OAuth1ClientRequestAuthorizer(OAuth1Template oauthTemplate) {
+		// TODO: I'm tempted to make this class abstract and have subclasses
+		// implement the buildAuthorizationHeader() functionality from the
+		// template...and then do away with the template interface and
+		// implementations.
 		this.oauthTemplate = oauthTemplate;
 	}
 
-	@Override
 	public ClientHttpRequest authorize(ClientHttpRequest request) throws AuthorizationException {
 		try {
 			Map<String, String> params = extractParametersFromRequest(request);
