@@ -31,7 +31,7 @@ public class OAuth2ParameterClientRequestAuthorizerTest {
 				HttpMethod.GET, new URI("http://foo.com/bar?a=b&c=1"));
 
 		ClientHttpRequest requestOut = authorizer.authorize(requestIn);
-		assertEquals("http://foo.com/bar?a=b&c=1&access_token=ACCESS_TOKEN", requestOut.getURI().toString());
+		assertEquals("http://foo.com/bar?a=b&c=1&oauth_token=ACCESS_TOKEN", requestOut.getURI().toString());
 	}
 
 	@Test
@@ -40,7 +40,7 @@ public class OAuth2ParameterClientRequestAuthorizerTest {
 				HttpMethod.GET, new URI("http://foo.com/bar"));
 
 		ClientHttpRequest requestOut = authorizer.authorize(requestIn);
-		assertEquals("http://foo.com/bar?access_token=ACCESS_TOKEN", requestOut.getURI().toString());
+		assertEquals("http://foo.com/bar?oauth_token=ACCESS_TOKEN", requestOut.getURI().toString());
 	}
 
 	@Test
