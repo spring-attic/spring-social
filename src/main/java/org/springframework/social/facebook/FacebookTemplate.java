@@ -1,31 +1,21 @@
 package org.springframework.social.facebook;
 
-import static java.util.Arrays.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.oauth.AccessTokenServices;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 public class FacebookTemplate implements FacebookOperations {
-	private RestTemplate restOperations;
+	private RestOperations restOperations;
 	
-	public FacebookTemplate(RestTemplate restOperations, AccessTokenServices tokenServices) {
+	public FacebookTemplate(RestOperations restOperations, AccessTokenServices tokenServices) {
 		this.restOperations = restOperations;
-
-		// TODO: The following lines should be moved out of here and into
-		// whatever constructs the RestOperations injected here. When that
-		// happens, restOperations can be RestOperations and not RestTemplate
-		MappingJacksonHttpMessageConverter jsonMessageConverter = new MappingJacksonHttpMessageConverter();
-		jsonMessageConverter.setSupportedMediaTypes(asList(new MediaType("text", "javascript")) );
-		this.restOperations.getMessageConverters().add(jsonMessageConverter);
 	}
 
 	public FacebookUserInfo getUserInfo() {

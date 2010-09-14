@@ -15,6 +15,10 @@ public abstract class OAuthEnabledRestTemplateFactory implements FactoryBean<OAu
 	}
 
 	public OAuthEnabledRestTemplate getObject() throws Exception {
+		return createRestTemplate();
+	}
+
+	protected OAuthEnabledRestTemplate createRestTemplate() {
 		return new OAuthEnabledRestTemplate(new OAuthEnabledClientHttpRequestFactory(getRequestSigner()));
 	}
 

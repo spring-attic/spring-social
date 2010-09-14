@@ -18,7 +18,7 @@ import org.springframework.social.core.SocialException;
 import org.springframework.social.oauth.OAuthEnabledRestTemplate;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 /**
  * This is the central class for interacting with Twitter.
@@ -27,7 +27,7 @@ import org.springframework.web.client.RestTemplate;
  */
 public class TwitterTemplate implements TwitterOperations {
 
-	private final RestTemplate restOperations;
+	private final RestOperations restOperations;
 	private ResponseStatusCodeTranslator statusCodeTranslator;
 
 	/**
@@ -42,14 +42,9 @@ public class TwitterTemplate implements TwitterOperations {
 	 *            An {@link OAuthEnabledRestTemplate} that will perform the
 	 *            calls against Twitter's REST APIs.
 	 */
-	public TwitterTemplate(RestTemplate restOperations) {
+	public TwitterTemplate(RestOperations restOperations) {
 		this.restOperations = restOperations;
 		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
-
-		// TODO: The following line should be moved into whatever creates the
-		// RestOperations injected here. Once that's done, restOperations can be
-		// RestOperations and not RestTemplate.
-		this.restOperations.setErrorHandler(new TwitterErrorHandler());
 	}
 
 	public String getScreenName() {
