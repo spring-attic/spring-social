@@ -8,7 +8,10 @@ import org.springframework.social.oauth.OAuthClientRequestSigner;
 import org.springframework.social.oauth.OAuthEnabledRestTemplate;
 import org.springframework.social.oauth.OAuthEnabledRestTemplateFactory;
 
-// TODO: This will probably go away with the new API changes
+/**
+ * @deprecated This class is likely to soon go away and be replaced with a new
+ *             API
+ */
 public class FacebookOAuthEnabledRestTemplateFactory extends OAuthEnabledRestTemplateFactory {
 	protected OAuthClientRequestSigner getRequestSigner() {
 		return new FacebookClientRequestSigner(getAccessTokenServices(), "Facebook");

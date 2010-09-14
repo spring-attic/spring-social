@@ -5,6 +5,10 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+/**
+ * @deprecated This class is likely to soon go away and be replaced with a new
+ *             API
+ */
 public abstract class OAuthEnabledRestTemplateFactory implements FactoryBean<OAuthEnabledRestTemplate>,
 		ApplicationContextAware {
 
@@ -19,7 +23,7 @@ public abstract class OAuthEnabledRestTemplateFactory implements FactoryBean<OAu
 	}
 
 	protected OAuthEnabledRestTemplate createRestTemplate() {
-		return new OAuthEnabledRestTemplate(new OAuthEnabledClientHttpRequestFactory(getRequestSigner()));
+		return new OAuthEnabledRestTemplate(new OAuthSigningClientHttpRequestFactory(getRequestSigner()));
 	}
 
 	public Class<?> getObjectType() {

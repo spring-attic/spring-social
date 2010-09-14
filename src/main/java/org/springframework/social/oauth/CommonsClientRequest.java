@@ -11,6 +11,12 @@ import org.apache.commons.httpclient.HttpMethodBase;
 import org.apache.commons.httpclient.URIException;
 import org.springframework.http.HttpMethod;
 
+/**
+ * An implementation of {@link ClientRequest} that delegates to a wrapped
+ * {@link HttpMethodBase} from Commons HTTP.
+ * 
+ * @author Craig Walls
+ */
 public class CommonsClientRequest implements ClientRequest {
 	private final HttpMethodBase methodBase;
 

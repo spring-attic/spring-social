@@ -13,6 +13,12 @@ import org.springframework.security.oauth.consumer.token.OAuthConsumerToken;
 import org.springframework.social.oauth.AccessToken;
 import org.springframework.social.oauth.AccessTokenServices;
 
+/**
+ * Extension of {@link OAuth1ClientRequestSigner} that uses Spring Security
+ * OAuth's {@link OAuthConsumerSupport} to calculate the authorization header.
+ * 
+ * @author Craig Walls
+ */
 public class SSOAuth1ClientRequestSigner extends OAuth1ClientRequestSigner {
 	private final OAuthConsumerSupport oauthSupport;
 	private final AccessTokenServices tokenServices;

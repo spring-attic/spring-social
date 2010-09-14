@@ -7,7 +7,10 @@ import org.springframework.social.oauth.OAuthEnabledRestTemplate;
 import org.springframework.social.oauth.OAuthEnabledRestTemplateFactory;
 import org.springframework.social.twitter.TwitterErrorHandler;
 
-// TODO: This will likely go away with the new API changes
+/**
+ * @deprecated This class is likely to soon go away and be replaced with a new
+ *             API
+ */
 public class SSOAuth1EnabledRestTemplateFactory extends OAuthEnabledRestTemplateFactory {
 	private String providerId;
 	public SSOAuth1EnabledRestTemplateFactory(String providerId) {
