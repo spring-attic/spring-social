@@ -2,7 +2,7 @@ package org.springframework.social.oauth;
 
 import org.springframework.security.core.AuthenticationException;
 
-public interface AccessTokenServices<T> {
+public interface AccessTokenServices {
 	/**
 	 * Get the token for the specified protected resource.
 	 * 
@@ -10,7 +10,7 @@ public interface AccessTokenServices<T> {
 	 *            The id of the protected resource.
 	 * @return The token, or null if none was found.
 	 */
-	T getToken(String resourceId, Object user) throws AuthenticationException;
+	AccessToken getToken(String resourceId, Object user) throws AuthenticationException;
 
 	/**
 	 * Store a token for a specified resource.
@@ -20,7 +20,7 @@ public interface AccessTokenServices<T> {
 	 * @param token
 	 *            The token to store.
 	 */
-	void storeToken(String resourceId, Object user, T token);
+	void storeToken(String resourceId, Object user, AccessToken token);
 
 	  /**
 	 * Removes the token for the specified resource.

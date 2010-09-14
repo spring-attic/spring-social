@@ -15,7 +15,7 @@ public abstract class OAuthEnabledRestTemplateFactory implements FactoryBean<OAu
 	}
 
 	public OAuthEnabledRestTemplate getObject() throws Exception {
-		return new OAuthEnabledRestTemplate(getAuthorizer());
+		return new OAuthEnabledRestTemplate(new OAuthEnabledClientHttpRequestFactory(getRequestSigner()));
 	}
 
 	public Class<?> getObjectType() {
@@ -26,5 +26,9 @@ public abstract class OAuthEnabledRestTemplateFactory implements FactoryBean<OAu
 		return true;
 	}
 
-	protected abstract OAuthClientRequestAuthorizer getAuthorizer();
+	protected AccessTokenServices getAccessTokenServices() {
+		return applicationContext.getBean(AccessTokenServices.class);
+	}
+
+	protected abstract OAuthClientRequestSigner getRequestSigner();
 }

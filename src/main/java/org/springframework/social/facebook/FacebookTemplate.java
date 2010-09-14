@@ -8,32 +8,35 @@ import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.CommonsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.social.oauth.AccessTokenServices;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 public class FacebookTemplate implements FacebookOperations {
-	private RestTemplate restTemplate;
+	private RestTemplate restOperations;
 	
-	public FacebookTemplate() {
+	public FacebookTemplate(RestTemplate restOperations, AccessTokenServices tokenServices) {
+		this.restOperations = restOperations;
+
+		// TODO: The following lines should be moved out of here and into
+		// whatever constructs the RestOperations injected here. When that
+		// happens, restOperations can be RestOperations and not RestTemplate
 		MappingJacksonHttpMessageConverter jsonMessageConverter = new MappingJacksonHttpMessageConverter();
 		jsonMessageConverter.setSupportedMediaTypes(asList(new MediaType("text", "javascript")) );
-		this.restTemplate = new RestTemplate();
-		restTemplate.setRequestFactory(new CommonsClientHttpRequestFactory());
-		this.restTemplate.getMessageConverters().add(jsonMessageConverter);
+		this.restOperations.getMessageConverters().add(jsonMessageConverter);
 	}
 
-	public FacebookUserInfo getUserInfo(String accessToken) {
-		return restTemplate.getForObject(OBJECT_URL + ACCESS_TOKEN_PARAM, FacebookUserInfo.class, "me", accessToken);
+	public FacebookUserInfo getUserInfo() {
+		return restOperations.getForObject(OBJECT_URL, FacebookUserInfo.class, "me");
     }
 
-	public List<String> getFriendIds(String accessToken) {
-		Map<String, List<Map<String, String>>> results = 
-			restTemplate.getForObject(CONNECTION_URL + ACCESS_TOKEN_PARAM, Map.class, 
-					CURRENT_USER, FRIENDS, accessToken);		
-		List<Map<String, String>> friends = results.get("data");
+	public List<String> getFriendIds() {
+		ResponseEntity<Map> response = restOperations.getForEntity(CONNECTION_URL, Map.class, CURRENT_USER, FRIENDS);
+
+		Map<String, List<Map<String, String>>> resultsMap = response.getBody();
+		List<Map<String, String>> friends = resultsMap.get("data");
 		
 		List<String> friendIds = new ArrayList<String>();
 		for (Map<String, String> friendData : friends) {
@@ -42,48 +45,46 @@ public class FacebookTemplate implements FacebookOperations {
 	    return friendIds;
     }
 	
-	public void postToWall(String accessToken, String message) {
+	public void postToWall(String message) {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.set("message", message);
-		publish(accessToken, CURRENT_USER, FEED, map);
+		publish(CURRENT_USER, FEED, map);
 	}
 	
-	public void postToWall(String accessToken, String message, FacebookLink link) {
+	public void postToWall(String message, FacebookLink link) {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.set("link", link.getLink());
 		map.set("name", link.getName());
 		map.set("caption", link.getCaption());
 		map.set("description", link.getDescription());
 		map.set("message", message);
-		publish(accessToken, CURRENT_USER, FEED, map);
+		publish(CURRENT_USER, FEED, map);
 	}
 	
-	public void publish(String accessToken, String object, String connection, MultiValueMap<String, String> data) {
+	public void publish(String object, String connection, MultiValueMap<String, String> data) {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
-		requestData.add("access_token", accessToken);
-		restTemplate.postForLocation(CONNECTION_URL, requestData, object, connection);
+		restOperations.postForLocation(CONNECTION_URL, requestData, object, connection);
 	}
 	
-	public byte[] getProfilePicture(String accessToken) {
-		return getProfilePicture(accessToken, "me");
+	public byte[] getProfilePicture() {
+		return getProfilePicture("me");
 	}
 
-	public byte[] getProfilePicture(String accessToken, String profileId) {
-		ResponseEntity<byte[]> imageBytes = restTemplate.getForEntity(PROFILE_LARGE_PICTURE_URL, 
-				byte[].class, profileId, accessToken);
+	public byte[] getProfilePicture(String profileId) {
+		ResponseEntity<byte[]> imageBytes = restOperations.getForEntity(PROFILE_LARGE_PICTURE_URL, byte[].class,
+				profileId);
 		return imageBytes.getBody();
 	}
 	
 	// to support unit testing
 	void setRestTemplate(RestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
+		this.restOperations = restTemplate;
 	}
 	
-	static final String PROFILE_LARGE_PICTURE_URL = "https://graph.facebook.com/{profile}/picture?type=large&access_token={token}";
+	static final String PROFILE_LARGE_PICTURE_URL = "https://graph.facebook.com/{profile}/picture?type=large";
 	static final String OBJECT_URL = "https://graph.facebook.com/{objectId}";
 	static final String CONNECTION_URL = OBJECT_URL + "/{connection}";
 	
-	static final String ACCESS_TOKEN_PARAM = "?access_token={token}";
 	static final String FRIENDS = "friends";
 	static final String FEED = "feed";
 	static final String CURRENT_USER = "me";

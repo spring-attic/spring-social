@@ -22,7 +22,7 @@ public interface FacebookOperations {
 	 * @param accessToken
 	 * @return the user's profile information.
 	 */
-	FacebookUserInfo getUserInfo(String accessToken);
+	FacebookUserInfo getUserInfo();
 
 	/**
 	 * Get a list of the user's friends.
@@ -31,7 +31,7 @@ public interface FacebookOperations {
 	 * @return a list of <code>String</code>s where each entry is the Facebook
 	 *         ID of one of the user's friends.
 	 */
-	List<String> getFriendIds(String accessToken);
+	List<String> getFriendIds();
 
 	/**
 	 * Posts a message to the current user's wall.
@@ -40,7 +40,7 @@ public interface FacebookOperations {
 	 * @param message
 	 *            The message to post
 	 */
-	void postToWall(String accessToken, String message);
+	void postToWall(String message);
 
 	/**
 	 * Posts a message to the current user's wall along with a link.
@@ -49,9 +49,9 @@ public interface FacebookOperations {
 	 * @param message
 	 * @param link
 	 */
-	void postToWall(String accessToken, String message, FacebookLink link);
+	void postToWall(String message, FacebookLink link);
 
-	void publish(String accessToken, String object, String connection, MultiValueMap<String, String> data);
+	void publish(String object, String connection, MultiValueMap<String, String> data);
 
 	/**
 	 * Retrieves the current user's profile picture as an array of bytes.
@@ -59,7 +59,7 @@ public interface FacebookOperations {
 	 * @param accessToken
 	 * @return the user's profile picture in bytes.
 	 */
-	byte[] getProfilePicture(String accessToken);
+	byte[] getProfilePicture();
 
 	/**
 	 * Retrieves a user's profile picture as an array of bytes.
@@ -69,5 +69,5 @@ public interface FacebookOperations {
 	 *            the Facebook ID of the user.
 	 * @return the user's profile picture in bytes.
 	 */
-	byte[] getProfilePicture(String accessToken, String profileId);
+	byte[] getProfilePicture(String profileId);
 }

@@ -18,6 +18,7 @@ import org.springframework.social.core.SocialException;
 import org.springframework.social.oauth.OAuthEnabledRestTemplate;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * This is the central class for interacting with Twitter.
@@ -26,7 +27,7 @@ import org.springframework.util.ObjectUtils;
  */
 public class TwitterTemplate implements TwitterOperations {
 
-	private final OAuthEnabledRestTemplate restTemplate;
+	private final RestTemplate restOperations;
 	private ResponseStatusCodeTranslator statusCodeTranslator;
 
 	/**
@@ -37,25 +38,27 @@ public class TwitterTemplate implements TwitterOperations {
 	 * {@link OAuthEnabledRestTemplate} that can add an OAuth Authorization
 	 * header to the request.
 	 * 
-	 * @param restTemplate
+	 * @param restOperations
 	 *            An {@link OAuthEnabledRestTemplate} that will perform the
 	 *            calls against Twitter's REST APIs.
 	 */
-	public TwitterTemplate(OAuthEnabledRestTemplate restTemplate) {
-		this.restTemplate = restTemplate;
-		// TODO: May want to make the error handler configurable or part of the
-		// factory and not do it here.
-		this.restTemplate.setErrorHandler(new TwitterErrorHandler());
+	public TwitterTemplate(RestTemplate restOperations) {
+		this.restOperations = restOperations;
 		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
+
+		// TODO: The following line should be moved into whatever creates the
+		// RestOperations injected here. Once that's done, restOperations can be
+		// RestOperations and not RestTemplate.
+		this.restOperations.setErrorHandler(new TwitterErrorHandler());
 	}
 
 	public String getScreenName() {
-		Map<?, ?> response = restTemplate.getForObject(VERIFY_CREDENTIALS_URL, Map.class);
+		Map<?, ?> response = restOperations.getForObject(VERIFY_CREDENTIALS_URL, Map.class);
 		return (String) response.get("screen_name");
 	}
 
 	public List<String> getFollowed(String screenName) {
-		List<Map<String, String>> response = restTemplate.getForObject(FRIENDS_STATUSES_URL, List.class,
+		List<Map<String, String>> response = restOperations.getForObject(FRIENDS_STATUSES_URL, List.class,
 				Collections.singletonMap("screen_name", screenName));
 		List<String> friends = new ArrayList<String>(response.size());
 		for (Map<String, String> item : response) {
@@ -66,7 +69,7 @@ public class TwitterTemplate implements TwitterOperations {
 
 	public void tweet(String message) throws SocialException {
 		try {
-			ResponseEntity<Map> response = restTemplate.postForEntity(TWEET_URL, null, Map.class,
+			ResponseEntity<Map> response = restOperations.postForEntity(TWEET_URL, null, Map.class,
 					Collections.singletonMap("status", URLEncoder.encode(message, "UTF-8")));
 			handleResponseErrors(response);
 		} catch (UnsupportedEncodingException willNeverHappen) {
@@ -74,7 +77,7 @@ public class TwitterTemplate implements TwitterOperations {
 	}
 
 	public void retweet(long tweetId) throws SocialException {
-		ResponseEntity<Map> response = restTemplate.postForEntity(RETWEET_URL, Collections.emptyMap(), Map.class,
+		ResponseEntity<Map> response = restOperations.postForEntity(RETWEET_URL, Collections.emptyMap(), Map.class,
 				Collections.singletonMap("tweet_id", Long.toString(tweetId)));
 		handleResponseErrors(response);
 	}
@@ -103,7 +106,7 @@ public class TwitterTemplate implements TwitterOperations {
 			parameters.put("max", String.valueOf(maxId));
 		}
 
-		ResponseEntity<Map> response = restTemplate.getForEntity(searchUrl, Map.class, parameters);
+		ResponseEntity<Map> response = restOperations.getForEntity(searchUrl, Map.class, parameters);
 		// handleResponseErrors(response);
 		Map<String, Object> resultsMap = response.getBody();
 		List<Map<String, Object>> items = (List<Map<String, Object>>) resultsMap.get("results");
