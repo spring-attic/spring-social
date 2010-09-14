@@ -15,10 +15,11 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.social.core.ResponseStatusCodeTranslator;
 import org.springframework.social.core.SocialException;
-import org.springframework.social.oauth.OAuthEnabledRestTemplate;
+import org.springframework.social.core.SocialSecurityException;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * This is the central class for interacting with Twitter.
@@ -34,13 +35,16 @@ public class TwitterTemplate implements TwitterOperations {
 	 * Create a new instance of TwitterTemplate.
 	 * 
 	 * Because many Twitter operations require an OAuth access token,
-	 * TwitterTemplate must be constructed with an
-	 * {@link OAuthEnabledRestTemplate} that can add an OAuth Authorization
-	 * header to the request.
+	 * TwitterTemplate must be constructed with an {@link RestOperations} that
+	 * is able to sign requests with OAuth authorization details. If it is given
+	 * a {@link RestTemplate} or some other implementation of RestOperations
+	 * that is not OAuth-enabled, then some operations (such as search) may
+	 * work. Those that require authentication, however, will result in a
+	 * {@link SocialSecurityException} being thrown.
 	 * 
 	 * @param restOperations
-	 *            An {@link OAuthEnabledRestTemplate} that will perform the
-	 *            calls against Twitter's REST APIs.
+	 *            An {@link RestOperations} that will perform the calls against
+	 *            Twitter's REST APIs.
 	 */
 	public TwitterTemplate(RestOperations restOperations) {
 		this.restOperations = restOperations;

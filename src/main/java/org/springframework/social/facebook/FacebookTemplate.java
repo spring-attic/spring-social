@@ -5,16 +5,36 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.social.oauth.AccessTokenServices;
+import org.springframework.social.core.SocialSecurityException;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * This is the central class for interacting with Facebook.
+ * 
+ * @author Craig Walls
+ */
 public class FacebookTemplate implements FacebookOperations {
 	private RestOperations restOperations;
-	
-	public FacebookTemplate(RestOperations restOperations, AccessTokenServices tokenServices) {
+
+	/**
+	 * Create a new instance of FacebookTemplate.
+	 * 
+	 * Because many Facebook operations require an OAuth access token,
+	 * FacebookTemplate must be constructed with an {@link RestOperations} that
+	 * is able to sign requests with OAuth authorization details. If it is given
+	 * a {@link RestTemplate} or some other implementation of RestOperations
+	 * that is not OAuth-enabled, then some operations may work. Those that
+	 * require authentication, however, will result in a
+	 * {@link SocialSecurityException} being thrown.
+	 * 
+	 * @param restOperations
+	 *            An {@link RestOperations} that will perform the calls against
+	 *            Facebook's REST APIs.
+	 */
+	public FacebookTemplate(RestOperations restOperations) {
 		this.restOperations = restOperations;
 	}
 
