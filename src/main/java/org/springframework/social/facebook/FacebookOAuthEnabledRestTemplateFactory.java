@@ -5,8 +5,9 @@ import static java.util.Arrays.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.oauth.OAuthClientRequestSigner;
-import org.springframework.social.oauth.OAuthEnabledRestTemplate;
 import org.springframework.social.oauth.OAuthEnabledRestTemplateFactory;
+import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @deprecated This class is likely to soon go away and be replaced with a new
@@ -17,8 +18,8 @@ public class FacebookOAuthEnabledRestTemplateFactory extends OAuthEnabledRestTem
 		return new FacebookClientRequestSigner(getAccessTokenServices(), "Facebook");
 	}
 
-	protected OAuthEnabledRestTemplate createRestTemplate() {
-		OAuthEnabledRestTemplate restTemplate = super.createRestTemplate();
+	protected RestOperations createRestTemplate() {
+		RestTemplate restTemplate = (RestTemplate) super.createRestTemplate();
 
 		// Go figure: Facebook uses "text/javascript" as the JSON content type
 		MappingJacksonHttpMessageConverter jsonMessageConverter = new MappingJacksonHttpMessageConverter();

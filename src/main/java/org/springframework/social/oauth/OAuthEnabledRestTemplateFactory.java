@@ -4,12 +4,14 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @deprecated This class is likely to soon go away and be replaced with a new
  *             API
  */
-public abstract class OAuthEnabledRestTemplateFactory implements FactoryBean<OAuthEnabledRestTemplate>,
+public abstract class OAuthEnabledRestTemplateFactory implements FactoryBean<RestOperations>,
 		ApplicationContextAware {
 
 	protected ApplicationContext applicationContext;
@@ -18,16 +20,16 @@ public abstract class OAuthEnabledRestTemplateFactory implements FactoryBean<OAu
 		this.applicationContext = applicationContext;
 	}
 
-	public OAuthEnabledRestTemplate getObject() throws Exception {
+	public RestOperations getObject() throws Exception {
 		return createRestTemplate();
 	}
 
-	protected OAuthEnabledRestTemplate createRestTemplate() {
-		return new OAuthEnabledRestTemplate(new OAuthSigningClientHttpRequestFactory(getRequestSigner()));
+	protected RestOperations createRestTemplate() {
+		return new RestTemplate(new OAuthSigningClientHttpRequestFactory(getRequestSigner()));
 	}
 
 	public Class<?> getObjectType() {
-		return OAuthEnabledRestTemplate.class;
+		return RestOperations.class;
 	}
 
 	public boolean isSingleton() {
