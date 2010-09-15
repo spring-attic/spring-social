@@ -1,6 +1,9 @@
 package org.springframework.social.oauth1;
 
+import static org.junit.Assert.*;
+
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,34 +12,36 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
+import org.springframework.social.oauth.FakeClientRequest;
 
-public class OAuth1ClientRequestAuthorizerTest {
-	private OAuth1ClientRequestSigner authorizer;
+public class OAuth1ClientRequestSignerTest {
+	private OAuth1ClientRequestSigner signer;
 
 	@Before
 	public void setup() throws Exception {
-		authorizer = new StubbedOAuth1ClientRequestAuthorizer();
+		signer = new StubbedOAuth1ClientRequestAuthorizer();
 	}
 
-	// @Test
-	// public void authorize_postRequest() throws Exception {
-	// HttpHeaders headers = new HttpHeaders();
-	// authorizer.authorize(new FakeClientHttpRequest(new
-	// ByteArrayOutputStream(), headers, HttpMethod.POST, new URI(
-	// "http://foo.com/bar")));
-	// assertEquals("POST_AUTHORIZATION_HEADER",
-	// headers.getFirst("Authorization"));
-	// }
-	//
-	// @Test
-	// public void authorize_getRequest() throws Exception {
-	// HttpHeaders headers = new HttpHeaders();
-	// authorizer.authorize(new FakeClientHttpRequest(new
-	// ByteArrayOutputStream(), headers, HttpMethod.GET, new URI(
-	// "http://bar.com/foo?b=2&a=1")));
-	// assertEquals("GET_AUTHORIZATION_HEADER",
-	// headers.getFirst("Authorization"));
-	// }
+	@Test
+	public void authorize_postRequest() throws Exception {
+		FakeClientRequest request = new FakeClientRequest(new URI("http://bar.com/foo"), HttpMethod.POST,
+				new HashMap<String, String>());
+		signer.sign(request);
+
+		assertEquals("POST_AUTHORIZATION_HEADER", request.getHeaders().get("Authorization"));
+	}
+
+	@Test
+	public void authorize_getRequest() throws Exception {
+		HashMap<String, String> queryParameters = new HashMap<String, String>();
+		queryParameters.put("a", "1");
+		queryParameters.put("b", "2");
+		FakeClientRequest request = new FakeClientRequest(new URI("http://bar.com/foo?b=2&a=1"), HttpMethod.GET,
+				queryParameters);
+		signer.sign(request);
+
+		assertEquals("GET_AUTHORIZATION_HEADER", request.getHeaders().get("Authorization"));
+	}
 
 	@Test
 	public void canary() {
@@ -48,7 +53,7 @@ public class OAuth1ClientRequestAuthorizerTest {
 	private class StubbedOAuth1ClientRequestAuthorizer extends OAuth1ClientRequestSigner {
 		protected String buildAuthorizationHeader(HttpMethod method, URL url, Map<String, String> parameters) {
 			try {
-				if (method.equals(HttpMethod.POST) && url.equals(new URL("http://foo.com/bar"))
+				if (method.equals(HttpMethod.POST) && url.equals(new URL("http://bar.com/foo"))
 						&& parameters.equals(Collections.emptyMap())) {
 					return "POST_AUTHORIZATION_HEADER";
 				}

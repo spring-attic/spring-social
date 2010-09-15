@@ -12,14 +12,14 @@ import org.springframework.web.client.RestTemplate;
  * @deprecated This class is likely to soon go away and be replaced with a new
  *             API
  */
-public class SSOAuth1EnabledRestTemplateFactory extends OAuthEnabledRestTemplateFactory {
+public class S2OAuth1RestTemplateFactory extends OAuthEnabledRestTemplateFactory {
 	private String providerId;
-	public SSOAuth1EnabledRestTemplateFactory(String providerId) {
+	public S2OAuth1RestTemplateFactory(String providerId) {
 		this.providerId = providerId;
 	}
 
 	public OAuthClientRequestSigner getRequestSigner() {
-		return new SSOAuth1ClientRequestSigner(applicationContext.getBean(OAuthConsumerSupport.class),
+		return new S2OAuth1ClientRequestSigner(applicationContext.getBean(OAuthConsumerSupport.class),
 				applicationContext.getBean(ProtectedResourceDetailsService.class).loadProtectedResourceDetailsById(
 						providerId), getAccessTokenServices());
 	}

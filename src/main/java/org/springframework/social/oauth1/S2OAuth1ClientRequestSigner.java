@@ -19,12 +19,12 @@ import org.springframework.social.oauth.AccessTokenServices;
  * 
  * @author Craig Walls
  */
-public class SSOAuth1ClientRequestSigner extends OAuth1ClientRequestSigner {
+public class S2OAuth1ClientRequestSigner extends OAuth1ClientRequestSigner {
 	private final OAuthConsumerSupport oauthSupport;
 	private final AccessTokenServices tokenServices;
 	private final ProtectedResourceDetails protectedResourceDetails;
 
-	public SSOAuth1ClientRequestSigner(OAuthConsumerSupport oauthSupport,
+	public S2OAuth1ClientRequestSigner(OAuthConsumerSupport oauthSupport,
 			ProtectedResourceDetails protectedResourceDetails, AccessTokenServices tokenServices) {
 		this.oauthSupport = oauthSupport;
 		this.tokenServices = tokenServices;
