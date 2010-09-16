@@ -17,16 +17,16 @@ import org.springframework.http.client.CommonsClientHttpRequestFactory;
  * @author Craig Walls
  */
 public class OAuthSigningClientHttpRequestFactory extends CommonsClientHttpRequestFactory {
-	private final OAuthClientRequestSigner authorizer;
+	private final OAuthClientRequestSigner signer;
 
-	public OAuthSigningClientHttpRequestFactory(OAuthClientRequestSigner authorizer) {
-		this.authorizer = authorizer;
+	public OAuthSigningClientHttpRequestFactory(OAuthClientRequestSigner signer) {
+		this.signer = signer;
 	}
 	
 	protected HttpMethodBase createCommonsHttpMethod(HttpMethod httpMethod, String uri) {
 		HttpMethodBase methodBase = super.createCommonsHttpMethod(httpMethod, uri);
 		CommonsClientRequest clientRequest = new CommonsClientRequest(methodBase);
-		authorizer.sign(clientRequest);
+		signer.sign(clientRequest);
 		return clientRequest.getMethodBase();
 	}
 }
