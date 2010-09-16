@@ -10,9 +10,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.social.core.ForbiddenSocialOperationException;
+import org.springframework.social.core.OperationNotPermittedException;
 import org.springframework.social.core.SocialException;
-import org.springframework.social.core.SocialSecurityException;
+import org.springframework.social.core.AccountNotConnectedException;
 
 public class TwitterResponseStatusCodeTranslatorTest {
 	private TwitterResponseStatusCodeTranslator translator = new TwitterResponseStatusCodeTranslator();
@@ -27,7 +27,7 @@ public class TwitterResponseStatusCodeTranslatorTest {
 		ResponseEntity<Map> responseEntity = new ResponseEntity<Map>(Collections.singletonMap("error",
 				"Some forbidden message"), HttpStatus.FORBIDDEN);
 		SocialException socialException = translator.translate(responseEntity);
-		assertTrue(socialException instanceof ForbiddenSocialOperationException);
+		assertTrue(socialException instanceof OperationNotPermittedException);
 		assertEquals("Some forbidden message", socialException.getMessage());
 	}
 
@@ -45,7 +45,7 @@ public class TwitterResponseStatusCodeTranslatorTest {
 		ResponseEntity<Map> responseEntity = new ResponseEntity<Map>(
 				Collections.singletonMap("error", "That's a no-no"), HttpStatus.UNAUTHORIZED);
 		SocialException socialException = translator.translate(responseEntity);
-		assertTrue(socialException instanceof SocialSecurityException);
+		assertTrue(socialException instanceof AccountNotConnectedException);
 		assertEquals("That's a no-no", socialException.getMessage());
 	}
 }

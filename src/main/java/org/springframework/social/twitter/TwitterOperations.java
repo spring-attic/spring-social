@@ -38,7 +38,7 @@ public interface TwitterOperations {
 	 * @throws SocialException
 	 *             if an error response is received from Twitter
 	 */
-	void tweet(String message) throws SocialException;
+	void tweet(String message);
 
 	/**
 	 * Posts a retweet of an existing tweet.
@@ -49,7 +49,7 @@ public interface TwitterOperations {
 	 * @throws SocialException
 	 *             if an error response is received from Twitter
 	 */
-	void retweet(long tweetId) throws SocialException;
+	void retweet(long tweetId);
 
 	/**
 	 * Searches Twitter, returning the first 50 matching {@link Tweet}s

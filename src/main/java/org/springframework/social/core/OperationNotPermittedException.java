@@ -9,14 +9,14 @@ package org.springframework.social.core;
  * 
  * @author Craig Walls
  */
-public class ForbiddenSocialOperationException extends SocialException {
+public class OperationNotPermittedException extends SocialException {
 	private static final long serialVersionUID = 1L;
 
-	public ForbiddenSocialOperationException(String message) {
+	public OperationNotPermittedException(String message) {
 		super(message);
 	}
 
-	public ForbiddenSocialOperationException(String message, Throwable cause) {
+	public OperationNotPermittedException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

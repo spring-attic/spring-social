@@ -7,14 +7,14 @@ package org.springframework.social.core;
  * 
  * @author Craig Walls
  */
-public class SocialSecurityException extends SocialException {
+public class AccountNotConnectedException extends SocialException {
 	private static final long serialVersionUID = 1L;
 
-	public SocialSecurityException(String message) {
+	public AccountNotConnectedException(String message) {
 		super(message);
 	}
 
-	public SocialSecurityException(String message, Throwable cause) {
+	public AccountNotConnectedException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

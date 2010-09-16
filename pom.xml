@@ -10,7 +10,7 @@
 
 	<properties>
 		<java-version>1.6</java-version>
-        <org.springframework-version>3.0.4.RELEASE</org.springframework-version>
+        <org.springframework-version>3.0.5.BUILD-SNAPSHOT</org.springframework-version>
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- dist.* properties are used by the antrun tasks below -->
@@ -110,6 +110,13 @@
 			<artifactId>joda-time</artifactId>
 			<version>1.6</version>
 		</dependency>
+
+		<!-- Scribe -->
+		<dependency>
+			<groupId>org.scribe</groupId>
+			<artifactId>scribe</artifactId>
+			<version>1.0.2</version>
+		</dependency>				
 		
 		<!-- Test -->
 		<dependency>
@@ -159,6 +166,11 @@
 			<id>repository.source.maven.release</id>
 			<name>SpringSource Maven Release Repository</name>
 			<url>http://repository.springsource.com/maven/bundles/release</url>
+		</repository>
+		<repository>
+			<id>self.provided</id>
+			<name>Self-Provided Dependencies</name>
+			<url>file://${project.basedir}/lib</url>
 		</repository>
 	</repositories>
 	<build>

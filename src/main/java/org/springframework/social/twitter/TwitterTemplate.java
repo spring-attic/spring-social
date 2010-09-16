@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.social.core.AccountNotConnectedException;
 import org.springframework.social.core.ResponseStatusCodeTranslator;
 import org.springframework.social.core.SocialException;
-import org.springframework.social.core.SocialSecurityException;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestOperations;
@@ -40,7 +40,7 @@ public class TwitterTemplate implements TwitterOperations {
 	 * a {@link RestTemplate} or some other implementation of RestOperations
 	 * that is not OAuth-enabled, then some operations (such as search) may
 	 * work. Those that require authentication, however, will result in a
-	 * {@link SocialSecurityException} being thrown.
+	 * {@link AccountNotConnectedException} being thrown.
 	 * 
 	 * @param restOperations
 	 *            An {@link RestOperations} that will perform the calls against
@@ -66,7 +66,7 @@ public class TwitterTemplate implements TwitterOperations {
 		return friends;
 	}
 
-	public void tweet(String message) throws SocialException {
+	public void tweet(String message) {
 		try {
 			ResponseEntity<Map> response = restOperations.postForEntity(TWEET_URL, null, Map.class,
 					Collections.singletonMap("status", URLEncoder.encode(message, "UTF-8")));
@@ -75,7 +75,7 @@ public class TwitterTemplate implements TwitterOperations {
 		}
 	}
 
-	public void retweet(long tweetId) throws SocialException {
+	public void retweet(long tweetId) {
 		ResponseEntity<Map> response = restOperations.postForEntity(RETWEET_URL, Collections.emptyMap(), Map.class,
 				Collections.singletonMap("tweet_id", Long.toString(tweetId)));
 		handleResponseErrors(response);
@@ -150,7 +150,7 @@ public class TwitterTemplate implements TwitterOperations {
 		}
 	}
 
-	private void handleResponseErrors(ResponseEntity<Map> response) throws SocialException {
+	private void handleResponseErrors(ResponseEntity<Map> response) {
 		SocialException exception = statusCodeTranslator.translate(response);
 		if (exception != null) {
 			throw exception;

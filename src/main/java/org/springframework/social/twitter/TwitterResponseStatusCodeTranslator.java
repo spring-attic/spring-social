@@ -4,10 +4,10 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.social.core.ForbiddenSocialOperationException;
+import org.springframework.social.core.OperationNotPermittedException;
 import org.springframework.social.core.ResponseStatusCodeTranslator;
 import org.springframework.social.core.SocialException;
-import org.springframework.social.core.SocialSecurityException;
+import org.springframework.social.core.AccountNotConnectedException;
 
 /**
  * Implementation of {@link ResponseStatusCodeTranslator} that reads a Twitter
@@ -52,10 +52,10 @@ public class TwitterResponseStatusCodeTranslator implements ResponseStatusCodeTr
 			if (errorText.equals(DUPLICATE_STATUS_TEXT)) {
 				return new DuplicateTweetException(errorText);
 			} else {
-				return new ForbiddenSocialOperationException(errorText);
+				return new OperationNotPermittedException(errorText);
 			}
 		} else if (statusCode.equals(HttpStatus.UNAUTHORIZED)) {
-			return new SocialSecurityException(errorText);
+			return new AccountNotConnectedException(errorText);
 		}
 
 		return null;

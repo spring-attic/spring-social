@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.social.core.SocialSecurityException;
+import org.springframework.social.core.AccountNotConnectedException;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
@@ -28,7 +28,7 @@ public class FacebookTemplate implements FacebookOperations {
 	 * a {@link RestTemplate} or some other implementation of RestOperations
 	 * that is not OAuth-enabled, then some operations may work. Those that
 	 * require authentication, however, will result in a
-	 * {@link SocialSecurityException} being thrown.
+	 * {@link AccountNotConnectedException} being thrown.
 	 * 
 	 * @param restOperations
 	 *            An {@link RestOperations} that will perform the calls against

@@ -9,7 +9,7 @@ package org.springframework.social.core;
  * 
  * @author Craig Walls
  */
-public abstract class SocialException extends Exception {
+public abstract class SocialException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 	public SocialException(String message) {
