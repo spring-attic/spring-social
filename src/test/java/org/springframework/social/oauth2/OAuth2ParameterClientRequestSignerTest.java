@@ -9,7 +9,6 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
-import org.springframework.social.oauth.AccessToken;
 import org.springframework.social.oauth.FakeClientRequest;
 
 public class OAuth2ParameterClientRequestSignerTest {
@@ -19,8 +18,8 @@ public class OAuth2ParameterClientRequestSignerTest {
 	public void setup() throws Exception {
 		signer = new OAuth2ParameterClientRequestSigner() {
 			// stub, since this isn't what's being tested here anyway
-			public AccessToken resolveAccessToken() {
-				return new AccessToken("ACCESS_TOKEN", "Twitter");
+			public String resolveAccessToken() {
+				return "ACCESS_TOKEN";
 			}
 		};
 	}

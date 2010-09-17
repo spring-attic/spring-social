@@ -1,6 +1,5 @@
 package org.springframework.social.oauth2;
 
-import org.springframework.social.oauth.AccessToken;
 import org.springframework.social.oauth.AuthorizationException;
 import org.springframework.social.oauth.ClientRequest;
 import org.springframework.social.oauth.OAuthClientRequestSigner;
@@ -24,7 +23,7 @@ public abstract class OAuth2ParameterClientRequestSigner implements OAuthClientR
 	private String parameterName = "oauth_token";
 
 	public void sign(ClientRequest request) throws AuthorizationException {
-		request.setParameter(parameterName, resolveAccessToken().getValue());
+		request.setParameter(parameterName, resolveAccessToken());
 	}
 
 	/**
@@ -40,5 +39,5 @@ public abstract class OAuth2ParameterClientRequestSigner implements OAuthClientR
 		this.parameterName = parameterName;
 	}
 
-	protected abstract AccessToken resolveAccessToken();
+	protected abstract String resolveAccessToken();
 }

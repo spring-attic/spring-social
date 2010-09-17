@@ -2,6 +2,7 @@ package org.springframework.social.oauth1;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpMethod;
@@ -21,7 +22,8 @@ public abstract class OAuth1ClientRequestSigner implements OAuthClientRequestSig
 
 	public void sign(ClientRequest request) throws AuthorizationException {
 		try {
-			Map<String, String> params = request.getQueryParameters();
+			Map<String, String> params = request.getHttpMethod().equals(HttpMethod.GET) ? request.getQueryParameters()
+					: new HashMap<String, String>();
 			String authorizationHeader = buildAuthorizationHeader(request.getHttpMethod(), request.getURI()
 					.toURL(), params);
 

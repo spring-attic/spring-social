@@ -1,7 +1,5 @@
 package org.springframework.social.twitter;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -67,12 +65,9 @@ public class TwitterTemplate implements TwitterOperations {
 	}
 
 	public void tweet(String message) {
-		try {
-			ResponseEntity<Map> response = restOperations.postForEntity(TWEET_URL, null, Map.class,
-					Collections.singletonMap("status", URLEncoder.encode(message, "UTF-8")));
-			handleResponseErrors(response);
-		} catch (UnsupportedEncodingException willNeverHappen) {
-		}
+		ResponseEntity<Map> response = restOperations.postForEntity(TWEET_URL, null, Map.class,
+				Collections.singletonMap("status", message));
+		handleResponseErrors(response);
 	}
 
 	public void retweet(long tweetId) {
