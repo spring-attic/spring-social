@@ -27,8 +27,8 @@ public class CommonsClientRequestTest {
 		HttpMethodBase methodBase = new GetMethod("http://foo.com/bar");
 		CommonsClientRequest request = new CommonsClientRequest(methodBase);
 		request.setParameter("abc", "xyz");
-		request.setParameter("access_token", "pipe|delimited|token");
-		assertEquals("http://foo.com/bar?abc=xyz&access_token=pipe%7Cdelimited%7Ctoken", request.getURI().toString());
+		request.setParameter("access_token", "someToken");
+		assertEquals("http://foo.com/bar?abc=xyz&access_token=someToken", request.getURI().toString());
 	}
 
 	@Test
@@ -49,7 +49,6 @@ public class CommonsClientRequestTest {
 		Map<String, String> queryParameters = request.getQueryParameters();
 		assertEquals("123", queryParameters.get("abc"));
 		assertEquals("789", queryParameters.get("xyz"));
-		assertEquals("pipe%7Cdelimited%7Ctoken", queryParameters.get("access_token"));
 	}
 
 	@Test

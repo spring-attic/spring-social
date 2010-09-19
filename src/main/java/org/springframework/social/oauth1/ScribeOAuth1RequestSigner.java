@@ -1,6 +1,8 @@
 package org.springframework.social.oauth1;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Map;
 
 import org.scribe.builder.ServiceBuilder;
@@ -44,9 +46,16 @@ public class ScribeOAuth1RequestSigner extends OAuth1ClientRequestSigner {
 	}
 
 	protected String buildAuthorizationHeader(HttpMethod method, URL url, Map<String, String> parameters) {
-		OAuthRequest request = new OAuthRequest(Verb.valueOf(method.name()), url.toString());
-		Token token = new Token(accessToken, accessTokenSecret);
-		service.signRequest(token, request);
-		return request.getHeaders().get("Authorization");
+		try {
+			// Need to decode the URL given because Scribe is assuming that it
+			// isn't UTF-8 encoded yet and will re-encode it.
+			String decodedUrl = URLDecoder.decode(url.toString(), "UTF-8");
+			OAuthRequest request = new OAuthRequest(Verb.valueOf(method.name()), decodedUrl);
+			Token token = new Token(accessToken, accessTokenSecret);
+			service.signRequest(token, request);
+			return request.getHeaders().get("Authorization");
+		} catch (UnsupportedEncodingException shouldntHappen) {
+			return null;
+		}
 	}
 }

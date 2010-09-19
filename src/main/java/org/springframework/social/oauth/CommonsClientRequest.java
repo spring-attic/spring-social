@@ -1,8 +1,6 @@
 package org.springframework.social.oauth;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,17 +31,14 @@ public class CommonsClientRequest implements ClientRequest {
 	}
 
 	public void setParameter(String parameterName, String parameterValue) {
-		try {
-			String queryString = methodBase.getQueryString();
+		String queryString = methodBase.getQueryString();
 
-			if (queryString == null) {
-				queryString = parameterName + "=" + URLEncoder.encode(parameterValue, "UTF-8");
-			} else {
-				queryString += "&" + parameterName + "=" + URLEncoder.encode(parameterValue, "UTF-8");
-			}
-			methodBase.setQueryString(queryString);
-		} catch (UnsupportedEncodingException wontHappen) {
+		if (queryString == null) {
+			queryString = parameterName + "=" + parameterValue;
+		} else {
+			queryString += "&" + parameterName + "=" + parameterValue;
 		}
+		methodBase.setQueryString(queryString);
 	}
 
 	public Map<String, String> getQueryParameters() {
