@@ -10,10 +10,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.social.core.AccountNotConnectedException;
 import org.springframework.social.core.OperationNotPermittedException;
 import org.springframework.social.core.SocialException;
-import org.springframework.social.core.AccountNotConnectedException;
 
+@SuppressWarnings("rawtypes")
 public class TwitterResponseStatusCodeTranslatorTest {
 	private TwitterResponseStatusCodeTranslator translator = new TwitterResponseStatusCodeTranslator();
 

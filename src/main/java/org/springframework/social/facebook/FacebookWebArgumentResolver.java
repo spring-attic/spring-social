@@ -10,6 +10,12 @@ import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.context.request.NativeWebRequest;
 
+/**
+ * Web argument resolver that resolves arguments annotated with
+ * {@link FacebookAccessToken} or {@link FacebookUserId}.
+ * 
+ * @author Craig Walls
+ */
 public class FacebookWebArgumentResolver implements WebArgumentResolver {
 
 	private final String applicationKey;

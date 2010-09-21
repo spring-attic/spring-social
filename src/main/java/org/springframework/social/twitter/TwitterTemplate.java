@@ -55,6 +55,7 @@ public class TwitterTemplate implements TwitterOperations {
 	}
 
 	public List<String> getFollowed(String screenName) {
+		@SuppressWarnings("unchecked")
 		List<Map<String, String>> response = restOperations.getForObject(FRIENDS_STATUSES_URL, List.class,
 				Collections.singletonMap("screen_name", screenName));
 		List<String> friends = new ArrayList<String>(response.size());
@@ -65,12 +66,14 @@ public class TwitterTemplate implements TwitterOperations {
 	}
 
 	public void tweet(String message) {
+		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restOperations.postForEntity(TWEET_URL, null, Map.class,
 				Collections.singletonMap("status", message));
 		handleResponseErrors(response);
 	}
 
 	public void retweet(long tweetId) {
+		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restOperations.postForEntity(RETWEET_URL, Collections.emptyMap(), Map.class,
 				Collections.singletonMap("tweet_id", Long.toString(tweetId)));
 		handleResponseErrors(response);
@@ -100,9 +103,14 @@ public class TwitterTemplate implements TwitterOperations {
 			parameters.put("max", String.valueOf(maxId));
 		}
 
+		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restOperations.getForEntity(searchUrl, Map.class, parameters);
 		// handleResponseErrors(response);
+
+		@SuppressWarnings("unchecked")
 		Map<String, Object> resultsMap = response.getBody();
+
+		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> items = (List<Map<String, Object>>) resultsMap.get("results");
 		List<Tweet> tweets = new ArrayList<Tweet>(resultsMap.size());
 		for (Map<String, Object> item : items) {
@@ -145,6 +153,7 @@ public class TwitterTemplate implements TwitterOperations {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void handleResponseErrors(ResponseEntity<Map> response) {
 		SocialException exception = statusCodeTranslator.translate(response);
 		if (exception != null) {

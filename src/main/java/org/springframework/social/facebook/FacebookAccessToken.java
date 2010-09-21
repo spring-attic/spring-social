@@ -6,9 +6,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/*
- * This isn't particularly portable or necessarily in line with what we may do with SS-OAuth and OAuth 2. But,
- * it's a start and it helps me get the FB access token.
+/**
+ * Annotation that indicates that a controller method parameter should be bound
+ * to the Facebook access token given when the user signed in with Facebook.
+ * 
+ * @author Craig Walls
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)

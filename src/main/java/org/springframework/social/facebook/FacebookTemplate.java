@@ -43,8 +43,10 @@ public class FacebookTemplate implements FacebookOperations {
     }
 
 	public List<String> getFriendIds() {
+		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restOperations.getForEntity(CONNECTION_URL, Map.class, CURRENT_USER, FRIENDS);
 
+		@SuppressWarnings("unchecked")
 		Map<String, List<Map<String, String>>> resultsMap = response.getBody();
 		List<Map<String, String>> friends = resultsMap.get("data");
 		
