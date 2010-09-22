@@ -79,7 +79,7 @@ public class FacebookTemplate implements FacebookOperations {
 	}
 	
 	public byte[] getProfilePicture() {
-		return getProfilePicture("me");
+		return getProfilePicture(CURRENT_USER);
 	}
 
 	public byte[] getProfilePicture(String profileId) {
