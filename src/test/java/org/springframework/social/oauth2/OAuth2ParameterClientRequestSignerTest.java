@@ -19,7 +19,7 @@ public class OAuth2ParameterClientRequestSignerTest {
 		signer = new OAuth2ParameterClientRequestSigner() {
 			// stub, since this isn't what's being tested here anyway
 			public String resolveAccessToken() {
-				return "ACCESS_TOKEN";
+				return "157702280911244|48044afccb06d771931a81f8-100001387295207|_w2_8EBi6Z2NdZiDLzKzE3uTmLA";
 			}
 		};
 	}
@@ -33,7 +33,8 @@ public class OAuth2ParameterClientRequestSignerTest {
 				queryParameters);
 
 		signer.sign(request);
-		assertEquals("ACCESS_TOKEN", request.getQueryParameters().get("oauth_token"));
+		assertEquals("157702280911244|48044afccb06d771931a81f8-100001387295207|_w2_8EBi6Z2NdZiDLzKzE3uTmLA", request
+				.getQueryParameters().get("oauth_token"));
 	}
 
 	@Test
@@ -44,9 +45,10 @@ public class OAuth2ParameterClientRequestSignerTest {
 		FakeClientRequest request = new FakeClientRequest(new URI("http://foo.com/bar?a=b&c=1"), HttpMethod.GET,
 				queryParameters);
 
-		signer.setParameterName("the_token");
+		signer.setParameterName("access_token");
 		signer.sign(request);
-		assertEquals("ACCESS_TOKEN", request.getQueryParameters().get("the_token"));
+		assertEquals("157702280911244|48044afccb06d771931a81f8-100001387295207|_w2_8EBi6Z2NdZiDLzKzE3uTmLA", request
+				.getQueryParameters().get("access_token"));
 	}
 	
 }

@@ -49,6 +49,7 @@ public class CommonsClientRequestTest {
 		Map<String, String> queryParameters = request.getQueryParameters();
 		assertEquals("123", queryParameters.get("abc"));
 		assertEquals("789", queryParameters.get("xyz"));
+		assertEquals("pipe%7Cdelimited%7Ctoken", queryParameters.get("access_token"));
 	}
 
 	@Test
