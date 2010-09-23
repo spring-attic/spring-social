@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.social.core.AccountNotConnectedException;
+import org.springframework.social.oauth.OAuthSigningClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
@@ -36,6 +37,20 @@ public class FacebookTemplate implements FacebookOperations {
 	 */
 	public FacebookTemplate(RestOperations restOperations) {
 		this.restOperations = restOperations;
+	}
+
+	/**
+	 * Create a new instance of FacebookTemplate.
+	 * 
+	 * This constructor creates the FacebookTemplate using a given access token.
+	 * 
+	 * @param accessToken
+	 *            An access token given by Facebook after a successful OAuth 2
+	 *            authentication (or through Facebook's JS library).
+	 */
+	public FacebookTemplate(String accessToken) {
+		this.restOperations = new RestTemplate(new OAuthSigningClientHttpRequestFactory(new FacebookRequestSigner(
+				accessToken)));
 	}
 
 	public FacebookUserInfo getUserInfo() {
