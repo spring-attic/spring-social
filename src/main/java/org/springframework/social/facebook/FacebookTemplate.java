@@ -1,10 +1,13 @@
 package org.springframework.social.facebook;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.core.AccountNotConnectedException;
 import org.springframework.social.oauth.OAuthSigningClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
@@ -49,8 +52,13 @@ public class FacebookTemplate implements FacebookOperations {
 	 *            authentication (or through Facebook's JS library).
 	 */
 	public FacebookTemplate(String accessToken) {
-		this.restOperations = new RestTemplate(new OAuthSigningClientHttpRequestFactory(new FacebookRequestSigner(
+		RestTemplate restTemplate = new RestTemplate(new OAuthSigningClientHttpRequestFactory(
+				new FacebookRequestSigner(
 				accessToken)));
+		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
+		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
+		restTemplate.getMessageConverters().add(json);
+		this.restOperations = restTemplate;
 	}
 
 	public FacebookUserInfo getUserInfo() {
