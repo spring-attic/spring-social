@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.social.core.AccountNotConnectedException;
 import org.springframework.social.core.ResponseStatusCodeTranslator;
 import org.springframework.social.core.SocialException;
+import org.springframework.social.oauth.OAuthSigningClientHttpRequestFactory;
+import org.springframework.social.oauth1.ScribeOAuth1RequestSigner;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestOperations;
@@ -47,6 +49,29 @@ public class TwitterTemplate implements TwitterOperations {
 	public TwitterTemplate(RestOperations restOperations) {
 		this.restOperations = restOperations;
 		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
+	}
+
+	/**
+	 * Create a new instance of TwitterTemplate.
+	 * 
+	 * This constructor creates a new TwitterTemplate given the minimal amount
+	 * of information required to sign a request and builds up a
+	 * {@link RestOperations} internally using this information.
+	 * 
+	 * @param apiKey
+	 *            the application's API key.
+	 * @param apiSecret
+	 *            the application's API secret.
+	 * @param accessToken
+	 *            the user's access token, given after successful OAuth
+	 *            authentication.
+	 * @param accessTokenSecret
+	 *            the access token secret, given along with the access token
+	 *            after successful OAuth authentication.
+	 */
+	public TwitterTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
+		this.restOperations = new RestTemplate(new OAuthSigningClientHttpRequestFactory(new ScribeOAuth1RequestSigner(
+				apiKey, apiSecret, accessToken, accessTokenSecret)));
 	}
 
 	public String getScreenName() {
