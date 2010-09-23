@@ -70,8 +70,11 @@ public class TwitterTemplate implements TwitterOperations {
 	 *            after successful OAuth authentication.
 	 */
 	public TwitterTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
-		this.restOperations = new RestTemplate(new OAuthSigningClientHttpRequestFactory(new ScribeOAuth1RequestSigner(
+		RestTemplate restTemplate = new RestTemplate(new OAuthSigningClientHttpRequestFactory(new ScribeOAuth1RequestSigner(
 				apiKey, apiSecret, accessToken, accessTokenSecret)));
+		restTemplate.setErrorHandler(new TwitterErrorHandler());
+		this.restOperations = restTemplate;
+		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
 	}
 
 	public String getScreenName() {
