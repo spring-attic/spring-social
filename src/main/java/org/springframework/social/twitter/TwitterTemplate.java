@@ -34,6 +34,25 @@ public class TwitterTemplate implements TwitterOperations {
 	/**
 	 * Create a new instance of TwitterTemplate.
 	 * 
+	 * This constructor creates a new TwitterTemplate given the minimal amount
+	 * of information required to perform unauthenticated operations against
+	 * Twitter's API.
+	 * 
+	 * Some operations, such as search, do not require OAuth authentication. A
+	 * TwitterTemplate created with this constructor will support those
+	 * operations. Those operations requiring authentication will throw
+	 * {@link AccountNotConnectedException}.
+	 */
+	public TwitterTemplate() {
+		RestTemplate restTemplate = new RestTemplate();
+		restTemplate.setErrorHandler(new TwitterErrorHandler());
+		this.restOperations = restTemplate;
+		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
+	}
+
+	/**
+	 * Create a new instance of TwitterTemplate.
+	 * 
 	 * Because many Twitter operations require an OAuth access token,
 	 * TwitterTemplate must be constructed with an {@link RestOperations} that
 	 * is able to sign requests with OAuth authorization details. If it is given
