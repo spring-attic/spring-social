@@ -1,4 +1,11 @@
-<%@ attribute name="apiKey" required="true" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="s" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ attribute name="apiKey" required="false" %>
+
+<c:if test="${empty apiKey}">
+	<s:eval expression="@facebookAccountProvider.apiKey" var="apiKey" />
+</c:if>
+
 <div id='fb-root'></div>
 <script src='http://connect.facebook.net/en_US/all.js'></script>
 <script>
@@ -24,7 +31,7 @@ if(FB) {
 	};
 }
 </script>
-<script type='text/javascript'>
+<script type='text/javascript'>	
 	FB.init({appId: '${apiKey}', status: true, cookie: true, xfbml: true});
 	FB.Event.subscribe('auth.sessionChange', function(response) { if (response.session) {} else {} });
 </script>
