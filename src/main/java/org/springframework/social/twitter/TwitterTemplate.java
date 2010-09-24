@@ -34,9 +34,8 @@ public class TwitterTemplate implements TwitterOperations {
 	/**
 	 * Create a new instance of TwitterTemplate.
 	 * 
-	 * This constructor creates a new TwitterTemplate given the minimal amount
-	 * of information required to perform unauthenticated operations against
-	 * Twitter's API.
+	 * This constructor creates a new TwitterTemplate able to perform
+	 * unauthenticated operations against Twitter's API.
 	 * 
 	 * Some operations, such as search, do not require OAuth authentication. A
 	 * TwitterTemplate created with this constructor will support those

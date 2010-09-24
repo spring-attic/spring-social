@@ -6,8 +6,8 @@ import org.springframework.util.MultiValueMap;
 
 /**
  * Interface specifying a basic set of operations for interacting with Facebook.
- * Implemented by FacebookTemplate. Not often used directly, but a useful option
- * to enhance testability, as it can easily be mocked or stubbed.
+ * Implemented by {@link FacebookTemplate}. Not often used directly, but a
+ * useful option to enhance testability, as it can easily be mocked or stubbed.
  * 
  * Many of the methods contained in this interface require an access token from
  * Facebook. When a method's description speaks of the "current user", it is
