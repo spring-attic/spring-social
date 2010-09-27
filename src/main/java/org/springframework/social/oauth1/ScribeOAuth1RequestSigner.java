@@ -6,7 +6,6 @@ import java.net.URLDecoder;
 import java.util.Map;
 
 import org.scribe.builder.ServiceBuilder;
-import org.scribe.builder.api.LinkedInApi;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
@@ -43,7 +42,7 @@ public class ScribeOAuth1RequestSigner extends OAuth1ClientRequestSigner {
 		this.accessTokenSecret = accessTokenSecret;
 		// TODO : REMOVE THE SPECIFIC API HERE...FIGURE OUT WHICH ONE WE NEED OR
 		// BUILD UP THE SERVICE PROGRAMMATICALLY
-		this.service = new ServiceBuilder().provider(LinkedInApi.class).apiKey(apiKey).apiSecret(apiSecret)
+		this.service = new ServiceBuilder().provider(PreAuthorizedOAuthApi.class).apiKey(apiKey).apiSecret(apiSecret)
 				.callback("http://greenhouse.springsource.org").build();
 	}
 

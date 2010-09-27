@@ -7,24 +7,6 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Trip {
-	@JsonProperty("id")
-	private long id;
-
-	@JsonProperty("display_name")
-	private String displayName;
-
-	@JsonProperty("start_date")
-	private Date startDate;
-
-	@JsonProperty("end_date")
-	private Date endDate;
-
-	@JsonProperty("primary_location")
-	private String primaryLocation;
-
-	@JsonProperty("relative_url")
-	private String tripPath;
-
 	public long getId() {
 		return id;
 	}
@@ -48,4 +30,22 @@ public class Trip {
 	public String getTripUrl() {
 		return "http://www.tripit.com/" + tripPath;
 	}
+
+	@JsonProperty("id")
+	private long id;
+
+	@JsonProperty("display_name")
+	private String displayName;
+
+	@JsonProperty("start_date")
+	private Date startDate;
+
+	@JsonProperty("end_date")
+	private Date endDate;
+
+	@JsonProperty("primary_location")
+	private String primaryLocation;
+
+	@JsonProperty("relative_url")
+	private String tripPath;
 }

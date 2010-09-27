@@ -9,12 +9,6 @@ import org.codehaus.jackson.annotate.JsonTypeName;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeName("Profile")
 public class TripItProfile {
-	public TripItProfile() {
-	}
-
-	public TripItProfile(String screenName) {
-		this.screenName = screenName;
-	}
 	
 	public String getId() {
 		return attributes.get("ref");
