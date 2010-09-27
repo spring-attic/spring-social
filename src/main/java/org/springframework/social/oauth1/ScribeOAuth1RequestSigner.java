@@ -40,8 +40,6 @@ public class ScribeOAuth1RequestSigner extends OAuth1ClientRequestSigner {
 	public ScribeOAuth1RequestSigner(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
 		this.accessToken = accessToken;
 		this.accessTokenSecret = accessTokenSecret;
-		// TODO : REMOVE THE SPECIFIC API HERE...FIGURE OUT WHICH ONE WE NEED OR
-		// BUILD UP THE SERVICE PROGRAMMATICALLY
 		this.service = new ServiceBuilder().provider(PreAuthorizedOAuthApi.class).apiKey(apiKey).apiSecret(apiSecret)
 				.callback("http://greenhouse.springsource.org").build();
 	}
