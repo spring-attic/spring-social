@@ -1,7 +1,6 @@
 package org.springframework.social.oauth1;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Map;
 
@@ -44,8 +43,8 @@ public class ScribeOAuth1RequestSigner extends OAuth1ClientRequestSigner {
 				.callback("http://greenhouse.springsource.org").build();
 	}
 
-	protected String buildAuthorizationHeader(HttpMethod method, URL url, Map<String, String> parameters) {
-		String adjustedUrl = adjustUrl(url.toString());
+	protected String buildAuthorizationHeader(HttpMethod method, String url, Map<String, String> parameters) {
+		String adjustedUrl = adjustUrl(url);
 		OAuthRequest request = new OAuthRequest(Verb.valueOf(method.name()), adjustedUrl);
 
 		for (String key : parameters.keySet()) {

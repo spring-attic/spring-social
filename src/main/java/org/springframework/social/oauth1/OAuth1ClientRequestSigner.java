@@ -1,7 +1,8 @@
 package org.springframework.social.oauth1;
 
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,8 +24,20 @@ public abstract class OAuth1ClientRequestSigner implements OAuthClientRequestSig
 	public void sign(ClientRequest request) throws AuthorizationException {
 		try {
 			Map<String, String> params = new HashMap<String, String>();
-			String authorizationHeader = buildAuthorizationHeader(request.getHttpMethod(), request.getURI()
-					.toURL(), params);
+			String requestUrl = request.getURI().toURL().toString();
+			if (request.getHttpMethod() == HttpMethod.POST || request.getHttpMethod() == HttpMethod.PUT) {
+				String[] baseAndParams = requestUrl.split("\\?");
+				requestUrl = baseAndParams[0];
+				if (baseAndParams.length == 2) {
+					String[] paramPairs = baseAndParams[1].split("\\&");
+					for (String paramPair : paramPairs) {
+						String[] splitPair = paramPair.split("=");
+						params.put(splitPair[0], decode(splitPair[1]));
+					}
+				}
+			}
+
+			String authorizationHeader = buildAuthorizationHeader(request.getHttpMethod(), requestUrl, params);
 
 			if (authorizationHeader != null) {
 				request.addHeader("Authorization", authorizationHeader);
@@ -34,5 +47,13 @@ public abstract class OAuth1ClientRequestSigner implements OAuthClientRequestSig
 		}
 	}
 
-	protected abstract String buildAuthorizationHeader(HttpMethod method, URL url, Map<String, String> parameters);
+	String decode(String encoded) {
+		try {
+			return URLDecoder.decode(encoded, "UTF-8");
+		} catch (UnsupportedEncodingException shouldntHappen) {
+			return encoded;
+		}
+	}
+
+	protected abstract String buildAuthorizationHeader(HttpMethod method, String url, Map<String, String> parameters);
 }
