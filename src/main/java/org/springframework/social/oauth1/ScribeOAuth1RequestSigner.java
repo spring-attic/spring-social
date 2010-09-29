@@ -45,14 +45,24 @@ public class ScribeOAuth1RequestSigner extends OAuth1ClientRequestSigner {
 	}
 
 	protected String buildAuthorizationHeader(HttpMethod method, URL url, Map<String, String> parameters) {
+		String adjustedUrl = adjustUrl(url.toString());
+		OAuthRequest request = new OAuthRequest(Verb.valueOf(method.name()), adjustedUrl);
+		Token token = new Token(accessToken, accessTokenSecret);
+		service.signRequest(token, request);
+		return request.getHeaders().get("Authorization");
+	}
+
+	private String adjustUrl(String url) {
 		try {
-			// Need to decode the URL given because Scribe is assuming that it
-			// isn't UTF-8 encoded yet and will re-encode it.
+			// Scribe assumes that the URL is not yet encoded, but the request
+			// factory gives us a pre-encoded URL. So, decode it before giving
+			// it to Scribe.
 			String decodedUrl = URLDecoder.decode(url.toString(), "UTF-8");
-			OAuthRequest request = new OAuthRequest(Verb.valueOf(method.name()), decodedUrl);
-			Token token = new Token(accessToken, accessTokenSecret);
-			service.signRequest(token, request);
-			return request.getHeaders().get("Authorization");
+
+			// The hash sign (#), however, causes trouble in a URL because it
+			// looks like a URL fragment marker. Leave it encoded.
+			decodedUrl = decodedUrl.replace("#", "%23");
+			return decodedUrl;
 		} catch (UnsupportedEncodingException shouldntHappen) {
 			return null;
 		}
