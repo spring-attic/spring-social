@@ -22,8 +22,7 @@ public abstract class OAuth1ClientRequestSigner implements OAuthClientRequestSig
 
 	public void sign(ClientRequest request) throws AuthorizationException {
 		try {
-			Map<String, String> params = request.getHttpMethod().equals(HttpMethod.GET) ? request.getQueryParameters()
-					: new HashMap<String, String>();
+			Map<String, String> params = new HashMap<String, String>();
 			String authorizationHeader = buildAuthorizationHeader(request.getHttpMethod(), request.getURI()
 					.toURL(), params);
 

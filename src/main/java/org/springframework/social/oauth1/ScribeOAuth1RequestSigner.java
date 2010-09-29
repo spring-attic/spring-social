@@ -47,6 +47,11 @@ public class ScribeOAuth1RequestSigner extends OAuth1ClientRequestSigner {
 	protected String buildAuthorizationHeader(HttpMethod method, URL url, Map<String, String> parameters) {
 		String adjustedUrl = adjustUrl(url.toString());
 		OAuthRequest request = new OAuthRequest(Verb.valueOf(method.name()), adjustedUrl);
+
+		for (String key : parameters.keySet()) {
+			request.addBodyParameter(key, parameters.get(key));
+		}
+
 		Token token = new Token(accessToken, accessTokenSecret);
 		service.signRequest(token, request);
 		return request.getHeaders().get("Authorization");
