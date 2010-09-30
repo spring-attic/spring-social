@@ -1,7 +1,9 @@
 package org.springframework.social.oauth;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,7 +52,7 @@ public class OAuthSigningClientHttpRequestFactory extends CommonsClientHttpReque
 				for (String pair : paramPairs) {
 					String[] keyValue = pair.split("=");
 					if (keyValue.length == 2) {
-						params.put(keyValue[0], keyValue[1]);
+						params.put(keyValue[0], decode(keyValue[1]));
 					}
 				}
 			}
@@ -63,6 +65,14 @@ public class OAuthSigningClientHttpRequestFactory extends CommonsClientHttpReque
 
 		public HttpMethod getMethod() {
 			return original.getMethod();
+		}
+	}
+
+	private String decode(String in) {
+		try {
+			return URLDecoder.decode(in, "UTF-8");
+		} catch (UnsupportedEncodingException wontHappen) {
+			return in;
 		}
 	}
 }
