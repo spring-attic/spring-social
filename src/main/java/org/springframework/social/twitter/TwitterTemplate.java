@@ -16,6 +16,8 @@ import org.springframework.social.core.ResponseStatusCodeTranslator;
 import org.springframework.social.core.SocialException;
 import org.springframework.social.oauth.OAuthSigningClientHttpRequestFactory;
 import org.springframework.social.oauth1.ScribeOAuth1RequestSigner;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestOperations;
@@ -88,7 +90,8 @@ public class TwitterTemplate implements TwitterOperations {
 	 *            after successful OAuth authentication.
 	 */
 	public TwitterTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
-		RestTemplate restTemplate = new RestTemplate(new OAuthSigningClientHttpRequestFactory(new ScribeOAuth1RequestSigner(
+		RestTemplate restTemplate = new RestTemplate(new OAuthSigningClientHttpRequestFactory(
+				new ScribeOAuth1RequestSigner(
 				apiKey, apiSecret, accessToken, accessTokenSecret)));
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
 		this.restOperations = restTemplate;
@@ -112,8 +115,10 @@ public class TwitterTemplate implements TwitterOperations {
 	}
 
 	public void tweet(String message) {
+		MultiValueMap<String, Object> tweetParams = new LinkedMultiValueMap<String, Object>();
+		tweetParams.add("status", message);
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restOperations.postForEntity(TWEET_URL, null, Map.class,
+		ResponseEntity<Map> response = restOperations.postForEntity(TWEET_URL, tweetParams, Map.class,
 				Collections.singletonMap("status", message));
 		handleResponseErrors(response);
 	}
@@ -212,6 +217,6 @@ public class TwitterTemplate implements TwitterOperations {
 	static final String VERIFY_CREDENTIALS_URL = "http://api.twitter.com/1/account/verify_credentials.json";
 	static final String FRIENDS_STATUSES_URL = "http://api.twitter.com/1/statuses/friends.json?screen_name={screen_name}";
 	static final String SEARCH_URL = "http://search.twitter.com/search.json?q={query}&rpp={rpp}&page={page}";
-	static final String TWEET_URL = "http://api.twitter.com/1/statuses/update.json?status={status}";
+	static final String TWEET_URL = "http://api.twitter.com/1/statuses/update.json";
 	static final String RETWEET_URL = "http://api.twitter.com/1/statuses/retweet/{tweet_id}.json";
 }

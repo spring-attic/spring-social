@@ -1,14 +1,11 @@
 package org.springframework.social.oauth1;
 
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URLDecoder;
-import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.social.oauth.AuthorizationException;
-import org.springframework.social.oauth.ClientRequest;
 import org.springframework.social.oauth.OAuthClientRequestSigner;
 
 /**
@@ -21,33 +18,14 @@ import org.springframework.social.oauth.OAuthClientRequestSigner;
  */
 public abstract class OAuth1ClientRequestSigner implements OAuthClientRequestSigner {
 
-	public void sign(ClientRequest request) throws AuthorizationException {
-		try {
-			Map<String, String> params = new HashMap<String, String>();
-			String requestUrl = request.getURI().toURL().toString();
-			if (request.getHttpMethod() == HttpMethod.POST || request.getHttpMethod() == HttpMethod.PUT) {
-				String[] baseAndParams = requestUrl.split("\\?");
-				requestUrl = baseAndParams[0];
-				if (baseAndParams.length == 2) {
-					String[] paramPairs = baseAndParams[1].split("\\&");
-					for (String paramPair : paramPairs) {
-						String[] splitPair = paramPair.split("=");
-						params.put(splitPair[0], decode(splitPair[1]));
-					}
-				}
-			}
-
-			String authorizationHeader = buildAuthorizationHeader(request.getHttpMethod(), requestUrl, params);
-
-			if (authorizationHeader != null) {
-				request.addHeader("Authorization", authorizationHeader);
-			}
-		} catch (MalformedURLException e) {
-			throw new AuthorizationException("Bad URL", e);
+	public void sign(HttpMethod method, HttpHeaders headers, String url, Map<String, String> bodyParameters) {
+		String authorizationHeader = buildAuthorizationHeader(method, url, bodyParameters);
+		if (authorizationHeader != null) {
+			headers.add("Authorization", authorizationHeader);
 		}
 	}
 
-	String decode(String encoded) {
+	protected String decode(String encoded) {
 		try {
 			return URLDecoder.decode(encoded, "UTF-8");
 		} catch (UnsupportedEncodingException shouldntHappen) {

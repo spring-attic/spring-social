@@ -1,7 +1,5 @@
 package org.springframework.social.oauth1;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Map;
 
 import org.scribe.builder.ServiceBuilder;
@@ -40,35 +38,19 @@ public class ScribeOAuth1RequestSigner extends OAuth1ClientRequestSigner {
 		this.accessToken = accessToken;
 		this.accessTokenSecret = accessTokenSecret;
 		this.service = new ServiceBuilder().provider(PreAuthorizedOAuthApi.class).apiKey(apiKey).apiSecret(apiSecret)
-				.callback("http://greenhouse.springsource.org").build();
+				.build();
 	}
 
 	protected String buildAuthorizationHeader(HttpMethod method, String url, Map<String, String> parameters) {
-		String adjustedUrl = adjustUrl(url);
+		String adjustedUrl = decode(url).replace("#", "%23");
 		OAuthRequest request = new OAuthRequest(Verb.valueOf(method.name()), adjustedUrl);
 
 		for (String key : parameters.keySet()) {
-			request.addBodyParameter(key, parameters.get(key));
+			request.addBodyParameter(key, decode(parameters.get(key)));
 		}
 
 		Token token = new Token(accessToken, accessTokenSecret);
 		service.signRequest(token, request);
 		return request.getHeaders().get("Authorization");
-	}
-
-	private String adjustUrl(String url) {
-		try {
-			// Scribe assumes that the URL is not yet encoded, but the request
-			// factory gives us a pre-encoded URL. So, decode it before giving
-			// it to Scribe.
-			String decodedUrl = URLDecoder.decode(url.toString(), "UTF-8");
-
-			// The hash sign (#), however, causes trouble in a URL because it
-			// looks like a URL fragment marker. Leave it encoded.
-			decodedUrl = decodedUrl.replace("#", "%23");
-			return decodedUrl;
-		} catch (UnsupportedEncodingException shouldntHappen) {
-			return null;
-		}
 	}
 }

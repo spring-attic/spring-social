@@ -1,32 +1,68 @@
 package org.springframework.social.oauth;
 
-import org.apache.commons.httpclient.HttpMethodBase;
+import java.io.IOException;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.AbstractClientHttpRequest;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.CommonsClientHttpRequestFactory;
 
-/**
- * Implementation of {@link ClientHttpRequestFactory} that signs the request
- * with OAuth credentials. Delegates to an {@link OAuthClientRequestSigner} to
- * add OAuth credentials to the request.
- * 
- * This implementation is an extension of
- * {@link CommonsClientHttpRequestFactory}, so the underlying HTTP library is
- * Commons HTTP.
- * 
- * @author Craig Walls
- */
 public class OAuthSigningClientHttpRequestFactory extends CommonsClientHttpRequestFactory {
+	private final CommonsClientHttpRequestFactory delegate;
 	private final OAuthClientRequestSigner signer;
 
 	public OAuthSigningClientHttpRequestFactory(OAuthClientRequestSigner signer) {
 		this.signer = signer;
+		this.delegate = new CommonsClientHttpRequestFactory();
 	}
-	
-	protected HttpMethodBase createCommonsHttpMethod(HttpMethod httpMethod, String uri) {
-		HttpMethodBase methodBase = super.createCommonsHttpMethod(httpMethod, uri);
-		CommonsClientRequest clientRequest = new CommonsClientRequest(methodBase);
-		signer.sign(clientRequest);
-		return clientRequest.getMethodBase();
+
+	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+		ClientHttpRequest originalRequest = new SignableClientHttpRequest(delegate.createRequest(uri, httpMethod));
+		return originalRequest;
+	}
+
+
+	private class SignableClientHttpRequest extends AbstractClientHttpRequest {
+		private final AbstractClientHttpRequest original;
+
+		public SignableClientHttpRequest(ClientHttpRequest original) {
+			this.original = (AbstractClientHttpRequest) original;
+		}
+
+		protected ClientHttpResponse executeInternal(HttpHeaders headers, byte[] bufferedOutput) throws IOException {
+			Map<String, String> bodyParameters = extractBodyParameters(headers.getContentType(), bufferedOutput);
+			signer.sign(getMethod(), original.getHeaders(), getURI().toString(), bodyParameters);
+			original.getBody().write(bufferedOutput);
+			return original.execute();
+		}
+
+		private Map<String, String> extractBodyParameters(MediaType bodyType, byte[] bodyBytes) {
+			Map<String, String> params = new HashMap<String, String>();
+
+			if (bodyType != null && bodyType.equals(MediaType.APPLICATION_FORM_URLENCODED)) {
+				String[] paramPairs = new String(bodyBytes).split("&");
+				for (String pair : paramPairs) {
+					String[] keyValue = pair.split("=");
+					if (keyValue.length == 2) {
+						params.put(keyValue[0], keyValue[1]);
+					}
+				}
+			}
+			return params;
+		}
+
+		public URI getURI() {
+			return original.getURI();
+		}
+
+		public HttpMethod getMethod() {
+			return original.getMethod();
+		}
 	}
 }

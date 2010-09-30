@@ -1,7 +1,9 @@
 package org.springframework.social.oauth2;
 
-import org.springframework.social.oauth.AuthorizationException;
-import org.springframework.social.oauth.ClientRequest;
+import java.util.Map;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.social.oauth.OAuthClientRequestSigner;
 
 /**
@@ -22,8 +24,9 @@ import org.springframework.social.oauth.OAuthClientRequestSigner;
 public abstract class OAuth2ParameterClientRequestSigner implements OAuthClientRequestSigner {
 	private String parameterName = "oauth_token";
 
-	public void sign(ClientRequest request) throws AuthorizationException {
-		request.setParameter(parameterName, resolveAccessToken());
+	public void sign(HttpMethod method, HttpHeaders headers, String url, Map<String, String> bodyParameters) {
+		// TODO : FIX THIS
+		// request.setParameter(parameterName, resolveAccessToken());
 	}
 
 	/**
