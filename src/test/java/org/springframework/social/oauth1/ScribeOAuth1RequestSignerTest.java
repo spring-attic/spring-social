@@ -1,11 +1,15 @@
 package org.springframework.social.oauth1;
 
+import static org.junit.Assert.*;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 
 public class ScribeOAuth1RequestSignerTest {
 	private ScribeOAuth1RequestSigner signer;
@@ -16,35 +20,28 @@ public class ScribeOAuth1RequestSignerTest {
 	}
 
 	@Test
-	@Ignore("FIX THIS TO USE THE NEW SIGNER")
 	public void sign_get() throws Exception {
-		// Map<String, String> params = Collections.emptyMap();
-		// FakeClientRequest request = new FakeClientRequest(new
-		// URI("http://foo.com/bar"), HttpMethod.GET, params);
-		// signer.sign(request);
-		//
-		// String authorization = request.getHeaders().get("Authorization");
-		// Map<String, String> authEntries =
-		// splitAuthorizationHeader(authorization);
-		//
-		// assertEquals("\"API_KEY\"", authEntries.get("oauth_consumer_key"));
-		// assertEquals("\"TOKEN_VALUE\"", authEntries.get("oauth_token"));
+		Map<String, String> params = Collections.emptyMap();
+		HttpHeaders headers = new HttpHeaders();
+		signer.sign(HttpMethod.GET, headers, "http://foo.com/bar?boo=ya", params);
+
+		String authorization = headers.get("Authorization").get(0);
+		Map<String, String> authEntries = splitAuthorizationHeader(authorization);
+		assertEquals("\"API_KEY\"", authEntries.get("oauth_consumer_key"));
+		assertEquals("\"TOKEN_VALUE\"", authEntries.get("oauth_token"));
 	}
 
 	@Test
-	@Ignore("FIX THIS TO USE THE NEW SIGNER")
 	public void sign_post() throws Exception {
-		// Map<String, String> params = Collections.emptyMap();
-		// FakeClientRequest request = new FakeClientRequest(new
-		// URI("http://foo.com/bar"), HttpMethod.POST, params);
-		// signer.sign(request);
-		//
-		// String authorization = request.getHeaders().get("Authorization");
-		// Map<String, String> authEntries =
-		// splitAuthorizationHeader(authorization);
-		//
-		// assertEquals("\"API_KEY\"", authEntries.get("oauth_consumer_key"));
-		// assertEquals("\"TOKEN_VALUE\"", authEntries.get("oauth_token"));
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("status", "#willitwork Who knows?");
+		HttpHeaders headers = new HttpHeaders();
+		signer.sign(HttpMethod.POST, headers, "http://foo.com/bar", params);
+
+		String authorization = headers.get("Authorization").get(0);
+		Map<String, String> authEntries = splitAuthorizationHeader(authorization);
+		assertEquals("\"API_KEY\"", authEntries.get("oauth_consumer_key"));
+		assertEquals("\"TOKEN_VALUE\"", authEntries.get("oauth_token"));
 	}
 
 	private Map<String, String> splitAuthorizationHeader(String authorization) {
