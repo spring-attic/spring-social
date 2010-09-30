@@ -91,8 +91,7 @@ public class TwitterTemplate implements TwitterOperations {
 	 */
 	public TwitterTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
 		RestTemplate restTemplate = new RestTemplate(new OAuthSigningClientHttpRequestFactory(
-				new ScribeOAuth1RequestSigner(
-				apiKey, apiSecret, accessToken, accessTokenSecret)));
+				new ScribeOAuth1RequestSigner(apiKey, apiSecret, accessToken, accessTokenSecret)));
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
 		this.restOperations = restTemplate;
 		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
