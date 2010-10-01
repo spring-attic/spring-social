@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.CommonsClientHttpRequestFactory;
 import org.springframework.social.core.AccountNotConnectedException;
 import org.springframework.social.core.ResponseStatusCodeTranslator;
 import org.springframework.social.core.SocialException;
@@ -91,6 +92,7 @@ public class TwitterTemplate implements TwitterOperations {
 	 */
 	public TwitterTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
 		RestTemplate restTemplate = new RestTemplate(new OAuthSigningClientHttpRequestFactory(
+				new CommonsClientHttpRequestFactory(),
 				new ScribeOAuth1RequestSigner(apiKey, apiSecret, accessToken, accessTokenSecret)));
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
 		this.restOperations = restTemplate;

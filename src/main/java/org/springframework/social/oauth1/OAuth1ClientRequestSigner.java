@@ -1,11 +1,12 @@
 package org.springframework.social.oauth1;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.util.Map;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.social.oauth.OAuthClientRequestSigner;
 
 /**
@@ -18,10 +19,10 @@ import org.springframework.social.oauth.OAuthClientRequestSigner;
  */
 public abstract class OAuth1ClientRequestSigner implements OAuthClientRequestSigner {
 
-	public void sign(HttpMethod method, HttpHeaders headers, String url, Map<String, String> bodyParameters) {
-		String authorizationHeader = buildAuthorizationHeader(method, url, bodyParameters);
+	public void sign(ClientHttpRequest request, Map<String, String> bodyParameters) {
+		String authorizationHeader = buildAuthorizationHeader(request.getMethod(), request.getURI(), bodyParameters);
 		if (authorizationHeader != null) {
-			headers.add("Authorization", authorizationHeader);
+			request.getHeaders().add("Authorization", authorizationHeader);
 		}
 	}
 
@@ -33,5 +34,5 @@ public abstract class OAuth1ClientRequestSigner implements OAuthClientRequestSig
 		}
 	}
 
-	protected abstract String buildAuthorizationHeader(HttpMethod method, String url, Map<String, String> parameters);
+	protected abstract String buildAuthorizationHeader(HttpMethod method, URI url, Map<String, String> parameters);
 }

@@ -2,6 +2,7 @@ package org.springframework.social.tripit;
 
 import java.util.List;
 
+import org.springframework.http.client.CommonsClientHttpRequestFactory;
 import org.springframework.social.oauth.OAuthSigningClientHttpRequestFactory;
 import org.springframework.social.oauth1.ScribeOAuth1RequestSigner;
 import org.springframework.social.twitter.TwitterErrorHandler;
@@ -13,6 +14,7 @@ public class TripItTemplate implements TripItOperations {
 
 	public TripItTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
 		RestTemplate restTemplate = new RestTemplate(new OAuthSigningClientHttpRequestFactory(
+				new CommonsClientHttpRequestFactory(),
 				new ScribeOAuth1RequestSigner(apiKey, apiSecret, accessToken, accessTokenSecret)));
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
 		this.restOperations = restTemplate;

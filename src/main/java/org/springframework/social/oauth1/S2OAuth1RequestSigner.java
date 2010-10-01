@@ -1,7 +1,9 @@
 package org.springframework.social.oauth1;
 
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpMethod;
@@ -47,12 +49,20 @@ public class S2OAuth1RequestSigner extends OAuth1ClientRequestSigner {
 		consumerToken.setSecret(accessTokenSecret);
 	}
 
-	protected String buildAuthorizationHeader(HttpMethod method, String url, Map<String, String> parameters) {
+	protected String buildAuthorizationHeader(HttpMethod method, URI url, Map<String, String> parameters) {
 		try {
 			return new CoreOAuthConsumerSupport().getAuthorizationHeader(providerDetails, consumerToken, new URL(
-					decode(url)), method.name(), parameters);
+					decode(url.toString())), method.name(), decodeBodyParameters(parameters));
 		} catch (MalformedURLException e) {
 			return null;
 		}
+	}
+
+	private Map<String, String> decodeBodyParameters(Map<String, String> parameters) {
+		Map<String, String> decodedParameters = new HashMap<String, String>();
+		for (String key : parameters.keySet()) {
+			decodedParameters.put(key, decode(parameters.get(key)));
+		}
+		return decodedParameters;
 	}
 }

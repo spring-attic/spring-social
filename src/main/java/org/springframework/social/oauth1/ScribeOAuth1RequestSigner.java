@@ -1,5 +1,6 @@
 package org.springframework.social.oauth1;
 
+import java.net.URI;
 import java.util.Map;
 
 import org.scribe.builder.ServiceBuilder;
@@ -39,8 +40,8 @@ public class ScribeOAuth1RequestSigner extends OAuth1ClientRequestSigner {
 				.build();
 	}
 
-	protected String buildAuthorizationHeader(HttpMethod method, String url, Map<String, String> parameters) {
-		OAuthRequest request = new OAuthRequest(Verb.valueOf(method.name()), decode(url).replace("#", "%23"));
+	protected String buildAuthorizationHeader(HttpMethod method, URI url, Map<String, String> parameters) {
+		OAuthRequest request = new OAuthRequest(Verb.valueOf(method.name()), url.toString());
 
 		for (String key : parameters.keySet()) {
 			request.addBodyParameter(key, decode(parameters.get(key)));

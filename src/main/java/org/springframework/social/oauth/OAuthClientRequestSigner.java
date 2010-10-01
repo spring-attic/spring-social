@@ -2,8 +2,7 @@ package org.springframework.social.oauth;
 
 import java.util.Map;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequest;
 
 /**
  * Strategy interface for signing a client request with the necessary
@@ -13,5 +12,5 @@ import org.springframework.http.HttpMethod;
  * @author Craig Walls
  */
 public interface OAuthClientRequestSigner {
-	void sign(HttpMethod method, HttpHeaders headers, String url, Map<String, String> bodyParameters);
+	void sign(ClientHttpRequest request, Map<String, String> bodyParameters);
 }
