@@ -20,6 +20,10 @@ public class TripItTemplate implements TripItOperations {
 		this.restOperations = restTemplate;
 	}
 
+	public String getProfileId() {
+		return getProfile().getId();
+	}
+
 	public TripItProfile getProfile() {
 		TripItProfileResponse response = restOperations.getForObject(
 				"https://api.tripit.com/v1/get/profile?format=json", TripItProfileResponse.class);

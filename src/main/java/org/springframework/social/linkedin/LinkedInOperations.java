@@ -2,6 +2,8 @@ package org.springframework.social.linkedin;
 
 import java.util.List;
 
+import org.springframework.social.core.SocialOperations;
+
 /**
  * Interface specifying a basic set of operations for interacting with LinkedIn.
  * Implemented by {@link LinkedInTemplate}. Not often used directly, but a
@@ -13,7 +15,7 @@ import java.util.List;
  * 
  * @author Craig Walls
  */
-public interface LinkedInOperations {
+public interface LinkedInOperations extends SocialOperations {
 	/**
 	 * Retrieves the current user's profile details.
 	 * 

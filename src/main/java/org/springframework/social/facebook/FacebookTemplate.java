@@ -40,6 +40,10 @@ public class FacebookTemplate implements FacebookOperations {
 		this.restOperations = restTemplate;
 	}
 
+	public String getProfileId() {
+		return Long.toString(getUserInfo().getId());
+	}
+
 	public FacebookUserInfo getUserInfo() {
 		return restOperations.getForObject(OBJECT_URL + "?access_token={accessToken}", FacebookUserInfo.class, "me",
 				accessToken);

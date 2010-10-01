@@ -2,6 +2,8 @@ package org.springframework.social.tripit;
 
 import java.util.List;
 
+import org.springframework.social.core.SocialOperations;
+
 /**
  * Interface specifying a basic set of operations for interacting with TripIt.
  * Implemented by {@link TripItTemplate}. Not often used directly, but a useful
@@ -13,7 +15,7 @@ import java.util.List;
  * 
  * @author Craig Walls
  */
-public interface TripItOperations {
+public interface TripItOperations extends SocialOperations {
 
 	/**
 	 * Retrieves the current user's TripIt profile details.
