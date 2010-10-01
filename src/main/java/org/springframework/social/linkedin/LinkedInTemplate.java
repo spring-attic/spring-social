@@ -47,6 +47,10 @@ public class LinkedInTemplate implements LinkedInOperations {
 		this.restOperations = restTemplate;
 	}
 
+	public String getProfileId() {
+		return getUserInfo().getId();
+	}
+
 	public LinkedInProfile getUserInfo() {
 		ResponseEntity<LinkedInProfile> response = restOperations.getForEntity(GET_CURRENT_USER_INFO,
 				LinkedInProfile.class);
@@ -60,6 +64,6 @@ public class LinkedInTemplate implements LinkedInOperations {
 		return connections.getConnections();
 	}
 
-	private static final String GET_CURRENT_USER_INFO = "http://api.linkedin.com/v1/people/~:public";
+	private static final String GET_CURRENT_USER_INFO = "https://api.linkedin.com/v1/people/~:public";
 
 }
