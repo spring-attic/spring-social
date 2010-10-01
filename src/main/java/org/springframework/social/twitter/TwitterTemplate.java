@@ -99,6 +99,10 @@ public class TwitterTemplate implements TwitterOperations {
 		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
 	}
 
+	public String getProfileId() {
+		return getScreenName();
+	}
+
 	public String getScreenName() {
 		Map<?, ?> response = restOperations.getForObject(VERIFY_CREDENTIALS_URL, Map.class);
 		return (String) response.get("screen_name");
@@ -215,9 +219,9 @@ public class TwitterTemplate implements TwitterOperations {
 
 	private static final int DEFAULT_RESULTS_PER_PAGE = 50;
 
-	static final String VERIFY_CREDENTIALS_URL = "http://api.twitter.com/1/account/verify_credentials.json";
-	static final String FRIENDS_STATUSES_URL = "http://api.twitter.com/1/statuses/friends.json?screen_name={screen_name}";
-	static final String SEARCH_URL = "http://search.twitter.com/search.json?q={query}&rpp={rpp}&page={page}";
-	static final String TWEET_URL = "http://api.twitter.com/1/statuses/update.json";
-	static final String RETWEET_URL = "http://api.twitter.com/1/statuses/retweet/{tweet_id}.json";
+	static final String VERIFY_CREDENTIALS_URL = "https://api.twitter.com/1/account/verify_credentials.json";
+	static final String FRIENDS_STATUSES_URL = "https://api.twitter.com/1/statuses/friends.json?screen_name={screen_name}";
+	static final String SEARCH_URL = "https://search.twitter.com/search.json?q={query}&rpp={rpp}&page={page}";
+	static final String TWEET_URL = "https://api.twitter.com/1/statuses/update.json";
+	static final String RETWEET_URL = "https://api.twitter.com/1/statuses/retweet/{tweet_id}.json";
 }
