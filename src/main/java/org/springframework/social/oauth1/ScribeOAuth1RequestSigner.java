@@ -19,8 +19,7 @@ import org.springframework.social.oauth.OAuthClientRequestSigner;
  */
 public class ScribeOAuth1RequestSigner extends OAuth1ClientRequestSigner {
 	private final OAuthService service;
-	private final String accessToken;
-	private final String accessTokenSecret;
+	private final Token tokenAndSecret;
 
 	/**
 	 * Create a new instance of ScribeOAuth1RequestSigner.
@@ -35,22 +34,19 @@ public class ScribeOAuth1RequestSigner extends OAuth1ClientRequestSigner {
 	 *            the API secret assigned by the provider
 	 */
 	public ScribeOAuth1RequestSigner(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
-		this.accessToken = accessToken;
-		this.accessTokenSecret = accessTokenSecret;
+		tokenAndSecret = new Token(accessToken, accessTokenSecret);
 		this.service = new ServiceBuilder().provider(PreAuthorizedOAuthApi.class).apiKey(apiKey).apiSecret(apiSecret)
 				.build();
 	}
 
 	protected String buildAuthorizationHeader(HttpMethod method, String url, Map<String, String> parameters) {
-		String adjustedUrl = decode(url).replace("#", "%23");
-		OAuthRequest request = new OAuthRequest(Verb.valueOf(method.name()), adjustedUrl);
+		OAuthRequest request = new OAuthRequest(Verb.valueOf(method.name()), decode(url).replace("#", "%23"));
 
 		for (String key : parameters.keySet()) {
 			request.addBodyParameter(key, decode(parameters.get(key)));
 		}
 
-		Token token = new Token(accessToken, accessTokenSecret);
-		service.signRequest(token, request);
+		service.signRequest(tokenAndSecret, request);
 		return request.getHeaders().get("Authorization");
 	}
 }
