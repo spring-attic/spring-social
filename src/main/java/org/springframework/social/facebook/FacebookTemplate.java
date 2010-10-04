@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.CommonsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -34,6 +35,9 @@ public class FacebookTemplate implements FacebookOperations {
 	public FacebookTemplate(String accessToken) {
 		this.accessToken = accessToken;
 		RestTemplate restTemplate = new RestTemplate();
+		// must be CommonsClientHttpRequestFactory or else the location header
+		// in an HTTP 302 won't be followed
+		restTemplate.setRequestFactory(new CommonsClientHttpRequestFactory());
 		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
 		restTemplate.getMessageConverters().add(json);
