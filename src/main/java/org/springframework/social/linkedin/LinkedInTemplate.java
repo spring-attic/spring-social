@@ -51,6 +51,12 @@ public class LinkedInTemplate implements LinkedInOperations {
 		return getUserInfo().getId();
 	}
 
+	public void setStatus(String status) {
+		// TODO: There's no reason not to support this...come back to this when
+		// I have opportunity to implement it
+		throw new UnsupportedOperationException("Status update not supported for LinkedIn");
+	}
+
 	public LinkedInProfile getUserInfo() {
 		ResponseEntity<LinkedInProfile> response = restOperations.getForEntity(GET_CURRENT_USER_INFO,
 				LinkedInProfile.class);

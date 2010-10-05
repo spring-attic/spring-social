@@ -103,6 +103,10 @@ public class TwitterTemplate implements TwitterOperations {
 		return getScreenName();
 	}
 
+	public void setStatus(String status) {
+		tweet(status);
+	}
+
 	public String getScreenName() {
 		Map<?, ?> response = restOperations.getForObject(VERIFY_CREDENTIALS_URL, Map.class);
 		return (String) response.get("screen_name");

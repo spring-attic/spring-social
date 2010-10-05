@@ -48,6 +48,10 @@ public class FacebookTemplate implements FacebookOperations {
 		return Long.toString(getUserInfo().getId());
 	}
 
+	public void setStatus(String status) {
+		postToWall(status);
+	}
+
 	public FacebookUserInfo getUserInfo() {
 		return restOperations.getForObject(OBJECT_URL + "?access_token={accessToken}", FacebookUserInfo.class, "me",
 				accessToken);
