@@ -48,6 +48,10 @@ public class FacebookTemplate implements FacebookOperations {
 		return Long.toString(getUserInfo().getId());
 	}
 
+	public String getProfileUrl() {
+		return "http://www.facebook.com/profile.php?id=" + getProfileId();
+	}
+
 	public void setStatus(String status) {
 		postToWall(status);
 	}

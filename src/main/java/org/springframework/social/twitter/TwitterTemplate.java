@@ -103,6 +103,10 @@ public class TwitterTemplate implements TwitterOperations {
 		return getScreenName();
 	}
 
+	public String getProfileUrl() {
+		return "http://www.twitter.com/" + getProfileId();
+	}
+
 	public void setStatus(String status) {
 		tweet(status);
 	}

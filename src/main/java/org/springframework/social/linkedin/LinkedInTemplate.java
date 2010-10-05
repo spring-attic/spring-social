@@ -51,6 +51,10 @@ public class LinkedInTemplate implements LinkedInOperations {
 		return getUserInfo().getId();
 	}
 
+	public String getProfileUrl() {
+		return getUserInfo().getPublicProfileUrl();
+	}
+
 	public void setStatus(String status) {
 		// TODO: There's no reason not to support this...come back to this when
 		// I have opportunity to implement it

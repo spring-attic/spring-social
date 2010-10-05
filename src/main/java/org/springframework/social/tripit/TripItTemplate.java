@@ -24,6 +24,10 @@ public class TripItTemplate implements TripItOperations {
 		return getProfile().getId();
 	}
 
+	public String getProfileUrl() {
+		return getProfile().getProfileUrl();
+	}
+
 	public void setStatus(String status) {
 		// TODO: There's no reason not to support this...come back to this when
 		// I am back on the network and can lookup how to do it
