@@ -1,6 +1,6 @@
 package org.springframework.social.core;
 
-public interface SocialOperations {
+public interface SocialProviderOperations {
 	String getProfileId();
 
 	String getProfileUrl();

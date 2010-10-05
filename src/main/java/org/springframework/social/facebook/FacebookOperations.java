@@ -2,7 +2,7 @@ package org.springframework.social.facebook;
 
 import java.util.List;
 
-import org.springframework.social.core.SocialOperations;
+import org.springframework.social.core.SocialProviderOperations;
 import org.springframework.util.MultiValueMap;
 
 /**
@@ -16,7 +16,7 @@ import org.springframework.util.MultiValueMap;
  * 
  * @author Craig Walls
  */
-public interface FacebookOperations extends SocialOperations {
+public interface FacebookOperations extends SocialProviderOperations {
 	/**
 	 * Retrieve the current user's Facebook profile information.
 	 * 

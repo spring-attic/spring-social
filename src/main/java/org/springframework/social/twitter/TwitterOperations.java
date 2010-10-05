@@ -2,8 +2,8 @@ package org.springframework.social.twitter;
 
 import java.util.List;
 
+import org.springframework.social.core.SocialProviderOperations;
 import org.springframework.social.core.SocialException;
-import org.springframework.social.core.SocialOperations;
 
 /**
  * Interface specifying a basic set of operations for interacting with Twitter.
@@ -12,7 +12,7 @@ import org.springframework.social.core.SocialOperations;
  * 
  * @author Craig Walls
  */
-public interface TwitterOperations extends SocialOperations {
+public interface TwitterOperations extends SocialProviderOperations {
 
 	/**
 	 * Retrieves the user's Twitter screen name.
