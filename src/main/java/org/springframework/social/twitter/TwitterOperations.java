@@ -2,7 +2,6 @@ package org.springframework.social.twitter;
 
 import java.util.List;
 
-import org.springframework.social.core.SocialProviderOperations;
 import org.springframework.social.core.SocialException;
 
 /**
@@ -12,7 +11,7 @@ import org.springframework.social.core.SocialException;
  * 
  * @author Craig Walls
  */
-public interface TwitterOperations extends SocialProviderOperations {
+public interface TwitterOperations {
 
 	/**
 	 * Retrieves the user's Twitter screen name.
@@ -20,7 +19,14 @@ public interface TwitterOperations extends SocialProviderOperations {
 	 * @return the user's screen name at Twitter
 	 */
 	String getScreenName();
-	
+
+	/**
+	 * Retrieves the user's Twitter screen name.
+	 * 
+	 * @return the user's screen name at Twitter
+	 */
+	String getProfileId();
+
 	/**
 	 * Retrieves a list of users that the given user follows.
 	 * 
@@ -40,6 +46,17 @@ public interface TwitterOperations extends SocialProviderOperations {
 	 *             if an error response is received from Twitter
 	 */
 	void tweet(String message);
+
+	/**
+	 * Updates the user's status.
+	 * 
+	 * @param status
+	 *            The status message
+	 * 
+	 * @throws SocialException
+	 *             if an error response is received from Twitter
+	 */
+	void updateStatus(String status);
 
 	/**
 	 * Posts a retweet of an existing tweet.

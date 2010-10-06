@@ -2,7 +2,6 @@ package org.springframework.social.facebook;
 
 import java.util.List;
 
-import org.springframework.social.core.SocialProviderOperations;
 import org.springframework.util.MultiValueMap;
 
 /**
@@ -16,7 +15,14 @@ import org.springframework.util.MultiValueMap;
  * 
  * @author Craig Walls
  */
-public interface FacebookOperations extends SocialProviderOperations {
+public interface FacebookOperations {
+	/**
+	 * Retrieves the user's Facebook profile ID.
+	 * 
+	 * @return the user's Facebook profile ID.
+	 */
+	String getProfileId();
+
 	/**
 	 * Retrieve the current user's Facebook profile information.
 	 * 

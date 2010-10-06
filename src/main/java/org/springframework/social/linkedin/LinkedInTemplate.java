@@ -14,18 +14,6 @@ public class LinkedInTemplate implements LinkedInOperations {
 	private final RestOperations restOperations;
 
 	/**
-	 * Creates a new LinkedInTemplate given a {@link RestOperations} through
-	 * which calls will be made to the LinkedIn API.
-	 * 
-	 * Because all LinkedIn operations require OAuth authentication, the
-	 * {@link RestOperations} must be equipped to sign requests with an OAuth 1
-	 * Authorization header.
-	 */
-	public LinkedInTemplate(RestOperations restOperations) {
-		this.restOperations = restOperations;
-	}
-
-	/**
 	 * Creates a new LinkedInTemplate given the minimal amount of information
 	 * needed to sign requests with OAuth 1 credentials.
 	 * 
@@ -55,7 +43,7 @@ public class LinkedInTemplate implements LinkedInOperations {
 		return getUserInfo().getPublicProfileUrl();
 	}
 
-	public void setStatus(String status) {
+	public void updateStatus(String status) {
 		// TODO: There's no reason not to support this...come back to this when
 		// I have opportunity to implement it
 		throw new UnsupportedOperationException("Status update not supported for LinkedIn");

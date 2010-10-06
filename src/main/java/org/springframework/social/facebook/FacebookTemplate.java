@@ -52,7 +52,7 @@ public class FacebookTemplate implements FacebookOperations {
 		return "http://www.facebook.com/profile.php?id=" + getProfileId();
 	}
 
-	public void setStatus(String status) {
+	public void updateStatus(String status) {
 		postToWall(status);
 	}
 

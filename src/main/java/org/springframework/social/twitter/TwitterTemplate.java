@@ -55,26 +55,6 @@ public class TwitterTemplate implements TwitterOperations {
 	/**
 	 * Create a new instance of TwitterTemplate.
 	 * 
-	 * Because many Twitter operations require an OAuth access token,
-	 * TwitterTemplate must be constructed with an {@link RestOperations} that
-	 * is able to sign requests with OAuth authorization details. If it is given
-	 * a {@link RestTemplate} or some other implementation of RestOperations
-	 * that is not OAuth-enabled, then some operations (such as search) may
-	 * work. Those that require authentication, however, will result in a
-	 * {@link AccountNotConnectedException} being thrown.
-	 * 
-	 * @param restOperations
-	 *            An {@link RestOperations} that will perform the calls against
-	 *            Twitter's REST APIs.
-	 */
-	public TwitterTemplate(RestOperations restOperations) {
-		this.restOperations = restOperations;
-		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
-	}
-
-	/**
-	 * Create a new instance of TwitterTemplate.
-	 * 
 	 * This constructor creates a new TwitterTemplate given the minimal amount
 	 * of information required to sign a request and builds up a
 	 * {@link RestOperations} internally using this information.
@@ -103,11 +83,7 @@ public class TwitterTemplate implements TwitterOperations {
 		return getScreenName();
 	}
 
-	public String getProfileUrl() {
-		return "http://www.twitter.com/" + getProfileId();
-	}
-
-	public void setStatus(String status) {
+	public void updateStatus(String status) {
 		tweet(status);
 	}
 
