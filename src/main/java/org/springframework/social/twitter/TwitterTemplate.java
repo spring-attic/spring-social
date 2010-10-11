@@ -207,5 +207,5 @@ public class TwitterTemplate implements TwitterOperations {
 	static final String FRIENDS_STATUSES_URL = "https://api.twitter.com/1/statuses/friends.json?screen_name={screen_name}";
 	static final String SEARCH_URL = "https://search.twitter.com/search.json?q={query}&rpp={rpp}&page={page}";
 	static final String TWEET_URL = "https://api.twitter.com/1/statuses/update.json";
-	static final String RETWEET_URL = "http://api.twitter.com/1/statuses/retweet/{tweet_id}.json";
+	static final String RETWEET_URL = "https://api.twitter.com/1/statuses/retweet/{tweet_id}.json";
 }
