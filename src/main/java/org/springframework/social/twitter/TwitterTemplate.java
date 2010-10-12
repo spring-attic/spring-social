@@ -107,8 +107,7 @@ public class TwitterTemplate implements TwitterOperations {
 		MultiValueMap<String, Object> tweetParams = new LinkedMultiValueMap<String, Object>();
 		tweetParams.add("status", message);
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restOperations.postForEntity(TWEET_URL, tweetParams, Map.class,
-				Collections.singletonMap("status", message));
+		ResponseEntity<Map> response = restOperations.postForEntity(TWEET_URL, tweetParams, Map.class);
 		handleResponseErrors(response);
 	}
 
