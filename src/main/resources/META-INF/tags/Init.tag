@@ -7,7 +7,14 @@
 </c:if>
 
 <div id='fb-root'></div>
-<script src='http://connect.facebook.net/en_US/all.js'></script>
+<c:choose>
+	<c:when test="${pageContext.request.secure}">
+		<script src='https://connect.facebook.net/en_US/all.js'></script>
+	</c:when>
+	<c:when test="${not pageContext.request.secure}">
+		<script src='http://connect.facebook.net/en_US/all.js'></script>
+	</c:when>
+</c:choose>
 <script>
 if(FB) {
 	FB.requireSessionThenGoTo = function(url) {
