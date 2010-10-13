@@ -25,6 +25,7 @@ public class OAuthSigningClientHttpRequest extends AbstractClientHttpRequest {
 		Map<String, String> bodyParameters = extractBodyParameters(headers.getContentType(), bufferedOutput);
 		signer.sign(delegate, bodyParameters);
 		delegate.getBody().write(bufferedOutput);
+		delegate.getHeaders().putAll(headers);
 		return delegate.execute();
 	}
 
