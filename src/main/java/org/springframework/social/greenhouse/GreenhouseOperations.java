@@ -25,7 +25,6 @@ public interface GreenhouseOperations {
 	/**
 	 * Retrieve the current user's Greenhouse profile information.
 	 * 
-	 * @param accessToken
 	 * @return the user's profile information.
 	 */
 	GreenhouseProfile getUserProfile();
