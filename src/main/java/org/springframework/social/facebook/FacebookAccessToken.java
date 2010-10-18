@@ -7,8 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation that indicates that a controller method parameter should be bound
- * to the Facebook access token given when the user signed in with Facebook.
+ * Annotation that indicates to {@link FacebookWebArgumentResolver} that a
+ * controller method parameter should be bound to the Facebook access token
+ * given when the user signed in with Facebook.
  * 
  * @author Craig Walls
  */

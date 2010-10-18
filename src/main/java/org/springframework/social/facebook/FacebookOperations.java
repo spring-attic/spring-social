@@ -5,13 +5,17 @@ import java.util.List;
 import org.springframework.util.MultiValueMap;
 
 /**
+ * <p>
  * Interface specifying a basic set of operations for interacting with Facebook.
  * Implemented by {@link FacebookTemplate}. Not often used directly, but a
  * useful option to enhance testability, as it can easily be mocked or stubbed.
+ * </p>
  * 
+ * <p>
  * Many of the methods contained in this interface require an access token from
  * Facebook. When a method's description speaks of the "current user", it is
  * referring to the user for whom the access token has been issued.
+ * </p>
  * 
  * @author Craig Walls
  */
@@ -29,7 +33,7 @@ public interface FacebookOperations {
 	 * @param accessToken
 	 * @return the user's profile information.
 	 */
-	FacebookUserInfo getUserInfo();
+	FacebookProfile getUserProfile();
 
 	/**
 	 * Get a list of the user's friends.

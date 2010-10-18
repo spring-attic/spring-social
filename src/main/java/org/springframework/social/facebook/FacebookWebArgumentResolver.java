@@ -11,8 +11,18 @@ import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.context.request.NativeWebRequest;
 
 /**
+ * <p>
  * Web argument resolver that resolves arguments annotated with
  * {@link FacebookAccessToken} or {@link FacebookUserId}.
+ * </p>
+ * 
+ * <p>
+ * After a user has authenticated with Facebook via the XFBML
+ * &lt;fb:login-button&gt; tag, their user ID and an access token are stored in
+ * a cookie whose name is "fbs_{application key}". This web argument resolver
+ * extracts that information from the cookie (if available) and supplies it to a
+ * controller handler method as String values.
+ * </p>
  * 
  * @author Craig Walls
  */

@@ -14,14 +14,78 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * <p>
+ * This is the central class for interacting with Greenhouse.
+ * </p>
+ * 
+ * <p>
+ * Greenhouse operations require OAuth authentication with the server.
+ * Therefore, GreenhouseTemplate must be constructed with the minimal
+ * information required to sign requests with and OAuth 1 Authorization header.
+ * </p>
+ * 
+ * @author Craig Walls
+ */
 public class GreenhouseTemplate implements GreenhouseOperations {
 	private RestTemplate restOperations;
 	private String baseUrl;
 
+	/**
+	 * <p>
+	 * Constructs a GreenhouseTemplate with the minimal amount of information
+	 * required to sign requests with an OAuth 1 Authorization header.
+	 * </p>
+	 * 
+	 * <p>
+	 * This constructor assumes that the application will be conversing with the
+	 * production Greenhouse server at http://springsource.greenhouse.org.
+	 * </p>
+	 * 
+	 * @param apiKey
+	 *            The application's API Key as assigned when registering the
+	 *            application with Greenhouse
+	 * @param apiSecret
+	 *            The application's API Secret as assigned when registering the
+	 *            application with Greenhouse
+	 * @param accessToken
+	 *            An access token acquired through successful OAuth 1
+	 *            authentication with Greenhouse
+	 * @param accessTokenSecret
+	 *            An access token secret acquired through successful OAuth 1
+	 *            authentication with Greenhouse
+	 */
 	public GreenhouseTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
         this(apiKey, apiSecret, accessToken, accessTokenSecret, DEFAULT_BASE_URL);
     }
-    
+
+	/**
+	 * <p>
+	 * Constructs a GreenhouseTemplate with the minimal amount of information
+	 * required to sign requests with an OAuth 1 Authorization header.
+	 * </p>
+	 * 
+	 * <p>
+	 * This constructor allows the application to specify the base URL of the
+	 * Greenhouse server, enabling the template to converse with a development
+	 * or test server.
+	 * </p>
+	 * 
+	 * @param apiKey
+	 *            The application's API Key as assigned when registering the
+	 *            application with Greenhouse
+	 * @param apiSecret
+	 *            The application's API Secret as assigned when registering the
+	 *            application with Greenhouse
+	 * @param accessToken
+	 *            An access token acquired through successful OAuth 1
+	 *            authentication with Greenhouse
+	 * @param accessTokenSecret
+	 *            An access token secret acquired through successful OAuth 1
+	 *            authentication with Greenhouse
+	 * @param baseUrl
+	 *            The base URL of the Greenhouse server
+	 */
 	public GreenhouseTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret, String baseUrl) {
 		RestTemplate restTemplate = new RestTemplate(new OAuthSigningClientHttpRequestFactory(
 				new SimpleClientHttpRequestFactory(),

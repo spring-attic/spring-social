@@ -17,7 +17,23 @@ import org.springframework.web.client.RestTemplate;
 /**
  * This is the central class for interacting with Facebook.
  * 
+ * <p>
+ * All operations through Facebook require OAuth 2-based authentication.
+ * Therefore, FacebookTemplate must be given an access token at construction
+ * time.
+ * </p>
+ * 
+ * <p>
+ * The easiest way to get an access token is to use the XFBML
+ * &lt;fb:login-button&gt; tag to require the user to signin to Facebook. Then,
+ * after a successful signin, the access token can be found in the cookie whose
+ * name is "fbs_{application key}". In Spring MVC, the
+ * {@link FacebookWebArgumentResolver} can extract the access token from the
+ * cookie and make it available as a String argument to the controller method.
+ * </p>
+ * 
  * @author Craig Walls
+ * @see FacebookWebArgumentResolver
  */
 public class FacebookTemplate implements FacebookOperations {
 	private RestOperations restOperations;
@@ -45,7 +61,7 @@ public class FacebookTemplate implements FacebookOperations {
 	}
 
 	public String getProfileId() {
-		return Long.toString(getUserInfo().getId());
+		return Long.toString(getUserProfile().getId());
 	}
 
 	public String getProfileUrl() {
@@ -56,8 +72,8 @@ public class FacebookTemplate implements FacebookOperations {
 		postToWall(status);
 	}
 
-	public FacebookUserInfo getUserInfo() {
-		return restOperations.getForObject(OBJECT_URL + "?access_token={accessToken}", FacebookUserInfo.class, "me",
+	public FacebookProfile getUserProfile() {
+		return restOperations.getForObject(OBJECT_URL + "?access_token={accessToken}", FacebookProfile.class, "me",
 				accessToken);
     }
 
