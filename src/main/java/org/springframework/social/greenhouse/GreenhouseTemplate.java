@@ -10,7 +10,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.social.oauth.OAuthSigningClientHttpRequestFactory;
 import org.springframework.social.oauth1.ScribeOAuth1RequestSigner;
-import org.springframework.social.twitter.TwitterErrorHandler;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -27,7 +26,6 @@ public class GreenhouseTemplate implements GreenhouseOperations {
 		RestTemplate restTemplate = new RestTemplate(new OAuthSigningClientHttpRequestFactory(
 				new SimpleClientHttpRequestFactory(),
 				new ScribeOAuth1RequestSigner(apiKey, apiSecret, accessToken, accessTokenSecret)));
-		restTemplate.setErrorHandler(new TwitterErrorHandler());
 		this.restOperations = restTemplate;
 		jsonAcceptingHeaders = new LinkedMultiValueMap<String, String>();
 		jsonAcceptingHeaders.add("Accept", "application/json");
