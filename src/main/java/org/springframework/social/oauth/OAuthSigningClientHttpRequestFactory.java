@@ -7,6 +7,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 
+/**
+ * An implementation of {@link ClientHttpRequestFactory} that creates an
+ * {@link OAuthSigningClientHttpRequest} so that the request can be signed with
+ * an OAuth <code>Authorization</code> header.
+ * 
+ * @author Craig Walls
+ */
 public class OAuthSigningClientHttpRequestFactory implements ClientHttpRequestFactory {
 	private final OAuthClientRequestSigner signer;
 	private final ClientHttpRequestFactory delegate;

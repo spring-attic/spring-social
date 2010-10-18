@@ -25,7 +25,24 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 /**
+ * <p>
  * This is the central class for interacting with Twitter.
+ * </p>
+ * 
+ * <p>
+ * Most (not all) Twitter operations require OAuth authentication. To perform
+ * such operations, {@link TwitterTemplate} must be constructed with the minimal
+ * amount of information required to sign requests to Twitter's API with an
+ * OAuth <code>Authorization</code> header.
+ * </p>
+ * 
+ * <p>
+ * There are a few operations, such as searching, that do not require OAuth
+ * authentication. In those cases, you may use a {@link TwitterTemplate} that is
+ * created through the default constructor and without any OAuth details.
+ * Attempts to perform secured operations through such an instance, however,
+ * will result in {@link AccountNotConnectedException} being thrown.
+ * </p>
  * 
  * @author Craig Walls
  */

@@ -5,13 +5,17 @@ import org.scribe.extensions.linkedin.LinkedInBaseStringExtractorImpl;
 import org.scribe.extractors.BaseStringExtractor;
 
 /**
+ * <p>
  * Generic Scribe API class used internally by {@link ScribeOAuth1RequestSigner}
  * for request-signing purposes only.
+ * </p>
  * 
+ * <p>
  * Assumes that the user is pre-authenticated and does not know or care about
  * request or access token endpoints. Thus, it can be used generically to sign
  * requests regardless of the provider, but cannot be used to authenticate a
  * user.
+ * </p>
  * 
  * @author Craig Walls
  */

@@ -34,7 +34,7 @@ public interface TripItOperations {
 	 * 
 	 * @return the user's profile data.
 	 */
-	TripItProfile getProfile();
+	TripItProfile getUserProfile();
 
 	/**
 	 * Retrieves a list of upcoming trips for the current user.

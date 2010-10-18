@@ -12,10 +12,25 @@ import org.springframework.http.client.AbstractClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
+/**
+ * Implementation of {@link ClientHttpRequest} that wraps another
+ * {@link ClientHttpRequest} and signs it with an OAuth
+ * <code>Authorization</code> header before it is sent.
+ * 
+ * @author Craig Walls
+ */
 public class OAuthSigningClientHttpRequest extends AbstractClientHttpRequest {
 	private final ClientHttpRequest delegate;
 	private final OAuthClientRequestSigner signer;
 
+	/**
+	 * Creates an {@link OAuthSigningClientHttpRequest}.
+	 * 
+	 * @param delegate
+	 *            The wrapped {@link ClientHttpRequest} that is to be signed
+	 * @param signer
+	 *            An OAuth signer
+	 */
 	public OAuthSigningClientHttpRequest(ClientHttpRequest delegate, OAuthClientRequestSigner signer) {
 		this.delegate = delegate;
 		this.signer = signer;
