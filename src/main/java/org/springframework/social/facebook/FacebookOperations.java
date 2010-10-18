@@ -30,15 +30,20 @@ public interface FacebookOperations {
 	/**
 	 * Retrieve the current user's Facebook profile information.
 	 * 
-	 * @param accessToken
 	 * @return the user's profile information.
 	 */
 	FacebookProfile getUserProfile();
 
 	/**
+	 * Retrieve the URL to the user's Facebook profile.
+	 * 
+	 * @return the URL to the user's Facebook profile.
+	 */
+	String getProfileUrl();
+
+	/**
 	 * Get a list of the user's friends.
 	 * 
-	 * @param accessToken
 	 * @return a list of <code>String</code>s where each entry is the Facebook
 	 *         ID of one of the user's friends.
 	 */
@@ -47,7 +52,14 @@ public interface FacebookOperations {
 	/**
 	 * Posts a message to the current user's wall.
 	 * 
-	 * @param accessToken
+	 * @param message
+	 *            The message to post
+	 */
+	void updateStatus(String status);
+
+	/**
+	 * Posts a message to the current user's wall.
+	 * 
 	 * @param message
 	 *            The message to post
 	 */
@@ -56,18 +68,29 @@ public interface FacebookOperations {
 	/**
 	 * Posts a message to the current user's wall along with a link.
 	 * 
-	 * @param accessToken
 	 * @param message
 	 * @param link
 	 */
 	void postToWall(String message, FacebookLink link);
 
+	/**
+	 * <p>
+	 * Low-level publish-to-Facebook method for publishing any type of object
+	 * supported by Facebook's API.
+	 * </p>
+	 * 
+	 * @param object
+	 *            The ID of the object to publish to.
+	 * @param connection
+	 *            The connection to be published.
+	 * @param data
+	 *            The data to be published.
+	 */
 	void publish(String object, String connection, MultiValueMap<String, String> data);
 
 	/**
 	 * Retrieves the current user's profile picture as an array of bytes.
 	 * 
-	 * @param accessToken
 	 * @return the user's profile picture in bytes.
 	 */
 	byte[] getProfilePicture();
@@ -75,7 +98,6 @@ public interface FacebookOperations {
 	/**
 	 * Retrieves a user's profile picture as an array of bytes.
 	 * 
-	 * @param accessToken
 	 * @param profileId
 	 *            the Facebook ID of the user.
 	 * @return the user's profile picture in bytes.

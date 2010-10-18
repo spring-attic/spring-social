@@ -57,12 +57,6 @@ public class TripItTemplate implements TripItOperations {
 		return getUserProfile().getProfileUrl();
 	}
 
-	public void updateStatus(String status) {
-		// TODO: There's no reason not to support this...come back to this when
-		// I am back on the network and can lookup how to do it
-		throw new UnsupportedOperationException("Status update not supported for LinkedIn");
-	}
-
 	public TripItProfile getUserProfile() {
 		TripItProfileResponse response = restOperations.getForObject(
 				"https://api.tripit.com/v1/get/profile?format=json", TripItProfileResponse.class);
