@@ -9,6 +9,19 @@ import org.springframework.social.oauth1.ScribeOAuth1RequestSigner;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * <p>
+ * This is the central class for interacting with LinkedIn.
+ * </p>
+ * 
+ * <p>
+ * Greenhouse operations require OAuth authentication with the server.
+ * Therefore, LinkedInTemplate must be constructed with the minimal information
+ * required to sign requests with and OAuth 1 Authorization header.
+ * </p>
+ * 
+ * @author Craig Walls
+ */
 public class LinkedInTemplate implements LinkedInOperations {
 
 	private final RestOperations restOperations;
@@ -36,11 +49,11 @@ public class LinkedInTemplate implements LinkedInOperations {
 	}
 
 	public String getProfileId() {
-		return getUserInfo().getId();
+		return getUserProfile().getId();
 	}
 
 	public String getProfileUrl() {
-		return getUserInfo().getPublicProfileUrl();
+		return getUserProfile().getPublicProfileUrl();
 	}
 
 	public void updateStatus(String status) {
@@ -49,7 +62,7 @@ public class LinkedInTemplate implements LinkedInOperations {
 		throw new UnsupportedOperationException("Status update not supported for LinkedIn");
 	}
 
-	public LinkedInProfile getUserInfo() {
+	public LinkedInProfile getUserProfile() {
 		ResponseEntity<LinkedInProfile> response = restOperations.getForEntity(GET_CURRENT_USER_INFO,
 				LinkedInProfile.class);
 

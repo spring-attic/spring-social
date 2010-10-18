@@ -3,13 +3,17 @@ package org.springframework.social.linkedin;
 import java.util.List;
 
 /**
+ * <p>
  * Interface specifying a basic set of operations for interacting with LinkedIn.
  * Implemented by {@link LinkedInTemplate}. Not often used directly, but a
  * useful option to enhance testability, as it can easily be mocked or stubbed.
+ * </p>
  * 
+ * <p>
  * Many of the methods contained in this interface require OAuth authentication
  * with LinkedIn. When a method's description speaks of the "current user", it
  * is referring to the user for whom the access token has been issued.
+ * </p>
  * 
  * @author Craig Walls
  */
@@ -33,7 +37,7 @@ public interface LinkedInOperations {
 	 * 
 	 * @return the user's profile data.
 	 */
-	LinkedInProfile getUserInfo();
+	LinkedInProfile getUserProfile();
 
 	/**
 	 * Retrieves the 1st-degree connections from the current user's network.
