@@ -79,13 +79,6 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.springframework.security.oauth</groupId>
-			<artifactId>spring-security-oauth</artifactId>
-			<version>1.0.0.BUILD-SNAPSHOT</version>
-			<optional>true</optional>
-		</dependency>
-		
-		<dependency>
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
@@ -113,11 +106,19 @@
 			<version>1.6</version>
 		</dependency>
 
+		<!-- Spring Security OAuth -->		
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth</artifactId>
+			<version>1.0.0.BUILD-SNAPSHOT</version>
+			<optional>true</optional>
+		</dependency>
+
 		<!-- Scribe -->
 		<dependency>
 			<groupId>org.scribe</groupId>
 			<artifactId>scribe</artifactId>
-			<version>1.0.3</version>
+			<version>1.0.6</version>
 			<optional>true</optional>
 		</dependency>				
 		

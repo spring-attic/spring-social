@@ -9,6 +9,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.social.oauth.OAuthSigningClientHttpRequestFactory;
+import org.springframework.social.oauth1.OAuth1RequestSignerFactory;
 import org.springframework.social.oauth1.ScribeOAuth1RequestSigner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -89,7 +90,7 @@ public class GreenhouseTemplate implements GreenhouseOperations {
 	public GreenhouseTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret, String baseUrl) {
 		RestTemplate restTemplate = new RestTemplate(new OAuthSigningClientHttpRequestFactory(
 				new SimpleClientHttpRequestFactory(),
-				new ScribeOAuth1RequestSigner(apiKey, apiSecret, accessToken, accessTokenSecret)));
+				OAuth1RequestSignerFactory.getRequestSigner(apiKey, apiSecret, accessToken, accessTokenSecret)));
 		this.restOperations = restTemplate;
 		jsonAcceptingHeaders = new LinkedMultiValueMap<String, String>();
 		jsonAcceptingHeaders.add("Accept", "application/json");
