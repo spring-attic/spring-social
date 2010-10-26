@@ -36,7 +36,7 @@ import org.springframework.web.client.RestTemplate;
  * @see FacebookWebArgumentResolver
  */
 public class FacebookTemplate implements FacebookOperations {
-	private RestOperations restOperations;
+	RestOperations restOperations;
 	private final String accessToken;
 
 	/**

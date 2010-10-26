@@ -11,19 +11,19 @@ import org.codehaus.jackson.annotate.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class FacebookProfile {
 	@JsonProperty
-	private long id;
+	long id;
 
 	@JsonProperty
-	private String name;
+	String name;
 
 	@JsonProperty("first_name")
-	private String firstName;
+	String firstName;
 
 	@JsonProperty("last_name")
-	private String lastName;
+	String lastName;
 
 	@JsonProperty
-	private String email;
+	String email;
 
 	/**
 	 * The user's Facebook ID
