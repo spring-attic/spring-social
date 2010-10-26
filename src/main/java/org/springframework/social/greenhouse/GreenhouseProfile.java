@@ -9,13 +9,13 @@ import org.codehaus.jackson.annotate.JsonProperty;
  */
 public class GreenhouseProfile {
 	@JsonProperty
-	private long accountId;
+	long accountId;
 
 	@JsonProperty
-	private String displayName;
+	String displayName;
 
 	@JsonProperty
-	private String pictureUrl;
+	String pictureUrl;
 
 	/**
 	 * The user's Greenhouse account ID.

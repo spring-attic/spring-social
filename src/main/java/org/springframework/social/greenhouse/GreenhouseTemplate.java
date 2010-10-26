@@ -10,9 +10,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.social.oauth.OAuthSigningClientHttpRequestFactory;
 import org.springframework.social.oauth1.OAuth1RequestSignerFactory;
-import org.springframework.social.oauth1.ScribeOAuth1RequestSigner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -29,7 +29,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Craig Walls
  */
 public class GreenhouseTemplate implements GreenhouseOperations {
-	private RestTemplate restOperations;
+	RestOperations restOperations;
 	private String baseUrl;
 
 	/**
@@ -121,9 +121,9 @@ public class GreenhouseTemplate implements GreenhouseOperations {
 	}
 
 
-	private static final String DEFAULT_BASE_URL = "https://greenhouse.springsource.org";
-	private static final String PROFILE_PATH = "/members/{id}";
-	private static final String EVENTS_PATH = "/events";
-	private static final String SESSIONS_FOR_DAY_PATH = "/events/{eventId}/sessions/{day}";
+	static final String DEFAULT_BASE_URL = "https://greenhouse.springsource.org";
+	static final String PROFILE_PATH = "/members/{id}";
+	static final String EVENTS_PATH = "/events";
+	static final String SESSIONS_FOR_DAY_PATH = "/events/{eventId}/sessions/{day}";
 	private MultiValueMap<String, String> jsonAcceptingHeaders;
 }
