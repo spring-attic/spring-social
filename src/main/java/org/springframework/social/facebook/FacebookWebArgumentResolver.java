@@ -28,10 +28,10 @@ import org.springframework.web.context.request.NativeWebRequest;
  */
 public class FacebookWebArgumentResolver implements WebArgumentResolver {
 
-	private final String applicationKey;
+	private final String apiKey;
 
-	public FacebookWebArgumentResolver(String applicationKey) {
-		this.applicationKey = applicationKey;
+	public FacebookWebArgumentResolver(String apiKey) {
+		this.apiKey = apiKey;
 	}
 	
 	public Object resolveArgument(MethodParameter parameter, NativeWebRequest request) throws Exception {
@@ -41,7 +41,7 @@ public class FacebookWebArgumentResolver implements WebArgumentResolver {
 			return WebArgumentResolver.UNRESOLVED;
 		}
 		for (Cookie cookie : cookies) {
-            if (cookie.getName().equals("fbs_" + applicationKey)) {
+			if (cookie.getName().equals("fbs_" + apiKey)) {
             		return processParameterAnnotation(parameter, extractDataFromCookie(cookie.getValue()));
             }
         }

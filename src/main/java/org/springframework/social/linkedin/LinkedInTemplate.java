@@ -2,11 +2,9 @@ package org.springframework.social.linkedin;
 
 import java.util.List;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.CommonsClientHttpRequestFactory;
 import org.springframework.social.oauth.OAuthSigningClientHttpRequestFactory;
 import org.springframework.social.oauth1.OAuth1RequestSignerFactory;
-import org.springframework.social.oauth1.ScribeOAuth1RequestSigner;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,7 +23,7 @@ import org.springframework.web.client.RestTemplate;
  */
 public class LinkedInTemplate implements LinkedInOperations {
 
-	private final RestOperations restOperations;
+	RestOperations restOperations;
 
 	/**
 	 * Creates a new LinkedInTemplate given the minimal amount of information
@@ -57,17 +55,8 @@ public class LinkedInTemplate implements LinkedInOperations {
 		return getUserProfile().getPublicProfileUrl();
 	}
 
-	public void updateStatus(String status) {
-		// TODO: There's no reason not to support this...come back to this when
-		// I have opportunity to implement it
-		throw new UnsupportedOperationException("Status update not supported for LinkedIn");
-	}
-
 	public LinkedInProfile getUserProfile() {
-		ResponseEntity<LinkedInProfile> response = restOperations.getForEntity(GET_CURRENT_USER_INFO,
-				LinkedInProfile.class);
-
-		return response.getBody();
+		return restOperations.getForObject(GET_CURRENT_USER_INFO, LinkedInProfile.class);
 	}
 
 	public List<LinkedInProfile> getConnections() {
@@ -76,6 +65,6 @@ public class LinkedInTemplate implements LinkedInOperations {
 		return connections.getConnections();
 	}
 
-	private static final String GET_CURRENT_USER_INFO = "https://api.linkedin.com/v1/people/~:public";
+	static final String GET_CURRENT_USER_INFO = "https://api.linkedin.com/v1/people/~:public";
 
 }

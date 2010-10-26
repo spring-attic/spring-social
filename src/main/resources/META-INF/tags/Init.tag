@@ -3,7 +3,7 @@
 <%@ attribute name="apiKey" required="false" %>
 
 <c:if test="${empty apiKey}">
-	<s:eval expression="@facebookAccountProvider.apiKey" var="apiKey" />
+	<s:eval expression="@facebookProvider.apiKey" var="apiKey" />
 </c:if>
 
 <div id='fb-root'></div>

@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "connections")
 public class LinkedInConnections {
 	@XmlElement(name = "person")
-	private List<LinkedInProfile> connections;
+	List<LinkedInProfile> connections;
 
 	/**
 	 * Retrieves the list of connected profiles.

@@ -12,27 +12,27 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "person")
 public class LinkedInProfile {
 	@XmlElement
-	private String id;
+	String id;
 
 	@XmlElement(name = "first-name")
-	private String firstName;
+	String firstName;
 
 	@XmlElement(name = "last-name")
-	private String lastName;
+	String lastName;
 
 	@XmlElement
-	private String headline;
+	String headline;
 
 	@XmlElementWrapper(name = "site-standard-profile-request")
 	@XmlElement(name = "url")
-	private String[] standardProfileUrls;
+	String[] standardProfileUrls;
 
 	@XmlElementWrapper(name = "site-public-profile-request")
 	@XmlElement(name = "url")
-	private String[] publicProfileUrls;
+	String[] publicProfileUrls;
 
 	@XmlElement
-	private String industry;
+	String industry;
 
 	/**
 	 * The user's LinkedIn profile ID

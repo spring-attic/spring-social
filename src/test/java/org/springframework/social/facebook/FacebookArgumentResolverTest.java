@@ -15,12 +15,12 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 
 public class FacebookArgumentResolverTest {
-	private static final String APPLICATION_KEY = "APPLICATION_KEY";
+	private static final String API_KEY = "API_KEY";
 	private FacebookWebArgumentResolver resolver;
 
 	@Before
 	public void setup() {
-		resolver = new FacebookWebArgumentResolver(APPLICATION_KEY);
+		resolver = new FacebookWebArgumentResolver(API_KEY);
 	}
 
 	@Test
@@ -40,7 +40,7 @@ public class FacebookArgumentResolverTest {
 	@Test
 	public void resolveArgument_facebookCookieWithoutEntries() throws Exception {
 		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
-		httpServletRequest.setCookies(new Cookie("fbs_" + APPLICATION_KEY, "foo=bar&cat=feline"));
+		httpServletRequest.setCookies(new Cookie("fbs_" + API_KEY, "foo=bar&cat=feline"));
 		NativeWebRequest request = new ServletWebRequest(httpServletRequest);
 		Method method = FacebookArgumentResolverTest.class.getDeclaredMethod("annotatedMethod", String.class,
 				String.class, String.class);
@@ -58,7 +58,7 @@ public class FacebookArgumentResolverTest {
 	@Test
 	public void resolveArgument() throws Exception {
 		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
-		httpServletRequest.setCookies(new Cookie("fbs_" + APPLICATION_KEY, "uid=24680&access_token=a1b2c3d4%7Ce5f6"));
+		httpServletRequest.setCookies(new Cookie("fbs_" + API_KEY, "uid=24680&access_token=a1b2c3d4%7Ce5f6"));
 		NativeWebRequest request = new ServletWebRequest(httpServletRequest);
 		Method method = FacebookArgumentResolverTest.class.getDeclaredMethod("annotatedMethod", String.class,
 				String.class, String.class);
