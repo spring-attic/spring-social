@@ -67,20 +67,20 @@ public class Trip {
 	}
 
 	@JsonProperty("id")
-	private long id;
+	long id;
 
 	@JsonProperty("display_name")
-	private String displayName;
+	String displayName;
 
 	@JsonProperty("start_date")
-	private Date startDate;
+	Date startDate;
 
 	@JsonProperty("end_date")
-	private Date endDate;
+	Date endDate;
 
 	@JsonProperty("primary_location")
-	private String primaryLocation;
+	String primaryLocation;
 
 	@JsonProperty("relative_url")
-	private String tripPath;
+	String tripPath;
 }

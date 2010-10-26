@@ -8,7 +8,7 @@ public class TripItProfileResponse {
 	private long timestamp;
 
 	@JsonProperty("Profile")
-	private TripItProfile profile;
+	TripItProfile profile;
 
 	public long getTimestamp() {
 		return timestamp;

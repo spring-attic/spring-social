@@ -45,7 +45,6 @@ public class OAuth1RequestSignerFactory {
 	 */
 	public static OAuth1ClientRequestSigner getRequestSigner(String apiKey, String apiSecret, String accessToken,
 			String accessTokenSecret) {
-		System.out.println(s2OAuthPresent + " :: " + scribePresent);
 		if (s2OAuthPresent) {
 			return new S2OAuth1RequestSigner(apiKey, apiSecret, accessToken, accessTokenSecret);
 		} else if (scribePresent) {

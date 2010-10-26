@@ -70,20 +70,20 @@ public class TripItProfile {
 	}
 
 	@JsonProperty("@attributes")
-	private Map<String, String> attributes;
+	Map<String, String> attributes;
 
 	@JsonProperty("screen_name")
-	private String screenName;
+	String screenName;
 
 	@JsonProperty("public_display_name")
-	private String publicDisplayName;
+	String publicDisplayName;
 
 	@JsonProperty("home_city")
-	private String homeCity;
+	String homeCity;
 
 	@JsonProperty("company")
-	private String company;
+	String company;
 
 	@JsonProperty("profile_url")
-	private String profilePath;
+	String profilePath;
 }

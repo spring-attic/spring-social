@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.http.client.CommonsClientHttpRequestFactory;
 import org.springframework.social.oauth.OAuthSigningClientHttpRequestFactory;
 import org.springframework.social.oauth1.OAuth1RequestSignerFactory;
-import org.springframework.social.oauth1.ScribeOAuth1RequestSigner;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
@@ -23,7 +22,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Craig Walls
  */
 public class TripItTemplate implements TripItOperations {
-	private final RestOperations restOperations;
+	RestOperations restOperations;
 
 	/**
 	 * Constructs a TripItTemplate with the minimal amount of information
