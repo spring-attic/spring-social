@@ -48,7 +48,7 @@ import org.springframework.web.client.RestTemplate;
  */
 public class TwitterTemplate implements TwitterOperations {
 
-	private final RestOperations restOperations;
+	RestOperations restOperations;
 	private ResponseStatusCodeTranslator statusCodeTranslator;
 
 	/**
@@ -217,7 +217,7 @@ public class TwitterTemplate implements TwitterOperations {
 		}
 	}
 
-	private static final int DEFAULT_RESULTS_PER_PAGE = 50;
+	static final int DEFAULT_RESULTS_PER_PAGE = 50;
 
 	static final String VERIFY_CREDENTIALS_URL = "https://api.twitter.com/1/account/verify_credentials.json";
 	static final String FRIENDS_STATUSES_URL = "https://api.twitter.com/1/statuses/friends.json?screen_name={screen_name}";
