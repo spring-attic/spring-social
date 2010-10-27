@@ -19,11 +19,11 @@ import org.springframework.util.ClassUtils;
  * @author Craig Walls
  */
 public class OAuth1RequestSignerFactory {
-	private static final boolean s2OAuthPresent = ClassUtils
+	static boolean s2OAuthPresent = ClassUtils
 			.isPresent("org.springframework.security.oauth.consumer.CoreOAuthConsumerSupport",
 			OAuth1RequestSignerFactory.class.getClassLoader());
 
-	private static final boolean scribePresent = ClassUtils.isPresent(
+	static boolean scribePresent = ClassUtils.isPresent(
 			"org.scribe.builder.ServiceBuilder", OAuth1RequestSignerFactory.class.getClassLoader());
 
 	/**

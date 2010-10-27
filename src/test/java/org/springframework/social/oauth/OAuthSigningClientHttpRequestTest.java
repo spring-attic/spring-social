@@ -14,7 +14,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
@@ -25,7 +24,7 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 
 public class OAuthSigningClientHttpRequestTest {
-	private static final String TEST_AUTHORIZATION_HEADER = "test_authorization_header";
+	static final String TEST_AUTHORIZATION_HEADER = "test_authorization_header";
 
 	@Test
 	public void executeInternal() throws Exception {
@@ -85,15 +84,7 @@ public class OAuthSigningClientHttpRequestTest {
 		assertTrue(authorizationHeader.contains("&bar=199"));
 	}
 
-	private static class FakeSigner implements OAuthClientRequestSigner {
-		public void sign(ClientHttpRequest request, Map<String, String> bodyParameters) {
-			String parameterString = "";
-			for (String key : bodyParameters.keySet()) {
-				parameterString += "&" + key + "=" + bodyParameters.get(key);
-			}
-			request.getHeaders().add("Authorization", TEST_AUTHORIZATION_HEADER + parameterString);
-		}
-	}
+
 
 	private static class FakeRequest implements ClientHttpRequest {
 		private ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
