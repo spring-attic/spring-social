@@ -3,11 +3,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.social</groupId>
-	<artifactId>spring-social</artifactId>
+	<artifactId>spring-social-dist</artifactId>
 	<name>Spring Social</name>
-	<packaging>jar</packaging>
 	<version>1.0.0.BUILD-SNAPSHOT</version>
-
+	<packaging>pom</packaging>
+	<modules>
+		<module>spring-social-parent</module>
+		<module>spring-social-core</module>
+    </modules>
+    
 	<properties>
 		<java-version>1.5</java-version>
         <org.springframework-version>3.0.5.RELEASE</org.springframework-version>
@@ -65,125 +69,6 @@
 			<url>s3://maven.springframework.org/snapshot</url>
 		</snapshotRepository>
 	</distributionManagement>	
-	
-	<dependencies>
-	    <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>${org.springframework-version}</version>
-		</dependency>
-	    <dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
-			<version>${org.springframework-version}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-			<version>3.1</version>
-		</dependency>
-
-        <!-- Servlet -->
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-			<scope>provided</scope>
-		</dependency>
-
-		<!-- Jackson JSON Mapper -->
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<version>1.5.3</version>
-		</dependency>
-
-		<!-- Joda Date/Time -->
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-			<version>1.6</version>
-		</dependency>
-
-		<!-- Spring Security OAuth -->		
-		<dependency>
-			<groupId>org.springframework.security.oauth</groupId>
-			<artifactId>spring-security-oauth</artifactId>
-			<version>1.0.0.BUILD-SNAPSHOT</version>
-			<optional>true</optional>
-		</dependency>
-
-		<!-- Scribe -->
-		<dependency>
-			<groupId>org.scribe</groupId>
-			<artifactId>scribe</artifactId>
-			<version>1.0.6</version>
-			<optional>true</optional>
-		</dependency>				
-		
-		<!-- Test -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.7</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${org.springframework-version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.8.5</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
-	<repositories>
-		<!-- For testing against latest Spring snapshots -->
-		<repository>
-			<id>org.springframework.maven.snapshot</id>
-			<name>Spring Maven Snapshot Repository</name>
-			<url>http://maven.springframework.org/snapshot</url>
-			<releases><enabled>false</enabled></releases>			
-			<snapshots><enabled>true</enabled></snapshots>
-		</repository>
-		<!-- For Spring releases -->
-		<repository>
-			<id>org.springframework.maven.release</id>
-			<name>Spring Maven Release Repository</name>
-			<url>http://maven.springframework.org/release</url>
-			<snapshots><enabled>false</enabled></snapshots>			
-		</repository>
-		<!-- For developing against latest Spring milestones -->
-		<repository>
-			<id>org.springframework.maven.milestone</id>
-			<name>Spring Maven Milestone Repository</name>
-			<url>http://maven.springframework.org/milestone</url>
-			<snapshots><enabled>false</enabled></snapshots>		
-		</repository>
-		<repository>
-			<!-- necessary for org.springframework.build.aws.maven dependency -->
-			<id>repository.source.maven.release</id>
-			<name>SpringSource Maven Release Repository</name>
-			<url>http://repository.springsource.com/maven/bundles/release</url>
-		</repository>
-		<!-- For resolving Scribe dependency; temporary awaiting its arrival in central -->
-		<repository>
-			<id>org.springframework.maven.external</id>
-			<name>Spring Maven External Libraries Repository</name>
-			<url>http://maven.springframework.org/external</url>
-			<snapshots><enabled>false</enabled></snapshots>			
-		</repository>	
-		<repository>
-			<id>self.provided</id>
-			<name>Self-Provided Dependencies</name>
-			<url>file://${project.basedir}/lib</url>
-		</repository>
-	</repositories>
 	<build>
 		<extensions>
 			<extension>
@@ -286,11 +171,9 @@
 						</goals>
 						<phase>package</phase>
 						<configuration>
-							<!-- TODO: This isn't right...it's a javadoc:aggregate goal, not a property. 
-							See http://maven.apache.org/plugins/maven-javadoc-plugin/examples/aggregate.html
-							<javadoc:aggregate>true</javadoc:aggregate> -->
+							<javadoc:aggregate>true</javadoc:aggregate>
 							<breakiterator>true</breakiterator>
-							<header>Spring Mobile</header>
+							<header>Spring Social</header>
 							<source>1.5</source>
 							<quiet>true</quiet>
 							<javadocDirectory>${project.basedir}/src/main/javadoc</javadocDirectory>
@@ -300,11 +183,10 @@
 							<docfilessubdirs>true</docfilessubdirs>
 							<groups>
 								<group>
-									<title>Spring Social</title>
-									<packages>org.springframework.social:org.springframework.social.*</packages>
+									<title>Spring Social Core</title>
+									<packages>org.springframework.social:org.springframework.spring-social-core.*</packages>
 								</group>
 							</groups>
-							<excludePackageNames>org.springframework.social.samples</excludePackageNames>
 							<links>
 								<link>http://static.springframework.org/spring/docs/3.0.3.RELEASE/javadoc-api</link>
 								<link>http://java.sun.com/javase/6/docs/api</link>
@@ -370,4 +252,47 @@
 			</plugin>
 		</plugins>
 	</build>	
+	<repositories>
+		<!-- For testing against latest Spring snapshots -->
+		<repository>
+			<id>org.springframework.maven.snapshot</id>
+			<name>Spring Maven Snapshot Repository</name>
+			<url>http://maven.springframework.org/snapshot</url>
+			<releases><enabled>false</enabled></releases>			
+			<snapshots><enabled>true</enabled></snapshots>
+		</repository>
+		<!-- For Spring releases -->
+		<repository>
+			<id>org.springframework.maven.release</id>
+			<name>Spring Maven Release Repository</name>
+			<url>http://maven.springframework.org/release</url>
+			<snapshots><enabled>false</enabled></snapshots>			
+		</repository>
+		<!-- For developing against latest Spring milestones -->
+		<repository>
+			<id>org.springframework.maven.milestone</id>
+			<name>Spring Maven Milestone Repository</name>
+			<url>http://maven.springframework.org/milestone</url>
+			<snapshots><enabled>false</enabled></snapshots>		
+		</repository>
+		<repository>
+			<!-- necessary for org.springframework.build.aws.maven dependency -->
+			<id>repository.source.maven.release</id>
+			<name>SpringSource Maven Release Repository</name>
+			<url>http://repository.springsource.com/maven/bundles/release</url>
+		</repository>
+		<!-- For resolving Scribe dependency; temporary awaiting its arrival in central -->
+		<repository>
+			<id>org.springframework.maven.external</id>
+			<name>Spring Maven External Libraries Repository</name>
+			<url>http://maven.springframework.org/external</url>
+			<snapshots><enabled>false</enabled></snapshots>			
+		</repository>	
+		<repository>
+			<id>self.provided</id>
+			<name>Self-Provided Dependencies</name>
+			<url>file://${project.basedir}/lib</url>
+		</repository>
+	</repositories>
+	
 </project>
