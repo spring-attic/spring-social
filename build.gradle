@@ -31,7 +31,7 @@ apply plugin: 'idea'
 
 // used for artifact names, building doc upload urls, etc.
 description = 'Spring Social'
-abbreviation = 'SOC'
+abbreviation = 'SOCIAL'
 
 // -----------------------------------------------------------------------------
 // Configuration for all projects including this one (the root project)
