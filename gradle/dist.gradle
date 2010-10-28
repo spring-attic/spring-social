@@ -133,7 +133,7 @@ task uploadArchives(overwrite: true, dependsOn: distArchive) { // base plugin ad
             s3(accessKey: s3AccessKey, secretKey: s3SecretAccessKey) {
                 upload(bucketName: 'dist.springframework.org', file: distArchive.archivePath,
                         toFile: releaseType + "/${rootProject.abbreviation}/${distArchive.archiveName}", publicRead: 'true') {
-                    metadata(name: 'project.name', value: 'Spring Integration')
+                    metadata(name: 'project.name', value: 'Spring Social')
                     metadata(name: 'release.type', value: releaseType)
                     metadata(name: 'bundle.version', value: version)
                     metadata(name: 'package.file.name', value: distArchive.archiveName)

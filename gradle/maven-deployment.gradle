@@ -62,9 +62,7 @@ artifacts {
  * deployed to maven central.
  *
  * Gradle will generate Maven poms on-the-fly during the deployment process.
- * This process is customized to add ASL license information, and for projects
- * that have the erlangLicense property set to true, the Erlang License will be
- * added to the pom as well.
+ * This process is customized to add ASL license information.
  *
  * @author cbeams
  * @see 'mavenSyncRepoDir' in gradle.properties
