@@ -1,2 +1,4 @@
-target
+build
+**/build
 src/test/java/exploration
+.gradle
