@@ -146,6 +146,7 @@ public class TwitterTemplateTest {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	public void search_sinceAndMaxId() {
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("query", "Spring");
