@@ -16,7 +16,7 @@
 
 apply plugin: 'base'
 
-description = "Spring Integration Documentation"
+description = "Spring Social Documentation"
 
 task build(dependsOn: assemble) {
     group = 'Build'
@@ -47,7 +47,7 @@ task build(dependsOn: assemble) {
     options.links = ["http://static.springframework.org/spring/docs/3.0.x/javadoc-api"]
     options.overview = "${srcDir}/overview.html"
     options.docFilesSubDirs = true
-    title = "Spring Integration ${version} API"
+    title = "Spring Social ${version} API"
 
     // collect all the sources that will be included in the javadoc output
     source javaprojects.collect {project ->
