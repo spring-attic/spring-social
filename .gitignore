@@ -2,3 +2,5 @@ build
 **/build
 src/test/java/exploration
 .gradle
+**/.classpath
+**/.project
