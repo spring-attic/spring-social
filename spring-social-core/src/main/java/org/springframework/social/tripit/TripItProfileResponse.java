@@ -18,6 +18,9 @@ package org.springframework.social.tripit;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+/**
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TripItProfileResponse {
 	private long timestamp;

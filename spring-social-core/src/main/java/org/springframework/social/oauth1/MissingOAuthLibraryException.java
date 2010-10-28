@@ -17,6 +17,9 @@ package org.springframework.social.oauth1;
 
 import org.springframework.social.core.SocialException;
 
+/**
+ * @author Craig Walls
+ */
 public class MissingOAuthLibraryException extends SocialException {
     private static final long serialVersionUID = 1L;
 	

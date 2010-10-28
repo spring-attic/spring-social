@@ -20,6 +20,9 @@ import java.util.List;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+/**
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TripListResponse {
 	private long timestamp;
