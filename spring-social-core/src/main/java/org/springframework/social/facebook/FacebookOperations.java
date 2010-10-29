@@ -73,20 +73,14 @@ public interface FacebookOperations {
 	void updateStatus(String status);
 
 	/**
-	 * Posts a message to the current user's wall.
-	 * 
-	 * @param message
-	 *            The message to post
-	 */
-	void postToWall(String message);
-
-	/**
 	 * Posts a message to the current user's wall along with a link.
 	 * 
 	 * @param message
+	 *            The message to post
 	 * @param link
+	 *            A link to be included in the status update
 	 */
-	void postToWall(String message, FacebookLink link);
+	void updateStatus(String message, FacebookLink link);
 
 	/**
 	 * <p>

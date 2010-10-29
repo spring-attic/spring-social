@@ -83,10 +83,6 @@ public class FacebookTemplate implements FacebookOperations {
 		return "http://www.facebook.com/profile.php?id=" + getProfileId();
 	}
 
-	public void updateStatus(String status) {
-		postToWall(status);
-	}
-
 	public FacebookProfile getUserProfile() {
 		return restOperations.getForObject(OBJECT_URL + "?access_token={accessToken}", FacebookProfile.class, "me",
 				accessToken);
@@ -108,13 +104,13 @@ public class FacebookTemplate implements FacebookOperations {
 	    return friendIds;
     }
 	
-	public void postToWall(String message) {
+	public void updateStatus(String message) {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.set("message", message);
 		publish(CURRENT_USER, FEED, map);
 	}
 	
-	public void postToWall(String message, FacebookLink link) {
+	public void updateStatus(String message, FacebookLink link) {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.set("link", link.getLink());
 		map.set("name", link.getName());

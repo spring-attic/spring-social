@@ -133,7 +133,7 @@ public class FacebookTemplateTest {
 		String linkName = "SpringSource";
 		String linkCaption = "SpringSource Home Page";
 		String linkDescription = "SpringSource is the leader in Java application and infrastructure management.";
-		facebook.postToWall("Hello Facebook!", new FacebookLink(linkUrl, linkName, linkCaption, linkDescription));
+		facebook.updateStatus("Hello Facebook!", new FacebookLink(linkUrl, linkName, linkCaption, linkDescription));
 
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.set("message", "Hello Facebook!");

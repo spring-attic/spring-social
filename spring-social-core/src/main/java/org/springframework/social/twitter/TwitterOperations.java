@@ -33,13 +33,6 @@ public interface TwitterOperations {
 	 * 
 	 * @return the user's screen name at Twitter
 	 */
-	String getScreenName();
-
-	/**
-	 * Retrieves the user's Twitter screen name.
-	 * 
-	 * @return the user's screen name at Twitter
-	 */
 	String getProfileId();
 
 	/**
@@ -49,18 +42,7 @@ public interface TwitterOperations {
 	 *            The user's Twitter screen name
 	 * @return a list of user screen names
 	 */
-	List<String> getFollowed(String screenName);
-
-	/**
-	 * Updates the user's status.
-	 * 
-	 * @param message
-	 *            The status message
-	 * 
-	 * @throws SocialException
-	 *             if an error response is received from Twitter
-	 */
-	void tweet(String message);
+	List<String> getFriends(String screenName);
 
 	/**
 	 * Updates the user's status.

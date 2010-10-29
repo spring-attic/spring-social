@@ -112,19 +112,11 @@ public class TwitterTemplate implements TwitterOperations {
 	}
 
 	public String getProfileId() {
-		return getScreenName();
-	}
-
-	public void updateStatus(String status) {
-		tweet(status);
-	}
-
-	public String getScreenName() {
 		Map<?, ?> response = restOperations.getForObject(VERIFY_CREDENTIALS_URL, Map.class);
 		return (String) response.get("screen_name");
 	}
 
-	public List<String> getFollowed(String screenName) {
+	public List<String> getFriends(String screenName) {
 		@SuppressWarnings("unchecked")
 		List<Map<String, String>> response = restOperations.getForObject(FRIENDS_STATUSES_URL, List.class,
 				Collections.singletonMap("screen_name", screenName));
@@ -135,7 +127,7 @@ public class TwitterTemplate implements TwitterOperations {
 		return friends;
 	}
 
-	public void tweet(String message) {
+	public void updateStatus(String message) {
 		MultiValueMap<String, Object> tweetParams = new LinkedMultiValueMap<String, Object>();
 		tweetParams.add("status", message);
 		@SuppressWarnings("rawtypes")

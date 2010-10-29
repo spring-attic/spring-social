@@ -68,7 +68,7 @@ public class TwitterTemplateTest {
 		when(restOperations.getForObject(eq(FRIENDS_STATUSES_URL), eq(List.class), 
 				eq(singletonMap("screen_name", "habuma")))).thenReturn(friendsList);
 
-		List<String> followed = twitter.getFollowed("habuma");
+		List<String> followed = twitter.getFriends("habuma");
 		assertEquals(3, followed.size());
 		assertThat(followed, hasItem("kdonald"));
 		assertThat(followed, hasItem("royclarkson"));
