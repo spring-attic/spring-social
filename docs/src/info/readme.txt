@@ -1,8 +1,9 @@
 SPRING SOCIAL 1.0.0 M1 (OCT 29, 2010)
 -------------------------------------
-
 Spring Social is released under the terms of the Apache Software License, 
 Version 2.0 (see license.txt).
+
+Visit the Spring Social home at http://www.springsource.org/spring-social
 
 
 DISTRIBUTION CONTENTS:
@@ -10,7 +11,7 @@ DISTRIBUTION CONTENTS:
 The JARs are available in the 'bin' directory, and the source JARs are in 
 the 'src' directory.
 
-The javadoc is located in the 'docs' directory.
+The javadoc is located in the 'docs' directory. 
 
 
 EXAMPLE CODE:
