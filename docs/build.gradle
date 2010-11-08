@@ -128,7 +128,9 @@ uploadArchives {
             name = 'sshHost: ' + sshHost // used for debugging
             host = sshHost
             user = sshUsername
-            keyFile = sshPrivateKey as File
+            if (project.hasProperty('remoteSiteDir')) {
+                keyFile = sshPrivateKey as File
+            }
             addArtifactPattern "${remoteDocsDir}/${archive.archiveName}"
         }
     }
