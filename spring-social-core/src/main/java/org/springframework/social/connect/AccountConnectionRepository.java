@@ -23,14 +23,15 @@ package org.springframework.social.connect;
  */
 public interface AccountConnectionRepository {
 
-	void addConnection(Long accountId, String provider, OAuthToken accessToken, String providerAccountId, String providerProfileUrl);
+	void addConnection(Object accountId, String provider, OAuthToken accessToken, String providerAccountId,
+			String providerProfileUrl);
 
-	boolean isConnected(Long accountId, String provider);
+	boolean isConnected(Object accountId, String provider);
 
-	void disconnect(Long accountId, String provider);
+	void disconnect(Object accountId, String provider);
 
-	OAuthToken getAccessToken(Long accountId, String provider);
+	OAuthToken getAccessToken(Object accountId, String provider);
 
-	String getProviderAccountId(Long accountId, String provider);
+	String getProviderAccountId(Object accountId, String provider);
 
 }

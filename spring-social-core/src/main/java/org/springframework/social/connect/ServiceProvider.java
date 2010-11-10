@@ -80,37 +80,34 @@ public interface ServiceProvider<S> {
 	 * This method completes the OAuth-based account connection process.
 	 * {@link #getServiceOperations(Long)} may now be called to get and invoke the service provider's API.
 	 * The requestToken required during the connection handshake is no longer valid and cannot be reused.
-	 * @param accountId the member account identifier
 	 * @param requestToken the OAuth request token that was authorized by the member.
 	 */
-	void connect(Long accountId, AuthorizedRequestToken requestToken);
+	void connect(AuthorizedRequestToken requestToken);
 
 	/**
 	 * Records an existing connection between a member account and this service provider.
 	 * Use when the connection process happens outside of the control of this package; for example, in JavaScript.
-	 * @param accountId the member account identifier
 	 * @param accessToken the access token that was granted as a result of the connection
 	 * @param providerAccountId the id of the user in the provider's system; may be an assigned number or a user-selected screen name.
 	 */
-	void addConnection(Long accountId, String accessToken, String providerAccountId);
+	void addConnection(String accessToken, String providerAccountId);
 
 	/**
 	 * Returns true if the member account is connected to this provider, false otherwise.
 	 */
-	boolean isConnected(Long accountId);
+	boolean isConnected();
 
 	/**
 	 * Gets a handle to the API offered by this service provider.
 	 * This API may be used by the application to invoke the service on behalf of a member.
-	 * @param accountId the member account identifier (may be null, if so, only operations that require no authorization may be invoked) 
 	 */
-	S getServiceOperations(Long accountId);
+	S getServiceOperations();
 
 	/**
 	 * Sever the connection between the member account and this service provider.
 	 * Has no effect if no connection is established to begin with.
 	 */
-	void disconnect(Long accountId);
+	void disconnect();
 	
 	// additional finders
 
@@ -119,6 +116,6 @@ public interface ServiceProvider<S> {
 	 * May be an assigned internal identifier, such as a sequence number, or a user-selected screen name.
 	 * Generally unique across accounts registered with this provider.
 	 */
-	String getProviderAccountId(Long accountId);
+	String getProviderAccountId();
 
 }

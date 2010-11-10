@@ -40,19 +40,20 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 		this.encryptor = encryptor;
 	}
 
-	public void addConnection(Long accountId, String provider, OAuthToken accessToken, String providerAccountId, String providerProfileUrl) {
+	public void addConnection(Object accountId, String provider, OAuthToken accessToken, String providerAccountId,
+			String providerProfileUrl) {
 		jdbcTemplate.update(INSERT_ACCOUNT_CONNECTION, accountId, provider, encryptor.encrypt(accessToken.getValue()), encryptIfPresent(accessToken.getSecret()), providerAccountId, providerProfileUrl);
 	}
 
-	public boolean isConnected(Long accountId, String provider) {
+	public boolean isConnected(Object accountId, String provider) {
 		return jdbcTemplate.queryForInt(SELECT_ACCOUNT_CONNECTION_COUNT, accountId, provider) == 1;
 	}
 
-	public void disconnect(Long accountId, String provider) {
+	public void disconnect(Object accountId, String provider) {
 		jdbcTemplate.update(DELETE_ACCOUNT_CONNECTION, accountId, provider);
 	}
 
-	public OAuthToken getAccessToken(Long accountId, String provider) {
+	public OAuthToken getAccessToken(Object accountId, String provider) {
 		return jdbcTemplate.queryForObject(SELECT_ACCESS_TOKEN, new RowMapper<OAuthToken>() {
 			public OAuthToken mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return new OAuthToken(encryptor.decrypt(rs.getString("accessToken")), decryptIfPresent(rs.getString("secret")));
@@ -60,7 +61,7 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 		}, accountId, provider);
 	}
 
-	public String getProviderAccountId(Long accountId, String provider) {
+	public String getProviderAccountId(Object accountId, String provider) {
 		try {
 			return jdbcTemplate.queryForObject(SELECT_PROVIDER_ACCOUNT_ID, String.class, accountId, provider);
 		} catch (EmptyResultDataAccessException e) {

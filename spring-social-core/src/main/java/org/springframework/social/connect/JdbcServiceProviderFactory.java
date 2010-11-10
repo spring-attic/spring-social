@@ -20,7 +20,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.encrypt.StringEncryptor;
@@ -39,11 +38,14 @@ public class JdbcServiceProviderFactory implements ServiceProviderFactory {
 	private final StringEncryptor encryptor;
 	
 	private final JdbcAccountConnectionRepository connectionRepository;
+
+	private final AccountIdResolver accountIdResolver;
 	
-	@Autowired
-	public JdbcServiceProviderFactory(JdbcTemplate jdbcTemplate, StringEncryptor encryptor) {
+	public JdbcServiceProviderFactory(JdbcTemplate jdbcTemplate, StringEncryptor encryptor,
+			AccountIdResolver accountIdResolver) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.encryptor = encryptor;
+		this.accountIdResolver = accountIdResolver;
 		this.connectionRepository = new JdbcAccountConnectionRepository(jdbcTemplate, encryptor);
 	}
 
@@ -52,8 +54,9 @@ public class JdbcServiceProviderFactory implements ServiceProviderFactory {
 			public ServiceProvider<?> mapRow(ResultSet rs, int rowNum) throws SQLException {
 				ServiceProviderParameters parameters = parametersMapper.mapRow(rs, rowNum);
 				Class<? extends ServiceProvider<?>> implementation = getImplementationClass(rs.getString("implementation"));
-				Constructor<? extends ServiceProvider<?>> constructor = ClassUtils.getConstructorIfAvailable(implementation, ServiceProviderParameters.class, AccountConnectionRepository.class);
-				return BeanUtils.instantiateClass(constructor, parameters, connectionRepository);
+				Constructor<? extends ServiceProvider<?>> constructor = ClassUtils.getConstructorIfAvailable(
+						implementation, ServiceProviderParameters.class, AccountConnectionRepository.class, AccountIdResolver.class);
+				return BeanUtils.instantiateClass(constructor, parameters, connectionRepository, accountIdResolver);
 			}
 		}, name);
 	}
