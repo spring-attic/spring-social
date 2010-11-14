@@ -134,11 +134,29 @@ public class GreenhouseTemplate implements GreenhouseOperations {
 		return Arrays.asList(restOperations.exchange(baseUrl + SESSIONS_FOR_DAY_PATH, HttpMethod.GET,
 				new HttpEntity<Object>(jsonAcceptingHeaders), EventSession[].class, eventId, isoDate).getBody());
 	}
+	
+	public List<EventSession> getFavoriteSessions(long eventId) {
+		return Arrays.asList(restOperations.exchange(baseUrl + FAVORITE_SESSIONS_PATH, HttpMethod.GET,
+				new HttpEntity<Object>(jsonAcceptingHeaders), EventSession[].class, eventId).getBody());
+	}
+	
+	public List<EventSession> getConferenceFavoriteSessions(long eventId) {
+		return Arrays.asList(restOperations.exchange(baseUrl + CONFERENCE_FAVORITE_SESSIONS_PATH, HttpMethod.GET,
+				new HttpEntity<Object>(jsonAcceptingHeaders), EventSession[].class, eventId).getBody());
+	}
+	
+	public boolean updateFavoriteSession(long eventId, long sessionId) {
+		return restOperations.exchange(baseUrl + UPDATE_FAVORITE_SESSION_PATH, HttpMethod.PUT,
+				new HttpEntity<Object>(jsonAcceptingHeaders), Boolean.class, eventId, sessionId).getBody();
+	}
 
 
 	static final String DEFAULT_BASE_URL = "https://greenhouse.springsource.org";
 	static final String PROFILE_PATH = "/members/{id}";
 	static final String EVENTS_PATH = "/events";
 	static final String SESSIONS_FOR_DAY_PATH = "/events/{eventId}/sessions/{day}";
+	static final String FAVORITE_SESSIONS_PATH = "/events/{eventId}/sessions/favorites";
+	static final String CONFERENCE_FAVORITE_SESSIONS_PATH = "/events/{eventId}/favorites";
+	static final String UPDATE_FAVORITE_SESSION_PATH = "/events/{eventId}/sessions/{sessionId}/favorite";
 	private MultiValueMap<String, String> jsonAcceptingHeaders;
 }

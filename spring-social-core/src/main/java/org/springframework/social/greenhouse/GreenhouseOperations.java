@@ -59,7 +59,7 @@ public interface GreenhouseOperations {
 	 * @return a list of events that take place after the given time.
 	 */
 	List<Event> getEventsAfter(Date date);
-
+	
 	/**
 	 * Retrieves a list of sessions for an event that take place on a given day.
 	 * 
@@ -70,4 +70,34 @@ public interface GreenhouseOperations {
 	 * @return a list of sessions for the given event and day
 	 */
 	List<EventSession> getSessionsOnDay(long eventId, Date date);
+
+	/**
+	 * Retrieves a list of sessions marked as favorites by the user
+	 * 
+	 * @param eventId
+	 *            the ID of the event
+	 * @return a list of sessions marked as favorites
+	 */
+	List<EventSession> getFavoriteSessions(long eventId);
+	
+	/**
+	 * Retrieves a list of sessions marked as favorites by all users.
+	 * 
+	 * @param eventId
+	 *            the ID of the event
+	 * @return a list of sessions marked as favorites
+	 */
+	List<EventSession> getConferenceFavoriteSessions(long eventId);
+		
+	/**
+	 * Updates the favorite status for a session. If the session is not a favorite 
+	 * it is marked as a favorite.
+	 * 
+	 * @param eventId
+	 *            the ID of the event
+	 * @param sessionId
+	 *            the ID of the session
+	 * @return true if the session is a favorite, and false if it is not
+	 */
+	boolean updateFavoriteSession(long eventId, long sessionId);
 }
