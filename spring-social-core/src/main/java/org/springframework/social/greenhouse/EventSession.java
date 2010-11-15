@@ -101,6 +101,22 @@ public class EventSession {
 	public void setLeaders(List<Leader> leaders) {
 		this.leaders = leaders;
 	}
+	
+	public String getJoinedLeaders(String separator) {		
+		String s = "";
+		int size = leaders.size();
+		
+		for (int i = 0; i < size; i++) {
+			Leader leader = leaders.get(i);
+			s += leader.getName();
+			
+			if (i < size-1) {
+				s += separator;
+			}
+		}
+		
+		return s;
+	}
 
 	public static class Room {
 		@JsonProperty
