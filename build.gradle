@@ -13,25 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ import org.springframework.build.Version
 
 // -----------------------------------------------------------------------------
 // Main gradle build file for Spring Social
-//
-// - run `./gradlew(.bat) build` to kick off a complete compile-test-package
-//
+// @author Chris Beams
 // @author Craig Walls
 // -----------------------------------------------------------------------------
-
 
 // -----------------------------------------------------------------------------
 // Configuration for the root project
 // -----------------------------------------------------------------------------
-apply from: "$rootDir/gradle/version.gradle"
-apply plugin: 'idea'
-
-// used for artifact names, building doc upload urls, etc.
 description = 'Spring Social'
 abbreviation = 'SOCIAL'
+
+apply plugin: 'base'
+apply plugin: 'idea'
+
+def buildSrcDir = "$rootDir/buildSrc"
+apply from: "$buildSrcDir/wrapper.gradle"
+apply from: "$buildSrcDir/maven-root-pom.gradle"
 
 // -----------------------------------------------------------------------------
 // Configuration for all projects including this one (the root project)
@@ -47,17 +48,14 @@ allprojects {
     // milestone or release.
     // @see org.springframework.build.Version under buildSrc/ for more info
     // @see gradle.properties for the declaration of this property.
-    version = createVersion(springSocialVersion)
+    version = new Version(springSocialVersion)
 
     // default set of maven repositories to be used when resolving dependencies
     repositories {
-        mavenRepo urls: 'http://maven.springframework.org/snapshot'
-        mavenCentral()
         mavenRepo urls: 'http://maven.springframework.org/release'
         mavenRepo urls: 'http://maven.springframework.org/milestone'
-        mavenRepo urls: 'http://repository.springsource.com/maven/bundles/external'
-        mavenRepo urls: 'http://repository.springsource.com/maven/bundles/release'
-        mavenRepo urls: 'http://repository.springsource.com/maven/bundles/milestone'
+        mavenRepo urls: 'http://maven.springframework.org/snapshot'
+        mavenCentral()
     }
 }
 
@@ -89,10 +87,11 @@ configure(javaprojects) {
     libsBinDir = new File(libsDir, 'bin')
     libsSrcDir = new File(libsDir, 'src')
 
-    // all core projects should be OSGi-compliant bundles
-    // add the bundlor task to ensure proper manifests
-    // apply from: "$rootDir/gradle/bundlor.gradle"
-    apply from: "$rootDir/gradle/maven-deployment.gradle"
+    // add tasks for creating source jars and generating poms etc
+    apply from: "$buildSrcDir/maven-deployment.gradle"
+
+    // add tasks for finding and publishing .xsd files
+    apply from: "$buildSrcDir/schema-publication.gradle"
 
     commonsHttpClientVersion = '3.1'
     jacksonVersion = '1.5.3'
@@ -156,22 +155,12 @@ project('spring-social-core') {
     }
 }
 
-// add basic tasks like 'clean' and 'assemble' to the root project. e.g.: allows
-// running `gradle clean` from the root project and deleting the build directory
-apply plugin: 'base'
+// -----------------------------------------------------------------------------
+// Configuration for the docs subproject
+// -----------------------------------------------------------------------------
+project('docs') {
+    apply from: "$buildSrcDir/docs.gradle"
+}
 
-// add tasks like 'distArchive'
 apply from: "$rootDir/gradle/dist.gradle"
-
-// add tasks like 'snapshotDependencyCheck'
 apply from: "${rootDir}/gradle/checks.gradle"
-
-
-// -----------------------------------------------------------------------------
-// Import tasks related to releasing and managing the project
-// depending on the role played by the current user.
-//
-// @see gradle.properties for more information on roles
-// -----------------------------------------------------------------------------
-// add management tasks like `wrapper` for generating the gradlew* scripts
-apply from: "$rootDir/gradle/wrapper.gradle"
