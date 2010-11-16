@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<book xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="spring-social-reference"
+    xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+  <bookinfo>
+    <title>Spring Social Reference Manual</title>
+    <titleabbrev>Spring Social ${version}</titleabbrev>
+    <productname>Spring Social</productname>
+    <releaseinfo>${version}</releaseinfo>
+
+    <!-- TODO: this isn't showing up. -->
+    <mediaobject>
+      <imageobject role="fo">
+        <imagedata fileref="images/logo.png"
+          format="PNG" align="center"/>
+      </imageobject>
+      <imageobject role="html">
+        <imagedata fileref="images/logo.png" format="PNG" align="center"/>
+      </imageobject>
+    </mediaobject>
+    <!-- END TODO -->
+
+    <authorgroup>
+      <author>
+        <firstname>Keith</firstname>
+        <surname>Donald</surname>
+      </author>
+    </authorgroup>
+
+    <legalnotice><para>© SpringSource Inc., 2010</para></legalnotice>
+  </bookinfo>
+
+  <toc></toc>
+  
+  <part id="spring-social-introduction">
+    <title>Introducing the Spring Social project</title>
+    <partintro id="spring-social-intro">
+    	 <para>The Spring Social project simplifies the development of socialized applications.</para>
+    </partintro>
+    <xi:include href="./overview.xml"/>
+  </part>
+  
+</book>
