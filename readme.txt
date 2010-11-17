@@ -7,7 +7,12 @@ To check out the project and build from source, do the following:
 
 Note: the --recursive switch above is important, as spring-social uses
 git submodules, which must themselves be cloned and initialized. If --recursive
-is omitted, doing so becomes a multi-step process.
+is omitted, doing so becomes a multi-step process. 
+
+If you've already cloned the Spring-Social repository without the --recursive
+switch, you'll need to pull the submodules with the following steps:
+
+ git submodule update --init
 
 If you encounter heap space errors during the build, increase the heap size for
 gradle:
