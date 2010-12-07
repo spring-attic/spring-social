@@ -13,14 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.springframework.security.encrypt;
 
-rootProject.name = 'spring-social'
+/**
+ * Service interface for symmetic string encryption.
+ * @author Keith Donald
+ */
+public interface StringEncryptor {
 
-include 'docs'
-include 'spring-social-connect'
-include 'spring-social-core'
-include 'spring-social-facebook'
-include 'spring-social-linkedin'
-include 'spring-social-oauth'
-include 'spring-social-tripit'
-include 'spring-social-twitter'
+	/**
+	 * Encrypt the text string.
+	 */
+	String encrypt(String string);
+
+	/**
+	 * Decrypt the encrypted string.
+	 */
+	String decrypt(String encrypted);
+	
+}

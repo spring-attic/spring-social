@@ -148,6 +148,18 @@ project('spring-social-core') {
     }
 }
 
+project('spring-social-connect') {
+    description = 'Spring Social Connect'
+    dependencies {
+        compile "org.springframework:spring-jdbc:$springVersion"
+        compile project(':spring-social-core')
+        compile project(':spring-social-facebook') { optional = true }
+        compile project(':spring-social-linkedin') { optional = true }
+        compile project(':spring-social-tripit') { optional = true }
+        compile project(':spring-social-twitter') { optional = true }
+    }
+}
+
 project('spring-social-facebook') {
     description = 'Spring Social Facebook'
     dependencies {
