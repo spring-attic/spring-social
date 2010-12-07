@@ -1,6 +1,6 @@
 build
 **/build
-src/test/java/exploration
+**/src/test/java/exploration
 .gradle
 spring-social-core/src/test/java/exploration
 **/.classpath

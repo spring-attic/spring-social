@@ -145,15 +145,57 @@ project('spring-social-core') {
     description = 'Spring Social Core'
     dependencies {
         compile "org.springframework:spring-web:$springVersion"
-        compile "org.springframework:spring-jdbc:$springVersion"
-        compile "commons-httpclient:commons-httpclient:$commonsHttpClientVersion"
-        compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
-        compile ("org.springframework.security.oauth:spring-security-oauth:$s2OAuthVersion") { optional = true }
-        compile ("org.scribe:scribe:$scribeVersion") { optional = true }
-        compile "joda-time:joda-time:$jodaVersion"
-        compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
     }
 }
+
+project('spring-social-facebook') {
+    description = 'Spring Social Facebook'
+    dependencies {
+        compile "commons-httpclient:commons-httpclient:$commonsHttpClientVersion"
+        compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
+        compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+        compile project(':spring-social-core')
+        compile project(':spring-social-oauth')
+    }
+}
+
+project('spring-social-linkedin') {
+    description = 'Spring Social LinkedIn'
+    dependencies {
+        compile "commons-httpclient:commons-httpclient:$commonsHttpClientVersion"
+        compile project(':spring-social-core')
+        compile project(':spring-social-oauth')
+    }
+}
+
+project('spring-social-oauth') {
+    description = 'Spring Social OAuth'
+    dependencies {
+        compile "commons-httpclient:commons-httpclient:$commonsHttpClientVersion"
+        compile ("org.scribe:scribe:$scribeVersion") { optional = true }
+        compile ("org.springframework.security.oauth:spring-security-oauth:$s2OAuthVersion") { optional = true }
+        compile project(':spring-social-core')
+    }
+}
+
+project('spring-social-tripit') {
+    description = 'Spring Social TripIt'
+    dependencies {
+        compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+        compile project(':spring-social-core')
+        compile project(':spring-social-oauth')
+    }
+}
+
+project('spring-social-twitter') {
+    description = 'Spring Social Twitter'
+    dependencies {
+        compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+        compile project(':spring-social-core')
+        compile project(':spring-social-oauth')
+    }
+}
+
 
 // -----------------------------------------------------------------------------
 // Configuration for the docs subproject
