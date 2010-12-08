@@ -16,7 +16,6 @@
 package org.springframework.social.oauth1;
 
 import org.scribe.builder.api.DefaultApi10a;
-import org.scribe.extensions.linkedin.LinkedInBaseStringExtractorImpl;
 import org.scribe.extractors.BaseStringExtractor;
 
 /**
@@ -49,16 +48,5 @@ public class PreAuthorizedOAuthApi extends DefaultApi10a {
 	 */
 	public String getRequestTokenEndpoint() {
 		return null;
-	}
-
-	/**
-	 * Overridden to return a {@link LinkedInBaseStringExtractorImpl}, so that
-	 * tildes (~) will be escaped. LinkedIn's API requires this and there is no
-	 * apparent harm in using it with the other APIs.
-	 * 
-	 * @return an instance of {@link LinkedInBaseStringExtractorImpl}.
-	 */
-	public BaseStringExtractor getBaseStringExtractor() {
-		return new LinkedInBaseStringExtractorImpl();
 	}
 }
