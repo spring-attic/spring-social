@@ -5,3 +5,5 @@ build
 spring-social-core/src/test/java/exploration
 **/.classpath
 **/.project
+**/.settings
+**/bin
