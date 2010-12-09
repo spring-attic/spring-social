@@ -17,7 +17,6 @@ package org.springframework.social.connect.providers;
 
 import org.springframework.social.connect.AbstractServiceProvider;
 import org.springframework.social.connect.AccountConnectionRepository;
-import org.springframework.social.connect.AccountIdResolver;
 import org.springframework.social.connect.OAuthToken;
 import org.springframework.social.connect.ServiceProviderParameters;
 import org.springframework.social.linkedin.LinkedInOperations;
@@ -30,8 +29,8 @@ import org.springframework.social.linkedin.LinkedInTemplate;
 public final class LinkedInServiceProvider extends AbstractServiceProvider<LinkedInOperations> {
 	
 	public LinkedInServiceProvider(ServiceProviderParameters parameters,
-			AccountConnectionRepository connectionRepository, AccountIdResolver accountIdResolver) {
-		super(parameters, connectionRepository, accountIdResolver);
+			AccountConnectionRepository connectionRepository) {
+		super(parameters, connectionRepository);
 	}
 
 	protected LinkedInOperations createServiceOperations(OAuthToken accessToken) {

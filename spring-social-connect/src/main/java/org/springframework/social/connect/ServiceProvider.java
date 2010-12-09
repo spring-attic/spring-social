@@ -82,7 +82,7 @@ public interface ServiceProvider<S> {
 	 * The requestToken required during the connection handshake is no longer valid and cannot be reused.
 	 * @param requestToken the OAuth request token that was authorized by the member.
 	 */
-	void connect(AuthorizedRequestToken requestToken);
+	void connect(Long accountId, AuthorizedRequestToken requestToken);
 
 	/**
 	 * Records an existing connection between a member account and this service provider.
@@ -90,24 +90,24 @@ public interface ServiceProvider<S> {
 	 * @param accessToken the access token that was granted as a result of the connection
 	 * @param providerAccountId the id of the user in the provider's system; may be an assigned number or a user-selected screen name.
 	 */
-	void addConnection(String accessToken, String providerAccountId);
+	void addConnection(Long accountId, String accessToken, String providerAccountId);
 
 	/**
 	 * Returns true if the member account is connected to this provider, false otherwise.
 	 */
-	boolean isConnected();
+	boolean isConnected(Long accountId);
 
 	/**
 	 * Gets a handle to the API offered by this service provider.
 	 * This API may be used by the application to invoke the service on behalf of a member.
 	 */
-	S getServiceOperations();
+	S getServiceOperations(Long accountId);
 
 	/**
 	 * Sever the connection between the member account and this service provider.
 	 * Has no effect if no connection is established to begin with.
 	 */
-	void disconnect();
+	void disconnect(Long accountId);
 	
 	// additional finders
 
@@ -116,6 +116,6 @@ public interface ServiceProvider<S> {
 	 * May be an assigned internal identifier, such as a sequence number, or a user-selected screen name.
 	 * Generally unique across accounts registered with this provider.
 	 */
-	String getProviderAccountId();
+	String getProviderAccountId(Long accountId);
 
 }

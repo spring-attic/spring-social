@@ -17,7 +17,6 @@ package org.springframework.social.connect.providers;
 
 import org.springframework.social.connect.AbstractServiceProvider;
 import org.springframework.social.connect.AccountConnectionRepository;
-import org.springframework.social.connect.AccountIdResolver;
 import org.springframework.social.connect.OAuthToken;
 import org.springframework.social.connect.ServiceProviderParameters;
 import org.springframework.social.twitter.TwitterOperations;
@@ -31,8 +30,8 @@ import org.springframework.social.twitter.TwitterTemplate;
 public final class TwitterServiceProvider extends AbstractServiceProvider<TwitterOperations> {
 	
 	public TwitterServiceProvider(ServiceProviderParameters parameters,
-			AccountConnectionRepository connectionRepository, AccountIdResolver accountIdResolver) {
-		super(parameters, connectionRepository, accountIdResolver);
+ AccountConnectionRepository connectionRepository) {
+		super(parameters, connectionRepository);
 	}
 
 	protected TwitterOperations createServiceOperations(OAuthToken accessToken) {
