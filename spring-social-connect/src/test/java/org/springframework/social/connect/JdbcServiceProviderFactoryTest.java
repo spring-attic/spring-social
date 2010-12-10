@@ -26,7 +26,7 @@ public class JdbcServiceProviderFactoryTest {
 		db = new SpringSocialTestDatabaseBuilder().connectedAccount().testData(getClass()).getDatabase();
 		jdbcTemplate = new JdbcTemplate(db);
 		StringEncryptor encryptor = new SearchableStringEncryptor("secret", "5b8bd7612cdab5ed");
-		providerFactory = new JdbcServiceProviderFactory(jdbcTemplate, encryptor);
+		providerFactory = new JdbcServiceProviderFactory(jdbcTemplate, encryptor, new FakeAccountIdResolver());
 	}
 
 	@After

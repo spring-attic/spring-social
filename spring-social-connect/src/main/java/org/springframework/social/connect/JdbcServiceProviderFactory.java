@@ -38,10 +38,14 @@ public class JdbcServiceProviderFactory implements ServiceProviderFactory {
 	private final StringEncryptor encryptor;
 	
 	private final JdbcAccountConnectionRepository connectionRepository;
+
+	private final AccountIdResolver accountIdResolver;
 	
-	public JdbcServiceProviderFactory(JdbcTemplate jdbcTemplate, StringEncryptor encryptor) {
+	public JdbcServiceProviderFactory(JdbcTemplate jdbcTemplate, StringEncryptor encryptor,
+			AccountIdResolver accountIdResolver) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.encryptor = encryptor;
+		this.accountIdResolver = accountIdResolver;
 		this.connectionRepository = new JdbcAccountConnectionRepository(jdbcTemplate, encryptor);
 	}
 
@@ -51,8 +55,9 @@ public class JdbcServiceProviderFactory implements ServiceProviderFactory {
 				ServiceProviderParameters parameters = parametersMapper.mapRow(rs, rowNum);
 				Class<? extends ServiceProvider<?>> implementation = getImplementationClass(rs.getString("implementation"));
 				Constructor<? extends ServiceProvider<?>> constructor = ClassUtils.getConstructorIfAvailable(
-						implementation, ServiceProviderParameters.class, AccountConnectionRepository.class);
-				return BeanUtils.instantiateClass(constructor, parameters, connectionRepository);
+						implementation, ServiceProviderParameters.class, AccountConnectionRepository.class,
+						AccountIdResolver.class);
+				return BeanUtils.instantiateClass(constructor, parameters, connectionRepository, accountIdResolver);
 			}
 		}, name);
 	}

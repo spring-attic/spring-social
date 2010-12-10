@@ -23,12 +23,15 @@ public class JdbcAccountConnectionRepositoryTest {
 
 	private JdbcServiceProviderFactory providerFactory;
 
+	private FakeAccountIdResolver accountIdResolver;
+
 	@Before
 	public void setup() {
 		db = new SpringSocialTestDatabaseBuilder().connectedAccount().testData(getClass()).getDatabase();
 		jdbcTemplate = new JdbcTemplate(db);
 		StringEncryptor encryptor = new SearchableStringEncryptor("secret", "5b8bd7612cdab5ed");
-		providerFactory = new JdbcServiceProviderFactory(jdbcTemplate, encryptor);
+		accountIdResolver = new FakeAccountIdResolver();
+		providerFactory = new JdbcServiceProviderFactory(jdbcTemplate, encryptor, accountIdResolver);
 		serviceProvider = providerFactory.getServiceProvider("twitter", TwitterOperations.class);
 	}
 
@@ -41,50 +44,53 @@ public class JdbcAccountConnectionRepositoryTest {
 
 	@Test
 	public void addConnection() {
-		assertFalse(serviceProvider.isConnected(2L));
-		serviceProvider.addConnection(2L, "accessToken", "kdonald");
-		assertTrue(serviceProvider.isConnected(2L));
-		TwitterOperations api = serviceProvider.getServiceOperations(2L);
+		accountIdResolver.setAccountId(2L);
+		assertFalse(serviceProvider.isConnected());
+		serviceProvider.addConnection("accessToken", "kdonald");
+		assertTrue(serviceProvider.isConnected());
+		TwitterOperations api = serviceProvider.getServiceOperations();
 		assertNotNull(api);
 	}
 
 	@Test
 	public void connected() {
-		assertTrue(serviceProvider.isConnected(1L));
+		assertTrue(serviceProvider.isConnected());
 	}
 
 	@Test
 	public void notConnected() {
-		assertFalse(serviceProvider.isConnected(2L));
+		accountIdResolver.setAccountId(2L);
+		assertFalse(serviceProvider.isConnected());
 	}
 
 	@Test
 	public void getApi() {
-		TwitterOperations api = serviceProvider.getServiceOperations(1L);
+		TwitterOperations api = serviceProvider.getServiceOperations();
 		assertNotNull(api);
 	}
 
 	@Test
 	public void getApiNotConnected() {
-		TwitterOperations api = serviceProvider.getServiceOperations(2L);
+		accountIdResolver.setAccountId(2L);
+		TwitterOperations api = serviceProvider.getServiceOperations();
 		assertNotNull(api);
 	}
 
 	@Test
 	public void getConnectedAccountId() {
-		assertEquals("habuma", serviceProvider.getProviderAccountId(1L));
+		assertEquals("habuma", serviceProvider.getProviderAccountId());
 	}
 
 	@Test
 	public void getConnectedAccountIdNotConnected() {
-		assertNull(serviceProvider.getProviderAccountId(2L));
+		accountIdResolver.setAccountId(2L);
+		assertNull(serviceProvider.getProviderAccountId());
 	}
 
 	@Test
 	public void disconnect() {
-		assertTrue(serviceProvider.isConnected(1L));
-		serviceProvider.disconnect(1L);
-		assertFalse(serviceProvider.isConnected(1L));
+		assertTrue(serviceProvider.isConnected());
+		serviceProvider.disconnect();
+		assertFalse(serviceProvider.isConnected());
 	}
-
 }

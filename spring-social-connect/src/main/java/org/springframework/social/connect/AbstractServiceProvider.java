@@ -40,6 +40,8 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	private final ServiceProviderParameters parameters;
 
 	private final AccountConnectionRepository connectionRepository;
+
+	private final AccountIdResolver accountIdResolver;
 	
 	/**
 	 * Creates a ServiceProvider.
@@ -47,9 +49,10 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	 * @param connectionRepository a data access interface for managing account connection records
 	 */
 	public AbstractServiceProvider(ServiceProviderParameters parameters,
-			AccountConnectionRepository connectionRepository) {
+			AccountConnectionRepository connectionRepository, AccountIdResolver accountIdResolver) {
 		this.parameters = parameters;
 		this.connectionRepository = connectionRepository;
+		this.accountIdResolver = accountIdResolver;
 	}
 
 	// provider meta-data
@@ -81,44 +84,44 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		return parameters.getAuthorizeUrl().expand(requestToken).toString();
 	}
 
-	public void connect(Long accountId, AuthorizedRequestToken requestToken) {
+	public void connect(AuthorizedRequestToken requestToken) {
 		OAuthToken accessToken = getAccessToken(requestToken);
 		S serviceOperations = createServiceOperations(accessToken);
 		String providerAccountId = fetchProviderAccountId(serviceOperations);
-		connectionRepository.addConnection(accountId, getName(), accessToken,
+		connectionRepository.addConnection(accountIdResolver.resolveAccountId(), getName(), accessToken,
 				providerAccountId,
 				buildProviderProfileUrl(providerAccountId, serviceOperations));
 	}
 
-	public void addConnection(Long accountId, String accessToken, String providerAccountId) {
+	public void addConnection(String accessToken, String providerAccountId) {
 		OAuthToken oauthAccessToken = new OAuthToken(accessToken);
 		S serviceOperations = createServiceOperations(oauthAccessToken);
-		connectionRepository.addConnection(accountId, getName(), oauthAccessToken,
+		connectionRepository.addConnection(accountIdResolver.resolveAccountId(), getName(), oauthAccessToken,
 				providerAccountId,
 				buildProviderProfileUrl(providerAccountId, serviceOperations));
 	}
 
-	public boolean isConnected(Long accountId) {
-		return connectionRepository.isConnected(accountId, getName());
+	public boolean isConnected() {
+		return connectionRepository.isConnected(accountIdResolver.resolveAccountId(), getName());
 	}
 
-	public void disconnect(Long accountId) {
-		connectionRepository.disconnect(accountId, getName());
+	public void disconnect() {
+		connectionRepository.disconnect(accountIdResolver.resolveAccountId(), getName());
 	}
 	
 	@Transactional
-	public S getServiceOperations(Long accountId) {
-		if (accountId == null || !isConnected(accountId)) {
+	public S getServiceOperations() {
+		if (accountIdResolver.resolveAccountId() == null || !isConnected()) {
 			return createServiceOperations(null);
 		}
-		OAuthToken accessToken = connectionRepository.getAccessToken(accountId, getName());
+		OAuthToken accessToken = connectionRepository.getAccessToken(accountIdResolver.resolveAccountId(), getName());
 		return createServiceOperations(accessToken);
 	}
 
 	// additional finders
 	
-	public String getProviderAccountId(Long accountId) {
-		return connectionRepository.getProviderAccountId(accountId, getName());
+	public String getProviderAccountId() {
+		return connectionRepository.getProviderAccountId(accountIdResolver.resolveAccountId(), getName());
 	}
 
 	// subclassing hooks

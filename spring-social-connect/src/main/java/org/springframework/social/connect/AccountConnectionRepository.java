@@ -15,6 +15,8 @@
  */
 package org.springframework.social.connect;
 
+import java.io.Serializable;
+
 
 /**
  * Strategy for storing account connection information.
@@ -23,15 +25,15 @@ package org.springframework.social.connect;
  */
 public interface AccountConnectionRepository {
 
-	void addConnection(Object accountId, String provider, OAuthToken accessToken, String providerAccountId,
+	void addConnection(Serializable accountId, String provider, OAuthToken accessToken, String providerAccountId,
 			String providerProfileUrl);
 
-	boolean isConnected(Object accountId, String provider);
+	boolean isConnected(Serializable accountId, String provider);
 
-	void disconnect(Object accountId, String provider);
+	void disconnect(Serializable accountId, String provider);
 
-	OAuthToken getAccessToken(Object accountId, String provider);
+	OAuthToken getAccessToken(Serializable accountId, String provider);
 
-	String getProviderAccountId(Object accountId, String provider);
+	String getProviderAccountId(Serializable accountId, String provider);
 
 }

@@ -1,13 +1,8 @@
 package org.springframework.security.encrypt;
 
-import static org.springframework.security.encrypt.CipherUtils.doFinal;
-import static org.springframework.security.encrypt.CipherUtils.initCipher;
-import static org.springframework.security.encrypt.CipherUtils.newCipher;
-import static org.springframework.security.encrypt.CipherUtils.newSecretKey;
-import static org.springframework.security.encrypt.EncodingUtils.hexDecode;
-import static org.springframework.security.encrypt.EncodingUtils.hexEncode;
-import static org.springframework.security.encrypt.EncodingUtils.utf8Decode;
-import static org.springframework.security.encrypt.EncodingUtils.utf8Encode;
+import static org.springframework.security.encrypt.CipherUtils.*;
+import static org.springframework.security.encrypt.EncodingUtils.*;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
