@@ -80,6 +80,11 @@ public class TwitterTemplateTest {
 		testTweet(new ResponseEntity<Map>(emptyMap(), OK));
 	}
 
+	@Test
+	public void updateStatus_withLocation() {
+		testTweetWithLocation(new ResponseEntity<Map>(emptyMap(), OK));
+	}
+
 	@Test(expected = DuplicateTweetException.class)
 	public void updateStatus_duplicateTweet() {
 		testTweet(new ResponseEntity<Map>(singletonMap("error", DUPLICATE_STATUS_TEXT), FORBIDDEN));
@@ -209,6 +214,18 @@ public class TwitterTemplateTest {
 		when(restOperations.postForEntity(eq(TWEET_URL), eq(tweetParams), eq(Map.class))).thenReturn(response);
 
 		twitter.updateStatus("Hello Spring!");
+
+		verify(restOperations).postForEntity(eq(TWEET_URL), eq(tweetParams), eq(Map.class));
+	}
+
+	private void testTweetWithLocation(ResponseEntity<Map> response) {
+		MultiValueMap<String, Object> tweetParams = new LinkedMultiValueMap<String, Object>();
+		tweetParams.add("status", "Hello Spring!");
+		tweetParams.add("lat", "32.975");
+		tweetParams.add("long", "-96.72");
+		when(restOperations.postForEntity(eq(TWEET_URL), eq(tweetParams), eq(Map.class))).thenReturn(response);
+
+		twitter.updateStatus("Hello Spring!", new StatusDetails().setLocation(32.975f, -96.72f));
 
 		verify(restOperations).postForEntity(eq(TWEET_URL), eq(tweetParams), eq(Map.class));
 	}

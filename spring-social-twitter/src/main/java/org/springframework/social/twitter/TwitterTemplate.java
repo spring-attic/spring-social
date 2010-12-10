@@ -129,8 +129,22 @@ public class TwitterTemplate implements TwitterOperations {
 	}
 
 	public void updateStatus(String message) {
+		updateStatus(message, new StatusDetails());
+	}
+
+	public void updateStatus(String message, StatusDetails details) {
 		MultiValueMap<String, Object> tweetParams = new LinkedMultiValueMap<String, Object>();
 		tweetParams.add("status", message);
+
+		if (details.hasLocation()) {
+			tweetParams.add("lat", details.getLatitude().toString());
+			tweetParams.add("long", details.getLongitude().toString());
+		}
+
+		if (details.isDisplayCoordinates()) {
+			tweetParams.add("display_coordinates", "true");
+		}
+
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restOperations.postForEntity(TWEET_URL, tweetParams, Map.class);
 		handleResponseErrors(response);

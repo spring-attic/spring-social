@@ -56,6 +56,20 @@ public interface TwitterOperations {
 	void updateStatus(String status);
 
 	/**
+	 * Updates the user's status, including additional metadata concerning the
+	 * status.
+	 * 
+	 * @param status
+	 *            The status message
+	 * @param details
+	 *            Metadata pertaining to the status
+	 * 
+	 * @throws SocialException
+	 *             if an error response is received from Twitter
+	 */
+	void updateStatus(String status, StatusDetails details);
+
+	/**
 	 * Posts a retweet of an existing tweet.
 	 * 
 	 * @param tweetId
