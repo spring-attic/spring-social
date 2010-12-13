@@ -161,6 +161,15 @@ project('spring-social-connect') {
     }
 }
 
+project('spring-social-connect-web') {
+    description = 'Spring Social Connect Web'
+    dependencies {
+        compile "org.springframework:spring-web:$springVersion"
+        compile project(':spring-social-connect')
+        compile project(':spring-social-oauth')
+    }
+}
+
 project('spring-social-facebook') {
     description = 'Spring Social Facebook'
     dependencies {
