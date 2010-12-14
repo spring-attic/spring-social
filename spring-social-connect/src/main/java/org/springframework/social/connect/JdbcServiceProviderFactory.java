@@ -41,16 +41,20 @@ public class JdbcServiceProviderFactory implements ServiceProviderFactory {
 
 	private final AccountIdResolver accountIdResolver;
 	
+	private String serviceProviderByNameQuery;
+
 	public JdbcServiceProviderFactory(JdbcTemplate jdbcTemplate, StringEncryptor encryptor,
 			AccountIdResolver accountIdResolver) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.encryptor = encryptor;
 		this.accountIdResolver = accountIdResolver;
 		this.connectionRepository = new JdbcAccountConnectionRepository(jdbcTemplate, encryptor);
+
+		this.serviceProviderByNameQuery = SELECT_SERVICE_PROVIDER_BY_NAME;
 	}
 
 	public ServiceProvider<?> getServiceProvider(String name) {
-		return jdbcTemplate.queryForObject(SELECT_SERVICE_PROVIDER_BY_NAME, new RowMapper<ServiceProvider<?>>() {
+		return jdbcTemplate.queryForObject(serviceProviderByNameQuery, new RowMapper<ServiceProvider<?>>() {
 			public ServiceProvider<?> mapRow(ResultSet rs, int rowNum) throws SQLException {
 				ServiceProviderParameters parameters = parametersMapper.mapRow(rs, rowNum);
 				Class<? extends ServiceProvider<?>> implementation = getImplementationClass(rs.getString("implementation"));
@@ -66,6 +70,14 @@ public class JdbcServiceProviderFactory implements ServiceProviderFactory {
 	public <S> ServiceProvider<S> getServiceProvider(String name, Class<S> serviceType) {
 		ServiceProvider<?> provider = getServiceProvider(name);
 		return (ServiceProvider<S>) provider;
+	}
+
+	public void setServiceProviderByNameQuery(String serviceProviderByNameQuery) {
+		this.serviceProviderByNameQuery = serviceProviderByNameQuery;
+	}
+
+	public String getServiceProviderByNameQuery() {
+		return serviceProviderByNameQuery;
 	}
 
 	// internal helpers

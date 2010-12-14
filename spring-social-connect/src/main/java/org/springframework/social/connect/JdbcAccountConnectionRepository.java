@@ -39,6 +39,51 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 	public JdbcAccountConnectionRepository(JdbcTemplate jdbcTemplate, StringEncryptor encryptor) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.encryptor = encryptor;
+		this.providerAccountIdByMemberAndProviderQuery = SELECT_PROVIDER_ACCOUNT_ID;
+		this.countConnectionsQuery = SELECT_ACCOUNT_CONNECTION_COUNT;
+		this.insertAccountConnectionQuery = INSERT_ACCOUNT_CONNECTION;
+		this.deleteAccountConnectionQuery = DELETE_ACCOUNT_CONNECTION;
+		this.accessTokenByMemberAndProviderQuery = SELECT_ACCESS_TOKEN;
+	}
+
+	public String getProviderAccountIdByMemberAndProviderQuery() {
+		return providerAccountIdByMemberAndProviderQuery;
+	}
+
+	public void setProviderAccountIdByMemberAndProviderQuery(String providerAccountIdByMemberAndProviderQuery) {
+		this.providerAccountIdByMemberAndProviderQuery = providerAccountIdByMemberAndProviderQuery;
+	}
+
+	public String getCountConnectionsQuery() {
+		return countConnectionsQuery;
+	}
+
+	public void setCountConnectionsQuery(String countConnectionsQuery) {
+		this.countConnectionsQuery = countConnectionsQuery;
+	}
+
+	public String getInsertAccountConnectionQuery() {
+		return insertAccountConnectionQuery;
+	}
+
+	public void setInsertAccountConnectionQuery(String insertAccountConnectionQuery) {
+		this.insertAccountConnectionQuery = insertAccountConnectionQuery;
+	}
+
+	public String getDeleteAccountConnectionQuery() {
+		return deleteAccountConnectionQuery;
+	}
+
+	public void setDeleteAccountConnectionQuery(String deleteAccountConnectionQuery) {
+		this.deleteAccountConnectionQuery = deleteAccountConnectionQuery;
+	}
+
+	public String getAccessTokenByMemberAndProviderQuery() {
+		return accessTokenByMemberAndProviderQuery;
+	}
+
+	public void setAccessTokenByMemberAndProviderQuery(String accessTokenByMemberAndProviderQuery) {
+		this.accessTokenByMemberAndProviderQuery = accessTokenByMemberAndProviderQuery;
 	}
 
 	public void addConnection(Serializable accountId, String provider, OAuthToken accessToken,
@@ -48,15 +93,15 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 	}
 
 	public boolean isConnected(Serializable accountId, String provider) {
-		return jdbcTemplate.queryForInt(SELECT_ACCOUNT_CONNECTION_COUNT, accountId, provider) == 1;
+		return jdbcTemplate.queryForInt(countConnectionsQuery, accountId, provider) == 1;
 	}
 
 	public void disconnect(Serializable accountId, String provider) {
-		jdbcTemplate.update(DELETE_ACCOUNT_CONNECTION, accountId, provider);
+		jdbcTemplate.update(deleteAccountConnectionQuery, accountId, provider);
 	}
 
 	public OAuthToken getAccessToken(Serializable accountId, String provider) {
-		return jdbcTemplate.queryForObject(SELECT_ACCESS_TOKEN, new RowMapper<OAuthToken>() {
+		return jdbcTemplate.queryForObject(accessTokenByMemberAndProviderQuery, new RowMapper<OAuthToken>() {
 			public OAuthToken mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return new OAuthToken(encryptor.decrypt(rs.getString("accessToken")), decryptIfPresent(rs.getString("secret")));
 			}
@@ -65,7 +110,8 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 
 	public String getProviderAccountId(Serializable accountId, String provider) {
 		try {
-			return jdbcTemplate.queryForObject(SELECT_PROVIDER_ACCOUNT_ID, String.class, accountId, provider);
+			return jdbcTemplate.queryForObject(providerAccountIdByMemberAndProviderQuery, String.class, accountId,
+					provider);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
@@ -81,14 +127,16 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 		return string != null ? encryptor.decrypt(string) : null;
 	}
 	
+	private String providerAccountIdByMemberAndProviderQuery;
+	private String countConnectionsQuery;
+	private String insertAccountConnectionQuery;
+	private String deleteAccountConnectionQuery;
+	private String accessTokenByMemberAndProviderQuery;
+
 	private static final String SELECT_PROVIDER_ACCOUNT_ID = "select accountId from AccountConnection where member = ? and provider = ?";
-
 	private static final String SELECT_ACCOUNT_CONNECTION_COUNT = "select exists(select 1 from AccountConnection where member = ? and provider = ?)";
-
 	private static final String INSERT_ACCOUNT_CONNECTION = "insert into AccountConnection (member, provider, accessToken, secret, accountId, profileUrl) values (?, ?, ?, ?, ?, ?)";
-
 	private static final String DELETE_ACCOUNT_CONNECTION = "delete from AccountConnection where member = ? and provider = ?";
-
 	private static final String SELECT_ACCESS_TOKEN = "select accessToken, secret from AccountConnection where member = ? and provider = ?";
 
 }
