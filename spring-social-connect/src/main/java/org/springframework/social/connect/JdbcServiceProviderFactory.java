@@ -217,11 +217,33 @@ public class JdbcServiceProviderFactory implements ServiceProviderFactory {
 		return (ServiceProvider<S>) provider;
 	}
 
-	public void setServiceProviderByNameQuery(String serviceProviderByNameQuery) {
-		this.serviceProviderQuery = serviceProviderByNameQuery;
+	/**
+	 * <p>
+	 * Overrides the default query for selecting a service provider
+	 * </p>
+	 * 
+	 * <p>
+	 * The default query is:
+	 * </p>
+	 * 
+	 * <code>
+	 * select name, displayName, implementation, apiKey, secret, appId, requestTokenUrl, authorizeUrl, accessTokenUrl from ServiceProvider where name = ?
+	 * </code>
+	 * 
+	 * <p>
+	 * An overriding query should follow a similar form, taking a name as a
+	 * parameter and returning the name, displayName, fully-qualified classname
+	 * of the provider implementation, API key, API secret, application ID,
+	 * request token URL, authorization URL, and access token URL for the
+	 * provider.
+	 * 
+	 * @param serviceProviderQuery
+	 */
+	public void setServiceProviderQuery(String serviceProviderQuery) {
+		this.serviceProviderQuery = serviceProviderQuery;
 	}
 
-	public String getServiceProviderByNameQuery() {
+	public String getServiceProviderQuery() {
 		return serviceProviderQuery;
 	}
 

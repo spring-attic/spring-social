@@ -81,7 +81,7 @@ public class JdbcServiceProviderFactoryTest {
 		String testSql = "select something from somewhere where name=?";
 		JdbcServiceProviderFactory factory = new JdbcServiceProviderFactory(mockJdbcTemplate, encryptor,
 				new FakeAccountIdResolver());
-		factory.setServiceProviderByNameQuery(testSql);
+		factory.setServiceProviderQuery(testSql);
 		factory.getServiceProvider("foo");
 		verify(mockJdbcTemplate).queryForObject(eq(testSql), any(RowMapper.class), eq("foo"));
 	}
