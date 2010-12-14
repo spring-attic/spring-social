@@ -56,6 +56,6 @@ public interface TripItOperations {
 	 * 
 	 * @return the user's upcoming trips.
 	 */
-	List<Trip> getTrips();
+	List<Trip> getUpcomingTrips();
 
 }

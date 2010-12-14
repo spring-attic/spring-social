@@ -78,7 +78,7 @@ public class TripItTemplate implements TripItOperations {
 		return response.getProfile();
 	}
 
-	public List<Trip> getTrips() {
+	public List<Trip> getUpcomingTrips() {
 		return restOperations.getForObject("https://api.tripit.com/v1/list/trip/traveler/true/past/false?format=json",
 				TripListResponse.class).getTrips();
 	}

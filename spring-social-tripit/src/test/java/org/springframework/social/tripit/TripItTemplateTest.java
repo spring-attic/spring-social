@@ -87,7 +87,7 @@ public class TripItTemplateTest {
 		when(restOperations.getForObject("https://api.tripit.com/v1/list/trip/traveler/true/past/false?format=json",
 						TripListResponse.class)).thenReturn(response);
 
-		List<Trip> trips = tripIt.getTrips();
+		List<Trip> trips = tripIt.getUpcomingTrips();
 		assertThat(trips, hasItem(trip1));
 		assertThat(trips, hasItem(trip2));
 		assertEquals(123456789L, response.getTimestamp());
