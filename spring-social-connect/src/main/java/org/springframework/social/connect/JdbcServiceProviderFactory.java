@@ -41,7 +41,7 @@ public class JdbcServiceProviderFactory implements ServiceProviderFactory {
 
 	private final AccountIdResolver accountIdResolver;
 	
-	private String serviceProviderByNameQuery;
+	private String serviceProviderQuery;
 
 	public JdbcServiceProviderFactory(JdbcTemplate jdbcTemplate, StringEncryptor encryptor,
 			AccountIdResolver accountIdResolver) {
@@ -49,12 +49,157 @@ public class JdbcServiceProviderFactory implements ServiceProviderFactory {
 		this.encryptor = encryptor;
 		this.accountIdResolver = accountIdResolver;
 		this.connectionRepository = new JdbcAccountConnectionRepository(jdbcTemplate, encryptor);
+		this.connectionRepository.setAccessTokenQuery(JdbcAccountConnectionRepository.DEFAULT_ACCESS_TOKEN_QUERY);
+		this.connectionRepository.setConnectionExistsQuery(JdbcAccountConnectionRepository.DEFAULT_CONNECTION_EXISTS_QUERY);
+		this.connectionRepository.setCreateConnectionQuery(JdbcAccountConnectionRepository.DEFAULT_CREATE_CONNECTION_QUERY);
+		this.connectionRepository.setProviderAccountIdQuery(JdbcAccountConnectionRepository.DEFAULT_PROVIDER_ACCOUNT_ID_QUERY);
+		this.connectionRepository.setRemoveConnectionQuery(JdbcAccountConnectionRepository.DEFAULT_REMOVE_CONNECTION_QUERY);
+		this.serviceProviderQuery = DEFAULT_SERVICE_PROVIDER_QUERY;
+	}
 
-		this.serviceProviderByNameQuery = SELECT_SERVICE_PROVIDER_BY_NAME;
+	public String getProviderAccountIdQuery() {
+		return connectionRepository.getProviderAccountIdByMemberAndProviderQuery();
+	}
+
+	/**
+	 * <p>
+	 * Overrides the default query for selecting a user's provider account ID
+	 * given their local member ID and the provider ID.
+	 * </p>
+	 * 
+	 * <p>
+	 * The default query is:
+	 * </p>
+	 * 
+	 * <code>
+	 * select accountId from AccountConnection where member = ? and provider = ?
+	 * </code>
+	 * 
+	 * <p>
+	 * An overriding query should follow a similar form, taking a local member
+	 * ID and a provider ID as parameters and returning the provider account ID
+	 * as a single column result.
+	 * 
+	 * @param providerAccountIdByMemberAndProviderQuery
+	 */
+	public void setProviderAccountIdQuery(String providerAccountIdQuery) {
+		connectionRepository.setProviderAccountIdQuery(providerAccountIdQuery);
+	}
+
+	public String getConnectionExistsQuery() {
+		return connectionRepository.getConnectionExistsQuery();
+	}
+
+	/**
+	 * <p>
+	 * Overrides the default query for establishing the existence of one or more
+	 * connections between the application and a provider.
+	 * </p>
+	 * 
+	 * <p>
+	 * The default query is:
+	 * </p>
+	 * 
+	 * <code>
+	 * select exists(select 1 from AccountConnection where member = ? and provider = ?)
+	 * </code>
+	 * 
+	 * <p>
+	 * An overriding query should follow a similar form, taking a local member
+	 * ID and a provider ID as parameters and returning true if one or more
+	 * connections exist.
+	 * 
+	 * @param providerAccountIdByMemberAndProviderQuery
+	 */
+	public void setConnectionExistsQuery(String connectionExistsQuery) {
+		connectionRepository.setConnectionExistsQuery(connectionExistsQuery);
+	}
+
+	public String getCreateConnectionQuery() {
+		return connectionRepository.getCreateConnectionQuery();
+	}
+
+	/**
+	 * <p>
+	 * Overrides the default query for inserting a new connection.
+	 * </p>
+	 * 
+	 * <p>
+	 * The default query is:
+	 * </p>
+	 * 
+	 * <code>
+	 * insert into AccountConnection (member, provider, accessToken, secret, accountId, profileUrl) values (?, ?, ?, ?, ?, ?)
+	 * </code>
+	 * 
+	 * <p>
+	 * An overriding query should follow a similar form, taking a local member
+	 * ID, a provider ID, an access token, an access token secret, a provider
+	 * account ID, and a provider profile URL as parameters.
+	 * 
+	 * @param providerAccountIdByMemberAndProviderQuery
+	 */
+	public void setCreateConnectionQuery(String createConnectionQuery) {
+		connectionRepository.setCreateConnectionQuery(createConnectionQuery);
+	}
+
+	public String getRemoveConnectionQuery() {
+		return connectionRepository.getRemoveConnectionQuery();
+	}
+
+	/**
+	 * <p>
+	 * Overrides the default query for deleting a connection.
+	 * </p>
+	 * 
+	 * <p>
+	 * The default query is:
+	 * </p>
+	 * 
+	 * <code>
+	 * delete from AccountConnection where member = ? and provider = ?
+	 * </code>
+	 * 
+	 * <p>
+	 * An overriding query should follow a similar form, taking a local member
+	 * ID and a provider ID.
+	 * 
+	 * @param providerAccountIdByMemberAndProviderQuery
+	 */
+	public void setRemoveConnectionQuery(String removeConnectionQuery) {
+		connectionRepository.setRemoveConnectionQuery(removeConnectionQuery);
+	}
+
+	public String getAccessTokenQuery() {
+		return connectionRepository.getAccessTokenQuery();
+	}
+
+	/**
+	 * <p>
+	 * Overrides the default query for selecting an access token
+	 * </p>
+	 * 
+	 * <p>
+	 * The default query is:
+	 * </p>
+	 * 
+	 * <code>
+	 * select accessToken, secret from AccountConnection where member = ? and provider = ?
+	 * </code>
+	 * 
+	 * <p>
+	 * An overriding query should follow a similar form, taking a local member
+	 * ID and a provider ID and returning the access token and access token
+	 * secret.
+	 * 
+	 * @param providerAccountIdByMemberAndProviderQuery
+	 */
+	public void setAccessTokenQuery(String accessTokenQuery) {
+		connectionRepository.setAccessTokenQuery(accessTokenQuery);
 	}
 
 	public ServiceProvider<?> getServiceProvider(String name) {
-		return jdbcTemplate.queryForObject(serviceProviderByNameQuery, new RowMapper<ServiceProvider<?>>() {
+		return jdbcTemplate.queryForObject(serviceProviderQuery, new RowMapper<ServiceProvider<?>>() {
 			public ServiceProvider<?> mapRow(ResultSet rs, int rowNum) throws SQLException {
 				ServiceProviderParameters parameters = parametersMapper.mapRow(rs, rowNum);
 				Class<? extends ServiceProvider<?>> implementation = getImplementationClass(rs.getString("implementation"));
@@ -73,11 +218,11 @@ public class JdbcServiceProviderFactory implements ServiceProviderFactory {
 	}
 
 	public void setServiceProviderByNameQuery(String serviceProviderByNameQuery) {
-		this.serviceProviderByNameQuery = serviceProviderByNameQuery;
+		this.serviceProviderQuery = serviceProviderByNameQuery;
 	}
 
 	public String getServiceProviderByNameQuery() {
-		return serviceProviderByNameQuery;
+		return serviceProviderQuery;
 	}
 
 	// internal helpers
@@ -102,6 +247,5 @@ public class JdbcServiceProviderFactory implements ServiceProviderFactory {
 		}
 	};
 
-	private static final String SELECT_SERVICE_PROVIDER_BY_NAME = "select name, displayName, implementation, apiKey, secret, appId, requestTokenUrl, authorizeUrl, accessTokenUrl from ServiceProvider where name = ?";
-
+	private static final String DEFAULT_SERVICE_PROVIDER_QUERY = "select name, displayName, implementation, apiKey, secret, appId, requestTokenUrl, authorizeUrl, accessTokenUrl from ServiceProvider where name = ?";
 }
