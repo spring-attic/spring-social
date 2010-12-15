@@ -2,6 +2,8 @@ package org.springframework.social.connect;
 
 import static org.junit.Assert.*;
 
+import java.util.Collection;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,7 +80,7 @@ public class JdbcAccountConnectionRepositoryIntegrationTest {
 
 	@Test
 	public void getConnectedAccountId() {
-		assertEquals("habuma", serviceProvider.getProviderAccountId());
+		assertEquals("cwalls", serviceProvider.getProviderAccountId());
 	}
 
 	@Test
@@ -92,6 +94,12 @@ public class JdbcAccountConnectionRepositoryIntegrationTest {
 		assertTrue(serviceProvider.isConnected());
 		serviceProvider.disconnect();
 		assertFalse(serviceProvider.isConnected());
+	}
+
+	@Test
+	public void getConnections() {
+		Collection<AccountConnection> connections = serviceProvider.getConnections();
+		assertEquals(2, connections.size());
 	}
 
 }

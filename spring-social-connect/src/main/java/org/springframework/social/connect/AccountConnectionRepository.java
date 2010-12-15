@@ -16,6 +16,7 @@
 package org.springframework.social.connect;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 
 /**
@@ -36,4 +37,5 @@ public interface AccountConnectionRepository {
 
 	String getProviderAccountId(Serializable accountId, String provider);
 
+	Collection<AccountConnection> getAccountConnections(Serializable accountId, String provider);
 }

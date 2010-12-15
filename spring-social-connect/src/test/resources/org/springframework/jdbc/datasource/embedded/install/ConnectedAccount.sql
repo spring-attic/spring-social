@@ -15,6 +15,6 @@ create table AccountConnection (member bigint,
 					secret varchar, 
 					accountId varchar,	
 					profileUrl varchar,
-					primary key (member, provider, accessToken),
+					primary key (member, provider, accountId, accessToken),
 					foreign key (provider) references ServiceProvider(name));
 create index ProviderAccountKey on AccountConnection(accountId);

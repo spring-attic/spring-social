@@ -15,6 +15,8 @@
  */
 package org.springframework.social.connect;
 
+import java.util.Collection;
+
 
 /**
  * Models the provider of a service that local member accounts may connect to and invoke.
@@ -82,7 +84,7 @@ public interface ServiceProvider<S> {
 	 * The requestToken required during the connection handshake is no longer valid and cannot be reused.
 	 * @param requestToken the OAuth request token that was authorized by the member.
 	 */
-	void connect(AuthorizedRequestToken requestToken);
+	OAuthToken connect(AuthorizedRequestToken requestToken);
 
 	/**
 	 * Records an existing connection between a member account and this service provider.
@@ -98,14 +100,51 @@ public interface ServiceProvider<S> {
 	boolean isConnected();
 
 	/**
-	 * Gets a handle to the API offered by this service provider.
-	 * This API may be used by the application to invoke the service on behalf of a member.
+	 * <p>
+	 * Gets a handle to the API offered by this service provider. This API may
+	 * be used by the application to invoke the service on behalf of a member.
+	 * </p>
+	 * 
+	 * <p>
+	 * This method assumes that the user has established a connection with the
+	 * provider via the connect() method and will create the operations instance
+	 * based on that previously created connection.
+	 * </p>
 	 */
 	S getServiceOperations();
 
 	/**
-	 * Sever the connection between the member account and this service provider.
-	 * Has no effect if no connection is established to begin with.
+	 * <p>
+	 * Gets a handle to the API offered by this service provider for a given
+	 * access token. This API may be used by the application to invoke the
+	 * service on behalf of a member.
+	 * </p>
+	 * 
+	 * <p>
+	 * This method does not assume that a connection has been previously made
+	 * through the connect() method.
+	 * </p>
+	 * 
+	 * @param accessToken
+	 *            An access token through which the service operations will be
+	 *            granted authority to the provider.
+	 */
+	S getServiceOperations(OAuthToken accessToken);
+
+	/**
+	 * Retrieves all connections that the user has made with the provider.
+	 * Commonly, this collection would contain a single entry, but it is
+	 * possible that the user may have multiple profiles on a provider and has
+	 * created connections for all of them.
+	 * 
+	 * @return a collection of {@link AccountConnection}s that the user has
+	 *         established with the provider.
+	 */
+	Collection<AccountConnection> getConnections();
+
+	/**
+	 * Sever the connection between the member account and this service
+	 * provider. Has no effect if no connection is established to begin with.
 	 */
 	void disconnect();
 	

@@ -24,7 +24,7 @@ public class JdbcAccountConnectionRepositoryTest {
 		String customQuery = "select screenName from twitterAccounts where accountId = ? and provider = ?";
 		repository.setProviderAccountIdQuery(customQuery);
 		repository.getProviderAccountId("habuma", "twitter");
-		verify(jdbcTemplate).queryForObject(eq(customQuery), eq(String.class), eq("habuma"), eq("twitter"));
+		verify(jdbcTemplate).queryForList(eq(customQuery), eq(String.class), eq("habuma"), eq("twitter"));
 	}
 
 	@Test
@@ -33,7 +33,7 @@ public class JdbcAccountConnectionRepositoryTest {
 		String customQuery = "select token, secret from tokentable where accountId = ? and provider = ?";
 		repository.setAccessTokenQuery(customQuery);
 		repository.getAccessToken("habuma", "twitter");
-		verify(jdbcTemplate).queryForObject(eq(customQuery), any(RowMapper.class), eq("habuma"), eq("twitter"));
+		verify(jdbcTemplate).query(eq(customQuery), any(RowMapper.class), eq("habuma"), eq("twitter"));
 	}
 
 	@Test
@@ -61,5 +61,4 @@ public class JdbcAccountConnectionRepositoryTest {
 		verify(jdbcTemplate).update(eq(customQuery), eq(4321L), eq("linkedin"), eq("access_token"), eq("token_secret"),
 				eq("habuma"), eq("http://www.linkedin.com/habuma"));
 	}
-
 }

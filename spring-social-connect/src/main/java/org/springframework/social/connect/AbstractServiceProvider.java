@@ -15,6 +15,7 @@
  */
 package org.springframework.social.connect;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.scribe.extractors.BaseStringExtractorImpl;
@@ -84,13 +85,14 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		return parameters.getAuthorizeUrl().expand(requestToken).toString();
 	}
 
-	public void connect(AuthorizedRequestToken requestToken) {
+	public OAuthToken connect(AuthorizedRequestToken requestToken) {
 		OAuthToken accessToken = getAccessToken(requestToken);
 		S serviceOperations = createServiceOperations(accessToken);
 		String providerAccountId = fetchProviderAccountId(serviceOperations);
 		connectionRepository.addConnection(accountIdResolver.resolveAccountId(), getName(), accessToken,
 				providerAccountId,
 				buildProviderProfileUrl(providerAccountId, serviceOperations));
+		return accessToken;
 	}
 
 	public void addConnection(String accessToken, String providerAccountId) {
@@ -116,6 +118,14 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		}
 		OAuthToken accessToken = connectionRepository.getAccessToken(accountIdResolver.resolveAccountId(), getName());
 		return createServiceOperations(accessToken);
+	}
+
+	public S getServiceOperations(OAuthToken accessToken) {
+		return createServiceOperations(accessToken);
+	}
+
+	public Collection<AccountConnection> getConnections() {
+		return connectionRepository.getAccountConnections(accountIdResolver.resolveAccountId(), getName());
 	}
 
 	// additional finders
