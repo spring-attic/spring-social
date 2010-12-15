@@ -108,7 +108,9 @@ public interface ServiceProvider<S> {
 	 * <p>
 	 * This method assumes that the user has established a connection with the
 	 * provider via the connect() method and will create the operations instance
-	 * based on that previously created connection.
+	 * based on that previously created connection. In the case where the user
+	 * has established multiple connections with the provider, the first one
+	 * found will be used to create the service operations instance.
 	 * </p>
 	 */
 	S getServiceOperations();
@@ -143,11 +145,17 @@ public interface ServiceProvider<S> {
 	Collection<AccountConnection> getConnections();
 
 	/**
-	 * Sever the connection between the member account and this service
+	 * Severs all connections between the member account and this service
 	 * provider. Has no effect if no connection is established to begin with.
 	 */
 	void disconnect();
 	
+	/**
+	 * Severs a specific connection between the member account and this service
+	 * provider.
+	 */
+	void disconnect(String providerAccountId);
+
 	// additional finders
 
 	/**

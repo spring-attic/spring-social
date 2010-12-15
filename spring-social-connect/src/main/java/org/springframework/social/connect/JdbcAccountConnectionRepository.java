@@ -44,8 +44,9 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 		this.connectionExistsQuery = DEFAULT_CONNECTION_EXISTS_QUERY;
 		this.createConnectionQuery = DEFAULT_CREATE_CONNECTION_QUERY;
 		this.removeConnectionQuery = DEFAULT_REMOVE_CONNECTION_QUERY;
+		this.removeAllConnectionsQuery = DEFAULT_REMOVE_ALL_CONNECTIONS_QUERY;
 		this.accessTokenQuery = DEFAULT_ACCESS_TOKEN_QUERY;
-		this.setAccountConnectionsQuery(DEFAULT_ACCOUNT_CONNECTIONS_QUERY);
+		this.accountConnectionsQuery = DEFAULT_ACCOUNT_CONNECTIONS_QUERY;
 	}
 
 	public String getProviderAccountIdByMemberAndProviderQuery() {
@@ -148,6 +149,33 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 	 * </p>
 	 * 
 	 * <code>
+	 * delete from AccountConnection where member = ? and provider = ? and accountId = ?
+	 * </code>
+	 * 
+	 * <p>
+	 * An overriding query should follow a similar form, taking a local member
+	 * ID, a provider ID, and a provider account ID.
+	 * 
+	 * @param removeConnectionQuery
+	 */
+	public void setRemoveConnectionQuery(String removeConnectionQuery) {
+		this.removeConnectionQuery = removeConnectionQuery;
+	}
+
+	public String getRemoveAllConnectionsQuery() {
+		return removeAllConnectionsQuery;
+	}
+
+	/**
+	 * <p>
+	 * Overrides the default query for deleting all connections for a provider.
+	 * </p>
+	 * 
+	 * <p>
+	 * The default query is:
+	 * </p>
+	 * 
+	 * <code>
 	 * delete from AccountConnection where member = ? and provider = ?
 	 * </code>
 	 * 
@@ -157,8 +185,8 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 	 * 
 	 * @param removeConnectionQuery
 	 */
-	public void setRemoveConnectionQuery(String removeConnectionQuery) {
-		this.removeConnectionQuery = removeConnectionQuery;
+	public void setRemoveAllConnectionsQuery(String removeAllConnectionsQuery) {
+		this.removeAllConnectionsQuery = removeAllConnectionsQuery;
 	}
 
 	public String getAccessTokenQuery() {
@@ -189,8 +217,8 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 		this.accessTokenQuery = accessTokenQuery;
 	}
 
-	public void setAccountConnectionsQuery(String accountConnectionsQuery) {
-		this.accountConnectionsQuery = accountConnectionsQuery;
+	public String getAccountConnectionsQuery() {
+		return accountConnectionsQuery;
 	}
 
 	/**
@@ -215,8 +243,8 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 	 * 
 	 * @param accessTokenQuery
 	 */
-	public String getAccountConnectionsQuery() {
-		return accountConnectionsQuery;
+	public void setAccountConnectionsQuery(String accountConnectionsQuery) {
+		this.accountConnectionsQuery = accountConnectionsQuery;
 	}
 
 	public void addConnection(Serializable accountId, String provider, OAuthToken accessToken,
@@ -232,7 +260,11 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 	}
 
 	public void disconnect(Serializable accountId, String provider) {
-		jdbcTemplate.update(removeConnectionQuery, accountId, provider);
+		jdbcTemplate.update(removeAllConnectionsQuery, accountId, provider);
+	}
+
+	public void disconnect(Serializable accountId, String provider, String providerAccountId) {
+		jdbcTemplate.update(removeConnectionQuery, accountId, provider, providerAccountId);
 	}
 
 	public OAuthToken getAccessToken(Serializable accountId, String provider) {
@@ -278,13 +310,15 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 	private String connectionExistsQuery;
 	private String createConnectionQuery;
 	private String removeConnectionQuery;
+	private String removeAllConnectionsQuery;
 	private String accessTokenQuery;
 	private String accountConnectionsQuery;
 
 	static final String DEFAULT_PROVIDER_ACCOUNT_ID_QUERY = "select accountId from AccountConnection where member = ? and provider = ?";
 	static final String DEFAULT_CONNECTION_EXISTS_QUERY = "select exists(select 1 from AccountConnection where member = ? and provider = ?)";
 	static final String DEFAULT_CREATE_CONNECTION_QUERY = "insert into AccountConnection (member, provider, accessToken, secret, accountId, profileUrl) values (?, ?, ?, ?, ?, ?)";
-	static final String DEFAULT_REMOVE_CONNECTION_QUERY = "delete from AccountConnection where member = ? and provider = ?";
+	static final String DEFAULT_REMOVE_CONNECTION_QUERY = "delete from AccountConnection where member = ? and provider = ? and accountId = ?";
+	static final String DEFAULT_REMOVE_ALL_CONNECTIONS_QUERY = "delete from AccountConnection where member = ? and provider = ?";
 	static final String DEFAULT_ACCESS_TOKEN_QUERY = "select accessToken, secret from AccountConnection where member = ? and provider = ?";
-	private static final String DEFAULT_ACCOUNT_CONNECTIONS_QUERY = "select member, provider, accessToken, secret, accountId, profileUrl from AccountConnection where member = ? and provider = ?";
+	static final String DEFAULT_ACCOUNT_CONNECTIONS_QUERY = "select member, provider, accessToken, secret, accountId, profileUrl from AccountConnection where member = ? and provider = ?";
 }

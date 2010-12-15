@@ -45,9 +45,17 @@ public class JdbcAccountConnectionRepositoryTest {
 	}
 
 	@Test
-	public void disconnect() {
-		String customQuery = "delete from connections where member = ? and socialnetwork = ?";
+	public void disconnect_byProviderAccountId() {
+		String customQuery = "delete from connections where member = ? and socialnetwork = ? and profileId = ?";
 		repository.setRemoveConnectionQuery(customQuery);
+		repository.disconnect(1234L, "twitter", "superdude");
+		verify(jdbcTemplate).update(eq(customQuery), eq(1234L), eq("twitter"), eq("superdude"));
+	}
+
+	@Test
+	public void disconnect_all() {
+		String customQuery = "delete from connections where member = ? and socialnetwork = ?";
+		repository.setRemoveAllConnectionsQuery(customQuery);
 		repository.disconnect(1234L, "twitter");
 		verify(jdbcTemplate).update(eq(customQuery), eq(1234L), eq("twitter"));
 	}

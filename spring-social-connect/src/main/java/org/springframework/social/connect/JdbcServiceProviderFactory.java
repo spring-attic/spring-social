@@ -54,6 +54,10 @@ public class JdbcServiceProviderFactory implements ServiceProviderFactory {
 		this.connectionRepository.setCreateConnectionQuery(JdbcAccountConnectionRepository.DEFAULT_CREATE_CONNECTION_QUERY);
 		this.connectionRepository.setProviderAccountIdQuery(JdbcAccountConnectionRepository.DEFAULT_PROVIDER_ACCOUNT_ID_QUERY);
 		this.connectionRepository.setRemoveConnectionQuery(JdbcAccountConnectionRepository.DEFAULT_REMOVE_CONNECTION_QUERY);
+		this.connectionRepository
+				.setRemoveAllConnectionsQuery(JdbcAccountConnectionRepository.DEFAULT_REMOVE_ALL_CONNECTIONS_QUERY);
+		this.connectionRepository
+				.setAccountConnectionsQuery(JdbcAccountConnectionRepository.DEFAULT_ACCOUNT_CONNECTIONS_QUERY);
 		this.serviceProviderQuery = DEFAULT_SERVICE_PROVIDER_QUERY;
 	}
 
@@ -198,11 +202,67 @@ public class JdbcServiceProviderFactory implements ServiceProviderFactory {
 		connectionRepository.setAccessTokenQuery(accessTokenQuery);
 	}
 
+	public String getRemoveAllConnectionsQuery() {
+		return connectionRepository.getRemoveAllConnectionsQuery();
+	}
+
+	/**
+	 * <p>
+	 * Overrides the default query for deleting all connections for a provider.
+	 * </p>
+	 * 
+	 * <p>
+	 * The default query is:
+	 * </p>
+	 * 
+	 * <code>
+	 * delete from AccountConnection where member = ? and provider = ?
+	 * </code>
+	 * 
+	 * <p>
+	 * An overriding query should follow a similar form, taking a local member
+	 * ID and a provider ID.
+	 * 
+	 * @param removeConnectionQuery
+	 */
+	public void setRemoveAllConnectionsQuery(String removeAllConnectionsQuery) {
+		connectionRepository.setRemoveAllConnectionsQuery(removeAllConnectionsQuery);
+	}
+
+	public String getAccountConnectionsQuery() {
+		return connectionRepository.getAccountConnectionsQuery();
+	}
+
+	/**
+	 * <p>
+	 * Overrides the default query for selecting all account connections for a
+	 * provider.
+	 * </p>
+	 * 
+	 * <p>
+	 * The default query is:
+	 * </p>
+	 * 
+	 * <code>
+	 * select member, provider, accessToken, secret, accountId, profileUrl from AccountConnection where member = ? and provider = ?
+	 * </code>
+	 * 
+	 * <p>
+	 * An overriding query should follow a similar form, taking a local member
+	 * ID and a provider ID and returning the connection details, including the
+	 * member ID, provider ID, access token, access token secret, provider
+	 * account ID, and provider profile URL.
+	 * 
+	 * @param accessTokenQuery
+	 */
+	public void setAccountConnectionsQuery(String accountConnectionsQuery) {
+		connectionRepository.setAccountConnectionsQuery(accountConnectionsQuery);
+	}
 	public ServiceProvider<?> getServiceProvider(String name) {
 		return jdbcTemplate.queryForObject(serviceProviderQuery, new RowMapper<ServiceProvider<?>>() {
 			public ServiceProvider<?> mapRow(ResultSet rs, int rowNum) throws SQLException {
 				ServiceProviderParameters parameters = parametersMapper.mapRow(rs, rowNum);
-				Class<? extends ServiceProvider<?>> implementation = getImplementationClass(rs.getString("implementation"));
+				Class<? extends ServiceProvider<?>> implementation = getImplementationClass(rs.getString(3));
 				Constructor<? extends ServiceProvider<?>> constructor = ClassUtils.getConstructorIfAvailable(
 						implementation, ServiceProviderParameters.class, AccountConnectionRepository.class,
 						AccountIdResolver.class);
@@ -264,8 +324,9 @@ public class JdbcServiceProviderFactory implements ServiceProviderFactory {
 	
 	private RowMapper<ServiceProviderParameters> parametersMapper = new RowMapper<ServiceProviderParameters>() {
 		public ServiceProviderParameters mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return new ServiceProviderParameters(rs.getString("name"), rs.getString("displayName"), encryptor.decrypt(rs.getString("apiKey")), encryptor.decrypt(rs.getString("secret")),
-				rs.getLong("appId"), rs.getString("requestTokenUrl"), rs.getString("authorizeUrl"), rs.getString("accessTokenUrl"));
+			return new ServiceProviderParameters(rs.getString(1), rs.getString(2), encryptor.decrypt(rs.getString(4)),
+					encryptor.decrypt(rs.getString(5)), rs.getLong(6), rs.getString(7), rs.getString(8),
+					rs.getString(9));
 		}
 	};
 

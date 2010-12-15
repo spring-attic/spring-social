@@ -111,6 +111,10 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		connectionRepository.disconnect(accountIdResolver.resolveAccountId(), getName());
 	}
 	
+	public void disconnect(String providerAccountId) {
+		connectionRepository.disconnect(accountIdResolver.resolveAccountId(), getName());
+	}
+
 	@Transactional
 	public S getServiceOperations() {
 		if (accountIdResolver.resolveAccountId() == null || !isConnected()) {
