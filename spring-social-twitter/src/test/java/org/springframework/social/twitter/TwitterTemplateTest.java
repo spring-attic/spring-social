@@ -25,6 +25,7 @@ import static org.springframework.social.twitter.TwitterResponseStatusCodeTransl
 import static org.springframework.social.twitter.TwitterTemplate.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +119,65 @@ public class TwitterTemplateTest {
 	@Test(expected = AccountNotConnectedException.class)
 	public void retweet_unauthorized() {
 		testRetweet(new ResponseEntity<Map>(singletonMap("error", "who are you?"), UNAUTHORIZED));
+	}
+
+	@Test
+	public void getMentions() {
+		List<Map<String, Object>> resultList = createTimelineData();
+		when(restOperations.getForObject(eq(MENTIONS_URL), eq(List.class))).thenReturn(resultList);
+		List<Tweet> timeline = twitter.getMentions();
+		assertTimelineData(timeline);
+	}
+
+	@Test
+	public void getPublicTimeline() {
+		List<Map<String, Object>> resultList = createTimelineData();
+		when(restOperations.getForObject(eq(PUBLIC_TIMELINE_URL), eq(List.class))).thenReturn(resultList);
+		List<Tweet> timeline = twitter.getPublicTimeline();
+		assertTimelineData(timeline);
+	}
+
+	@Test
+	public void getHomeTimeline() {
+		List<Map<String, Object>> resultList = createTimelineData();
+		when(restOperations.getForObject(eq(HOME_TIMELINE_URL), eq(List.class))).thenReturn(resultList);
+		List<Tweet> timeline = twitter.getHomeTimeline();
+		assertTimelineData(timeline);
+	}
+
+	@Test
+	public void getFriendsTimeline() {
+		List<Map<String, Object>> resultList = createTimelineData();
+		when(restOperations.getForObject(eq(FRIENDS_TIMELINE_URL), eq(List.class))).thenReturn(resultList);
+		List<Tweet> timeline = twitter.getFriendsTimeline();
+		assertTimelineData(timeline);
+	}
+
+	@Test
+	public void getUserTimeline() {
+		List<Map<String, Object>> resultList = createTimelineData();
+		when(restOperations.getForObject(eq(USER_TIMELINE_URL), eq(List.class))).thenReturn(resultList);
+		List<Tweet> timeline = twitter.getUserTimeline();
+		assertTimelineData(timeline);
+	}
+
+	@Test
+	public void getUserTimeline_forScreenName() {
+		List<Map<String, Object>> resultList = createTimelineData();
+		when(restOperations.getForObject(eq(USER_TIMELINE_URL + "?screen_name={screenName}"), eq(List.class),
+						eq("habuma")))
+				.thenReturn(resultList);
+		List<Tweet> timeline = twitter.getUserTimeline("habuma");
+		assertTimelineData(timeline);
+	}
+
+	@Test
+	public void getUserTimeline_forUserId() {
+		List<Map<String, Object>> resultList = createTimelineData();
+		when(restOperations.getForObject(eq(USER_TIMELINE_URL + "?user_id={userId}"), eq(List.class), eq(1234L)))
+				.thenReturn(resultList);
+		List<Tweet> timeline = twitter.getUserTimeline(1234L);
+		assertTimelineData(timeline);
 	}
 
 	@Test
@@ -228,5 +288,36 @@ public class TwitterTemplateTest {
 		twitter.updateStatus("Hello Spring!", new StatusDetails().setLocation(32.975f, -96.72f));
 
 		verify(restOperations).postForEntity(eq(TWEET_URL), eq(tweetParams), eq(Map.class));
+	}
+
+	private void assertTimelineData(List<Tweet> timeline) {
+		assertEquals(1, timeline.size());
+		Tweet mention = timeline.get(0);
+		assertEquals(42, mention.getId());
+		assertEquals("Test Tweet", mention.getText());
+		assertEquals("habuma", mention.getFromUser());
+		assertEquals(1234, mention.getFromUserId());
+		assertEquals("http://www.twitter.com/images/foo.jpg", mention.getProfileImageUrl());
+		assertEquals("web", mention.getSource());
+		assertEquals(4321, mention.getToUserId().longValue());
+		Date createdAt = mention.getCreatedAt();
+		assertNotNull(createdAt);
+	}
+
+	private List<Map<String, Object>> createTimelineData() {
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap.put("id", 42L);
+		resultMap.put("text", "Test Tweet");
+		Map<String, Object> userMap = new HashMap<String, Object>();
+		userMap.put("screen_name", "habuma");
+		userMap.put("id", 1234L);
+		userMap.put("profile_image_url", "http://www.twitter.com/images/foo.jpg");
+		resultMap.put("user", userMap);
+		resultMap.put("source", "web");
+		resultMap.put("in_reply_to_user_id", 4321L);
+		resultMap.put("created_at", "Sun Dec 12 14:45:48 +0000 2010");
+		resultList.add(resultMap);
+		return resultList;
 	}
 }

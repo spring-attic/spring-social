@@ -148,6 +148,78 @@ public class TwitterTemplate implements TwitterOperations {
 		handleResponseErrors(response);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public List<Tweet> getMentions() {
+		List response = restOperations.getForObject(MENTIONS_URL, List.class);
+		List<Map<String, Object>> results = (List<Map<String, Object>>) response;
+
+		List<Tweet> tweets = new ArrayList<Tweet>();
+		for (Map<String, Object> item : results) {
+			tweets.add(populateTweetFromTimelineItem(item));
+		}
+
+		return tweets;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List<DirectMessage> getDirectMessagesReceived() {
+		ResponseEntity<List> response = restOperations.getForEntity(DIRECT_MESSAGES_URL, List.class);
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> results = (List<Map<String, Object>>) response.getBody();
+
+		List<DirectMessage> messages = new ArrayList<DirectMessage>();
+		for (Map<String, Object> item : results) {
+			DirectMessage message = new DirectMessage();
+			message.setId(Long.valueOf(String.valueOf(item.get("id"))));
+			message.setText(String.valueOf(item.get("text")));
+			message.setSenderId(Long.valueOf(String.valueOf(item.get("sender_id"))));
+			message.setSenderScreenName(String.valueOf(item.get("sender_screen_name")));
+			message.setRecipientId(Long.valueOf(String.valueOf(item.get("recipient_id"))));
+			message.setRecipientScreenName(String.valueOf(item.get("recipient_screen_name")));
+			message.setCreatedAt(toDate(ObjectUtils.nullSafeToString(item.get("created_at")), timelineDateFormat));
+			messages.add(message);
+		}
+		return messages;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List<Tweet> getPublicTimeline() {
+		List response = restOperations.getForObject(PUBLIC_TIMELINE_URL, List.class);
+		return extractTimelineTweetsFromResponse(response);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List<Tweet> getHomeTimeline() {
+		List response = restOperations.getForObject(HOME_TIMELINE_URL, List.class);
+		return extractTimelineTweetsFromResponse(response);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List<Tweet> getFriendsTimeline() {
+		List response = restOperations.getForObject(FRIENDS_TIMELINE_URL, List.class);
+		return extractTimelineTweetsFromResponse(response);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List<Tweet> getUserTimeline() {
+		List response = restOperations.getForObject(USER_TIMELINE_URL, List.class);
+		return extractTimelineTweetsFromResponse(response);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List<Tweet> getUserTimeline(String screenName) {
+		List response = restOperations.getForObject(USER_TIMELINE_URL + "?screen_name={screenName}",
+				List.class, screenName);
+		return extractTimelineTweetsFromResponse(response);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public List<Tweet> getUserTimeline(long userId) {
+		List response = restOperations.getForObject(USER_TIMELINE_URL + "?user_id={userId}",
+				List.class, userId);
+		return extractTimelineTweetsFromResponse(response);
+	}
+
 	public SearchResults search(String query) {
 		return search(query, 1, DEFAULT_RESULTS_PER_PAGE, 0, 0);
 	}
@@ -183,7 +255,7 @@ public class TwitterTemplate implements TwitterOperations {
 		List<Map<String, Object>> items = (List<Map<String, Object>>) resultsMap.get("results");
 		List<Tweet> tweets = new ArrayList<Tweet>(resultsMap.size());
 		for (Map<String, Object> item : items) {
-			tweets.add(populateTweet(item));
+			tweets.add(populateTweetFromSearchResults(item));
 		}
 
 		return buildSearchResults(resultsMap, tweets);
@@ -195,12 +267,38 @@ public class TwitterTemplate implements TwitterOperations {
 		return new SearchResults(tweets, maxId.longValue(), sinceId.longValue(), response.get("next_page") == null);
 	}
 
-	private Tweet populateTweet(Map<String, Object> item) {
+	@SuppressWarnings("rawtypes")
+	private List<Tweet> extractTimelineTweetsFromResponse(List response) {
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> results = (List<Map<String, Object>>) response;
+		List<Tweet> tweets = new ArrayList<Tweet>();
+		for (Map<String, Object> item : results) {
+			tweets.add(populateTweetFromTimelineItem(item));
+		}
+		return tweets;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Tweet populateTweetFromTimelineItem(Map<String, Object> item) {
+		Tweet tweet = new Tweet();
+		tweet.setId(Long.valueOf(String.valueOf(item.get("id"))));
+		tweet.setText(String.valueOf(item.get("text")));
+		tweet.setFromUser(String.valueOf(((Map<String, Object>) item.get("user")).get("screen_name")));
+		tweet.setFromUserId(Long.valueOf(String.valueOf(((Map<String, Object>) item.get("user")).get("id"))));
+		tweet.setProfileImageUrl(String.valueOf(((Map<String, Object>) item.get("user")).get("profile_image_url")));
+		tweet.setSource(String.valueOf(item.get("source")));
+		Object toUserId = item.get("in_reply_to_user_id");
+		tweet.setToUserId(toUserId != null ? Long.valueOf(String.valueOf(toUserId)) : null);
+		tweet.setCreatedAt(toDate(ObjectUtils.nullSafeToString(item.get("created_at")), timelineDateFormat));
+		return tweet;
+	}
+
+	private Tweet populateTweetFromSearchResults(Map<String, Object> item) {
 		Tweet tweet = new Tweet();
 		tweet.setId(NumberUtils.parseNumber(ObjectUtils.nullSafeToString(item.get("id")), Long.class));
 		tweet.setFromUser(ObjectUtils.nullSafeToString(item.get("from_user")));
 		tweet.setText(ObjectUtils.nullSafeToString(item.get("text")));
-		tweet.setCreatedAt(toDate(ObjectUtils.nullSafeToString(item.get("created_at"))));
+		tweet.setCreatedAt(toDate(ObjectUtils.nullSafeToString(item.get("created_at")), searchDateFormat));
 		tweet.setFromUserId(NumberUtils.parseNumber(ObjectUtils.nullSafeToString(item.get("from_user_id")), Long.class));
 		Object toUserId = item.get("to_user_id");
 		if (toUserId != null) {
@@ -212,9 +310,10 @@ public class TwitterTemplate implements TwitterOperations {
 		return tweet;
 	}
 
-	private DateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+	private DateFormat searchDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+	private DateFormat timelineDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH);
 
-	private Date toDate(String dateString) {
+	private Date toDate(String dateString, DateFormat dateFormat) {
 		try {
 			return dateFormat.parse(dateString);
 		} catch (ParseException e) {
@@ -232,9 +331,17 @@ public class TwitterTemplate implements TwitterOperations {
 
 	static final int DEFAULT_RESULTS_PER_PAGE = 50;
 
-	static final String VERIFY_CREDENTIALS_URL = "https://api.twitter.com/1/account/verify_credentials.json";
-	static final String FRIENDS_STATUSES_URL = "https://api.twitter.com/1/statuses/friends.json?screen_name={screen_name}";
-	static final String SEARCH_URL = "https://search.twitter.com/search.json?q={query}&rpp={rpp}&page={page}";
-	static final String TWEET_URL = "https://api.twitter.com/1/statuses/update.json";
-	static final String RETWEET_URL = "https://api.twitter.com/1/statuses/retweet/{tweet_id}.json";
+	static final String API_URL_BASE = "https://api.twitter.com/1/";
+	static final String SEARCH_API_URL_BASE = "https://search.twitter.com";
+	static final String VERIFY_CREDENTIALS_URL = API_URL_BASE + "account/verify_credentials.json";
+	static final String FRIENDS_STATUSES_URL = API_URL_BASE + "statuses/friends.json?screen_name={screen_name}";
+	static final String SEARCH_URL = SEARCH_API_URL_BASE + "/search.json?q={query}&rpp={rpp}&page={page}";
+	static final String TWEET_URL = API_URL_BASE + "statuses/update.json";
+	static final String RETWEET_URL = API_URL_BASE + "/statuses/retweet/{tweet_id}.json";
+	static final String MENTIONS_URL = API_URL_BASE + "statuses/mentions.json";
+	static final String DIRECT_MESSAGES_URL = API_URL_BASE + "direct_messages.json";
+	static final String PUBLIC_TIMELINE_URL = API_URL_BASE + "statuses/public_timeline.json";
+	static final String HOME_TIMELINE_URL = API_URL_BASE + "statuses/home_timeline.json";
+	static final String FRIENDS_TIMELINE_URL = API_URL_BASE + "statuses/friends_timeline.json";
+	static final String USER_TIMELINE_URL = API_URL_BASE + "statuses/user_timeline.json";
 }

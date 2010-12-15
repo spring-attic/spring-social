@@ -15,6 +15,7 @@
  */
 package org.springframework.social.twitter;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.social.core.SocialException;
@@ -79,6 +80,95 @@ public interface TwitterOperations {
 	 *             if an error response is received from Twitter
 	 */
 	void retweet(long tweetId);
+
+	/**
+	 * Retrieve the 20 most recent tweets that mention the authenticated user.
+	 * 
+	 * @return a collection of {@link Tweet} objects that mention the
+	 *         authenticated user.
+	 */
+	Collection<Tweet> getMentions();
+
+	/**
+	 * Retrieve the 20 most recently received direct messages for the
+	 * authenticating user.
+	 * 
+	 * @return a collection of {@link DirectMessage} with the authenticating
+	 *         user as the recipient.
+	 */
+	Collection<DirectMessage> getDirectMessagesReceived();
+
+	/**
+	 * <p>
+	 * Retrieves the 20 most recently posted tweets from the public timeline.
+	 * The public timeline is the timeline containing tweets from all Twitter
+	 * users. As this is the public timeline, authentication is not required to
+	 * use this method.
+	 * </p>
+	 * 
+	 * <p>
+	 * Note that Twitter caches public timeline results for 60 seconds. Calling
+	 * this method more frequently than that will count against rate limits and
+	 * will not return any new results.
+	 * </p>
+	 * 
+	 * @return a collection of {@link Tweet}s in the public timeline.
+	 */
+	Collection<Tweet> getPublicTimeline();
+
+	/**
+	 * <p>
+	 * Retrieves the 20 most recently posted tweets, including retweets, from
+	 * the authenticating user's home timeline. The home timeline includes
+	 * tweets from the user's timeline and the timeline of anyone that they
+	 * follow.
+	 * </p>
+	 * 
+	 * @return a collection of {@link Tweet}s in the authenticating user's home
+	 *         timeline.
+	 */
+	Collection<Tweet> getHomeTimeline();
+
+	/**
+	 * <p>
+	 * Retrieves the 20 most recently posted tweets, excluding retweets, from
+	 * the authenticating user's home timeline. The friends timeline includes
+	 * tweets from the user's timeline and the timeline of anyone that they
+	 * follow, with the exception of any retweets.
+	 * </p>
+	 * 
+	 * @return a collection of {@link Tweet}s in the authenticating user's
+	 *         friends timeline.
+	 */
+	Collection<Tweet> getFriendsTimeline();
+
+	/**
+	 * Retrieves the 20 most recent tweets posted by the authenticating user.
+	 * 
+	 * @return a collection of {@link Tweet}s that have been posted by the
+	 *         authenticating user.
+	 */
+	Collection<Tweet> getUserTimeline();
+
+	/**
+	 * Retrieves the 20 most recent tweets posted by the given user.
+	 * 
+	 * @param screenName
+	 *            The screen name of the user whose timeline is being requested.
+	 * @return a collection of {@link Tweet}s from the specified user's
+	 *         timeline.
+	 */
+	Collection<Tweet> getUserTimeline(String screenName);
+
+	/**
+	 * Retrieves the 20 most recent tweets posted by the given user.
+	 * 
+	 * @param userId
+	 *            The user ID of the user whose timeline is being requested.
+	 * @return a collection of {@link Tweet}s from the specified user's
+	 *         timeline.
+	 */
+	Collection<Tweet> getUserTimeline(long userId);
 
 	/**
 	 * Searches Twitter, returning the first 50 matching {@link Tweet}s
