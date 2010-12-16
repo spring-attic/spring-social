@@ -35,6 +35,8 @@ public interface AccountConnectionRepository {
 
 	OAuthToken getAccessToken(Serializable accountId, String provider);
 
+	OAuthToken getAccessToken(Serializable accountId, String provider, String providerAccountId);
+
 	String getProviderAccountId(Serializable accountId, String provider);
 
 	Collection<AccountConnection> getAccountConnections(Serializable accountId, String provider);

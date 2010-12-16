@@ -128,6 +128,12 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		return createServiceOperations(accessToken);
 	}
 
+	public S getServiceOperations(String providerAccountId) {
+		OAuthToken accessToken = connectionRepository.getAccessToken(accountIdResolver.resolveAccountId(), getName(),
+				providerAccountId);
+		return createServiceOperations(accessToken);
+	}
+
 	public Collection<AccountConnection> getConnections() {
 		return connectionRepository.getAccountConnections(accountIdResolver.resolveAccountId(), getName());
 	}

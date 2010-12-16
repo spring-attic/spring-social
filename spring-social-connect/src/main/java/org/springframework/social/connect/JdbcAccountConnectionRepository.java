@@ -32,7 +32,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class JdbcAccountConnectionRepository implements AccountConnectionRepository {
-
 	private final JdbcTemplate jdbcTemplate;
 
 	private final StringEncryptor encryptor;
@@ -46,6 +45,7 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 		this.removeConnectionQuery = DEFAULT_REMOVE_CONNECTION_QUERY;
 		this.removeAllConnectionsQuery = DEFAULT_REMOVE_ALL_CONNECTIONS_QUERY;
 		this.accessTokenQuery = DEFAULT_ACCESS_TOKEN_QUERY;
+		this.accessTokenByAccountIdQuery = DEFAULT_ACCESS_TOKEN_BY_ACCOUNT_ID_QUERY;
 		this.accountConnectionsQuery = DEFAULT_ACCOUNT_CONNECTIONS_QUERY;
 	}
 
@@ -276,6 +276,14 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 
 		return tokens.size() > 0 ? tokens.get(0) : null;
 	}
+	
+	public OAuthToken getAccessToken(Serializable accountId, String provider, String providerAccountId) {
+		return jdbcTemplate.queryForObject(accessTokenByAccountIdQuery, new RowMapper<OAuthToken>() {
+			public OAuthToken mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return new OAuthToken(rs.getString(1), rs.getString(2));
+			}
+		}, accountId, provider, providerAccountId);
+	}
 
 	public String getProviderAccountId(Serializable accountId, String provider) {
 		List<String> accountIds = jdbcTemplate.queryForList(providerAccountIdQuery, String.class, accountId, provider);
@@ -313,6 +321,7 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 	private String removeAllConnectionsQuery;
 	private String accessTokenQuery;
 	private String accountConnectionsQuery;
+	private String accessTokenByAccountIdQuery;
 
 	static final String DEFAULT_PROVIDER_ACCOUNT_ID_QUERY = "select accountId from AccountConnection where member = ? and provider = ?";
 	static final String DEFAULT_CONNECTION_EXISTS_QUERY = "select exists(select 1 from AccountConnection where member = ? and provider = ?)";
@@ -320,5 +329,7 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 	static final String DEFAULT_REMOVE_CONNECTION_QUERY = "delete from AccountConnection where member = ? and provider = ? and accountId = ?";
 	static final String DEFAULT_REMOVE_ALL_CONNECTIONS_QUERY = "delete from AccountConnection where member = ? and provider = ?";
 	static final String DEFAULT_ACCESS_TOKEN_QUERY = "select accessToken, secret from AccountConnection where member = ? and provider = ?";
+	static final String DEFAULT_ACCESS_TOKEN_BY_ACCOUNT_ID_QUERY = "select accessToken, secret from AccountConnection where member = ? and provider = ? and accountId = ?";
 	static final String DEFAULT_ACCOUNT_CONNECTIONS_QUERY = "select member, provider, accessToken, secret, accountId, profileUrl from AccountConnection where member = ? and provider = ?";
+
 }

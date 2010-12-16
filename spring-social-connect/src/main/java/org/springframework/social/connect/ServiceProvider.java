@@ -133,6 +133,8 @@ public interface ServiceProvider<S> {
 	 */
 	S getServiceOperations(OAuthToken accessToken);
 
+	S getServiceOperations(String providerAccountId);
+
 	/**
 	 * Retrieves all connections that the user has made with the provider.
 	 * Commonly, this collection would contain a single entry, but it is
