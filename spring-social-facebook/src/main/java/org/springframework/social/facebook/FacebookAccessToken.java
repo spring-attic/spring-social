@@ -32,5 +32,14 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface FacebookAccessToken {
-
+	/**
+	 * Whether the Facebook access token is required.
+	 * <p>
+	 * Default is <code>true</code>, leading to an exception being thrown in
+	 * case the Facebook cookie is missing or if the access token can't be found
+	 * in the cookie. Switch this to <code>false</code> if you prefer a
+	 * <code>null</value> in case of the missing cookie/token.
+	 * </p>
+	 */
+	boolean required() default true;
 }

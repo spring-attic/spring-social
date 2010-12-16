@@ -41,22 +41,84 @@ public class FacebookArgumentResolverTest {
 		resolver = new FacebookWebArgumentResolver(API_KEY);
 	}
 
-	@Test
-	public void resolveArgument_noCookies() throws Exception {
+	@Test(expected = IllegalStateException.class)
+	public void resolveFacebookUserIdArgument_noCookies_required() throws Exception {
 		NativeWebRequest request = new ServletWebRequest(new MockHttpServletRequest());
-		assertEquals(UNRESOLVED, resolver.resolveArgument(null, request));
+		Method method = FacebookArgumentResolverTest.class.getDeclaredMethod("annotatedMethod", String.class,
+				String.class, String.class);
+
+		MethodParameter idParameter = new MethodParameter(method, 0);
+		assertEquals(UNRESOLVED, resolver.resolveArgument(idParameter, request));
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void resolveFacebookAccessTokenArgument_noCookies_required() throws Exception {
+		NativeWebRequest request = new ServletWebRequest(new MockHttpServletRequest());
+		Method method = FacebookArgumentResolverTest.class.getDeclaredMethod("annotatedMethod", String.class,
+				String.class, String.class);
+
+		MethodParameter tokenParameter = new MethodParameter(method, 1);
+		resolver.resolveArgument(tokenParameter, request);
 	}
 
 	@Test
-	public void resolveArgument_noFacebookCookie() throws Exception {
+	public void resolveArgument_noCookies_unrequired() throws Exception {
+		NativeWebRequest request = new ServletWebRequest(new MockHttpServletRequest());
+		Method method = FacebookArgumentResolverTest.class.getDeclaredMethod("unrequiredAnnotatedMethod", String.class,
+				String.class, String.class);
+
+		MethodParameter idParameter = new MethodParameter(method, 0);
+		assertEquals(null, resolver.resolveArgument(idParameter, request));
+
+		MethodParameter tokenParameter = new MethodParameter(method, 1);
+		assertEquals(null, resolver.resolveArgument(tokenParameter, request));
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void resolveFacebookUserIdArgument_noFacebookCookie_required() throws Exception {
 		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
 		httpServletRequest.setCookies(new Cookie("not_a_facebook_cookie", "doesn't matter"));
 		NativeWebRequest request = new ServletWebRequest(httpServletRequest);
-		assertEquals(UNRESOLVED, resolver.resolveArgument(null, request));
+
+		Method method = FacebookArgumentResolverTest.class.getDeclaredMethod("annotatedMethod", String.class,
+				String.class, String.class);
+
+		MethodParameter idParameter = new MethodParameter(method, 0);
+		assertEquals(UNRESOLVED, resolver.resolveArgument(idParameter, request));
 	}
 
+	@Test(expected = IllegalStateException.class)
+	public void resolveFacebookAccessTokenArgument_noFacebookCookie_required() throws Exception {
+		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
+		httpServletRequest.setCookies(new Cookie("not_a_facebook_cookie", "doesn't matter"));
+		NativeWebRequest request = new ServletWebRequest(httpServletRequest);
+
+		Method method = FacebookArgumentResolverTest.class.getDeclaredMethod("annotatedMethod", String.class,
+				String.class, String.class);
+
+		MethodParameter tokenParameter = new MethodParameter(method, 1);
+		resolver.resolveArgument(tokenParameter, request);
+	}
+
+
 	@Test
-	public void resolveArgument_facebookCookieWithoutEntries() throws Exception {
+	public void resolveArgument_noFacebookCookie_unrequired() throws Exception {
+		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
+		httpServletRequest.setCookies(new Cookie("not_a_facebook_cookie", "doesn't matter"));
+		NativeWebRequest request = new ServletWebRequest(httpServletRequest);
+
+		Method method = FacebookArgumentResolverTest.class.getDeclaredMethod("unrequiredAnnotatedMethod", String.class,
+				String.class, String.class);
+
+		MethodParameter idParameter = new MethodParameter(method, 0);
+		assertEquals(null, resolver.resolveArgument(idParameter, request));
+
+		MethodParameter tokenParameter = new MethodParameter(method, 1);
+		assertEquals(null, resolver.resolveArgument(tokenParameter, request));
+	}
+	
+	@Test(expected = IllegalStateException.class)
+	public void resolveUserIdArgument_facebookCookieWithoutEntries_required() throws Exception {
 		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
 		httpServletRequest.setCookies(new Cookie("fbs_" + API_KEY, "foo=bar&cat=feline"));
 		NativeWebRequest request = new ServletWebRequest(httpServletRequest);
@@ -64,10 +126,34 @@ public class FacebookArgumentResolverTest {
 				String.class, String.class);
 
 		MethodParameter idParameter = new MethodParameter(method, 0);
-		assertNull(resolver.resolveArgument(idParameter, request));
+		assertEquals(UNRESOLVED, resolver.resolveArgument(idParameter, request));
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void resolveAccessTokenArgument_facebookCookieWithoutEntries_required() throws Exception {
+		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
+		httpServletRequest.setCookies(new Cookie("fbs_" + API_KEY, "foo=bar&cat=feline"));
+		NativeWebRequest request = new ServletWebRequest(httpServletRequest);
+		Method method = FacebookArgumentResolverTest.class.getDeclaredMethod("annotatedMethod", String.class,
+				String.class, String.class);
 
 		MethodParameter tokenParameter = new MethodParameter(method, 1);
-		assertNull(resolver.resolveArgument(tokenParameter, request));
+		assertEquals(UNRESOLVED, resolver.resolveArgument(tokenParameter, request));
+	}
+
+	@Test
+	public void resolveArgument_facebookCookieWithoutEntries_unrequired() throws Exception {
+		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
+		httpServletRequest.setCookies(new Cookie("fbs_" + API_KEY, "foo=bar&cat=feline"));
+		NativeWebRequest request = new ServletWebRequest(httpServletRequest);
+		Method method = FacebookArgumentResolverTest.class.getDeclaredMethod("unrequiredAnnotatedMethod", String.class,
+				String.class, String.class);
+
+		MethodParameter idParameter = new MethodParameter(method, 0);
+		assertEquals(null, resolver.resolveArgument(idParameter, request));
+
+		MethodParameter tokenParameter = new MethodParameter(method, 1);
+		assertEquals(null, resolver.resolveArgument(tokenParameter, request));
 
 		MethodParameter otherParameter = new MethodParameter(method, 2);
 		assertEquals(UNRESOLVED, resolver.resolveArgument(otherParameter, request));
@@ -88,8 +174,14 @@ public class FacebookArgumentResolverTest {
 		assertEquals("a1b2c3d4|e5f6", (String) resolver.resolveArgument(tokenParameter, request));
 	}
 
+	@SuppressWarnings("unused")
 	private void annotatedMethod(@FacebookUserId String userId, @FacebookAccessToken String accessToken,
 			String someOtherParameter) {
 
+	}
+
+	@SuppressWarnings("unused")
+	private void unrequiredAnnotatedMethod(@FacebookUserId(required = false) String userId,
+			@FacebookAccessToken(required = false) String accessToken, String someOtherParameter) {
 	}
 }

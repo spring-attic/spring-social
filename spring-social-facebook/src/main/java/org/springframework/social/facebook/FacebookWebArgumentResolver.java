@@ -15,6 +15,7 @@
  */
 package org.springframework.social.facebook;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +40,14 @@ import org.springframework.web.context.request.NativeWebRequest;
  * controller handler method as String values.
  * </p>
  * 
+ * <p>
+ * Both {@link FacebookAccessToken} and {@link FacebookUserId} are required by
+ * default. If the access token or user ID cannot be resolved and if the
+ * annotation is set to be required, an exception will be thrown indicating an
+ * illegal state. If the annotation is set to not be required, a null will be
+ * returned.
+ * </p>
+ * 
  * @author Craig Walls
  */
 public class FacebookWebArgumentResolver implements WebArgumentResolver {
@@ -51,28 +60,65 @@ public class FacebookWebArgumentResolver implements WebArgumentResolver {
 	
 	public Object resolveArgument(MethodParameter parameter, NativeWebRequest request) throws Exception {
 		HttpServletRequest nativeRequest = (HttpServletRequest) request.getNativeRequest();
-		Cookie[] cookies = nativeRequest.getCookies();
-		if (cookies == null) {
-			return WebArgumentResolver.UNRESOLVED;
+		return processParameterAnnotation(parameter, getFacebookCookieData(nativeRequest.getCookies(), apiKey));
+	}
+
+	private Map<String, String> getFacebookCookieData(Cookie[] cookies, String apiKey) {
+		if (cookies != null) {
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals("fbs_" + apiKey)) {
+					return extractDataFromCookie(cookie.getValue());
+				}
+			}
 		}
-		for (Cookie cookie : cookies) {
-			if (cookie.getName().equals("fbs_" + apiKey)) {
-            		return processParameterAnnotation(parameter, extractDataFromCookie(cookie.getValue()));
-            }
-        }
-		return WebArgumentResolver.UNRESOLVED;
+
+		return Collections.<String, String> emptyMap();
 	}
 
 	private Object processParameterAnnotation(MethodParameter parameter, Map<String, String> cookieData) {
-	    if (parameter.getParameterAnnotation(FacebookUserId.class) != null) {
-	    		return cookieData.get("uid");
-	    } else if (parameter.getParameterAnnotation(FacebookAccessToken.class) != null) {
-	    		String accessToken = cookieData.get("access_token");
-			return accessToken != null ? accessToken.replaceAll("\\%7C", "|") : null;
-	    } else {
-	    		return WebArgumentResolver.UNRESOLVED;
+		FacebookUserId userIdAnnotation = parameter.getParameterAnnotation(FacebookUserId.class);
+		if (userIdAnnotation != null) {
+			return resolveUserIdValue(parameter, cookieData, userIdAnnotation);
+		}
+
+		FacebookAccessToken accessTokenAnnotation = parameter.getParameterAnnotation(FacebookAccessToken.class);
+		if (accessTokenAnnotation != null) {
+			return resolveAccessTokenValue(parameter, cookieData, accessTokenAnnotation);
 	    }
+
+		return WebArgumentResolver.UNRESOLVED;
     }
+
+	private Object resolveAccessTokenValue(MethodParameter parameter, Map<String, String> cookieData,
+			FacebookAccessToken accessTokenAnnotation) {
+		String accessToken = cookieData.get("access_token");
+		if (accessToken != null) {
+			accessToken = accessToken.replaceAll("\\%7C", "|");
+		}
+
+		if (accessToken != null || !accessTokenAnnotation.required()) {
+			return accessToken;
+		}
+
+		throw new IllegalStateException("Parameter " + parameter.getParameterName()
+				+ " is annotated with @FacebookAccessToken, but the data cannot be found in the Facebook cookie. "
+				+ "Either ensure that Facebook authentication has taken place before arriving at this "
+				+ "state or consider setting @FacebookAccessToken's required attribute to false.");
+	}
+
+	private Object resolveUserIdValue(MethodParameter parameter, Map<String, String> cookieData,
+			FacebookUserId userIdAnnotation) {
+		String uid = cookieData.get("uid");
+		if (uid != null || !userIdAnnotation.required()) {
+			return uid;
+		}
+
+		throw new IllegalStateException(
+				"Parameter " + parameter.getParameterName()
+				+ " is annotated with @FacebookUserId, but the data cannot be found in the Facebook cookie. "
+				+ "Either ensure that Facebook authentication has taken place before arriving at this "
+				+ "state or consider setting @FacebookUserId's required attribute to false.");
+	}
 	
 	/*
 	 * Stuff you should expect from this cookie:
