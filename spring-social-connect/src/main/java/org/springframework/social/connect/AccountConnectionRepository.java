@@ -33,6 +33,8 @@ public interface AccountConnectionRepository {
 
 	void disconnect(Serializable accountId, String provider);
 
+	void disconnect(Serializable accountId, String provider, String providerAccountId);
+
 	OAuthToken getAccessToken(Serializable accountId, String provider);
 
 	OAuthToken getAccessToken(Serializable accountId, String provider, String providerAccountId);

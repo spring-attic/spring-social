@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- Loads ServiceProviders by name -->
+	<bean id="serviceProviderFactory" class="org.springframework.social.connect.JdbcServiceProviderFactory" autowire="constructor"/>
+
+	<!-- Twitter -->
+	<bean id="twitterProvider" parent="serviceProvider">
+		<constructor-arg value="twitter" />
+	</bean>
+	
+	<!-- Exposes ServiceProvider APIs as request-scoped beans -->
+	<bean class="org.springframework.social.samples.twitter.connect.ServiceProvidersApiConfiguration" />
+
+	<!-- Common serviceProvider parent -->
+	<bean abstract="true" id="serviceProvider" factory-bean="serviceProviderFactory" factory-method="getServiceProvider" />
+
+	<!-- Account ID resolver used internally by the service provider -->				
+	<bean class="org.springframework.social.samples.twitter.connect.TwitterSampleAccountIdResolver" />
+
+	<bean id="stringEncryptor" class="org.springframework.security.encrypt.NoOpStringEncryptor" factory-method="getInstance" />				
+</beans>
