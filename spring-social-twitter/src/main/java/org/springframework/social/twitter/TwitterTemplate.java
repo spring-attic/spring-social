@@ -117,6 +117,28 @@ public class TwitterTemplate implements TwitterOperations {
 		return (String) response.get("screen_name");
 	}
 
+	public TwitterProfile getProfile(String screenName) {
+		Map<?, ?> response = restOperations.getForObject(USER_PROFILE_URL + "?screen_name={screenName}", Map.class,
+				screenName);
+		return getProfileFromResponseMap(response);
+	}
+
+	public TwitterProfile getProfile(long userId) {
+		Map<?, ?> response = restOperations.getForObject(USER_PROFILE_URL + "?user_id={userId}", Map.class, userId);
+		return getProfileFromResponseMap(response);
+	}
+
+	private TwitterProfile getProfileFromResponseMap(Map<?, ?> response) {
+		TwitterProfile profile = new TwitterProfile();
+		profile.setId(Long.valueOf(String.valueOf(response.get("id"))).longValue());
+		profile.setScreenName(String.valueOf(response.get("screen_name")));
+		profile.setFullName(String.valueOf(response.get("name")));
+		profile.setDescription(String.valueOf(response.get("description")));
+		profile.setLocation(String.valueOf(response.get("location")));
+		profile.setUrl(String.valueOf(response.get("url")));
+		return profile;
+	}
+
 	public List<String> getFriends(String screenName) {
 		@SuppressWarnings("unchecked")
 		List<Map<String, String>> response = restOperations.getForObject(FRIENDS_STATUSES_URL, List.class,
@@ -353,6 +375,7 @@ public class TwitterTemplate implements TwitterOperations {
 	static final String API_URL_BASE = "https://api.twitter.com/1/";
 	static final String SEARCH_API_URL_BASE = "https://search.twitter.com";
 	static final String VERIFY_CREDENTIALS_URL = API_URL_BASE + "account/verify_credentials.json";
+	static final String USER_PROFILE_URL = API_URL_BASE + "users/show.json";
 	static final String FRIENDS_STATUSES_URL = API_URL_BASE + "statuses/friends.json?screen_name={screen_name}";
 	static final String SEARCH_URL = SEARCH_API_URL_BASE + "/search.json?q={query}&rpp={rpp}&page={page}";
 	static final String TWEET_URL = API_URL_BASE + "statuses/update.json";

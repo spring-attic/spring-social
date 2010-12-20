@@ -37,6 +37,37 @@ public interface TwitterOperations {
 	String getProfileId();
 
 	/**
+	 * <p>
+	 * Retrieves a specific user's Twitter profile details.
+	 * </p>
+	 * 
+	 * <p>
+	 * Note that this method does not require authentication.
+	 * </p>
+	 * 
+	 * @param screenName
+	 *            the screen name for the user whose details are to be
+	 *            retrieved.
+	 * @return a {@link TwitterProfile} object representing the user's profile.
+	 */
+	TwitterProfile getProfile(String screenName);
+
+	/**
+	 * <p>
+	 * Retrieves a specific user's Twitter profile details.
+	 * </p>
+	 * 
+	 * <p>
+	 * Note that this method does not require authentication.
+	 * </p>
+	 * 
+	 * @param userId
+	 *            the user ID for the user whose details are to be retrieved.
+	 * @return a {@link TwitterProfile} object representing the user's profile.
+	 */
+	TwitterProfile getProfile(long userId);
+
+	/**
 	 * Retrieves a list of users that the given user follows.
 	 * 
 	 * @param screenName
