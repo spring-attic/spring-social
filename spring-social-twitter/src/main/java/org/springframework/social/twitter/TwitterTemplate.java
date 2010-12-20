@@ -117,6 +117,10 @@ public class TwitterTemplate implements TwitterOperations {
 		return (String) response.get("screen_name");
 	}
 
+	public TwitterProfile getProfile() {
+		return getProfile(getProfileId());
+	}
+
 	public TwitterProfile getProfile(String screenName) {
 		Map<?, ?> response = restOperations.getForObject(USER_PROFILE_URL + "?screen_name={screenName}", Map.class,
 				screenName);
@@ -132,7 +136,7 @@ public class TwitterTemplate implements TwitterOperations {
 		TwitterProfile profile = new TwitterProfile();
 		profile.setId(Long.valueOf(String.valueOf(response.get("id"))).longValue());
 		profile.setScreenName(String.valueOf(response.get("screen_name")));
-		profile.setFullName(String.valueOf(response.get("name")));
+		profile.setName(String.valueOf(response.get("name")));
 		profile.setDescription(String.valueOf(response.get("description")));
 		profile.setLocation(String.valueOf(response.get("location")));
 		profile.setUrl(String.valueOf(response.get("url")));

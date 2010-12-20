@@ -15,14 +15,24 @@
  */
 package org.springframework.social.twitter;
 
+/**
+ * Model class representing a Twitter user's profile information.
+ * 
+ * @author Craig Walls
+ */
 public class TwitterProfile {
-	long id;
-	String screenName;
-	String fullName;
-	String url;
-	String description;
-	String location;
+	private long id;
+	private String screenName;
+	private String name;
+	private String url;
+	private String description;
+	private String location;
 
+	/**
+	 * The user's Twitter ID
+	 * 
+	 * @return The user's Twitter ID
+	 */
 	public long getId() {
 		return id;
 	}
@@ -31,6 +41,11 @@ public class TwitterProfile {
 		this.id = id;
 	}
 
+	/**
+	 * The user's Twitter screen name
+	 * 
+	 * @return The user's Twitter screen name
+	 */
 	public String getScreenName() {
 		return screenName;
 	}
@@ -39,14 +54,24 @@ public class TwitterProfile {
 		this.screenName = screenName;
 	}
 
-	public String getFullName() {
-		return fullName;
+	/**
+	 * The user's full name
+	 * 
+	 * @return The user's full name
+	 */
+	public String getName() {
+		return name;
 	}
 
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
+	/**
+	 * The user's URL
+	 * 
+	 * @return The user's URL
+	 */
 	public String getUrl() {
 		return url;
 	}
@@ -55,6 +80,11 @@ public class TwitterProfile {
 		this.url = url;
 	}
 
+	/**
+	 * The user's description
+	 * 
+	 * @return The user's description
+	 */
 	public String getDescription() {
 		return description;
 	}

@@ -38,6 +38,15 @@ public interface TwitterOperations {
 
 	/**
 	 * <p>
+	 * Retrieves the authenticated user's Twitter profile details.
+	 * </p>
+	 * 
+	 * @return a {@link TwitterProfile} object representing the user's profile.
+	 */
+	TwitterProfile getProfile();
+
+	/**
+	 * <p>
 	 * Retrieves a specific user's Twitter profile details.
 	 * </p>
 	 * 
