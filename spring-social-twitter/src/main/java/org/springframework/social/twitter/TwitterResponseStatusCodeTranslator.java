@@ -39,6 +39,7 @@ import org.springframework.social.core.SocialException;
  */
 public class TwitterResponseStatusCodeTranslator implements ResponseStatusCodeTranslator {
 
+	static final String INVALID_MESSAGE_RECIPIENT_TEXT = "You cannot send messages to users who are not following you.";
 	static final String DUPLICATE_STATUS_TEXT = "Status is a duplicate.";
 
 	public SocialException translate(ResponseEntity<?> responseEntity) {
@@ -64,8 +65,10 @@ public class TwitterResponseStatusCodeTranslator implements ResponseStatusCodeTr
 		// override. (See SQLErrorCodeSQLExceptionTranslator as an example of
 		// how this is done for SQL error codes.)
 		if (statusCode.equals(HttpStatus.FORBIDDEN)) {
-			if (errorText.equals(DUPLICATE_STATUS_TEXT)) {
+			if (errorText.equals(DUPLICATE_STATUS_TEXT) || errorText.contains("You already said that")) {
 				return new DuplicateTweetException(errorText);
+			} else if (errorText.equals(INVALID_MESSAGE_RECIPIENT_TEXT)) {
+				return new InvalidMessageRecipientException(errorText);
 			} else {
 				return new OperationNotPermittedException(errorText);
 			}

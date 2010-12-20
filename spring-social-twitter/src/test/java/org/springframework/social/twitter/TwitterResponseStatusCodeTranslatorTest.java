@@ -60,6 +60,24 @@ public class TwitterResponseStatusCodeTranslatorTest {
 	}
 
 	@Test
+	public void translate_duplicateDirectMessage() {
+		ResponseEntity<Map> responseEntity = new ResponseEntity<Map>(Collections.singletonMap("error",
+				"Whoops! You already said that"), HttpStatus.FORBIDDEN);
+		SocialException socialException = translator.translate(responseEntity);
+		assertTrue(socialException instanceof DuplicateTweetException);
+		assertEquals("Whoops! You already said that", socialException.getMessage());
+	}
+
+	@Test
+	public void translate_invalidMessageRecipient() {
+		ResponseEntity<Map> responseEntity = new ResponseEntity<Map>(Collections.singletonMap("error",
+				INVALID_MESSAGE_RECIPIENT_TEXT), HttpStatus.FORBIDDEN);
+		SocialException socialException = translator.translate(responseEntity);
+		assertTrue(socialException instanceof InvalidMessageRecipientException);
+		assertEquals(INVALID_MESSAGE_RECIPIENT_TEXT, socialException.getMessage());
+	}
+
+	@Test
 	public void translate_unauthorized() {
 		ResponseEntity<Map> responseEntity = new ResponseEntity<Map>(
 				Collections.singletonMap("error", "That's a no-no"), HttpStatus.UNAUTHORIZED);

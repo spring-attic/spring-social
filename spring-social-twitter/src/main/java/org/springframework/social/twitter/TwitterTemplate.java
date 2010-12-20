@@ -182,6 +182,25 @@ public class TwitterTemplate implements TwitterOperations {
 		return messages;
 	}
 
+	public void sendDirectMessage(String toScreenName, String text) {
+		MultiValueMap<String, Object> dmParams = new LinkedMultiValueMap<String, Object>();
+		dmParams.add("screen_name", toScreenName);
+		sendDirectMessage(text, dmParams);
+	}
+
+	public void sendDirectMessage(long toUserId, String text) {
+		MultiValueMap<String, Object> dmParams = new LinkedMultiValueMap<String, Object>();
+		dmParams.add("user_id", String.valueOf(toUserId));
+		sendDirectMessage(text, dmParams);
+	}
+
+	private void sendDirectMessage(String text, MultiValueMap<String, Object> dmParams) {
+		dmParams.add("text", text);
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> response = restOperations.postForEntity(SEND_DIRECT_MESSAGE_URL, dmParams, Map.class);
+		handleResponseErrors(response);
+	}
+
 	@SuppressWarnings("rawtypes")
 	public List<Tweet> getPublicTimeline() {
 		List response = restOperations.getForObject(PUBLIC_TIMELINE_URL, List.class);
@@ -340,6 +359,7 @@ public class TwitterTemplate implements TwitterOperations {
 	static final String RETWEET_URL = API_URL_BASE + "/statuses/retweet/{tweet_id}.json";
 	static final String MENTIONS_URL = API_URL_BASE + "statuses/mentions.json";
 	static final String DIRECT_MESSAGES_URL = API_URL_BASE + "direct_messages.json";
+	static final String SEND_DIRECT_MESSAGE_URL = API_URL_BASE + "direct_messages/new.json";
 	static final String PUBLIC_TIMELINE_URL = API_URL_BASE + "statuses/public_timeline.json";
 	static final String HOME_TIMELINE_URL = API_URL_BASE + "statuses/home_timeline.json";
 	static final String FRIENDS_TIMELINE_URL = API_URL_BASE + "statuses/friends_timeline.json";

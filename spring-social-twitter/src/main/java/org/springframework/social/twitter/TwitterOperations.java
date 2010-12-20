@@ -100,6 +100,54 @@ public interface TwitterOperations {
 
 	/**
 	 * <p>
+	 * Sends a direct message to another Twitter user.
+	 * </p>
+	 * 
+	 * <p>
+	 * The recipient of the message must follow the authenticated user in order
+	 * for the message to be delivered. If the recipient is not following the
+	 * authenticated user, an {@link InvalidMessageRecipientException} will be
+	 * thrown.
+	 * </p>
+	 * 
+	 * @param toScreenName
+	 *            the screen name of the recipient of the messages.
+	 * @param text
+	 *            the message text.
+	 * 
+	 * @throws InvalidMessageRecipientException
+	 *             if the recipient is not following the authenticating user.
+	 * @throws DuplicateTweetException
+	 *             if the message duplicates a previously sent message.
+	 */
+	void sendDirectMessage(String toScreenName, String text);
+
+	/**
+	 * <p>
+	 * Sends a direct message to another Twitter user.
+	 * </p>
+	 * 
+	 * <p>
+	 * The recipient of the message must follow the authenticated user in order
+	 * for the message to be delivered. If the recipient is not following the
+	 * authenticated user, an {@link InvalidMessageRecipientException} will be
+	 * thrown.
+	 * </p>
+	 * 
+	 * @param toUserId
+	 *            the Twitter user ID of the recipient of the messages.
+	 * @param text
+	 *            the message text.
+	 * 
+	 * @throws InvalidMessageRecipientException
+	 *             if the recipient is not following the authenticating user.
+	 * @throws DuplicateTweetException
+	 *             if the message duplicates a previously sent message.
+	 */
+	void sendDirectMessage(long toUserId, String text);
+
+	/**
+	 * <p>
 	 * Retrieves the 20 most recently posted tweets from the public timeline.
 	 * The public timeline is the timeline containing tweets from all Twitter
 	 * users. As this is the public timeline, authentication is not required to
