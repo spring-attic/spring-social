@@ -5,17 +5,14 @@
 
 	<!-- Loads ServiceProviders by name -->
 	<bean id="serviceProviderFactory" class="org.springframework.social.connect.JdbcServiceProviderFactory" autowire="constructor"/>
-
-	<!-- Twitter -->
-	<bean id="twitterProvider" parent="serviceProvider">
+	
+	<bean id="twitterProvider" factory-bean="serviceProviderFactory" factory-method="getServiceProvider">
 		<constructor-arg value="twitter" />
 	</bean>
 	
 	<!-- Exposes ServiceProvider APIs as request-scoped beans -->
 	<bean class="org.springframework.social.samples.twitter.connect.ServiceProvidersApiConfiguration" />
 
-	<!-- Common serviceProvider parent -->
-	<bean abstract="true" id="serviceProvider" factory-bean="serviceProviderFactory" factory-method="getServiceProvider" />
 
 	<!-- Account ID resolver used internally by the service provider -->				
 	<bean class="org.springframework.social.samples.twitter.connect.TwitterSampleAccountIdResolver" />
