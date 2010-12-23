@@ -15,14 +15,17 @@
  */
 package org.springframework.social.connect;
 
+import java.io.Serializable;
+
 /**
  * Holds an OAuth token and secret.
  * Used for both the request token and access token.
  * The secret is null for OAuth2-based connections.
  * @author Keith Donald
  */
-public final class OAuthToken {
-	
+public final class OAuthToken implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	private final String value;
 	
 	private final String secret;

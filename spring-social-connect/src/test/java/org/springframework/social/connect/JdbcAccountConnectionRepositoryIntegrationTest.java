@@ -14,7 +14,7 @@ import org.springframework.security.encrypt.StringEncryptor;
 import org.springframework.social.test.utils.SpringSocialTestDatabaseBuilder;
 import org.springframework.social.twitter.TwitterOperations;
 
-// TODO This is testing more than just the jdbc account connection repository - factor out and focus on the data access logic
+// TODO This is testing more than just the JDBC account connection repository - factor out and focus on the data access logic
 public class JdbcAccountConnectionRepositoryIntegrationTest {
 
 	private EmbeddedDatabase db;

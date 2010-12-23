@@ -39,238 +39,32 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 	public JdbcAccountConnectionRepository(JdbcTemplate jdbcTemplate, StringEncryptor encryptor) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.encryptor = encryptor;
-		this.providerAccountIdQuery = DEFAULT_PROVIDER_ACCOUNT_ID_QUERY;
-		this.connectionExistsQuery = DEFAULT_CONNECTION_EXISTS_QUERY;
-		this.createConnectionQuery = DEFAULT_CREATE_CONNECTION_QUERY;
-		this.removeConnectionQuery = DEFAULT_REMOVE_CONNECTION_QUERY;
-		this.removeAllConnectionsQuery = DEFAULT_REMOVE_ALL_CONNECTIONS_QUERY;
-		this.accessTokenQuery = DEFAULT_ACCESS_TOKEN_QUERY;
-		this.accessTokenByAccountIdQuery = DEFAULT_ACCESS_TOKEN_BY_ACCOUNT_ID_QUERY;
-		this.accountConnectionsQuery = DEFAULT_ACCOUNT_CONNECTIONS_QUERY;
-	}
-
-	public String getProviderAccountIdByMemberAndProviderQuery() {
-		return providerAccountIdQuery;
-	}
-
-	/**
-	 * <p>
-	 * Overrides the default query for selecting a user's provider account ID
-	 * given their local member ID and the provider ID.
-	 * </p>
-	 * 
-	 * <p>
-	 * The default query is:
-	 * </p>
-	 * 
-	 * <code>
-	 * select accountId from AccountConnection where member = ? and provider = ?
-	 * </code>
-	 * 
-	 * <p>
-	 * An overriding query should follow a similar form, taking a local member
-	 * ID and a provider ID as parameters and returning the provider account ID
-	 * as a single column result.
-	 * 
-	 * @param providerAccountIdQuery
-	 */
-	public void setProviderAccountIdQuery(String providerAccountIdQuery) {
-		this.providerAccountIdQuery = providerAccountIdQuery;
-	}
-
-	public String getConnectionExistsQuery() {
-		return connectionExistsQuery;
-	}
-
-	/**
-	 * <p>
-	 * Overrides the default query for establishing the existence of one or more
-	 * connections between the application and a provider.
-	 * </p>
-	 * 
-	 * <p>
-	 * The default query is:
-	 * </p>
-	 * 
-	 * <code>
-	 * select exists(select 1 from AccountConnection where member = ? and provider = ?)
-	 * </code>
-	 * 
-	 * <p>
-	 * An overriding query should follow a similar form, taking a local member
-	 * ID and a provider ID as parameters and returning true if one or more
-	 * connections exist.
-	 * 
-	 * @param connectionExistsQuery
-	 */
-	public void setConnectionExistsQuery(String connectionExistsQuery) {
-		this.connectionExistsQuery = connectionExistsQuery;
-	}
-
-	public String getCreateConnectionQuery() {
-		return createConnectionQuery;
-	}
-
-	/**
-	 * <p>
-	 * Overrides the default query for inserting a new connection.
-	 * </p>
-	 * 
-	 * <p>
-	 * The default query is:
-	 * </p>
-	 * 
-	 * <code>
-	 * insert into AccountConnection (member, provider, accessToken, secret, accountId, profileUrl) values (?, ?, ?, ?, ?, ?)
-	 * </code>
-	 * 
-	 * <p>
-	 * An overriding query should follow a similar form, taking a local member
-	 * ID, a provider ID, an access token, an access token secret, a provider
-	 * account ID, and a provider profile URL as parameters.
-	 * 
-	 * @param createConnectionQuery
-	 */
-	public void setCreateConnectionQuery(String createConnectionQuery) {
-		this.createConnectionQuery = createConnectionQuery;
-	}
-
-	public String getRemoveConnectionQuery() {
-		return removeConnectionQuery;
-	}
-
-	/**
-	 * <p>
-	 * Overrides the default query for deleting a connection.
-	 * </p>
-	 * 
-	 * <p>
-	 * The default query is:
-	 * </p>
-	 * 
-	 * <code>
-	 * delete from AccountConnection where member = ? and provider = ? and accountId = ?
-	 * </code>
-	 * 
-	 * <p>
-	 * An overriding query should follow a similar form, taking a local member
-	 * ID, a provider ID, and a provider account ID.
-	 * 
-	 * @param removeConnectionQuery
-	 */
-	public void setRemoveConnectionQuery(String removeConnectionQuery) {
-		this.removeConnectionQuery = removeConnectionQuery;
-	}
-
-	public String getRemoveAllConnectionsQuery() {
-		return removeAllConnectionsQuery;
-	}
-
-	/**
-	 * <p>
-	 * Overrides the default query for deleting all connections for a provider.
-	 * </p>
-	 * 
-	 * <p>
-	 * The default query is:
-	 * </p>
-	 * 
-	 * <code>
-	 * delete from AccountConnection where member = ? and provider = ?
-	 * </code>
-	 * 
-	 * <p>
-	 * An overriding query should follow a similar form, taking a local member
-	 * ID and a provider ID.
-	 * 
-	 * @param removeConnectionQuery
-	 */
-	public void setRemoveAllConnectionsQuery(String removeAllConnectionsQuery) {
-		this.removeAllConnectionsQuery = removeAllConnectionsQuery;
-	}
-
-	public String getAccessTokenQuery() {
-		return accessTokenQuery;
-	}
-
-	/**
-	 * <p>
-	 * Overrides the default query for selecting an access token
-	 * </p>
-	 * 
-	 * <p>
-	 * The default query is:
-	 * </p>
-	 * 
-	 * <code>
-	 * select accessToken, secret from AccountConnection where member = ? and provider = ?
-	 * </code>
-	 * 
-	 * <p>
-	 * An overriding query should follow a similar form, taking a local member
-	 * ID and a provider ID and returning the access token and access token
-	 * secret.
-	 * 
-	 * @param accessTokenQuery
-	 */
-	public void setAccessTokenQuery(String accessTokenQuery) {
-		this.accessTokenQuery = accessTokenQuery;
-	}
-
-	public String getAccountConnectionsQuery() {
-		return accountConnectionsQuery;
-	}
-
-	/**
-	 * <p>
-	 * Overrides the default query for selecting all account connections for a
-	 * provider.
-	 * </p>
-	 * 
-	 * <p>
-	 * The default query is:
-	 * </p>
-	 * 
-	 * <code>
-	 * select member, provider, accessToken, secret, accountId, profileUrl from AccountConnection where member = ? and provider = ?
-	 * </code>
-	 * 
-	 * <p>
-	 * An overriding query should follow a similar form, taking a local member
-	 * ID and a provider ID and returning the connection details, including the
-	 * member ID, provider ID, access token, access token secret, provider
-	 * account ID, and provider profile URL.
-	 * 
-	 * @param accessTokenQuery
-	 */
-	public void setAccountConnectionsQuery(String accountConnectionsQuery) {
-		this.accountConnectionsQuery = accountConnectionsQuery;
 	}
 
 	public void addConnection(Serializable accountId, String provider, OAuthToken accessToken,
-			String providerAccountId,
-			String providerProfileUrl) {
-		jdbcTemplate.update(DEFAULT_CREATE_CONNECTION_QUERY, accountId, provider,
+			String providerAccountId, String providerProfileUrl) {
+		jdbcTemplate.update(CREATE_CONNECTION_QUERY, accountId, provider,
 				encryptor.encrypt(accessToken.getValue()), encryptIfPresent(accessToken.getSecret()),
 				providerAccountId, providerProfileUrl);
 	}
 
 	public boolean isConnected(Serializable accountId, String provider) {
-		return jdbcTemplate.queryForInt(connectionExistsQuery, accountId, provider) == 1;
+		return jdbcTemplate.queryForInt(CONNECTION_EXISTS_QUERY, accountId, provider) == 1;
 	}
 
 	public void disconnect(Serializable accountId, String provider) {
-		jdbcTemplate.update(removeAllConnectionsQuery, accountId, provider);
+		jdbcTemplate.update(REMOVE_ALL_CONNECTIONS_QUERY, accountId, provider);
 	}
 
 	public void disconnect(Serializable accountId, String provider, String providerAccountId) {
-		jdbcTemplate.update(removeConnectionQuery, accountId, provider, providerAccountId);
+		jdbcTemplate.update(REMOVE_CONNECTION_QUERY, accountId, provider, providerAccountId);
 	}
 
 	public OAuthToken getAccessToken(Serializable accountId, String provider) {
-		List<OAuthToken> tokens = jdbcTemplate.query(accessTokenQuery, new RowMapper<OAuthToken>() {
+		List<OAuthToken> tokens = jdbcTemplate.query(ACCESS_TOKEN_QUERY, new RowMapper<OAuthToken>() {
 			public OAuthToken mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return new OAuthToken(encryptor.decrypt(rs.getString(1)), decryptIfPresent(rs.getString(2)));
+				return new OAuthToken(encryptor.decrypt(rs.getString("accessToken")), decryptIfPresent(rs
+						.getString("secret")));
 			}
 		}, accountId, provider);
 
@@ -278,27 +72,28 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 	}
 	
 	public OAuthToken getAccessToken(Serializable accountId, String provider, String providerAccountId) {
-		return jdbcTemplate.queryForObject(accessTokenByAccountIdQuery, new RowMapper<OAuthToken>() {
+		return jdbcTemplate.queryForObject(ACCESS_TOKEN_BY_ACCOUNT_ID_QUERY, new RowMapper<OAuthToken>() {
 			public OAuthToken mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return new OAuthToken(rs.getString(1), rs.getString(2));
+				return new OAuthToken(rs.getString("accessToken"), rs.getString("secret"));
 			}
 		}, accountId, provider, providerAccountId);
 	}
 
 	public String getProviderAccountId(Serializable accountId, String provider) {
-		List<String> accountIds = jdbcTemplate.queryForList(providerAccountIdQuery, String.class, accountId, provider);
+		List<String> accountIds = jdbcTemplate.queryForList(PROVIDER_ACCOUNT_ID_QUERY, String.class, accountId,
+				provider);
 		return accountIds.size() > 0 ? accountIds.get(0) : null;
 	}
 
 	public Collection<AccountConnection> getAccountConnections(Serializable accountId, String provider) {
-		return jdbcTemplate.query(accountConnectionsQuery, new RowMapper<AccountConnection>() {
+		return jdbcTemplate.query(ACCOUNT_CONNECTIONS_QUERY, new RowMapper<AccountConnection>() {
 			public AccountConnection mapRow(ResultSet rs, int rowNum) throws SQLException {
 				AccountConnection accountConnection = new AccountConnection();
-				accountConnection.setAccountId((Serializable) rs.getObject(1));
-				accountConnection.setProvider(rs.getString(2));
-				accountConnection.setAccessToken(new OAuthToken(rs.getString(3), rs.getString(4)));
-				accountConnection.setProviderAccountId(rs.getString(5));
-				accountConnection.setProviderProfileUrl(rs.getString(6));
+				accountConnection.setAccountId((Serializable) rs.getObject("member"));
+				accountConnection.setProvider(rs.getString("provider"));
+				accountConnection.setAccessToken(new OAuthToken(rs.getString("accessToken"), rs.getString("secret")));
+				accountConnection.setProviderAccountId(rs.getString("accountId"));
+				accountConnection.setProviderProfileUrl(rs.getString("profileUrl"));
 				return accountConnection;
 			}
 		}, accountId, provider);
@@ -314,22 +109,13 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 		return string != null ? encryptor.decrypt(string) : null;
 	}
 
-	private String providerAccountIdQuery;
-	private String connectionExistsQuery;
-	private String createConnectionQuery;
-	private String removeConnectionQuery;
-	private String removeAllConnectionsQuery;
-	private String accessTokenQuery;
-	private String accountConnectionsQuery;
-	private String accessTokenByAccountIdQuery;
-
-	static final String DEFAULT_PROVIDER_ACCOUNT_ID_QUERY = "select accountId from AccountConnection where member = ? and provider = ?";
-	static final String DEFAULT_CONNECTION_EXISTS_QUERY = "select exists(select 1 from AccountConnection where member = ? and provider = ?)";
-	static final String DEFAULT_CREATE_CONNECTION_QUERY = "insert into AccountConnection (member, provider, accessToken, secret, accountId, profileUrl) values (?, ?, ?, ?, ?, ?)";
-	static final String DEFAULT_REMOVE_CONNECTION_QUERY = "delete from AccountConnection where member = ? and provider = ? and accountId = ?";
-	static final String DEFAULT_REMOVE_ALL_CONNECTIONS_QUERY = "delete from AccountConnection where member = ? and provider = ?";
-	static final String DEFAULT_ACCESS_TOKEN_QUERY = "select accessToken, secret from AccountConnection where member = ? and provider = ?";
-	static final String DEFAULT_ACCESS_TOKEN_BY_ACCOUNT_ID_QUERY = "select accessToken, secret from AccountConnection where member = ? and provider = ? and accountId = ?";
-	static final String DEFAULT_ACCOUNT_CONNECTIONS_QUERY = "select member, provider, accessToken, secret, accountId, profileUrl from AccountConnection where member = ? and provider = ?";
+	static final String PROVIDER_ACCOUNT_ID_QUERY = "select accountId from AccountConnection where member = ? and provider = ?";
+	static final String CONNECTION_EXISTS_QUERY = "select exists(select 1 from AccountConnection where member = ? and provider = ?)";
+	static final String CREATE_CONNECTION_QUERY = "insert into AccountConnection (member, provider, accessToken, secret, accountId, profileUrl) values (?, ?, ?, ?, ?, ?)";
+	static final String REMOVE_CONNECTION_QUERY = "delete from AccountConnection where member = ? and provider = ? and accountId = ?";
+	static final String REMOVE_ALL_CONNECTIONS_QUERY = "delete from AccountConnection where member = ? and provider = ?";
+	static final String ACCESS_TOKEN_QUERY = "select accessToken, secret from AccountConnection where member = ? and provider = ?";
+	static final String ACCESS_TOKEN_BY_ACCOUNT_ID_QUERY = "select accessToken, secret from AccountConnection where member = ? and provider = ? and accountId = ?";
+	static final String ACCOUNT_CONNECTIONS_QUERY = "select member, provider, accessToken, secret, accountId, profileUrl from AccountConnection where member = ? and provider = ?";
 
 }

@@ -1,14 +1,11 @@
 package org.springframework.social.connect;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.security.encrypt.SearchableStringEncryptor;
 import org.springframework.security.encrypt.StringEncryptor;
@@ -71,18 +68,5 @@ public class JdbcServiceProviderFactoryTest {
 		assertEquals("facebook", facebookProvider.getName());
 		assertEquals("Facebook", facebookProvider.getDisplayName());
 		assertEquals("345678901", facebookProvider.getApiKey());
-	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void setServiceProviderByNameQuery() {
-		StringEncryptor encryptor = new SearchableStringEncryptor("secret", "5b8bd7612cdab5ed");
-		JdbcTemplate mockJdbcTemplate = mock(JdbcTemplate.class);
-		String testSql = "select something from somewhere where name=?";
-		JdbcServiceProviderFactory factory = new JdbcServiceProviderFactory(mockJdbcTemplate, encryptor,
-				new FakeAccountIdResolver());
-		factory.setServiceProviderQuery(testSql);
-		factory.getServiceProvider("foo");
-		verify(mockJdbcTemplate).queryForObject(eq(testSql), any(RowMapper.class), eq("foo"));
 	}
 }
