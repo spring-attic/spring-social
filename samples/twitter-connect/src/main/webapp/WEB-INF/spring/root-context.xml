@@ -6,7 +6,6 @@
 	<!-- Root Context: defines shared resources visible to all other web components -->
 		
 	<import resource="data.xml" />
-
-	<import resource="security-oauth-consumer.xml" />
+	<import resource="social-connection.xml" />
 
 </beans>

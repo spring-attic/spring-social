@@ -1,2 +1,0 @@
-insert into ServiceProvider (name, displayName, implementation, apiKey, secret, requestTokenUrl, authorizeUrl, accessTokenUrl) values ('twitter', 'Twitter', 'org.springframework.social.connect.providers.TwitterServiceProvider', 'kqAm0GiPCT2owEtyTLPsug', '3461TFWV52VJuppKeaWMi8lKOxXMZtYLPGISq4nJ5s', 'http://twitter.com/oauth/request_token', 'https://twitter.com/oauth/authorize?oauth_token={token}', 'https://twitter.com/oauth/access_token');
-insert into Member (firstName, lastName, email, password, username) values ('Craig', 'Walls', 'cwalls@vmware.com', 'password', 'habuma');

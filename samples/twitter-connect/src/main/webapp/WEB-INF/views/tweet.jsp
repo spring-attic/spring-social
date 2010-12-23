@@ -4,17 +4,12 @@
 <%@ page session="false" %>
 <html>
 <head>
-	<title>Twitter Sample: Tweet</title>
+	<title>Tweet-A-Lot: Send a Tweet</title>
 </head>
 <body>
-<h1>Twitter Sample: Tweet</h1>
+<h1>Tweet-A-Lot: Send a Tweet</h1>
 
-<c:if test="${empty accountConnectionList}">
-<p>You don't have any Twitter connections (<a href="connect/twitter">Create one</a>).</p>
-</c:if>
-
-<c:if test="${not empty accountConnectionList}">
-<sf:form method="post" modelAttribute="tweetForm">
+<sf:form action="tweet" method="post" modelAttribute="tweetForm">
 	Tweet using
 	<c:if test="${fn:length(accountConnectionList) eq 1}">
 		<b><c:out value="${accountConnectionList[0].providerAccountId}" /></b>
@@ -26,11 +21,11 @@
 		<sf:checkbox path="tweetToAll" label="Tweet to all"/>
 	</c:if>
 	<br/>
+	<a href="<c:url value="/connect/twitter"/>">Add a new connection</a>
+	<br/>
 	<sf:textarea path="message" rows="5" cols="80"/><br/>
 	<input type="submit" value="Send Tweet"/>
 </sf:form>
-</c:if>
-
 
 </body>
 </html>

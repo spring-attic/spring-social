@@ -23,8 +23,7 @@
 	</bean>
 
 	<jdbc:embedded-database id="dataSource" type="H2">
-		<jdbc:script location="classpath:/org/springframework/social/samples/twitter/db/Member.sql" />
 		<jdbc:script location="classpath:/org/springframework/social/samples/twitter/db/ConnectedAccount.sql" />
-		<jdbc:script location="classpath:/org/springframework/social/samples/twitter/db/test-data.sql" />
+		<jdbc:script location="classpath:/org/springframework/social/samples/twitter/db/ServiceProviders-data.sql" />
 	</jdbc:embedded-database>	
 </beans>

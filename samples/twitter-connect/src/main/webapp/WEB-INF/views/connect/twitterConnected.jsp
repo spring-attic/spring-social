@@ -1,6 +1,12 @@
-<%@ page session="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="s" %>
+<%@ page session="false" %>
+<html>
+<head>
+	<title>Tweet-A-Lot: Connected to Twitter</title>
+</head>
+<body>
+<h1>Tweet-A-Lot: Connected to Twitter</h1>
 
 <c:if test="${not empty message}">
 <div class="${message.type.cssClass}">${message.text}</div>
@@ -8,7 +14,6 @@
 
 <form action="<c:url value="/connect/twitter" />" method="POST">
 	<div class="formInfo">
-		<h2>Connect to Twitter</h2>
 		<p>The Twitter Connect sample application is already connected to your Twitter account.
 			Click the button to create another connection with Twitter.</p>
 			
@@ -16,3 +21,6 @@
 	</div>
 	<p><button type="submit"><img src="<c:url value="/resources/social/twitter/signin.png" />"/></button></p>
 </form>
+
+</body>
+</html>

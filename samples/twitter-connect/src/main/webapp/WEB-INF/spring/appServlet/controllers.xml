@@ -8,12 +8,10 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
 	<!-- Scans within the base package of the application for @Components to configure as beans -->
-	<context:component-scan base-package="org.springframework.social.samples.twitter.home" />
+	<context:component-scan base-package="org.springframework.social.samples.twitter" />
 	
 	<bean class="org.springframework.social.connect.web.ConnectController">
 		<constructor-arg ref="serviceProviderFactory" />
 		<constructor-arg value="http://localhost:8080/twitter-connect" />
 	</bean>
-	
-	<bean class="org.springframework.social.samples.twitter.connect.DisconnectController" autowire="constructor" />
 </beans>
