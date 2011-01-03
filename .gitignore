@@ -7,3 +7,7 @@ spring-social-core/src/test/java/exploration
 **/.project
 **/.settings
 **/bin
+samples/**/.classpath
+samples/**/.project
+samples/**/.settings
+samples/**/bin
