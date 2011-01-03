@@ -84,9 +84,10 @@ public class TwitterTemplateTest {
 		assertEquals("Description", profile.getDescription());
 		assertEquals("http://www.springsource.org", profile.getUrl());
 		assertEquals("http://a3.twimg.com/profile_images/1205746571/me2_300_normal.jpg", profile.getProfileImageUrl());
-		// Date createdDate = profile.getCreatedDate();
-		// assertEquals("6/25/07", DateFormat.getDateInstance(DateFormat.SHORT,
-		// Locale.ENGLISH).format(createdDate));
+		Date createdDate = profile.getCreatedDate();
+		// it's a fixed point in time, so this is the easiest way to assert that
+		// the date is handled correctly
+		assertEquals(1182815404000L, createdDate.getTime());
 	}
 
 	@Test
