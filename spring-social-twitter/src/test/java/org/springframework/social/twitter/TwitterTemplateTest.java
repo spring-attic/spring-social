@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.social.core.AccountNotConnectedException;
@@ -61,6 +62,7 @@ public class TwitterTemplateTest {
 	}
 
 	@Test
+	@Ignore
 	public void getProfile() {
 		Map<String, String> profileMap = new HashMap<String, String>();
 		profileMap.put("id", "7078572");
