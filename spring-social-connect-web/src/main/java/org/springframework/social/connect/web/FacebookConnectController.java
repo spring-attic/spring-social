@@ -21,7 +21,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.security.core.Authentication;
 import org.springframework.social.connect.ServiceProvider;
 import org.springframework.social.facebook.FacebookAccessToken;
 import org.springframework.social.facebook.FacebookOperations;
@@ -88,7 +87,7 @@ public class FacebookConnectController {
 	}
 
 	@RequestMapping(value = "/connect/facebook", method = RequestMethod.DELETE)
-	public String disconnectFacebook(HttpServletRequest request, Authentication authentication) {
+	public String disconnectFacebook(HttpServletRequest request) {
 		facebookProvider.disconnect();
 		return "redirect:/connect/facebook";
 	}
