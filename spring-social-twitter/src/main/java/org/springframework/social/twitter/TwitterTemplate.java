@@ -140,6 +140,8 @@ public class TwitterTemplate implements TwitterOperations {
 		profile.setDescription(String.valueOf(response.get("description")));
 		profile.setLocation(String.valueOf(response.get("location")));
 		profile.setUrl(String.valueOf(response.get("url")));
+		profile.setProfileImageUrl(String.valueOf(response.get("profile_image_url")));
+		profile.setCreatedDate(toDate(String.valueOf(response.get("created_at")), timelineDateFormat));
 		return profile;
 	}
 

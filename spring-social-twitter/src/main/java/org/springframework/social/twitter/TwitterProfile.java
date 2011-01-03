@@ -15,6 +15,8 @@
  */
 package org.springframework.social.twitter;
 
+import java.util.Date;
+
 /**
  * Model class representing a Twitter user's profile information.
  * 
@@ -25,8 +27,10 @@ public class TwitterProfile {
 	private String screenName;
 	private String name;
 	private String url;
+	private String profileImageUrl;
 	private String description;
 	private String location;
+	private Date createdDate;
 
 	/**
 	 * The user's Twitter ID
@@ -93,11 +97,44 @@ public class TwitterProfile {
 		this.description = description;
 	}
 
+	/**
+	 * The user's location
+	 * 
+	 * @return The user's location
+	 */
 	public String getLocation() {
 		return location;
 	}
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+
+	public void setProfileImageUrl(String profileImageUrl) {
+		this.profileImageUrl = profileImageUrl;
+	}
+
+	/**
+	 * <p>
+	 * The URL of the user's profile image in "normal" size (48x48).
+	 * </p>
+	 * 
+	 * @return The URL of the user's normal-sized profile image.
+	 */
+	public String getProfileImageUrl() {
+		return profileImageUrl;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
+	/**
+	 * The date that the Twitter profile was created.
+	 * 
+	 * @return The date that the Twitter profile was created.
+	 */
+	public Date getCreatedDate() {
+		return createdDate;
 	}
 }

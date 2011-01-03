@@ -101,7 +101,8 @@ configure(javaprojects) {
     s2OAuthVersion = '1.0.0.M1'
     scribeVersion = '1.0.8'
     servletApiVersion = '2.5'
-    springVersion = '3.0.5.RELEASE'
+//    springVersion = '3.0.5.RELEASE'
+    springVersion = '3.1.0.BUILD-SNAPSHOT'
     
 
     sourceSets {
