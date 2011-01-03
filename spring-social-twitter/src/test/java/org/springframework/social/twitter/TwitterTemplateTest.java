@@ -24,10 +24,12 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.social.twitter.TwitterResponseStatusCodeTranslator.*;
 import static org.springframework.social.twitter.TwitterTemplate.*;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Before;
@@ -58,6 +60,34 @@ public class TwitterTemplateTest {
 		when(restOperations.getForObject(eq(VERIFY_CREDENTIALS_URL), eq(Map.class))).thenReturn(
 				singletonMap("screen_name", "habuma"));
 		assertEquals("habuma", twitter.getProfileId());
+	}
+
+	@Test
+	public void getProfile() {
+		Map<String, String> profileMap = new HashMap<String, String>();
+		profileMap.put("id", "7078572");
+		profileMap.put("screen_name", "habuma");
+		profileMap.put("name", "Craig Walls");
+		profileMap.put("location", "Plano, TX");
+		profileMap.put("description", "Description");
+		profileMap.put("url", "http://www.springsource.org");
+		profileMap.put("profile_image_url", "http://a3.twimg.com/profile_images/1205746571/me2_300_normal.jpg");
+		profileMap.put("created_at", "Mon Jun 25 23:50:04 +0000 2007");
+
+		when(
+				restOperations.getForObject(eq(USER_PROFILE_URL + "?screen_name={screenName}"), eq(Map.class),
+						eq("habuma"))).thenReturn(profileMap);
+
+		TwitterProfile profile = twitter.getProfile("habuma");
+		assertEquals(7078572, profile.getId());
+		assertEquals("habuma", profile.getScreenName());
+		assertEquals("Craig Walls", profile.getName());
+		assertEquals("Plano, TX", profile.getLocation());
+		assertEquals("Description", profile.getDescription());
+		assertEquals("http://www.springsource.org", profile.getUrl());
+		assertEquals("http://a3.twimg.com/profile_images/1205746571/me2_300_normal.jpg", profile.getProfileImageUrl());
+		Date createdDate = profile.getCreatedDate();
+		assertEquals("6/25/07", DateFormat.getDateInstance(DateFormat.SHORT, Locale.ENGLISH).format(createdDate));
 	}
 
 	@Test
