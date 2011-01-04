@@ -64,7 +64,7 @@ public class FacebookConnectController {
 	}
 
 	@RequestMapping(value = "/connect/facebook", method = RequestMethod.GET)
-	public String connectView(@FacebookUserId String facebookUserId, Model model) {
+	public String connectView(@FacebookUserId(required = false) String facebookUserId, Model model) {
 		if (facebookProvider.isConnected()) {
 			model.addAttribute("facebookUserId", facebookUserId);
 			return "connect/facebookConnected";
@@ -74,8 +74,8 @@ public class FacebookConnectController {
 	}
 
 	@RequestMapping(value = "/connect/facebook", method = RequestMethod.POST)
-	public String connectAccountToFacebook(@FacebookAccessToken String accessToken,
-			@FacebookUserId String facebookUserId, WebRequest request) {
+	public String connectAccountToFacebook(@FacebookAccessToken(required = false) String accessToken,
+			@FacebookUserId(required = false) String facebookUserId, WebRequest request) {
 		if (facebookUserId != null && accessToken != null) {
 			preConnect(facebookProvider, request);
 			facebookProvider.addConnection(accessToken, facebookUserId);
