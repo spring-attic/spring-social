@@ -30,43 +30,32 @@ public class AccountConnection {
 	private String providerAccountId;
 	private String providerProfileUrl;
 
-	public Serializable getAccountId() {
-		return accountId;
+	public AccountConnection(Serializable accountId, String provider, OAuthToken accessToken, String providerAccountId,
+			String providerProfileUrl) {
+		this.accountId = accountId;
+		this.provider = provider;
+		this.accessToken = accessToken;
+		this.providerAccountId = providerAccountId;
+		this.providerProfileUrl = providerProfileUrl;
 	}
 
-	public void setAccountId(Serializable accountId) {
-		this.accountId = accountId;
+	public Serializable getAccountId() {
+		return accountId;
 	}
 
 	public String getProvider() {
 		return provider;
 	}
 
-	public void setProvider(String provider) {
-		this.provider = provider;
-	}
-
 	public OAuthToken getAccessToken() {
 		return accessToken;
-	}
-
-	public void setAccessToken(OAuthToken accessToken) {
-		this.accessToken = accessToken;
 	}
 
 	public String getProviderAccountId() {
 		return providerAccountId;
 	}
 
-	public void setProviderAccountId(String providerAccountId) {
-		this.providerAccountId = providerAccountId;
-	}
-
 	public String getProviderProfileUrl() {
 		return providerProfileUrl;
-	}
-
-	public void setProviderProfileUrl(String providerProfileUrl) {
-		this.providerProfileUrl = providerProfileUrl;
 	}
 }

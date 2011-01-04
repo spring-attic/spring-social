@@ -88,12 +88,9 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 	public Collection<AccountConnection> getAccountConnections(Serializable accountId, String provider) {
 		return jdbcTemplate.query(ACCOUNT_CONNECTIONS_QUERY, new RowMapper<AccountConnection>() {
 			public AccountConnection mapRow(ResultSet rs, int rowNum) throws SQLException {
-				AccountConnection accountConnection = new AccountConnection();
-				accountConnection.setAccountId((Serializable) rs.getObject("member"));
-				accountConnection.setProvider(rs.getString("provider"));
-				accountConnection.setAccessToken(new OAuthToken(rs.getString("accessToken"), rs.getString("secret")));
-				accountConnection.setProviderAccountId(rs.getString("accountId"));
-				accountConnection.setProviderProfileUrl(rs.getString("profileUrl"));
+				AccountConnection accountConnection = new AccountConnection((Serializable) rs.getObject("member"), rs
+						.getString("provider"), new OAuthToken(rs.getString("accessToken"), rs.getString("secret")), rs
+						.getString("accountId"), rs.getString("profileUrl"));
 				return accountConnection;
 			}
 		}, accountId, provider);
