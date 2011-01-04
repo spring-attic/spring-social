@@ -4,18 +4,13 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<!-- Loads ServiceProviders by name -->
-	<bean id="serviceProviderFactory" class="org.springframework.social.connect.JdbcServiceProviderFactory">
+	<bean id="serviceProviderFactory" class="org.springframework.social.connect.jdbc.JdbcServiceProviderFactory">
 		<constructor-arg ref="jdbcTemplate" />
 		<constructor-arg ref="stringEncryptor" />
-		<constructor-arg ref="accountIdResolver" />
 	</bean>
 
 	<!-- String encryptor for encrypting OAuth specifics in the DB -->
 	<bean id="stringEncryptor" class="org.springframework.security.encrypt.NoOpStringEncryptor" factory-method="getInstance" />				
-
-	<!-- Account ID resolver used internally by the service provider -->				
-	<bean id="accountIdResolver" 
-			class="org.springframework.social.samples.twitter.TwitterSampleAccountIdResolver" />
 
 	<!-- Twitter service provider -->
 	<bean id="twitterProvider" factory-bean="serviceProviderFactory" factory-method="getServiceProvider">

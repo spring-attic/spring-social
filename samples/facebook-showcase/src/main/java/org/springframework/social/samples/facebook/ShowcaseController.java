@@ -40,7 +40,7 @@ public class ShowcaseController {
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Model model) {
-		Collection<AccountConnection> connections = facebookProvider.getConnections();
+		Collection<AccountConnection> connections = facebookProvider.getConnections(1);
 		if (connections.size() > 0) {
 			model.addAttribute(connections);
 			model.addAttribute(new MessageForm());
@@ -53,7 +53,7 @@ public class ShowcaseController {
 	public String postToWall(MessageForm tweetForm) {
 		List<String> tweetToScreenNames = new ArrayList<String>();
 		if (tweetForm.isTweetToAll()) {
-			Collection<AccountConnection> connections = facebookProvider.getConnections();
+			Collection<AccountConnection> connections = facebookProvider.getConnections(1);
 			for (AccountConnection accountConnection : connections) {
 				tweetToScreenNames.add(accountConnection.getProviderAccountId());
 			}

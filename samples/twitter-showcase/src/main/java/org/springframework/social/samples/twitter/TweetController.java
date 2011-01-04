@@ -40,7 +40,7 @@ public class TweetController {
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Model model) {
-		Collection<AccountConnection> connections = twitterProvider.getConnections();
+		Collection<AccountConnection> connections = twitterProvider.getConnections(1);
 		if (connections.size() > 0) {
 			model.addAttribute(connections);
 			model.addAttribute(new TweetForm());
@@ -53,7 +53,7 @@ public class TweetController {
 	public String postTweet(TweetForm tweetForm) {
 		List<String> tweetToScreenNames = new ArrayList<String>();
 		if (tweetForm.isTweetToAll()) {
-			Collection<AccountConnection> connections = twitterProvider.getConnections();
+			Collection<AccountConnection> connections = twitterProvider.getConnections(1);
 			for (AccountConnection accountConnection : connections) {
 				tweetToScreenNames.add(accountConnection.getProviderAccountId());
 			}
@@ -62,7 +62,7 @@ public class TweetController {
 		}
 
 		for (String screenName : tweetToScreenNames) {
-			TwitterOperations twitter = twitterProvider.getServiceOperations(screenName);
+			TwitterOperations twitter = twitterProvider.getServiceOperations(1, screenName);
 			twitter.updateStatus(tweetForm.getMessage());
 		}
 

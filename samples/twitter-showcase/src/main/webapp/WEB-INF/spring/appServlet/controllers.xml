@@ -12,6 +12,12 @@
 	
 	<bean class="org.springframework.social.connect.web.ConnectController">
 		<constructor-arg ref="serviceProviderFactory" />
-		<constructor-arg value="http://localhost:8080/twitter-connect" />
+		<constructor-arg value="http://localhost:8080/twitter-showcase" />
+		<constructor-arg ref="accountIdResolver" />
 	</bean>
+
+	<!-- Account ID resolver used internally by the connect controller -->				
+	<bean id="accountIdResolver" 
+			class="org.springframework.social.samples.twitter.TwitterSampleAccountIdResolver" />
+	
 </beans>
