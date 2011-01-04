@@ -16,13 +16,15 @@
 <form id="disconnect" method="post">
 	<div class="formInfo">
 		<p>
-			Your Greenhouse account is connected to your Facebook account.
+			Facebook Showcase is connected to your Facebook account.
 			Click the button if you wish to disconnect.
 		</p>
 	</div>
 	<button type="submit" onclick="FB.logout(function(response) { return true; } );">Disconnect</button>	
 	<input type="hidden" name="_method" value="delete" />
 </form>
+
+<a href="<c:url value="/"/>">Return to home page</a>
 
 <facebook:init />
 

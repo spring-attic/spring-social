@@ -37,7 +37,8 @@ public class AnnotationMethodHandlerAdapterPostProcessor implements BeanPostProc
 	}
 
 	/**
-	 * Needed by {@link FacebookWebArgumentResolver} to resolve Facebook cookies such as the user's Facebook ID and Greenhouse->Facebook access token. 
+	 * Needed by {@link FacebookWebArgumentResolver} to resolve Facebook cookies
+	 * such as the user's Facebook ID and Facebook access token.
 	 */
 	@Value("#{facebookProvider.apiKey}")
 	private String facebookApiKey;

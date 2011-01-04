@@ -23,7 +23,7 @@
 
 <form id="fb_signin" action="<c:url value="/connect/facebook" />" method="post">
 	<div class="formInfo">
-		<p>Click the button to connect your Greenhouse account with your Facebook account.</p>
+		<p>Click the button to connect Facebook Showcase with your Facebook account.</p>
 	</div>
 	<div id="fb-root"></div>	
 	<p><fb:login-button perms="email,publish_stream,offline_access" onlogin="signInWithFacebook();" v="2" length="long">Connect to Facebook</fb:login-button></p>

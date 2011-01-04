@@ -15,15 +15,10 @@
  */
 package org.springframework.social.samples.facebook;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import javax.inject.Inject;
 
-import org.springframework.social.connect.AccountConnection;
 import org.springframework.social.connect.providers.FacebookServiceProvider;
-import org.springframework.social.facebook.FacebookOperations;
+import org.springframework.social.facebook.FacebookProfile;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,32 +35,17 @@ public class ShowcaseController {
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Model model) {
-		Collection<AccountConnection> connections = facebookProvider.getConnections(1);
-		if (connections.size() > 0) {
-			model.addAttribute(connections);
-			model.addAttribute(new MessageForm());
-			return "tweet";
+		if (facebookProvider.isConnected(1)) {
+			FacebookProfile userProfile = facebookProvider.getServiceOperations(1).getUserProfile();
+			model.addAttribute("fbUser", userProfile);
+			return "home";
 		}
 		return "redirect:/connect/facebook";
 	}
 
-	@RequestMapping(value = "/tweet", method = RequestMethod.POST)
-	public String postToWall(MessageForm tweetForm) {
-		List<String> tweetToScreenNames = new ArrayList<String>();
-		if (tweetForm.isTweetToAll()) {
-			Collection<AccountConnection> connections = facebookProvider.getConnections(1);
-			for (AccountConnection accountConnection : connections) {
-				tweetToScreenNames.add(accountConnection.getProviderAccountId());
-			}
-		} else {
-			tweetToScreenNames.add(tweetForm.getScreenName());
-		}
-
-		for (String screenName : tweetToScreenNames) {
-			FacebookOperations facebook = facebookProvider.getServiceOperations(1, screenName);
-			facebook.updateStatus(tweetForm.getMessage());
-		}
-
+	@RequestMapping(value = "/wall", method = RequestMethod.POST)
+	public String postToWall(String message) {
+		facebookProvider.getServiceOperations(1).updateStatus(message);
 		return "redirect:/";
 	}
 }
