@@ -15,6 +15,7 @@
  */
 package org.springframework.social.connect;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 
@@ -84,7 +85,7 @@ public interface ServiceProvider<S> {
 	 * The requestToken required during the connection handshake is no longer valid and cannot be reused.
 	 * @param requestToken the OAuth request token that was authorized by the member.
 	 */
-	OAuthToken connect(AuthorizedRequestToken requestToken);
+	void connect(Serializable accountId, AuthorizedRequestToken requestToken);
 
 	/**
 	 * Records an existing connection between a member account and this service provider.
@@ -92,12 +93,12 @@ public interface ServiceProvider<S> {
 	 * @param accessToken the access token that was granted as a result of the connection
 	 * @param providerAccountId the id of the user in the provider's system; may be an assigned number or a user-selected screen name.
 	 */
-	void addConnection(String accessToken, String providerAccountId);
+	void addConnection(Serializable accountId, String accessToken, String providerAccountId);
 
 	/**
 	 * Returns true if the member account is connected to this provider, false otherwise.
 	 */
-	boolean isConnected();
+	boolean isConnected(Serializable accountId);
 
 	/**
 	 * <p>
@@ -113,7 +114,7 @@ public interface ServiceProvider<S> {
 	 * found will be used to create the service operations instance.
 	 * </p>
 	 */
-	S getServiceOperations();
+	S getServiceOperations(Serializable accountId);
 
 	/**
 	 * <p>
@@ -133,7 +134,7 @@ public interface ServiceProvider<S> {
 	 */
 	S getServiceOperations(OAuthToken accessToken);
 
-	S getServiceOperations(String providerAccountId);
+	S getServiceOperations(Serializable accountId, String providerAccountId);
 
 	/**
 	 * Retrieves all connections that the user has made with the provider.
@@ -144,19 +145,19 @@ public interface ServiceProvider<S> {
 	 * @return a collection of {@link AccountConnection}s that the user has
 	 *         established with the provider.
 	 */
-	Collection<AccountConnection> getConnections();
+	Collection<AccountConnection> getConnections(Serializable accountId);
 
 	/**
 	 * Severs all connections between the member account and this service
 	 * provider. Has no effect if no connection is established to begin with.
 	 */
-	void disconnect();
+	void disconnect(Serializable accountId);
 	
 	/**
 	 * Severs a specific connection between the member account and this service
 	 * provider.
 	 */
-	void disconnect(String providerAccountId);
+	void disconnect(Serializable accountId, String providerAccountId);
 
 	// additional finders
 
@@ -165,6 +166,6 @@ public interface ServiceProvider<S> {
 	 * May be an assigned internal identifier, such as a sequence number, or a user-selected screen name.
 	 * Generally unique across accounts registered with this provider.
 	 */
-	String getProviderAccountId();
+	String getProviderAccountId(Serializable accountId);
 
 }

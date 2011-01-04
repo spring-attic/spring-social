@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.social.connect.AccountIdResolver;
 import org.springframework.social.connect.AuthorizedRequestToken;
 import org.springframework.social.connect.OAuthToken;
 import org.springframework.social.connect.ServiceProvider;
@@ -52,13 +53,17 @@ public class ConnectController {
 	
 	private MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors;
 
+	private final AccountIdResolver accountIdResolver;
+
 	/**
 	 * Constructs a ConnectController.
 	 * @param serviceProviderFactory the factory that loads the ServiceProviders members wish to connect to
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
 	 */
-	public ConnectController(ServiceProviderFactory serviceProviderFactory, String applicationUrl) {
+	public ConnectController(ServiceProviderFactory serviceProviderFactory, String applicationUrl,
+			AccountIdResolver accountIdResolver) {
 		this.serviceProviderFactory = serviceProviderFactory;
+		this.accountIdResolver = accountIdResolver;
 		this.baseCallbackUrl = applicationUrl + "/connect/";
 		this.interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
 	}
@@ -79,7 +84,7 @@ public class ConnectController {
 	@RequestMapping(value="/connect/{name}", method=RequestMethod.GET)
 	public String connect(@PathVariable String name) {
 		String baseViewPath = "connect/" + name;
-		if (getServiceProvider(name).isConnected()) {
+		if (getServiceProvider(name).isConnected(accountIdResolver.resolveAccountId())) {
 			return baseViewPath + "Connected";
 		} else {
 			return baseViewPath + "Connect";
@@ -114,7 +119,7 @@ public class ConnectController {
 		}
 		request.removeAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		ServiceProvider<?> provider = getServiceProvider(name);
-		provider.connect(new AuthorizedRequestToken(requestToken, verifier));
+		provider.connect(accountIdResolver.resolveAccountId(), new AuthorizedRequestToken(requestToken, verifier));
 		postConnect(provider, request);
 		// FlashMap.setSuccessMessage("Your Greenhouse account is now connected to your "
 		// + provider.getDisplayName() + " account!");
@@ -127,7 +132,7 @@ public class ConnectController {
 	 */
 	@RequestMapping(value="/connect/{name}", method=RequestMethod.DELETE)
 	public String disconnect(@PathVariable String name) {
-		getServiceProvider(name).disconnect();
+		getServiceProvider(name).disconnect(accountIdResolver.resolveAccountId());
 		return "redirect:/connect/" + name;
 	}
 

@@ -17,7 +17,6 @@ package org.springframework.social.connect.providers;
 
 import org.springframework.social.connect.AbstractServiceProvider;
 import org.springframework.social.connect.AccountConnectionRepository;
-import org.springframework.social.connect.AccountIdResolver;
 import org.springframework.social.connect.OAuthToken;
 import org.springframework.social.connect.ServiceProviderParameters;
 import org.springframework.social.tripit.TripItOperations;
@@ -30,8 +29,8 @@ import org.springframework.social.tripit.TripItTemplate;
 public final class TripItServiceProvider extends AbstractServiceProvider<TripItOperations> {
 	
 	public TripItServiceProvider(ServiceProviderParameters parameters,
-			AccountConnectionRepository connectionRepository, AccountIdResolver accountIdResolver) {
-		super(parameters, connectionRepository, accountIdResolver);
+ AccountConnectionRepository connectionRepository) {
+		super(parameters, connectionRepository);
 	}
 
 	protected TripItOperations createServiceOperations(OAuthToken accessToken) {

@@ -21,6 +21,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.social.connect.AccountIdResolver;
 import org.springframework.social.connect.ServiceProvider;
 import org.springframework.social.facebook.FacebookAccessToken;
 import org.springframework.social.facebook.FacebookOperations;
@@ -46,8 +47,12 @@ public class FacebookConnectController {
 
 	private MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors;
 
-	public FacebookConnectController(ServiceProvider<FacebookOperations> facebookProvider) {
+	private final AccountIdResolver accountIdResolver;
+
+	public FacebookConnectController(ServiceProvider<FacebookOperations> facebookProvider,
+			AccountIdResolver accountIdResolver) {
 		this.facebookProvider = facebookProvider;
+		this.accountIdResolver = accountIdResolver;
 		this.interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
 	}
 
@@ -65,7 +70,7 @@ public class FacebookConnectController {
 
 	@RequestMapping(value = "/connect/facebook", method = RequestMethod.GET)
 	public String connectView(@FacebookUserId(required = false) String facebookUserId, Model model) {
-		if (facebookProvider.isConnected()) {
+		if (facebookProvider.isConnected(accountIdResolver.resolveAccountId())) {
 			model.addAttribute("facebookUserId", facebookUserId);
 			return "connect/facebookConnected";
 		} else {
@@ -78,7 +83,7 @@ public class FacebookConnectController {
 			@FacebookUserId(required = false) String facebookUserId, WebRequest request) {
 		if (facebookUserId != null && accessToken != null) {
 			preConnect(facebookProvider, request);
-			facebookProvider.addConnection(accessToken, facebookUserId);
+			facebookProvider.addConnection(accountIdResolver.resolveAccountId(), accessToken, facebookUserId);
 			postConnect(facebookProvider, request);
 
 			// FlashMap.setSuccessMessage("Your Greenhouse account is now connected to your Facebook account!");
@@ -88,7 +93,7 @@ public class FacebookConnectController {
 
 	@RequestMapping(value = "/connect/facebook", method = RequestMethod.DELETE)
 	public String disconnectFacebook(HttpServletRequest request) {
-		facebookProvider.disconnect();
+		facebookProvider.disconnect(accountIdResolver.resolveAccountId());
 		return "redirect:/connect/facebook";
 	}
 
