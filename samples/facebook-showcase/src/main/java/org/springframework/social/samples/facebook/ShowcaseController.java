@@ -62,7 +62,7 @@ public class ShowcaseController {
 		}
 
 		for (String screenName : tweetToScreenNames) {
-			FacebookOperations facebook = facebookProvider.getServiceOperations(screenName);
+			FacebookOperations facebook = facebookProvider.getServiceOperations(1, screenName);
 			facebook.updateStatus(tweetForm.getMessage());
 		}
 

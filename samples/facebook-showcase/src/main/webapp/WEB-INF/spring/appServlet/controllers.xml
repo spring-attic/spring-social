@@ -12,5 +12,11 @@
 	
 	<bean class="org.springframework.social.connect.web.FacebookConnectController">
 		<constructor-arg ref="facebookProvider" />
+		<constructor-arg ref="accountIdResolver" />
 	</bean>
+	
+	<!-- Account ID resolver used internally by the connect controller -->				
+	<bean id="accountIdResolver" 
+			class="org.springframework.social.samples.facebook.FacebookShowcaseAccountIdResolver" />
+
 </beans>
