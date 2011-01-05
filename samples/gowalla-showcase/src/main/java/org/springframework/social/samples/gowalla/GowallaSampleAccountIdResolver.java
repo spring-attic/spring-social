@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.springframework.social.samples.gowalla;
 
-rootProject.name = 'spring-social'
+import java.io.Serializable;
 
-include 'docs'
-include 'spring-social-connect'
-include 'spring-social-connect-web'
-include 'spring-social-core'
-include 'spring-social-facebook'
-include 'spring-social-gowalla'
-include 'spring-social-linkedin'
-include 'spring-social-oauth'
-include 'spring-social-tripit'
-include 'spring-social-twitter'
+import org.springframework.social.connect.AccountIdResolver;
+
+public class GowallaSampleAccountIdResolver implements AccountIdResolver {
+	public Serializable resolveAccountId() {
+		// we only have a single user in the DB, and his ID is 1.
+		return 1L;
+	}
+}

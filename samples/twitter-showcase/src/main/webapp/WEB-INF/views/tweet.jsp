@@ -4,15 +4,16 @@
 <%@ page session="false" %>
 <html>
 <head>
-	<title>Tweet-A-Lot: Send a Tweet</title>
+	<title>Twitter Showcase: Send a Tweet</title>
 </head>
 <body>
-<h1>Tweet-A-Lot: Send a Tweet</h1>
+<h1>Twitter Showcase: Send a Tweet</h1>
 
 <sf:form action="tweet" method="post" modelAttribute="tweetForm">
 	Tweet using
 	<c:if test="${fn:length(accountConnectionList) eq 1}">
 		<b><c:out value="${accountConnectionList[0].providerAccountId}" /></b>
+		<input type="hidden" name="screenName" value="<c:out value="${accountConnectionList[0].providerAccountId}" />" />
 	</c:if>
 	<c:if test="${fn:length(accountConnectionList) gt 1}">
 		<sf:select path="screenName">

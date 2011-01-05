@@ -68,24 +68,36 @@ public interface ServiceProvider<S> {
 	OAuthToken fetchNewRequestToken(String callbackUrl);
 
 	/**
-	 * Construct the URL to redirect the member to for connection authorization.
-	 * @param requestToken the request token value, to be encoded in the authorize URL
-	 * @return the absolute authorize URL to redirect the member to for authorization
+	 * Construct the URL to redirect the member to for OAuth 1 connection
+	 * authorization.
+	 * 
+	 * @param requestToken
+	 *            the request token value, to be encoded in the authorize URL
+	 * @return the absolute authorize URL to redirect the member to for
+	 *         authorization
 	 */
 	String buildAuthorizeUrl(String requestToken);
 
 	/**
-	 * Connects a member account to this service provider.
-	 * Called after the user authorizes the connection at the {@link #buildAuthorizeUrl(String) authorizeUrl} and the service provider calls us back.
-	 * Internally, exchanges the authorized request token for an access token, then stores the awarded access token with the member account.
-	 * This access token identifies the connection between the member account and this service provider.
+	 * Connects a member account to this service provider. Called after the user
+	 * authorizes the connection at the {@link #buildAuthorizeUrl(String)
+	 * authorizeUrl} and the service provider calls us back. Internally,
+	 * exchanges the authorized request token for an access token, then stores
+	 * the awarded access token with the member account. This access token
+	 * identifies the connection between the member account and this service
+	 * provider.
 	 * <p>
 	 * This method completes the OAuth-based account connection process.
-	 * {@link #getServiceOperations(Long)} may now be called to get and invoke the service provider's API.
-	 * The requestToken required during the connection handshake is no longer valid and cannot be reused.
-	 * @param requestToken the OAuth request token that was authorized by the member.
+	 * {@link #getServiceOperations(Long)} may now be called to get and invoke
+	 * the service provider's API. The requestToken required during the
+	 * connection handshake is no longer valid and cannot be reused.
+	 * 
+	 * @param requestToken
+	 *            the OAuth request token that was authorized by the member.
 	 */
 	void connect(Serializable accountId, AuthorizedRequestToken requestToken);
+
+	void connect(Serializable accountId, String redirectUri, String code);
 
 	/**
 	 * Records an existing connection between a member account and this service provider.
@@ -168,4 +180,5 @@ public interface ServiceProvider<S> {
 	 */
 	String getProviderAccountId(Serializable accountId);
 
+	OAuthVersion getOAuthVersion();
 }

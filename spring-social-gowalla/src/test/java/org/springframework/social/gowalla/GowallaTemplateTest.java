@@ -13,16 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.springframework.social.gowalla;
 
-rootProject.name = 'spring-social'
+import static org.mockito.Mockito.*;
 
-include 'docs'
-include 'spring-social-connect'
-include 'spring-social-connect-web'
-include 'spring-social-core'
-include 'spring-social-facebook'
-include 'spring-social-gowalla'
-include 'spring-social-linkedin'
-include 'spring-social-oauth'
-include 'spring-social-tripit'
-include 'spring-social-twitter'
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.web.client.RestOperations;
+
+/**
+ * @author Craig Walls
+ */
+public class GowallaTemplateTest {
+	private GowallaTemplate gowalla;
+	private RestOperations restOperations;
+
+	@Before
+	public void setup() {
+		gowalla = new GowallaTemplate("ACCESS_TOKEN");
+		restOperations = mock(RestOperations.class);
+		gowalla.restOperations = restOperations;
+	}
+
+	@Test
+	public void getProfileId() {
+		// assertEquals("12345", gowalla.getProfileId());
+	}
+}

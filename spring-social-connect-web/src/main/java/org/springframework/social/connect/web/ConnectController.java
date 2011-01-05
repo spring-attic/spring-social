@@ -22,6 +22,7 @@ import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.AccountIdResolver;
 import org.springframework.social.connect.AuthorizedRequestToken;
 import org.springframework.social.connect.OAuthToken;
+import org.springframework.social.connect.OAuthVersion;
 import org.springframework.social.connect.ServiceProvider;
 import org.springframework.social.connect.ServiceProviderFactory;
 import org.springframework.stereotype.Controller;
@@ -99,9 +100,17 @@ public class ConnectController {
 	public String connect(@PathVariable String name, WebRequest request) {
 		ServiceProvider<?> provider = getServiceProvider(name);
 		preConnect(provider, request);
-		OAuthToken requestToken = provider.fetchNewRequestToken(baseCallbackUrl + name);
-		request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
-		return "redirect:" + provider.buildAuthorizeUrl(requestToken.getValue());
+
+		String authorizationUrlParameter = null;
+		if (provider.getOAuthVersion() == OAuthVersion.OAUTH_1) {
+			OAuthToken requestToken = provider.fetchNewRequestToken(baseCallbackUrl + name);
+			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
+			authorizationUrlParameter = requestToken.getValue();
+		} else {
+			authorizationUrlParameter = baseCallbackUrl + name;
+		}
+
+		return "redirect:" + provider.buildAuthorizeUrl(authorizationUrlParameter);
 	}
 	
 	/**
@@ -123,6 +132,14 @@ public class ConnectController {
 		postConnect(provider, request);
 		// FlashMap.setSuccessMessage("Your Greenhouse account is now connected to your "
 		// + provider.getDisplayName() + " account!");
+		return "redirect:/connect/" + name;
+	}
+
+	@RequestMapping(value = "/connect/{name}", method = RequestMethod.GET, params = "code")
+	public String authorizeCallback(@PathVariable String name, @RequestParam("code") String code, WebRequest request) {
+		ServiceProvider<?> provider = getServiceProvider(name);
+		provider.connect(accountIdResolver.resolveAccountId(), baseCallbackUrl + name, code);
+		postConnect(provider, request);
 		return "redirect:/connect/" + name;
 	}
 

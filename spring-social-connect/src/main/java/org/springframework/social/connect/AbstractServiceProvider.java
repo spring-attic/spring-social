@@ -17,7 +17,9 @@ package org.springframework.social.connect;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.scribe.extractors.BaseStringExtractorImpl;
 import org.scribe.extractors.HeaderExtractorImpl;
@@ -31,6 +33,7 @@ import org.scribe.oauth.OAuthService;
 import org.scribe.services.HMACSha1SignatureService;
 import org.scribe.services.TimestampServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * General-purpose base class for ServiceProvider implementations.
@@ -39,7 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	
-	private final ServiceProviderParameters parameters;
+	protected final ServiceProviderParameters parameters;
 
 	private final AccountConnectionRepository connectionRepository;
 	
@@ -75,12 +78,20 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	// connection management
 	
 	public OAuthToken fetchNewRequestToken(String callbackUrl) {
+		if (getOAuthVersion() == OAuthVersion.OAUTH_2) {
+			throw new IllegalStateException("You may not fetch a request token for an OAuth 2-based service provider");
+		}
+
 		Token requestToken = getOAuthService(callbackUrl).getRequestToken();
 		return new OAuthToken(requestToken.getToken(), requestToken.getSecret());
 	}
 
 	public String buildAuthorizeUrl(String requestToken) {
-		return parameters.getAuthorizeUrl().expand(requestToken).toString();
+		if (getOAuthVersion() == OAuthVersion.OAUTH_1) {
+			return parameters.getAuthorizeUrl().expand(requestToken).toString();
+		}
+
+		return parameters.getAuthorizeUrl().expand(parameters.getApiKey(), requestToken).toString();
 	}
 
 	public void connect(Serializable accountId, AuthorizedRequestToken requestToken) {
@@ -89,6 +100,24 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		String providerAccountId = fetchProviderAccountId(serviceOperations);
 		connectionRepository.addConnection(accountId, getName(), accessToken,
 				providerAccountId, buildProviderProfileUrl(providerAccountId, serviceOperations));
+	}
+
+	public void connect(Serializable accountId, String redirectUri, String code) {
+		RestTemplate rest = new RestTemplate();
+		Map<String, String> request = new HashMap<String, String>();
+		request.put("client_id", parameters.getApiKey());
+		request.put("client_secret", parameters.getSecret());
+		request.put("code", code);
+		request.put("redirect_uri", redirectUri);
+		Map<String, String> result = rest.postForObject(parameters.getAccessTokenUrl(), request, Map.class);
+		String accessToken = result.get("access_token");
+
+		OAuthToken oauthAccessToken = new OAuthToken(accessToken);
+		S serviceOperations = createServiceOperations(oauthAccessToken);
+		String username = fetchProviderAccountId(serviceOperations);
+
+		connectionRepository.addConnection(accountId, getName(), oauthAccessToken, username,
+				buildProviderProfileUrl(username, serviceOperations));
 	}
 
 	public void addConnection(Serializable accountId, String accessToken, String providerAccountId) {
@@ -131,6 +160,10 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 
 	public Collection<AccountConnection> getConnections(Serializable accountId) {
 		return connectionRepository.getAccountConnections(accountId, getName());
+	}
+
+	public OAuthVersion getOAuthVersion() {
+		return parameters.getRequestTokenUrl() == null ? OAuthVersion.OAUTH_2 : OAuthVersion.OAUTH_1;
 	}
 
 	// additional finders

@@ -154,6 +154,7 @@ project('spring-social-connect') {
         compile "org.springframework:spring-jdbc:$springVersion"
         compile project(':spring-social-core')
         compile project(':spring-social-facebook') { optional = true }
+        compile project(':spring-social-gowalla') { optional = true }
         compile project(':spring-social-linkedin') { optional = true }
         compile project(':spring-social-tripit') { optional = true }
         compile project(':spring-social-twitter') { optional = true }
@@ -175,6 +176,15 @@ project('spring-social-facebook') {
     dependencies {
         compile "commons-httpclient:commons-httpclient:$commonsHttpClientVersion"
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
+        compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+        compile project(':spring-social-core')
+        compile project(':spring-social-oauth')
+    }
+}
+
+project('spring-social-gowalla') {
+    description = 'Spring Social Gowalla'
+    dependencies {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
         compile project(':spring-social-oauth')
