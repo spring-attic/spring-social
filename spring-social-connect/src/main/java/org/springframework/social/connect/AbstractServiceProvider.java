@@ -110,17 +110,7 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		request.put("code", code);
 		request.put("redirect_uri", redirectUri);
 
-		String accessToken = null;
-		// TODO: Consider pushing this special case down into FacebookServiceProvider
-		if (getOAuthVersion() == OAuthVersion.FB_OAUTH_2) {
-			accessToken = getAccessTokenForFacebook(rest, request, accessToken);
-		} else {
-			@SuppressWarnings("unchecked")
-			Map<String, String> result = rest.postForObject(parameters.getAccessTokenUrl(), request, Map.class);
-			accessToken = result.get("access_token");
-		}
-
-		OAuthToken oauthAccessToken = new OAuthToken(accessToken);
+		OAuthToken oauthAccessToken = new OAuthToken(fetchOAuth2AccessToken(rest, request));
 		S serviceOperations = createServiceOperations(oauthAccessToken);
 		String username = fetchProviderAccountId(serviceOperations);
 
@@ -180,8 +170,15 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		return connectionRepository.getProviderAccountId(accountId, getName());
 	}
 
+	protected String fetchOAuth2AccessToken(RestTemplate rest, Map<String, String> request) {
+		String accessToken;
+		@SuppressWarnings("unchecked")
+		Map<String, String> result = rest.postForObject(parameters.getAccessTokenUrl(), request, Map.class);
+		accessToken = result.get("access_token");
+		return accessToken;
+	}
+
 	// subclassing hooks
-	
 	/**
 	 * Construct the strongly-typed service API template that callers may use to invoke the service offered by this service provider.
 	 * Subclasses should override to return their concrete service implementation.
@@ -212,39 +209,6 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	
 
 	// internal helpers
-
-	/*
-	 * This method is necessary because Facebook fails to properly adhere to the
-	 * latest OAuth 2 specification draft (draft 11). In particular Facebook
-	 * differs from the spec in the following 2 ways:
-	 * 
-	 * 1. The OAuth 2 spec says requests for access tokens should be made via
-	 * POST requests. Facebook only supports GET requests.
-	 * 
-	 * 2. The OAuth 2 spec limits the access token response to application/json
-	 * content type. Facebook responds with what appears to be form-encoded data
-	 * but with Content-Type set to "text/plain".
-	 * 
-	 * In addition, the OAuth 2 spec speaks of a refresh token that may be
-	 * returned so that the client can refresh the access token after it
-	 * expires. Facebook does not support refresh tokens.
-	 */
-	private String getAccessTokenForFacebook(RestTemplate rest, Map<String, String> request, String accessToken) {
-		String result = rest.getForObject(parameters.getAccessTokenUrl() + ACCESS_TOKEN_QUERY_PARAMETERS, String.class,
-				request);
-		String[] nameValuePairs = result.split("\\&");
-		for (String nameValuePair : nameValuePairs) {
-			String[] nameAndValue = nameValuePair.split("=");
-			if (nameAndValue[0].equals("access_token")) {
-				accessToken = nameAndValue[1];
-				break;
-			}
-		}
-		return accessToken;
-	}
-	
-	private static final String ACCESS_TOKEN_QUERY_PARAMETERS = "?client_id={client_id}&client_secret={client_secret}&code={code}&redirect_uri={redirect_uri}";
-
 	private OAuthService getOAuthService() {
 		return getOAuthService(null);
 	}

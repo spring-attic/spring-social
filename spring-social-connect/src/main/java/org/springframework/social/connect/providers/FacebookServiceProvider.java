@@ -15,13 +15,15 @@
  */
 package org.springframework.social.connect.providers;
 
+import java.util.Map;
+
 import org.springframework.social.connect.AbstractServiceProvider;
 import org.springframework.social.connect.AccountConnectionRepository;
 import org.springframework.social.connect.OAuthToken;
-import org.springframework.social.connect.OAuthVersion;
 import org.springframework.social.connect.ServiceProviderParameters;
 import org.springframework.social.facebook.FacebookOperations;
 import org.springframework.social.facebook.FacebookTemplate;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Facebook ServiceProvider implementation.
@@ -32,6 +34,37 @@ public final class FacebookServiceProvider extends AbstractServiceProvider<Faceb
 	public FacebookServiceProvider(ServiceProviderParameters parameters,
 			AccountConnectionRepository connectionRepository) {
 		super(parameters, connectionRepository);
+	}
+
+	/*
+	 * This method is necessary because Facebook fails to properly adhere to the
+	 * latest OAuth 2 specification draft (draft 11). In particular Facebook
+	 * differs from the spec in the following 2 ways:
+	 * 
+	 * 1. The OAuth 2 spec says requests for access tokens should be made via
+	 * POST requests. Facebook only supports GET requests.
+	 * 
+	 * 2. The OAuth 2 spec limits the access token response to application/json
+	 * content type. Facebook responds with what appears to be form-encoded data
+	 * but with Content-Type set to "text/plain".
+	 * 
+	 * In addition, the OAuth 2 spec speaks of a refresh token that may be
+	 * returned so that the client can refresh the access token after it
+	 * expires. Facebook does not support refresh tokens.
+	 */
+	@Override
+	protected String fetchOAuth2AccessToken(RestTemplate rest, Map<String, String> request) {
+		String result = rest.getForObject(parameters.getAccessTokenUrl() + ACCESS_TOKEN_QUERY_PARAMETERS, String.class,
+				request);
+		String[] nameValuePairs = result.split("\\&");
+		for (String nameValuePair : nameValuePairs) {
+			String[] nameAndValue = nameValuePair.split("=");
+			if (nameAndValue[0].equals("access_token")) {
+				return nameAndValue[1];
+			}
+		}
+
+		return null;
 	}
 
 	protected FacebookOperations createServiceOperations(OAuthToken accessToken) {
@@ -49,8 +82,6 @@ public final class FacebookServiceProvider extends AbstractServiceProvider<Faceb
 		return "http://www.facebook.com/profile.php?id=" + facebookId;
 	}
 
-	@Override
-	public OAuthVersion getOAuthVersion() {
-		return OAuthVersion.FB_OAUTH_2;
-	}
+	private static final String ACCESS_TOKEN_QUERY_PARAMETERS = "?client_id={client_id}&client_secret={client_secret}&code={code}&redirect_uri={redirect_uri}";
+
 }
