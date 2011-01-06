@@ -103,18 +103,15 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	}
 
 	public void connect(Serializable accountId, String redirectUri, String code) {
-		RestTemplate rest = new RestTemplate();
-		Map<String, String> request = new HashMap<String, String>();
-		request.put("client_id", parameters.getApiKey());
-		request.put("client_secret", parameters.getSecret());
-		request.put("code", code);
-		request.put("redirect_uri", redirectUri);
-
-		OAuthToken oauthAccessToken = new OAuthToken(fetchOAuth2AccessToken(rest, request));
-		S serviceOperations = createServiceOperations(oauthAccessToken);
+		Map<String, String> tokenRequestParameters = new HashMap<String, String>();
+		tokenRequestParameters.put("client_id", parameters.getApiKey());
+		tokenRequestParameters.put("client_secret", parameters.getSecret());
+		tokenRequestParameters.put("code", code);
+		tokenRequestParameters.put("redirect_uri", redirectUri);
+		OAuthToken accessToken = fetchOAuth2AccessToken(tokenRequestParameters);
+		S serviceOperations = createServiceOperations(accessToken);
 		String username = fetchProviderAccountId(serviceOperations);
-
-		connectionRepository.addConnection(accountId, getName(), oauthAccessToken, username,
+		connectionRepository.addConnection(accountId, getName(), accessToken, username,
 				buildProviderProfileUrl(username, serviceOperations));
 	}
 
@@ -170,12 +167,11 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		return connectionRepository.getProviderAccountId(accountId, getName());
 	}
 
-	protected String fetchOAuth2AccessToken(RestTemplate rest, Map<String, String> request) {
-		String accessToken;
+	protected OAuthToken fetchOAuth2AccessToken(Map<String, String> tokenRequestParameters) {
 		@SuppressWarnings("unchecked")
-		Map<String, String> result = rest.postForObject(parameters.getAccessTokenUrl(), request, Map.class);
-		accessToken = result.get("access_token");
-		return accessToken;
+		Map<String, String> result = new RestTemplate().postForObject(parameters.getAccessTokenUrl(),
+				tokenRequestParameters, Map.class);
+		return new OAuthToken(result.get("access_token"));
 	}
 
 	// subclassing hooks

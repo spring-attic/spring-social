@@ -53,14 +53,14 @@ public final class FacebookServiceProvider extends AbstractServiceProvider<Faceb
 	 * expires. Facebook does not support refresh tokens.
 	 */
 	@Override
-	protected String fetchOAuth2AccessToken(RestTemplate rest, Map<String, String> request) {
-		String result = rest.getForObject(parameters.getAccessTokenUrl() + ACCESS_TOKEN_QUERY_PARAMETERS, String.class,
-				request);
-		String[] nameValuePairs = result.split("\\&");
+	protected OAuthToken fetchOAuth2AccessToken(Map<String, String> tokenRequestParameters) {
+		String response = new RestTemplate().getForObject(parameters.getAccessTokenUrl() + ACCESS_TOKEN_QUERY_PARAMETERS,
+				String.class, tokenRequestParameters);
+		String[] nameValuePairs = response.split("\\&");
 		for (String nameValuePair : nameValuePairs) {
 			String[] nameAndValue = nameValuePair.split("=");
 			if (nameAndValue[0].equals("access_token")) {
-				return nameAndValue[1];
+				return new OAuthToken(nameAndValue[1]);
 			}
 		}
 
