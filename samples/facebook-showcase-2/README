@@ -1,0 +1,17 @@
+Facebook Showcase 2
+===================
+This showcase application serves to demonstrate many of the features that Spring Social offers for interacting
+with Facebook. This particular showcase example uses Spring Social's ConnectController to establish connections
+with Facebook using the OAuth 2 web server flow. (Another Facebook showcase sample, facebook-showcase, demonstrates 
+how to use Spring Social to establish connections using Facebook's XFBML and JavaScript APIs).
+
+At this time, this showcase demonstrates:
+ - Connecting to Facebook using Spring Social's ConnectController and the OAuth 2 web server flow.
+ - Retrieving a user's Facebook profile data.
+ - Posting a message to the user's Facebook wall.
+ 
+To keep things simple this showcase application is a single-user application, assuming that the user's application
+account ID is always 1. A more comprehensive example would be multi-user keeping a store of users, any of which
+may connect their application account with their Facebook profile.
+
+The functionality of this showcase sample will be expanded as Spring Social offers more Facebook capability.

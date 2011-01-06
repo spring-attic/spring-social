@@ -13,11 +13,6 @@
 	
 	<h3>Post to your Facebook wall</h3>	
 
-	<p>Note that this currently won't work in this version of the showcase (you'll get a '403 Forbidden' error) 
-	because right now there's no way to specify scope when authorizing with via Spring Social's OAuth 2 web server
-	flow in ConnectController. Consequently, after authorization, the showcase is only granted read access to the
-	user's public profile information. Consider this a TODO item.</p>
-
 	<form method="POST" action="<c:url value="/wall"/>">
 		<textarea id="message" name="message" rows="5" cols="40"></textarea><br/>
 		<input type="submit" value="Post" />
