@@ -18,6 +18,7 @@ package org.springframework.social.connect.providers;
 import org.springframework.social.connect.AbstractServiceProvider;
 import org.springframework.social.connect.AccountConnectionRepository;
 import org.springframework.social.connect.OAuthToken;
+import org.springframework.social.connect.OAuthVersion;
 import org.springframework.social.connect.ServiceProviderParameters;
 import org.springframework.social.facebook.FacebookOperations;
 import org.springframework.social.facebook.FacebookTemplate;
@@ -48,4 +49,8 @@ public final class FacebookServiceProvider extends AbstractServiceProvider<Faceb
 		return "http://www.facebook.com/profile.php?id=" + facebookId;
 	}
 
+	@Override
+	public OAuthVersion getOAuthVersion() {
+		return OAuthVersion.FB_OAUTH_2;
+	}
 }

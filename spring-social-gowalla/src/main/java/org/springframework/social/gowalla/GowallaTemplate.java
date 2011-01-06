@@ -69,7 +69,9 @@ public class GowallaTemplate implements GowallaOperations {
 
 	public String getProfileId() {
 		HttpEntity<?> requestEntity = new HttpEntity<String>(buildBaseHeaders());
+		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restOperations.exchange(PROFILE_URL, HttpMethod.GET, requestEntity, Map.class);
+		@SuppressWarnings("unchecked")
 		Map<String, ?> profileInfo = response.getBody();
 		return String.valueOf(profileInfo.get("username"));
 	}
@@ -80,9 +82,11 @@ public class GowallaTemplate implements GowallaOperations {
 	
 	public List<Checkin> getTopCheckins(String userId) {
 		HttpEntity<?> requestEntity = new HttpEntity<String>(buildBaseHeaders());
+		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restOperations.exchange(TOP_CHECKINS_URL, HttpMethod.GET, requestEntity,
 				Map.class, userId);
 
+		@SuppressWarnings("unchecked")
 		List<Map<String, ?>> checkinsList = (List<Map<String, ?>>) response.getBody().get("top_spots");
 		List<Checkin> checkins = new ArrayList<Checkin>();
 		for (Map<String, ?> checkinMap : checkinsList) {
