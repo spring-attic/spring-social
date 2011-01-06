@@ -111,6 +111,7 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		request.put("redirect_uri", redirectUri);
 
 		String accessToken = null;
+		// TODO: Consider pushing this special case down into FacebookServiceProvider
 		if (getOAuthVersion() == OAuthVersion.FB_OAUTH_2) {
 			accessToken = getAccessTokenForFacebook(rest, request, accessToken);
 		} else {

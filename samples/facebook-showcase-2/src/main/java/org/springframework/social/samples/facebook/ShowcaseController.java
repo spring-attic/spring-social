@@ -42,4 +42,10 @@ public class ShowcaseController {
 		}
 		return "redirect:/connect/facebook";
 	}
+
+	@RequestMapping(value = "/wall", method = RequestMethod.POST)
+	public String postToWall(String message) {
+		facebookProvider.getServiceOperations(1).updateStatus(message);
+		return "redirect:/";
+	}
 }

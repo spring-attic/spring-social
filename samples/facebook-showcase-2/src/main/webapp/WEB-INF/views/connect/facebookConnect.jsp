@@ -13,7 +13,7 @@
 	<div class="formInfo">
 		<p>Click the button to connect Facebook Showcase with your Facebook account.</p>
 	</div>
-	<p><button type="submit"><img src="<c:url value="/resources/social/facebook/signin.png" />"/></button></p>
+	<p><button type="submit"><img src="<c:url value="/resources/social/facebook/connect_light_medium_short.gif" />"/></button></p>
 </form>
 
 
