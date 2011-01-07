@@ -17,7 +17,7 @@ package org.springframework.social.connect.providers;
 
 import java.util.Map;
 
-import org.springframework.social.connect.AbstractServiceProvider;
+import org.springframework.social.connect.AbstractOAuth2ServiceProvider;
 import org.springframework.social.connect.AccountConnectionRepository;
 import org.springframework.social.connect.OAuthToken;
 import org.springframework.social.connect.ServiceProviderParameters;
@@ -29,7 +29,7 @@ import org.springframework.web.client.RestTemplate;
  * Facebook ServiceProvider implementation.
  * @author Keith Donald
  */
-public final class FacebookServiceProvider extends AbstractServiceProvider<FacebookOperations> {
+public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<FacebookOperations> {
 	
 	public FacebookServiceProvider(ServiceProviderParameters parameters,
 			AccountConnectionRepository connectionRepository) {

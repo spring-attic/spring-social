@@ -76,24 +76,6 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	}
 	
 	// connection management
-	
-	public OAuthToken fetchNewRequestToken(String callbackUrl) {
-		if (getOAuthVersion() == OAuthVersion.OAUTH_2) {
-			throw new IllegalStateException("You may not fetch a request token for an OAuth 2-based service provider");
-		}
-
-		Token requestToken = getOAuthService(callbackUrl).getRequestToken();
-		return new OAuthToken(requestToken.getToken(), requestToken.getSecret());
-	}
-
-	public String buildAuthorizeUrl(String requestToken) {
-		if (getOAuthVersion() == OAuthVersion.OAUTH_1) {
-			return parameters.getAuthorizeUrl().expand(requestToken).toString();
-		}
-
-		return parameters.getAuthorizeUrl().expand(parameters.getApiKey(), requestToken).toString();
-	}
-
 	public void connect(Serializable accountId, AuthorizedRequestToken requestToken) {
 		OAuthToken accessToken = getAccessToken(requestToken);
 		S serviceOperations = createServiceOperations(accessToken);
@@ -157,12 +139,8 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		return connectionRepository.getAccountConnections(accountId, getName());
 	}
 
-	public OAuthVersion getOAuthVersion() {
-		return parameters.getRequestTokenUrl() == null ? OAuthVersion.OAUTH_2 : OAuthVersion.OAUTH_1;
-	}
-
 	// additional finders
-	
+
 	public String getProviderAccountId(Serializable accountId) {
 		return connectionRepository.getProviderAccountId(accountId, getName());
 	}
@@ -205,11 +183,11 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	
 
 	// internal helpers
-	private OAuthService getOAuthService() {
+	protected OAuthService getOAuthService() {
 		return getOAuthService(null);
 	}
 	
-	private OAuthService getOAuthService(String callbackUrl) {
+	protected OAuthService getOAuthService(String callbackUrl) {
 		OAuthConfig config = new OAuthConfig();
 		config.setRequestTokenEndpoint(parameters.getRequestTokenUrl());
 		config.setAccessTokenEndpoint(parameters.getAccessTokenUrl());

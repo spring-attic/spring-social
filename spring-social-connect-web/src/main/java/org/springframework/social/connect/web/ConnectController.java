@@ -20,9 +20,9 @@ import java.util.List;
 
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.AccountIdResolver;
+import org.springframework.social.connect.AuthorizationStyle;
 import org.springframework.social.connect.AuthorizedRequestToken;
 import org.springframework.social.connect.OAuthToken;
-import org.springframework.social.connect.OAuthVersion;
 import org.springframework.social.connect.ServiceProvider;
 import org.springframework.social.connect.ServiceProviderFactory;
 import org.springframework.stereotype.Controller;
@@ -102,7 +102,7 @@ public class ConnectController {
 		preConnect(provider, request);
 
 		String authorizationUrlParameter = null;
-		if (provider.getOAuthVersion() == OAuthVersion.OAUTH_1) {
+		if (provider.getAuthorizationStyle() == AuthorizationStyle.OAUTH_1) {
 			OAuthToken requestToken = provider.fetchNewRequestToken(baseCallbackUrl + name);
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
 			authorizationUrlParameter = requestToken.getValue();
@@ -112,12 +112,15 @@ public class ConnectController {
 
 		return "redirect:" + provider.buildAuthorizeUrl(authorizationUrlParameter);
 	}
-	
+
 	/**
-	 * Process the authorization callback from the service provider.
-	 * Called after the member authorizes the connection, generally done by having he or she click "Allow" in their web browser at the provider's site.
-	 * On authorization verification, connects the member's local account to the account they hold at the service provider.
-	 * Removes the request token from the session since it is no longer valid after the connection is established.
+	 * Process the authorization callback from an OAuth 1 service provider.
+	 * Called after the member authorizes the connection, generally done by
+	 * having he or she click "Allow" in their web browser at the provider's
+	 * site. On authorization verification, connects the member's local account
+	 * to the account they hold at the service provider. Removes the request
+	 * token from the session since it is no longer valid after the connection
+	 * is established.
 	 */
 	@RequestMapping(value="/connect/{name}", method=RequestMethod.GET, params="oauth_token")
 	public String authorizeCallback(@PathVariable String name, @RequestParam("oauth_token") String token,
@@ -135,6 +138,13 @@ public class ConnectController {
 		return "redirect:/connect/" + name;
 	}
 
+	/**
+	 * Process the authorization callback from an OAuth 2 service provider.
+	 * Called after the member authorizes the connection, generally done by
+	 * having he or she click "Allow" in their web browser at the provider's
+	 * site. On authorization verification, connects the member's local account
+	 * to the account they hold at the service provider.
+	 */
 	@RequestMapping(value = "/connect/{name}", method = RequestMethod.GET, params = "code")
 	public String authorizeCallback(@PathVariable String name, @RequestParam("code") String code, WebRequest request) {
 		ServiceProvider<?> provider = getServiceProvider(name);

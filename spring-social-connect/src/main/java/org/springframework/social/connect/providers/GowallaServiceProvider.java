@@ -1,13 +1,13 @@
 package org.springframework.social.connect.providers;
 
-import org.springframework.social.connect.AbstractServiceProvider;
+import org.springframework.social.connect.AbstractOAuth2ServiceProvider;
 import org.springframework.social.connect.AccountConnectionRepository;
 import org.springframework.social.connect.OAuthToken;
 import org.springframework.social.connect.ServiceProviderParameters;
 import org.springframework.social.gowalla.GowallaOperations;
 import org.springframework.social.gowalla.GowallaTemplate;
 
-public class GowallaServiceProvider extends AbstractServiceProvider<GowallaOperations> {
+public class GowallaServiceProvider extends AbstractOAuth2ServiceProvider<GowallaOperations> {
 
 	public GowallaServiceProvider(ServiceProviderParameters parameters, AccountConnectionRepository connectionRepository) {
 		super(parameters, connectionRepository);

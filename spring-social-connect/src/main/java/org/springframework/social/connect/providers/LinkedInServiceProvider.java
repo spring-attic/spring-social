@@ -15,7 +15,7 @@
  */
 package org.springframework.social.connect.providers;
 
-import org.springframework.social.connect.AbstractServiceProvider;
+import org.springframework.social.connect.AbstractOAuth1ServiceProvider;
 import org.springframework.social.connect.AccountConnectionRepository;
 import org.springframework.social.connect.OAuthToken;
 import org.springframework.social.connect.ServiceProviderParameters;
@@ -26,7 +26,7 @@ import org.springframework.social.linkedin.LinkedInTemplate;
  * LinkedIn ServiceProvider implementation.
  * @author Keith Donald
  */
-public final class LinkedInServiceProvider extends AbstractServiceProvider<LinkedInOperations> {
+public final class LinkedInServiceProvider extends AbstractOAuth1ServiceProvider<LinkedInOperations> {
 	
 	public LinkedInServiceProvider(ServiceProviderParameters parameters,
 			AccountConnectionRepository connectionRepository) {
