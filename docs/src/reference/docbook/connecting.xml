@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="connecting"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>Connecting to Social Providers</title>
+
+  <para>Most social connections are based on OAuth authorization. Authorizing an application to access a social provider on behalf of a user involves a back-and-forth conversation between the application, the social network, and the user. This conversation, commonly referred to as the "OAuth Dance", involves the application asking the user to tell the social network that it's okay for the application to access and manipulate their social information. The outcome of the dance is an access token that the application can use as a sort of valet key to interact with the social network on the user's behalf.</para>
+  
+  <para>Spring Social comes with <classname>ConnectController</classname>, a Spring MVC controller that handles the application's part in the OAuth dance.</para>
+
+  <section id="connect-controller">
+    <title><classname>ConnectController</classname></title>
+
+
+    <programlisting><![CDATA[
+<bean class="org.springframework.social.connect.web.ConnectController">
+	<constructor-arg ref="serviceProviderFactory" />
+	<constructor-arg value="http://localhost:8080/myapplication" />
+	<constructor-arg ref="accountIdResolver" />
+</bean>
+]]></programlisting>
+
+    <para><classname>ConnectController</classname> can handle the application's side of the OAuth dance for either OAuth 1 or OAuth 2 providers. For OAuth 1 providers, <classname>ConnectController</classname> supports the following flow:</para>
+    
+    <itemizedlist>
+        <listitem><para><code>GET /connect/{provider name}</code> - Displays a web page showing connection status to the provider.</para></listitem>
+        <listitem><para><code>POST /connect/{provider name}</code> - Initiates the connection flow with the provider.</para></listitem>
+        <listitem><para><code>GET /connect/{provider name}?oauth_token={request token}</code> - Receives the authorization callback from the provider, accepting a request token. Uses the request token to request an access token and complete the connection.</para></listitem>
+        <listitem><para><code>DELETE /connect/{provider name}</code> - Severs a connection with the provider.</para></listitem>
+    </itemizedlist>
+
+    <para>For an OAuth 2 provider, the flow is almost identical, with a subtle difference in how the authorization callback is handled:</para>
+    
+    <itemizedlist>
+        <listitem><para><code>GET /connect/{provider name}?code={code}</code> - Receives the authorization callback from the provider, accepting an authorization code. Uses the code to request an access token and complete the connection.</para></listitem>
+    </itemizedlist>
+
+    <section id="connect-controller-flow-1">
+      <title>Displaying a connection page</title>
+
+      <para>Before the connection flow starts in earnest, a web application may choose to show a page that offers the user information on their connection status and offer them the opportunity to create a connection between their account and their social profile. <classname>ConnectController</classname> can display such a page if the browser navigates to <code>/connect/{provider name}</code>.</para>
+      
+      <para>For example, to display a connection status page for Twitter, where the provider name is "twitter", there may be a link something like this:</para>
+    
+        <programlisting><![CDATA[
+<a href="<c:url value="/connect/twitter" />">Connect to Twitter</a>
+]]></programlisting>
+
+        <para><classname>ConnectController</classname> will respond to this request by first checking to see if a connection already exists between the user's account and the Twitter. If not, then it will with a view that should offer the user an opportunity to create the connection. Otherwise, it will respond with a view to inform the user that a connection already exists.</para>
+    
+        <para>The view names that <classname>ConnectController</classname> responds with are based on the provider's name. In this case, since the provider name is "twitter", the view names are "connect/twitterConnect" and "connect/twitterConnected".</para>
+        
+    </section>
+    
+    <section id="connect-controller-flow-2">
+      <title>Initiating the connection flow</title>
+      
+      <para>To kick off the connection flow, the application should <code>POST</code> to <code>/connect/{provider name}</code>. Continuing with the Twitter example, the JSP resolved from "connect/twitterConnect" might include the following form:</para>
+      
+      <programlisting><![CDATA[
+<form action="<c:url value="/connect/twitter" />" method="POST">
+    <p>You haven't created any connections with Twitter yet. Click the button to create
+       a connection between your account and your Twitter profile. 
+       (You'll be redirected to Twitter where you'll be asked to authorize the connection.)</p>
+    <p><button type="submit"><img src="<c:url value="/resources/social/twitter/signin.png" />"/></button></p>
+</form>
+      ]]></programlisting>
+      
+      <para>When <classname>ConnectController</classname> handles the request, it will redirect the browser to the provider's authorization page. In the case of an OAuth 1 provider, it will first fetch a request token from the provider and pass it along as a parameter to the authorization page. Request tokens aren't used in OAuth 2, however, so instead it passes the application's client ID and redirect URI as parameters to the authorization page.</para>
+      
+      <para>For example, Twitter's authorization URL has the following pattern:</para>
+      
+      <programlisting><![CDATA[https://twitter.com/oauth/authorize?oauth_token={token}]]></programlisting>
+      
+      <para>If the application's request token were "vPyVSeIPzEoVVdU69OyRm85MN5eRmRCl2xYuc4ujLT", then the browser would be redirected to https://twitter.com/oauth/authorize?oauth_token=vPyVSeIPzEoVVdU69OyRm85MN5eRmRCl2xYuc4ujLT and a page similar to the following would be displayed to the user (from Twitter):</para>
+      
+      <mediaobject>
+        <imageobject role="fo">
+            <imagedata fileref="images/twitter-authorize.png"
+              format="PNG" align="center" scale="40"/>
+        </imageobject>
+        <imageobject role="html">
+            <imagedata fileref="images/twitter-authorize.png" format="PNG" align="center" scale="40"/>
+        </imageobject>
+      </mediaobject>
+      
+      <para>(If the user has not yet signed into Twitter, the authorization page will also included a username and password field.)</para>
+      
+      <para>In contrast, Facebook is an OAuth 2 provider, so its authorization URL takes a slightly different pattern:</para>
+      
+      <programlisting><![CDATA[https://graph.facebook.com/oauth/authorize?client_id={clientId}&redirect_uri={redirectUri}
+   &scope=publish_stream,offline_access]]></programlisting>
+      
+      <para>Thus, if the application's Facebook client ID is "0b754d95f9c9899b0d6c4456B4f2EdD7" and it's redirect URI is "http://www.mycoolapp.com/connect/facebook", then the browser would be redirected to <![CDATA[https://graph.facebook.com/oauth/authorize?client_id=0b754d95f9c9899b0d6c4456B4f2EdD7&redirect_uri=http://www.mycoolapp.com/connect/facebook&scope=publish_stream,offline_access]]> and Facebook would display the following authorization page to the user:</para>
+      
+      <mediaobject>
+        <imageobject role="fo">
+            <imagedata fileref="images/facebook-authorize.png"
+              format="PNG" align="center" scale="40"/>
+        </imageobject>
+        <imageobject role="html">
+            <imagedata fileref="images/facebook-authorize.png" format="PNG" align="center" scale="40"/>
+        </imageobject>
+      </mediaobject>      
+      
+      <para>(The <code>scope</code> attribute is used in OAuth 2 to specify exactly the kind of access being authorized. In this case, the user is asked to authorize the application to access their public Facebook profile, write to the user's Facebook wall, and to access Facebook on their behalf even after the user has gone offline.)</para>
+      
+      <para>If the user clicks the "Allow" button to authorize access, the provider will redirect the browser back to the authorization callback URL where <classname>ConnectController</classname> will be waiting to complete the connection.</para>
+      
+      <para>The behavior varies from provider to provider when the user denies the authorization. Twitter will simply show a page telling the user that they denied the application access and does not redirect back to the application's callback URL. Facebook will redirect back to the callback URL with error information as request parameters.</para>
+    </section>
+    
+    <section id="connect-controller-flow-3">
+      <title>Responding to the authorization callback</title>
+      
+      <para>After the user agrees to allow the application have access to their profile on the provider, the provider will redirect their browser back to the application's authorization URL with a code that can be exchanged for an access token. For OAuth 1.0a providers, the callback URL is expected to receive the code (known as a verifier in OAuth 1) in a <code>verifier</code> parameter. For OAuth 2, the code will be in a <code>code</code> parameter.</para>
+      
+      <para><classname>ConnectController</classname> will handle the callback request and trade in the verifier/code for an access token. Once the access token has been received, the OAuth dance is complete and the application may use the access token to access the provider on behalf of the user. The last thing that <classname>ConnectController</classname> does is to hand off the access token to the <interfacename>ServiceProvider</interfacename> implementation to be stored for future user.</para>
+    </section>
+
+    <section id="connect-controller-flow-disconnect">
+      <title>Disconnecting</title>
+      
+    </section>
+  </section>
+
+
+  <section id="connect-interceptors">
+    <title>Connection interceptors</title>
+
+    <para></para>
+  </section>
+  
+  <section id="facebook-connect-controller">
+    <title><classname>FacebookConnectController</classname></title>
+
+    <para></para>
+  </section>
+
+
+
+
+</chapter>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="serviceprovider"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>Service Provider Framework</title>
+
+
+  <!--
+    Configuring a service provider:
+      - DB-oriented configuration:
+         - Add row to ServiceProvider table
+         - Configure a JdbcServiceProviderFactory bean
+           - wired with a JdbcTemplate and a StringEncryptor
+         - Configure a provider bean that is constructed by calling the getServiceProvider()
+           method on the serviceProviderFactory bean
+      - Bean-oriented configuration:
+         - Configure the service provider class as a bean
+         - Doesn't quite work with ConnectController (yet)
+  -->
+
+
+
+
+
+
+
+  <para>In <xref linkend="spring-social-integration"/>, you saw that getting an instance of one of Spring Social's templates is a simple matter of passing connection (e.g., OAuth specifics) details into one of the template's constructors. While creation of the template is simple, however, you are responsible for handling the management of those connection details if you construct the templates yourself.</para>
+
+  <para>To simplify management of connection details, Spring Social offers a service provider framework. At the highest level, the service provider framework is made up of three main components:</para>
+  
+  <itemizedlist>
+      <listitem><para>A service provider factory (defined by the <interfacename>ServiceProviderFactory</interfacename> interface)</para> that create service providers.</listitem>
+      <listitem><para>One or more service providers (defined by the <interfacename>ServiceProvider</interfacename> interface) through which connections can be made and severed.</para></listitem>
+      <listitem><para>The service operations APIs through which social interactions take place.</para></listitem>
+  </itemizedlist>
+  
+  <section xml:id="section_serviceproviderfactory">
+      <title>Service Provider Factories</title>
+      
+      <para>A service provider factory's single purpose is to create or lookup <interfacename>ServiceProvider</interfacename> instances. To fulfill that purpose, the <interfacename>ServiceProviderFactory</interfacename> interface defines two methods:</para>
+
+      <programlisting><![CDATA[
+ServiceProvider<?> getServiceProvider(String name);
+<S> ServiceProvider<S> getServiceProvider(String name, Class<S> serviceType);
+      ]]></programlisting>
+      
+      <para>Both of these methods should return a <interfacename>ServiceProvider</interfacename> instance for the provider, specified by the provider's name. The second form of <methodname>getServiceProvider</methodname> is more strongly-typed, ensuring that the <interfacename>ServiceProvider</interfacename> returned will offer a service operations API of a given type.</para>
+      
+      <para>Spring Social provides <classname>JdbcServiceProviderFactory</classname>, an implementation of <interfacename>ServiceProviderFactory</interfacename> that loads service provider details from database using JDBC. <classname>JdbcServiceProviderFactory</classname> is configured in Spring XML like this:</para>
+      
+      <programlisting><![CDATA[
+<bean id="serviceProviderFactory"
+    class="org.springframework.social.connect.JdbcServiceProviderFactory">
+  <constructor-arg ref="jdbcTemplate" />
+  <constructor-arg ref="stringEncryptor" />
+  <constructor-arg ref="accountIdResolver" />
+</bean>
+      ]]></programlisting>
+      
+      <para>As you can see from the constructor arguments, <classname>JdbcServiceProviderFactory</classname> needs three things to operate:</para>
+      
+      <itemizedlist>
+          <listitem><para>A <interfacename>org.springframework.jdbc.core.JdbcTemplate</interfacename> that it will use to retrieve service provider records from the database.</para></listitem>          
+          <listitem><para>A <interfacename>org.springframework.security.encrypt.StringEncryptor</interfacename> that will be used to encrypt/decrypt sensitive connection specifics (such as an OAuth shared secret).</para></listitem>
+          <listitem><para>A <interfacename>org.springframework.social.connect.AccountIdResolver</interfacename> that it will use to determine the identity of users for whom connections are being made.</para></listitem>          
+      </itemizedlist>
+      
+      <sidebar>
+          <para>The Java package name of <interfacename>org.springframework.security.encrypt.StringEncryptor</interfacename> implies that it is part of Spring Security. At this time, however, the <interfacename>StringEncryptor</interfacename> interface is packaged with Spring Social (within the connect module) until such time that it is absorbed into the Spring Security project.</para> 
+      </sidebar>
+      
+      <para>TODO: Determine the fate of StringEncryptor.</para>
+      
+      <para><classname>JdbcServiceProviderFactory</classname> assumes a certain set of tables in the database, as described in <xref linkend="appendix-schema"/>.</para>
+  </section>
+  <section xml:id="section_serviceproviders">
+      <title>Service Providers</title>
+      
+      <para>A <interfacename>ServiceProvider</interfacename> represents the relationship between a consuming application and a social network provider (such as Twitter). Through that relationship, connections may be made on behalf of an application user with their profile on the social network.</para>
+      
+      <para>If you have an instance of <interfacename>ServiceProviderFactory</interfacename> in hand, obtaining a service provider for a specific social network involves calling the <methodname>getServiceProvider</methodname> method. Programmatically, it might look like this:</para>
+      
+      <programlisting><![CDATA[
+ServiceProviderFactory spf = ...;
+
+ServiceProvider<TwitterOperations> serviceProvider = spf.getServiceProvider("twitter", TwitterOperations.class);
+      ]]></programlisting>
+      
+      <para>But it's often more convenient to have the <code>ServiceProvider</code> available as a Spring bean so that it may be injected into wherever it is needed:</para>
+
+      <programlisting><![CDATA[
+<bean id="twitterProvider" factory-bean="serviceProviderFactory" factory-method="getServiceProvider">
+	<constructor-arg value="twitter" />
+</bean>
+      ]]></programlisting>
+      
+      
+  </section>
+</chapter>

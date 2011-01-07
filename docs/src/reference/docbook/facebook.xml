@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="facebook"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>Facebook</title>
+
+  <section id="facebook-springmvc">
+    <title>Spring MVC extensions for Facebook</title>
+
+    <para></para>
+  </section>
+
+  <section id="facebook-template">
+    <title><classname>FacebookTemplate</classname></title>
+
+    <para></para>
+  </section>
+
+  <section id="facebook-jsp">
+    <title>Facebook JSP tags</title>
+
+    <para></para>
+  </section>
+
+</chapter>

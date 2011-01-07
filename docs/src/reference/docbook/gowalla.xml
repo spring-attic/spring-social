@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="gowalla"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>Gowalla</title>
+
+  <section id="gowalla-template">
+    <title><classname>GowallaTemplate</classname></title>
+
+    <para></para>
+  </section>
+
+</chapter>
