@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * General-purpose base class for ServiceProvider implementations.
@@ -68,8 +67,7 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	public void addConnection(Serializable accountId, String accessToken, String providerAccountId) {
 		OAuthToken oauthAccessToken = new OAuthToken(accessToken);
 		S serviceOperations = createServiceOperations(oauthAccessToken);
-		connectionRepository.addConnection(accountId, getName(), oauthAccessToken,
-				providerAccountId,
+		connectionRepository.addConnection(accountId, getName(), oauthAccessToken, providerAccountId,
 				buildProviderProfileUrl(providerAccountId, serviceOperations));
 	}
 
@@ -117,13 +115,6 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 
 	public String getProviderAccountId(Serializable accountId) {
 		return connectionRepository.getProviderAccountId(accountId, getName());
-	}
-
-	protected OAuthToken fetchOAuth2AccessToken(Map<String, String> tokenRequestParameters) {
-		@SuppressWarnings("unchecked")
-		Map<String, String> result = new RestTemplate().postForObject(parameters.getAccessTokenUrl(),
-				tokenRequestParameters, Map.class);
-		return new OAuthToken(result.get("access_token"));
 	}
 
 	// subclassing hooks

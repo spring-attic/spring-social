@@ -29,6 +29,9 @@ public interface AccountConnectionRepository {
 	void addConnection(Serializable accountId, String provider, OAuthToken accessToken, String providerAccountId,
 			String providerProfileUrl);
 
+	void addConnection(Serializable accountId, String provider, OAuthToken accessToken, String refreshToken,
+			String providerAccountId, String providerProfileUrl);
+
 	boolean isConnected(Serializable accountId, String provider);
 
 	void disconnect(Serializable accountId, String provider);
@@ -40,6 +43,8 @@ public interface AccountConnectionRepository {
 	OAuthToken getAccessToken(Serializable accountId, String provider, String providerAccountId);
 
 	String getProviderAccountId(Serializable accountId, String provider);
+
+	String getRefreshToken(Serializable accountId, String provider, String providerAccountId);
 
 	Collection<AccountConnection> getAccountConnections(Serializable accountId, String provider);
 }

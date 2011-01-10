@@ -48,10 +48,15 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 
 	public void addConnection(Serializable accountId, String provider, OAuthToken accessToken,
 			String providerAccountId, String providerProfileUrl) {
+		addConnection(accountId, provider, accessToken, null, providerAccountId, providerProfileUrl);
+	}
+
+	public void addConnection(Serializable accountId, String provider, OAuthToken accessToken,
+			String refreshToken, String providerAccountId, String providerProfileUrl) {
 		try {
 			jdbcTemplate.update(CREATE_CONNECTION_QUERY, accountId, provider,
 					encryptor.encrypt(accessToken.getValue()), encryptIfPresent(accessToken.getSecret()),
-					providerAccountId, providerProfileUrl);
+					encryptIfPresent(refreshToken), providerAccountId, providerProfileUrl);
 		} catch (DuplicateKeyException e) {
 			throw new ConnectionAlreadyExistsException("A connection already exists between account (" + accountId
 					+ ") and the " + provider + " service provider.", e);
@@ -89,6 +94,14 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 		}, accountId, provider, providerAccountId);
 	}
 
+	public String getRefreshToken(Serializable accountId, String provider, String providerAccountId) {
+		return jdbcTemplate.queryForObject(REFRESH_TOKEN_BY_ACCOUNT_ID_QUERY, new RowMapper<String>() {
+			public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return rs.getString("refreshToken");
+			}
+		}, accountId, provider, providerAccountId);
+	}
+
 	public String getProviderAccountId(Serializable accountId, String provider) {
 		List<String> accountIds = jdbcTemplate.queryForList(PROVIDER_ACCOUNT_ID_QUERY, String.class, accountId,
 				provider);
@@ -100,7 +113,7 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 			public AccountConnection mapRow(ResultSet rs, int rowNum) throws SQLException {
 				AccountConnection accountConnection = new AccountConnection((Serializable) rs.getObject("member"), rs
 						.getString("provider"), new OAuthToken(rs.getString("accessToken"), rs.getString("secret")), rs
-						.getString("accountId"), rs.getString("profileUrl"));
+						.getString("refreshToken"), rs.getString("accountId"), rs.getString("profileUrl"));
 				return accountConnection;
 			}
 		}, accountId, provider);
@@ -118,11 +131,12 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 
 	static final String PROVIDER_ACCOUNT_ID_QUERY = "select accountId from AccountConnection where member = ? and provider = ?";
 	static final String CONNECTION_EXISTS_QUERY = "select exists(select 1 from AccountConnection where member = ? and provider = ?)";
-	static final String CREATE_CONNECTION_QUERY = "insert into AccountConnection (member, provider, accessToken, secret, accountId, profileUrl) values (?, ?, ?, ?, ?, ?)";
+	static final String CREATE_CONNECTION_QUERY = "insert into AccountConnection (member, provider, accessToken, secret, refreshToken, accountId, profileUrl) values (?, ?, ?, ?, ?, ?, ?)";
 	static final String REMOVE_CONNECTION_QUERY = "delete from AccountConnection where member = ? and provider = ? and accountId = ?";
 	static final String REMOVE_ALL_CONNECTIONS_QUERY = "delete from AccountConnection where member = ? and provider = ?";
 	static final String ACCESS_TOKEN_QUERY = "select accessToken, secret from AccountConnection where member = ? and provider = ?";
 	static final String ACCESS_TOKEN_BY_ACCOUNT_ID_QUERY = "select accessToken, secret from AccountConnection where member = ? and provider = ? and accountId = ?";
-	static final String ACCOUNT_CONNECTIONS_QUERY = "select member, provider, accessToken, secret, accountId, profileUrl from AccountConnection where member = ? and provider = ?";
+	static final String REFRESH_TOKEN_BY_ACCOUNT_ID_QUERY = "select refreshToken from AccountConnection where member = ? and provider = ? and accountId = ?";
+	static final String ACCOUNT_CONNECTIONS_QUERY = "select member, provider, accessToken, secret, refreshToken, accountId, profileUrl from AccountConnection where member = ? and provider = ?";
 
 }

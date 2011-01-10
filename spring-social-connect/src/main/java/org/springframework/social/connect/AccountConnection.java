@@ -24,17 +24,19 @@ import java.io.Serializable;
  * @author Craig Walls
  */
 public class AccountConnection {
-	private Serializable accountId;
-	private String provider;
-	private OAuthToken accessToken;
-	private String providerAccountId;
-	private String providerProfileUrl;
+	private final Serializable accountId;
+	private final String provider;
+	private final OAuthToken accessToken;
+	private final String refreshToken;
+	private final String providerAccountId;
+	private final String providerProfileUrl;
 
-	public AccountConnection(Serializable accountId, String provider, OAuthToken accessToken, String providerAccountId,
-			String providerProfileUrl) {
+	public AccountConnection(Serializable accountId, String provider, OAuthToken accessToken, String refreshToken,
+			String providerAccountId, String providerProfileUrl) {
 		this.accountId = accountId;
 		this.provider = provider;
 		this.accessToken = accessToken;
+		this.refreshToken = refreshToken;
 		this.providerAccountId = providerAccountId;
 		this.providerProfileUrl = providerProfileUrl;
 	}
@@ -49,6 +51,10 @@ public class AccountConnection {
 
 	public OAuthToken getAccessToken() {
 		return accessToken;
+	}
+
+	public String getRefreshToken() {
+		return refreshToken;
 	}
 
 	public String getProviderAccountId() {

@@ -19,6 +19,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.web.client.RestTemplate;
+
 /**
  * Base class for ServiceProvider implementations that use OAuth 2
  * authorization.
@@ -49,14 +51,22 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 		tokenRequestParameters.put("client_secret", parameters.getSecret());
 		tokenRequestParameters.put("code", code);
 		tokenRequestParameters.put("redirect_uri", redirectUri);
-		OAuthToken accessToken = fetchOAuth2AccessToken(tokenRequestParameters);
+		OAuth2Tokens oauth2Tokens = fetchOAuth2AccessToken(tokenRequestParameters);
+		OAuthToken accessToken = oauth2Tokens.getAccessToken();
 		S serviceOperations = createServiceOperations(accessToken);
 		String username = fetchProviderAccountId(serviceOperations);
-		connectionRepository.addConnection(accountId, getName(), accessToken, username,
+		connectionRepository.addConnection(accountId, getName(), accessToken, oauth2Tokens.getRefreshToken(), username,
 				buildProviderProfileUrl(username, serviceOperations));
 	}
 
 	public AuthorizationStyle getAuthorizationStyle() {
 		return AuthorizationStyle.OAUTH_2;
+	}
+
+	protected OAuth2Tokens fetchOAuth2AccessToken(Map<String, String> tokenRequestParameters) {
+		@SuppressWarnings("unchecked")
+		Map<String, String> result = new RestTemplate().postForObject(parameters.getAccessTokenUrl(),
+				tokenRequestParameters, Map.class);
+		return new OAuth2Tokens(new OAuthToken(result.get("access_token")), result.get("refresh_token"));
 	}
 }
