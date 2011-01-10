@@ -16,7 +16,9 @@
 package org.springframework.social.connect.web;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.AccountIdResolver;
@@ -101,16 +103,16 @@ public class ConnectController {
 		ServiceProvider<?> provider = getServiceProvider(name);
 		preConnect(provider, request);
 
-		String authorizationUrlParameter = null;
+		Map<String, String> authorizationParameters = new HashMap<String, String>();
 		if (provider.getAuthorizationStyle() == AuthorizationStyle.OAUTH_1) {
 			OAuthToken requestToken = provider.fetchNewRequestToken(baseCallbackUrl + name);
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
-			authorizationUrlParameter = requestToken.getValue();
+			authorizationParameters.put("requestToken", requestToken.getValue());
 		} else {
-			authorizationUrlParameter = baseCallbackUrl + name;
+			authorizationParameters.put("redirectUri", baseCallbackUrl + name);
 		}
 
-		return "redirect:" + provider.buildAuthorizeUrl(authorizationUrlParameter);
+		return "redirect:" + provider.buildAuthorizeUrl(authorizationParameters);
 	}
 
 	/**

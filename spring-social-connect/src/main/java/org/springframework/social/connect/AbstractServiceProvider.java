@@ -17,6 +17,7 @@ package org.springframework.social.connect;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -104,6 +105,12 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 
 	public Collection<AccountConnection> getConnections(Serializable accountId) {
 		return connectionRepository.getAccountConnections(accountId, getName());
+	}
+
+	public String buildAuthorizeUrl(Map<String, String> authorizationParameters) {
+		Map<String, String> authParametersCopy = new HashMap<String, String>(authorizationParameters);
+		authParametersCopy.put("clientId", getApiKey());
+		return parameters.getAuthorizeUrl().expand(authParametersCopy).toString();
 	}
 
 	// additional finders

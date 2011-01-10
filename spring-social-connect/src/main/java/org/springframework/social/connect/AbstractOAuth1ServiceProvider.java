@@ -57,19 +57,8 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 	}
 
 	public void connect(Serializable accountId, String redirectUri, String code) {
-		throw new IllegalStateException(
+		throw new UnsupportedOperationException(
 				"Connections with redirectUri and code are not supported for an OAuth 1-based service provider");
-	}
-
-	/**
-	 * Constructs a URL to the provider's authorization page. A typical OAuth 1
-	 * authorization URL takes the value of the request token as a parameter.
-	 * 
-	 * @param requestToken
-	 *            the request token received earlier in the authorization flow.
-	 */
-	public String buildAuthorizeUrl(String requestToken) {
-		return parameters.getAuthorizeUrl().expand(requestToken).toString();
 	}
 
 	public AuthorizationStyle getAuthorizationStyle() {

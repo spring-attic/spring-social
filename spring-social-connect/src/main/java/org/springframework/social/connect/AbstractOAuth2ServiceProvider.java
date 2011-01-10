@@ -34,11 +34,12 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 	}
 
 	public OAuthToken fetchNewRequestToken(String callbackUrl) {
-		throw new IllegalStateException("You may not fetch a request token for an OAuth 2-based service provider");
+		throw new UnsupportedOperationException(
+				"You may not fetch a request token for an OAuth 2-based service provider");
 	}
 
 	public void connect(Serializable accountId, AuthorizedRequestToken requestToken) {
-		throw new IllegalStateException(
+		throw new UnsupportedOperationException(
 				"Connections with request token are not supported for an OAuth 2-based service provider");
 	}
 
@@ -53,25 +54,6 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 		String username = fetchProviderAccountId(serviceOperations);
 		connectionRepository.addConnection(accountId, getName(), accessToken, username,
 				buildProviderProfileUrl(username, serviceOperations));
-	}
-
-	/**
-	 * <p>
-	 * Constructs a URL to the service provider's authorization page.
-	 * </p>
-	 * 
-	 * <p>
-	 * A typical OAuth 2 authorization URL takes 2 parameters: The client's API
-	 * key and its redirect URI. Since the provider instance will already know
-	 * its client API key, the caller will only need to pass in the redirect
-	 * URI.
-	 * </p>
-	 * 
-	 * @param redirectUri
-	 *            the client's redirect URI
-	 */
-	public String buildAuthorizeUrl(String redirectUri) {
-		return parameters.getAuthorizeUrl().expand(parameters.getApiKey(), redirectUri).toString();
 	}
 
 	public AuthorizationStyle getAuthorizationStyle() {

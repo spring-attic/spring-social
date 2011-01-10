@@ -2,6 +2,8 @@ package org.springframework.social.connect.jdbc;
 
 import static org.junit.Assert.*;
 
+import java.util.Collections;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +48,7 @@ public class JdbcServiceProviderFactoryTest {
 		assertEquals("Twitter", twitterProvider.getDisplayName());
 		assertEquals("123456789", twitterProvider.getApiKey());
 		assertEquals("http://www.twitter.com/authorize?oauth_token=123456789",
-				twitterProvider.buildAuthorizeUrl("123456789"));
+				twitterProvider.buildAuthorizeUrl(Collections.singletonMap("requestToken", "123456789")));
 
 		ServiceProvider<FacebookOperations> facebookProvider = providerFactory.getServiceProvider("facebook",
 				FacebookOperations.class);
@@ -63,7 +65,7 @@ public class JdbcServiceProviderFactoryTest {
 		assertEquals("Twitter", twitterProvider.getDisplayName());
 		assertEquals("123456789", twitterProvider.getApiKey());
 		assertEquals("http://www.twitter.com/authorize?oauth_token=123456789",
-				twitterProvider.buildAuthorizeUrl("123456789"));
+				twitterProvider.buildAuthorizeUrl(Collections.singletonMap("requestToken", "123456789")));
 
 		ServiceProvider<FacebookOperations> facebookProvider = providerFactory.getServiceProvider("facebook",
 				FacebookOperations.class);

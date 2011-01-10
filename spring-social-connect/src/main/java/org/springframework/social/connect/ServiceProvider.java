@@ -17,6 +17,7 @@ package org.springframework.social.connect;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Map;
 
 
 /**
@@ -71,15 +72,15 @@ public interface ServiceProvider<S> {
 	 * Construct the URL to redirect the member to for OAuth connection
 	 * authorization.
 	 * 
-	 * @param authorizationUrlParameter
-	 *            A value to be plugged into the authorization URL. In the case
+	 * @param authorizationParameters
+	 *            Values to be plugged into the authorization URL. In the case
 	 *            of OAuth 1 authorization, this should be the value of the
-	 *            request token. For OAuth 2 it needs to be the application's
-	 *            redirect URL.
+	 *            request token. For OAuth 2 it should include the application's
+	 *            redirect URL and optionally the authorization scope.
 	 * @return the absolute authorize URL to redirect the member to for
 	 *         authorization
 	 */
-	String buildAuthorizeUrl(String authorizationUrlParameter);
+	String buildAuthorizeUrl(Map<String, String> authorizationParameters);
 
 	/**
 	 * Connects a member account to this OAuth 1 service provider. Called after
