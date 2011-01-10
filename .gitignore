@@ -10,4 +10,5 @@ spring-social-core/src/test/java/exploration
 samples/**/.classpath
 samples/**/.project
 samples/**/.settings
+samples/**/.springBeans
 samples/**/bin

@@ -15,7 +15,19 @@
  */
 package org.springframework.social.connect;
 
+import java.io.Serializable;
+
+import org.scribe.extractors.BaseStringExtractorImpl;
+import org.scribe.extractors.HeaderExtractorImpl;
+import org.scribe.extractors.TokenExtractorImpl;
+import org.scribe.model.OAuthConfig;
 import org.scribe.model.Token;
+import org.scribe.model.Verb;
+import org.scribe.model.Verifier;
+import org.scribe.oauth.OAuth10aServiceImpl;
+import org.scribe.oauth.OAuthService;
+import org.scribe.services.HMACSha1SignatureService;
+import org.scribe.services.TimestampServiceImpl;
 
 /**
  * Base class for ServiceProvider implementations that use OAuth 1
@@ -36,6 +48,19 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 		return new OAuthToken(requestToken.getToken(), requestToken.getSecret());
 	}
 
+	public void connect(Serializable accountId, AuthorizedRequestToken requestToken) {
+		OAuthToken accessToken = getAccessToken(requestToken);
+		S serviceOperations = createServiceOperations(accessToken);
+		String providerAccountId = fetchProviderAccountId(serviceOperations);
+		connectionRepository.addConnection(accountId, getName(), accessToken, providerAccountId,
+				buildProviderProfileUrl(providerAccountId, serviceOperations));
+	}
+
+	public void connect(Serializable accountId, String redirectUri, String code) {
+		throw new IllegalStateException(
+				"Connections with redirectUri and code are not supported for an OAuth 1-based service provider");
+	}
+
 	/**
 	 * Constructs a URL to the provider's authorization page. A typical OAuth 1
 	 * authorization URL takes the value of the request token as a parameter.
@@ -49,5 +74,32 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 
 	public AuthorizationStyle getAuthorizationStyle() {
 		return AuthorizationStyle.OAUTH_1;
+	}
+
+	// internal helpers
+	protected OAuthService getOAuthService() {
+		return getOAuthService(null);
+	}
+
+	protected OAuthService getOAuthService(String callbackUrl) {
+		OAuthConfig config = new OAuthConfig();
+		config.setRequestTokenEndpoint(parameters.getRequestTokenUrl());
+		config.setAccessTokenEndpoint(parameters.getAccessTokenUrl());
+		config.setAccessTokenVerb(Verb.POST);
+		config.setRequestTokenVerb(Verb.POST);
+		config.setApiKey(parameters.getApiKey());
+		config.setApiSecret(parameters.getSecret());
+		if (callbackUrl != null) {
+			config.setCallback(callbackUrl);
+		}
+		return new OAuth10aServiceImpl(new HMACSha1SignatureService(), new TimestampServiceImpl(),
+				new BaseStringExtractorImpl(), new HeaderExtractorImpl(), new TokenExtractorImpl(),
+				new TokenExtractorImpl(), config);
+	}
+
+	private OAuthToken getAccessToken(AuthorizedRequestToken requestToken) {
+		Token accessToken = getOAuthService().getAccessToken(
+				new Token(requestToken.getValue(), requestToken.getSecret()), new Verifier(requestToken.getVerifier()));
+		return new OAuthToken(accessToken.getToken(), accessToken.getSecret());
 	}
 }

@@ -21,11 +21,13 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.encrypt.StringEncryptor;
 import org.springframework.social.connect.AccountConnection;
 import org.springframework.social.connect.AccountConnectionRepository;
+import org.springframework.social.connect.ConnectionAlreadyExistsException;
 import org.springframework.social.connect.OAuthToken;
 import org.springframework.stereotype.Repository;
 
@@ -46,9 +48,14 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 
 	public void addConnection(Serializable accountId, String provider, OAuthToken accessToken,
 			String providerAccountId, String providerProfileUrl) {
-		jdbcTemplate.update(CREATE_CONNECTION_QUERY, accountId, provider,
-				encryptor.encrypt(accessToken.getValue()), encryptIfPresent(accessToken.getSecret()),
-				providerAccountId, providerProfileUrl);
+		try {
+			jdbcTemplate.update(CREATE_CONNECTION_QUERY, accountId, provider,
+					encryptor.encrypt(accessToken.getValue()), encryptIfPresent(accessToken.getSecret()),
+					providerAccountId, providerProfileUrl);
+		} catch (DuplicateKeyException e) {
+			throw new ConnectionAlreadyExistsException("A connection already exists between account (" + accountId
+					+ ") and the " + provider + " service provider.", e);
+		}
 	}
 
 	public boolean isConnected(Serializable accountId, String provider) {

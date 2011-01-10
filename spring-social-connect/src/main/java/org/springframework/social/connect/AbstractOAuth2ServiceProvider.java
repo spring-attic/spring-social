@@ -15,6 +15,10 @@
  */
 package org.springframework.social.connect;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Base class for ServiceProvider implementations that use OAuth 2
  * authorization.
@@ -31,6 +35,24 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 
 	public OAuthToken fetchNewRequestToken(String callbackUrl) {
 		throw new IllegalStateException("You may not fetch a request token for an OAuth 2-based service provider");
+	}
+
+	public void connect(Serializable accountId, AuthorizedRequestToken requestToken) {
+		throw new IllegalStateException(
+				"Connections with request token are not supported for an OAuth 2-based service provider");
+	}
+
+	public void connect(Serializable accountId, String redirectUri, String code) {
+		Map<String, String> tokenRequestParameters = new HashMap<String, String>();
+		tokenRequestParameters.put("client_id", parameters.getApiKey());
+		tokenRequestParameters.put("client_secret", parameters.getSecret());
+		tokenRequestParameters.put("code", code);
+		tokenRequestParameters.put("redirect_uri", redirectUri);
+		OAuthToken accessToken = fetchOAuth2AccessToken(tokenRequestParameters);
+		S serviceOperations = createServiceOperations(accessToken);
+		String username = fetchProviderAccountId(serviceOperations);
+		connectionRepository.addConnection(accountId, getName(), accessToken, username,
+				buildProviderProfileUrl(username, serviceOperations));
 	}
 
 	/**

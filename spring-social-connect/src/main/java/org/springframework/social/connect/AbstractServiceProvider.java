@@ -17,21 +17,9 @@ package org.springframework.social.connect;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.scribe.extractors.BaseStringExtractorImpl;
-import org.scribe.extractors.HeaderExtractorImpl;
-import org.scribe.extractors.TokenExtractorImpl;
-import org.scribe.model.OAuthConfig;
-import org.scribe.model.Token;
-import org.scribe.model.Verb;
-import org.scribe.model.Verifier;
-import org.scribe.oauth.OAuth10aServiceImpl;
-import org.scribe.oauth.OAuthService;
-import org.scribe.services.HMACSha1SignatureService;
-import org.scribe.services.TimestampServiceImpl;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
@@ -44,7 +32,7 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	
 	protected final ServiceProviderParameters parameters;
 
-	private final AccountConnectionRepository connectionRepository;
+	protected final AccountConnectionRepository connectionRepository;
 	
 	/**
 	 * Creates a ServiceProvider.
@@ -76,27 +64,6 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	}
 	
 	// connection management
-	public void connect(Serializable accountId, AuthorizedRequestToken requestToken) {
-		OAuthToken accessToken = getAccessToken(requestToken);
-		S serviceOperations = createServiceOperations(accessToken);
-		String providerAccountId = fetchProviderAccountId(serviceOperations);
-		connectionRepository.addConnection(accountId, getName(), accessToken,
-				providerAccountId, buildProviderProfileUrl(providerAccountId, serviceOperations));
-	}
-
-	public void connect(Serializable accountId, String redirectUri, String code) {
-		Map<String, String> tokenRequestParameters = new HashMap<String, String>();
-		tokenRequestParameters.put("client_id", parameters.getApiKey());
-		tokenRequestParameters.put("client_secret", parameters.getSecret());
-		tokenRequestParameters.put("code", code);
-		tokenRequestParameters.put("redirect_uri", redirectUri);
-		OAuthToken accessToken = fetchOAuth2AccessToken(tokenRequestParameters);
-		S serviceOperations = createServiceOperations(accessToken);
-		String username = fetchProviderAccountId(serviceOperations);
-		connectionRepository.addConnection(accountId, getName(), accessToken, username,
-				buildProviderProfileUrl(username, serviceOperations));
-	}
-
 	public void addConnection(Serializable accountId, String accessToken, String providerAccountId) {
 		OAuthToken oauthAccessToken = new OAuthToken(accessToken);
 		S serviceOperations = createServiceOperations(oauthAccessToken);
@@ -180,30 +147,4 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	protected String getSecret() {
 		return parameters.getSecret();
 	}
-	
-
-	// internal helpers
-	protected OAuthService getOAuthService() {
-		return getOAuthService(null);
-	}
-	
-	protected OAuthService getOAuthService(String callbackUrl) {
-		OAuthConfig config = new OAuthConfig();
-		config.setRequestTokenEndpoint(parameters.getRequestTokenUrl());
-		config.setAccessTokenEndpoint(parameters.getAccessTokenUrl());
-		config.setAccessTokenVerb(Verb.POST);
-		config.setRequestTokenVerb(Verb.POST);
-		config.setApiKey(parameters.getApiKey());
-		config.setApiSecret(parameters.getSecret());
-		if (callbackUrl != null) {
-			config.setCallback(callbackUrl);
-		}
-		return new OAuth10aServiceImpl(new HMACSha1SignatureService(), new TimestampServiceImpl(), new BaseStringExtractorImpl(), new HeaderExtractorImpl(), new TokenExtractorImpl(), new TokenExtractorImpl(), config);
-	}
-
-	private OAuthToken getAccessToken(AuthorizedRequestToken requestToken) {
-		Token accessToken = getOAuthService().getAccessToken(new Token(requestToken.getValue(), requestToken.getSecret()), new Verifier(requestToken.getVerifier()));
-		return new OAuthToken(accessToken.getToken(), accessToken.getSecret());
-	}
-
 }
