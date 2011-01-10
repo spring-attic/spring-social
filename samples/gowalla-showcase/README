@@ -5,6 +5,8 @@ with Gowalla.
 
 At this time, this showcase demonstrates:
  - Connecting to Gowalla using Spring Social's ConnectController and the OAuth 2 web server flow.
+ - Specifying an OAuth 2 authorization scope via an optional "scope" parameter to the ConnectController
+   at authorization time
  - Retrieving a user's Gowalla ID.
  - Retrieving a user's top spots (the spots that the user has checked into most).
  

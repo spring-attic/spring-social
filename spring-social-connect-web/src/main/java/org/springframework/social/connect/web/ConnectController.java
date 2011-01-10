@@ -99,7 +99,8 @@ public class ConnectController {
 	 * Fetches a new request token from the provider, temporarily stores it in the session, then redirects the member to the provider's site for authorization.
 	 */
 	@RequestMapping(value="/connect/{name}", method=RequestMethod.POST)
-	public String connect(@PathVariable String name, WebRequest request) {
+	public String connect(@PathVariable String name, WebRequest request,
+			@RequestParam(required = false, defaultValue = "") String scope) {
 		ServiceProvider<?> provider = getServiceProvider(name);
 		preConnect(provider, request);
 
@@ -110,6 +111,7 @@ public class ConnectController {
 			authorizationParameters.put("requestToken", requestToken.getValue());
 		} else {
 			authorizationParameters.put("redirectUri", baseCallbackUrl + name);
+			authorizationParameters.put("scope", scope);
 		}
 
 		return "redirect:" + provider.buildAuthorizeUrl(authorizationParameters);

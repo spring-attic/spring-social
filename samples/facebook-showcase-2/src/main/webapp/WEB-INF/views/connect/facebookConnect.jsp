@@ -10,6 +10,7 @@
 <h1>Facebook Showcase: Connect to Facebook</h1>
 
 <form action="<c:url value="/connect/facebook" />" method="POST">
+	<input type="hidden" name="scope" value="publish_stream,offline_access" />
 	<div class="formInfo">
 		<p>Click the button to connect Facebook Showcase with your Facebook account.</p>
 	</div>

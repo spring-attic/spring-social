@@ -10,6 +10,7 @@
 <h1>Gowalla Showcase: Connect to Gowalla</h1>
 
 <form action="<c:url value="/connect/gowalla" />" method="POST">
+	<input type="hidden" name="scope" value="read-write" />
 	<div class="formInfo">
 		<p>Click the button to connect Gowalla Showcase with your Gowalla account.</p>
 	</div>
