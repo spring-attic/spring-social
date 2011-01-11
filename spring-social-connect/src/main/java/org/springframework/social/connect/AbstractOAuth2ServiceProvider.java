@@ -51,12 +51,35 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 		tokenRequestParameters.put("client_secret", parameters.getSecret());
 		tokenRequestParameters.put("code", code);
 		tokenRequestParameters.put("redirect_uri", redirectUri);
+		tokenRequestParameters.put("grant_type", "authorization_code");
 		OAuth2Tokens oauth2Tokens = fetchOAuth2AccessToken(tokenRequestParameters);
 		OAuthToken accessToken = oauth2Tokens.getAccessToken();
 		S serviceOperations = createServiceOperations(accessToken);
 		String username = fetchProviderAccountId(serviceOperations);
 		connectionRepository.addConnection(accountId, getName(), accessToken, oauth2Tokens.getRefreshToken(), username,
 				buildProviderProfileUrl(username, serviceOperations));
+	}
+
+	@Override
+	public void refreshConnection(Serializable accountId, String providerAccountId) {
+		String refreshToken = connectionRepository.getRefreshToken(accountId, getName(), providerAccountId);
+		if (refreshToken == null) {
+			throw new UnsupportedOperationException("Connection refresh is not supported for this provider.");
+		}
+
+		// TODO : Look into reducing some of the duplication between this method
+		// and the connect() method above
+		Map<String, String> tokenRequestParameters = new HashMap<String, String>();
+		tokenRequestParameters.put("client_id", parameters.getApiKey());
+		tokenRequestParameters.put("client_secret", parameters.getSecret());
+		tokenRequestParameters.put("refresh_token", refreshToken);
+		tokenRequestParameters.put("grant_type", "refresh_token");
+		OAuth2Tokens oauth2Tokens = fetchOAuth2AccessToken(tokenRequestParameters);
+		OAuthToken accessToken = oauth2Tokens.getAccessToken();
+		S serviceOperations = createServiceOperations(accessToken);
+		String username = fetchProviderAccountId(serviceOperations);
+		connectionRepository.updateConnection(accountId, getName(), accessToken, oauth2Tokens.getRefreshToken(),
+				username);
 	}
 
 	public AuthorizationStyle getAuthorizationStyle() {

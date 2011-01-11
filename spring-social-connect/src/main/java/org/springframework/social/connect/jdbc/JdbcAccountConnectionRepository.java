@@ -63,6 +63,13 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 		}
 	}
 
+	public void updateConnection(Serializable accountId, String provider, OAuthToken accessToken, String refreshToken,
+			String providerAccountId) {
+		jdbcTemplate.update(UPDATE_CONNECTION_QUERY, encryptor.encrypt(accessToken.getValue()),
+				encryptIfPresent(accessToken.getSecret()), encryptIfPresent(refreshToken), provider, accountId,
+				providerAccountId);
+	}
+
 	public boolean isConnected(Serializable accountId, String provider) {
 		return jdbcTemplate.queryForInt(CONNECTION_EXISTS_QUERY, accountId, provider) == 1;
 	}
@@ -132,6 +139,7 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 	static final String PROVIDER_ACCOUNT_ID_QUERY = "select accountId from AccountConnection where member = ? and provider = ?";
 	static final String CONNECTION_EXISTS_QUERY = "select exists(select 1 from AccountConnection where member = ? and provider = ?)";
 	static final String CREATE_CONNECTION_QUERY = "insert into AccountConnection (member, provider, accessToken, secret, refreshToken, accountId, profileUrl) values (?, ?, ?, ?, ?, ?, ?)";
+	static final String UPDATE_CONNECTION_QUERY = "update AccountConnection set accessToken = ?, secret = ?, refreshToken = ? where provider = ? and member = ? and accountId = ?";
 	static final String REMOVE_CONNECTION_QUERY = "delete from AccountConnection where member = ? and provider = ? and accountId = ?";
 	static final String REMOVE_ALL_CONNECTIONS_QUERY = "delete from AccountConnection where member = ? and provider = ?";
 	static final String ACCESS_TOKEN_QUERY = "select accessToken, secret from AccountConnection where member = ? and provider = ?";

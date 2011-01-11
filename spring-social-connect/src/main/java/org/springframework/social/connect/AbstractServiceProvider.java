@@ -75,6 +75,10 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		return connectionRepository.isConnected(accountId, getName());
 	}
 
+	public void refreshConnection(Serializable accountId, String providerAccountId) {
+		throw new UnsupportedOperationException("Connection refresh is not supported for this provider.");
+	}
+
 	public void disconnect(Serializable accountId) {
 		connectionRepository.disconnect(accountId, getName());
 	}

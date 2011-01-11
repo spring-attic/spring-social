@@ -154,6 +154,25 @@ public interface ServiceProvider<S> {
 
 	/**
 	 * <p>
+	 * Refreshes a connection whose access token has expired.
+	 * </p>
+	 * 
+	 * <p>
+	 * Only applicable for OAuth 2 providers that support refresh tokens.
+	 * </p>
+	 * 
+	 * @throws UnsupportedOperationException
+	 *             if the provider doesn't support connection refresh
+	 * 
+	 * @param accountId
+	 *            the account ID on the application side of the connection.
+	 * @param providerAccountId
+	 *            the account ID on the provider side of the connection.
+	 */
+	void refreshConnection(Serializable accountId, String providerAccountId);
+
+	/**
+	 * <p>
 	 * Gets a handle to the API offered by this service provider. This API may
 	 * be used by the application to invoke the service on behalf of a member.
 	 * </p>
