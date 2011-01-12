@@ -4,8 +4,17 @@
 				xsi:schemaLocation="http://www.springframework.org/schema/social-connect http://www.springframework.org/schema/social/social-connect-1.0.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<social:jdbc-service-provider-factory jdbc-template="jdbcTemplate" />
+	<!-- Configure a connection repository through which account-to-provider connections will be stored -->	
 	<social:jdbc-connection-repository jdbc-template="jdbcTemplate" />
+	
+	<!-- Configure a service provider factory from which service providers may be retrieved by name
+	     (used primarily by ConnectController).
+	     In this case, service providers are retrieved as beans from the Spring application context.
+	     <social:jdbc-service-provider-factory> retrieves them through JDBC.  
+	     -->
+	<social:context-service-provider-factory />
+	
+	<!-- Configure a Twitter service provider -->
 	<social:twitter-provider consumer-key="YR571S2JiVBOFyJS5MEg" 
 							 consumer-secret="Kb8hS0luftwCJX3qVoyiLUMfZDtK1EozFoUkjNLUMx4" />
 

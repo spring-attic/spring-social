@@ -188,6 +188,14 @@
 		</xsd:complexType>
 	</xsd:element>
 	
+	<xsd:element name="context-service-provider-factory">
+		<xsd:annotation>
+			<xsd:documentation>
+				Configures a JDBC-backed service provider factory.
+			</xsd:documentation>
+		</xsd:annotation>
+	</xsd:element>
+	
 	<xsd:element name="jdbc-service-provider-factory">
 		<xsd:annotation>
 			<xsd:documentation>

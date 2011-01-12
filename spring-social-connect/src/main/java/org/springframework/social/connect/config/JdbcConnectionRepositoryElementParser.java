@@ -26,7 +26,7 @@ public class JdbcConnectionRepositoryElementParser implements BeanDefinitionPars
 		}
 
 		AbstractBeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-		parserContext.getRegistry().registerBeanDefinition("jdbcAccountConnectionRepository", beanDefinition);
+		parserContext.getRegistry().registerBeanDefinition("accountConnectionRepository", beanDefinition);
 
 		return beanDefinition;
 	}

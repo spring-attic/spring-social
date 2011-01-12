@@ -5,28 +5,15 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.security.encrypt.NoOpStringEncryptor;
-import org.springframework.social.connect.jdbc.JdbcServiceProviderFactory;
+import org.springframework.social.connect.jdbc.ContextServiceProviderFactory;
 import org.w3c.dom.Element;
 
-public class JdbcServiceProviderFactoryElementParser implements BeanDefinitionParser {
+public class ContextServiceProviderFactoryElementParser implements BeanDefinitionParser {
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
 		BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder
-				.genericBeanDefinition(JdbcServiceProviderFactory.class);
-
-		String jdbcTemplate = element.getAttribute("jdbc-template");
-		beanBuilder.addConstructorArgReference(jdbcTemplate);
-
-		String stringEncryptor = element.getAttribute("string-encryptor");
-		if (stringEncryptor != null && !stringEncryptor.isEmpty()) {
-			beanBuilder.addConstructorArgReference(stringEncryptor);
-		} else {
-			beanBuilder.addConstructorArgValue(NoOpStringEncryptor.getInstance());
-		}
-
+				.genericBeanDefinition(ContextServiceProviderFactory.class);
 		AbstractBeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
 		parserContext.getRegistry().registerBeanDefinition("serviceProviderFactory", beanDefinition);
-
 		return beanDefinition;
 	}
 }
