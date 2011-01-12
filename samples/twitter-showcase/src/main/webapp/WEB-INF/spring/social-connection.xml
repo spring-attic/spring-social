@@ -4,51 +4,9 @@
 				xsi:schemaLocation="http://www.springframework.org/schema/social-connect http://www.springframework.org/schema/social/social-connect-1.0.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-
-	<!-- Loads ServiceProviders by name -->
-	<!-- 
-		Could be replaced with:		
-		<social:jdbc-service-provider-factory />
-		
-		  or
-		
-		<social:context-service-provider-factory />
-	 -->	
-	<bean id="serviceProviderFactory" class="org.springframework.social.connect.jdbc.JdbcServiceProviderFactory">
-		<constructor-arg ref="jdbcTemplate" />
-		<constructor-arg ref="stringEncryptor" />
-	</bean>
-
-	<!-- String encryptor for encrypting OAuth specifics in the DB -->
-	<!--  This wouldn't be necessary as it would be the default -->
-	<bean id="stringEncryptor" class="org.springframework.security.encrypt.NoOpStringEncryptor" factory-method="getInstance" />				
-
-	<!-- Twitter service provider -->
-	<!-- 
-	<bean id="twitterProvider" factory-bean="serviceProviderFactory" factory-method="getServiceProvider">
-		<constructor-arg value="twitter" />
-	</bean>
-	-->
-
-	<!-- 
-		Could be replaced with:		
-		<social:jdbc-connection-repository />
-	 -->	
-	<bean id="connectionRepository" class="org.springframework.social.connect.jdbc.JdbcAccountConnectionRepository">
-		<constructor-arg ref="jdbcTemplate" />
-		<constructor-arg ref="stringEncryptor" />
-	</bean>
-	
+	<social:jdbc-service-provider-factory jdbc-template="jdbcTemplate" />
+	<social:jdbc-connection-repository jdbc-template="jdbcTemplate" />
 	<social:twitter-provider consumer-key="YR571S2JiVBOFyJS5MEg" 
 							 consumer-secret="Kb8hS0luftwCJX3qVoyiLUMfZDtK1EozFoUkjNLUMx4" />
 
-	<!-- 	
-	<social:service-provider id="twitter" 
-							 class="org.springframework.social.connect.providers.TwitterServiceProvider" 
-							 consumer-key="YR571S2JiVBOFyJS5MEg" 
-							 consumer-secret="Kb8hS0luftwCJX3qVoyiLUMfZDtK1EozFoUkjNLUMx4" 
-							 request-token-url="http://twitter.com/oauth/request_token" 
-							 authorization-url="https://twitter.com/oauth/authorize?oauth_token={requestToken}"
-							 access-token-url="https://twitter.com/oauth/access_token" />
-	-->
 </beans>

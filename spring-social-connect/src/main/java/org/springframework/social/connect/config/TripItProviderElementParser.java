@@ -33,7 +33,7 @@ public class TripItProviderElementParser extends AbstractServiceProviderElementP
 		}
 
 		return registerServiceProviderBean(parserContext, name, TripItServiceProvider.class.getName(), "TripIt",
-				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"), null, REQUEST_TOKEN_URL, AUTHORIZATION_URL, ACCESS_TOKEN_URL,
-				element.getAttribute("connection-repository-ref"));
+				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"), null, REQUEST_TOKEN_URL,
+				AUTHORIZATION_URL, ACCESS_TOKEN_URL, element.getAttribute("connection-repository"));
 	}
 }

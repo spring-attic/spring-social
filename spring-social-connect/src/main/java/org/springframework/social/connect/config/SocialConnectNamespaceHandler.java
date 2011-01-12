@@ -21,6 +21,13 @@ public class SocialConnectNamespaceHandler extends NamespaceHandlerSupport {
 
 	public void init() {
 		registerBeanDefinitionParser("service-provider", new ServiceProviderElementParser());
+		registerBeanDefinitionParser("facebook-provider", new FacebookProviderElementParser());
+		registerBeanDefinitionParser("gowalla-provider", new GowallaProviderElementParser());
+		registerBeanDefinitionParser("linkedin-provider", new LinkedInProviderElementParser());
+		registerBeanDefinitionParser("tripit-provider", new TripItProviderElementParser());
 		registerBeanDefinitionParser("twitter-provider", new TwitterProviderElementParser());
+
+		registerBeanDefinitionParser("jdbc-service-provider-factory", new JdbcServiceProviderFactoryElementParser());
+		registerBeanDefinitionParser("jdbc-connection-repository", new JdbcConnectionRepositoryElementParser());
 	}
 }

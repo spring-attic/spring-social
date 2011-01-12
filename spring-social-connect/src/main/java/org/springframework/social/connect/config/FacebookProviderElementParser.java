@@ -36,7 +36,6 @@ public class FacebookProviderElementParser extends AbstractServiceProviderElemen
 
 		return registerServiceProviderBean(parserContext, name, FacebookServiceProvider.class.getName(), "Facebook",
 				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"), appId,
-				REQUEST_TOKEN_URL, AUTHORIZATION_URL, ACCESS_TOKEN_URL,
-				element.getAttribute("connection-repository-ref"));
+				REQUEST_TOKEN_URL, AUTHORIZATION_URL, ACCESS_TOKEN_URL, element.getAttribute("connection-repository"));
 	}
 }

@@ -11,7 +11,7 @@
 	<context:component-scan base-package="org.springframework.social.samples.twitter" />
 	
 	<bean class="org.springframework.social.connect.web.ConnectController">
-		<constructor-arg ref="serviceProviderFactory" />
+		<constructor-arg ref="jdbcServiceProviderFactory" />
 		<constructor-arg value="http://localhost:8080/twitter-showcase" />
 		<constructor-arg ref="accountIdResolver" />
 	</bean>

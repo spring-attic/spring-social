@@ -33,7 +33,7 @@ public class TwitterProviderElementParser extends AbstractServiceProviderElement
 		}
 
 		return registerServiceProviderBean(parserContext, name, TwitterServiceProvider.class.getName(), "Twitter",
-				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"), null, REQUEST_TOKEN_URL, AUTHORIZATION_URL, ACCESS_TOKEN_URL,
-				element.getAttribute("connection-repository-ref"));
+				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"), null, REQUEST_TOKEN_URL,
+				AUTHORIZATION_URL, ACCESS_TOKEN_URL, element.getAttribute("connection-repository"));
 	}
 }

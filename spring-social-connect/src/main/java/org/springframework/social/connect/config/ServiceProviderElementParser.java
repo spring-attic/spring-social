@@ -37,7 +37,7 @@ public class ServiceProviderElementParser extends AbstractServiceProviderElement
 		requestTokenUrl = requestTokenUrl != null && requestTokenUrl.isEmpty() ? null : requestTokenUrl;
 		String authorizeUrl = element.getAttribute("authorization-url");
 		String accessTokenUrl = element.getAttribute("access-token-url");
-		String connectionRepositoryBean = element.getAttribute("connection-repository-ref");
+		String connectionRepositoryBean = element.getAttribute("connection-repository");
 		
 		return registerServiceProviderBean(parserContext, name, className, displayName, consumerKey, consumerSecret,
 				appId, requestTokenUrl, authorizeUrl, accessTokenUrl, connectionRepositoryBean);

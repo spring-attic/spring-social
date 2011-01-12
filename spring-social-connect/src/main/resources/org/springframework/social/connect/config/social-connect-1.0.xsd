@@ -35,7 +35,7 @@
 				</xsd:documentation>
 			</xsd:annotation>
 		</xsd:attribute>
-		<xsd:attribute name="connection-repository-ref" type="xsd:string">
+		<xsd:attribute name="connection-repository" type="xsd:string">
 			<xsd:annotation>
 				<xsd:documentation>
 					A reference to a AccountConnectionRepository bean that will store connections made for this
@@ -188,4 +188,53 @@
 		</xsd:complexType>
 	</xsd:element>
 	
+	<xsd:element name="jdbc-service-provider-factory">
+		<xsd:annotation>
+			<xsd:documentation>
+				Configures a JDBC-backed service provider factory.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="jdbc-template" use="required" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+						Specifies the JdbcTemplate through which service providers will be managed.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="string-encryptor" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+						Sets a string encryptor to encrypt/decrypt an application's OAuth credentials. Defaults to
+						a no-op string encryptor.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="jdbc-connection-repository">
+		<xsd:annotation>
+			<xsd:documentation>
+				Configures a JDBC-backed account connection repository
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:attribute name="jdbc-template" use="required" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+						Specifies the JdbcTemplate through which connections will be managed.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="string-encryptor" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+						Sets a string encryptor to encrypt/decrypt a user's connection tokens. Defaults to
+						a no-op string encryptor.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>	
 </xsd:schema>

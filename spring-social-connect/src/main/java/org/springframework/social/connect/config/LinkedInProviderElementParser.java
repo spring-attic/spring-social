@@ -33,7 +33,7 @@ public class LinkedInProviderElementParser extends AbstractServiceProviderElemen
 		}
 
 		return registerServiceProviderBean(parserContext, name, LinkedInServiceProvider.class.getName(), "LinkedIn",
-				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"), null, REQUEST_TOKEN_URL, AUTHORIZATION_URL, ACCESS_TOKEN_URL,
-				element.getAttribute("connection-repository-ref"));
+				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"), null, REQUEST_TOKEN_URL,
+				AUTHORIZATION_URL, ACCESS_TOKEN_URL, element.getAttribute("connection-repository"));
 	}
 }
