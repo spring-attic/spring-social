@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -88,8 +89,12 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 
 	protected OAuth2Tokens fetchOAuth2AccessToken(Map<String, String> tokenRequestParameters) {
 		@SuppressWarnings("unchecked")
-		Map<String, String> result = new RestTemplate().postForObject(parameters.getAccessTokenUrl(),
+		Map<String, String> result = getRestOperations().postForObject(parameters.getAccessTokenUrl(),
 				tokenRequestParameters, Map.class);
 		return new OAuth2Tokens(new OAuthToken(result.get("access_token")), result.get("refresh_token"));
+	}
+
+	protected RestOperations getRestOperations() {
+		return new RestTemplate();
 	}
 }

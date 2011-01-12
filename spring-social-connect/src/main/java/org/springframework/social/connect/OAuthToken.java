@@ -54,5 +54,5 @@ public final class OAuthToken implements Serializable {
 	public String getSecret() {
 		return secret;
 	}
-	
+
 }
