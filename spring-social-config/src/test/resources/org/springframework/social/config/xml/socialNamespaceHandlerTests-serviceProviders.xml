@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:social="http://www.springframework.org/schema/spring-social"
+	xsi:schemaLocation="http://www.springframework.org/schema/spring-social http://www.springframework.org/schema/social/spring-social-1.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean class="org.springframework.social.config.xml.TestConnectionRepository" />
+
+	<social:service-provider id="foobar"
+							 consumer-key="consumer_key"
+							 consumer-secret="consumer_secret"
+							 display-name="FooBar"
+							 class="org.springframework.social.config.xml.TestServiceProvider"
+							 app-id="1234" 
+							 request-token-url="http://www.foobar.com/oauth/requestToken" 
+							 authorization-url="http://www.foobar.com/oauth/authorize"
+							 access-token-url="http://www.foobar.com/oauth/accessToken" />
+	
+	<social:twitter-provider consumer-key="twitter_key" consumer-secret="twitter_secret" />
+	<social:facebook-provider consumer-key="facebook_key" consumer-secret="facebook_secret" app-id="1234" />
+	<social:gowalla-provider consumer-key="gowalla_key" consumer-secret="gowalla_secret" />
+	<social:tripit-provider consumer-key="tripit_key" consumer-secret="tripit_secret" />
+	<social:linkedin-provider consumer-key="linkedin_key" consumer-secret="linkedin_secret" />
+</beans>

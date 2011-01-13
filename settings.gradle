@@ -17,6 +17,7 @@
 rootProject.name = 'spring-social'
 
 include 'docs'
+include 'spring-social-config'
 include 'spring-social-connect'
 include 'spring-social-connect-web'
 include 'spring-social-core'

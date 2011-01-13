@@ -148,6 +148,21 @@ project('spring-social-core') {
     }
 }
 
+project('spring-social-config') {
+    description = 'Spring Social Configuration'
+    dependencies {
+        compile "org.springframework:spring-beans:$springVersion"
+        compile project(':spring-social-connect')
+        compile project(':spring-social-core')
+        compile project(':spring-social-facebook') { optional = true }
+        compile project(':spring-social-gowalla') { optional = true }
+        compile project(':spring-social-linkedin') { optional = true }
+        compile project(':spring-social-tripit') { optional = true }
+        compile project(':spring-social-twitter') { optional = true }
+        testCompile "com.h2database:h2:1.2.143"
+    }
+}
+
 project('spring-social-connect') {
     description = 'Spring Social Connect'
     dependencies {
