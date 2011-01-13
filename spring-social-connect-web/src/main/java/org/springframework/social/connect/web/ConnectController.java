@@ -65,6 +65,16 @@ public class ConnectController {
 	 */
 	public ConnectController(ServiceProviderFactory serviceProviderFactory, String applicationUrl,
 			AccountIdResolver accountIdResolver) {
+		// TODO: It seems that since we always configure a service provider as a
+		// bean in Spring, whether it be using the namespace or by invoking
+		// getServiceProvider() on the JDBC service provider factory, that
+		// wiring the service provider factory into ConnectController isn't
+		// necessary. Instead, ConnectController just needs a way of finding one
+		// of those service provider beans by its name. If so, then the SPF
+		// should be removed as a constructor argument. This would not only
+		// simplify configuration, but would also prevent 2 instances of SPs
+		// from being created (one created when ConnectController asks for it
+		// and one created in the Spring context).
 		this.serviceProviderFactory = serviceProviderFactory;
 		this.accountIdResolver = accountIdResolver;
 		this.baseCallbackUrl = applicationUrl + "/connect/";

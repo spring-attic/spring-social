@@ -9,6 +9,7 @@ At this time, this showcase demonstrates:
    connection, you'll need to "logout" of Twitter and login as a different Twitter user when prompted for
    authorization by Twitter.)
  - Posting a status message to any or all of the connected Twitter profile timelines.
+ - Using Spring Social's configuration namespace to declare a Twitter-based service provider.
  
 To keep things simple this showcase application is a single-user application, assuming that the user's application
 account ID is always 1. A more comprehensive example would be multi-user keeping a store of users, any of which
