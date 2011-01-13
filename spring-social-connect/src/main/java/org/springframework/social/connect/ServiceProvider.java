@@ -143,14 +143,26 @@ public interface ServiceProvider<S> {
 	void addConnection(Serializable accountId, String accessToken, String providerAccountId);
 
 	/**
-	 * Returns true if the member account is connected to this provider, false
-	 * otherwise.
+	 * Returns true if the member account has any connections to this provider,
+	 * false otherwise.
 	 * 
 	 * @param accountId
 	 *            the application account ID to check for a connection with this
 	 *            provider.
 	 */
 	boolean isConnected(Serializable accountId);
+
+	/**
+	 * Returns true if the member account is connected to a specific profile on
+	 * this provider, false otherwise.
+	 * 
+	 * @param accountId
+	 *            the application account ID to check for a connection with this
+	 *            provider.
+	 * @param providerAcountId
+	 *            the id of the user in the provider's system.
+	 */
+	boolean isConnected(Serializable accountId, String providerAcountId);
 
 	/**
 	 * <p>

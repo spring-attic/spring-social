@@ -74,6 +74,11 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 		return jdbcTemplate.queryForInt(CONNECTION_EXISTS_QUERY, accountId, provider) == 1;
 	}
 
+	public boolean isConnected(Serializable accountId, String provider, String providerAccountId) {
+		return jdbcTemplate.queryForInt(CONNECTION_EXISTS_QUERY + " and accountId = ?", accountId, provider,
+				providerAccountId) == 1;
+	}
+
 	public void disconnect(Serializable accountId, String provider) {
 		jdbcTemplate.update(REMOVE_ALL_CONNECTIONS_QUERY, accountId, provider);
 	}

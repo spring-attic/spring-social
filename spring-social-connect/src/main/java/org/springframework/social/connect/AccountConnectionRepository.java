@@ -37,6 +37,8 @@ public interface AccountConnectionRepository {
 
 	boolean isConnected(Serializable accountId, String provider);
 
+	boolean isConnected(Serializable accountId, String provider, String providerAccountId);
+
 	void disconnect(Serializable accountId, String provider);
 
 	void disconnect(Serializable accountId, String provider, String providerAccountId);

@@ -39,6 +39,10 @@ public class TestConnectionRepository implements AccountConnectionRepository {
 		return false;
 	}
 
+	public boolean isConnected(Serializable accountId, String provider, String providerAccountId) {
+		return false;
+	}
+
 	public void disconnect(Serializable accountId, String provider) {
 	}
 
