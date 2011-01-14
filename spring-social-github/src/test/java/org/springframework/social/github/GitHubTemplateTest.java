@@ -25,18 +25,18 @@ import org.springframework.web.client.RestOperations;
  * @author Craig Walls
  */
 public class GitHubTemplateTest {
-	private GitHubTemplate gowalla;
+	private GitHubTemplate github;
 	private RestOperations restOperations;
 
 	@Before
 	public void setup() {
-		gowalla = new GitHubTemplate("ACCESS_TOKEN");
+		github = new GitHubTemplate("ACCESS_TOKEN");
 		restOperations = mock(RestOperations.class);
-		gowalla.restOperations = restOperations;
+		github.restOperations = restOperations;
 	}
 
 	@Test
 	public void getProfileId() {
-		// assertEquals("12345", gowalla.getProfileId());
+		// assertEquals("12345", github.getProfileId());
 	}
 }

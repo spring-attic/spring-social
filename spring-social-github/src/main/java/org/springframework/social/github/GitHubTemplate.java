@@ -80,7 +80,7 @@ public class GitHubTemplate implements GitHubOperations {
 	}
 
 	public String getProfileUrl() {
-		return "http://www.gowalla.com/users/" + getProfileId();
+		return "https://github.com/" + getProfileId();
 	}
 	
 	static final String PROFILE_URL = "https://github.com/api/v2/json/user/show?access_token={accessToken}";
