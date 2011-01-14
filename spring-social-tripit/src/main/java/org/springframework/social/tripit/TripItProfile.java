@@ -15,6 +15,7 @@
  */
 package org.springframework.social.tripit;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
@@ -28,7 +29,7 @@ import org.codehaus.jackson.annotate.JsonTypeName;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeName("Profile")
-public class TripItProfile {
+public class TripItProfile implements Serializable {
 	
 	/**
 	 * The TripIt user's profile ID

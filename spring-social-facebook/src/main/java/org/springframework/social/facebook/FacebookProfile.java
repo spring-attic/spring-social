@@ -15,6 +15,8 @@
  */
 package org.springframework.social.facebook;
 
+import java.io.Serializable;
+
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
@@ -24,7 +26,9 @@ import org.codehaus.jackson.annotate.JsonProperty;
  * @author Craig Walls
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class FacebookProfile {
+public class FacebookProfile implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	@JsonProperty
 	long id;
 

@@ -15,6 +15,8 @@
  */
 package org.springframework.social.linkedin;
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -25,7 +27,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Craig Walls
  */
 @XmlRootElement(name = "person")
-public class LinkedInProfile {
+public class LinkedInProfile implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	@XmlElement
 	String id;
 

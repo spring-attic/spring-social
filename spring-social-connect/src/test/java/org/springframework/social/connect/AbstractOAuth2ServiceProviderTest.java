@@ -3,6 +3,7 @@ package org.springframework.social.connect;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,7 +56,7 @@ public class AbstractOAuth2ServiceProviderTest {
 		provider.connect(1L, "http://www.foo.com/oauth/callback", "authorizationCode");
 
 		verify(connectionRepository).addConnection(eq(1L), eq("oauthProvider"),
-				argThat(new OAuthTokenMatcher("accessToken")), eq("refreshToken"), eq("habuma"),
+				argThat(new OAuthTokenMatcher("accessToken", "refreshToken")), eq("habuma"),
 				eq("http://www.oauthprovider.com/habuma"));
 	}
 
@@ -79,20 +80,25 @@ public class AbstractOAuth2ServiceProviderTest {
 		provider.refreshConnection(1L, "habuma");
 
 		verify(connectionRepository).updateConnection(eq(1L), eq("oauthProvider"),
-				argThat(new OAuthTokenMatcher("newAccessToken")), eq("newRefreshToken"), eq("habuma"));
+				argThat(new OAuthTokenMatcher("newAccessToken", "newRefreshToken")), eq("habuma"));
 	}
 }
 
 class OAuthTokenMatcher extends ArgumentMatcher<OAuthToken> {
 	private final String expectedValue;
-	public OAuthTokenMatcher(String expectedValue) {
+	private final String expectedRefreshToken;
+
+	public OAuthTokenMatcher(String expectedValue, String expectedRefreshToken) {
 		this.expectedValue = expectedValue;
+		this.expectedRefreshToken = expectedRefreshToken;
 	}
 
 	@Override
 	public boolean matches(Object argument) {
 		OAuthToken token = (OAuthToken) argument;
-		return token.getValue().equals(expectedValue);
+		String refreshToken = token.getRefreshToken();
+		return token.getValue().equals(expectedValue)
+				&& ((refreshToken != null && expectedRefreshToken != null && refreshToken.equals(expectedRefreshToken)) || (refreshToken == null && expectedRefreshToken == null));
 	}
 
 }
@@ -127,5 +133,9 @@ class FakeOAuth2ServiceProvider extends AbstractOAuth2ServiceProvider<Object> {
 
 	void setRestOperations(RestOperations restOperations) {
 		this.restOperations = restOperations;
+	}
+
+	public Serializable getProviderUserProfile(OAuthToken accessToken) {
+		return null;
 	}
 }

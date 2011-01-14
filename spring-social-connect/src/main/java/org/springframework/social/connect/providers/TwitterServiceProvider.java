@@ -15,6 +15,8 @@
  */
 package org.springframework.social.connect.providers;
 
+import java.io.Serializable;
+
 import org.springframework.social.connect.AbstractOAuth1ServiceProvider;
 import org.springframework.social.connect.AccountConnectionRepository;
 import org.springframework.social.connect.OAuthToken;
@@ -39,6 +41,11 @@ public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<
 
 	protected String fetchProviderAccountId(TwitterOperations twitter) {
 		return twitter.getProfileId();
+	}
+
+	public Serializable getProviderUserProfile(OAuthToken accessToken) {
+		return new TwitterTemplate(getApiKey(), getSecret(), accessToken.getValue(), accessToken.getSecret())
+				.getProfile();
 	}
 
 	protected String buildProviderProfileUrl(String screenName, TwitterOperations twitter) {

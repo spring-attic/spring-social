@@ -9,6 +9,13 @@
 <body>
 <h1>GitHub Showcase: Connect to GitHub</h1>
 
+<form action="<c:url value="/connect/github/register" />" method="POST">
+	<div class="formInfo">
+		<p>Click the button to register to GitHub Showcase with your GitHub account.</p>
+	</div>
+	<p><input type="submit" value="Register via GitHub"/></p>
+</form>
+
 <form action="<c:url value="/connect/github" />" method="POST">
 	<div class="formInfo">
 		<p>Click the button to connect GitHub Showcase with your GitHub account.</p>

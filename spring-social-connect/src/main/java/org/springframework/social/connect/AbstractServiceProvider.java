@@ -153,4 +153,11 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	protected String getSecret() {
 		return parameters.getSecret();
 	}
+
+	public void connect(Serializable accountId, OAuthToken accessToken) {
+		S serviceOperations = createServiceOperations(accessToken);
+		String providerAccountId = fetchProviderAccountId(serviceOperations);
+		connectionRepository.addConnection(accountId, getName(), accessToken, providerAccountId,
+				buildProviderProfileUrl(providerAccountId, serviceOperations));
+	}
 }

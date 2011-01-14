@@ -15,11 +15,11 @@
  */
 package org.springframework.social.connect.providers;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import org.springframework.social.connect.AbstractOAuth2ServiceProvider;
 import org.springframework.social.connect.AccountConnectionRepository;
-import org.springframework.social.connect.OAuth2Tokens;
 import org.springframework.social.connect.OAuthToken;
 import org.springframework.social.connect.ServiceProviderParameters;
 import org.springframework.social.facebook.FacebookOperations;
@@ -54,18 +54,18 @@ public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider
 	 * expires. Facebook does not support refresh tokens.
 	 */
 	@Override
-	protected OAuth2Tokens fetchOAuth2AccessToken(Map<String, String> tokenRequestParameters) {
+	protected OAuthToken fetchOAuth2AccessToken(Map<String, String> tokenRequestParameters) {
 		String response = new RestTemplate().getForObject(parameters.getAccessTokenUrl() + ACCESS_TOKEN_QUERY_PARAMETERS,
 				String.class, tokenRequestParameters);
 		String[] nameValuePairs = response.split("\\&");
 		for (String nameValuePair : nameValuePairs) {
 			String[] nameAndValue = nameValuePair.split("=");
 			if (nameAndValue[0].equals("access_token")) {
-				return new OAuth2Tokens(new OAuthToken(nameAndValue[1]), null);
+				return new OAuthToken(nameAndValue[1]);
 			}
 		}
 
-		return new OAuth2Tokens(null, null);
+		return new OAuthToken(null);
 	}
 
 	protected FacebookOperations createServiceOperations(OAuthToken accessToken) {
@@ -77,6 +77,10 @@ public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider
 
 	protected String fetchProviderAccountId(FacebookOperations facebook) {
 		return facebook.getProfileId();
+	}
+
+	public Serializable getProviderUserProfile(OAuthToken accessToken) {
+		return new FacebookTemplate(accessToken.getValue()).getUserProfile();
 	}
 
 	protected String buildProviderProfileUrl(String facebookId, FacebookOperations facebook) {

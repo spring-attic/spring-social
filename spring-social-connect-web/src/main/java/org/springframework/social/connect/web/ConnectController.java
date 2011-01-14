@@ -105,6 +105,20 @@ public class ConnectController {
 	}
 
 	/**
+	 * Initiates a registration/connection flow. Commences the process of
+	 * establishing a connection to the provider on behalf of the member, just
+	 * as with the regular connection flow. However, when the flow reaches the
+	 * step where an access token is retrieved, the flow will break off to offer
+	 * the user an application registration screen.
+	 */
+	@RequestMapping(value = "/connect/{name}/register", method = RequestMethod.POST)
+	public String register(@PathVariable String name, WebRequest request,
+			@RequestParam(required = false, defaultValue = "") String scope) {
+		request.setAttribute(REGISTRATION_FLOW_ATTRIBUTE, true, WebRequest.SCOPE_SESSION);
+		return connect(name, request, scope);
+	}
+
+	/**
 	 * Process a connect form submission by commencing the process of establishing a connection to the provider on behalf of the member.
 	 * Fetches a new request token from the provider, temporarily stores it in the session, then redirects the member to the provider's site for authorization.
 	 */
@@ -113,7 +127,6 @@ public class ConnectController {
 			@RequestParam(required = false, defaultValue = "") String scope) {
 		ServiceProvider<?> provider = getServiceProvider(name);
 		preConnect(provider, request);
-
 		Map<String, String> authorizationParameters = new HashMap<String, String>();
 		if (provider.getAuthorizationStyle() == AuthorizationStyle.OAUTH_1) {
 			OAuthToken requestToken = provider.fetchNewRequestToken(baseCallbackUrl + name);
@@ -162,8 +175,40 @@ public class ConnectController {
 	@RequestMapping(value = "/connect/{name}", method = RequestMethod.GET, params = "code")
 	public String authorizeCallback(@PathVariable String name, @RequestParam("code") String code, WebRequest request) {
 		ServiceProvider<?> provider = getServiceProvider(name);
-		provider.connect(accountIdResolver.resolveAccountId(), baseCallbackUrl + name, code);
+
+		String redirectUri = baseCallbackUrl + name;
+		if (request.getAttribute(REGISTRATION_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION) != null) {
+			request.removeAttribute(REGISTRATION_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+			OAuthToken accessToken = provider.fetchAccessToken(redirectUri, code);
+
+			request.setAttribute(name + "UserProfile", provider.getProviderUserProfile(accessToken),
+					WebRequest.SCOPE_REQUEST);
+
+			request.setAttribute(ACCESS_TOKEN_ATTRIBUTE + name, accessToken, WebRequest.SCOPE_SESSION);
+			return "connect/" + name + "Register";
+		}
+
+		provider.connect(accountIdResolver.resolveAccountId(), redirectUri, code);
 		postConnect(provider, request);
+		return "redirect:/connect/" + name;
+	}
+
+	/**
+	 * Completes the connection process after registration. After the
+	 * application successfully registers a user, it should redirect to this
+	 * handler method's URL to create the connection between the application
+	 * account and the provider account.
+	 */
+	@RequestMapping(value = "/connect/{name}/register", method = RequestMethod.GET)
+	public String completeRegistrationConnection(@PathVariable String name, WebRequest request) {
+		OAuthToken accessToken = (OAuthToken) request.getAttribute(ACCESS_TOKEN_ATTRIBUTE + name,
+				WebRequest.SCOPE_SESSION);
+		if (accessToken != null) {
+			request.removeAttribute(ACCESS_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+
+			ServiceProvider<?> provider = getServiceProvider(name);
+			provider.connect(accountIdResolver.resolveAccountId(), accessToken);
+		}
 		return "redirect:/connect/" + name;
 	}
 
@@ -207,5 +252,6 @@ public class ConnectController {
 	}
 	
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
-
+	private static final String REGISTRATION_FLOW_ATTRIBUTE = "registrationFlow";
+	private static final String ACCESS_TOKEN_ATTRIBUTE = "accessToken_";
 }

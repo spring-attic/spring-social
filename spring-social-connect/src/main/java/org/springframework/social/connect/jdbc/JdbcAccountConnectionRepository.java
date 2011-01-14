@@ -48,26 +48,21 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 
 	public void addConnection(Serializable accountId, String provider, OAuthToken accessToken,
 			String providerAccountId, String providerProfileUrl) {
-		addConnection(accountId, provider, accessToken, null, providerAccountId, providerProfileUrl);
-	}
-
-	public void addConnection(Serializable accountId, String provider, OAuthToken accessToken,
-			String refreshToken, String providerAccountId, String providerProfileUrl) {
 		try {
 			jdbcTemplate.update(CREATE_CONNECTION_QUERY, accountId, provider,
 					encryptor.encrypt(accessToken.getValue()), encryptIfPresent(accessToken.getSecret()),
-					encryptIfPresent(refreshToken), providerAccountId, providerProfileUrl);
+					encryptIfPresent(accessToken.getRefreshToken()), providerAccountId, providerProfileUrl);
 		} catch (DuplicateKeyException e) {
 			throw new ConnectionAlreadyExistsException("A connection already exists between account (" + accountId
 					+ ") and the " + provider + " service provider.", e);
 		}
 	}
 
-	public void updateConnection(Serializable accountId, String provider, OAuthToken accessToken, String refreshToken,
+	public void updateConnection(Serializable accountId, String provider, OAuthToken accessToken,
 			String providerAccountId) {
 		jdbcTemplate.update(UPDATE_CONNECTION_QUERY, encryptor.encrypt(accessToken.getValue()),
-				encryptIfPresent(accessToken.getSecret()), encryptIfPresent(refreshToken), provider, accountId,
-				providerAccountId);
+				encryptIfPresent(accessToken.getSecret()), encryptIfPresent(accessToken.getRefreshToken()), provider,
+				accountId, providerAccountId);
 	}
 
 	public boolean isConnected(Serializable accountId, String provider) {

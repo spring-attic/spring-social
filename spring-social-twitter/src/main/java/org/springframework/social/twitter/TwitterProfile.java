@@ -15,6 +15,7 @@
  */
 package org.springframework.social.twitter;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -22,7 +23,9 @@ import java.util.Date;
  * 
  * @author Craig Walls
  */
-public class TwitterProfile {
+public class TwitterProfile implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	private long id;
 	private String screenName;
 	private String name;

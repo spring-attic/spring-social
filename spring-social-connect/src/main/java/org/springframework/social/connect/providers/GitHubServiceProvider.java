@@ -15,6 +15,8 @@
  */
 package org.springframework.social.connect.providers;
 
+import java.io.Serializable;
+
 import org.springframework.social.connect.AbstractOAuth2ServiceProvider;
 import org.springframework.social.connect.AccountConnectionRepository;
 import org.springframework.social.connect.OAuthToken;
@@ -46,4 +48,7 @@ public class GitHubServiceProvider extends AbstractOAuth2ServiceProvider<GitHubO
 		return github.getProfileUrl();
 	}
 
+	public Serializable getProviderUserProfile(OAuthToken accessToken) {
+		return new GitHubTemplate(accessToken.getValue()).getUserProfile();
+	}
 }

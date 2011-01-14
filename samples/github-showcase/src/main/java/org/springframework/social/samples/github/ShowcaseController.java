@@ -50,4 +50,10 @@ public class ShowcaseController {
 		}
 		return "redirect:/connect/github";
 	}
+
+	@RequestMapping(value = "/signup", method = RequestMethod.POST)
+	public String register(ShowcaseUser user) {
+		System.out.println("Pretending to register the user: " + user.getUsername());
+		return "redirect:/connect/github/register";
+	}
 }

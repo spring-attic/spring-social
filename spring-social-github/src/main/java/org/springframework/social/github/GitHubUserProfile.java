@@ -15,7 +15,11 @@
  */
 package org.springframework.social.github;
 
-public class GitHubUserProfile {
+import java.io.Serializable;
+
+public class GitHubUserProfile implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	private final long id;
 	private final String name;
 	private final String username;

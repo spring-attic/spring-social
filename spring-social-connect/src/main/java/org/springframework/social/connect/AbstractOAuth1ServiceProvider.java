@@ -49,16 +49,24 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 	}
 
 	public void connect(Serializable accountId, AuthorizedRequestToken requestToken) {
-		OAuthToken accessToken = getAccessToken(requestToken);
-		S serviceOperations = createServiceOperations(accessToken);
-		String providerAccountId = fetchProviderAccountId(serviceOperations);
-		connectionRepository.addConnection(accountId, getName(), accessToken, providerAccountId,
-				buildProviderProfileUrl(providerAccountId, serviceOperations));
+		OAuthToken accessToken = fetchAccessToken(requestToken);
+		connect(accountId, accessToken);
+	}
+
+	public OAuthToken fetchAccessToken(AuthorizedRequestToken requestToken) {
+		Token accessToken = getOAuthService().getAccessToken(
+				new Token(requestToken.getValue(), requestToken.getSecret()), new Verifier(requestToken.getVerifier()));
+		return new OAuthToken(accessToken.getToken(), accessToken.getSecret());
 	}
 
 	public void connect(Serializable accountId, String redirectUri, String code) {
 		throw new UnsupportedOperationException(
 				"Connections with redirectUri and code are not supported for an OAuth 1-based service provider");
+	}
+
+	public OAuthToken fetchAccessToken(String redirectUri, String code) {
+		throw new UnsupportedOperationException(
+				"Fetching access tokens with redirectUri and code are not supported for an OAuth 1-based service provider");
 	}
 
 	public AuthorizationStyle getAuthorizationStyle() {
@@ -86,9 +94,4 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 				new TokenExtractorImpl(), config);
 	}
 
-	private OAuthToken getAccessToken(AuthorizedRequestToken requestToken) {
-		Token accessToken = getOAuthService().getAccessToken(
-				new Token(requestToken.getValue(), requestToken.getSecret()), new Verifier(requestToken.getVerifier()));
-		return new OAuthToken(accessToken.getToken(), accessToken.getSecret());
-	}
 }

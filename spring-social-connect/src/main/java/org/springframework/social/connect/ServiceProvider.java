@@ -104,6 +104,8 @@ public interface ServiceProvider<S> {
 	 */
 	void connect(Serializable accountId, AuthorizedRequestToken requestToken);
 
+	OAuthToken fetchAccessToken(AuthorizedRequestToken requestToken);
+
 	/**
 	 * Connects a member account to this OAuth 2 service provider. Called after
 	 * the user authorizes the connection at the
@@ -124,6 +126,10 @@ public interface ServiceProvider<S> {
 	 *            the OAuth request token that was authorized by the member.
 	 */
 	void connect(Serializable accountId, String redirectUri, String code);
+
+	OAuthToken fetchAccessToken(String redirectUri, String code);
+
+	void connect(Serializable accountId, OAuthToken accessToken);
 
 	/**
 	 * Records an existing connection between a member account and this service
@@ -293,6 +299,17 @@ public interface ServiceProvider<S> {
 	 * Generally unique across accounts registered with this provider.
 	 */
 	String getProviderAccountId(Serializable accountId);
+
+	/**
+	 * Retrieves an object containing the user's profile information from the
+	 * provider.
+	 * 
+	 * @param accessToken
+	 *            the access token used to lookup the profile information.
+	 * @return a {@link Serializable} object containing the user's provider
+	 *         profile data.
+	 */
+	Serializable getProviderUserProfile(OAuthToken accessToken);
 
 	/**
 	 * The style of authorization supported by this service provider (e.g.,

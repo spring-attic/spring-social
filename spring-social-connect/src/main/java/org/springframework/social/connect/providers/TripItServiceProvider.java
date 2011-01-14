@@ -15,6 +15,8 @@
  */
 package org.springframework.social.connect.providers;
 
+import java.io.Serializable;
+
 import org.springframework.social.connect.AbstractOAuth1ServiceProvider;
 import org.springframework.social.connect.AccountConnectionRepository;
 import org.springframework.social.connect.OAuthToken;
@@ -42,6 +44,11 @@ public final class TripItServiceProvider extends AbstractOAuth1ServiceProvider<T
 
 	protected String fetchProviderAccountId(TripItOperations tripIt) {
 		return tripIt.getProfileId();
+	}
+
+	public Serializable getProviderUserProfile(OAuthToken accessToken) {
+		return new TripItTemplate(getApiKey(), getSecret(), accessToken.getValue(), accessToken.getSecret())
+				.getUserProfile();
 	}
 
 	protected String buildProviderProfileUrl(String tripItId, TripItOperations tripIt) {

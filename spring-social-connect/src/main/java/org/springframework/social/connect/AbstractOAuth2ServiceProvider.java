@@ -47,18 +47,23 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 	}
 
 	public void connect(Serializable accountId, String redirectUri, String code) {
+		connect(accountId, fetchAccessToken(redirectUri, code));
+	}
+
+	public OAuthToken fetchAccessToken(AuthorizedRequestToken requestToken) {
+		throw new UnsupportedOperationException(
+				"Fetching access tokens with request token are not supported for an OAuth 2-based service provider");
+	}
+
+	public OAuthToken fetchAccessToken(String redirectUri, String code) {
 		Map<String, String> tokenRequestParameters = new HashMap<String, String>();
 		tokenRequestParameters.put("client_id", parameters.getApiKey());
 		tokenRequestParameters.put("client_secret", parameters.getSecret());
 		tokenRequestParameters.put("code", code);
 		tokenRequestParameters.put("redirect_uri", redirectUri);
 		tokenRequestParameters.put("grant_type", "authorization_code");
-		OAuth2Tokens oauth2Tokens = fetchOAuth2AccessToken(tokenRequestParameters);
-		OAuthToken accessToken = oauth2Tokens.getAccessToken();
-		S serviceOperations = createServiceOperations(accessToken);
-		String username = fetchProviderAccountId(serviceOperations);
-		connectionRepository.addConnection(accountId, getName(), accessToken, oauth2Tokens.getRefreshToken(), username,
-				buildProviderProfileUrl(username, serviceOperations));
+		OAuthToken accessToken = fetchOAuth2AccessToken(tokenRequestParameters);
+		return accessToken;
 	}
 
 	@Override
@@ -75,23 +80,21 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 		tokenRequestParameters.put("client_secret", parameters.getSecret());
 		tokenRequestParameters.put("refresh_token", refreshToken);
 		tokenRequestParameters.put("grant_type", "refresh_token");
-		OAuth2Tokens oauth2Tokens = fetchOAuth2AccessToken(tokenRequestParameters);
-		OAuthToken accessToken = oauth2Tokens.getAccessToken();
+		OAuthToken accessToken = fetchOAuth2AccessToken(tokenRequestParameters);
 		S serviceOperations = createServiceOperations(accessToken);
 		String username = fetchProviderAccountId(serviceOperations);
-		connectionRepository.updateConnection(accountId, getName(), accessToken, oauth2Tokens.getRefreshToken(),
-				username);
+		connectionRepository.updateConnection(accountId, getName(), accessToken, username);
 	}
 
 	public AuthorizationStyle getAuthorizationStyle() {
 		return AuthorizationStyle.OAUTH_2;
 	}
 
-	protected OAuth2Tokens fetchOAuth2AccessToken(Map<String, String> tokenRequestParameters) {
+	protected OAuthToken fetchOAuth2AccessToken(Map<String, String> tokenRequestParameters) {
 		@SuppressWarnings("unchecked")
 		Map<String, String> result = getRestOperations().postForObject(parameters.getAccessTokenUrl(),
 				tokenRequestParameters, Map.class);
-		return new OAuth2Tokens(new OAuthToken(result.get("access_token")), result.get("refresh_token"));
+		return new OAuthToken(result.get("access_token"), null, result.get("refresh_token"));
 	}
 
 	protected RestOperations getRestOperations() {

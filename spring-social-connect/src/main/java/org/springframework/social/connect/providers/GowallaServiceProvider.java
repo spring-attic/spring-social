@@ -1,5 +1,7 @@
 package org.springframework.social.connect.providers;
 
+import java.io.Serializable;
+
 import org.springframework.social.connect.AbstractOAuth2ServiceProvider;
 import org.springframework.social.connect.AccountConnectionRepository;
 import org.springframework.social.connect.OAuthToken;
@@ -24,6 +26,10 @@ public class GowallaServiceProvider extends AbstractOAuth2ServiceProvider<Gowall
 	@Override
 	protected String fetchProviderAccountId(GowallaOperations gowalla) {
 		return gowalla.getProfileId();
+	}
+
+	public Serializable getProviderUserProfile(OAuthToken accessToken) {
+		return null;
 	}
 
 	@Override

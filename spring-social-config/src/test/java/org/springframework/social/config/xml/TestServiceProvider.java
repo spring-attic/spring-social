@@ -15,6 +15,8 @@
  */
 package org.springframework.social.config.xml;
 
+import java.io.Serializable;
+
 import org.springframework.social.connect.AbstractOAuth1ServiceProvider;
 import org.springframework.social.connect.AccountConnectionRepository;
 import org.springframework.social.connect.OAuthToken;
@@ -51,5 +53,9 @@ public class TestServiceProvider extends AbstractOAuth1ServiceProvider<Object> {
 
 	public AccountConnectionRepository getConnectionRepository() {
 		return connectionRepository;
+	}
+
+	public Serializable getProviderUserProfile(OAuthToken accessToken) {
+		return null;
 	}
 }

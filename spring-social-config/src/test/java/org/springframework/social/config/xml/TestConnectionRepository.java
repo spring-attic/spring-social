@@ -27,11 +27,7 @@ public class TestConnectionRepository implements AccountConnectionRepository {
 			String providerAccountId, String providerProfileUrl) {
 	}
 
-	public void addConnection(Serializable accountId, String provider, OAuthToken accessToken, String refreshToken,
-			String providerAccountId, String providerProfileUrl) {
-	}
-
-	public void updateConnection(Serializable accountId, String name, OAuthToken accessToken, String refreshToken,
+	public void updateConnection(Serializable accountId, String name, OAuthToken accessToken,
 			String username) {
 	}
 

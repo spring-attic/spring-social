@@ -29,10 +29,7 @@ public interface AccountConnectionRepository {
 	void addConnection(Serializable accountId, String provider, OAuthToken accessToken, String providerAccountId,
 			String providerProfileUrl);
 
-	void addConnection(Serializable accountId, String provider, OAuthToken accessToken, String refreshToken,
-			String providerAccountId, String providerProfileUrl);
-
-	void updateConnection(Serializable accountId, String name, OAuthToken accessToken, String refreshToken,
+	void updateConnection(Serializable accountId, String name, OAuthToken accessToken,
 			String username);
 
 	boolean isConnected(Serializable accountId, String provider);

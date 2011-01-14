@@ -29,13 +29,15 @@ public final class OAuthToken implements Serializable {
 	private final String value;
 	
 	private final String secret;
+	
+	private final String refreshToken;
 
 	/**
 	 * Create a new OAuth token with a token value and null secret.
-	 * Use this for OAuth 2.
+	 * Use this for OAuth 2 when there is no refresh token.
 	 */
 	public OAuthToken(String value) {
-		this(value, null);
+		this(value, null, null);
 	}
 
 	/**
@@ -43,8 +45,13 @@ public final class OAuthToken implements Serializable {
 	 * Use this for OAuth 1.
 	 */
 	public OAuthToken(String value, String secret) {
+		this(value, secret, null);
+	}
+	
+	public OAuthToken(String value, String secret, String refreshToken) {
 		this.value = value;
 		this.secret = secret;
+		this.refreshToken = refreshToken;
 	}
 
 	public String getValue() {
@@ -53,6 +60,10 @@ public final class OAuthToken implements Serializable {
 
 	public String getSecret() {
 		return secret;
+	}
+
+	public String getRefreshToken() {
+		return refreshToken;
 	}
 
 }
