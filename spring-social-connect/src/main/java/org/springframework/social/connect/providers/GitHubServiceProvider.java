@@ -43,7 +43,7 @@ public class GitHubServiceProvider extends AbstractOAuth2ServiceProvider<GitHubO
 
 	@Override
 	protected String buildProviderProfileUrl(String providerAccountId, GitHubOperations github) {
-		return "http://www.gowalla.com/users/" + providerAccountId;
+		return "https://github.com/" + providerAccountId;
 	}
 
 }
