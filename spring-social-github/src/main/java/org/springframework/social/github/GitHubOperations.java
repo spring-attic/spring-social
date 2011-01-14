@@ -41,4 +41,11 @@ public interface GitHubOperations {
 	 * @return the user's GitHub profile
 	 */
 	GitHubUserProfile getUserProfile();
+
+	/**
+	 * Retrieve the URL to the user's GitHub profile.
+	 * 
+	 * @return the URL to the user's GitHub profile.
+	 */
+	String getProfileUrl();
 }
