@@ -23,4 +23,5 @@
 	<social:gowalla-provider consumer-key="gowalla_key" consumer-secret="gowalla_secret" />
 	<social:tripit-provider consumer-key="tripit_key" consumer-secret="tripit_secret" />
 	<social:linkedin-provider consumer-key="linkedin_key" consumer-secret="linkedin_secret" />
+	<social:github-provider consumer-key="github_key" consumer-secret="github_secret" />
 </beans>

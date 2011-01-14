@@ -13,18 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.springframework.security.encrypt;
 
-rootProject.name = 'spring-social'
+/**
+ * A String Encryptor that does nothing. Useful for testing.
+ * @author Keith Donald
+ */
+public class NoOpStringEncryptor implements StringEncryptor {
 
-include 'docs'
-include 'spring-social-config'
-include 'spring-social-connect'
-include 'spring-social-connect-web'
-include 'spring-social-core'
-include 'spring-social-facebook'
-include 'spring-social-github'
-include 'spring-social-gowalla'
-include 'spring-social-linkedin'
-include 'spring-social-oauth'
-include 'spring-social-tripit'
-include 'spring-social-twitter'
+	public String encrypt(String string) {
+		return string;
+	}
+
+	public String decrypt(String encrypted) {
+		return encrypted;
+	}
+
+	/**
+	 * Get the singleton {@link NoOpStringEncryptor}.
+	 */
+	public static StringEncryptor getInstance() {
+		return INSTANCE;
+	}
+	
+	private static final StringEncryptor INSTANCE = new NoOpStringEncryptor();
+	
+	private NoOpStringEncryptor() {
+		
+	}
+}

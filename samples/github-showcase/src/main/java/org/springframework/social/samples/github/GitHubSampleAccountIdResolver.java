@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.springframework.social.samples.github;
 
-rootProject.name = 'spring-social'
+import java.io.Serializable;
 
-include 'docs'
-include 'spring-social-config'
-include 'spring-social-connect'
-include 'spring-social-connect-web'
-include 'spring-social-core'
-include 'spring-social-facebook'
-include 'spring-social-github'
-include 'spring-social-gowalla'
-include 'spring-social-linkedin'
-include 'spring-social-oauth'
-include 'spring-social-tripit'
-include 'spring-social-twitter'
+import org.springframework.social.connect.AccountIdResolver;
+
+public class GitHubSampleAccountIdResolver implements AccountIdResolver {
+	public Serializable resolveAccountId() {
+		// we only have a single user in the DB, and his ID is 1.
+		return 1L;
+	}
+}

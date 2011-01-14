@@ -28,6 +28,7 @@ import org.springframework.social.connect.ServiceProviderParameters;
 import org.springframework.social.connect.jdbc.ContextServiceProviderFactory;
 import org.springframework.social.connect.jdbc.JdbcServiceProviderFactory;
 import org.springframework.social.connect.providers.FacebookServiceProvider;
+import org.springframework.social.connect.providers.GitHubServiceProvider;
 import org.springframework.social.connect.providers.GowallaServiceProvider;
 import org.springframework.social.connect.providers.LinkedInServiceProvider;
 import org.springframework.social.connect.providers.TripItServiceProvider;
@@ -157,6 +158,24 @@ public class SocialNamespaceHandlerTest {
 		assertTrue(parameters.getAuthorizeUrl().matches(
 				"https://www.linkedin.com/uas/oauth/authorize?oauth_token={requestToken}"));
 		assertEquals("https://api.linkedin.com/uas/oauth/accessToken", parameters.getAccessTokenUrl());
+	}
+
+	@Test
+	public void githubServiceProvider() throws Exception {
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
+				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
+		GitHubServiceProvider provider = applicationContext.getBean("github", GitHubServiceProvider.class);
+		assertNotNull(provider);
+		ServiceProviderParameters parameters = peekAtServiceProviderParameters(provider);
+		assertEquals("github", parameters.getName());
+		assertEquals("GitHub", parameters.getDisplayName());
+		assertEquals("github_key", parameters.getApiKey());
+		assertEquals("github_secret", parameters.getSecret());
+		assertNull(parameters.getAppId());
+		assertNull(parameters.getRequestTokenUrl());
+		assertTrue(parameters.getAuthorizeUrl().matches(
+						"https://github.com/login/oauth/authorize?client_id={clientId}&redirect_uri={redirectUri}&scope={scope}"));
+		assertEquals("https://github.com/login/oauth/access_token", parameters.getAccessTokenUrl());
 	}
 
 	private ServiceProviderParameters peekAtServiceProviderParameters(ServiceProvider<?> bean)

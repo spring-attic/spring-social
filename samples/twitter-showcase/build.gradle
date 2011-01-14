@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 // -----------------------------------------------------------------------------
-// Main gradle build file for Spring Social's Twitter-Connect Sample
+// Main gradle build file for Spring Social's Twitter Showcase Sample
 // @author Craig Walls
 // -----------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
 // Configuration for the root project
 // -----------------------------------------------------------------------------
-description = 'Spring Social Twitter Connect'
-abbreviation = 'TWITCONN'
+description = 'Spring Social Twitter Showcase'
+abbreviation = 'TWITSHOW'
 
 apply plugin: 'java' // tasks for conventional java lifecycle
 apply plugin: 'maven' // `gradle install` to push jars to local .m2 cache

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 // -----------------------------------------------------------------------------
-// Main gradle build file for Spring Social's Gowalla Showcase Sample
+// Main gradle build file for Spring Social's GitHub Showcase Sample
 // @author Craig Walls
 // -----------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
 // Configuration for the root project
 // -----------------------------------------------------------------------------
-description = 'Spring Social Gowalla Showcase'
-abbreviation = 'GOWASHOW'
+description = 'Spring Social GitHub Showcase'
+abbreviation = 'GITHUBSHOW'
 
 apply plugin: 'java' // tasks for conventional java lifecycle
 apply plugin: 'maven' // `gradle install` to push jars to local .m2 cache
@@ -60,6 +60,7 @@ dependencies {
 	compile "log4j:log4j:1.2.15"
 	compile "javax.inject:javax.inject:1"
 	compile "org.springframework.social:spring-social-core:1.0.0.BUILD-SNAPSHOT"
+	compile "org.springframework.social:spring-social-config:1.0.0.BUILD-SNAPSHOT"
 	compile "org.springframework.social:spring-social-connect:1.0.0.BUILD-SNAPSHOT"
 	compile "org.springframework.social:spring-social-connect-web:1.0.0.BUILD-SNAPSHOT"
 	compile "org.scribe:scribe:1.0.7"

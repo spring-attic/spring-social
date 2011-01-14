@@ -22,6 +22,7 @@ public class SocialNamespaceHandler extends NamespaceHandlerSupport {
 	public void init() {
 		registerBeanDefinitionParser("service-provider", new ServiceProviderElementParser());
 		registerBeanDefinitionParser("facebook-provider", new FacebookProviderElementParser());
+		registerBeanDefinitionParser("github-provider", new GitHubProviderElementParser());
 		registerBeanDefinitionParser("gowalla-provider", new GowallaProviderElementParser());
 		registerBeanDefinitionParser("linkedin-provider", new LinkedInProviderElementParser());
 		registerBeanDefinitionParser("tripit-provider", new TripItProviderElementParser());

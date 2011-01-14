@@ -73,6 +73,18 @@
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:element name="github-provider">
+		<xsd:annotation>
+			<xsd:documentation>
+				Configures a GitHub service provider.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="baseProviderType" />
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
 
 	<xsd:element name="gowalla-provider">
 		<xsd:annotation>
