@@ -5,10 +5,7 @@ with GitHub.
 
 At this time, this showcase demonstrates:
  - Connecting to GitHub using Spring Social's ConnectController and the OAuth 2 web server flow.
- - Specifying an OAuth 2 authorization scope via an optional "scope" parameter to the ConnectController
-   at authorization time
  - Retrieving a user's GitHub ID.
- - Retrieving a user's top spots (the spots that the user has checked into most).
  
 To keep things simple this showcase application is a single-user application, assuming that the user's application
 account ID is always 1. A more comprehensive example would be multi-user keeping a store of users, any of which
