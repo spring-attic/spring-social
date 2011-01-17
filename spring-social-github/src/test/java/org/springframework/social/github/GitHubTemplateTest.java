@@ -18,7 +18,6 @@ package org.springframework.social.github;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,9 +64,5 @@ public class GitHubTemplateTest {
 		assertEquals("SpringSource", profile.getCompany());
 		assertEquals("http://blog.springsource.com/author/keithd", profile.getBlog());
 		assertEquals("keith.donald at springsource.com", profile.getEmail());
-		Date createdDate = profile.getCreatedDate();
-		assertEquals(110, createdDate.getYear());
-		assertEquals(10, createdDate.getMonth());
-		assertEquals(30, createdDate.getDate());
 	}
 }
