@@ -60,11 +60,17 @@ public interface ServiceProvider<S> {
 	Long getAppId();
 
 	// connection management
-	
+
 	/**
-	 * Begin the account connection process by fetching a new request token from this service provider.
-	 * The new token should be stored in the member's session up until the authorization callback is made and it's time to {@link #connect(Long, AuthorizedRequestToken) connect}.
-	 * @param callbackUrl the URL the provider should redirect to after the member authorizes the connection (may be null for OAuth 1.0-based service providers) 
+	 * Begin the account connection process by fetching a new request token from
+	 * this service provider. The new token should be stored in the member's
+	 * session up until the authorization callback is made and it's time to
+	 * {@link #connect(Serializable, AuthorizedRequestToken) connect}.
+	 * 
+	 * @param callbackUrl
+	 *            the URL the provider should redirect to after the member
+	 *            authorizes the connection (may be null for OAuth 1.0-based
+	 *            service providers)
 	 */
 	OAuthToken fetchNewRequestToken(String callbackUrl);
 
@@ -84,16 +90,16 @@ public interface ServiceProvider<S> {
 
 	/**
 	 * Connects a member account to this OAuth 1 service provider. Called after
-	 * the user authorizes the connection at the
-	 * {@link #buildAuthorizeUrl(String) authorizeUrl} and the service provider
-	 * calls us back. Internally, exchanges the authorized request token for an
-	 * access token, then stores the awarded access token with the member
-	 * account. This access token identifies the connection between the member
-	 * account and this service provider.
+	 * the user authorizes the connection at the {@link #buildAuthorizeUrl(Map)
+	 * authorizeUrl} and the service provider calls us back. Internally,
+	 * exchanges the authorized request token for an access token, then stores
+	 * the awarded access token with the member account. This access token
+	 * identifies the connection between the member account and this service
+	 * provider.
 	 * <p>
 	 * This method completes the OAuth-based account connection process.
-	 * {@link #getServiceOperations(Long)} may now be called to get and invoke
-	 * the service provider's API. The requestToken required during the
+	 * {@link #getServiceOperations(Serializable)} may now be called to get and
+	 * invoke the service provider's API. The requestToken required during the
 	 * connection handshake is no longer valid and cannot be reused.
 	 * 
 	 * @param accountId
@@ -104,31 +110,71 @@ public interface ServiceProvider<S> {
 	 */
 	void connect(Serializable accountId, AuthorizedRequestToken requestToken);
 
+	/**
+	 * Fetches an access token from the OAuth 1 provider, but does not create a
+	 * connection between the member account and the account at the provider.
+	 * This method is useful when you don't want to persist the connection or
+	 * when you want to create the connection at a later time (such as in the
+	 * registration/connect flow).
+	 * 
+	 * @param requestToken
+	 *            an authorized request token and verifier
+	 * @return an access token granted by the provider
+	 */
 	OAuthToken fetchAccessToken(AuthorizedRequestToken requestToken);
 
 	/**
 	 * Connects a member account to this OAuth 2 service provider. Called after
-	 * the user authorizes the connection at the
-	 * {@link #buildAuthorizeUrl(String) authorizeUrl} and the service provider
-	 * calls us back. Internally, exchanges the code given by the provider for
-	 * an access token, then stores the awarded access token with the member
-	 * account. This access token identifies the connection between the member
-	 * account and this service provider.
+	 * the user authorizes the connection at the {@link #buildAuthorizeUrl(Map)
+	 * authorizeUrl} and the service provider calls us back. Internally,
+	 * exchanges the code given by the provider for an access token, then stores
+	 * the awarded access token with the member account. This access token
+	 * identifies the connection between the member account and this service
+	 * provider.
 	 * <p>
 	 * This method completes the OAuth2-based account connection process.
-	 * {@link #getServiceOperations(Long)} may now be called to get and invoke
-	 * the service provider's API.
+	 * {@link #getServiceOperations(Serializable)} may now be called to get and
+	 * invoke the service provider's API.
 	 * 
 	 * @param accountId
 	 *            the application account ID that the connection will be made
 	 *            with.
-	 * @param requestToken
-	 *            the OAuth request token that was authorized by the member.
+	 * @param redirectUri
+	 *            the redirectUri that the application has registered with the
+	 *            provider
+	 * @param code
+	 *            the authorization code granted by the provider after the user
+	 *            agrees to the requested permissions at authorization
 	 */
 	void connect(Serializable accountId, String redirectUri, String code);
 
+	/**
+	 * Fetches an access token from the OAuth 2 provider, but does not create a
+	 * connection between the member account and the account at the provider.
+	 * This method is useful when you don't want to persist the connection or
+	 * when you want to create the connection at a later time (such as in the
+	 * registration/connect flow).
+	 * 
+	 * @param redirectUri
+	 *            the redirectUri that the application has registered with the
+	 *            provider
+	 * @param code
+	 *            the authorization code granted by the provider after the user
+	 *            agrees to the requested permissions at authorization
+	 * @return an access token granted by the provider
+	 */
 	OAuthToken fetchAccessToken(String redirectUri, String code);
 
+	/**
+	 * Creates a connection between a member account ID and a provider, given an
+	 * access token granted by that provider.
+	 * 
+	 * @param accountId
+	 *            the application account ID that the connection will be made
+	 *            with.
+	 * @param accessToken
+	 *            an access token granted by the provider.
+	 */
 	void connect(Serializable accountId, OAuthToken accessToken);
 
 	/**
@@ -250,7 +296,7 @@ public interface ServiceProvider<S> {
 	 *            the user's account ID on the service provider, used to select
 	 *            a specific connection in the case where the user may have
 	 *            created multiple connections for a single provider.
-	 * @return
+	 * @return an object providing operations to perform against the provider.
 	 */
 	S getServiceOperations(Serializable accountId, String providerAccountId);
 

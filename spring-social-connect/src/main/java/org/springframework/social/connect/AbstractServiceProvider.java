@@ -18,7 +18,6 @@ package org.springframework.social.connect;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -136,7 +135,6 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	/**
 	 * Use the service API to fetch the id the member has been assigned in the provider's system.
 	 * This id is stored locally to support linking to the user's connected profile page.
-	 * It is also used for finding connected friends, see {@link #findMembersConnectedTo(List)}.
 	 */
 	protected abstract String fetchProviderAccountId(S serviceOperations);
 

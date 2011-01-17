@@ -22,8 +22,6 @@ import java.util.List;
  * and any metadata associated with that search.
  * 
  * @author Craig Walls
- * 
- * @see TwitterOperations.search()
  */
 public class SearchResults {
 	private List<Tweet> tweets;

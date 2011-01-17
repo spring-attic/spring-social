@@ -67,7 +67,7 @@ public interface FacebookOperations {
 	/**
 	 * Posts a message to the current user's wall.
 	 * 
-	 * @param message
+	 * @param status
 	 *            The message to post
 	 */
 	void updateStatus(String status);

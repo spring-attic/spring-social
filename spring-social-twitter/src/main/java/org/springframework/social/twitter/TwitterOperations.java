@@ -309,5 +309,5 @@ public interface TwitterOperations {
 	 * 
 	 * @see SearchResults, {@link Tweet}
 	 */
-	SearchResults search(String query, int page, int resultsPerPage, int sinceId, int maxId);
+	SearchResults search(String query, int page, int pageSize, int sinceId, int maxId);
 }

@@ -45,21 +45,12 @@ public class GowallaTemplate implements GowallaOperations {
 	private final String accessToken;
 
 	/**
-	 * Constructs a TripItTemplate with the minimal amount of information
+	 * Constructs a GowallaTemplate with the minimal amount of information
 	 * required to sign requests with an OAuth <code>Authorization</code>
 	 * header.
 	 * 
-	 * @param apiKey
-	 *            The application's API key as given by TripIt when registering
-	 *            the application.
-	 * @param apiSecret
-	 *            The application's API secret as given by TripIt when
-	 *            registering the application.
 	 * @param accessToken
 	 *            An access token granted to the application after OAuth
-	 *            authentication.
-	 * @param accessTokenSecret
-	 *            An access token secret granted to the application after OAuth
 	 *            authentication.
 	 */
 	public GowallaTemplate(String accessToken) {
