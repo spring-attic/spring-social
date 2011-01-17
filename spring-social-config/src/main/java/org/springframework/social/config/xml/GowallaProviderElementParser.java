@@ -17,7 +17,7 @@ package org.springframework.social.config.xml;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.social.connect.providers.GowallaServiceProvider;
+import org.springframework.social.gowalla.provider.GowallaServiceProvider;
 import org.w3c.dom.Element;
 
 public class GowallaProviderElementParser extends AbstractServiceProviderElementParser {

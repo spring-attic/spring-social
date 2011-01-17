@@ -1,4 +1,4 @@
-package org.springframework.social.connect.providers;
+package org.springframework.social.gowalla.provider;
 
 import java.io.Serializable;
 

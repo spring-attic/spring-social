@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect.providers;
+package org.springframework.social.linkedin.provider;
 
 import java.io.Serializable;
 
@@ -21,38 +21,38 @@ import org.springframework.social.connect.AbstractOAuth1ServiceProvider;
 import org.springframework.social.connect.AccountConnectionRepository;
 import org.springframework.social.connect.OAuthToken;
 import org.springframework.social.connect.ServiceProviderParameters;
-import org.springframework.social.tripit.TripItOperations;
-import org.springframework.social.tripit.TripItTemplate;
+import org.springframework.social.linkedin.LinkedInOperations;
+import org.springframework.social.linkedin.LinkedInTemplate;
 
 /**
- * TripIt ServiceProvider implementation.
- * @author Craig Walls
+ * LinkedIn ServiceProvider implementation.
+ * @author Keith Donald
  */
-public final class TripItServiceProvider extends AbstractOAuth1ServiceProvider<TripItOperations> {
+public final class LinkedInServiceProvider extends AbstractOAuth1ServiceProvider<LinkedInOperations> {
 	
-	public TripItServiceProvider(ServiceProviderParameters parameters,
- AccountConnectionRepository connectionRepository) {
+	public LinkedInServiceProvider(ServiceProviderParameters parameters,
+			AccountConnectionRepository connectionRepository) {
 		super(parameters, connectionRepository);
 	}
 
-	protected TripItOperations createServiceOperations(OAuthToken accessToken) {
+	protected LinkedInOperations createServiceOperations(OAuthToken accessToken) {
 		if (accessToken == null) {
-			throw new IllegalStateException("Cannot access TripIt without an access token");
+			throw new IllegalStateException("Cannot access LinkedIn without an access token");
 		}
-		return new TripItTemplate(getApiKey(), getSecret(), accessToken.getValue(), accessToken.getSecret());
+		return new LinkedInTemplate(getApiKey(), getSecret(), accessToken.getValue(), accessToken.getSecret());
 	}
 
-	protected String fetchProviderAccountId(TripItOperations tripIt) {
-		return tripIt.getProfileId();
+	protected String fetchProviderAccountId(LinkedInOperations linkedIn) {
+		return linkedIn.getProfileId();
 	}
 
 	public Serializable getProviderUserProfile(OAuthToken accessToken) {
-		return new TripItTemplate(getApiKey(), getSecret(), accessToken.getValue(), accessToken.getSecret())
+		return new LinkedInTemplate(getApiKey(), getSecret(), accessToken.getValue(), accessToken.getSecret())
 				.getUserProfile();
 	}
 
-	protected String buildProviderProfileUrl(String tripItId, TripItOperations tripIt) {
-		return tripIt.getProfileUrl();
+	protected String buildProviderProfileUrl(String linkedInId, LinkedInOperations linkedIn) {
+		return linkedIn.getProfileUrl();
 	}
 	
 }

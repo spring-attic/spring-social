@@ -27,12 +27,12 @@ import org.springframework.social.connect.ServiceProvider;
 import org.springframework.social.connect.ServiceProviderParameters;
 import org.springframework.social.connect.jdbc.ContextServiceProviderFactory;
 import org.springframework.social.connect.jdbc.JdbcServiceProviderFactory;
-import org.springframework.social.connect.providers.FacebookServiceProvider;
-import org.springframework.social.connect.providers.GitHubServiceProvider;
-import org.springframework.social.connect.providers.GowallaServiceProvider;
-import org.springframework.social.connect.providers.LinkedInServiceProvider;
-import org.springframework.social.connect.providers.TripItServiceProvider;
-import org.springframework.social.connect.providers.TwitterServiceProvider;
+import org.springframework.social.facebook.provider.FacebookServiceProvider;
+import org.springframework.social.github.provider.GitHubServiceProvider;
+import org.springframework.social.gowalla.provider.GowallaServiceProvider;
+import org.springframework.social.linkedin.provider.LinkedInServiceProvider;
+import org.springframework.social.tripit.provider.TripItServiceProvider;
+import org.springframework.social.twitter.provider.TwitterServiceProvider;
 
 public class SocialNamespaceHandlerTest {
 	@Test

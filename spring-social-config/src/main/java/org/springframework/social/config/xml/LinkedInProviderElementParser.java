@@ -17,7 +17,7 @@ package org.springframework.social.config.xml;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.social.connect.providers.LinkedInServiceProvider;
+import org.springframework.social.linkedin.provider.LinkedInServiceProvider;
 import org.w3c.dom.Element;
 
 public class LinkedInProviderElementParser extends AbstractServiceProviderElementParser {

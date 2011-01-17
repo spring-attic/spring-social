@@ -17,7 +17,7 @@ package org.springframework.social.config.xml;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.social.connect.providers.TwitterServiceProvider;
+import org.springframework.social.twitter.provider.TwitterServiceProvider;
 import org.w3c.dom.Element;
 
 public class TwitterProviderElementParser extends AbstractServiceProviderElementParser {

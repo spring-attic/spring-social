@@ -15,6 +15,7 @@
  */
 package org.springframework.social.github;
 
+import static java.util.Calendar.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -53,7 +54,7 @@ public class GitHubTemplateTest {
 		userData.put("company", "SpringSource");
 		userData.put("blog", "http://blog.springsource.com/author/keithd");
 		userData.put("email", "keith.donald at springsource.com");
-		userData.put("created_at", "2010/11/30 22:24:19 -0700");
+		userData.put("created_at", "2001/11/30 12:24:19 -0700");
 		when(restOperations.getForObject(GitHubTemplate.PROFILE_URL, Map.class, "ACCESS_TOKEN")).thenReturn(
 				restResponse);
 
@@ -65,13 +66,20 @@ public class GitHubTemplateTest {
 		assertEquals("SpringSource", profile.getCompany());
 		assertEquals("http://blog.springsource.com/author/keithd", profile.getBlog());
 		assertEquals("keith.donald at springsource.com", profile.getEmail());
+
+		// This passes every time locally, but fails every time on Bamboo.
+		// java.lang.AssertionError: expected:<10> but was:<11> when asserting
+		// the month
+		// It's as if the get(MONTH) is returning 1-based results, contrary to
+		// the JavaDoc and everything I know about Calendar
+		// Is it a timezone thing?
+
 		Date createdDate = profile.getCreatedDate();
 		Calendar createdDateCal = Calendar.getInstance();
-
-		// This passes every time locally, but fails every time on Bamboo. ???
-		// createdDateCal.setTime(createdDate);
-		// assertEquals(NOVEMBER, createdDateCal.get(MONTH));
-		// assertEquals(30, createdDateCal.get(DAY_OF_MONTH));
-		// assertEquals(2010, createdDateCal.get(YEAR));
+		createdDateCal.set(Calendar.ZONE_OFFSET, -23);
+		createdDateCal.setTime(createdDate);
+		assertEquals(NOVEMBER, createdDateCal.get(MONTH));
+		assertEquals(30, createdDateCal.get(DAY_OF_MONTH));
+		assertEquals(2001, createdDateCal.get(YEAR));
 	}
 }

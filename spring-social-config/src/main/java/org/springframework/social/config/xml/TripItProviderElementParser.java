@@ -17,7 +17,7 @@ package org.springframework.social.config.xml;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.social.connect.providers.TripItServiceProvider;
+import org.springframework.social.tripit.provider.TripItServiceProvider;
 import org.w3c.dom.Element;
 
 public class TripItProviderElementParser extends AbstractServiceProviderElementParser {

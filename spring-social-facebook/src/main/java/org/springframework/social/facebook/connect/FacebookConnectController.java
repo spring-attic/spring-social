@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect.web;
+package org.springframework.social.facebook.connect;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.AccountIdResolver;
 import org.springframework.social.connect.ServiceProvider;
+import org.springframework.social.connect.web.ConnectInterceptor;
 import org.springframework.social.facebook.FacebookAccessToken;
 import org.springframework.social.facebook.FacebookOperations;
 import org.springframework.social.facebook.FacebookUserId;
