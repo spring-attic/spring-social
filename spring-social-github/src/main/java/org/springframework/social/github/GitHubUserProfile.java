@@ -16,6 +16,7 @@
 package org.springframework.social.github;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class GitHubUserProfile implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -23,17 +24,22 @@ public class GitHubUserProfile implements Serializable {
 	private final long id;
 	private final String name;
 	private final String username;
+	private final String location;
 	private final String company;
 	private final String blog;
 	private final String email;
+	private final Date createdDate;
 
-	public GitHubUserProfile(long id, String username, String name, String company, String blog, String email) {
+	public GitHubUserProfile(long id, String username, String name, String location, String company, String blog,
+			String email, Date createdDate) {
 		this.id = id;
 		this.username = username;
 		this.name = name;
+		this.location = location;
 		this.company = company;
 		this.blog = blog;
 		this.email = email;
+		this.createdDate = createdDate;
 	}
 
 	public long getId() {
@@ -48,6 +54,10 @@ public class GitHubUserProfile implements Serializable {
 		return username;
 	}
 
+	public String getLocation() {
+		return location;
+	}
+
 	public String getCompany() {
 		return company;
 	}
@@ -59,26 +69,8 @@ public class GitHubUserProfile implements Serializable {
 	public String getEmail() {
 		return email;
 	}
-	
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
 }
-/*
-{
-	user: {
-	id: 56928
-	followers_count: 9
-	created_at: "2009/02/22 14:40:13 -0800"
-	following_count: 9
-	public_repo_count: 14
-	company: ""
-	type: "User"
-	permission: null
-	public_gist_count: 0
-	location: null
-	login: "benrady"
-	blog: "benrady.com"
-	email: "benrady@gmail.com"
-	gravatar_id: "0c4ce84ae6a6c7b48c00451dc0349b86"
-	name: "Ben Rady"
-	}
-	}
-*/

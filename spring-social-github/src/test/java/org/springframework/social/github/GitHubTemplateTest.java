@@ -15,7 +15,12 @@
  */
 package org.springframework.social.github;
 
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,8 +40,34 @@ public class GitHubTemplateTest {
 		github.restOperations = restOperations;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Test
 	public void getProfileId() {
-		// assertEquals("12345", github.getProfileId());
+		Map<String, Map<String, ?>> restResponse = new HashMap<String, Map<String, ?>>();
+		Map<String, Object> userData = new HashMap<String, Object>();
+		restResponse.put("user", userData);
+		userData.put("id", 123L);
+		userData.put("name", "Keith Donald");
+		userData.put("login", "kdonald");
+		userData.put("location", "Melbourne, Florida");
+		userData.put("company", "SpringSource");
+		userData.put("blog", "http://blog.springsource.com/author/keithd");
+		userData.put("email", "keith.donald at springsource.com");
+		userData.put("created_at", "2010/11/30 22:24:19 -0700");
+		when(restOperations.getForObject(GitHubTemplate.PROFILE_URL, Map.class, "ACCESS_TOKEN")).thenReturn(
+				restResponse);
+
+		GitHubUserProfile profile = github.getUserProfile();
+		assertEquals(123L, profile.getId());
+		assertEquals("Keith Donald", profile.getName());
+		assertEquals("kdonald", profile.getUsername());
+		assertEquals("Melbourne, Florida", profile.getLocation());
+		assertEquals("SpringSource", profile.getCompany());
+		assertEquals("http://blog.springsource.com/author/keithd", profile.getBlog());
+		assertEquals("keith.donald at springsource.com", profile.getEmail());
+		Date createdDate = profile.getCreatedDate();
+		assertEquals(110, createdDate.getYear());
+		assertEquals(10, createdDate.getMonth());
+		assertEquals(30, createdDate.getDate());
 	}
 }

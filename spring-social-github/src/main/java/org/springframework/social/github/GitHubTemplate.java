@@ -15,6 +15,11 @@
  */
 package org.springframework.social.github;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.web.client.RestOperations;
@@ -72,16 +77,28 @@ public class GitHubTemplate implements GitHubOperations {
 		Long gitHubId = Long.valueOf(String.valueOf(user.get("id")));
 		String username = String.valueOf(user.get("login"));
 		String name = String.valueOf(user.get("name"));
+		String location = user.get("location") != null ? String.valueOf(user.get("location")) : null;
 		String company = user.get("company") != null ? String.valueOf(user.get("company")) : null;
 		String blog = user.get("blog") != null ? String.valueOf(user.get("blog")) : null;
 		String email = user.get("email") != null ? String.valueOf(user.get("email")) : null;
+		Date createdDate = toDate(String.valueOf(user.get("created_at")), dateFormat);
 
-		return new GitHubUserProfile(gitHubId, username, name, company, blog, email);
+		return new GitHubUserProfile(gitHubId, username, name, location, company, blog, email, createdDate);
 	}
 
 	public String getProfileUrl() {
 		return "https://github.com/" + getProfileId();
 	}
 	
+	private Date toDate(String dateString, DateFormat dateFormat) {
+		try {
+			return dateFormat.parse(dateString);
+		} catch (ParseException e) {
+			return null;
+		}
+	}
+
+	private DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss Z", Locale.ENGLISH);
+
 	static final String PROFILE_URL = "https://github.com/api/v2/json/user/show?access_token={accessToken}";
 }
