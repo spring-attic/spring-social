@@ -30,7 +30,8 @@ import org.codehaus.jackson.annotate.JsonTypeName;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonTypeName("Profile")
 public class TripItProfile implements Serializable {
-	
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * The TripIt user's profile ID
 	 * 

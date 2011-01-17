@@ -107,9 +107,11 @@ public class ConnectController {
 	/**
 	 * Initiates a registration/connection flow. Commences the process of
 	 * establishing a connection to the provider on behalf of the member, just
-	 * as with the regular connection flow. However, when the flow reaches the
-	 * step where an access token is retrieved, the flow will break off to offer
-	 * the user an application registration screen.
+	 * as with the regular connection flow. The main difference here is that
+	 * once an access token is retrieved, the flow will break away, offering the
+	 * user an application registration screen. Once the user has registered
+	 * with the application, the flow can be resumed and the connection will be
+	 * created.
 	 */
 	@RequestMapping(value = "/connect/{name}/register", method = RequestMethod.POST)
 	public String register(@PathVariable String name, WebRequest request,

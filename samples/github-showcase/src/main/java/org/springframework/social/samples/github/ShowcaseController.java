@@ -53,7 +53,11 @@ public class ShowcaseController {
 
 	@RequestMapping(value = "/signup", method = RequestMethod.POST)
 	public String register(ShowcaseUser user) {
+		// In a more complete example, the user data would be persisted somehow
 		System.out.println("Pretending to register the user: " + user.getUsername());
+
+		// Redirect to the ConnectController to complete the post-registration
+		// connection
 		return "redirect:/connect/github/register";
 	}
 }

@@ -21,6 +21,9 @@
 
 	<sf:label path="email">Email <sf:errors path="email" cssClass="error" /></sf:label>
 	<sf:input path="email" />
+
+	<sf:label path="location">Location <sf:errors path="location" cssClass="error" /></sf:label>
+	<sf:input path="location" />
 	
 	<sf:label path="company">Company <sf:errors path="company" cssClass="error" /></sf:label>
 	<sf:input path="company" />
