@@ -28,9 +28,9 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.CommonsClientHttpRequestFactory;
-import org.springframework.social.core.AccountNotConnectedException;
-import org.springframework.social.core.ResponseStatusCodeTranslator;
-import org.springframework.social.core.SocialException;
+import org.springframework.social.client.AccountNotConnectedException;
+import org.springframework.social.client.ResponseStatusCodeTranslator;
+import org.springframework.social.client.SocialException;
 import org.springframework.social.oauth.OAuthSigningClientHttpRequestFactory;
 import org.springframework.social.oauth1.OAuth1RequestSignerFactory;
 import org.springframework.util.LinkedMultiValueMap;

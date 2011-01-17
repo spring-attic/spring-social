@@ -19,10 +19,10 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.social.core.AccountNotConnectedException;
-import org.springframework.social.core.OperationNotPermittedException;
-import org.springframework.social.core.ResponseStatusCodeTranslator;
-import org.springframework.social.core.SocialException;
+import org.springframework.social.client.AccountNotConnectedException;
+import org.springframework.social.client.OperationNotPermittedException;
+import org.springframework.social.client.ResponseStatusCodeTranslator;
+import org.springframework.social.client.SocialException;
 
 /**
  * Implementation of {@link ResponseStatusCodeTranslator} that reads a Twitter

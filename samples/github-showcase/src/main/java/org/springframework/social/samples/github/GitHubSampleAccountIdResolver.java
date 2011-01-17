@@ -17,7 +17,7 @@ package org.springframework.social.samples.github;
 
 import java.io.Serializable;
 
-import org.springframework.social.connect.AccountIdResolver;
+import org.springframework.social.client.connect.AccountIdResolver;
 
 public class GitHubSampleAccountIdResolver implements AccountIdResolver {
 	public Serializable resolveAccountId() {

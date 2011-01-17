@@ -18,10 +18,10 @@ package org.springframework.social.facebook.provider;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.springframework.social.connect.AbstractOAuth2ServiceProvider;
-import org.springframework.social.connect.AccountConnectionRepository;
-import org.springframework.social.connect.OAuthToken;
-import org.springframework.social.connect.ServiceProviderParameters;
+import org.springframework.social.client.connect.AbstractOAuth2ServiceProvider;
+import org.springframework.social.client.connect.AccountConnectionRepository;
+import org.springframework.social.client.connect.OAuthToken;
+import org.springframework.social.client.connect.ServiceProviderParameters;
 import org.springframework.social.facebook.FacebookOperations;
 import org.springframework.social.facebook.FacebookTemplate;
 import org.springframework.web.client.RestTemplate;

@@ -15,7 +15,7 @@
  */
 package org.springframework.social.twitter;
 
-import org.springframework.social.core.SocialException;
+import org.springframework.social.client.SocialException;
 
 /**
  * Exception thrown when an attempt is made to send a direct message to an

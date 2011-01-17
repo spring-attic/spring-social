@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
 	<!-- Loads ServiceProviders by name -->
-	<bean id="serviceProviderFactory" class="org.springframework.social.connect.jdbc.JdbcServiceProviderFactory">
+	<bean id="serviceProviderFactory" class="org.springframework.social.client.connect.jdbc.JdbcServiceProviderFactory">
 		<constructor-arg ref="jdbcTemplate" />
 		<constructor-arg ref="stringEncryptor" />
 	</bean>

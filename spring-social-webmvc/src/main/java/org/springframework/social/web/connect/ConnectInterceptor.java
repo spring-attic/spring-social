@@ -15,7 +15,7 @@
  */
 package org.springframework.social.web.connect;
 
-import org.springframework.social.connect.ServiceProvider;
+import org.springframework.social.client.connect.ServiceProvider;
 import org.springframework.web.context.request.WebRequest;
 
 /**

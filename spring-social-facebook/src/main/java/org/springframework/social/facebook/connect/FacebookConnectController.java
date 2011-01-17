@@ -21,8 +21,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.social.connect.AccountIdResolver;
-import org.springframework.social.connect.ServiceProvider;
+import org.springframework.social.client.connect.AccountIdResolver;
+import org.springframework.social.client.connect.ServiceProvider;
 import org.springframework.social.facebook.FacebookAccessToken;
 import org.springframework.social.facebook.FacebookOperations;
 import org.springframework.social.facebook.FacebookUserId;

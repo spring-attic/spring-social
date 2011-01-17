@@ -15,7 +15,7 @@
  */
 package org.springframework.social.twitter;
 
-import org.springframework.social.core.OperationNotPermittedException;
+import org.springframework.social.client.OperationNotPermittedException;
 
 /**
  * Exception thrown when a duplicate tweet is posted.

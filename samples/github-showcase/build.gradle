@@ -59,9 +59,8 @@ dependencies {
 	compile 'org.slf4j:slf4j-log4j12:1.5.10'
 	compile "log4j:log4j:1.2.15"
 	compile "javax.inject:javax.inject:1"
-	compile "org.springframework.social:spring-social-core:1.0.0.BUILD-SNAPSHOT"
 	compile "org.springframework.social:spring-social-config:1.0.0.BUILD-SNAPSHOT"
-	compile "org.springframework.social:spring-social-connect:1.0.0.BUILD-SNAPSHOT"
+	compile "org.springframework.social:spring-social-client:1.0.0.BUILD-SNAPSHOT"
 	compile "org.springframework.social:spring-social-github:1.0.0.BUILD-SNAPSHOT"
 	compile "org.springframework.social:spring-social-webmvc:1.0.0.BUILD-SNAPSHOT"
 	compile "org.scribe:scribe:1.0.7"

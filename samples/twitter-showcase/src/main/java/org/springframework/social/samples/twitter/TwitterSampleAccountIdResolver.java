@@ -17,7 +17,7 @@ package org.springframework.social.samples.twitter;
 
 import java.io.Serializable;
 
-import org.springframework.social.connect.AccountIdResolver;
+import org.springframework.social.client.connect.AccountIdResolver;
 
 public class TwitterSampleAccountIdResolver implements AccountIdResolver {
 	public Serializable resolveAccountId() {

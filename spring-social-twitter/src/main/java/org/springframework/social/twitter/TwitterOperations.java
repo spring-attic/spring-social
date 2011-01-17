@@ -18,7 +18,7 @@ package org.springframework.social.twitter;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.social.core.SocialException;
+import org.springframework.social.client.SocialException;
 
 /**
  * Interface specifying a basic set of operations for interacting with Twitter.

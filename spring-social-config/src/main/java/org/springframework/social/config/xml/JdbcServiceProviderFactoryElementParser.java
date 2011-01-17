@@ -21,7 +21,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.security.encrypt.NoOpStringEncryptor;
-import org.springframework.social.connect.jdbc.JdbcServiceProviderFactory;
+import org.springframework.social.client.connect.jdbc.JdbcServiceProviderFactory;
 import org.w3c.dom.Element;
 
 public class JdbcServiceProviderFactoryElementParser implements BeanDefinitionParser {
