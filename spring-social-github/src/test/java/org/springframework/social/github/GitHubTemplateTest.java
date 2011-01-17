@@ -15,9 +15,12 @@
  */
 package org.springframework.social.github;
 
+import static java.util.Calendar.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,7 +42,6 @@ public class GitHubTemplateTest {
 		github.restOperations = restOperations;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Test
 	public void getProfileId() {
 		Map<String, Map<String, ?>> restResponse = new HashMap<String, Map<String, ?>>();
@@ -64,5 +66,11 @@ public class GitHubTemplateTest {
 		assertEquals("SpringSource", profile.getCompany());
 		assertEquals("http://blog.springsource.com/author/keithd", profile.getBlog());
 		assertEquals("keith.donald at springsource.com", profile.getEmail());
+		Date createdDate = profile.getCreatedDate();
+		Calendar createdDateCal = Calendar.getInstance();
+		createdDateCal.setTime(createdDate);
+		assertEquals(NOVEMBER, createdDateCal.get(MONTH));
+		assertEquals(30, createdDateCal.get(DAY_OF_MONTH));
+		assertEquals(2010, createdDateCal.get(YEAR));
 	}
 }
