@@ -37,13 +37,38 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
 /**
- * Generic UI controller for managing the account connection process.  Supported flow:
+ * <p>Generic UI controller for managing the account connection process.  Supported connection flow for OAuth 1 providers:</p>
  * <ul>
  * GET /connect/{name}  - Get a web page showing Account connection status to provider {name}.<br/>
  * POST /connect/{name} - Initiate an Account connection with provider {name}.<br/>
  * GET /connect/{name}?oauth_token - Receive provider {name} authorization callback and complete Account connection.<br/>
  * DELETE /connect/{name} - Disconnect Account from provider {name}.<br/>
  * </ul>
+ * 
+ * <p>The connection flow for OAuth 2 providers is subtly different:</p>
+ * <ul>
+ * GET /connect/{name}  - Get a web page showing Account connection status to provider {name}.<br/>
+ * POST /connect/{name} - Initiate an Account connection with provider {name}.<br/>
+ * GET /connect/{name}?code - Receive provider {name} authorization callback and complete Account connection.<br/>
+ * DELETE /connect/{name} - Disconnect Account from provider {name}.<br/>
+ * </ul>
+ * 
+ * <p>Also supports a register-then-connect flow. This flow is similar to the connect flows, except that after
+ * receiving an access token from the provider, the flow breaks away to an application registration screen, allowing
+ * a new user to register with the application with data retrieved from their provider profile. After registration,
+ * the application may resume the flow so that a connection may be completed between the member account and their
+ * provider profile. The register-then-connect flow is:</p>
+ * 
+ * <p>The connection flow for OAuth 2 providers is subtly different:</p>
+ * <ul>
+ * GET /connect/{name}  - Get a web page showing Account connection status to provider {name}.<br/>
+ * POST /connect/{name}/register - Initiate an Account connection with registration flow with provider {name}.<br/>
+ * GET /connect/{name}?oauth_token or GET /connect/{name}?code - Receive provider {name} authorization callback and complete Account connection.
+ *    The flow breaks away to the application registration view at this point.<br/>
+ * GET /connect/{name}/register - Resumes the connection flow, establishing the connection.<br/>
+ * DELETE /connect/{name} - Disconnect Account from provider {name}.<br/>
+ * </ul>
+ * 
  * @author Keith Donald
  * @author Craig Walls
  */
