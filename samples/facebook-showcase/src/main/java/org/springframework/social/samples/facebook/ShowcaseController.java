@@ -17,8 +17,8 @@ package org.springframework.social.samples.facebook;
 
 import javax.inject.Inject;
 
-import org.springframework.social.connect.providers.FacebookServiceProvider;
 import org.springframework.social.facebook.FacebookProfile;
+import org.springframework.social.facebook.provider.FacebookServiceProvider;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;

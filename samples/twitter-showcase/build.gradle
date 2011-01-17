@@ -32,7 +32,7 @@ apply plugin: 'war'
 apply plugin: 'jetty'
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '0.9-rc-3'
+    gradleVersion = '0.9.1'
 }
   
 group = 'org.springframework.social.samples'
@@ -62,7 +62,8 @@ dependencies {
 	compile "org.springframework.social:spring-social-core:1.0.0.BUILD-SNAPSHOT"
 	compile "org.springframework.social:spring-social-config:1.0.0.BUILD-SNAPSHOT"
 	compile "org.springframework.social:spring-social-connect:1.0.0.BUILD-SNAPSHOT"
-	compile "org.springframework.social:spring-social-connect-web:1.0.0.BUILD-SNAPSHOT"
+	compile "org.springframework.social:spring-social-twitter:1.0.0.BUILD-SNAPSHOT"
+	compile "org.springframework.social:spring-social-webmvc:1.0.0.BUILD-SNAPSHOT"
 	compile "org.scribe:scribe:1.0.7"
 	providedRuntime ("javax.servlet:servlet-api:2.5") { provided = true }
 	providedRuntime ("javax.servlet.jsp:jsp-api:2.1") { provided = true }

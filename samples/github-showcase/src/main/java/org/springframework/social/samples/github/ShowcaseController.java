@@ -17,9 +17,9 @@ package org.springframework.social.samples.github;
 
 import javax.inject.Inject;
 
-import org.springframework.social.connect.providers.GitHubServiceProvider;
 import org.springframework.social.github.GitHubOperations;
 import org.springframework.social.github.GitHubUserProfile;
+import org.springframework.social.github.provider.GitHubServiceProvider;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;

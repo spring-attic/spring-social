@@ -10,7 +10,7 @@
 	<!-- Scans within the base package of the application for @Components to configure as beans -->
 	<context:component-scan base-package="org.springframework.social.samples.facebook" />
 	
-	<bean class="org.springframework.social.connect.web.ConnectController">
+	<bean class="org.springframework.social.web.connect.ConnectController">
 		<constructor-arg ref="serviceProviderFactory" />
 		<constructor-arg value="http://localhost:8080/facebook-showcase-2" />
 		<constructor-arg ref="accountIdResolver" />

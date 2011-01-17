@@ -17,8 +17,8 @@ package org.springframework.social.samples.gowalla;
 
 import javax.inject.Inject;
 
-import org.springframework.social.connect.providers.GowallaServiceProvider;
 import org.springframework.social.gowalla.GowallaOperations;
+import org.springframework.social.gowalla.provider.GowallaServiceProvider;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;

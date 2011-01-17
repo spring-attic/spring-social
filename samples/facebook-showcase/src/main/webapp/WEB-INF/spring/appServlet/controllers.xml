@@ -10,7 +10,7 @@
 	<!-- Scans within the base package of the application for @Components to configure as beans -->
 	<context:component-scan base-package="org.springframework.social.samples.facebook" />
 	
-	<bean class="org.springframework.social.connect.web.FacebookConnectController">
+	<bean class="org.springframework.social.facebook.connect.FacebookConnectController">
 		<constructor-arg ref="facebookProvider" />
 		<constructor-arg ref="accountIdResolver" />
 	</bean>

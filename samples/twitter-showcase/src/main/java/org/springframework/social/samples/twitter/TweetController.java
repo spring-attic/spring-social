@@ -22,8 +22,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.springframework.social.connect.AccountConnection;
-import org.springframework.social.connect.providers.TwitterServiceProvider;
 import org.springframework.social.twitter.TwitterOperations;
+import org.springframework.social.twitter.provider.TwitterServiceProvider;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;

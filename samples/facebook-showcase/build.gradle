@@ -61,7 +61,8 @@ dependencies {
 	compile "javax.inject:javax.inject:1"
 	compile "org.springframework.social:spring-social-core:1.0.0.BUILD-SNAPSHOT"
 	compile "org.springframework.social:spring-social-connect:1.0.0.BUILD-SNAPSHOT"
-	compile "org.springframework.social:spring-social-connect-web:1.0.0.BUILD-SNAPSHOT"
+	compile "org.springframework.social:spring-social-facebook:1.0.0.BUILD-SNAPSHOT"
+	compile "org.springframework.social:spring-social-webmvc:1.0.0.BUILD-SNAPSHOT"
 	compile "org.scribe:scribe:1.0.7"
 	providedRuntime ("javax.servlet:servlet-api:2.5") { provided = true }
 	providedRuntime ("javax.servlet.jsp:jsp-api:2.1") { provided = true }

@@ -174,15 +174,6 @@ project('spring-social-connect') {
     }
 }
 
-project('spring-social-connect-web') {
-    description = 'Spring Social Connect Web'
-    dependencies {
-        compile "org.springframework:spring-web:$springVersion"
-        compile project(':spring-social-connect')
-        compile project(':spring-social-oauth')
-    }
-}
-
 project('spring-social-facebook') {
     description = 'Spring Social Facebook'
     dependencies {
@@ -190,9 +181,8 @@ project('spring-social-facebook') {
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-connect')
-        compile project(':spring-social-connect-web')
+        compile project(':spring-social-webmvc')
         compile project(':spring-social-core')
-//        compile project(':spring-social-oauth')
     }
 }
 
@@ -202,7 +192,6 @@ project('spring-social-github') {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-connect')
         compile project(':spring-social-core')
-//        compile project(':spring-social-oauth')
     }
 }
 
@@ -212,7 +201,6 @@ project('spring-social-gowalla') {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-connect')
         compile project(':spring-social-core')
-//        compile project(':spring-social-oauth')
     }
 }
 
@@ -222,7 +210,6 @@ project('spring-social-linkedin') {
         compile "commons-httpclient:commons-httpclient:$commonsHttpClientVersion"
         compile project(':spring-social-connect')
         compile project(':spring-social-core')
-//        compile project(':spring-social-oauth')
     }
 }
 
@@ -242,7 +229,6 @@ project('spring-social-tripit') {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-connect')
         compile project(':spring-social-core')
-//        compile project(':spring-social-oauth')
     }
 }
 
@@ -252,10 +238,17 @@ project('spring-social-twitter') {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-connect')
         compile project(':spring-social-core')
-//        compile project(':spring-social-oauth')
     }
 }
 
+project('spring-social-webmvc') {
+    description = 'Spring Social Spring MVC extensions'
+    dependencies {
+        compile "org.springframework:spring-web:$springVersion"
+        compile project(':spring-social-connect')
+        compile project(':spring-social-oauth')
+    }
+}
 
 // -----------------------------------------------------------------------------
 // Configuration for the docs subproject
