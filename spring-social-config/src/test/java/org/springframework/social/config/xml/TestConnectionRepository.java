@@ -18,9 +18,9 @@ package org.springframework.social.config.xml;
 import java.io.Serializable;
 import java.util.Collection;
 
-import org.springframework.social.client.connect.AccountConnection;
-import org.springframework.social.client.connect.AccountConnectionRepository;
-import org.springframework.social.client.connect.OAuthToken;
+import org.springframework.social.provider.AccountConnection;
+import org.springframework.social.provider.AccountConnectionRepository;
+import org.springframework.social.provider.OAuthToken;
 
 public class TestConnectionRepository implements AccountConnectionRepository {
 	public void addConnection(Serializable accountId, String provider, OAuthToken accessToken,

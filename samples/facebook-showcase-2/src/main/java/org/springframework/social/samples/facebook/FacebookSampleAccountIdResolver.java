@@ -17,7 +17,7 @@ package org.springframework.social.samples.facebook;
 
 import java.io.Serializable;
 
-import org.springframework.social.client.connect.AccountIdResolver;
+import org.springframework.social.provider.AccountIdResolver;
 
 public class FacebookSampleAccountIdResolver implements AccountIdResolver {
 	public Serializable resolveAccountId() {

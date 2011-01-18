@@ -21,12 +21,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.social.client.connect.AccountIdResolver;
-import org.springframework.social.client.connect.AuthorizationStyle;
-import org.springframework.social.client.connect.AuthorizedRequestToken;
-import org.springframework.social.client.connect.OAuthToken;
-import org.springframework.social.client.connect.ServiceProvider;
-import org.springframework.social.client.connect.ServiceProviderFactory;
+import org.springframework.social.provider.AccountIdResolver;
+import org.springframework.social.provider.AuthorizationStyle;
+import org.springframework.social.provider.AuthorizedRequestToken;
+import org.springframework.social.provider.OAuthToken;
+import org.springframework.social.provider.ServiceProvider;
+import org.springframework.social.provider.ServiceProviderFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;

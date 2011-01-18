@@ -3,32 +3,6 @@
     xmlns:xlink="http://www.w3.org/1999/xlink">
   <title>Service Provider Framework</title>
 
-  <!--
-    Configuring service providers
-      - Config-oriented
-        - Generic
-        - Supported providers
-
-
-      - AccountConnectionRepository
-      
-      
-      - ServiceProviderFactory
-  
-
-      - Jdbc-oriented configuration of providers
-          - Add row to ServiceProvider table
-          - Configure a JdbcServiceProviderFactory bean
-            - wired with a JdbcTemplate and a StringEncryptor
-          - Configure a provider bean that is constructed by calling the getServiceProvider()
-            method on the serviceProviderFactory bean
-      
-      - Using a provider
-        - connection-management
-        - service operations
-        
-  -->
-
   <section xml:id="section_serviceproviderconfig">
       <title>Configuring Service Providers</title>
       
@@ -52,7 +26,7 @@
     consumer-key="twitter_key"
     consumer-secret="twitter_secret"
     display-name="Twitter"
-    class="org.springframework.social.connect.providers.TwitterServiceProvider"
+    class="org.springframework.social.twitter.provider.TwitterServiceProvider"
     request-token-url="https://twitter.com/oauth/request_token" 
     authorization-url="https://twitter.com/oauth/authorize?oauth_token={requestToken}"
     access-token-url="https://twitter.com/oauth/access_token" />]]></programlisting>
@@ -118,14 +92,14 @@
 
         <programlisting><![CDATA[insert into ServiceProvider (name, displayName, implementation, apiKey, secret, requestTokenUrl, authorizeUrl, 
       accessTokenUrl) values 
-   ('twitter', 'Twitter', 'org.springframework.social.connect.providers.TwitterServiceProvider', 
+   ('twitter', 'Twitter', 'org.springframework.social.twitter.provider.TwitterServiceProvider', 
       'twitter_key', 'twitter_secret', 'https://twitter.com/oauth/request_token',
       'https://twitter.com/oauth/authorize?oauth_token={requestToken}',      
       'https://twitter.com/oauth/access_token');]]></programlisting>
 
         <para>Next, configure <classname>JdbcServiceProviderFactory</classname> in Spring:</para> 
         
-    	<programlisting><![CDATA[<bean id="serviceProviderFactory" class="org.springframework.social.connect.jdbc.JdbcServiceProviderFactory">
+    	<programlisting><![CDATA[<bean id="serviceProviderFactory" class="org.springframework.social.provider.jdbc.JdbcServiceProviderFactory">
     <constructor-arg ref="jdbcTemplate" />
 	<constructor-arg ref="stringEncryptor" />
 </bean>]]></programlisting>

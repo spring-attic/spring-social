@@ -13,25 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter;
-
-import org.springframework.social.SocialException;
+package org.springframework.social;
 
 /**
- * Exception thrown when an attempt is made to send a direct message to an
- * invalid recipient; that is, a recipient who is not following the
- * authenticated user.
+ * <p>
+ * Indicates an HTTP 403 (Forbidden) response from making a call to a social
+ * network's API.
+ * </p>
+ * 
+ * <p>
+ * In the case of Twitter, this often means that you are attempting to post a
+ * duplicate tweet or have reached an update limit.
+ * </p>
  * 
  * @author Craig Walls
  */
-public class InvalidMessageRecipientException extends SocialException {
+public class OperationNotPermittedException extends SocialException {
 	private static final long serialVersionUID = 1L;
 
-	public InvalidMessageRecipientException(String message) {
+	public OperationNotPermittedException(String message) {
 		super(message);
 	}
 
-	public InvalidMessageRecipientException(String message, Throwable cause) {
+	public OperationNotPermittedException(String message, Throwable cause) {
 		super(message, cause);
 	}
+
 }

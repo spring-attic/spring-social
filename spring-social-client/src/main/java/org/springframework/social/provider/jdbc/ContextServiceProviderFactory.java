@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.client.connect.jdbc;
+package org.springframework.social.provider.jdbc;
 
 import java.util.Map;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.social.client.connect.ServiceProvider;
-import org.springframework.social.client.connect.ServiceProviderFactory;
+import org.springframework.social.provider.ServiceProvider;
+import org.springframework.social.provider.ServiceProviderFactory;
 
 public class ContextServiceProviderFactory implements ServiceProviderFactory, BeanFactoryPostProcessor {
 

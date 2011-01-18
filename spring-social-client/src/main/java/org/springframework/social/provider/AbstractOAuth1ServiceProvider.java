@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.client.connect;
+package org.springframework.social.provider;
 
 import java.io.Serializable;
 

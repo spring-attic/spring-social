@@ -13,29 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.client;
+package org.springframework.social;
 
 /**
- * <p>
- * Indicates an HTTP 403 (Forbidden) response from making a call to a social
- * network's API.
- * </p>
- * 
- * <p>
- * In the case of Twitter, this often means that you are attempting to post a
- * duplicate tweet or have reached an update limit.
- * </p>
+ * Indicates a security-related error while performing an operation on a social
+ * network provider (updating a Twitter user's status without an OAuth access
+ * token, for example).
  * 
  * @author Craig Walls
  */
-public class OperationNotPermittedException extends SocialException {
+public class AccountNotConnectedException extends SocialException {
 	private static final long serialVersionUID = 1L;
 
-	public OperationNotPermittedException(String message) {
+	public AccountNotConnectedException(String message) {
 		super(message);
 	}
 
-	public OperationNotPermittedException(String message, Throwable cause) {
+	public AccountNotConnectedException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

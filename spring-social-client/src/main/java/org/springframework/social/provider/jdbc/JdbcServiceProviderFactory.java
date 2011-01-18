@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.client.connect.jdbc;
+package org.springframework.social.provider.jdbc;
 
 import java.lang.reflect.Constructor;
 import java.sql.ResultSet;
@@ -23,10 +23,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.encrypt.StringEncryptor;
-import org.springframework.social.client.connect.AccountConnectionRepository;
-import org.springframework.social.client.connect.ServiceProvider;
-import org.springframework.social.client.connect.ServiceProviderFactory;
-import org.springframework.social.client.connect.ServiceProviderParameters;
+import org.springframework.social.provider.AccountConnectionRepository;
+import org.springframework.social.provider.ServiceProvider;
+import org.springframework.social.provider.ServiceProviderFactory;
+import org.springframework.social.provider.ServiceProviderParameters;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ClassUtils;
 

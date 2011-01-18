@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.client;
+package org.springframework.social.provider;
 
 /**
- * Indicates a security-related error while performing an operation on a social
- * network provider (updating a Twitter user's status without an OAuth access
- * token, for example).
+ * This enumeration identifies styles of authorization that may be used to
+ * create connections between a user account and their profile on a service
+ * provider.
  * 
  * @author Craig Walls
  */
-public class AccountNotConnectedException extends SocialException {
-	private static final long serialVersionUID = 1L;
-
-	public AccountNotConnectedException(String message) {
-		super(message);
-	}
-
-	public AccountNotConnectedException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
+public enum AuthorizationStyle {
+	OAUTH_1, OAUTH_2
 }

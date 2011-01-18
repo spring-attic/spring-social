@@ -21,11 +21,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.social.client.connect.AccountIdResolver;
-import org.springframework.social.client.connect.ServiceProvider;
 import org.springframework.social.facebook.FacebookAccessToken;
 import org.springframework.social.facebook.FacebookOperations;
 import org.springframework.social.facebook.FacebookUserId;
+import org.springframework.social.provider.AccountIdResolver;
+import org.springframework.social.provider.ServiceProvider;
 import org.springframework.social.web.connect.ConnectInterceptor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

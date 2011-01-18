@@ -1,4 +1,4 @@
-package org.springframework.social.connect.jdbc;
+package org.springframework.social.provider.jdbc;
 
 
 public class JdbcServiceProviderFactoryTest {

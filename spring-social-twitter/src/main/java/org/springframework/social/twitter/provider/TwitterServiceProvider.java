@@ -17,10 +17,10 @@ package org.springframework.social.twitter.provider;
 
 import java.io.Serializable;
 
-import org.springframework.social.client.connect.AbstractOAuth1ServiceProvider;
-import org.springframework.social.client.connect.AccountConnectionRepository;
-import org.springframework.social.client.connect.OAuthToken;
-import org.springframework.social.client.connect.ServiceProviderParameters;
+import org.springframework.social.provider.AbstractOAuth1ServiceProvider;
+import org.springframework.social.provider.AccountConnectionRepository;
+import org.springframework.social.provider.OAuthToken;
+import org.springframework.social.provider.ServiceProviderParameters;
 import org.springframework.social.twitter.TwitterOperations;
 import org.springframework.social.twitter.TwitterTemplate;
 

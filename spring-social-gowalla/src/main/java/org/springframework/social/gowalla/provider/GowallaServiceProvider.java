@@ -2,12 +2,12 @@ package org.springframework.social.gowalla.provider;
 
 import java.io.Serializable;
 
-import org.springframework.social.client.connect.AbstractOAuth2ServiceProvider;
-import org.springframework.social.client.connect.AccountConnectionRepository;
-import org.springframework.social.client.connect.OAuthToken;
-import org.springframework.social.client.connect.ServiceProviderParameters;
 import org.springframework.social.gowalla.GowallaOperations;
 import org.springframework.social.gowalla.GowallaTemplate;
+import org.springframework.social.provider.AbstractOAuth2ServiceProvider;
+import org.springframework.social.provider.AccountConnectionRepository;
+import org.springframework.social.provider.OAuthToken;
+import org.springframework.social.provider.ServiceProviderParameters;
 
 public class GowallaServiceProvider extends AbstractOAuth2ServiceProvider<GowallaOperations> {
 

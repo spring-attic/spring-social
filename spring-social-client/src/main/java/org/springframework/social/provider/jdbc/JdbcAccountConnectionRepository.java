@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.client.connect.jdbc;
+package org.springframework.social.provider.jdbc;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
@@ -25,10 +25,10 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.encrypt.StringEncryptor;
-import org.springframework.social.client.connect.AccountConnection;
-import org.springframework.social.client.connect.AccountConnectionRepository;
-import org.springframework.social.client.connect.ConnectionAlreadyExistsException;
-import org.springframework.social.client.connect.OAuthToken;
+import org.springframework.social.provider.AccountConnection;
+import org.springframework.social.provider.AccountConnectionRepository;
+import org.springframework.social.provider.ConnectionAlreadyExistsException;
+import org.springframework.social.provider.OAuthToken;
 import org.springframework.stereotype.Repository;
 
 /**

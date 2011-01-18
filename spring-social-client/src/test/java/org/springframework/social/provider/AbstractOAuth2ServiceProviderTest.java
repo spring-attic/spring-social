@@ -1,4 +1,4 @@
-package org.springframework.social.connect;
+package org.springframework.social.provider;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -10,11 +10,11 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
-import org.springframework.social.client.connect.AbstractOAuth2ServiceProvider;
-import org.springframework.social.client.connect.AccountConnectionRepository;
-import org.springframework.social.client.connect.AuthorizedRequestToken;
-import org.springframework.social.client.connect.OAuthToken;
-import org.springframework.social.client.connect.ServiceProviderParameters;
+import org.springframework.social.provider.AbstractOAuth2ServiceProvider;
+import org.springframework.social.provider.AccountConnectionRepository;
+import org.springframework.social.provider.AuthorizedRequestToken;
+import org.springframework.social.provider.OAuthToken;
+import org.springframework.social.provider.ServiceProviderParameters;
 import org.springframework.web.client.RestOperations;
 
 public class AbstractOAuth2ServiceProviderTest {

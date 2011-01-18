@@ -13,22 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.client.connect;
+package org.springframework.social.provider;
 
-/**
- * Factory for obtaining ServiceProviders by name.
- * @author Keith Donald
- */
-public interface ServiceProviderFactory {
-	
-	/**
-	 * Get the ServiceProvider identified by the provided name.
-	 */
-	ServiceProvider<?> getServiceProvider(String name);
+import java.io.Serializable;
 
-	/**
-	 * Get a strongly-typed reference to the ServiceProvider identified by the provided name.
-	 */
-	<S> ServiceProvider<S> getServiceProvider(String name, Class<S> serviceType);
-
+public interface AccountIdResolver {
+	Serializable resolveAccountId();
 }

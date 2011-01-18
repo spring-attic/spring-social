@@ -1,3 +1,31 @@
+Spring Social 1.0.0 Milestone 2 (Jan ??, 2011)
+==============================================
+For release notes see:
+ https://jira.springframework.org/secure/ReleaseNote.jspa?projectId=10481&version=11738
+
+New Features
+   * New connection framework to handle the application side of the "OAuth Dance".
+   * Expanded TwitterOperations interface:
+     * Posting location metadata along with Tweet
+     * Retrieving user, friends, public, and home timelines
+     * Send and receive direct messages
+     * Retrieving a user's full Twitter profile
+   * New social templates (minimal functionality in this release):
+     * Gowalla - Retrieve user's top checkins
+     * GitHub - Retrieve a user's profile data
+   * Small showcase samples
+     * Facebook sample showing how to connect using <fb:login-button>
+     * Facebook sample showing how to connect using OAuth 2 web server profile
+     * Twitter sample showing how to connect with OAuth 1.0a
+     * Gowalla sample showing how to connect using OAuth 2 web server profile
+     * GitHub sample showing how to connect using OAuth 2 web server profile and
+       how to perform a register-then-connect flow
+   * More documentation!
+
+Bug fixes:
+
+    
+
 Spring Social 1.0.0 Milestone 1 (Oct 29, 2010)
 ==============================================
 

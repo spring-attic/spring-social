@@ -17,12 +17,12 @@ package org.springframework.social.github.provider;
 
 import java.io.Serializable;
 
-import org.springframework.social.client.connect.AbstractOAuth2ServiceProvider;
-import org.springframework.social.client.connect.AccountConnectionRepository;
-import org.springframework.social.client.connect.OAuthToken;
-import org.springframework.social.client.connect.ServiceProviderParameters;
 import org.springframework.social.github.GitHubOperations;
 import org.springframework.social.github.GitHubTemplate;
+import org.springframework.social.provider.AbstractOAuth2ServiceProvider;
+import org.springframework.social.provider.AccountConnectionRepository;
+import org.springframework.social.provider.OAuthToken;
+import org.springframework.social.provider.ServiceProviderParameters;
 
 public class GitHubServiceProvider extends AbstractOAuth2ServiceProvider<GitHubOperations> {
 

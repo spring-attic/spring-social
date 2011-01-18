@@ -25,9 +25,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.social.client.AccountNotConnectedException;
-import org.springframework.social.client.OperationNotPermittedException;
-import org.springframework.social.client.SocialException;
+import org.springframework.social.AccountNotConnectedException;
+import org.springframework.social.OperationNotPermittedException;
+import org.springframework.social.SocialException;
 
 /**
  * @author Craig Walls

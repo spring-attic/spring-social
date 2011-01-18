@@ -17,10 +17,10 @@ package org.springframework.social.tripit.provider;
 
 import java.io.Serializable;
 
-import org.springframework.social.client.connect.AbstractOAuth1ServiceProvider;
-import org.springframework.social.client.connect.AccountConnectionRepository;
-import org.springframework.social.client.connect.OAuthToken;
-import org.springframework.social.client.connect.ServiceProviderParameters;
+import org.springframework.social.provider.AbstractOAuth1ServiceProvider;
+import org.springframework.social.provider.AccountConnectionRepository;
+import org.springframework.social.provider.OAuthToken;
+import org.springframework.social.provider.ServiceProviderParameters;
 import org.springframework.social.tripit.TripItOperations;
 import org.springframework.social.tripit.TripItTemplate;
 
@@ -30,8 +30,7 @@ import org.springframework.social.tripit.TripItTemplate;
  */
 public final class TripItServiceProvider extends AbstractOAuth1ServiceProvider<TripItOperations> {
 	
-	public TripItServiceProvider(ServiceProviderParameters parameters,
- AccountConnectionRepository connectionRepository) {
+	public TripItServiceProvider(ServiceProviderParameters parameters, AccountConnectionRepository connectionRepository) {
 		super(parameters, connectionRepository);
 	}
 

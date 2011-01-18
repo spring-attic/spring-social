@@ -1,4 +1,4 @@
-package org.springframework.social.connect.jdbc;
+package org.springframework.social.provider.jdbc;
 
 
 // TODO This is testing more than just the JDBC account connection repository - factor out and focus on the data access logic
