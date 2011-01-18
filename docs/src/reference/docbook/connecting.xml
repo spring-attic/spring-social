@@ -6,7 +6,7 @@
   <para>Most social connections are based on OAuth authorization. Authorizing an application to access a social provider on behalf of a user involves a back-and-forth conversation between the application, the social network, and the user. This conversation, commonly referred to as the "OAuth Dance", involves the application asking the user to tell the social network that it's okay for the application to access and manipulate their social information. The outcome of the dance is an access token that the application can use as a sort of valet key to interact with the social network on the user's behalf.</para>
   
   <section id="connect-controller">
-    <title><classname>ConnectController</classname></title>
+    <title>Creating connections with <classname>ConnectController</classname></title>
 
     <para>To simplify an application's role in the OAuth dance, Spring Social provides <classname>ConnectController</classname>. <classname>ConnectController</classname> is a Spring MVC controller that handles the application's part in the OAuth dance.</para>
 
@@ -15,10 +15,19 @@
     <programlisting><![CDATA[
 <bean class="org.springframework.social.web.connect.ConnectController">
 	<constructor-arg ref="serviceProviderFactory" />
-	<constructor-arg value="http://localhost:8080/myapplication" />
 	<constructor-arg ref="accountIdResolver" />
+	<constructor-arg value="http://localhost:8080/myapplication" />
 </bean>
 ]]></programlisting>
+
+
+    <para><classname>ConnectController</classname> is constructed with three arguments:</para>
+    
+    <itemizedlist>
+        <listitem><para>A reference to an instance of a <interfacename>ServiceProviderFactory</interfacename> to assist <classname>ConnectController</classname> in obtaining service providers.</para></listitem>
+        <listitem><para>A reference to an instance of an <interfacename>AccountIdResolver</interfacename> so that <classname>ConnectController</classname> will know which application account to create connections for.</para></listitem>
+        <listitem><para>The base URL for the application. <classname>ConnectController</classname> will use this to construct callback URLs used in the OAuth dance.</para></listitem>
+    </itemizedlist>
 
     <para><classname>ConnectController</classname> can handle the application's side of the OAuth dance for either OAuth 1 or OAuth 2 providers. For OAuth 1 providers, <classname>ConnectController</classname> supports the following flow:</para>
     
@@ -34,6 +43,8 @@
     <itemizedlist>
         <listitem><para><code>GET /connect/{provider}?code={code}</code> - Receives the authorization callback from the provider, accepting an authorization code. Uses the code to request an access token and complete the connection.</para></listitem>
     </itemizedlist>
+    
+    <para><classname>ConnectController</classname> also supports a registration-then-connect flow, which is covered in <xref linkend="registration-flow"/>.</para>
 
     <section id="connect-controller-flow-1">
       <title>Displaying a connection page</title>
@@ -46,7 +57,7 @@
 <a href="<c:url value="/connect/twitter" />">Connect to Twitter</a>
 ]]></programlisting>
 
-        <para><classname>ConnectController</classname> will respond to this request by first checking to see if a connection already exists between the user's account and the Twitter. If not, then it will with a view that should offer the user an opportunity to create the connection. Otherwise, it will respond with a view to inform the user that a connection already exists.</para>
+        <para><classname>ConnectController</classname> will respond to this request by first checking to see if a connection already exists between the user's account and Twitter. If not, then it will with a view that should offer the user an opportunity to create the connection. Otherwise, it will respond with a view to inform the user that a connection already exists.</para>
     
         <para>The view names that <classname>ConnectController</classname> responds with are based on the provider's name. In this case, since the provider name is "twitter", the view names are "connect/twitterConnect" and "connect/twitterConnected".</para>
         
@@ -75,7 +86,7 @@
       
       <programlisting><![CDATA[https://twitter.com/oauth/authorize?oauth_token={token}]]></programlisting>
       
-      <para>If the application's request token were "vPyVSeIPzEoVVdU69OyRm85MN5eRmRCl2xYuc4ujLT", then the browser would be redirected to https://twitter.com/oauth/authorize?oauth_token=vPyVSeIPzEoVVdU69OyRm85MN5eRmRCl2xYuc4ujLT and a page similar to the following would be displayed to the user (from Twitter):</para>
+      <para>If the application's request token were "vPyVSe"<footnote><para>This is just an example. Actual request tokens are typically much longer.</para></footnote>, then the browser would be redirected to https://twitter.com/oauth/authorize?oauth_token=vPyVSe and a page similar to the following would be displayed to the user (from Twitter)<footnote><para>If the user has not yet signed into Twitter, the authorization page will also include a username and password field for authentication into Twitter.</para></footnote>:</para>
       
       <mediaobject>
         <imageobject role="fo">
@@ -87,13 +98,11 @@
         </imageobject>
       </mediaobject>
       
-      <para>(If the user has not yet signed into Twitter, the authorization page will also included a username and password field for authentication into Twitter.)</para>
-      
       <para>In contrast, Facebook is an OAuth 2 provider, so its authorization URL takes a slightly different pattern:</para>
       
       <programlisting><![CDATA[https://graph.facebook.com/oauth/authorize?client_id={clientId}&redirect_uri={redirectUri}]]></programlisting>
       
-      <para>Thus, if the application's Facebook client ID is "0b754d95f9c9899b0d6c4456B4f2EdD7" and it's redirect URI is "http://www.mycoolapp.com/connect/facebook", then the browser would be redirected to <![CDATA[https://graph.facebook.com/oauth/authorize?client_id=0b754d95f9c9899b0d6c4456B4f2EdD7&redirect_uri=http://www.mycoolapp.com/connect/facebook]]> and Facebook would display the following authorization page to the user:</para>
+      <para>Thus, if the application's Facebook client ID is "0b754" and it's redirect URI is "http://www.mycoolapp.com/connect/facebook", then the browser would be redirected to <![CDATA[https://graph.facebook.com/oauth/authorize?client_id=0b754&redirect_uri=http://www.mycoolapp.com/connect/facebook]]> and Facebook would display the following authorization page to the user:</para>
       
       <mediaobject>
         <imageobject role="fo">
@@ -114,7 +123,7 @@
       <section id="connect-controller-flow-3-scope">
         <title>Authorization scope</title>
 
-        <para>In the previous example of authorizing an application to interact with a user's Facebook profile, you notice that the application is only being given access to the user's basic profile information. But there's much more that an application can do on behalf of a user with Facebook than simply harvest their profile data. For example, how can an application gain authorization to post to a user's Facebook wall?</para>
+        <para>In the previous example of authorizing an application to interact with a user's Facebook profile, you notice that the application is only requesting access to the user's basic profile information. But there's much more that an application can do on behalf of a user with Facebook than simply harvest their profile data. For example, how can an application gain authorization to post to a user's Facebook wall?</para>
         
         <para>OAuth 2 authorization may optionally include a scope parameter that indicates the type of authorization being requested. On the provider, the "scope" parameter should be passed along on the authorization URL. In the case of Facebook, that means that the Facebook authorization URL pattern should be as follows:</para>
         
@@ -158,7 +167,7 @@
     <section id="connect-controller-flow-3">
       <title>Responding to the authorization callback</title>
       
-      <para>After the user agrees to allow the application have access to their profile on the provider, the provider will redirect their browser back to the application's authorization URL with a code that can be exchanged for an access token. For OAuth 1.0a providers, the callback URL is expected to receive the code (known as a verifier in OAuth 1) in a <code>verifier</code> parameter. For OAuth 2, the code will be in a <code>code</code> parameter.</para>
+      <para>After the user agrees to allow the application have access to their profile on the provider, the provider will redirect their browser back to the application's authorization URL with a code that can be exchanged for an access token. For OAuth 1.0a providers, the callback URL is expected to receive the code (known as a verifier in OAuth 1 terms) in a <code>verifier</code> parameter. For OAuth 2, the code will be in a <code>code</code> parameter.</para>
       
       <para><classname>ConnectController</classname> will handle the callback request and trade in the verifier/code for an access token. Once the access token has been received, the OAuth dance is complete and the application may use the access token to interact with the provider on behalf of the user. The last thing that <classname>ConnectController</classname> does is to hand off the access token to the <interfacename>ServiceProvider</interfacename> implementation to be stored for future user.</para>
     </section>
@@ -185,6 +194,44 @@
     </section>
   </section>
 
+  <section id="registration-flow">
+      <title>Registering users with social profile data</title>
+      
+      <para>A convenient feature of many social-ready applications is the ability for a new user to register with the application, creating their new account with data extracted from one of their social network profiles. It's convenient to the user, as they won't have to enter all of their information and can be assured that the data is consistent. It's also convenient for the social application, as it can trust that some of the data has already been vetted by the social provider (such as confirming email addresses).</para>
+      
+      <para>In the connection flow described in <xref linkend="connect-controller"/>, <classname>ConnectController</classname> assumes that the user already has created an account with the application and simply wants to connect that account to one of their social network profiles. But <classname>ConnectController</classname> also supports a register-then-connect flow that enables a new user to create a new account using social profile data and then connect that account as part of the registration process.</para>
+      
+      <para>The register-then-connect flow is quite similar to the connect flow, but with a few small differences.</para>
+      
+      <orderedlist>
+          <listitem><para><code>GET /connect/{provider}/register</code> - Displays a web page showing connection status to the provider.</para></listitem>
+          <listitem><para><code>POST /connect/{provider}</code> - Initiates the register-then-connect flow.</para></listitem>
+          <listitem><para><code>GET /connect/{provider}?oauth_token={token}</code> or <code>GET /connect/{provider}?code={code}</code>- Receives the authorization callback from the provider, accepting a request token or code. After requesting an access token, the user will be redirected to a registration form with an object containing the user profile data in the request.</para></listitem>
+          <listitem><para><code>GET /connect/{provider}/register</code> - The application should redirect to this URL after a successful registration to resume the flow and complete the connection.</para></listitem>
+          <listitem><para><code>DELETE /connect/{provider}</code> - Severs a connection with the provider.</para></listitem>
+      </orderedlist>
+      
+      <para>Unlike the connect flow where step 3 both retrieves an access token from the provider and establishes the connection, step 3 in the register-then-connect flow only retrieves the access token. It cannot create the connection since the user has not yet registered and there is no account to connect with.</para>
+      
+      <para>Once <classname>ConnectController</classname> has an access token, it stores it away (in the session) and sends the user to a registration form. The view name of the registration form is derived from the provider name. If the provider name is "github", then the registration view name will be "connect/githubRegister".</para>
+      
+      <para>Before going to the registration view, however, <classname>ConnectController</classname> retrieves a user profile object from the provider and places it into the request as an attribute named "{provider}UserProfile". If the provider's name is "github", then the attribute name is "githubUserProfile". This object can be used to prepopulate the application's registration form with data from the user's social profile. The type of the profile object will vary from provider to provider and is determined by the object returned from the provider implementation's <methodname>getProviderUserProfile()</methodname> method.</para>
+      
+      <para>The application is expected to provider a controller to handler submission of the registration form and, after successful registration, redirect the browser to <classname>ConnectController</classname>'s via the "/connect/{provider}/register" URL.</para>
+      
+      <para>For example, the GitHub showcase sample has a Spring MVC controller with the following handler method to process registration form submission:</para>
+      
+      
+        <programlisting><![CDATA[@RequestMapping(value = "/signup", method = RequestMethod.POST)
+   public String register(ShowcaseUser user) {
+   
+      // ... create a new account
+   
+      return "redirect:/connect/github/register";
+   }]]></programlisting>
+      
+      <para>After the account has been created, the controller redirects to "/connect/github/register", which is handled by <classname>ConnectController</classname>. <classname>ConnectController</classname> will then pull the access token from the session and use it to complete the connection between the newly created account and the user's social profile.</para>
+  </section>
 
   <section id="connect-interceptors">
     <title>Connection interceptors</title>
@@ -281,7 +328,7 @@ public class TwitterConnectInterceptor implements ConnectInterceptor<TwitterOper
 </html>]]></programlisting>
     
     
-    <para>When the user clicks on the "Connect to Facebook" button, they will be presented with the following authorization dialog:</para>
+    <para>When the user clicks on the "Connect to Facebook" button, they will be presented with the following authorization dialog<footnote><para>If the user hasn't yet signed in to Facebook, they will first be prompted with a signin page by Facebook.</para></footnote>:</para>
     
     <mediaobject>
       <imageobject role="fo">
@@ -293,7 +340,7 @@ public class TwitterConnectInterceptor implements ConnectInterceptor<TwitterOper
       </imageobject>
     </mediaobject>
     
-    <para>(If the user hasn't yet signed in to Facebook, they will first be prompted with a signin page by Facebook.)</para>
+    
     
     <para>When the user clicks on the "Allow" button, the dialog will close and the access token will be written to a cookie. If the user clicks on the "Don't Allow" button, the dialog will still close, but no cookie will be written.</para>
     
