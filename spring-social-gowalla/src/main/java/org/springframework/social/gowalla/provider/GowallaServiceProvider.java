@@ -29,7 +29,7 @@ public class GowallaServiceProvider extends AbstractOAuth2ServiceProvider<Gowall
 	}
 
 	public Serializable getProviderUserProfile(OAuthToken accessToken) {
-		return null;
+		return new GowallaTemplate(accessToken.getValue()).getUserProfile();
 	}
 
 	@Override

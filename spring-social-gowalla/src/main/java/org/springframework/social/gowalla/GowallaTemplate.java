@@ -59,12 +59,27 @@ public class GowallaTemplate implements GowallaOperations {
 	}
 
 	public String getProfileId() {
+		return getUserProfile().getId();
+	}
+
+	public GowallaProfile getUserProfile() {
+		return getUserProfile("me");
+	}
+
+	public GowallaProfile getUserProfile(String userId) {
 		HttpEntity<?> requestEntity = new HttpEntity<String>(buildBaseHeaders());
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restOperations.exchange(PROFILE_URL, HttpMethod.GET, requestEntity, Map.class);
+		ResponseEntity<Map> response = restOperations.exchange(PROFILE_URL, HttpMethod.GET, requestEntity, Map.class,
+				userId);
 		@SuppressWarnings("unchecked")
 		Map<String, ?> profileInfo = response.getBody();
-		return String.valueOf(profileInfo.get("username"));
+		int pinsCount = Integer.valueOf(String.valueOf(profileInfo.get("pins_count")));
+		int stampsCount = Integer.valueOf(String.valueOf(profileInfo.get("stamps_count")));
+		GowallaProfile profile = new GowallaProfile(String.valueOf(profileInfo.get("username")),
+				String.valueOf(profileInfo.get("first_name")),
+				String.valueOf(profileInfo.get("last_name")), String.valueOf(profileInfo.get("hometown")), pinsCount,
+				stampsCount);
+		return profile;
 	}
 
 	public String getProfileUrl() {
@@ -93,6 +108,6 @@ public class GowallaTemplate implements GowallaOperations {
 		return headers;
 	}
 
-	static final String PROFILE_URL = "https://api.gowalla.com/users/me";
+	static final String PROFILE_URL = "https://api.gowalla.com/users/{userId}";
 	static final String TOP_CHECKINS_URL = "https://api.gowalla.com/users/{userId}/top_spots";
 }

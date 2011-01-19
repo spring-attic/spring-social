@@ -44,6 +44,27 @@ public interface GowallaOperations {
 	 */
 	String getProfileUrl();
 
-	List<Checkin> getTopCheckins(String userId);
+	/**
+	 * Gets the authenticating user's profile data.
+	 * 
+	 * @return profile information for the authenticating user.
+	 */
+	GowallaProfile getUserProfile();
 
+	/**
+	 * Gets a specific user's profile data.
+	 * 
+	 * @param userId
+	 *            the user ID to retrieve profile data for
+	 * @return profile information for the specified user.
+	 */
+	GowallaProfile getUserProfile(String userId);
+
+	/**
+	 * Retrieves a list of the spots that the user has checked into most.
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	List<Checkin> getTopCheckins(String userId);
 }
