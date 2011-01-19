@@ -3,9 +3,53 @@
     xmlns:xlink="http://www.w3.org/1999/xlink">
   <title>LinkedIn</title>
 
-  <section id="linkedin-template">
-    <title><classname>LinkedInTemplate</classname></title>
+  <para>LinkedIn is a social networking site geared toward professionals. It enables its users to maintain and correspond with a network of contacts they have are professionally linked to.</para>
+  
+  <para>Spring Social offers integration with LinkedIn via <interfacename>LinkedInOperations</interfacename> and its implementation, <classname>LinkedInTemplate</classname>.</para>
+  
+  <para>To create an instance of <classname>LinkedInTemplate</classname>, you may pass in your application's OAuth 1 credentials, along with an access token/secret pair to the constructor:</para>
+  
+  <programlisting><![CDATA[String apiKey = "..."; // The application's API/Consumer key
+String apiSecret = "..."; // The application's API/Consumer secret
+String accessToken = "..."; // The access token granted after OAuth authorization
+String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
+LinkedInOperations linkedin = new LinkedInTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]></programlisting>
+  
+  <para>If you're using the service provider framework described in <xref linkend="serviceprovider"/>, you can get an instance of <classname>LinkedInTemplate</classname> by calling one of the <methodname>getServiceOperations()</methodname> methods on <classname>LinkedInServiceProvider</classname> For example:</para>
 
-    <para></para>
+  <programlisting><![CDATA[LinkedInOperations linkedin = linkedInProvider.getServiceOperations(accountId);]]></programlisting>
+  
+  <para>In this case, the <methodname>getServiceOperations()</methodname> is asked to return a <interfacename>LinkedInOperations</interfacename> instance created using connection details established using the service provider's <methodname>connect()</methodname> method or via <classname>ConnectController</classname>.</para>
+  
+  <para>Once you have a <interfacename>LinkedInOperations</interfacename> you can use it to interact with LinkedIn on behalf of the user who the access token was granted for.</para>
+
+  <section id="linkedin-getProfile">
+    <title>Retrieving a user's LinkedIn profile data</title>
+
+    <para>To retrieve the authenticated user's profile data, call the <methodname>getUserProfile()</methodname> method:</para>
+    
+    <programlisting><![CDATA[LinkedInProfile profile = linkedin.getUserProfile();]]></programlisting>
+    
+    <para>The data returned in the <classname>LinkedInProfile</classname> includes the user's LinkedIn ID, first and last names, their "headline", the industry they're in, and URLs for the public and standard profile pages.</para>
+    
+    <para>If it's only the user's LinkedIn ID you need, then you can get that by calling the <methodname>getProfileId()</methodname> method:</para>
+    
+    <programlisting><![CDATA[String profileId = linkedin.getProfileId();]]></programlisting>
+    
+    <para>Or if you only need a URL for the user's public profile page, call <methodname>getProfileUrl()</methodname>:</para>
+    
+    <programlisting><![CDATA[String profileUrl = linkedin.getProfileUrl();]]></programlisting>
+        
+  </section>
+  
+  <section id="linkedin-connections">
+      <title>Getting a user's LinkedIn connections</title>
+
+      <para>To retrieve a list of LinkedIn users to whom the user is connected, call the <methodname>getConnections()</methodname> method:</para>
+      
+      <programlisting><![CDATA[List<LinkedInProfile> connections = linkedin.getConnections();]]></programlisting>
+      
+      <para>This will return a list of <classname>LinkedInProfile</classname> objects for the user's 1st-degree network (those LinkedIn users to whom the user is directly linked--not their extended network).</para>
+      
   </section>
 </chapter>
