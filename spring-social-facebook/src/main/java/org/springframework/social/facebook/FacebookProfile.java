@@ -17,32 +17,25 @@ package org.springframework.social.facebook;
 
 import java.io.Serializable;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonProperty;
-
 /**
  * Model class containing a Facebook user's profile information.
  * 
  * @author Craig Walls
  */
-@JsonIgnoreProperties(ignoreUnknown=true)
+@SuppressWarnings("serial")
 public class FacebookProfile implements Serializable {
-	private static final long serialVersionUID = 1L;
 
-	@JsonProperty
-	long id;
+	private final long id;
+	private final String firstName;
+	private final String lastName;
+	private final String email;
 
-	@JsonProperty
-	String name;
-
-	@JsonProperty("first_name")
-	String firstName;
-
-	@JsonProperty("last_name")
-	String lastName;
-
-	@JsonProperty
-	String email;
+	public FacebookProfile(long id, String firstName, String lastName, String email) {
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+	}
 
 	/**
 	 * The user's Facebook ID
@@ -51,15 +44,6 @@ public class FacebookProfile implements Serializable {
 	 */
 	public long getId() {
 		return id;
-	}
-
-	/**
-	 * The user's full name
-	 * 
-	 * @return The user's full name
-	 */
-	public String getName() {
-		return name;
 	}
 
 	/**

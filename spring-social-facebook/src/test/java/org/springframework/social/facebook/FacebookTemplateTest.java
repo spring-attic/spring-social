@@ -72,11 +72,10 @@ public class FacebookTemplateTest {
 
 	@Test
 	public void getUserProfile() {
-		FacebookProfile fbProfile = setupRestOperationsForGettingProfile();
+		setupRestOperationsForGettingProfile();
 		FacebookProfile actual = facebook.getUserProfile();
 		assertEquals("Craig", actual.getFirstName());
 		assertEquals("Walls", actual.getLastName());
-		assertEquals("Craig Walls", actual.getName());
 		assertEquals("cwalls@vmware.com", actual.getEmail());
 		assertEquals(12345L, actual.getId());
 	}
@@ -121,16 +120,14 @@ public class FacebookTemplateTest {
 				eq(ACCESS_TOKEN));
 	}
 
-	private FacebookProfile setupRestOperationsForGettingProfile() {
-		FacebookProfile fbProfile = new FacebookProfile();
-		fbProfile.firstName = "Craig";
-		fbProfile.lastName = "Walls";
-		fbProfile.name = "Craig Walls";
-		fbProfile.email = "cwalls@vmware.com";
-		fbProfile.id = 12345L;
-		when(restOperations.getForObject(eq(OBJECT_URL + "?access_token={accessToken}"), eq(FacebookProfile.class),
-						eq("me"), eq(ACCESS_TOKEN))).thenReturn(fbProfile);
-		return fbProfile;
+	private void setupRestOperationsForGettingProfile() {
+		Map<String, Object> profileMap = new HashMap<String, Object>();
+		profileMap.put("first_name", "Craig");
+		profileMap.put("last_name", "Walls");
+		profileMap.put("email", "cwalls@vmware.com");
+		profileMap.put("id", 12345L);
+		when(restOperations.getForObject(eq(OBJECT_URL + "?access_token={accessToken}"), eq(Map.class), eq("me"),
+						eq(ACCESS_TOKEN))).thenReturn(profileMap);
 	}
 
 

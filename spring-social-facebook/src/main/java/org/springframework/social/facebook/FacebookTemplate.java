@@ -84,8 +84,15 @@ public class FacebookTemplate implements FacebookOperations {
 	}
 
 	public FacebookProfile getUserProfile(String facebookId) {
-		return restOperations.getForObject(OBJECT_URL + "?access_token={accessToken}", FacebookProfile.class,
+		@SuppressWarnings("unchecked")
+		Map<String, ?> profileMap = restOperations.getForObject(OBJECT_URL + "?access_token={accessToken}", Map.class,
 				facebookId, accessToken);
+
+		long id = Long.valueOf(String.valueOf(profileMap.get("id")));
+		String firstName = String.valueOf(profileMap.get("first_name"));
+		String lastName = String.valueOf(profileMap.get("last_name"));
+		String email = String.valueOf(profileMap.get("email"));
+		return new FacebookProfile(id, firstName, lastName, email);
     }
 
 	public List<String> getFriendIds() {
