@@ -13,3 +13,4 @@ samples/**/.project
 samples/**/.settings
 samples/**/.springBeans
 samples/**/bin
+samples/**/src/main/webapp/META-INF
