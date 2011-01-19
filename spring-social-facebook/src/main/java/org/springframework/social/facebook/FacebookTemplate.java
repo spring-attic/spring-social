@@ -22,7 +22,6 @@ import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.CommonsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -66,9 +65,6 @@ public class FacebookTemplate implements FacebookOperations {
 	public FacebookTemplate(String accessToken) {
 		this.accessToken = accessToken;
 		RestTemplate restTemplate = new RestTemplate();
-		// must be CommonsClientHttpRequestFactory or else the location header
-		// in an HTTP 302 won't be followed
-		restTemplate.setRequestFactory(new CommonsClientHttpRequestFactory());
 		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
 		restTemplate.getMessageConverters().add(json);
@@ -129,17 +125,14 @@ public class FacebookTemplate implements FacebookOperations {
 		restOperations.postForLocation(CONNECTION_URL, requestData, object, connection, accessToken);
 	}
 	
-	public byte[] getProfilePicture() {
-		return getProfilePicture(CURRENT_USER);
+	public String getProfilePictureUrl() {
+		return getProfilePictureUrl(getProfileId());
 	}
 
-	public byte[] getProfilePicture(String profileId) {
-		ResponseEntity<byte[]> imageBytes = restOperations.getForEntity(PROFILE_LARGE_PICTURE_URL, byte[].class,
-				profileId, accessToken);
-		return imageBytes.getBody();
+	public String getProfilePictureUrl(String profileId) {
+		return "https://graph.facebook.com/" + profileId + "/picture";
 	}
-	
-	static final String PROFILE_LARGE_PICTURE_URL = "https://graph.facebook.com/{profile}/picture?type=large&access_token={accessToken}";
+
 	static final String OBJECT_URL = "https://graph.facebook.com/{objectId}";
 	static final String CONNECTION_URL = OBJECT_URL + "/{connection}?access_token={accessToken}";
 	

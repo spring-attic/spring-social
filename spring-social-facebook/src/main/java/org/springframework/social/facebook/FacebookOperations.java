@@ -106,19 +106,4 @@ public interface FacebookOperations {
 	 */
 	void publish(String object, String connection, MultiValueMap<String, String> data);
 
-	/**
-	 * Retrieves the current user's profile picture as an array of bytes.
-	 * 
-	 * @return the user's profile picture in bytes.
-	 */
-	byte[] getProfilePicture();
-
-	/**
-	 * Retrieves a user's profile picture as an array of bytes.
-	 * 
-	 * @param profileId
-	 *            the Facebook ID of the user.
-	 * @return the user's profile picture in bytes.
-	 */
-	byte[] getProfilePicture(String profileId);
 }

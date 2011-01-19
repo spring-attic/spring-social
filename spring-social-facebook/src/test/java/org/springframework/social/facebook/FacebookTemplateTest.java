@@ -94,30 +94,6 @@ public class FacebookTemplateTest {
 	}
 
 	@Test
-	public void getProfilePicture() {
-		byte[] imageBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-		ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(imageBytes, OK);
-		when(
-				restOperations.getForEntity(eq(PROFILE_LARGE_PICTURE_URL), eq(byte[].class), eq(CURRENT_USER),
-						eq(ACCESS_TOKEN)))
-				.thenReturn(response);
-
-		byte[] profilePicture = facebook.getProfilePicture();
-		assertEquals(imageBytes, profilePicture);
-	}
-
-	@Test
-	public void getProfilePicture_anotherUser() {
-		byte[] imageBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-		ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(imageBytes, OK);
-		when(restOperations.getForEntity(eq(PROFILE_LARGE_PICTURE_URL), eq(byte[].class), eq("54321"),
-						eq(ACCESS_TOKEN))).thenReturn(response);
-
-		byte[] profilePicture = facebook.getProfilePicture("54321");
-		assertEquals(imageBytes, profilePicture);
-	}
-
-	@Test
 	public void updateStatus() {
 		facebook.updateStatus("Hello Facebook!");
 
