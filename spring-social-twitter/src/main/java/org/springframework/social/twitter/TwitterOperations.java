@@ -15,7 +15,6 @@
  */
 package org.springframework.social.twitter;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.social.SocialException;
@@ -43,7 +42,7 @@ public interface TwitterOperations {
 	 * 
 	 * @return a {@link TwitterProfile} object representing the user's profile.
 	 */
-	TwitterProfile getProfile();
+	TwitterProfile getUserProfile();
 
 	/**
 	 * <p>
@@ -59,7 +58,7 @@ public interface TwitterOperations {
 	 *            retrieved.
 	 * @return a {@link TwitterProfile} object representing the user's profile.
 	 */
-	TwitterProfile getProfile(String screenName);
+	TwitterProfile getUserProfile(String screenName);
 
 	/**
 	 * <p>
@@ -74,7 +73,7 @@ public interface TwitterOperations {
 	 *            the user ID for the user whose details are to be retrieved.
 	 * @return a {@link TwitterProfile} object representing the user's profile.
 	 */
-	TwitterProfile getProfile(long userId);
+	TwitterProfile getUserProfile(long userId);
 
 	/**
 	 * Retrieves a list of users that the given user follows.
@@ -127,7 +126,7 @@ public interface TwitterOperations {
 	 * @return a collection of {@link Tweet} objects that mention the
 	 *         authenticated user.
 	 */
-	Collection<Tweet> getMentions();
+	List<Tweet> getMentions();
 
 	/**
 	 * Retrieve the 20 most recently received direct messages for the
@@ -136,7 +135,7 @@ public interface TwitterOperations {
 	 * @return a collection of {@link DirectMessage} with the authenticating
 	 *         user as the recipient.
 	 */
-	Collection<DirectMessage> getDirectMessagesReceived();
+	List<DirectMessage> getDirectMessagesReceived();
 
 	/**
 	 * <p>
@@ -202,7 +201,7 @@ public interface TwitterOperations {
 	 * 
 	 * @return a collection of {@link Tweet}s in the public timeline.
 	 */
-	Collection<Tweet> getPublicTimeline();
+	List<Tweet> getPublicTimeline();
 
 	/**
 	 * <p>
@@ -215,7 +214,7 @@ public interface TwitterOperations {
 	 * @return a collection of {@link Tweet}s in the authenticating user's home
 	 *         timeline.
 	 */
-	Collection<Tweet> getHomeTimeline();
+	List<Tweet> getHomeTimeline();
 
 	/**
 	 * <p>
@@ -228,7 +227,7 @@ public interface TwitterOperations {
 	 * @return a collection of {@link Tweet}s in the authenticating user's
 	 *         friends timeline.
 	 */
-	Collection<Tweet> getFriendsTimeline();
+	List<Tweet> getFriendsTimeline();
 
 	/**
 	 * Retrieves the 20 most recent tweets posted by the authenticating user.
@@ -236,7 +235,7 @@ public interface TwitterOperations {
 	 * @return a collection of {@link Tweet}s that have been posted by the
 	 *         authenticating user.
 	 */
-	Collection<Tweet> getUserTimeline();
+	List<Tweet> getUserTimeline();
 
 	/**
 	 * Retrieves the 20 most recent tweets posted by the given user.
@@ -246,7 +245,7 @@ public interface TwitterOperations {
 	 * @return a collection of {@link Tweet}s from the specified user's
 	 *         timeline.
 	 */
-	Collection<Tweet> getUserTimeline(String screenName);
+	List<Tweet> getUserTimeline(String screenName);
 
 	/**
 	 * Retrieves the 20 most recent tweets posted by the given user.
@@ -256,7 +255,7 @@ public interface TwitterOperations {
 	 * @return a collection of {@link Tweet}s from the specified user's
 	 *         timeline.
 	 */
-	Collection<Tweet> getUserTimeline(long userId);
+	List<Tweet> getUserTimeline(long userId);
 
 	/**
 	 * Searches Twitter, returning the first 50 matching {@link Tweet}s

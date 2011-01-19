@@ -45,7 +45,7 @@ public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<
 
 	public Serializable getProviderUserProfile(OAuthToken accessToken) {
 		return new TwitterTemplate(getApiKey(), getSecret(), accessToken.getValue(), accessToken.getSecret())
-				.getProfile();
+				.getUserProfile();
 	}
 
 	protected String buildProviderProfileUrl(String screenName, TwitterOperations twitter) {

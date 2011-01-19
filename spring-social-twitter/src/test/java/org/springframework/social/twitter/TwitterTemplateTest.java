@@ -76,7 +76,7 @@ public class TwitterTemplateTest {
 				restOperations.getForObject(eq(USER_PROFILE_URL + "?screen_name={screenName}"), eq(Map.class),
 						eq("habuma"))).thenReturn(profileMap);
 
-		TwitterProfile profile = twitter.getProfile("habuma");
+		TwitterProfile profile = twitter.getUserProfile("habuma");
 		assertEquals(7078572, profile.getId());
 		assertEquals("habuma", profile.getScreenName());
 		assertEquals("Craig Walls", profile.getName());

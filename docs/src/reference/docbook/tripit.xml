@@ -3,9 +3,52 @@
     xmlns:xlink="http://www.w3.org/1999/xlink">
   <title>TripIt</title>
 
-  <section id="tripit-template">
-    <title><classname>TripItTemplate</classname></title>
+  <para>TripIt is a social network that links together travelers. By connecting with other travelers, you can keep in touch with contacts when your travel plans coincide. Also, aside from its social aspects, TripIt is rather useful for managing a user's travel information.</para>
 
-    <para></para>
+  <para>Using Spring Social's <interfacename>TripItOperations</interfacename> and its implementation, <classname>TripItTemplate</classname>, you can develop applications that integrate a user's travel information and network.</para>
+  
+  <para>To create an instance of <classname>TripItTemplate</classname>, pass in your application's OAuth 1 credentials along with a user's access token/secret pair to the constructor:</para>
+  
+  <programlisting><![CDATA[String apiKey = "..."; // The application's API/Consumer key
+String apiSecret = "..."; // The application's API/Consumer secret
+String accessToken = "..."; // The access token granted after OAuth authorization
+String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
+TripItOperations tripit = new TripItTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]></programlisting>
+
+  <para>Optionally, if you're using Spring Social's service provider framework (as described in <xref linkend="serviceprovider"/>), <classname>TripItServiceProvider</classname>'s <methodname>getServiceOperations()</methodname> can handle the creation of a <classname>TripItTemplate</classname> for you:</para>
+  
+  <programlisting><![CDATA[TripItOperations tripit = tripItProvider.getServiceOperations(accountId);]]></programlisting>
+  
+  <para>In this case, <classname>TripItServiceProvider</classname> is being asked to give a <interfacename>TripItOperations</interfacename> constructed using connection data established beforehand using the service provider's <methodname>connect()</methodname> method or via <classname>ConnectController</classname>.</para>
+  
+  <para>In either event, once you have a <interfacename>TripItOperations</interfacename>, you can use it to retrieve a user's profile and travel data from TripIt.</para>
+
+  <section id="tripit-getProfile">
+    <title>Retrieving a user's TripIt profile data</title>
+
+    <para><interfacename>TripItOperations</interfacename>' <methodname>getUserProfile()</methodname> method is useful for retrieving the authenticated user's TripIt profile data. For example:</para>
+    
+    <programlisting><![CDATA[TripItProfile userProfile = tripit.getUserProfile();]]></programlisting>
+    
+    <para><methodname>getUserProfile()</methodname> returns a <classname>TripItProfile</classname> object that carries details about the user from TripIt. This includes the user's screen name, their display name, their home city, and their company.</para>
+    
+    <para>If all you need is the user's TripIt screen name, you can get that by calling <methodname>getProfileId()</methodname>:</para>
+    
+    <programlisting><![CDATA[String profileId = tripit.getProfileId();]]></programlisting>
+    
+    <para>Or if you only need a URL to the user's TripIt profile page, then call <methodname>getProfileUrl()</methodname>:</para>
+    
+    <programlisting><![CDATA[String profileUrl = tripit.getProfileUrl();]]></programlisting>
+    
+  </section>
+
+  <section id="tripit-trips">
+    <title>Getting a user's upcoming trips</title>
+
+    <para>If the user has any upcoming trips planned, your application can access the trip information by calling <methodname>getUpcomingTrips()</methodname>:</para>
+    
+    <programlisting><![CDATA[List<Trip> trips = tripit.getUpcomingTrips();]]></programlisting>
+    
+    <para>This returns a list of <classname>Trip</classname> objects containing details about each trip, such as the start and end dates for the trip, the primary location, and the trip's display name.</para>
   </section>
 </chapter>

@@ -117,17 +117,17 @@ public class TwitterTemplate implements TwitterOperations {
 		return (String) response.get("screen_name");
 	}
 
-	public TwitterProfile getProfile() {
-		return getProfile(getProfileId());
+	public TwitterProfile getUserProfile() {
+		return getUserProfile(getProfileId());
 	}
 
-	public TwitterProfile getProfile(String screenName) {
+	public TwitterProfile getUserProfile(String screenName) {
 		Map<?, ?> response = restOperations.getForObject(USER_PROFILE_URL + "?screen_name={screenName}", Map.class,
 				screenName);
 		return getProfileFromResponseMap(response);
 	}
 
-	public TwitterProfile getProfile(long userId) {
+	public TwitterProfile getUserProfile(long userId) {
 		Map<?, ?> response = restOperations.getForObject(USER_PROFILE_URL + "?user_id={userId}", Map.class, userId);
 		return getProfileFromResponseMap(response);
 	}
