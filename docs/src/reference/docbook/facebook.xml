@@ -10,7 +10,7 @@
   <programlisting><![CDATA[String accessToken = "f8FX29g..."; // access token received from Facebook after OAuth authorization
 FacebookOperations facebook = new FacebookTemplate(accessToken);]]></programlisting>
 
-  <para>Or, if you are using the service provider framework described in <xref linkend="serviceprovider"/>, you can get an instance of <classname>FacebookTemplate</classname> by calling one of the <methodname>getServiceOperations()</methodname> methods on <classname>FacebookServiceOperations</classname>:</para>
+  <para>Or, if you are using the service provider framework described in <xref linkend="serviceprovider"/>, you can get an instance of <classname>FacebookTemplate</classname> by calling one of the <methodname>getServiceOperations()</methodname> methods on <classname>FacebookServiceProvider</classname>:</para>
   
   <programlisting><![CDATA[FacebookOperations facebook = facebookProvider.getServiceOperations(accountId);]]></programlisting>
 

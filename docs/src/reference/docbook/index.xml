@@ -61,6 +61,7 @@
     	 <para>Spring Social comes with a selection of social templates to perform operations against a variety of social networks.</para>
     </partintro>
     <xi:include href="./facebook.xml"/>
+    <xi:include href="./github.xml"/>
     <xi:include href="./gowalla.xml"/>
     <xi:include href="./linkedin.xml"/>
     <xi:include href="./tripit.xml"/>

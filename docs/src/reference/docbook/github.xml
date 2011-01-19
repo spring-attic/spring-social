@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="github"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>GitHub</title>
+
+  <para>Although many developers thing of GitHub as Git-based source code hosting, the tagline in GitHub's logo clearly states that GitHub is about "social coding". GitHub is a social network that links developers together and with the projects they follow and/or contribute to.</para>
+  
+  <para>Spring Social's <interfacename>GitHubOperations</interfacename> and its implementation, <classname>GitHubTemplate</classname>, offer integration with GitHub's social platform.</para>
+  
+    <para>To obtain an instance of <classname>GitHubTemplate</classname>, you can instantiate it by passing an authorized access token to its constructor:</para>
+
+    <programlisting><![CDATA[String accessToken = "f8FX29g..."; // access token received from GitHub after OAuth authorization
+  GitHubOperations github = new GitHubTemplate(accessToken);]]></programlisting>
+
+    <para>If you are using the service provider framework described in <xref linkend="serviceprovider"/>, you can get an instance of <classname>GitHubTemplate</classname> by calling one of the <methodname>getServiceOperations()</methodname> methods on <classname>GitHubServiceProvider</classname>:</para>
+
+    <programlisting><![CDATA[GitHubOperations github = githubProvider.getServiceOperations(accountId);]]></programlisting>
+
+    <para>Here, <classname>GitHubServiceProvider</classname> is being asked for a <interfacename>GitHubOperations</interfacename> that was created using the connection details for the given account ID. The connection should have been created beforehand via the service provider's <methodname>connect()</methodname> method or using <classname>ConnectController</classname>.</para>  
+
+    <para>With a <interfacename>GitHubOperations</interfacename> in hand, there are a handful of operations it provides to interact with GitHub on behalf of the user. These will be covered in the following sections.</para>
+
+  <section id="github-profile">
+    <title>Retrieving a GitHub user's profile</title>
+
+    <para>To get the currently authenticated user's GitHub profile data, call <interfacename>GitHubOperations</interfacename>'s <methodname>getUserProfile()</methodname> method:</para>
+    
+    <programlisting><![CDATA[GitHubUserProfile profile = github.getUserProfile();]]></programlisting>
+    
+    <para>The <classname>GitHubUserProfile</classname> returned from <methodname>getUserProfile()</methodname> includes several useful pieces of information about the user, including their...</para>
+    
+    <itemizedlist>
+        <listitem><para>Name</para></listitem>
+        <listitem><para>Username (ie, login name)</para></listitem>
+        <listitem><para>Company</para></listitem>
+        <listitem><para>Email address</para></listitem>
+        <listitem><para>Location</para></listitem>
+        <listitem><para>Blog URL</para></listitem>
+        <listitem><para>Date they joined GitHub</para></listitem>
+    </itemizedlist>
+
+    <para>If all you need is the user's GitHub username, you can get that by calling the <methodname>getProfileId()</methodname> method:</para>
+    
+    <programlisting><![CDATA[String username = github.getProfileId();]]></programlisting>
+    
+    <para>And if you need a URL to the user's GitHub profile page, you can use the <methodname>getProfileUrl()</methodname> method:</para>
+    
+    <programlisting><![CDATA[String profileUrl = github.getProfileUrl();]]></programlisting>
+    
+  </section>
+</chapter>

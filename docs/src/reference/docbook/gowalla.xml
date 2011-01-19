@@ -3,10 +3,53 @@
     xmlns:xlink="http://www.w3.org/1999/xlink">
   <title>Gowalla</title>
 
-  <section id="gowalla-template">
-    <title><classname>GowallaTemplate</classname></title>
+  <para>Gowalla is a location-based social network where users may check in to various locations they visit and earn pins and stamps for having checked in a locations that achieve some goal (for example, a "Lucha Libre" pin may be earned by having checked into 10 different Mexican food restaurants).</para>
+  
+  <para>Spring Social supports interaction with Gowalla through the <interfacename>GowallaOperations</interfacename> interface and its implementation, <classname>GowallaTemplate</classname>.</para>
+  
+  <para>To obtain an instance of <classname>GowallaTemplate</classname>, you can instantiate it by passing an authorized access token to its constructor:</para>
+  
+  <programlisting><![CDATA[String accessToken = "f8FX29g..."; // access token received from Gowalla after OAuth authorization
+GowallaOperations gowalla = new GowallaTemplate(accessToken);]]></programlisting>
+  
+  <para>If you are using the service provider framework described in <xref linkend="serviceprovider"/>, you can get an instance of <classname>GowallaTemplate</classname> by calling one of the <methodname>getServiceOperations()</methodname> methods on <classname>GowallaServiceProvider</classname>:</para>
 
-    <para></para>
+  <programlisting><![CDATA[GowallaOperations gowalla = gowallaProvider.getServiceOperations(accountId);]]></programlisting>
+
+  <para>Here, <classname>GowallaServiceProvider</classname> is being asked for a <interfacename>GowallaOperations</interfacename> that was created using the connection details for the given account ID. The connection should have been created beforehand via the service provider's <methodname>connect()</methodname> method or using <classname>ConnectController</classname>.</para>  
+
+  <para>With a <interfacename>GowallaOperations</interfacename> in hand, there are a handful of operations it provides to interact with Gowalla on behalf of the user. These will be covered in the following sections.</para>
+
+  <section id="gowalla-getProfile">
+    <title>Retrieving a user's profile data</title>
+    
+    <para>You can retrieve a user's Gowalla profile using the <methodname>getUserProfile()</methodname> method:</para>
+    
+    <programlisting><![CDATA[GowallaProfile profile = gowalla.getUserProfile();]]></programlisting>
+    
+    <para>This will return the Gowalla profile data for the authenticated user. If you want to retrieve profile data for another user, you can pass the user's profile ID into <methodname>getUserProfile()</methodname>:</para>
+    
+    <programlisting><![CDATA[GowallaProfile profile = gowalla.getUserProfile("habuma");]]></programlisting>
+    
+    <para>The <classname>GowallaProfile</classname> object contains basic information about the Gowalla user such as their first and last names, their hometown, and the number of pins and stamps that they have earned.</para>
+    
+    <para>If all you want is the authenticated user's profile ID, you can get that by calling the <methodname>getProfileId()</methodname>:</para>
+    
+    <programlisting><![CDATA[String profileId = gowalla.getProfileId();]]></programlisting>
+    
+    <para>Or if you want the URL to the user's profile page at Gowalla, use the <methodname>getProfileUrl()</methodname> method:</para>
+    
+    <programlisting><![CDATA[String profileUrl = gowalla.getProfileUrl();]]></programlisting>
+    
   </section>
 
+  <section id="gowalla-checkins">
+    <title>Getting a user's checkins</title>
+    
+    <para><interfacename>GowallaOperations</interfacename> also allows you to learn about the user's favorite checkin spots. The <methodname>getTopCheckins()</methodname> method will provide a list of the top 10 places that the user has visited:</para>
+    
+    <programlisting><![CDATA[List<Checkin> topCheckins = gowalla.getTopCheckins();]]></programlisting>
+    
+    <para>Each member of the returns list is a <classname>Checkin</classname> object that includes the name of the location as well as the number of times that the user has checked in at that location.</para>
+  </section>
 </chapter>
