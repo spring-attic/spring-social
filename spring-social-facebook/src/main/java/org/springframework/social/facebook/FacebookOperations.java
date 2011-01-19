@@ -50,6 +50,15 @@ public interface FacebookOperations {
 	FacebookProfile getUserProfile();
 
 	/**
+	 * Retrieves the Facebook profile information for a given user ID.
+	 * 
+	 * @param facebookId
+	 *            the Facebook ID to retrieve profile data for.
+	 * @return the user's profile information.
+	 */
+	FacebookProfile getUserProfile(String facebookId);
+
+	/**
 	 * Retrieve the URL to the user's Facebook profile.
 	 * 
 	 * @return the URL to the user's Facebook profile.
@@ -85,7 +94,7 @@ public interface FacebookOperations {
 	/**
 	 * <p>
 	 * Low-level publish-to-Facebook method for publishing any type of object
-	 * supported by Facebook's API.
+	 * supported by Facebook's Graph API.
 	 * </p>
 	 * 
 	 * @param object

@@ -84,8 +84,12 @@ public class FacebookTemplate implements FacebookOperations {
 	}
 
 	public FacebookProfile getUserProfile() {
-		return restOperations.getForObject(OBJECT_URL + "?access_token={accessToken}", FacebookProfile.class, "me",
-				accessToken);
+		return getUserProfile(CURRENT_USER);
+	}
+
+	public FacebookProfile getUserProfile(String facebookId) {
+		return restOperations.getForObject(OBJECT_URL + "?access_token={accessToken}", FacebookProfile.class,
+				facebookId, accessToken);
     }
 
 	public List<String> getFriendIds() {
