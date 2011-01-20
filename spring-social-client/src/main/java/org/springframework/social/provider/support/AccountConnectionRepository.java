@@ -16,10 +16,9 @@
 package org.springframework.social.provider.support;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.List;
 
-import org.springframework.social.provider.AccountConnection;
-import org.springframework.social.provider.OAuthToken;
+import org.springframework.social.provider.oauth2.AccessToken;
 
 
 /**
@@ -43,13 +42,13 @@ public interface AccountConnectionRepository {
 
 	void disconnect(Serializable accountId, String provider, String providerAccountId);
 
-	AccessToken getAccessToken(Serializable accountId, String provider);
+	ConnectionToken getAccessToken(Serializable accountId, String provider);
 
-	AccessToken getAccessToken(Serializable accountId, String provider, String providerAccountId);
+	ConnectionToken getAccessToken(Serializable accountId, String provider, String providerAccountId);
 
 	String getProviderAccountId(Serializable accountId, String provider);
 
 	String getRefreshToken(Serializable accountId, String provider, String providerAccountId);
 
-	Collection<AccountConnection> getAccountConnections(Serializable accountId, String provider);
+	List<AccountConnection> getAccountConnections(Serializable accountId, String provider);
 }

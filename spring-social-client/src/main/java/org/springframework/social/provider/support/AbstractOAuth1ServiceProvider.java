@@ -29,8 +29,10 @@ import org.scribe.oauth.OAuthService;
 import org.scribe.services.HMACSha1SignatureService;
 import org.scribe.services.TimestampServiceImpl;
 import org.springframework.social.provider.AuthorizationProtocol;
-import org.springframework.social.provider.AuthorizedRequestToken;
-import org.springframework.social.provider.OAuthToken;
+import org.springframework.social.provider.ServiceProviderConnection;
+import org.springframework.social.provider.oauth1.AuthorizedRequestToken;
+import org.springframework.social.provider.oauth1.OAuth1ServiceProvider;
+import org.springframework.social.provider.oauth1.OAuthToken;
 
 /**
  * Base class for ServiceProvider implementations that use OAuth 1
@@ -39,39 +41,36 @@ import org.springframework.social.provider.OAuthToken;
  * @author Craig Walls
  * @param <S> The service API hosted by this service provider.
  */
-public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServiceProvider<S> {
+public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServiceProvider<S> implements
+		OAuth1ServiceProvider<S> {
 
 	public AbstractOAuth1ServiceProvider(ServiceProviderParameters parameters,
 			AccountConnectionRepository connectionRepository) {
 		super(parameters, connectionRepository);
 	}
 
-	public AccessToken fetchNewRequestToken(String callbackUrl) {
-		Token requestToken = getOAuthService(callbackUrl).getRequestToken();
-		return new AccessToken(requestToken.getToken(), requestToken.getSecret());
+	// OAuth1ServiceProvider
+	public String buildAuthorizeUrl(String requestToken) {
+		return parameters.getAuthorizeUrl().expand(requestToken).toString();
 	}
 
-	public void connect(Serializable accountId, AuthorizedRequestToken requestToken) {
-		AccessToken accessToken = fetchAccessToken(requestToken);
-		connect(accountId, accessToken);
+	public ServiceProviderConnection<S> connect(Serializable accountId, OAuthToken accessToken) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
-	public AccessToken fetchAccessToken(AuthorizedRequestToken requestToken) {
+	public OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken) {
 		Token accessToken = getOAuthService().getAccessToken(
 				new Token(requestToken.getValue(), requestToken.getSecret()), new Verifier(requestToken.getVerifier()));
-		return new AccessToken(accessToken.getToken(), accessToken.getSecret());
+		return new OAuthToken(accessToken.getToken(), accessToken.getSecret());
 	}
 
-	public void connect(Serializable accountId, String redirectUri, String code) {
-		throw new UnsupportedOperationException(
-				"Connections with redirectUri and code are not supported for an OAuth 1-based service provider");
+	public OAuthToken fetchNewRequestToken(String callbackUrl) {
+		Token requestToken = getOAuthService(callbackUrl).getRequestToken();
+		return new OAuthToken(requestToken.getToken(), requestToken.getSecret());
 	}
 
-	public AccessToken fetchAccessToken(String redirectUri, String code) {
-		throw new UnsupportedOperationException(
-				"Fetching access tokens with redirectUri and code are not supported for an OAuth 1-based service provider");
-	}
-
+	// ServiceProvider
 	public AuthorizationProtocol getAuthorizationProtocol() {
 		return AuthorizationProtocol.OAUTH_1;
 	}
@@ -96,5 +95,4 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 				new BaseStringExtractorImpl(), new HeaderExtractorImpl(), new TokenExtractorImpl(),
 				new TokenExtractorImpl(), config);
 	}
-
 }
