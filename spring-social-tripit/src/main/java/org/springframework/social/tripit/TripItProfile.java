@@ -16,21 +16,25 @@
 package org.springframework.social.tripit;
 
 import java.io.Serializable;
-import java.util.Map;
-
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.annotate.JsonTypeName;
 
 /**
  * Model class containing a TripIt user's profile information.
  * 
  * @author Craig Walls
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeName("Profile")
+@SuppressWarnings("serial")
 public class TripItProfile implements Serializable {
-	private static final long serialVersionUID = 1L;
+
+	public TripItProfile(String id, String screenName, String publicDisplayName, String homeCity, String company,
+			String profilePath) {
+		this.id = id;
+		this.screenName = screenName;
+		this.publicDisplayName = publicDisplayName;
+		this.homeCity = homeCity;
+		this.company = company;
+		this.profilePath = profilePath;
+
+	}
 
 	/**
 	 * The TripIt user's profile ID
@@ -38,7 +42,7 @@ public class TripItProfile implements Serializable {
 	 * @return The TripIt user's profile ID
 	 */
 	public String getId() {
-		return attributes.get("ref");
+		return id;
 	}
 
 	/**
@@ -86,21 +90,10 @@ public class TripItProfile implements Serializable {
 		return "http://www.tripit.com/" + profilePath;
 	}
 
-	@JsonProperty("@attributes")
-	Map<String, String> attributes;
-
-	@JsonProperty("screen_name")
-	String screenName;
-
-	@JsonProperty("public_display_name")
-	String publicDisplayName;
-
-	@JsonProperty("home_city")
-	String homeCity;
-
-	@JsonProperty("company")
-	String company;
-
-	@JsonProperty("profile_url")
-	String profilePath;
+	private final String id;
+	private final String screenName;
+	private final String publicDisplayName;
+	private final String homeCity;
+	private final String company;
+	private final String profilePath;
 }

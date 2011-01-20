@@ -15,7 +15,12 @@
  */
 package org.springframework.social.tripit;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.client.CommonsClientHttpRequestFactory;
 import org.springframework.social.oauth.OAuthSigningClientHttpRequestFactory;
@@ -72,14 +77,63 @@ public class TripItTemplate implements TripItOperations {
 		return getUserProfile().getProfileUrl();
 	}
 
+	@SuppressWarnings("unchecked")
 	public TripItProfile getUserProfile() {
-		TripItProfileResponse response = restOperations.getForObject(
-				"https://api.tripit.com/v1/get/profile?format=json", TripItProfileResponse.class);
-		return response.getProfile();
+		Map<String, ?> responseMap = restOperations.getForObject("https://api.tripit.com/v1/get/profile?format=json",
+				Map.class);
+		Map<String, ?> profileMap = (Map<String, ?>) responseMap.get("Profile");
+		Map<String, String> attributesMap = (Map<String, String>) profileMap.get("@attributes");
+		String id = attributesMap.get("ref");
+		String screenName = String.valueOf(profileMap.get("screen_name"));
+		String publicDisplayName = String.valueOf(profileMap.get("public_display_name"));
+		String homeCity = String.valueOf(profileMap.get("home_city"));
+		String company = String.valueOf(profileMap.get("company"));
+		String profilePath = String.valueOf(profileMap.get("profile_url"));
+		return new TripItProfile(id, screenName, publicDisplayName, homeCity, company, profilePath);
 	}
 
 	public List<Trip> getUpcomingTrips() {
-		return restOperations.getForObject("https://api.tripit.com/v1/list/trip/traveler/true/past/false?format=json",
-				TripListResponse.class).getTrips();
+		@SuppressWarnings("unchecked")
+		Map<String, ?> responseMap = restOperations.getForObject(
+				"https://api.tripit.com/v1/list/trip/traveler/true/past/false?format=json", Map.class);
+
+		List<Trip> trips = new ArrayList<Trip>();
+		List<Map<String, ?>> tripsList = getTripsList(responseMap);
+		for (Map<String, ?> tripItem : tripsList) {
+			long id = Long.valueOf(String.valueOf(tripItem.get("id")));
+			String displayName = String.valueOf(tripItem.get("display_name"));
+			String primaryLocation = String.valueOf(tripItem.get("primary_location"));
+			Date startDate = parseDate(String.valueOf(tripItem.get("start_date")));
+			Date endDate = parseDate(String.valueOf(tripItem.get("end_date")));
+			String tripPath = String.valueOf(tripItem.get("relative_url"));
+			Trip trip = new Trip(id, displayName, primaryLocation, startDate, endDate, tripPath);
+			trips.add(trip);
+		}
+
+		return trips;
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<Map<String, ?>> getTripsList(Map<String, ?> result) {
+		List<Map<String, ?>> trips;
+		Object tripObject = result.get("Trip");
+		if (tripObject instanceof Map) {
+			trips = new ArrayList<Map<String, ?>>();
+			trips.add((Map<String, ?>) tripObject);
+		} else {
+			trips = (List<Map<String, ?>>) tripObject;
+		}
+		return trips;
+	}
+
+	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+
+	private Date parseDate(String dateString) {
+		try {
+			Date startDate = dateFormatter.parse(dateString);
+			return startDate;
+		} catch (ParseException e) {
+			return null;
+		}
 	}
 }

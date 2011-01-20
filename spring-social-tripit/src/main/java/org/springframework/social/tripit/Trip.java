@@ -17,16 +17,21 @@ package org.springframework.social.tripit;
 
 import java.util.Date;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonProperty;
-
 /**
  * Model class representing a trip taken by a TripIt user.
  * 
  * @author Craig Walls
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Trip {
+	public Trip(long id, String displayName, String primaryLocation, Date startDate, Date endDate, String tripPath) {
+		this.id = id;
+		this.displayName = displayName;
+		this.primaryLocation = primaryLocation;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.tripPath = tripPath;
+	}
+
 	/**
 	 * The trip ID
 	 * 
@@ -78,24 +83,13 @@ public class Trip {
 	 * @return A URL to the trip page at TripIt
 	 */
 	public String getTripUrl() {
-		return "http://www.tripit.com/" + tripPath;
+		return "http://www.tripit.com" + tripPath;
 	}
 
-	@JsonProperty("id")
-	long id;
-
-	@JsonProperty("display_name")
-	String displayName;
-
-	@JsonProperty("start_date")
-	Date startDate;
-
-	@JsonProperty("end_date")
-	Date endDate;
-
-	@JsonProperty("primary_location")
-	String primaryLocation;
-
-	@JsonProperty("relative_url")
-	String tripPath;
+	private final long id;
+	private final String displayName;
+	private final Date startDate;
+	private final Date endDate;
+	private final String primaryLocation;
+	private final String tripPath;
 }
