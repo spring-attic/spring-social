@@ -13,13 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.provider;
+package org.springframework.social.provider.support;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.social.provider.AccountConnection;
+import org.springframework.social.provider.OAuthToken;
+import org.springframework.social.provider.ServiceProvider;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -46,7 +49,7 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 
 	// provider meta-data
 	
-	public String getName() {
+	public String getId() {
 		return parameters.getName();
 	}
 	
@@ -64,18 +67,18 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	
 	// connection management
 	public void addConnection(Serializable accountId, String accessToken, String providerAccountId) {
-		OAuthToken oauthAccessToken = new OAuthToken(accessToken);
+		AccessToken oauthAccessToken = new AccessToken(accessToken);
 		S serviceOperations = createServiceOperations(oauthAccessToken);
-		connectionRepository.addConnection(accountId, getName(), oauthAccessToken, providerAccountId,
+		connectionRepository.addConnection(accountId, getId(), oauthAccessToken, providerAccountId,
 				buildProviderProfileUrl(providerAccountId, serviceOperations));
 	}
 
 	public boolean isConnected(Serializable accountId) {
-		return connectionRepository.isConnected(accountId, getName());
+		return connectionRepository.isConnected(accountId, getId());
 	}
 
 	public boolean isConnected(Serializable accountId, String providerAcountId) {
-		return connectionRepository.isConnected(accountId, getName(), providerAcountId);
+		return connectionRepository.isConnected(accountId, getId(), providerAcountId);
 	}
 
 	public void refreshConnection(Serializable accountId, String providerAccountId) {
@@ -83,11 +86,11 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	}
 
 	public void disconnect(Serializable accountId) {
-		connectionRepository.disconnect(accountId, getName());
+		connectionRepository.disconnect(accountId, getId());
 	}
 	
 	public void disconnect(Serializable accountId, String providerAccountId) {
-		connectionRepository.disconnect(accountId, getName(), providerAccountId);
+		connectionRepository.disconnect(accountId, getId(), providerAccountId);
 	}
 
 	@Transactional
@@ -95,21 +98,21 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		if (accountId == null || !isConnected(accountId)) {
 			return createServiceOperations(null);
 		}
-		OAuthToken accessToken = connectionRepository.getAccessToken(accountId, getName());
+		AccessToken accessToken = connectionRepository.getAccessToken(accountId, getId());
 		return createServiceOperations(accessToken);
 	}
 
-	public S getServiceOperations(OAuthToken accessToken) {
+	public S getServiceOperations(AccessToken accessToken) {
 		return createServiceOperations(accessToken);
 	}
 
 	public S getServiceOperations(Serializable accountId, String providerAccountId) {
-		OAuthToken accessToken = connectionRepository.getAccessToken(accountId, getName(), providerAccountId);
+		AccessToken accessToken = connectionRepository.getAccessToken(accountId, getId(), providerAccountId);
 		return createServiceOperations(accessToken);
 	}
 
 	public Collection<AccountConnection> getConnections(Serializable accountId) {
-		return connectionRepository.getAccountConnections(accountId, getName());
+		return connectionRepository.getAccountConnections(accountId, getId());
 	}
 
 	public String buildAuthorizeUrl(Map<String, String> authorizationParameters) {
@@ -121,7 +124,7 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	// additional finders
 
 	public String getProviderAccountId(Serializable accountId) {
-		return connectionRepository.getProviderAccountId(accountId, getName());
+		return connectionRepository.getProviderAccountId(accountId, getId());
 	}
 
 	// subclassing hooks
@@ -130,7 +133,7 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	 * Subclasses should override to return their concrete service implementation.
 	 * @param accessToken the granted access token needed to make authorized requests for protected resources
 	 */
-	protected abstract S createServiceOperations(OAuthToken accessToken);
+	protected abstract S createServiceOperations(AccessToken accessToken);
 
 	/**
 	 * Use the service API to fetch the id the member has been assigned in the provider's system.
@@ -152,10 +155,10 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		return parameters.getSecret();
 	}
 
-	public void connect(Serializable accountId, OAuthToken accessToken) {
+	public void connect(Serializable accountId, AccessToken accessToken) {
 		S serviceOperations = createServiceOperations(accessToken);
 		String providerAccountId = fetchProviderAccountId(serviceOperations);
-		connectionRepository.addConnection(accountId, getName(), accessToken, providerAccountId,
+		connectionRepository.addConnection(accountId, getId(), accessToken, providerAccountId,
 				buildProviderProfileUrl(providerAccountId, serviceOperations));
 	}
 }

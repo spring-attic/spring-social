@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.provider;
+package org.springframework.social.provider.support;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.social.provider.AuthorizationProtocol;
+import org.springframework.social.provider.AuthorizedRequestToken;
+import org.springframework.social.provider.OAuthToken;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
@@ -36,7 +39,7 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 		super(parameters, connectionRepository);
 	}
 
-	public OAuthToken fetchNewRequestToken(String callbackUrl) {
+	public AccessToken fetchNewRequestToken(String callbackUrl) {
 		throw new UnsupportedOperationException(
 				"You may not fetch a request token for an OAuth 2-based service provider");
 	}
@@ -50,25 +53,25 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 		connect(accountId, fetchAccessToken(redirectUri, code));
 	}
 
-	public OAuthToken fetchAccessToken(AuthorizedRequestToken requestToken) {
+	public AccessToken fetchAccessToken(AuthorizedRequestToken requestToken) {
 		throw new UnsupportedOperationException(
 				"Fetching access tokens with request token are not supported for an OAuth 2-based service provider");
 	}
 
-	public OAuthToken fetchAccessToken(String redirectUri, String code) {
+	public AccessToken fetchAccessToken(String redirectUri, String code) {
 		Map<String, String> tokenRequestParameters = new HashMap<String, String>();
 		tokenRequestParameters.put("client_id", parameters.getApiKey());
 		tokenRequestParameters.put("client_secret", parameters.getSecret());
 		tokenRequestParameters.put("code", code);
 		tokenRequestParameters.put("redirect_uri", redirectUri);
 		tokenRequestParameters.put("grant_type", "authorization_code");
-		OAuthToken accessToken = fetchOAuth2AccessToken(tokenRequestParameters);
+		AccessToken accessToken = fetchOAuth2AccessToken(tokenRequestParameters);
 		return accessToken;
 	}
 
 	@Override
 	public void refreshConnection(Serializable accountId, String providerAccountId) {
-		String refreshToken = connectionRepository.getRefreshToken(accountId, getName(), providerAccountId);
+		String refreshToken = connectionRepository.getRefreshToken(accountId, getId(), providerAccountId);
 		if (refreshToken == null) {
 			throw new UnsupportedOperationException("Connection refresh is not supported for this provider.");
 		}
@@ -80,21 +83,21 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 		tokenRequestParameters.put("client_secret", parameters.getSecret());
 		tokenRequestParameters.put("refresh_token", refreshToken);
 		tokenRequestParameters.put("grant_type", "refresh_token");
-		OAuthToken accessToken = fetchOAuth2AccessToken(tokenRequestParameters);
+		AccessToken accessToken = fetchOAuth2AccessToken(tokenRequestParameters);
 		S serviceOperations = createServiceOperations(accessToken);
 		String username = fetchProviderAccountId(serviceOperations);
-		connectionRepository.updateConnection(accountId, getName(), accessToken, username);
+		connectionRepository.updateConnection(accountId, getId(), accessToken, username);
 	}
 
-	public AuthorizationStyle getAuthorizationStyle() {
-		return AuthorizationStyle.OAUTH_2;
+	public AuthorizationProtocol getAuthorizationProtocol() {
+		return AuthorizationProtocol.OAUTH_2;
 	}
 
-	protected OAuthToken fetchOAuth2AccessToken(Map<String, String> tokenRequestParameters) {
+	protected AccessToken fetchOAuth2AccessToken(Map<String, String> tokenRequestParameters) {
 		@SuppressWarnings("unchecked")
 		Map<String, String> result = getRestOperations().postForObject(parameters.getAccessTokenUrl(),
 				tokenRequestParameters, Map.class);
-		return new OAuthToken(result.get("access_token"), null, result.get("refresh_token"));
+		return new AccessToken(result.get("access_token"), null, result.get("refresh_token"));
 	}
 
 	protected RestOperations getRestOperations() {

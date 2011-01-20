@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.provider;
+package org.springframework.social.provider.support;
 
 import java.io.Serializable;
 import java.util.Collection;
+
+import org.springframework.social.provider.AccountConnection;
+import org.springframework.social.provider.OAuthToken;
 
 
 /**
@@ -26,10 +29,10 @@ import java.util.Collection;
  */
 public interface AccountConnectionRepository {
 
-	void addConnection(Serializable accountId, String provider, OAuthToken accessToken, String providerAccountId,
+	void addConnection(Serializable accountId, String provider, AccessToken accessToken, String providerAccountId,
 			String providerProfileUrl);
 
-	void updateConnection(Serializable accountId, String name, OAuthToken accessToken,
+	void updateConnection(Serializable accountId, String name, AccessToken accessToken,
 			String username);
 
 	boolean isConnected(Serializable accountId, String provider);
@@ -40,9 +43,9 @@ public interface AccountConnectionRepository {
 
 	void disconnect(Serializable accountId, String provider, String providerAccountId);
 
-	OAuthToken getAccessToken(Serializable accountId, String provider);
+	AccessToken getAccessToken(Serializable accountId, String provider);
 
-	OAuthToken getAccessToken(Serializable accountId, String provider, String providerAccountId);
+	AccessToken getAccessToken(Serializable accountId, String provider, String providerAccountId);
 
 	String getProviderAccountId(Serializable accountId, String provider);
 

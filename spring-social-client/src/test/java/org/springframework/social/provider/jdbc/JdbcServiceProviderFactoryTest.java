@@ -43,7 +43,7 @@ public class JdbcServiceProviderFactoryTest {
 	public void getAccountProvider() {
 		ServiceProvider<TestOperations> twitterProvider = (TestServiceProvider) providerFactory
 				.getServiceProvider("twitter");
-		assertEquals("twitter", twitterProvider.getName());
+		assertEquals("twitter", twitterProvider.getId());
 		assertEquals("Twitter", twitterProvider.getDisplayName());
 		assertEquals("123456789", twitterProvider.getApiKey());
 		assertEquals("http://www.twitter.com/authorize?oauth_token=123456789",
@@ -51,7 +51,7 @@ public class JdbcServiceProviderFactoryTest {
 
 		ServiceProvider<TestOperations> facebookProvider = (TestServiceProvider) providerFactory
 				.getServiceProvider("facebook");
-		assertEquals("facebook", facebookProvider.getName());
+		assertEquals("facebook", facebookProvider.getId());
 		assertEquals("Facebook", facebookProvider.getDisplayName());
 		assertEquals("345678901", facebookProvider.getApiKey());
 	}
@@ -60,7 +60,7 @@ public class JdbcServiceProviderFactoryTest {
 	public void getAccountProviderByName() {
 		ServiceProvider<TestOperations> twitterProvider = providerFactory.getServiceProvider("twitter",
 				TestOperations.class);
-		assertEquals("twitter", twitterProvider.getName());
+		assertEquals("twitter", twitterProvider.getId());
 		assertEquals("Twitter", twitterProvider.getDisplayName());
 		assertEquals("123456789", twitterProvider.getApiKey());
 		assertEquals("http://www.twitter.com/authorize?oauth_token=123456789",
@@ -68,7 +68,7 @@ public class JdbcServiceProviderFactoryTest {
 
 		ServiceProvider<TestOperations> facebookProvider = providerFactory.getServiceProvider("facebook",
 				TestOperations.class);
-		assertEquals("facebook", facebookProvider.getName());
+		assertEquals("facebook", facebookProvider.getId());
 		assertEquals("Facebook", facebookProvider.getDisplayName());
 		assertEquals("345678901", facebookProvider.getApiKey());
 	}

@@ -13,10 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.provider;
+package org.springframework.social.provider.oauth2;
 
 import java.io.Serializable;
 
-public interface AccountIdResolver {
-	Serializable resolveAccountId();
+/**
+ * Holds an OAuth token and secret.
+ * Used for both the request token and access token.
+ * The secret is null for OAuth2-based connections.
+ * @author Keith Donald
+ */
+public final class AccessToken implements Serializable {
+
+	private final String value;
+	
+	private final String refreshToken;
+
+	public AccessToken(String value, String refreshToken) {
+		this.value = value;
+		this.refreshToken = refreshToken;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public String getRefreshToken() {
+		return refreshToken;
+	}
+
 }

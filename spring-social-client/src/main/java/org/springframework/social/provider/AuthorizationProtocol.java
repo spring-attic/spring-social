@@ -16,12 +16,9 @@
 package org.springframework.social.provider;
 
 /**
- * This enumeration identifies styles of authorization that may be used to
- * create connections between a user account and their profile on a service
- * provider.
- * 
+ * Authorization protocol enumeration.
  * @author Craig Walls
  */
-public enum AuthorizationStyle {
+public enum AuthorizationProtocol {
 	OAUTH_1, OAUTH_2
 }

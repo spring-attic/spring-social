@@ -26,11 +26,11 @@ import org.springframework.social.facebook.provider.FacebookServiceProvider;
 import org.springframework.social.github.provider.GitHubServiceProvider;
 import org.springframework.social.gowalla.provider.GowallaServiceProvider;
 import org.springframework.social.linkedin.provider.LinkedInServiceProvider;
-import org.springframework.social.provider.AbstractServiceProvider;
 import org.springframework.social.provider.ServiceProvider;
-import org.springframework.social.provider.ServiceProviderParameters;
 import org.springframework.social.provider.jdbc.ContextServiceProviderFactory;
 import org.springframework.social.provider.jdbc.JdbcServiceProviderFactory;
+import org.springframework.social.provider.support.AbstractServiceProvider;
+import org.springframework.social.provider.support.ServiceProviderParameters;
 import org.springframework.social.tripit.provider.TripItServiceProvider;
 import org.springframework.social.twitter.provider.TwitterServiceProvider;
 

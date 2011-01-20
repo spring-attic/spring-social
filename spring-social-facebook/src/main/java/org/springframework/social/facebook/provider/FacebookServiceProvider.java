@@ -20,10 +20,10 @@ import java.util.Map;
 
 import org.springframework.social.facebook.FacebookOperations;
 import org.springframework.social.facebook.FacebookTemplate;
-import org.springframework.social.provider.AbstractOAuth2ServiceProvider;
-import org.springframework.social.provider.AccountConnectionRepository;
 import org.springframework.social.provider.OAuthToken;
-import org.springframework.social.provider.ServiceProviderParameters;
+import org.springframework.social.provider.support.AbstractOAuth2ServiceProvider;
+import org.springframework.social.provider.support.AccountConnectionRepository;
+import org.springframework.social.provider.support.ServiceProviderParameters;
 import org.springframework.web.client.RestTemplate;
 
 /**

@@ -26,13 +26,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.encrypt.StringEncryptor;
 import org.springframework.social.provider.AccountConnection;
-import org.springframework.social.provider.AccountConnectionRepository;
 import org.springframework.social.provider.ConnectionAlreadyExistsException;
 import org.springframework.social.provider.OAuthToken;
+import org.springframework.social.provider.support.AccountConnectionRepository;
 import org.springframework.stereotype.Repository;
 
 /**
  * Stores Account connection information in a relational database using the JDBC API.
+ *  // TODO rename member to account
  * @author Keith Donald
  */
 @Repository
@@ -46,7 +47,7 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 		this.encryptor = encryptor;
 	}
 
-	public void addConnection(Serializable accountId, String provider, OAuthToken accessToken,
+	public void addConnection(Serializable accountId, String provider, AccessToken accessToken,
 			String providerAccountId, String providerProfileUrl) {
 		try {
 			jdbcTemplate.update(CREATE_CONNECTION_QUERY, accountId, provider,
@@ -58,7 +59,7 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 		}
 	}
 
-	public void updateConnection(Serializable accountId, String provider, OAuthToken accessToken,
+	public void updateConnection(Serializable accountId, String provider, AccessToken accessToken,
 			String providerAccountId) {
 		jdbcTemplate.update(UPDATE_CONNECTION_QUERY, encryptor.encrypt(accessToken.getValue()),
 				encryptIfPresent(accessToken.getSecret()), encryptIfPresent(accessToken.getRefreshToken()), provider,
@@ -82,10 +83,10 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 		jdbcTemplate.update(REMOVE_CONNECTION_QUERY, accountId, provider, providerAccountId);
 	}
 
-	public OAuthToken getAccessToken(Serializable accountId, String provider) {
-		List<OAuthToken> tokens = jdbcTemplate.query(ACCESS_TOKEN_QUERY, new RowMapper<OAuthToken>() {
-			public OAuthToken mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return new OAuthToken(encryptor.decrypt(rs.getString("accessToken")), decryptIfPresent(rs
+	public AccessToken getAccessToken(Serializable accountId, String provider) {
+		List<AccessToken> tokens = jdbcTemplate.query(ACCESS_TOKEN_QUERY, new RowMapper<AccessToken>() {
+			public AccessToken mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return new AccessToken(encryptor.decrypt(rs.getString("accessToken")), decryptIfPresent(rs
 						.getString("secret")));
 			}
 		}, accountId, provider);
@@ -93,10 +94,10 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 		return tokens.size() > 0 ? tokens.get(0) : null;
 	}
 	
-	public OAuthToken getAccessToken(Serializable accountId, String provider, String providerAccountId) {
-		return jdbcTemplate.queryForObject(ACCESS_TOKEN_BY_ACCOUNT_ID_QUERY, new RowMapper<OAuthToken>() {
-			public OAuthToken mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return new OAuthToken(rs.getString("accessToken"), rs.getString("secret"));
+	public AccessToken getAccessToken(Serializable accountId, String provider, String providerAccountId) {
+		return jdbcTemplate.queryForObject(ACCESS_TOKEN_BY_ACCOUNT_ID_QUERY, new RowMapper<AccessToken>() {
+			public AccessToken mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return new AccessToken(rs.getString("accessToken"), rs.getString("secret"));
 			}
 		}, accountId, provider, providerAccountId);
 	}
@@ -119,7 +120,7 @@ public class JdbcAccountConnectionRepository implements AccountConnectionReposit
 		return jdbcTemplate.query(ACCOUNT_CONNECTIONS_QUERY, new RowMapper<AccountConnection>() {
 			public AccountConnection mapRow(ResultSet rs, int rowNum) throws SQLException {
 				AccountConnection accountConnection = new AccountConnection((Serializable) rs.getObject("member"), rs
-						.getString("provider"), new OAuthToken(rs.getString("accessToken"), rs.getString("secret")), rs
+						.getString("provider"), new AccessToken(rs.getString("accessToken"), rs.getString("secret")), rs
 						.getString("refreshToken"), rs.getString("accountId"), rs.getString("profileUrl"));
 				return accountConnection;
 			}

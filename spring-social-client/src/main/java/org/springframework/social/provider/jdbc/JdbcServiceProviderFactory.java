@@ -23,10 +23,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.encrypt.StringEncryptor;
-import org.springframework.social.provider.AccountConnectionRepository;
 import org.springframework.social.provider.ServiceProvider;
 import org.springframework.social.provider.ServiceProviderFactory;
-import org.springframework.social.provider.ServiceProviderParameters;
+import org.springframework.social.provider.support.AccountConnectionRepository;
+import org.springframework.social.provider.support.ServiceProviderParameters;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ClassUtils;
 

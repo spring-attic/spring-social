@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.provider;
+package org.springframework.social.web.connect;
 
-/**
- * Factory for obtaining ServiceProviders by name.
- * @author Keith Donald
- */
-public interface ServiceProviderFactory {
-	
-	/**
-	 * Get the ServiceProvider identified by the provided id.
-	 */
-	ServiceProvider<?> getServiceProvider(String id);
+import java.io.Serializable;
 
-	/**
-	 * Get a strongly-typed reference to the ServiceProvider identified by the provided name.
-	 */
-	<S> ServiceProvider<S> getServiceProvider(String id, Class<S> serviceType);
-
+public interface AccountIdResolver {
+	Serializable resolveAccountId();
 }

@@ -2,10 +2,10 @@ package org.springframework.social.provider.jdbc;
 
 import java.io.Serializable;
 
-import org.springframework.social.provider.AbstractOAuth1ServiceProvider;
-import org.springframework.social.provider.AccountConnectionRepository;
 import org.springframework.social.provider.OAuthToken;
-import org.springframework.social.provider.ServiceProviderParameters;
+import org.springframework.social.provider.support.AbstractOAuth1ServiceProvider;
+import org.springframework.social.provider.support.AccountConnectionRepository;
+import org.springframework.social.provider.support.ServiceProviderParameters;
 
 public class TestServiceProvider extends AbstractOAuth1ServiceProvider<TestOperations> {
 
@@ -13,12 +13,12 @@ public class TestServiceProvider extends AbstractOAuth1ServiceProvider<TestOpera
 		super(parameters, connectionRepository);
 	}
 
-	public Serializable getProviderUserProfile(OAuthToken accessToken) {
+	public Serializable getProviderUserProfile(AccessToken accessToken) {
 		return null;
 	}
 
 	@Override
-	protected TestOperations createServiceOperations(OAuthToken accessToken) {
+	protected TestOperations createServiceOperations(AccessToken accessToken) {
 		return null;
 	}
 

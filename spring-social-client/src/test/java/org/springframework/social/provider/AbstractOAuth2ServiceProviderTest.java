@@ -10,11 +10,11 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
-import org.springframework.social.provider.AbstractOAuth2ServiceProvider;
-import org.springframework.social.provider.AccountConnectionRepository;
 import org.springframework.social.provider.AuthorizedRequestToken;
 import org.springframework.social.provider.OAuthToken;
-import org.springframework.social.provider.ServiceProviderParameters;
+import org.springframework.social.provider.support.AbstractOAuth2ServiceProvider;
+import org.springframework.social.provider.support.AccountConnectionRepository;
+import org.springframework.social.provider.support.ServiceProviderParameters;
 import org.springframework.web.client.RestOperations;
 
 public class AbstractOAuth2ServiceProviderTest {
@@ -37,7 +37,7 @@ public class AbstractOAuth2ServiceProviderTest {
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void connect_withRequestTokenShouldNotBeSupported() {
-		AuthorizedRequestToken requestToken = new AuthorizedRequestToken(new OAuthToken("accessToken"), "verifier");
+		AuthorizedRequestToken requestToken = new AuthorizedRequestToken(new AccessToken("accessToken"), "verifier");
 		provider.connect(1L, requestToken);
 	}
 
@@ -89,7 +89,7 @@ public class AbstractOAuth2ServiceProviderTest {
 	}
 }
 
-class OAuthTokenMatcher extends ArgumentMatcher<OAuthToken> {
+class OAuthTokenMatcher extends ArgumentMatcher<AccessToken> {
 	private final String expectedValue;
 	private final String expectedRefreshToken;
 
@@ -100,7 +100,7 @@ class OAuthTokenMatcher extends ArgumentMatcher<OAuthToken> {
 
 	@Override
 	public boolean matches(Object argument) {
-		OAuthToken token = (OAuthToken) argument;
+		AccessToken token = (AccessToken) argument;
 		String refreshToken = token.getRefreshToken();
 		return token.getValue().equals(expectedValue)
 				&& ((refreshToken != null && expectedRefreshToken != null && refreshToken.equals(expectedRefreshToken)) || (refreshToken == null && expectedRefreshToken == null));
@@ -117,7 +117,7 @@ class FakeOAuth2ServiceProvider extends AbstractOAuth2ServiceProvider<Object> {
 	}
 
 	@Override
-	protected Object createServiceOperations(OAuthToken accessToken) {
+	protected Object createServiceOperations(AccessToken accessToken) {
 		return null;
 	}
 
@@ -140,7 +140,7 @@ class FakeOAuth2ServiceProvider extends AbstractOAuth2ServiceProvider<Object> {
 		this.restOperations = restOperations;
 	}
 
-	public Serializable getProviderUserProfile(OAuthToken accessToken) {
+	public Serializable getProviderUserProfile(AccessToken accessToken) {
 		return null;
 	}
 }

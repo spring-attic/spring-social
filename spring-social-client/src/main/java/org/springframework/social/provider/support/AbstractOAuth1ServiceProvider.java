@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.provider;
+package org.springframework.social.provider.support;
 
 import java.io.Serializable;
 
@@ -28,6 +28,9 @@ import org.scribe.oauth.OAuth10aServiceImpl;
 import org.scribe.oauth.OAuthService;
 import org.scribe.services.HMACSha1SignatureService;
 import org.scribe.services.TimestampServiceImpl;
+import org.springframework.social.provider.AuthorizationProtocol;
+import org.springframework.social.provider.AuthorizedRequestToken;
+import org.springframework.social.provider.OAuthToken;
 
 /**
  * Base class for ServiceProvider implementations that use OAuth 1
@@ -43,20 +46,20 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 		super(parameters, connectionRepository);
 	}
 
-	public OAuthToken fetchNewRequestToken(String callbackUrl) {
+	public AccessToken fetchNewRequestToken(String callbackUrl) {
 		Token requestToken = getOAuthService(callbackUrl).getRequestToken();
-		return new OAuthToken(requestToken.getToken(), requestToken.getSecret());
+		return new AccessToken(requestToken.getToken(), requestToken.getSecret());
 	}
 
 	public void connect(Serializable accountId, AuthorizedRequestToken requestToken) {
-		OAuthToken accessToken = fetchAccessToken(requestToken);
+		AccessToken accessToken = fetchAccessToken(requestToken);
 		connect(accountId, accessToken);
 	}
 
-	public OAuthToken fetchAccessToken(AuthorizedRequestToken requestToken) {
+	public AccessToken fetchAccessToken(AuthorizedRequestToken requestToken) {
 		Token accessToken = getOAuthService().getAccessToken(
 				new Token(requestToken.getValue(), requestToken.getSecret()), new Verifier(requestToken.getVerifier()));
-		return new OAuthToken(accessToken.getToken(), accessToken.getSecret());
+		return new AccessToken(accessToken.getToken(), accessToken.getSecret());
 	}
 
 	public void connect(Serializable accountId, String redirectUri, String code) {
@@ -64,13 +67,13 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 				"Connections with redirectUri and code are not supported for an OAuth 1-based service provider");
 	}
 
-	public OAuthToken fetchAccessToken(String redirectUri, String code) {
+	public AccessToken fetchAccessToken(String redirectUri, String code) {
 		throw new UnsupportedOperationException(
 				"Fetching access tokens with redirectUri and code are not supported for an OAuth 1-based service provider");
 	}
 
-	public AuthorizationStyle getAuthorizationStyle() {
-		return AuthorizationStyle.OAUTH_1;
+	public AuthorizationProtocol getAuthorizationProtocol() {
+		return AuthorizationProtocol.OAUTH_1;
 	}
 
 	// internal helpers

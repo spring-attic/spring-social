@@ -21,8 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.social.provider.AccountIdResolver;
-import org.springframework.social.provider.AuthorizationStyle;
+import org.springframework.social.provider.AuthorizationProtocol;
 import org.springframework.social.provider.AuthorizedRequestToken;
 import org.springframework.social.provider.OAuthToken;
 import org.springframework.social.provider.ServiceProvider;
@@ -139,7 +138,7 @@ public class ConnectController {
 		ServiceProvider<?> provider = getServiceProvider(name);
 		preConnect(provider, request);
 		Map<String, String> authorizationParameters = new HashMap<String, String>();
-		if (provider.getAuthorizationStyle() == AuthorizationStyle.OAUTH_1) {
+		if (provider.getAuthorizationProtocol() == AuthorizationProtocol.OAUTH_1) {
 			OAuthToken requestToken = provider.fetchNewRequestToken(baseCallbackUrl + name);
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
 			authorizationParameters.put("requestToken", requestToken.getValue());
