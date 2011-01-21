@@ -23,11 +23,6 @@ package org.springframework.social.provider;
 public interface ServiceProviderConnection<S> {
 
 	/**
-	 * The connection identifier.
-	 */
-	public Long getId();
-
-	/**
 	 * The Service API.
 	 */
 	public S getApi();
