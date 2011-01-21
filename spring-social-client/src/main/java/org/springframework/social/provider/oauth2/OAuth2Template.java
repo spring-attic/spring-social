@@ -45,8 +45,8 @@ public class OAuth2Template implements OAuth2Operations {
 
 	public String buildAuthorizeUrl(String redirectUri, String scope) {
 		Map<String, String> urlVariables = new HashMap<String, String>();
-		urlVariables.put("clientId", clientId);
-		urlVariables.put("redirectUri", redirectUri);
+		urlVariables.put("client_id", clientId);
+		urlVariables.put("redirect_uri", redirectUri);
 		urlVariables.put("scope", scope);
 		return authorizeUrlTemplate.expand(urlVariables).toString();
 	}

@@ -17,7 +17,7 @@ public class OAuth2TemplateTest {
 
 	@Before
 	public void setup() {
-		String authorizeUrl = "http://www.someprovider.com/oauth/authorize?client_id={clientId}&redirect_uri={redirectUri}&scope={scope}";
+		String authorizeUrl = "http://www.someprovider.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}";
 		accessTokenUrl = "http://www.someprovider.com/oauth/accessToken";
 		oAuth2Template = new OAuth2Template("client_id", "client_secret", authorizeUrl, accessTokenUrl);
 	}
@@ -38,7 +38,7 @@ public class OAuth2TemplateTest {
 
 	@Test
 	public void buildAuthorizeUrl_noScopeInUrlTemplate() {
-		String authorizeUrl = "http://www.someprovider.com/oauth/authorize?client_id={clientId}&redirect_uri={redirectUri}";
+		String authorizeUrl = "http://www.someprovider.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}";
 		oAuth2Template = new OAuth2Template("client_id", "client_secret", authorizeUrl, null);
 		String expected = "http://www.someprovider.com/oauth/authorize?client_id=client_id&redirect_uri=http://www.someclient.com/connect/foo";
 		String actual = oAuth2Template.buildAuthorizeUrl("http://www.someclient.com/connect/foo", "read");
