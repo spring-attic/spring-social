@@ -42,5 +42,5 @@ public interface OAuth1Operations {
 	 * @return an access token granted by the provider
 	 */
 	OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken);
-	
+
 }
