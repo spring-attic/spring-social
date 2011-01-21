@@ -28,7 +28,7 @@ import org.springframework.social.twitter.TwitterTemplate;
  */
 public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<TwitterOperations> {
 
-	public TwitterServiceProvider(ConnectionRepository connectionRepository, String consumerKey, String consumerSecret) {
+	public TwitterServiceProvider(String consumerKey, String consumerSecret, ConnectionRepository connectionRepository) {
 		super("twitter", "Twitter", connectionRepository, consumerKey, consumerSecret,
 				new OAuth1Template(consumerKey, consumerSecret, "https://www.twitter.com/oauth/request_token", 
 						"https://www.twitter.com/oauth/authorize", "https://www.twitter.com/oauth/access_token"));

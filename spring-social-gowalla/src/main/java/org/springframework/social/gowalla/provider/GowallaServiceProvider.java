@@ -8,7 +8,7 @@ import org.springframework.social.provider.support.ConnectionRepository;
 
 public class GowallaServiceProvider extends AbstractOAuth2ServiceProvider<GowallaOperations> {
 
-	public GowallaServiceProvider(ConnectionRepository connectionRepository, String clientId, String clientSecret) {
+	public GowallaServiceProvider(String clientId, String clientSecret, ConnectionRepository connectionRepository) {
 		super("gowalla", "Gowalla", connectionRepository, new OAuth2Template(clientId, clientSecret));
 	}
 
