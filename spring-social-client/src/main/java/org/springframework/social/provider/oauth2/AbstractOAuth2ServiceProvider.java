@@ -23,7 +23,7 @@ import org.springframework.social.provider.support.AbstractServiceProvider;
 import org.springframework.social.provider.support.Connection;
 import org.springframework.social.provider.support.ConnectionRepository;
 
-public class AbstractOAuth2ServiceProvider<S> extends AbstractServiceProvider<S> implements OAuth2ServiceProvider<S> {
+public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServiceProvider<S> implements OAuth2ServiceProvider<S> {
 
 	private String clientId;
 	
@@ -55,7 +55,9 @@ public class AbstractOAuth2ServiceProvider<S> extends AbstractServiceProvider<S>
 
 	@Override
 	protected S getApi(Connection connection) {
-		return null;
+		return getApi(connection.getAccessToken());
 	}
+
+	protected abstract S getApi(String accessToken);
 	
 }

@@ -15,44 +15,25 @@
  */
 package org.springframework.social.linkedin.provider;
 
-import java.io.Serializable;
-
 import org.springframework.social.linkedin.LinkedInOperations;
 import org.springframework.social.linkedin.LinkedInTemplate;
-import org.springframework.social.provider.OAuthToken;
-import org.springframework.social.provider.support.AbstractOAuth1ServiceProvider;
+import org.springframework.social.provider.oauth1.AbstractOAuth1ServiceProvider;
 import org.springframework.social.provider.support.ConnectionRepository;
-import org.springframework.social.provider.support.ServiceProviderParameters;
 
 /**
  * LinkedIn ServiceProvider implementation.
  * @author Keith Donald
  */
 public final class LinkedInServiceProvider extends AbstractOAuth1ServiceProvider<LinkedInOperations> {
-	
-	public LinkedInServiceProvider(ServiceProviderParameters parameters,
-			ConnectionRepository connectionRepository) {
-		super(parameters, connectionRepository);
+
+	public LinkedInServiceProvider(String id, String displayName, ConnectionRepository connectionRepository, String consumerKey,
+			String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl) {
+		super(id, displayName, connectionRepository, consumerKey, consumerSecret, requestTokenUrl, authorizeUrl, accessTokenUrl);
 	}
 
-	protected LinkedInOperations createServiceOperations(OAuthToken accessToken) {
-		if (accessToken == null) {
-			throw new IllegalStateException("Cannot access LinkedIn without an access token");
-		}
-		return new LinkedInTemplate(getApiKey(), getSecret(), accessToken.getValue(), accessToken.getSecret());
-	}
-
-	protected String fetchProviderAccountId(LinkedInOperations linkedIn) {
-		return linkedIn.getProfileId();
-	}
-
-	public Serializable getProviderUserProfile(OAuthToken accessToken) {
-		return new LinkedInTemplate(getApiKey(), getSecret(), accessToken.getValue(), accessToken.getSecret())
-				.getUserProfile();
-	}
-
-	protected String buildProviderProfileUrl(String linkedInId, LinkedInOperations linkedIn) {
-		return linkedIn.getProfileUrl();
+	@Override
+	protected LinkedInOperations getApi(String accessToken, String secret) {
+		return new LinkedInTemplate(getConsumerKey(), getConsumerSecret(), accessToken, secret);
 	}
 	
 }

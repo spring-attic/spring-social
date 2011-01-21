@@ -23,7 +23,7 @@ import org.springframework.social.provider.support.AbstractServiceProvider;
 import org.springframework.social.provider.support.Connection;
 import org.springframework.social.provider.support.ConnectionRepository;
 
-public class AbstractOAuth1ServiceProvider<S> extends AbstractServiceProvider<S> implements OAuth1ServiceProvider<S> {
+public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServiceProvider<S> implements OAuth1ServiceProvider<S> {
 
 	private final String consumerKey;
 	
@@ -67,9 +67,19 @@ public class AbstractOAuth1ServiceProvider<S> extends AbstractServiceProvider<S>
 
 	// subclassing hooks
 	
+	protected String getConsumerKey() {
+		return consumerKey;
+	}
+	
+	protected String getConsumerSecret() {
+		return consumerSecret;
+	}
+	
 	@Override
-	protected S getApi(Connection connection) {
-		return null;
-	}	
+	protected final S getApi(Connection connection) {
+		return getApi(connection.getAccessToken(), connection.getSecret());
+	}
+
+	protected abstract S getApi(String accessToken, String secret);
 	
 }

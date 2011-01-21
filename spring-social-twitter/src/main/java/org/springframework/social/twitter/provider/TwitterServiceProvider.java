@@ -15,12 +15,8 @@
  */
 package org.springframework.social.twitter.provider;
 
-import java.io.Serializable;
-
-import org.springframework.social.provider.OAuthToken;
-import org.springframework.social.provider.support.AbstractOAuth1ServiceProvider;
+import org.springframework.social.provider.oauth1.AbstractOAuth1ServiceProvider;
 import org.springframework.social.provider.support.ConnectionRepository;
-import org.springframework.social.provider.support.ServiceProviderParameters;
 import org.springframework.social.twitter.TwitterOperations;
 import org.springframework.social.twitter.TwitterTemplate;
 
@@ -30,26 +26,15 @@ import org.springframework.social.twitter.TwitterTemplate;
  * @author Craig Walls
  */
 public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<TwitterOperations> {
-	
-	public TwitterServiceProvider(ServiceProviderParameters parameters, ConnectionRepository connectionRepository) {
-		super(parameters, connectionRepository);
+
+	public TwitterServiceProvider(String id, String displayName, ConnectionRepository connectionRepository, String consumerKey,
+			String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl) {
+		super(id, displayName, connectionRepository, consumerKey, consumerSecret, requestTokenUrl, authorizeUrl, accessTokenUrl);
 	}
 
-	protected TwitterOperations createServiceOperations(OAuthToken accessToken) {
-		return accessToken != null ? new TwitterTemplate(getApiKey(), getSecret(), accessToken.getValue(), accessToken.getSecret()) : new TwitterTemplate();
-	}
-
-	protected String fetchProviderAccountId(TwitterOperations twitter) {
-		return twitter.getProfileId();
-	}
-
-	public Serializable getProviderUserProfile(OAuthToken accessToken) {
-		return new TwitterTemplate(getApiKey(), getSecret(), accessToken.getValue(), accessToken.getSecret())
-				.getProfile();
-	}
-
-	protected String buildProviderProfileUrl(String screenName, TwitterOperations twitter) {
-		return "http://www.twitter.com/" + screenName;
+	@Override
+	protected TwitterOperations getApi(String accessToken, String secret) {
+		return new TwitterTemplate(getConsumerKey(), getConsumerSecret(), accessToken, secret);
 	}
 	
 }

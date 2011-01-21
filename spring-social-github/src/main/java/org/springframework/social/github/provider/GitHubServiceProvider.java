@@ -15,40 +15,18 @@
  */
 package org.springframework.social.github.provider;
 
-import java.io.Serializable;
-
 import org.springframework.social.github.GitHubOperations;
 import org.springframework.social.github.GitHubTemplate;
-import org.springframework.social.provider.OAuthToken;
-import org.springframework.social.provider.support.AbstractOAuth2ServiceProvider;
+import org.springframework.social.provider.oauth2.AbstractOAuth2ServiceProvider;
 import org.springframework.social.provider.support.ConnectionRepository;
-import org.springframework.social.provider.support.ServiceProviderParameters;
 
 public class GitHubServiceProvider extends AbstractOAuth2ServiceProvider<GitHubOperations> {
 
-	public GitHubServiceProvider(ServiceProviderParameters parameters, ConnectionRepository connectionRepository) {
-		super(parameters, connectionRepository);
+	public GitHubServiceProvider(String id, String displayName, ConnectionRepository connectionRepository, String clientId, String clientSecret) {
+		super(id, displayName, connectionRepository, clientId, clientSecret);
 	}
 
-	@Override
-	protected GitHubOperations createServiceOperations(OAuthToken accessToken) {
-		if (accessToken == null) {
-			throw new IllegalStateException("Cannot access GitHub without an access token");
-		}
-		return new GitHubTemplate(accessToken.getValue());
-	}
-
-	@Override
-	protected String fetchProviderAccountId(GitHubOperations github) {
-		return github.getProfileId();
-	}
-
-	@Override
-	protected String buildProviderProfileUrl(String providerAccountId, GitHubOperations github) {
-		return github.getProfileUrl();
-	}
-
-	public Serializable getProviderUserProfile(OAuthToken accessToken) {
-		return new GitHubTemplate(accessToken.getValue()).getUserProfile();
+	protected GitHubOperations getApi(String accessToken) {
+		return new GitHubTemplate(accessToken);
 	}
 }

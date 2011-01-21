@@ -15,12 +15,8 @@
  */
 package org.springframework.social.tripit.provider;
 
-import java.io.Serializable;
-
-import org.springframework.social.provider.OAuthToken;
-import org.springframework.social.provider.support.AbstractOAuth1ServiceProvider;
+import org.springframework.social.provider.oauth1.AbstractOAuth1ServiceProvider;
 import org.springframework.social.provider.support.ConnectionRepository;
-import org.springframework.social.provider.support.ServiceProviderParameters;
 import org.springframework.social.tripit.TripItOperations;
 import org.springframework.social.tripit.TripItTemplate;
 
@@ -29,29 +25,14 @@ import org.springframework.social.tripit.TripItTemplate;
  * @author Craig Walls
  */
 public final class TripItServiceProvider extends AbstractOAuth1ServiceProvider<TripItOperations> {
-	
-	public TripItServiceProvider(ServiceProviderParameters parameters, ConnectionRepository connectionRepository) {
-		super(parameters, connectionRepository);
+
+	public TripItServiceProvider(String id, String displayName, ConnectionRepository connectionRepository, String consumerKey,
+			String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl) {
+		super(id, displayName, connectionRepository, consumerKey, consumerSecret, requestTokenUrl, authorizeUrl, accessTokenUrl);
 	}
 
-	protected TripItOperations createServiceOperations(OAuthToken accessToken) {
-		if (accessToken == null) {
-			throw new IllegalStateException("Cannot access TripIt without an access token");
-		}
-		return new TripItTemplate(getApiKey(), getSecret(), accessToken.getValue(), accessToken.getSecret());
-	}
-
-	protected String fetchProviderAccountId(TripItOperations tripIt) {
-		return tripIt.getProfileId();
-	}
-
-	public Serializable getProviderUserProfile(OAuthToken accessToken) {
-		return new TripItTemplate(getApiKey(), getSecret(), accessToken.getValue(), accessToken.getSecret())
-				.getUserProfile();
-	}
-
-	protected String buildProviderProfileUrl(String tripItId, TripItOperations tripIt) {
-		return tripIt.getProfileUrl();
+	protected TripItOperations getApi(String accessToken, String secret) {
+		return new TripItTemplate(getConsumerKey(), getConsumerSecret(), accessToken, secret);
 	}
 	
 }
