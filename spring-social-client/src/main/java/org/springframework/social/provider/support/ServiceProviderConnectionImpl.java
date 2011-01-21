@@ -19,7 +19,12 @@ import java.io.Serializable;
 
 import org.springframework.social.provider.ServiceProviderConnection;
 
-public class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
+/**
+ * Generic ServiceProviderConnection implementation used by {@link AbstractServiceProvider}.
+ * @author Keith Donald
+ * @param <S> the service API
+ */
+class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
 
 	private final Long id;
 	

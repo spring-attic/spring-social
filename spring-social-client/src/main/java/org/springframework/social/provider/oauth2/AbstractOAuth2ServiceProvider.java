@@ -51,6 +51,12 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 		return getApi(connection.getAccessToken());
 	}
 
+	/**
+	 * Construct the ServiceProvider's API, secured by OAuth2 and to be invoked by the client application on behalf of a user.
+	 * OAuth-2 based ServiceProvider implementors should override to construct their specific API interface implementation e.g. GowallaTemplate.
+	 * @param accessToken the user's access token granted by the provider upon connection authorization
+	 * @return the service API
+	 */
 	protected abstract S getApi(String accessToken);
 	
 }

@@ -58,6 +58,15 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 		return getApi(consumerKey, consumerSecret, connection.getAccessToken(), connection.getSecret());
 	}
 
+	/**
+	 * Construct the ServiceProvider's API, secured by OAuth1 and to be invoked by the client application on behalf of a user.
+	 * OAuth-1 based ServiceProvider implementors should override to construct their specific API interface implementation e.g. TwitterTemplate.
+	 * @param consumerKey the client key assigned by the provider 
+	 * @param consumerSecret the client secret assigned by the provider
+	 * @param accessToken the user's access token granted by the provider upon connection authorization
+	 * @param secret the access token secret granted by the provider upon connection authorization
+	 * @return the service API
+	 */
 	protected abstract S getApi(String consumerKey, String consumerSecret, String accessToken, String secret);
 	
 }

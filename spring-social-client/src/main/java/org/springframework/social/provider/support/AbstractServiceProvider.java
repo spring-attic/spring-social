@@ -63,6 +63,11 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		return serviceProviderConnections;
 	}
 
+	/**
+	 * Construct the ServiceProvider's API to be invoked by the client application on behalf of a user.
+	 * @param connection the user connection details
+	 * @return the service API
+	 */
 	protected abstract S getApi(Connection connection);
 		
 }
