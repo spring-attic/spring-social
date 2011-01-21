@@ -16,6 +16,7 @@
 package org.springframework.social.twitter.provider;
 
 import org.springframework.social.provider.oauth1.AbstractOAuth1ServiceProvider;
+import org.springframework.social.provider.oauth1.OAuth1Template;
 import org.springframework.social.provider.support.ConnectionRepository;
 import org.springframework.social.twitter.TwitterOperations;
 import org.springframework.social.twitter.TwitterTemplate;
@@ -27,14 +28,15 @@ import org.springframework.social.twitter.TwitterTemplate;
  */
 public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<TwitterOperations> {
 
-	public TwitterServiceProvider(String id, String displayName, ConnectionRepository connectionRepository, String consumerKey,
-			String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl) {
-		super(id, displayName, connectionRepository, consumerKey, consumerSecret, requestTokenUrl, authorizeUrl, accessTokenUrl);
+	public TwitterServiceProvider(ConnectionRepository connectionRepository, String consumerKey, String consumerSecret) {
+		super("twitter", "Twitter", connectionRepository, consumerKey, consumerSecret,
+				new OAuth1Template(consumerKey, consumerSecret, "https://www.twitter.com/oauth/request_token", 
+						"https://www.twitter.com/oauth/authorize", "https://www.twitter.com/oauth/access_token"));
 	}
 
 	@Override
-	protected TwitterOperations getApi(String accessToken, String secret) {
-		return new TwitterTemplate(getConsumerKey(), getConsumerSecret(), accessToken, secret);
+	protected TwitterOperations getApi(String consumerKey, String consumerSecret, String accessToken, String secret) {
+		return new TwitterTemplate(consumerKey, consumerSecret, accessToken, secret);
 	}
-	
+		
 }

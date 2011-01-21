@@ -18,6 +18,7 @@ package org.springframework.social.linkedin.provider;
 import org.springframework.social.linkedin.LinkedInOperations;
 import org.springframework.social.linkedin.LinkedInTemplate;
 import org.springframework.social.provider.oauth1.AbstractOAuth1ServiceProvider;
+import org.springframework.social.provider.oauth1.OAuth1Template;
 import org.springframework.social.provider.support.ConnectionRepository;
 
 /**
@@ -26,14 +27,15 @@ import org.springframework.social.provider.support.ConnectionRepository;
  */
 public final class LinkedInServiceProvider extends AbstractOAuth1ServiceProvider<LinkedInOperations> {
 
-	public LinkedInServiceProvider(String id, String displayName, ConnectionRepository connectionRepository, String consumerKey,
-			String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl) {
-		super(id, displayName, connectionRepository, consumerKey, consumerSecret, requestTokenUrl, authorizeUrl, accessTokenUrl);
+	public LinkedInServiceProvider(ConnectionRepository connectionRepository, String consumerKey, String consumerSecret) {
+		super("linkedin", "LinkedIn", connectionRepository, consumerKey, consumerSecret,
+				new OAuth1Template(consumerKey, consumerSecret, "https://www.linkedin.com/oauth/request_token", 
+						"https://www.linkedin.com/oauth/authorize", "https://www.linkedin.com/oauth/access_token"));
 	}
 
 	@Override
-	protected LinkedInOperations getApi(String accessToken, String secret) {
-		return new LinkedInTemplate(getConsumerKey(), getConsumerSecret(), accessToken, secret);
+	protected LinkedInOperations getApi(String consumerKey, String consumerSecret, String accessToken, String secret) {
+		return new LinkedInTemplate(consumerKey, consumerSecret, accessToken, secret);
 	}
 	
 }

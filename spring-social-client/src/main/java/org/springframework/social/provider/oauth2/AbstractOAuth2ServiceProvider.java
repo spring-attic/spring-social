@@ -25,28 +25,21 @@ import org.springframework.social.provider.support.ConnectionRepository;
 
 public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServiceProvider<S> implements OAuth2ServiceProvider<S> {
 
-	private String clientId;
+	private final OAuth2Operations oauth2Operations;
 	
-	private String clientSecret;
-	
-	public AbstractOAuth2ServiceProvider(String id, String displayName, ConnectionRepository connectionRepository, String clientId, String clientSecret) {
+	public AbstractOAuth2ServiceProvider(String id, String displayName, ConnectionRepository connectionRepository, OAuth2Operations oauth2Operations) {
 		super(id, displayName, connectionRepository);
-		this.clientId = clientId;
-		this.clientSecret = clientSecret;
+		this.oauth2Operations = oauth2Operations;
 	}
 
 	public AuthorizationProtocol getAuthorizationProtocol() {
 		return AuthorizationProtocol.OAUTH_2;
 	}
 
-	public String buildAuthorizeUrl(String redirectUri, String scope) {
-		return null;
+	public OAuth2Operations getOAuth2Operations() {
+		return oauth2Operations;
 	}
-
-	public AccessToken exchangeForAccessToken(String redirectUri, String authorizationCode) {
-		return null;
-	}
-
+	
 	public ServiceProviderConnection<S> connect(Serializable accountId, AccessToken accessToken) {
 		return null;
 	}

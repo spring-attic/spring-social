@@ -18,6 +18,7 @@ package org.springframework.social.facebook.provider;
 import org.springframework.social.facebook.FacebookOperations;
 import org.springframework.social.facebook.FacebookTemplate;
 import org.springframework.social.provider.oauth2.AbstractOAuth2ServiceProvider;
+import org.springframework.social.provider.oauth2.OAuth2Template;
 import org.springframework.social.provider.support.ConnectionRepository;
 
 /**
@@ -26,8 +27,8 @@ import org.springframework.social.provider.support.ConnectionRepository;
  */
 public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<FacebookOperations> {
 
-	public FacebookServiceProvider(String id, String displayName, ConnectionRepository connectionRepository, String clientId, String clientSecret) {
-		super(id, displayName, connectionRepository, clientId, clientSecret);
+	public FacebookServiceProvider(ConnectionRepository connectionRepository, String clientId, String clientSecret) {
+		super("facebook", "Facebook", connectionRepository, new OAuth2Template(clientId, clientSecret));
 	}
 
 	@Override

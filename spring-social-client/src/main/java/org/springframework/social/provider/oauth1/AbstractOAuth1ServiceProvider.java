@@ -29,57 +29,35 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 	
 	private final String consumerSecret;
 	
-	private final String requestTokenUrl;
+	private final OAuth1Operations oauth1Operations;
 	
-	private final String authorizeUrl;
-	
-	private final String accessTokenUrl;
-	
-	public AbstractOAuth1ServiceProvider(String id, String displayName, ConnectionRepository connectionRepository, String consumerKey, String consumerSecret,
-			String  requestTokenUrl, String authorizeUrl, String accessTokenUrl) {
+	public AbstractOAuth1ServiceProvider(String id, String displayName, ConnectionRepository connectionRepository, 
+			String consumerKey, String consumerSecret, OAuth1Operations oauth1Operations) {
 		super(id, displayName, connectionRepository);
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
-		this.requestTokenUrl = requestTokenUrl;
-		this.authorizeUrl = authorizeUrl;
-		this.accessTokenUrl = accessTokenUrl;
+		this.oauth1Operations = oauth1Operations;
 	}
 
 	public AuthorizationProtocol getAuthorizationProtocol() {
 		return AuthorizationProtocol.OAUTH_1;
 	}
 
-	public OAuthToken fetchNewRequestToken(String callbackUrl) {
-		return null;
+	public OAuth1Operations getOAuth1Operations() {
+		return oauth1Operations;
 	}
-
-	public String buildAuthorizeUrl(String requestToken) {
-		return null;
-	}
-
-	public OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken) {
-		return null;
-	}
-
+	
 	public ServiceProviderConnection<S> connect(Serializable accountId, OAuthToken accessToken) {
 		return null;
 	}
 
 	// subclassing hooks
 	
-	protected String getConsumerKey() {
-		return consumerKey;
-	}
-	
-	protected String getConsumerSecret() {
-		return consumerSecret;
-	}
-	
 	@Override
 	protected final S getApi(Connection connection) {
-		return getApi(connection.getAccessToken(), connection.getSecret());
+		return getApi(consumerKey, consumerSecret, connection.getAccessToken(), connection.getSecret());
 	}
 
-	protected abstract S getApi(String accessToken, String secret);
+	protected abstract S getApi(String consumerKey, String consumerSecret, String accessToken, String secret);
 	
 }

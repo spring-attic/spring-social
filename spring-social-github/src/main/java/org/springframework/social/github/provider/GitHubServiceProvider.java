@@ -18,12 +18,13 @@ package org.springframework.social.github.provider;
 import org.springframework.social.github.GitHubOperations;
 import org.springframework.social.github.GitHubTemplate;
 import org.springframework.social.provider.oauth2.AbstractOAuth2ServiceProvider;
+import org.springframework.social.provider.oauth2.OAuth2Template;
 import org.springframework.social.provider.support.ConnectionRepository;
 
 public class GitHubServiceProvider extends AbstractOAuth2ServiceProvider<GitHubOperations> {
 
-	public GitHubServiceProvider(String id, String displayName, ConnectionRepository connectionRepository, String clientId, String clientSecret) {
-		super(id, displayName, connectionRepository, clientId, clientSecret);
+	public GitHubServiceProvider(ConnectionRepository connectionRepository, String clientId, String clientSecret) {
+		super("github", "Github", connectionRepository, new OAuth2Template(clientId, clientSecret));
 	}
 
 	protected GitHubOperations getApi(String accessToken) {
