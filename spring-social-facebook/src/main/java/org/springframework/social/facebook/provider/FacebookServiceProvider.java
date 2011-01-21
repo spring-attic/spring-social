@@ -22,7 +22,7 @@ import org.springframework.social.facebook.FacebookOperations;
 import org.springframework.social.facebook.FacebookTemplate;
 import org.springframework.social.provider.OAuthToken;
 import org.springframework.social.provider.support.AbstractOAuth2ServiceProvider;
-import org.springframework.social.provider.support.AccountConnectionRepository;
+import org.springframework.social.provider.support.ConnectionRepository;
 import org.springframework.social.provider.support.ServiceProviderParameters;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,7 +33,7 @@ import org.springframework.web.client.RestTemplate;
 public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<FacebookOperations> {
 	
 	public FacebookServiceProvider(ServiceProviderParameters parameters,
-			AccountConnectionRepository connectionRepository) {
+			ConnectionRepository connectionRepository) {
 		super(parameters, connectionRepository);
 	}
 

@@ -13,20 +13,20 @@ import org.mockito.ArgumentMatcher;
 import org.springframework.social.provider.AuthorizedRequestToken;
 import org.springframework.social.provider.OAuthToken;
 import org.springframework.social.provider.support.AbstractOAuth2ServiceProvider;
-import org.springframework.social.provider.support.AccountConnectionRepository;
+import org.springframework.social.provider.support.ConnectionRepository;
 import org.springframework.social.provider.support.ServiceProviderParameters;
 import org.springframework.web.client.RestOperations;
 
 public class AbstractOAuth2ServiceProviderTest {
 	private FakeOAuth2ServiceProvider provider;
-	private AccountConnectionRepository connectionRepository;
+	private ConnectionRepository connectionRepository;
 
 	@Before
 	public void setup() {
 		ServiceProviderParameters parameters = new ServiceProviderParameters("oauthProvider", "OAuth Provider",
 				"api_key", "api_secret", 12345L, null, "http://www.oauthprovider.com/oauth/authorize",
 				"http://www.oauthprovider.com/oauth/accesstoken");
-		connectionRepository = mock(AccountConnectionRepository.class);
+		connectionRepository = mock(ConnectionRepository.class);
 		provider = new FakeOAuth2ServiceProvider(parameters, connectionRepository);
 	}
 
@@ -112,7 +112,7 @@ class FakeOAuth2ServiceProvider extends AbstractOAuth2ServiceProvider<Object> {
 	private RestOperations restOperations;
 
 	public FakeOAuth2ServiceProvider(ServiceProviderParameters parameters,
-			AccountConnectionRepository connectionRepository) {
+			ConnectionRepository connectionRepository) {
 		super(parameters, connectionRepository);
 	}
 

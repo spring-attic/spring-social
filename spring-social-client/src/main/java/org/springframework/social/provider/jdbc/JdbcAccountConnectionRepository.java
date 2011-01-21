@@ -28,7 +28,7 @@ import org.springframework.security.encrypt.StringEncryptor;
 import org.springframework.social.provider.AccountConnection;
 import org.springframework.social.provider.ConnectionAlreadyExistsException;
 import org.springframework.social.provider.OAuthToken;
-import org.springframework.social.provider.support.AccountConnectionRepository;
+import org.springframework.social.provider.support.ConnectionRepository;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -37,7 +37,7 @@ import org.springframework.stereotype.Repository;
  * @author Keith Donald
  */
 @Repository
-public class JdbcAccountConnectionRepository implements AccountConnectionRepository {
+public class JdbcAccountConnectionRepository implements ConnectionRepository {
 	private final JdbcTemplate jdbcTemplate;
 
 	private final StringEncryptor encryptor;

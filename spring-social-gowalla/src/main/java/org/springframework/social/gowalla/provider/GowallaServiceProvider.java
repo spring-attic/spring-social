@@ -6,12 +6,12 @@ import org.springframework.social.gowalla.GowallaOperations;
 import org.springframework.social.gowalla.GowallaTemplate;
 import org.springframework.social.provider.OAuthToken;
 import org.springframework.social.provider.support.AbstractOAuth2ServiceProvider;
-import org.springframework.social.provider.support.AccountConnectionRepository;
+import org.springframework.social.provider.support.ConnectionRepository;
 import org.springframework.social.provider.support.ServiceProviderParameters;
 
 public class GowallaServiceProvider extends AbstractOAuth2ServiceProvider<GowallaOperations> {
 
-	public GowallaServiceProvider(ServiceProviderParameters parameters, AccountConnectionRepository connectionRepository) {
+	public GowallaServiceProvider(ServiceProviderParameters parameters, ConnectionRepository connectionRepository) {
 		super(parameters, connectionRepository);
 	}
 

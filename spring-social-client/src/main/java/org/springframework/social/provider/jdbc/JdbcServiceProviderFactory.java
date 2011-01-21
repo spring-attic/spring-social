@@ -25,7 +25,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.encrypt.StringEncryptor;
 import org.springframework.social.provider.ServiceProvider;
 import org.springframework.social.provider.ServiceProviderFactory;
-import org.springframework.social.provider.support.AccountConnectionRepository;
+import org.springframework.social.provider.support.ConnectionRepository;
 import org.springframework.social.provider.support.ServiceProviderParameters;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ClassUtils;
@@ -57,7 +57,7 @@ public class JdbcServiceProviderFactory implements ServiceProviderFactory {
 				Class<? extends ServiceProvider<?>> implementation = getImplementationClass(rs
 						.getString("implementation"));
 				Constructor<? extends ServiceProvider<?>> constructor = ClassUtils.getConstructorIfAvailable(
-						implementation, ServiceProviderParameters.class, AccountConnectionRepository.class);
+						implementation, ServiceProviderParameters.class, ConnectionRepository.class);
 				return BeanUtils.instantiateClass(constructor, parameters, connectionRepository);
 			}
 		}, name);

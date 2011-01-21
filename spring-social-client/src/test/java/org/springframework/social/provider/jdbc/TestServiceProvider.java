@@ -4,12 +4,12 @@ import java.io.Serializable;
 
 import org.springframework.social.provider.OAuthToken;
 import org.springframework.social.provider.support.AbstractOAuth1ServiceProvider;
-import org.springframework.social.provider.support.AccountConnectionRepository;
+import org.springframework.social.provider.support.ConnectionRepository;
 import org.springframework.social.provider.support.ServiceProviderParameters;
 
 public class TestServiceProvider extends AbstractOAuth1ServiceProvider<TestOperations> {
 
-	public TestServiceProvider(ServiceProviderParameters parameters, AccountConnectionRepository connectionRepository) {
+	public TestServiceProvider(ServiceProviderParameters parameters, ConnectionRepository connectionRepository) {
 		super(parameters, connectionRepository);
 	}
 

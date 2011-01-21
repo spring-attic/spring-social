@@ -19,7 +19,7 @@ import java.io.Serializable;
 
 import org.springframework.social.provider.OAuthToken;
 import org.springframework.social.provider.support.AbstractOAuth1ServiceProvider;
-import org.springframework.social.provider.support.AccountConnectionRepository;
+import org.springframework.social.provider.support.ConnectionRepository;
 import org.springframework.social.provider.support.ServiceProviderParameters;
 import org.springframework.social.twitter.TwitterOperations;
 import org.springframework.social.twitter.TwitterTemplate;
@@ -31,7 +31,7 @@ import org.springframework.social.twitter.TwitterTemplate;
  */
 public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<TwitterOperations> {
 	
-	public TwitterServiceProvider(ServiceProviderParameters parameters, AccountConnectionRepository connectionRepository) {
+	public TwitterServiceProvider(ServiceProviderParameters parameters, ConnectionRepository connectionRepository) {
 		super(parameters, connectionRepository);
 	}
 

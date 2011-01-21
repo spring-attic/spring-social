@@ -19,14 +19,14 @@ import java.io.Serializable;
 
 import org.springframework.social.provider.OAuthToken;
 import org.springframework.social.provider.support.AbstractOAuth1ServiceProvider;
-import org.springframework.social.provider.support.AccountConnectionRepository;
+import org.springframework.social.provider.support.ConnectionRepository;
 import org.springframework.social.provider.support.ServiceProviderParameters;
 
 public class TestServiceProvider extends AbstractOAuth1ServiceProvider<Object> {
 	private final ServiceProviderParameters parameters;
-	private final AccountConnectionRepository connectionRepository;
+	private final ConnectionRepository connectionRepository;
 
-	public TestServiceProvider(ServiceProviderParameters parameters, AccountConnectionRepository connectionRepository) {
+	public TestServiceProvider(ServiceProviderParameters parameters, ConnectionRepository connectionRepository) {
 		super(parameters, connectionRepository);
 		this.parameters = parameters;
 		this.connectionRepository = connectionRepository;
@@ -51,7 +51,7 @@ public class TestServiceProvider extends AbstractOAuth1ServiceProvider<Object> {
 		return parameters;
 	}
 
-	public AccountConnectionRepository getConnectionRepository() {
+	public ConnectionRepository getConnectionRepository() {
 		return connectionRepository;
 	}
 

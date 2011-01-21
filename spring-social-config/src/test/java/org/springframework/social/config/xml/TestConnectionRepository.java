@@ -20,9 +20,9 @@ import java.util.Collection;
 
 import org.springframework.social.provider.AccountConnection;
 import org.springframework.social.provider.OAuthToken;
-import org.springframework.social.provider.support.AccountConnectionRepository;
+import org.springframework.social.provider.support.ConnectionRepository;
 
-public class TestConnectionRepository implements AccountConnectionRepository {
+public class TestConnectionRepository implements ConnectionRepository {
 	public void addConnection(Serializable accountId, String provider, OAuthToken accessToken,
 			String providerAccountId, String providerProfileUrl) {
 	}
