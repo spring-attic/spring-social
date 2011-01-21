@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package org.springframework.social.provider.support;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Strategy for storing account connection information.
@@ -26,6 +27,8 @@ public interface ConnectionRepository {
 
 	boolean isConnected(Serializable accountId, String providerId);
 
-	void disconnect(String accountId, String providerId, String connectionId);
+	void disconnect(Serializable accountId, String providerId, Long connectionId);
 
+	List<Connection> findConnections(Serializable accountId, String providerId);
+	
 }

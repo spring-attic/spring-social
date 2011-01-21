@@ -17,6 +17,7 @@ package org.springframework.social.provider;
 
 /**
  * Authorization protocol enumeration.
+ * @author Keith Donald
  * @author Craig Walls
  */
 public enum AuthorizationProtocol {

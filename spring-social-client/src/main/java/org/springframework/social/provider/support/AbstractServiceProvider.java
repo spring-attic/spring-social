@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package org.springframework.social.provider.support;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.social.provider.AuthorizationProtocol;
@@ -52,7 +53,16 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	}
 
 	public List<ServiceProviderConnection<S>> getConnections(Serializable accountId) {
-		return null;
+		List<Connection> connections = connectionRepository.findConnections(accountId, id);
+		List<ServiceProviderConnection<S>> serviceProviderConnections = new ArrayList<ServiceProviderConnection<S>>(connections.size());
+		for (Connection connection : connections) {
+			S api = getApi(connection);
+			ServiceProviderConnection<S> serviceProviderConnection = new ServiceProviderConnectionImpl<S>(connection.getId(), api, accountId, id, connectionRepository);
+			serviceProviderConnections.add(serviceProviderConnection);
+		}
+		return serviceProviderConnections;
 	}
+
+	protected abstract S getApi(Connection connection);
 		
 }

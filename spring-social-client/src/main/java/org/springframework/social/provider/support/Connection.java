@@ -15,40 +15,51 @@
  */
 package org.springframework.social.provider.support;
 
-import java.io.Serializable;
-
-import org.springframework.social.provider.ServiceProviderConnection;
-
-public class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
-
-	private final Long id;
+public class Connection {
 	
-	private final S api;
-
-	private final Serializable accountId;
+	private Long id;
 	
-	private final String providerId;
-
-	private final ConnectionRepository connectionRepository;
+	private String accessToken;
 	
-	public ServiceProviderConnectionImpl(Long id, S api, Serializable accountId, String providerId, ConnectionRepository connectionRepository) {
+	private String secret;
+	
+	private String refreshToken;
+	
+	private String accountId;
+	
+	private String profileUrl;
+
+	public Connection(Long id, String accessToken, String secret, String refreshToken, String accountId, String profileUrl) {
 		this.id = id;
-		this.api = api;
-		this.connectionRepository = connectionRepository;
+		this.accessToken = accessToken;
+		this.secret = secret;
+		this.refreshToken = refreshToken;
 		this.accountId = accountId;
-		this.providerId = providerId;
+		this.profileUrl = profileUrl;
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
 
-	public S getApi() {
-		return api;
+	public String getAccessToken() {
+		return accessToken;
 	}
 
-	public void disconnect() {
-		connectionRepository.disconnect(accountId, providerId, id);
+	public String getSecret() {
+		return secret;
 	}
 
+	public String getRefreshToken() {
+		return refreshToken;
+	}
+
+	public String getAccountId() {
+		return accountId;
+	}
+
+	public String getProfileUrl() {
+		return profileUrl;
+	}
+	
 }
