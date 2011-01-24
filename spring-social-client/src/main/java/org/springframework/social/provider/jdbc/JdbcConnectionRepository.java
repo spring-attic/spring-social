@@ -3,18 +3,17 @@ package org.springframework.social.provider.jdbc;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.StatementCreatorUtils;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.social.provider.support.Connection;
 import org.springframework.social.provider.support.ConnectionRepository;
@@ -26,9 +25,11 @@ import org.springframework.social.provider.support.ConnectionRepository;
 public class JdbcConnectionRepository implements ConnectionRepository {
 
 	private final JdbcTemplate jdbcTemplate;
-	
+
 	private final TextEncryptor textEncryptor;
 
+	private final SimpleJdbcInsert connectionInsert;
+	
 	/**
 	 * Creates a JDBC-based connection repository.
 	 * @param dataSource the data source
@@ -37,6 +38,7 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 	public JdbcConnectionRepository(DataSource dataSource, TextEncryptor textEncryptor) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.textEncryptor = textEncryptor;
+		this.connectionInsert = createConnectionInsert();
 	}
 
 	public boolean isConnected(Serializable accountId, String providerId) {
@@ -57,9 +59,14 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 
 	public Connection saveConnection(Serializable accountId, String providerId, Connection connection) {
 		try {
-			Long connectionId = (Long) insert("insert into Connection (accountId, providerId, accessToken, secret, refreshToken) values (?, ?, ?, ?, ?)",
-					accountId, providerId, encrypt(connection.getAccessToken()), encrypt(connection.getSecret()), encrypt(connection.getRefreshToken()));
-			return new Connection(connectionId, connection.getAccessToken(), connection.getSecret(), connection.getRefreshToken());
+			Map<String, Object> args = new HashMap<String, Object>();
+			args.put("accountId", accountId);
+			args.put("providerId", providerId);
+			args.put("accessToken", encrypt(connection.getAccessToken()));
+			args.put("secret", encrypt(connection.getSecret()));
+			args.put("refreshToken", encrypt(connection.getRefreshToken()));			
+			Number connectionId = connectionInsert.executeAndReturnKey(args);
+			return new Connection((Long) connectionId, connection.getAccessToken(), connection.getSecret(), connection.getRefreshToken());
 		} catch (DuplicateKeyException e) {
 			throw new IllegalArgumentException("Access token is not unique: a connection already exists!", e);
 		}
@@ -75,23 +82,11 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 		return encryptedText != null ? textEncryptor.decrypt(encryptedText) : encryptedText;
 	}
 	
-	private Number insert(String sql, Object... args) {
-		// contribute a similar insert method back to Spring JdbcTemplate?
-		GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-	    PreparedStatementCreatorFactory creatorFactory = new PreparedStatementCreatorFactory(sql, sqlTypes(args));
-	    creatorFactory.setReturnGeneratedKeys(true);
-	    creatorFactory.setGeneratedKeysColumnNames(new String[] { "id" } );
-	    jdbcTemplate.update(creatorFactory.newPreparedStatementCreator(Arrays.asList(args)), keyHolder);
-	    return keyHolder.getKey();
+	private SimpleJdbcInsert createConnectionInsert() {
+		SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate);
+		insert.setTableName("Connection");
+		insert.setColumnNames(Arrays.asList("accountId", "providerId", "accessToken", "secret", "refreshToken"));
+		insert.setGeneratedKeyName("id");
+		return insert;
 	}
-	
-	private int[] sqlTypes(Object... args) {
-		int[] sqlTypes = new int[args.length];
-		for (int i = 0; i < args.length; i++) {
-			Object arg = args[i];
-			sqlTypes[i] = arg != null ? StatementCreatorUtils.javaTypeToSqlParameterType(arg.getClass()) : Types.NULL;
-		}
-		return sqlTypes;
-	}
-	
 }
