@@ -31,7 +31,7 @@ public interface ConnectionRepository {
 	boolean isConnected(Serializable accountId, String providerId);
 
 	/**
-	 * Returns the connections between the account and the provider.
+	 * Finds the connections between the account and the provider.
 	 */
 	List<Connection> findConnections(Serializable accountId, String providerId);
 
