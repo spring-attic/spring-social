@@ -2,6 +2,7 @@ package org.springframework.social.provider.jdbc;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -52,7 +53,18 @@ public class JdbcConnectionRepositoryTests {
 		assertEquals("123456789", c1.getAccessToken());
 		assertEquals("987654321", c1.getRefreshToken());
 	}
-	
+
+	@Test
+	public void duplicateConnection() {
+		repository.saveConnection(1L, "facebook", Connection.oauth2("123456789", "987654321"));
+		try {
+			repository.saveConnection(1L, "facebook", Connection.oauth2("123456789", "987654321"));
+			fail("Should have failed");
+		} catch (IllegalArgumentException e) {
+			
+		}
+	}
+
 	@Test
 	public void findMultipleConnections() {
 		repository.saveConnection(1L, "facebook", Connection.oauth2("123456789", "987654321"));
