@@ -31,5 +31,4 @@ public class OAuth1TemplateTest {
 	public void exchangeForAccessToken() {
 		// TODO : Flesh out proper test
 	}
-
 }

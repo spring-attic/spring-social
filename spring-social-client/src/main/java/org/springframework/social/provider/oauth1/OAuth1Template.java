@@ -79,14 +79,23 @@ public class OAuth1Template implements OAuth1Operations {
 		return getTokenFromProvider(accessTokenParameters, accessTokenUrl, requestToken.getSecret());
 	}
 
+	public String buildAuthorizationHeader(String targetUrl, HttpMethod method, Map<String, String> parameters,
+			OAuthToken accessToken) {
+		Map<String, String> oauthParameters = getCommonOAuthParameters();
+		oauthParameters.put("oauth_token", accessToken.getValue());
+
+		return buildAuthorizationHeader(targetUrl, oauthParameters, parameters, method,
+				accessToken.getSecret());
+	}
+
 	// private helpers
-	private String buildAuthorizationHeader(String targetUrl, Map<String, String> parameters, HttpMethod method,
-			String tokenSecret) {
-		String baseString = buildBaseString(targetUrl, parameters, method);
+	private String buildAuthorizationHeader(String targetUrl, Map<String, String> oauthParameters,
+			Map<String, String> additionalParameters, HttpMethod method, String tokenSecret) {
+		String baseString = buildBaseString(targetUrl, oauthParameters, additionalParameters, method);
 		String signature = calculateSignature(baseString, tokenSecret);
 		String header = "OAuth ";
-		for (String key : parameters.keySet()) {
-			header += key + "=\"" + encode(parameters.get(key)) + "\", ";
+		for (String key : oauthParameters.keySet()) {
+			header += key + "=\"" + encode(oauthParameters.get(key)) + "\", ";
 		}
 		header += "oauth_signature=\"" + encode(signature) + "\"";
 		return header;
@@ -94,14 +103,10 @@ public class OAuth1Template implements OAuth1Operations {
 
 	private OAuthToken getTokenFromProvider(Map<String, String> tokenRequestParameters, String tokenUrl,
 			String tokenSecret) {
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("oauth_consumer_key", consumerKey);
-		parameters.put("oauth_signature_method", HMAC_SHA1_SIGNATURE_NAME);
-		parameters.put("oauth_timestamp", String.valueOf(System.currentTimeMillis() / 1000));
-		parameters.put("oauth_nonce", UUID.randomUUID().toString());
-		parameters.put("oauth_version", "1.0");
-		parameters.putAll(tokenRequestParameters);
-		String authHeader = buildAuthorizationHeader(tokenUrl, parameters, HttpMethod.POST, tokenSecret);
+		Map<String, String> oauthParameters = getCommonOAuthParameters();
+		oauthParameters.putAll(tokenRequestParameters);
+		String authHeader = buildAuthorizationHeader(tokenUrl, oauthParameters,
+				Collections.<String, String> emptyMap(), HttpMethod.POST, tokenSecret);
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 		headers.add("Authorization", authHeader);
 		HttpEntity<String> request = new HttpEntity<String>(headers);
@@ -111,6 +116,16 @@ public class OAuth1Template implements OAuth1Operations {
 
 		Map<String, String> responseMap = parseResponse(response.getBody());
 		return new OAuthToken(responseMap.get("oauth_token"), responseMap.get("oauth_token_secret"));
+	}
+
+	private Map<String, String> getCommonOAuthParameters() {
+		Map<String, String> oauthParameters = new HashMap<String, String>();
+		oauthParameters.put("oauth_consumer_key", consumerKey);
+		oauthParameters.put("oauth_signature_method", HMAC_SHA1_SIGNATURE_NAME);
+		oauthParameters.put("oauth_timestamp", String.valueOf(System.currentTimeMillis() / 1000));
+		oauthParameters.put("oauth_nonce", UUID.randomUUID().toString());
+		oauthParameters.put("oauth_version", "1.0");
+		return oauthParameters;
 	}
 
 	private Map<String, String> parseResponse(String response) {
@@ -125,15 +140,19 @@ public class OAuth1Template implements OAuth1Operations {
 		return responseMap;
 	}
 
-	private String buildBaseString(String targetUrl, Map<String, String> parameters, HttpMethod method) {
+	private String buildBaseString(String targetUrl, Map<String, String> parameters,
+			Map<String, String> additionalParameters, HttpMethod method) {
+
+		Map<String, String> allParameters = new HashMap<String, String>(parameters);
+		allParameters.putAll(additionalParameters);
 
 		String baseString = method.toString() + "&" + encode(targetUrl) + "&";
-		List<String> keys = new ArrayList<String>(parameters.keySet());
+		List<String> keys = new ArrayList<String>(allParameters.keySet());
 		Collections.sort(keys);
 		String separator = "";
 		for (String key : keys) {
-			baseString += separator + encode(key) + "%3D" + encode(encode(parameters.get(key)));
-			separator = "%26";
+			baseString += encode(separator + key + "=" + encode(allParameters.get(key)).replace("+", "%20"));
+			separator = "&";
 		}
 
 		return baseString;

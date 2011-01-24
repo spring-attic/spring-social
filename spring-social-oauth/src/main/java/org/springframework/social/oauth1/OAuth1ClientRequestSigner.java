@@ -18,11 +18,14 @@ package org.springframework.social.oauth1;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.social.oauth.OAuthClientRequestSigner;
+import org.springframework.social.provider.oauth1.OAuth1Template;
+import org.springframework.social.provider.oauth1.OAuthToken;
 
 /**
  * Abstract implementation of {@link OAuthClientRequestSigner} that adds an
@@ -32,10 +35,25 @@ import org.springframework.social.oauth.OAuthClientRequestSigner;
  * 
  * @author Craig Walls
  */
-public abstract class OAuth1ClientRequestSigner implements OAuthClientRequestSigner {
+public class OAuth1ClientRequestSigner implements OAuthClientRequestSigner {
+
+	private final String apiKey;
+	private final String apiSecret;
+	private final String accessToken;
+	private final String accessTokenSecret;
+	private OAuth1Template oauth1Template;
+
+	public OAuth1ClientRequestSigner(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
+		this.apiKey = apiKey;
+		this.apiSecret = apiSecret;
+		this.accessToken = accessToken;
+		this.accessTokenSecret = accessTokenSecret;
+		oauth1Template = new OAuth1Template(apiKey, apiSecret, null, "http://localhost:8080/foo", null);
+	}
 
 	public void sign(ClientHttpRequest request, Map<String, String> bodyParameters) {
-		String authorizationHeader = buildAuthorizationHeader(request.getMethod(), request.getURI(), bodyParameters);
+		String authorizationHeader = buildAuthorizationHeader(request.getMethod(), request.getURI(),
+				decodeBodyParameters(bodyParameters));
 		if (authorizationHeader != null) {
 			request.getHeaders().add("Authorization", authorizationHeader);
 		}
@@ -49,5 +67,16 @@ public abstract class OAuth1ClientRequestSigner implements OAuthClientRequestSig
 		}
 	}
 
-	protected abstract String buildAuthorizationHeader(HttpMethod method, URI url, Map<String, String> parameters);
+	protected String buildAuthorizationHeader(HttpMethod method, URI url, Map<String, String> parameters) {
+		return oauth1Template.buildAuthorizationHeader(url.toString(), method, parameters, new OAuthToken(accessToken,
+				accessTokenSecret));
+	}
+
+	private Map<String, String> decodeBodyParameters(Map<String, String> parameters) {
+		Map<String, String> decodedParameters = new HashMap<String, String>();
+		for (String key : parameters.keySet()) {
+			decodedParameters.put(key, decode(parameters.get(key)));
+		}
+		return decodedParameters;
+	}
 }

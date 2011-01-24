@@ -27,12 +27,12 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.CommonsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.social.AccountNotConnectedException;
 import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.SocialException;
 import org.springframework.social.oauth.OAuthSigningClientHttpRequestFactory;
-import org.springframework.social.oauth1.OAuth1RequestSignerFactory;
+import org.springframework.social.oauth1.OAuth1ClientRequestSigner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.NumberUtils;
@@ -105,8 +105,8 @@ public class TwitterTemplate implements TwitterOperations {
 	 */
 	public TwitterTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
 		RestTemplate restTemplate = new RestTemplate(new OAuthSigningClientHttpRequestFactory(
-				new CommonsClientHttpRequestFactory(),
-				OAuth1RequestSignerFactory.getRequestSigner(apiKey, apiSecret, accessToken, accessTokenSecret)));
+				new SimpleClientHttpRequestFactory(),
+				new OAuth1ClientRequestSigner(apiKey, apiSecret, accessToken, accessTokenSecret)));
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
 		this.restOperations = restTemplate;
 		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();

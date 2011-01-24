@@ -23,9 +23,10 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.internal.matchers.Contains;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.http.client.CommonsClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
 /**
  * @author Craig Walls
@@ -35,29 +36,25 @@ public class OAuth1ClientRequestSignerTest {
 
 	@Before
 	public void setup() throws Exception {
-		signer = new StubbedOAuth1ClientRequestAuthorizer();
+		signer = new OAuth1ClientRequestSigner("api_key", "api_secret", "access_token", "access_token_secret");
 	}
 
 	@Test
 	public void authorize_postRequest() throws Exception {
 		Map<String, String> bodyParameters = Collections.singletonMap("status", "some status message");
-		ClientHttpRequest request = new CommonsClientHttpRequestFactory().createRequest(new URI("http://bar.com/foo"),
+		ClientHttpRequest request = new SimpleClientHttpRequestFactory().createRequest(new URI("http://bar.com/foo"),
 				HttpMethod.POST);
 		signer.sign(request, bodyParameters);
-		assertEquals("POST_AUTHORIZATION_HEADER", request.getHeaders().get("Authorization").get(0));
+		String authorizationHeader = request.getHeaders().get("Authorization").get(0);
+		assertTrue(authorizationHeader.startsWith("OAuth"));
+		assertThat(authorizationHeader, new Contains("oauth_version=\"1.0\""));
+		assertThat(authorizationHeader, new Contains("oauth_nonce=\""));
+		assertThat(authorizationHeader, new Contains("oauth_signature_method=\"HMAC-SHA1\""));
+		assertThat(authorizationHeader, new Contains("oauth_consumer_key=\"api_key\""));
+		assertThat(authorizationHeader, new Contains("oauth_token=\"access_token\""));
+		assertThat(authorizationHeader, new Contains("oauth_timestamp=\""));
+		assertThat(authorizationHeader, new Contains("oauth_signature=\""));
+		System.out.println(authorizationHeader);
 	}
 
-
-	// stub buildAuthorizationHeader(), since that's not what we're
-	// testing here anyway. We're just checking that the signer puts the
-	// authorization into the request...not that the value is good
-	private class StubbedOAuth1ClientRequestAuthorizer extends OAuth1ClientRequestSigner {
-		protected String buildAuthorizationHeader(HttpMethod method, URI url, Map<String, String> parameters) {
-			if (method.equals(HttpMethod.POST) && url.toString().equals("http://bar.com/foo")
-					&& parameters.equals(Collections.singletonMap("status", "some status message"))) {
-				return "POST_AUTHORIZATION_HEADER";
-			}
-			return null;
-		}
-	}
 }
