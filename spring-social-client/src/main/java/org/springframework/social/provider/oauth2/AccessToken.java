@@ -18,9 +18,7 @@ package org.springframework.social.provider.oauth2;
 import java.io.Serializable;
 
 /**
- * Holds an OAuth token and secret.
- * Used for both the request token and access token.
- * The secret is null for OAuth2-based connections.
+ * OAuth2 access token.
  * @author Keith Donald
  */
 public final class AccessToken implements Serializable {
@@ -34,10 +32,16 @@ public final class AccessToken implements Serializable {
 		this.refreshToken = refreshToken;
 	}
 
+	/**
+	 * The access token value.
+	 */
 	public String getValue() {
 		return value;
 	}
 
+	/**
+	 * The refresh token that can be used to renew the access token.
+	 */
 	public String getRefreshToken() {
 		return refreshToken;
 	}

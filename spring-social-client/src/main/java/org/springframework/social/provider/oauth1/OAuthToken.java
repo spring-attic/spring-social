@@ -20,7 +20,6 @@ import java.io.Serializable;
 /**
  * Holds an OAuth token and secret.
  * Used for both the request token and access token.
- * The secret is null for OAuth2-based connections.
  * @author Keith Donald
  */
 public final class OAuthToken implements Serializable {
@@ -36,11 +35,17 @@ public final class OAuthToken implements Serializable {
 		this.value = value;
 		this.secret = secret;
 	}
-	
+
+	/**
+	 * The token value.
+	 */
 	public String getValue() {
 		return value;
 	}
 
+	/**
+	 * The token secret.
+	 */
 	public String getSecret() {
 		return secret;
 	}

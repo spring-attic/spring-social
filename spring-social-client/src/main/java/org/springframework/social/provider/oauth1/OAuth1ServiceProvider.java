@@ -35,7 +35,7 @@ public interface OAuth1ServiceProvider<S> extends ServiceProvider<S> {
 	/**
 	 * Establish a connection between a user account and this service provider.
 	 * @param accountId the user account identifier
-	 * @param accessToken an access token granted by the provider.
+	 * @param accessToken the access token returned from {@link OAuth1Operations#exchangeForAccessToken(AuthorizedRequestToken)}.
 	 */
 	ServiceProviderConnection<S> connect(Serializable accountId, OAuthToken accessToken);
 

@@ -20,17 +20,29 @@ import java.util.List;
 
 /**
  * Strategy for storing account connection information.
- * Delegated to {@link AbstractServiceProvider} to decouple the provider implementation from any physical connection store.
+ * Delegated to by {@link AbstractServiceProvider} to decouple the provider implementation from any physical connection store.
  * @author Keith Donald
  */
 public interface ConnectionRepository {
 
+	/**
+	 * True if a connection exists between the account and the provider, false otherwise.
+	 */
 	boolean isConnected(Serializable accountId, String providerId);
 
+	/**
+	 * Finds the connections between the account and the provider.
+	 */
 	List<Connection> findConnections(Serializable accountId, String providerId);
 
+	/**
+	 * Removes a connection.
+	 */
 	void removeConnection(Serializable accountId, String providerId, Long connectionId);
 
+	/**
+	 * Saves a connection.
+	 */
 	Connection saveConnection(Serializable accountId, String providerId, Connection connection);
 	
 }
