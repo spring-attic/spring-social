@@ -39,7 +39,7 @@ public class OAuth2Template implements OAuth2Operations {
 	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String accessTokenUrl) {
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
-		this.authorizeUrlTemplate = authorizeUrl != null ? new UriTemplate(authorizeUrl) : null;
+		this.authorizeUrlTemplate = new UriTemplate(authorizeUrl);
 		this.accessTokenUrl = accessTokenUrl;
 	}
 

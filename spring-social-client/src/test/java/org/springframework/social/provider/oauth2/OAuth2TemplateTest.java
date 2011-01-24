@@ -59,7 +59,8 @@ public class OAuth2TemplateTest {
 		result.put("refresh_token", "REFRESH_TOKEN");
 		when(rest.postForObject(eq(accessTokenUrl), eq(parameters), eq(Map.class))).thenReturn(result);
 		
-		OAuth2Template oauth2Template = new OAuth2Template("client_id", "client_secret", null, accessTokenUrl) {
+		String authorizeUrl = "http://www.someprovider.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}";
+		OAuth2Template oauth2Template = new OAuth2Template("client_id", "client_secret", authorizeUrl, accessTokenUrl) {
 			protected RestOperations getRestOperations() {
 				return rest;
 			};
