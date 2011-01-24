@@ -65,7 +65,7 @@ public class OAuth1Template implements OAuth1Operations {
 	public OAuthToken fetchNewRequestToken(String callbackUrl) {
 		Map<String, String> requestTokenParameters = new HashMap<String, String>();
 		requestTokenParameters.put("oauth_callback", callbackUrl);
-		return getTokenFromProvider(requestTokenParameters, requestTokenUrl);
+		return getTokenFromProvider(requestTokenParameters, requestTokenUrl, null);
 	}
 
 	public String buildAuthorizeUrl(String requestToken) {
@@ -76,7 +76,7 @@ public class OAuth1Template implements OAuth1Operations {
 		Map<String, String> accessTokenParameters = new HashMap<String, String>();
 		accessTokenParameters.put("oauth_token", requestToken.getValue());
 		accessTokenParameters.put("oauth_verifier", requestToken.getVerifier());
-		return getTokenFromProvider(accessTokenParameters, accessTokenUrl);
+		return getTokenFromProvider(accessTokenParameters, accessTokenUrl, requestToken.getSecret());
 	}
 
 	// private helpers
@@ -92,7 +92,8 @@ public class OAuth1Template implements OAuth1Operations {
 		return header;
 	}
 
-	private OAuthToken getTokenFromProvider(Map<String, String> tokenRequestParameters, String tokenUrl) {
+	private OAuthToken getTokenFromProvider(Map<String, String> tokenRequestParameters, String tokenUrl,
+			String tokenSecret) {
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("oauth_consumer_key", consumerKey);
 		parameters.put("oauth_signature_method", HMAC_SHA1_SIGNATURE_NAME);
@@ -100,12 +101,13 @@ public class OAuth1Template implements OAuth1Operations {
 		parameters.put("oauth_nonce", UUID.randomUUID().toString());
 		parameters.put("oauth_version", "1.0");
 		parameters.putAll(tokenRequestParameters);
-		String authHeader = buildAuthorizationHeader(tokenUrl, parameters, HttpMethod.POST, null);
+		String authHeader = buildAuthorizationHeader(tokenUrl, parameters, HttpMethod.POST, tokenSecret);
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 		headers.add("Authorization", authHeader);
 		HttpEntity<String> request = new HttpEntity<String>(headers);
 
-		ResponseEntity<String> response = new RestTemplate().exchange(tokenUrl, HttpMethod.POST, request, String.class);
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, request, String.class);
 
 		Map<String, String> responseMap = parseResponse(response.getBody());
 		return new OAuthToken(responseMap.get("oauth_token"), responseMap.get("oauth_token_secret"));
