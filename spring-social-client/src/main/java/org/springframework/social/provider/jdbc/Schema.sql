@@ -3,6 +3,6 @@ create table Connection (id identity,
 					providerId varchar,
 					accessToken varchar not null,					
 					secret varchar, 
-					refreshToken varchar
+					refreshToken varchar,
 					primary key (id));
 create index AccessToken on Connection(accountId, providerId, accessToken);

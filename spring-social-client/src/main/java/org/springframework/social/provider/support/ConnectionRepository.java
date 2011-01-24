@@ -36,13 +36,13 @@ public interface ConnectionRepository {
 	List<Connection> findConnections(Serializable accountId, String providerId);
 
 	/**
+	 * Saves a connection.
+	 */
+	Connection saveConnection(Serializable accountId, String providerId, Connection connection);
+
+	/**
 	 * Removes a connection.
 	 */
 	void removeConnection(Serializable accountId, String providerId, Long connectionId);
 
-	/**
-	 * Saves a connection.
-	 */
-	Connection saveConnection(Serializable accountId, String providerId, Connection connection);
-	
 }

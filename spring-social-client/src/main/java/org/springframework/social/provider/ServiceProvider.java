@@ -45,7 +45,6 @@ public interface ServiceProvider<S> {
 	 * The first connection in the list is the "primary" connection between the account and this service provider.
 	 * @param accountId a user account id
 	 * @return the account's connections to this service provider
-	 * @throws IllegalStateException if no connections have been established between the account and this provider
 	 */
 	List<ServiceProviderConnection<S>> getConnections(Serializable accountId);
 	
