@@ -25,8 +25,10 @@ import org.springframework.social.provider.ServiceProviderConnection;
 
 /**
  * General-purpose base class for ServiceProvider implementations.
+ * Assumes provider connections are persisted in a {@link ConnectionRepository}.
+ * Subclasses must implement {@link #getAuthorizationProtocol()} and {@link #getApi(Connection)}.
  * @author Keith Donald
- * @param <S> The service API hosted by this service provider.
+ * @param <S> The service API exposed by this service provider.
  */
 public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 
@@ -36,6 +38,12 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	
 	private final ConnectionRepository connectionRepository;
 	
+	/**
+	 * Creates a service provider.
+	 * @param id the id of the provider as it is identified in the connection repository.
+	 * @param displayName a display name for the provider, suitable for display on a user interface.
+	 * @param connectionRepository the store for service provider connections
+	 */
 	public AbstractServiceProvider(String id, String displayName, ConnectionRepository connectionRepository) {
 		this.id = id;
 		this.displayName = displayName;
@@ -45,8 +53,6 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	public String getDisplayName() {
 		return displayName;
 	}
-
-	public abstract AuthorizationProtocol getAuthorizationProtocol();
 
 	public boolean isConnected(Serializable accountId) {
 		return connectionRepository.isConnected(accountId, id);
@@ -62,7 +68,9 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	}
 
 	// subclassing hooks
-	
+
+	public abstract AuthorizationProtocol getAuthorizationProtocol();
+
 	/**
 	 * Construct the ServiceProvider's API to be invoked by the client application on behalf of a user.
 	 * @param connection the user connection details
@@ -70,6 +78,10 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	 */
 	protected abstract S getApi(Connection connection);
 
+	/**
+	 * Hook method for creating a persisted {@link ServiceProviderConnection} from a Connection record.
+	 * Designed for use by subclasses in their authorization-protocol-specific connection operations.
+	 */
 	protected ServiceProviderConnection<S> connect(Serializable accountId, Connection connection) {
 		return createConnection(accountId, connectionRepository.saveConnection(accountId, id, connection));
 	}

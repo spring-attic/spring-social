@@ -15,16 +15,25 @@
  */
 package org.springframework.social.provider.support;
 
+/**
+ * The record of a connection between an account and a service provider.
+ * Managed by a {@link ConnectionRepository}.
+ * @author Keith Donald
+ */
 public class Connection {
 	
-	private Long id;
+	private final Long id;
 	
-	private String accessToken;
+	private final String accessToken;
 	
-	private String secret;
+	private final String secret;
 	
-	private String refreshToken;
+	private final String refreshToken;
 	
+	/**
+	 * Creates a new connection with all fields populated.
+	 * Consider the static factory methods for more convenient construction options.
+	 */
 	public Connection(Long id, String accessToken, String secret, String refreshToken) {
 		this.id = id;
 		this.accessToken = accessToken;
@@ -32,26 +41,49 @@ public class Connection {
 		this.refreshToken = refreshToken;
 	}
 
+	/**
+	 * The internal connection id assigned by the managing connection repository.
+	 * Null if this connection instance is not yet persistent.
+	 */
 	public Long getId() {
 		return id;
 	}
 
+	/**
+	 * The access token.
+	 */
 	public String getAccessToken() {
 		return accessToken;
 	}
 
+	/**
+	 * The access token secret (OAuth 1 only).
+	 */
 	public String getSecret() {
 		return secret;
 	}
 
+	/**
+	 * The refresh token (OAuth 2 only).
+	 */
 	public String getRefreshToken() {
 		return refreshToken;
 	}
 
+	/**
+	 * Create a new, transient Connection instance with the oauth1 fields populated.
+	 * @param accessToken the access token
+	 * @param secret the access token secret
+	 */
 	public static Connection oauth1(String accessToken, String secret) {
 		return new Connection(null, accessToken, secret, null);
 	}
 
+	/**
+	 * Create a new, transient Connection instance with the oauth2 fields populated.
+	 * @param accessToken the access token
+	 * @param secret the access token secret
+	 */
 	public static Connection oauth2(String accessToken, String refreshToken) {
 		return new Connection(null, accessToken, null, refreshToken);
 	}
