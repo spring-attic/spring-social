@@ -23,6 +23,12 @@ import org.springframework.social.provider.support.AbstractServiceProvider;
 import org.springframework.social.provider.support.Connection;
 import org.springframework.social.provider.support.ConnectionRepository;
 
+/**
+ * Base class for ServiceProviders that use the OAuth2 protocol.
+ * OAuth2-based ServiceProvider implementations should extend and implement {@link #getApi(String)}.
+ * @author Keith Donald
+ * @param <S> the service API type
+ */
 public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServiceProvider<S> implements OAuth2ServiceProvider<S> {
 
 	private final OAuth2Operations oauth2Operations;
@@ -41,15 +47,16 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 	}
 	
 	public ServiceProviderConnection<S> connect(Serializable accountId, AccessToken accessToken) {
-		return null;
+		return connect(accountId, Connection.oauth2(accessToken.getValue(), accessToken.getRefreshToken()));
+	}
+
+	@Override
+	protected final S getApi(Connection connection) {
+		// TODO transparent refresh token handling should be added here
+		return getApi(connection.getAccessToken());
 	}
 
 	// subclassing hooks
-
-	@Override
-	protected S getApi(Connection connection) {
-		return getApi(connection.getAccessToken());
-	}
 
 	/**
 	 * Construct the ServiceProvider's API, secured by OAuth2 and to be invoked by the client application on behalf of a user.

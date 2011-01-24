@@ -56,18 +56,28 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		List<Connection> connections = connectionRepository.findConnections(accountId, id);
 		List<ServiceProviderConnection<S>> serviceProviderConnections = new ArrayList<ServiceProviderConnection<S>>(connections.size());
 		for (Connection connection : connections) {
-			S api = getApi(connection);
-			ServiceProviderConnection<S> serviceProviderConnection = new ServiceProviderConnectionImpl<S>(connection.getId(), api, accountId, id, connectionRepository);
-			serviceProviderConnections.add(serviceProviderConnection);
+			serviceProviderConnections.add(createConnection(accountId, connection));
 		}
 		return serviceProviderConnections;
 	}
 
+	// subclassing hooks
+	
 	/**
 	 * Construct the ServiceProvider's API to be invoked by the client application on behalf of a user.
 	 * @param connection the user connection details
 	 * @return the service API
 	 */
 	protected abstract S getApi(Connection connection);
-		
+
+	protected ServiceProviderConnection<S> connect(Serializable accountId, Connection connection) {
+		return createConnection(accountId, connectionRepository.saveConnection(accountId, id, connection));
+	}
+	
+	// internal helpers
+	
+	private ServiceProviderConnection<S> createConnection(Serializable accountId, Connection connection) {
+		return new ServiceProviderConnectionImpl<S>(connection.getId(), getApi(connection), accountId, id, connectionRepository);
+	}
+	
 }

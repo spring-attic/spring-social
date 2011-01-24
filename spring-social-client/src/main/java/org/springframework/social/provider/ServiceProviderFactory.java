@@ -16,7 +16,7 @@
 package org.springframework.social.provider;
 
 /**
- * Factory for obtaining ServiceProviders by name.
+ * Factory for ServiceProviders.
  * @author Keith Donald
  */
 public interface ServiceProviderFactory {

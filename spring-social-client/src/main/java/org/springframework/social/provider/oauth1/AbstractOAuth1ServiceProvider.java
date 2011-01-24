@@ -23,6 +23,12 @@ import org.springframework.social.provider.support.AbstractServiceProvider;
 import org.springframework.social.provider.support.Connection;
 import org.springframework.social.provider.support.ConnectionRepository;
 
+/**
+ * Base class for ServiceProviders that use the OAuth1 protocol.
+ * OAuth1-based ServiceProvider implementations should extend and implement {@link #getApi(String, String, String, String)}.
+ * @author Keith Donald
+ * @param <S> the service API type
+ */
 public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServiceProvider<S> implements OAuth1ServiceProvider<S> {
 
 	private final String consumerKey;
@@ -48,16 +54,16 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 	}
 	
 	public ServiceProviderConnection<S> connect(Serializable accountId, OAuthToken accessToken) {
-		return null;
+		return connect(accountId, Connection.oauth1(accessToken.getValue(), accessToken.getSecret()));
 	}
 
-	// subclassing hooks
-	
 	@Override
 	protected final S getApi(Connection connection) {
 		return getApi(consumerKey, consumerSecret, connection.getAccessToken(), connection.getSecret());
 	}
 
+	// subclassing hooks
+	
 	/**
 	 * Construct the ServiceProvider's API, secured by OAuth1 and to be invoked by the client application on behalf of a user.
 	 * OAuth-1 based ServiceProvider implementors should override to construct their specific API interface implementation e.g. TwitterTemplate.

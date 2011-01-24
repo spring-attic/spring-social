@@ -24,7 +24,7 @@ import org.springframework.social.provider.ServiceProviderConnection;
  * @author Keith Donald
  * @param <S> the service API
  */
-class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
+public class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
 
 	private final Long id;
 	
@@ -53,7 +53,7 @@ class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
 	}
 
 	public void disconnect() {
-		connectionRepository.disconnect(accountId, providerId, id);
+		connectionRepository.removeConnection(accountId, providerId, id);
 	}
 
 }

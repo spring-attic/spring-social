@@ -27,8 +27,10 @@ public interface ConnectionRepository {
 
 	boolean isConnected(Serializable accountId, String providerId);
 
-	void disconnect(Serializable accountId, String providerId, Long connectionId);
-
 	List<Connection> findConnections(Serializable accountId, String providerId);
+
+	void removeConnection(Serializable accountId, String providerId, Long connectionId);
+
+	Connection saveConnection(Serializable accountId, String providerId, Connection connection);
 	
 }

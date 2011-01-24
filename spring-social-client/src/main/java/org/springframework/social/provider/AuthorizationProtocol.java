@@ -21,5 +21,14 @@ package org.springframework.social.provider;
  * @author Craig Walls
  */
 public enum AuthorizationProtocol {
-	OAUTH_1, OAUTH_2
+	
+	/**
+	 * OAuth version 1, includes 1.0 and 1.0a.
+	 */
+	OAUTH_1,
+	
+	/**
+	 * OAuth version 2.
+	 */
+	OAUTH_2
 }

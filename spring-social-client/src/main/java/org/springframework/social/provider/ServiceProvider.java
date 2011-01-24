@@ -48,9 +48,9 @@ public interface ServiceProvider<S> {
 	 * Get the connections established between a user account and this service provider.
 	 * The connections are ordered by rank.
 	 * The first connection in the list is the "primary" connection between the account and this service provider.
-	 * TODO return semantics when no connections are established -- throw exception? return empty list? return null?
 	 * @param accountId a user account id
-	 * @return the account's service provider connections
+	 * @return the account's connections to this service provider
+	 * @throws IllegalStateException if no connections have been established between the account and this provider
 	 */
 	List<ServiceProviderConnection<S>> getConnections(Serializable accountId);
 	

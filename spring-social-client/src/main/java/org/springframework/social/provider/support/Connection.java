@@ -25,17 +25,11 @@ public class Connection {
 	
 	private String refreshToken;
 	
-	private String accountId;
-	
-	private String profileUrl;
-
-	public Connection(Long id, String accessToken, String secret, String refreshToken, String accountId, String profileUrl) {
+	public Connection(Long id, String accessToken, String secret, String refreshToken) {
 		this.id = id;
 		this.accessToken = accessToken;
 		this.secret = secret;
 		this.refreshToken = refreshToken;
-		this.accountId = accountId;
-		this.profileUrl = profileUrl;
 	}
 
 	public Long getId() {
@@ -54,12 +48,12 @@ public class Connection {
 		return refreshToken;
 	}
 
-	public String getAccountId() {
-		return accountId;
+	public static Connection oauth1(String accessToken, String secret) {
+		return new Connection(null, accessToken, secret, null);
 	}
 
-	public String getProfileUrl() {
-		return profileUrl;
+	public static Connection oauth2(String accessToken, String refreshToken) {
+		return new Connection(null, accessToken, null, refreshToken);
 	}
 	
 }

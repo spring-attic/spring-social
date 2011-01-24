@@ -33,7 +33,7 @@ public interface OAuth1ServiceProvider<S> extends ServiceProvider<S> {
 	OAuth1Operations getOAuth1Operations();
 	
 	/**
-	 * Establishes a connection between a user account and this provider.
+	 * Establish a connection between a user account and this service provider.
 	 * @param accountId the user account identifier
 	 * @param accessToken an access token granted by the provider.
 	 */
