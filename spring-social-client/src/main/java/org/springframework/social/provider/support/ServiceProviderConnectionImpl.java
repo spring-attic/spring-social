@@ -24,7 +24,7 @@ import org.springframework.social.provider.ServiceProviderConnection;
  * @author Keith Donald
  * @param <S> the service API
  */
-public class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
+class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
 
 	private final Long id;
 	
