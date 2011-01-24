@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * Strategy for storing account connection information.
- * Delegated to {@link AbstractServiceProvider} to decouple the provider implementation from any physical connection store.
+ * Delegated to by {@link AbstractServiceProvider} to decouple the provider implementation from any physical connection store.
  * @author Keith Donald
  */
 public interface ConnectionRepository {
