@@ -33,8 +33,8 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 
 	private final OAuth2Operations oauth2Operations;
 	
-	public AbstractOAuth2ServiceProvider(String id, String displayName, ConnectionRepository connectionRepository, OAuth2Operations oauth2Operations) {
-		super(id, displayName, connectionRepository);
+	public AbstractOAuth2ServiceProvider(String id, ConnectionRepository connectionRepository, OAuth2Operations oauth2Operations) {
+		super(id, connectionRepository);
 		this.oauth2Operations = oauth2Operations;
 	}
 

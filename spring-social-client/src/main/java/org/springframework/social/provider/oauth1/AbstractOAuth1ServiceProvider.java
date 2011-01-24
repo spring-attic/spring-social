@@ -37,9 +37,9 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 	
 	private final OAuth1Operations oauth1Operations;
 	
-	public AbstractOAuth1ServiceProvider(String id, String displayName, ConnectionRepository connectionRepository, 
+	public AbstractOAuth1ServiceProvider(String id, ConnectionRepository connectionRepository, 
 			String consumerKey, String consumerSecret, OAuth1Operations oauth1Operations) {
-		super(id, displayName, connectionRepository);
+		super(id, connectionRepository);
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
 		this.oauth1Operations = oauth1Operations;

@@ -34,8 +34,6 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 
 	private final String id;
 	
-	private final String displayName;
-	
 	private final ConnectionRepository connectionRepository;
 	
 	/**
@@ -44,16 +42,11 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	 * @param displayName a display name for the provider, suitable for display on a user interface.
 	 * @param connectionRepository the store for service provider connections
 	 */
-	public AbstractServiceProvider(String id, String displayName, ConnectionRepository connectionRepository) {
+	public AbstractServiceProvider(String id, ConnectionRepository connectionRepository) {
 		this.id = id;
-		this.displayName = displayName;
 		this.connectionRepository = connectionRepository;
 	}
 	
-	public String getDisplayName() {
-		return displayName;
-	}
-
 	public boolean isConnected(Serializable accountId) {
 		return connectionRepository.isConnected(accountId, id);
 	}

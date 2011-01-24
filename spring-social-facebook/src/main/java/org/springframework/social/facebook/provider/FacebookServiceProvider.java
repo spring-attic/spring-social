@@ -28,7 +28,7 @@ import org.springframework.social.provider.support.ConnectionRepository;
 public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<FacebookOperations> {
 
 	public FacebookServiceProvider(String clientId, String clientSecret, ConnectionRepository connectionRepository) {
-		super("facebook", "Facebook", connectionRepository, new OAuth2Template(clientId, clientSecret));
+		super("facebook", connectionRepository, new OAuth2Template(clientId, clientSecret, "http://facebook.com/oauth/authorize", "http://facebook.com/oauth/access_token"));
 	}
 
 	@Override
