@@ -98,7 +98,7 @@ configure(javaprojects) {
     jodaVersion = '1.6'
     junitVersion = '4.7'
     mockitoVersion = '1.8.5'
-    s2OAuthVersion = '1.0.0.BUILD-SNAPSHOT'
+    s2OAuthVersion = '1.0.0.M1'
     scribeVersion = '1.0.8'
     servletApiVersion = '2.5'
     springVersion = '3.0.5.RELEASE'
@@ -161,7 +161,8 @@ project('spring-social-client') {
     description = 'Spring Social Client'
     dependencies {
         compile "org.springframework:spring-jdbc:$springVersion"
-        compile project(':spring-social-oauth')
+        compile "org.springframework:spring-web:$springVersion"
+        compile "commons-codec:commons-codec:1.4"
         testCompile "com.h2database:h2:1.2.143"
     }
 }
