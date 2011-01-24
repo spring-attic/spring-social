@@ -17,9 +17,9 @@ package org.springframework.social.tripit;
 
 import java.util.List;
 
-import org.springframework.http.client.CommonsClientHttpRequestFactory;
-import org.springframework.social.oauth.OAuthSigningClientHttpRequestFactory;
-import org.springframework.social.oauth1.OAuth1RequestSignerFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.social.provider.oauth.OAuthSigningClientHttpRequestFactory;
+import org.springframework.social.provider.oauth1.OAuth1ClientRequestSigner;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
@@ -59,8 +59,8 @@ public class TripItTemplate implements TripItOperations {
 	 */
 	public TripItTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
 		RestTemplate restTemplate = new RestTemplate(new OAuthSigningClientHttpRequestFactory(
-				new CommonsClientHttpRequestFactory(),
-				OAuth1RequestSignerFactory.getRequestSigner(apiKey, apiSecret, accessToken, accessTokenSecret)));
+				new SimpleClientHttpRequestFactory(),
+				new OAuth1ClientRequestSigner(apiKey, apiSecret, accessToken, accessTokenSecret)));
 		this.restOperations = restTemplate;
 	}
 

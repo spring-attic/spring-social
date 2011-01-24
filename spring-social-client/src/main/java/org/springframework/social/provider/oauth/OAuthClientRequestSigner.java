@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.oauth;
-
-import static org.springframework.social.oauth.OAuthSigningClientHttpRequestTest.*;
+package org.springframework.social.provider.oauth;
 
 import java.util.Map;
 
 import org.springframework.http.client.ClientHttpRequest;
 
 /**
+ * Strategy interface for signing a client request with the necessary
+ * information for it to be OAuth-authenticated. Implementations of this
+ * interface will vary for different versions of OAuth.
+ * 
  * @author Craig Walls
  */
-public class FakeSigner implements OAuthClientRequestSigner {
-	public void sign(ClientHttpRequest request, Map<String, String> bodyParameters) {
-		String parameterString = "";
-		for (String key : bodyParameters.keySet()) {
-			parameterString += "&" + key + "=" + bodyParameters.get(key);
-		}
-		request.getHeaders().add("Authorization", TEST_AUTHORIZATION_HEADER + parameterString);
-	}
+public interface OAuthClientRequestSigner {
+	void sign(ClientHttpRequest request, Map<String, String> bodyParameters);
 }

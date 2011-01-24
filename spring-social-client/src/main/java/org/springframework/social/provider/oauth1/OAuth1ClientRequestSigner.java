@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.oauth1;
+package org.springframework.social.provider.oauth1;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -23,9 +23,7 @@ import java.util.Map;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
-import org.springframework.social.oauth.OAuthClientRequestSigner;
-import org.springframework.social.provider.oauth1.OAuth1Template;
-import org.springframework.social.provider.oauth1.OAuthToken;
+import org.springframework.social.provider.oauth.OAuthClientRequestSigner;
 
 /**
  * Abstract implementation of {@link OAuthClientRequestSigner} that adds an
@@ -37,15 +35,11 @@ import org.springframework.social.provider.oauth1.OAuthToken;
  */
 public class OAuth1ClientRequestSigner implements OAuthClientRequestSigner {
 
-	private final String apiKey;
-	private final String apiSecret;
 	private final String accessToken;
 	private final String accessTokenSecret;
 	private OAuth1Template oauth1Template;
 
 	public OAuth1ClientRequestSigner(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
-		this.apiKey = apiKey;
-		this.apiSecret = apiSecret;
 		this.accessToken = accessToken;
 		this.accessTokenSecret = accessTokenSecret;
 		oauth1Template = new OAuth1Template(apiKey, apiSecret, null, "http://localhost:8080/foo", null);

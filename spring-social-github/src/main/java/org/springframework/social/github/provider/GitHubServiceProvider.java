@@ -24,7 +24,9 @@ import org.springframework.social.provider.support.ConnectionRepository;
 public class GitHubServiceProvider extends AbstractOAuth2ServiceProvider<GitHubOperations> {
 
 	public GitHubServiceProvider(String clientId, String clientSecret, ConnectionRepository connectionRepository) {
-		super("github", "Github", connectionRepository, new OAuth2Template(clientId, clientSecret));
+		super("github", "Github", connectionRepository, new OAuth2Template(clientId, clientSecret, 
+				"https://github.com/login/oauth/authorize?client_id={clientId}&redirect_uri={redirectUri}&scope={scope}", 
+				"https://github.com/login/oauth/access_token"));
 	}
 
 	protected GitHubOperations getApi(String accessToken) {

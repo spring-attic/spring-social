@@ -13,16 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.oauth1;
+package org.springframework.social.provider.oauth;
 
+import static org.springframework.social.provider.oauth.OAuthSigningClientHttpRequestTest.*;
+
+import java.util.Map;
+
+import org.springframework.http.client.ClientHttpRequest;
 
 /**
  * @author Craig Walls
  */
-public class MissingOAuthLibraryException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
-	
-	public MissingOAuthLibraryException(String message) {
-		super(message);
+public class FakeSigner implements OAuthClientRequestSigner {
+	public void sign(ClientHttpRequest request, Map<String, String> bodyParameters) {
+		String parameterString = "";
+		for (String key : bodyParameters.keySet()) {
+			parameterString += "&" + key + "=" + bodyParameters.get(key);
+		}
+		request.getHeaders().add("Authorization", TEST_AUTHORIZATION_HEADER + parameterString);
 	}
 }

@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.oauth;
+package org.springframework.social.provider.oauth1;
 
-import java.util.Map;
-
-import org.springframework.http.client.ClientHttpRequest;
 
 /**
- * Strategy interface for signing a client request with the necessary
- * information for it to be OAuth-authenticated. Implementations of this
- * interface will vary for different versions of OAuth.
- * 
  * @author Craig Walls
  */
-public interface OAuthClientRequestSigner {
-	void sign(ClientHttpRequest request, Map<String, String> bodyParameters);
+public class MissingOAuthLibraryException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+	
+	public MissingOAuthLibraryException(String message) {
+		super(message);
+	}
 }

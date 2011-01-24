@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.oauth1;
+package org.springframework.social.provider.oauth1;
 
 import static org.junit.Assert.*;
 
