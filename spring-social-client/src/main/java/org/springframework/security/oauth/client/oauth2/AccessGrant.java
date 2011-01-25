@@ -21,13 +21,13 @@ import java.io.Serializable;
  * OAuth2 access token.
  * @author Keith Donald
  */
-public final class AccessCredentials implements Serializable {
+public final class AccessGrant implements Serializable {
 
 	private final String accessToken;
 	
 	private final String refreshToken;
 
-	public AccessCredentials(String accessToken, String refreshToken) {
+	public AccessGrant(String accessToken, String refreshToken) {
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
 	}

@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.oauth.client.oauth2.AccessCredentials;
+import org.springframework.security.oauth.client.oauth2.AccessGrant;
 import org.springframework.security.oauth.client.oauth2.OAuth2Template;
 import org.springframework.web.client.RestOperations;
 
@@ -68,7 +68,7 @@ public class OAuth2TemplateTest {
 				return rest;
 			};
 		};
-		AccessCredentials accessToken = oauth2Template.exchangeForAccess("authCode", "http://www.someclient.com/connect/foo");
+		AccessGrant accessToken = oauth2Template.exchangeForAccess("authCode", "http://www.someclient.com/connect/foo");
 		assertEquals("ACCESS_TOKEN", accessToken.getAccessToken());
 		assertEquals("REFRESH_TOKEN", accessToken.getRefreshToken());
 	}

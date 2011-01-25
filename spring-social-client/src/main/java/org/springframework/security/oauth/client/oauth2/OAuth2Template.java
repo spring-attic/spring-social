@@ -54,7 +54,7 @@ public class OAuth2Template implements OAuth2Operations {
 		return authorizeUrlTemplate.expand(urlVariables).toString();
 	}
 
-	public AccessCredentials exchangeForAccess(String authorizationCode, String redirectUri) {
+	public AccessGrant exchangeForAccess(String authorizationCode, String redirectUri) {
 		Map<String, String> requestParameters = new HashMap<String, String>();
 		requestParameters.put("client_id", clientId);
 		requestParameters.put("client_secret", clientSecret);
@@ -63,7 +63,7 @@ public class OAuth2Template implements OAuth2Operations {
 		requestParameters.put("grant_type", "authorization_code");
 		@SuppressWarnings("unchecked")
 		Map<String, String> result = getRestOperations().postForObject(accessTokenUrl, requestParameters, Map.class);
-		return new AccessCredentials(result.get("access_token"), result.get("refresh_token"));
+		return new AccessGrant(result.get("access_token"), result.get("refresh_token"));
 	}
 
 	public void sign(ProtectedResourceRequest request, String accessToken) {

@@ -49,7 +49,7 @@ public interface OAuth1Operations {
 	 * Sign the client http request with OAuth credentials.
 	 * To be called before the request is executed.
 	 * @param request the client http request
-	 * @param accessToken the access token
+	 * @param accessToken the access token and secret
 	 */
 	void sign(ProtectedResourceRequest request, OAuthToken accessToken);
 	

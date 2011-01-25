@@ -31,11 +31,11 @@ public interface OAuth2Operations {
 	String buildAuthorizeUrl(String redirectUri, String scope);
 
 	/**
-	 * Exchange the authorization grant for access.
-	 * @param authorizationGrant the authorization code returned by the provider upon user authorization
+	 * Exchange the authorization grant for an access grant.
+	 * @param authorizationGrant the authorization grant returned by the provider upon user authorization
 	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider
 	 */
-	AccessCredentials exchangeForAccess(String authorizationGrant, String redirectUri);
+	AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri);
 
 	/**
 	 * Sign the client http request with OAuth credentials.
