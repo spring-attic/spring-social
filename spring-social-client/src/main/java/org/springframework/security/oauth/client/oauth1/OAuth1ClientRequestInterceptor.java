@@ -15,18 +15,13 @@
  */
 package org.springframework.security.oauth.client.oauth1;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.http.MediaType;
 import org.springframework.security.oauth.client.ClientRequest;
 import org.springframework.security.oauth.client.RestTemplateInterceptor;
 
 /**
  * ClientRequestInterceptor implementation that performs OAuth1 request signing before the request is executed.
  * @author Keith Donald
+ * @author Craig Walls
  */
 public class OAuth1ClientRequestInterceptor implements RestTemplateInterceptor {
 
@@ -45,35 +40,8 @@ public class OAuth1ClientRequestInterceptor implements RestTemplateInterceptor {
 	}
 
 	public void beforeExecution(ClientRequest request) {
-		Map<String, String> parameters = extractBodyParameters(request.getHeaders().getContentType(), request.getBody());
-		String authorizationHeader = OAuth1SigningUtils.buildAuthorizationHeader(request.getUri().toString(),
-				request.getMethod(), parameters, consumerKey,
-				consumerSecret, accessToken);
-		request.getHeaders().set("Authorization", authorizationHeader);
-	}
-	
-	private Map<String, String> extractBodyParameters(MediaType bodyType, byte[] bodyBytes) {
-		Map<String, String> params = new HashMap<String, String>();
-
-		if (bodyType != null && bodyType.equals(MediaType.APPLICATION_FORM_URLENCODED)) {
-			String[] paramPairs = new String(bodyBytes).split("&");
-			for (String pair : paramPairs) {
-				String[] keyValue = pair.split("=");
-				if (keyValue.length == 2) {
-					// TODO: Determine if this decode step is necessary, since
-					// it's just going to be encoded again later
-					params.put(keyValue[0], decode(keyValue[1]));
-				}
-			}
-		}
-		return params;
+		request.getHeaders().set("Authorization", OAuth1SigningUtils.buildAuthorizationHeader(request, consumerKey, consumerSecret,
+				accessToken));
 	}
 
-	protected String decode(String encoded) {
-		try {
-			return URLDecoder.decode(encoded, "UTF-8");
-		} catch (UnsupportedEncodingException shouldntHappen) {
-			return encoded;
-		}
-	}
 }

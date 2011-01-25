@@ -1,6 +1,8 @@
 package org.springframework.security.oauth.client.oauth1;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -16,18 +18,23 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.security.oauth.client.ClientRequest;
 
 public class OAuth1SigningUtils {
-	// TODO: Look into reducing the number of params here
-	public static String buildAuthorizationHeader(String targetUrl, HttpMethod method, Map<String, String> parameters,
-			String consumerKey, String consumerSecret, OAuthToken accessToken) {
+	public static String buildAuthorizationHeader(ClientRequest request, String consumerKey, String consumerSecret,
+			OAuthToken accessToken) {
 		Map<String, String> oauthParameters = getCommonOAuthParameters(consumerKey);
 		oauthParameters.put("oauth_token", accessToken.getValue());
-		return OAuth1SigningUtils.buildAuthorizationHeader(targetUrl, oauthParameters, parameters, method,
-				consumerSecret, accessToken.getSecret());
+		Map<String, String> aditionalParameters = extractBodyParameters(request.getHeaders().getContentType(),
+				request.getBody());
+		Map<String, String> queryParameters = extractParameters(request.getUri().getQuery());
+		aditionalParameters.putAll(queryParameters);
+		String baseRequestUrl = getBaseUrlWithoutPortOrQueryString(request.getUri());
+		return OAuth1SigningUtils.buildAuthorizationHeader(baseRequestUrl, oauthParameters, aditionalParameters,
+				request.getMethod(), consumerSecret, accessToken.getSecret());
 	}
 
-	// TODO: Look into reducing the number of params here
 	public static String buildAuthorizationHeader(String targetUrl, Map<String, String> oauthParameters,
 			Map<String, String> additionalParameters, HttpMethod method, String consumerSecret, String tokenSecret) {
 		String baseString = buildBaseString(targetUrl, oauthParameters, additionalParameters, method);
@@ -40,6 +47,16 @@ public class OAuth1SigningUtils {
 		return header;
 	}
 
+	public static Map<String, String> getCommonOAuthParameters(String consumerKey) {
+		Map<String, String> oauthParameters = new HashMap<String, String>();
+		oauthParameters.put("oauth_consumer_key", consumerKey);
+		oauthParameters.put("oauth_signature_method", HMAC_SHA1_SIGNATURE_NAME);
+		oauthParameters.put("oauth_timestamp", String.valueOf(System.currentTimeMillis() / 1000));
+		oauthParameters.put("oauth_nonce", UUID.randomUUID().toString());
+		oauthParameters.put("oauth_version", "1.0");
+		return oauthParameters;
+	}
+
 	private static String buildBaseString(String targetUrl, Map<String, String> parameters,
 			Map<String, String> additionalParameters, HttpMethod method) {
 		Map<String, String> allParameters = new HashMap<String, String>(parameters);
@@ -49,7 +66,8 @@ public class OAuth1SigningUtils {
 		Collections.sort(keys);
 		String separator = "";
 		for (String key : keys) {
-			baseString += encode(separator + key + "=" + encode(allParameters.get(key)).replace("+", "%20"));
+			String parameterValue = allParameters.get(key);
+			baseString += encode(separator + key + "=" + encode(parameterValue));
 			separator = "&";
 		}
 		return baseString;
@@ -79,22 +97,49 @@ public class OAuth1SigningUtils {
 		}
 	}
 
+	private static Map<String, String> extractBodyParameters(MediaType bodyType, byte[] bodyBytes) {
+		if (bodyType != null && bodyType.equals(MediaType.APPLICATION_FORM_URLENCODED)) {
+			return extractParameters(new String(bodyBytes));
+		}
+		return new HashMap<String, String>();
+	}
+
+	private static Map<String, String> extractParameters(String parameterString) {
+		Map<String, String> params = new HashMap<String, String>();
+		if (parameterString != null) {
+			String[] paramPairs = parameterString.split("&");
+			for (String pair : paramPairs) {
+				String[] keyValue = pair.split("=");
+				if (keyValue.length == 2) {
+					// TODO: Determine if this decode step is necessary, since
+					// it's just going to be encoded again later
+					params.put(keyValue[0], decode(keyValue[1]));
+				}
+			}
+		}
+		return params;
+	}
+
+	private static String getBaseUrlWithoutPortOrQueryString(URI uri) {
+		String baseRequestUrl = uri.toString().replaceAll("\\?.*", "").replace("\\:\\d{4}", "");
+		return baseRequestUrl;
+	}
+
 	private static String encode(String in) {
 		try {
-			return URLEncoder.encode(in, "UTF-8");
+			// See http://oauth.net/core/1.0a/#encoding_parameters
+			return URLEncoder.encode(in, "UTF-8").replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
 		} catch (Exception wontHappen) {
 			return null;
 		}
 	}
 
-	public static Map<String, String> getCommonOAuthParameters(String consumerKey) {
-		Map<String, String> oauthParameters = new HashMap<String, String>();
-		oauthParameters.put("oauth_consumer_key", consumerKey);
-		oauthParameters.put("oauth_signature_method", HMAC_SHA1_SIGNATURE_NAME);
-		oauthParameters.put("oauth_timestamp", String.valueOf(System.currentTimeMillis() / 1000));
-		oauthParameters.put("oauth_nonce", UUID.randomUUID().toString());
-		oauthParameters.put("oauth_version", "1.0");
-		return oauthParameters;
+	private static String decode(String encoded) {
+		try {
+			return URLDecoder.decode(encoded, "UTF-8");
+		} catch (UnsupportedEncodingException shouldntHappen) {
+			return encoded;
+		}
 	}
 
 	public static final String HMAC_SHA1_SIGNATURE_NAME = "HMAC-SHA1";

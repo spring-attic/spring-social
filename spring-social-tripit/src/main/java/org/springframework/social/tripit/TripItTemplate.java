@@ -17,11 +17,10 @@ package org.springframework.social.tripit;
 
 import java.util.List;
 
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.social.provider.oauth.OAuthSigningClientHttpRequestFactory;
-import org.springframework.social.provider.oauth1.OAuth1ClientRequestSigner;
+import org.springframework.security.oauth.client.InterceptorCallingRestTemplate;
+import org.springframework.security.oauth.client.oauth1.OAuth1ClientRequestInterceptor;
+import org.springframework.security.oauth.client.oauth1.OAuthToken;
 import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * <p>
@@ -58,9 +57,14 @@ public class TripItTemplate implements TripItOperations {
 	 *            authentication.
 	 */
 	public TripItTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
-		RestTemplate restTemplate = new RestTemplate(new OAuthSigningClientHttpRequestFactory(
-				new SimpleClientHttpRequestFactory(),
-				new OAuth1ClientRequestSigner(apiKey, apiSecret, accessToken, accessTokenSecret)));
+		// RestTemplate restTemplate = new RestTemplate();
+		// temporarily use InterceptorCallingRestTemplate instead of a regular
+		// RestTemplate. This is to simulate the work that Arjen is doing for
+		// SPR-7494. Once Arjen's finished, a regular RestTemplate should be
+		// used with the interceptors registered appropriately.
+		InterceptorCallingRestTemplate restTemplate = new InterceptorCallingRestTemplate();
+		restTemplate.addInterceptor(new OAuth1ClientRequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken,
+				accessTokenSecret)));
 		this.restOperations = restTemplate;
 	}
 
