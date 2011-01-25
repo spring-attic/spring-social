@@ -28,7 +28,7 @@ public class OAuth1ServiceProviderTest {
 		assertEquals(false, serviceProvider.isConnected(accountId));
 		assertEquals(0, serviceProvider.getConnections(accountId).size());
 		
-		// oauth dance
+		// oauth 1 dance
 		OAuth1Operations oauthClient = serviceProvider.getOAuth1Operations();
 		OAuthToken requestToken = oauthClient.fetchNewRequestToken("http://localhost:8080/me");
 		String authorizeUrl = oauthClient.buildAuthorizeUrl(requestToken.getValue());
