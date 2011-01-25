@@ -18,7 +18,6 @@ package org.springframework.security.oauth.client.oauth2;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.security.oauth.client.ClientRequest;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
