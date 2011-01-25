@@ -41,14 +41,29 @@ public class OAuth2ServiceProviderTest {
 		TestApiImpl impl = (TestApiImpl) api;
 		assertEquals("12345", impl.getAccessToken());
 		
-		// postconditions
+		// additional postconditions
 		assertEquals(true, serviceProvider.isConnected(accountId));
 		List<ServiceProviderConnection<TestApi>> connections = serviceProvider.getConnections(accountId);
 		assertEquals(1, connections.size());
-		ServiceProviderConnection<TestApi> sameConnection = connections.get(0);
-		assertEquals(connection, sameConnection);
-		assertEquals("Hello Keith!", connection.getApi().testOperation("Keith"));
+		assertEquals("Hello Keith!", connections.get(0).getApi().testOperation("Keith"));
 
+	}
+	
+	@Test
+	public void equals() {
+		Long accountId = 1L;
+		AccessGrant accessGrant = new AccessGrant("12345", "23456");
+		ServiceProviderConnection<TestApi> connection = serviceProvider.connect(accountId, accessGrant);
+		List<ServiceProviderConnection<TestApi>> connections = serviceProvider.getConnections(accountId);		
+		ServiceProviderConnection<TestApi> sameConnection = connections.get(0);
+		assertEquals(connection, sameConnection);		
+	}
+	
+	@Test
+	public void disconnect() {
+		Long accountId = 1L;
+		AccessGrant accessGrant = new AccessGrant("12345", "23456");
+		ServiceProviderConnection<TestApi> connection = serviceProvider.connect(accountId, accessGrant);	
 		connection.disconnect();
 		assertEquals(false, serviceProvider.isConnected(accountId));
 		assertEquals(0, serviceProvider.getConnections(accountId).size());
@@ -66,16 +81,15 @@ public class OAuth2ServiceProviderTest {
 		} catch (IllegalStateException e) {
 			
 		}
-		
 	}
 	
 	@Test
 	public void duplicateConnection() {
 		Long accountId = 1L;
-		AccessGrant accessToken = new AccessGrant("12345", "23456");
-		serviceProvider.connect(accountId, accessToken);
+		AccessGrant accessGrant = new AccessGrant("12345", "23456");
+		serviceProvider.connect(accountId, accessGrant);
 		try {
-			serviceProvider.connect(accountId, accessToken);
+			serviceProvider.connect(accountId, accessGrant);
 			fail("Should have failed on duplicate connection");
 		} catch (IllegalArgumentException e) {
 			

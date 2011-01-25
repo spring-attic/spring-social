@@ -46,14 +46,45 @@ public class OAuth1ServiceProviderTest {
 		assertEquals("34567", impl.getAccessToken());
 		assertEquals("45678", impl.getSecret());
 		
-		// postconditions
+		// additional postconditions
 		assertEquals(true, serviceProvider.isConnected(accountId));
 		List<ServiceProviderConnection<TestApi>> connections = serviceProvider.getConnections(accountId);
 		assertEquals(1, connections.size());
-		ServiceProviderConnection<TestApi> sameConnection = connections.get(0);
-		assertEquals(connection, sameConnection);
-		assertEquals("Hello Keith!", connection.getApi().testOperation("Keith"));
+		assertEquals("Hello Keith!", connections.get(0).getApi().testOperation("Keith"));		
 
+	}
+	
+	@Test
+	public void equals() {
+		Long accountId = 1L;
+		OAuthToken accessToken = new OAuthToken("12345", "23456");
+		ServiceProviderConnection<TestApi> connection = serviceProvider.connect(accountId, accessToken);
+		ServiceProviderConnection<TestApi> sameConnection = serviceProvider.getConnections(1L).get(0);
+		assertEquals(connection, sameConnection);		
+	}
+	
+	@Test
+	public void duplicateConnection() {
+		Long accountId = 1L;
+		OAuthToken accessToken = new OAuthToken("12345", "23456");
+		serviceProvider.connect(accountId, accessToken);
+		try {
+			serviceProvider.connect(accountId, accessToken);
+			fail("Should have failed on duplicate connection");
+		} catch (IllegalArgumentException e) {
+			
+		}
+	}
+	
+	@Test
+	public void disconnect() {
+		Long accountId = 1L;
+		OAuthToken accessToken = new OAuthToken("12345", "23456");
+		ServiceProviderConnection<TestApi> connection = serviceProvider.connect(accountId, accessToken);
+		TestApi api = connection.getApi();
+		assertEquals("Hello Keith!", api.testOperation("Keith"));
+
+		// disconnect
 		connection.disconnect();
 		assertEquals(false, serviceProvider.isConnected(accountId));
 		assertEquals(0, serviceProvider.getConnections(accountId).size());
@@ -70,21 +101,7 @@ public class OAuth1ServiceProviderTest {
 			fail("Should already be disconnected");
 		} catch (IllegalStateException e) {
 			
-		}
-		
-	}
-	
-	@Test
-	public void duplicateConnection() {
-		Long accountId = 1L;
-		OAuthToken accessToken = new OAuthToken("12345", "23456");
-		serviceProvider.connect(accountId, accessToken);
-		try {
-			serviceProvider.connect(accountId, accessToken);
-			fail("Should have failed on duplicate connection");
-		} catch (IllegalArgumentException e) {
-			
-		}
+		}		
 	}
 	
 	static class TestServiceProvider extends AbstractOAuth1ServiceProvider<TestApi> {
