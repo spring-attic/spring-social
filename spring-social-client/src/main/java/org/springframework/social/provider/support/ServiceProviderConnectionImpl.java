@@ -36,6 +36,8 @@ class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
 
 	private final ConnectionRepository connectionRepository;
 	
+	private boolean disconnected;
+	
 	public ServiceProviderConnectionImpl(Long id, S api, Serializable accountId, String providerId, ConnectionRepository connectionRepository) {
 		this.id = id;
 		this.api = api;
@@ -44,16 +46,31 @@ class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
 		this.providerId = providerId;
 	}
 	
-	public Long getId() {
-		return id;
-	}
-
 	public S getApi() {
+		if (disconnected) {
+			throw new IllegalStateException("Unable to get Api: this Connection is disconnected");
+		}
 		return api;
 	}
 
 	public void disconnect() {
+		if (disconnected) {
+			throw new IllegalStateException("This connection is already disconnected");
+		}		
 		connectionRepository.removeConnection(accountId, providerId, id);
+		disconnected = true;
+	}
+	
+	public boolean equals(Object o) {
+		if (!(o instanceof ServiceProviderConnectionImpl)) {
+			return false;
+		}
+		ServiceProviderConnectionImpl<?> other = (ServiceProviderConnectionImpl<?>) o;
+		return id.equals(other.id);
+	}
+	
+	public int hashCode() {
+		return id.hashCode();
 	}
 
 }

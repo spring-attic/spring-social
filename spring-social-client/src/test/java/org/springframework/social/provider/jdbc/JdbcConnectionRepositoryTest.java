@@ -17,7 +17,7 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.social.provider.support.Connection;
 
-public class JdbcConnectionRepositoryTests {
+public class JdbcConnectionRepositoryTest {
 	
 	private EmbeddedDatabase db;
 
