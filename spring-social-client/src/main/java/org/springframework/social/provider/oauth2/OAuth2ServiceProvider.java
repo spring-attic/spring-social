@@ -17,7 +17,7 @@ package org.springframework.social.provider.oauth2;
 
 import java.io.Serializable;
 
-import org.springframework.security.oauth.client.oauth2.AccessToken;
+import org.springframework.security.oauth.client.oauth2.AccessCredentials;
 import org.springframework.security.oauth.client.oauth2.OAuth2Operations;
 import org.springframework.social.provider.ServiceProvider;
 import org.springframework.social.provider.ServiceProviderConnection;
@@ -37,8 +37,8 @@ public interface OAuth2ServiceProvider<S> extends ServiceProvider<S> {
 	/**
 	 * Establishes a connection between a user account and this provider.
 	 * @param accountId the user account identifier
-	 * @param accessToken the access token returned from {@link OAuth2Operations#exchangeForAccessToken(String, String)}
+	 * @param accessToken the access token returned from {@link OAuth2Operations#exchangeForAccess(String, String)}
 	 */	
-	ServiceProviderConnection<S> connect(Serializable accountId, AccessToken accessToken);
+	ServiceProviderConnection<S> connect(Serializable accountId, AccessCredentials accessToken);
 
 }

@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.oauth.client.oauth2.AccessToken;
+import org.springframework.security.oauth.client.oauth2.AccessCredentials;
 import org.springframework.security.oauth.client.oauth2.OAuth2Template;
 import org.springframework.web.client.RestOperations;
 
@@ -50,7 +50,7 @@ public class OAuth2TemplateTest {
 	}
 
 	@Test
-	public void exchangeForAccessToken() {
+	public void exchangeForAccess() {
 		final RestOperations rest = mock(RestOperations.class);
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("client_id", "client_id");
@@ -68,13 +68,13 @@ public class OAuth2TemplateTest {
 				return rest;
 			};
 		};
-		AccessToken accessToken = oauth2Template.exchangeForAccessToken("http://www.someclient.com/connect/foo", "authCode");
-		assertEquals("ACCESS_TOKEN", accessToken.getValue());
+		AccessCredentials accessToken = oauth2Template.exchangeForAccess("authCode", "http://www.someclient.com/connect/foo");
+		assertEquals("ACCESS_TOKEN", accessToken.getAccessToken());
 		assertEquals("REFRESH_TOKEN", accessToken.getRefreshToken());
 	}
 	
 	@Test
-	public void signClientRequest() {
+	public void signProtectedResourceRequest() {
 		// TODO
 	}
 

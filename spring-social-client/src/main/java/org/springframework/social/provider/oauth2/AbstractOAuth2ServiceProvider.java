@@ -17,7 +17,7 @@ package org.springframework.social.provider.oauth2;
 
 import java.io.Serializable;
 
-import org.springframework.security.oauth.client.oauth2.AccessToken;
+import org.springframework.security.oauth.client.oauth2.AccessCredentials;
 import org.springframework.security.oauth.client.oauth2.OAuth2Operations;
 import org.springframework.social.provider.AuthorizationProtocol;
 import org.springframework.social.provider.ServiceProviderConnection;
@@ -48,8 +48,8 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 		return oauth2Operations;
 	}
 	
-	public ServiceProviderConnection<S> connect(Serializable accountId, AccessToken accessToken) {
-		return connect(accountId, Connection.oauth2(accessToken.getValue(), accessToken.getRefreshToken()));
+	public ServiceProviderConnection<S> connect(Serializable accountId, AccessCredentials accessToken) {
+		return connect(accountId, Connection.oauth2(accessToken.getAccessToken(), accessToken.getRefreshToken()));
 	}
 
 	@Override

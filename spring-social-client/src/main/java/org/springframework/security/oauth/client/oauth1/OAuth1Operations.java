@@ -15,14 +15,14 @@
  */
 package org.springframework.security.oauth.client.oauth1;
 
-import org.springframework.security.oauth.client.RequestSigner;
+import org.springframework.security.oauth.client.ProtectedResourceRequest;
 
 /**
  * A service interface for the OAuth1 flow.
  * This interface allows you to conduct the "OAuth dance" with a service provider on behalf of a user.
  * @author Keith Donald
  */
-public interface OAuth1Operations extends RequestSigner {
+public interface OAuth1Operations {
 
 	/**
 	 * Begin the account connection process by fetching a new request token from this service provider.
@@ -45,4 +45,12 @@ public interface OAuth1Operations extends RequestSigner {
 	 */
 	OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken);
 
+	/**
+	 * Sign the client http request with OAuth credentials.
+	 * To be called before the request is executed.
+	 * @param request the client http request
+	 * @param accessToken the access token
+	 */
+	void sign(ProtectedResourceRequest request, OAuthToken accessToken);
+	
 }

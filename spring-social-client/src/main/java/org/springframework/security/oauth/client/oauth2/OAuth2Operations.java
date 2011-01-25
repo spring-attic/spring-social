@@ -15,14 +15,14 @@
  */
 package org.springframework.security.oauth.client.oauth2;
 
-import org.springframework.security.oauth.client.RequestSigner;
+import org.springframework.security.oauth.client.ProtectedResourceRequest;
 
 /**
  * A service interface for the OAuth2 flow.
  * This interface allows you to conduct the "OAuth dance" with a service provider on behalf of a user. 
  * @author Keith Donald
  */
-public interface OAuth2Operations extends RequestSigner {
+public interface OAuth2Operations {
 
 	/**
 	 * Construct the URL to redirect the user to for connection authorization.
@@ -31,10 +31,18 @@ public interface OAuth2Operations extends RequestSigner {
 	String buildAuthorizeUrl(String redirectUri, String scope);
 
 	/**
-	 * Exchange the authorization code for an access token.
+	 * Exchange the authorization grant for access.
+	 * @param authorizationGrant the authorization code returned by the provider upon user authorization
 	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider
-	 * @param authorizationCode the authorization code returned by the provider upon user authorization
 	 */
-	AccessToken exchangeForAccessToken(String redirectUri, String authorizationCode);
+	AccessCredentials exchangeForAccess(String authorizationGrant, String redirectUri);
+
+	/**
+	 * Sign the client http request with OAuth credentials.
+	 * To be called before the request is executed.
+	 * @param request the client http request
+	 * @param accessToken the access token value
+	 */
+	void sign(ProtectedResourceRequest request, String accessToken);
 
 }

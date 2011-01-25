@@ -83,7 +83,7 @@ public class OAuth1Template implements OAuth1Operations {
 		return getTokenFromProvider(accessTokenParameters, accessTokenUrl, requestToken.getSecret());
 	}
 
-	public void sign(ProtectedResourceRequest request) {
+	public void sign(ProtectedResourceRequest request, OAuthToken accessToken) {
 		// TODO implement me
 	}
 
