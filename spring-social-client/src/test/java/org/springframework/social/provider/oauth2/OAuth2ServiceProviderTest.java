@@ -17,7 +17,7 @@ public class OAuth2ServiceProviderTest {
 
 	private ConnectionRepository connectionRepository = new StubConnectionRepository();
 
-	private OAuth2ServiceProvider<TestApi> serviceProvider = new TestServiceProvider("54321", "65432", connectionRepository);
+	private OAuth2ServiceProvider<TestApi> serviceProvider = new TestServiceProvider(connectionRepository);
 
 	@Test
 	public void connectFlow() {
@@ -98,7 +98,7 @@ public class OAuth2ServiceProviderTest {
 	
 	static class TestServiceProvider extends AbstractOAuth2ServiceProvider<TestApi> {
 
-		public TestServiceProvider(String consumerKey, String consumerSecret, ConnectionRepository connectionRepository) {
+		public TestServiceProvider(ConnectionRepository connectionRepository) {
 			super("test", connectionRepository, new StubOAuth2Operations());
 		}
 
