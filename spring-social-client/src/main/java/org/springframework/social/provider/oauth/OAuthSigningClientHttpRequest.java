@@ -45,7 +45,7 @@ public final class OAuthSigningClientHttpRequest implements ClientHttpRequest {
 		this.signer = signer;
 	}
 
-	// implementing HttpHeaders
+	// implementing HttpMessage
 	
 	public HttpHeaders getHeaders() {
 		return delegate.getHeaders();
