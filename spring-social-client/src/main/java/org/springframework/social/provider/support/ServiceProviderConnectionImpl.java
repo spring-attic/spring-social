@@ -46,7 +46,7 @@ class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
 		this.providerId = providerId;
 	}
 	
-	public S getApi() {
+	public S getServiceApi() {
 		if (disconnected) {
 			throw new IllegalStateException("Unable to get Api: this Connection is disconnected");
 		}

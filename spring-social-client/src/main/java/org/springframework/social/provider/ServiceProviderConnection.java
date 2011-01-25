@@ -25,7 +25,7 @@ public interface ServiceProviderConnection<S> {
 	/**
 	 * The Service API.
 	 */
-	public S getApi();
+	public S getServiceApi();
 	
 	/**
 	 * Severs this connection.

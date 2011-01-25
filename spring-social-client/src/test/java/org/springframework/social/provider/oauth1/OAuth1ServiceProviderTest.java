@@ -37,7 +37,7 @@ public class OAuth1ServiceProviderTest {
 
 		// connect
 		ServiceProviderConnection<TestApi> connection = serviceProvider.connect(accountId, accessToken);
-		TestApi api = connection.getApi();
+		TestApi api = connection.getServiceApi();
 		assertEquals("Hello Keith!", api.testOperation("Keith"));
 
 		TestApiImpl impl = (TestApiImpl) api;
@@ -50,7 +50,7 @@ public class OAuth1ServiceProviderTest {
 		assertEquals(true, serviceProvider.isConnected(accountId));
 		List<ServiceProviderConnection<TestApi>> connections = serviceProvider.getConnections(accountId);
 		assertEquals(1, connections.size());
-		assertEquals("Hello Keith!", connections.get(0).getApi().testOperation("Keith"));		
+		assertEquals("Hello Keith!", connections.get(0).getServiceApi().testOperation("Keith"));		
 
 	}
 	
@@ -81,7 +81,7 @@ public class OAuth1ServiceProviderTest {
 		Long accountId = 1L;
 		OAuthToken accessToken = new OAuthToken("12345", "23456");
 		ServiceProviderConnection<TestApi> connection = serviceProvider.connect(accountId, accessToken);
-		TestApi api = connection.getApi();
+		TestApi api = connection.getServiceApi();
 		assertEquals("Hello Keith!", api.testOperation("Keith"));
 
 		// disconnect
@@ -90,7 +90,7 @@ public class OAuth1ServiceProviderTest {
 		assertEquals(0, serviceProvider.getConnections(accountId).size());
 
 		try {
-			connection.getApi();
+			connection.getServiceApi();
 			fail("Should be disconnected");
 		} catch (IllegalStateException e) {
 			
