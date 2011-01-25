@@ -15,8 +15,6 @@
  */
 package org.springframework.security.oauth.client.oauth1;
 
-import org.springframework.security.oauth.client.ProtectedResourceRequest;
-
 /**
  * A service interface for the OAuth1 flow.
  * This interface allows you to conduct the "OAuth dance" with a service provider on behalf of a user.
@@ -45,12 +43,4 @@ public interface OAuth1Operations {
 	 */
 	OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken);
 
-	/**
-	 * Sign the client http request with OAuth credentials.
-	 * To be called before the request is executed.
-	 * @param request the client http request
-	 * @param accessToken the access token and secret
-	 */
-	void sign(ProtectedResourceRequest request, OAuthToken accessToken);
-	
 }

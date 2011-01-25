@@ -33,7 +33,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth.client.ProtectedResourceRequest;
+import org.springframework.security.oauth.client.ClientRequest;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
@@ -81,10 +81,6 @@ public class OAuth1Template implements OAuth1Operations {
 		accessTokenParameters.put("oauth_token", requestToken.getValue());
 		accessTokenParameters.put("oauth_verifier", requestToken.getVerifier());
 		return getTokenFromProvider(accessTokenParameters, accessTokenUrl, requestToken.getSecret());
-	}
-
-	public void sign(ProtectedResourceRequest request, OAuthToken accessToken) {
-		// TODO implement me
 	}
 
 	// internal helpers

@@ -18,7 +18,7 @@ package org.springframework.security.oauth.client.oauth2;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.security.oauth.client.ProtectedResourceRequest;
+import org.springframework.security.oauth.client.ClientRequest;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
@@ -66,10 +66,6 @@ public class OAuth2Template implements OAuth2Operations {
 		return new AccessGrant(result.get("access_token"), result.get("refresh_token"));
 	}
 
-	public void sign(ProtectedResourceRequest request, String accessToken) {
-		// TODO implement me
-	}
-	
 	// subclassing hooks
 	
 	protected RestOperations getRestOperations() {

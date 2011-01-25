@@ -21,11 +21,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 
 /**
+ * Note: temporary implementation until ClientRequestInterceptor concept introduced in Spring Framework.
+ * 
  * A client request for a resource protected by OAuth.
  * Used to sign the request with OAuth credentials before it is executed.
  * @author Keith Donald
  */
-public final class ProtectedResourceRequest {
+public final class ClientRequest {
 	
 	private final HttpHeaders headers;
 	
@@ -35,7 +37,7 @@ public final class ProtectedResourceRequest {
 	
 	private final HttpMethod method;
 
-	public ProtectedResourceRequest(HttpHeaders headers, byte[] body, URI uri, HttpMethod method) {
+	public ClientRequest(HttpHeaders headers, byte[] body, URI uri, HttpMethod method) {
 		this.headers = headers;
 		this.body = body;
 		this.uri = uri;
