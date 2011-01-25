@@ -17,6 +17,8 @@ package org.springframework.social.provider.oauth2;
 
 import java.io.Serializable;
 
+import org.springframework.security.oauth.client.oauth2.AccessToken;
+import org.springframework.security.oauth.client.oauth2.OAuth2Operations;
 import org.springframework.social.provider.ServiceProvider;
 import org.springframework.social.provider.ServiceProviderConnection;
 

@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.provider.oauth2;
+package org.springframework.security.oauth.client.oauth2;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.security.oauth.client.ProtectedResourceRequest;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
@@ -66,10 +67,9 @@ public class OAuth2Template implements OAuth2Operations {
 		return new AccessToken(result.get("access_token"), result.get("refresh_token"));
 	}
 
-	public void sign(ClientHttpRequest request) {
+	public void sign(ProtectedResourceRequest request) {
 		// TODO implement me
 	}
-
 	
 	// subclassing hooks
 	

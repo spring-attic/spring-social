@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.provider.oauth1;
+package org.springframework.security.oauth.client.oauth1;
 
 /**
  * A OAuth 1.0 request token that has been authorized by the user.

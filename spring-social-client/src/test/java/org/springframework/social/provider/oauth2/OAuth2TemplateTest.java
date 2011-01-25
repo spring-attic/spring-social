@@ -9,6 +9,8 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.security.oauth.client.oauth2.AccessToken;
+import org.springframework.security.oauth.client.oauth2.OAuth2Template;
 import org.springframework.web.client.RestOperations;
 
 public class OAuth2TemplateTest {

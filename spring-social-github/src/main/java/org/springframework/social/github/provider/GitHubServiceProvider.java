@@ -15,10 +15,10 @@
  */
 package org.springframework.social.github.provider;
 
+import org.springframework.security.oauth.client.oauth2.OAuth2Template;
 import org.springframework.social.github.GitHubOperations;
 import org.springframework.social.github.GitHubTemplate;
 import org.springframework.social.provider.oauth2.AbstractOAuth2ServiceProvider;
-import org.springframework.social.provider.oauth2.OAuth2Template;
 import org.springframework.social.provider.support.ConnectionRepository;
 
 public class GitHubServiceProvider extends AbstractOAuth2ServiceProvider<GitHubOperations> {

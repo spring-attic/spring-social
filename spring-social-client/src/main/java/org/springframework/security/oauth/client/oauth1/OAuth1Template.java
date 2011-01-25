@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.provider.oauth1;
+package org.springframework.security.oauth.client.oauth1;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -33,7 +33,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.security.oauth.client.ProtectedResourceRequest;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
@@ -83,7 +83,7 @@ public class OAuth1Template implements OAuth1Operations {
 		return getTokenFromProvider(accessTokenParameters, accessTokenUrl, requestToken.getSecret());
 	}
 
-	public void sign(ClientHttpRequest request) {
+	public void sign(ProtectedResourceRequest request) {
 		// TODO implement me
 	}
 

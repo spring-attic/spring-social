@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.security.oauth.client.oauth1.OAuth1Template;
 
 public class OAuth1TemplateTest {
 

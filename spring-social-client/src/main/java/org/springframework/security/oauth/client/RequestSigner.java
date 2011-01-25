@@ -13,22 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.provider.oauth;
-
-import org.springframework.http.client.ClientHttpRequest;
+package org.springframework.security.oauth.client;
 
 /**
  * Strategy interface for signing a client request with the necessary information for it to be OAuth-authenticated.
  * Implementations of this interface will vary for different versions of OAuth.
  * @author Craig Walls
  */
-public interface OAuthClientRequestSigner {
+public interface RequestSigner {
 	
 	/**
 	 * Sign the client http request with OAuth credentials.
 	 * To be called before the request is executed.
 	 * @param request the client http request
 	 */
-	void sign(ClientHttpRequest request);
+	void sign(ProtectedResourceRequest request);
 	
 }

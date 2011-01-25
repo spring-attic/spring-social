@@ -13,41 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.provider.oauth1;
+package org.springframework.security.oauth.client.oauth2;
 
 import java.io.Serializable;
 
 /**
- * Holds an OAuth token and secret.
- * Used for both the request token and access token.
+ * OAuth2 access token.
  * @author Keith Donald
  */
-public final class OAuthToken implements Serializable {
+public final class AccessToken implements Serializable {
 
 	private final String value;
 	
-	private final String secret;
-	
-	/**
-	 * Create a new OAuth token with a token value and secret.
-	 */
-	public OAuthToken(String value, String secret) {
+	private final String refreshToken;
+
+	public AccessToken(String value, String refreshToken) {
 		this.value = value;
-		this.secret = secret;
+		this.refreshToken = refreshToken;
 	}
 
 	/**
-	 * The token value.
+	 * The access token value.
 	 */
 	public String getValue() {
 		return value;
 	}
 
 	/**
-	 * The token secret.
+	 * The refresh token that can be used to renew the access token.
 	 */
-	public String getSecret() {
-		return secret;
+	public String getRefreshToken() {
+		return refreshToken;
 	}
 
 }

@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.provider.oauth2;
+package org.springframework.security.oauth.client.oauth2;
 
-import org.springframework.social.provider.oauth.OAuthClientRequestSigner;
+import org.springframework.security.oauth.client.RequestSigner;
 
 /**
  * A service interface for the OAuth2 flow.
  * This interface allows you to conduct the "OAuth dance" with a service provider on behalf of a user. 
  * @author Keith Donald
  */
-public interface OAuth2Operations extends OAuthClientRequestSigner {
+public interface OAuth2Operations extends RequestSigner {
 
 	/**
 	 * Construct the URL to redirect the user to for connection authorization.

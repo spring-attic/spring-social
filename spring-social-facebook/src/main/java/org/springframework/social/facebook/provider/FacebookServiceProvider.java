@@ -15,10 +15,10 @@
  */
 package org.springframework.social.facebook.provider;
 
+import org.springframework.security.oauth.client.oauth2.OAuth2Template;
 import org.springframework.social.facebook.FacebookOperations;
 import org.springframework.social.facebook.FacebookTemplate;
 import org.springframework.social.provider.oauth2.AbstractOAuth2ServiceProvider;
-import org.springframework.social.provider.oauth2.OAuth2Template;
 import org.springframework.social.provider.support.ConnectionRepository;
 
 /**

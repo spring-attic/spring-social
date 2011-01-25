@@ -15,10 +15,10 @@
  */
 package org.springframework.social.linkedin.provider;
 
+import org.springframework.security.oauth.client.oauth1.OAuth1Template;
 import org.springframework.social.linkedin.LinkedInOperations;
 import org.springframework.social.linkedin.LinkedInTemplate;
 import org.springframework.social.provider.oauth1.AbstractOAuth1ServiceProvider;
-import org.springframework.social.provider.oauth1.OAuth1Template;
 import org.springframework.social.provider.support.ConnectionRepository;
 
 /**
