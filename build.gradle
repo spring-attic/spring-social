@@ -98,8 +98,6 @@ configure(javaprojects) {
     jodaVersion = '1.6'
     junitVersion = '4.7'
     mockitoVersion = '1.8.5'
-    s2OAuthVersion = '1.0.0.M1'
-    scribeVersion = '1.0.8'
     servletApiVersion = '2.5'
     springVersion = '3.0.5.RELEASE'
     springSecurityVersion = '3.1.0.CI-SNAPSHOT'
@@ -142,23 +140,8 @@ configure(javaprojects) {
 // @see configure(javaprojects) above for general config
 // -----------------------------------------------------------------------------
 
-project('spring-social-config') {
-    description = 'Spring Social Configuration'
-    dependencies {
-        compile "org.springframework:spring-beans:$springVersion"
-        compile project(':spring-social-client')
-        compile project(':spring-social-facebook') { optional = true }
-        compile project(':spring-social-github') { optional = true }
-        compile project(':spring-social-gowalla') { optional = true }
-        compile project(':spring-social-linkedin') { optional = true }
-        compile project(':spring-social-tripit') { optional = true }
-        compile project(':spring-social-twitter') { optional = true }
-        testCompile "com.h2database:h2:1.2.143"
-    }
-}
-
 project('spring-social-client') {
-    description = 'Spring Social Client'
+    description = 'Service Provider Framework'
     dependencies {
         compile "org.springframework:spring-jdbc:$springVersion"
         compile "org.springframework:spring-web:$springVersion"
@@ -169,7 +152,7 @@ project('spring-social-client') {
 }
 
 project('spring-social-facebook') {
-    description = 'Spring Social Facebook'
+    description = 'Facebook Service Provider'
     dependencies {
         compile "commons-httpclient:commons-httpclient:$commonsHttpClientVersion"
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
@@ -180,7 +163,7 @@ project('spring-social-facebook') {
 }
 
 project('spring-social-github') {
-    description = 'Spring Social GitHub'
+    description = 'Github Service Provider'
     dependencies {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-client')
@@ -188,7 +171,7 @@ project('spring-social-github') {
 }
 
 project('spring-social-gowalla') {
-    description = 'Spring Social Gowalla'
+    description = 'Gowalla Service Provider'
     dependencies {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-client')
@@ -196,7 +179,7 @@ project('spring-social-gowalla') {
 }
 
 project('spring-social-linkedin') {
-    description = 'Spring Social LinkedIn'
+    description = 'LinkedIn Service Provider'
     dependencies {
         compile "commons-httpclient:commons-httpclient:$commonsHttpClientVersion"
         compile project(':spring-social-client')
@@ -204,7 +187,7 @@ project('spring-social-linkedin') {
 }
 
 project('spring-social-tripit') {
-    description = 'Spring Social TripIt'
+    description = 'TripIt Service Provider'
     dependencies {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-client')
@@ -212,7 +195,7 @@ project('spring-social-tripit') {
 }
 
 project('spring-social-twitter') {
-    description = 'Spring Social Twitter'
+    description = 'Twitter Service Provider'
     dependencies {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-client')
@@ -220,10 +203,25 @@ project('spring-social-twitter') {
 }
 
 project('spring-social-webmvc') {
-    description = 'Spring Social Spring MVC extensions'
+    description = 'Spring MVC Integration'
     dependencies {
         compile "org.springframework:spring-web:$springVersion"
         compile project(':spring-social-client')
+    }
+}
+
+project('spring-social-config') {
+    description = 'Configuration Namespace'
+    dependencies {
+        compile "org.springframework:spring-beans:$springVersion"
+        compile project(':spring-social-client')
+        compile project(':spring-social-facebook') { optional = true }
+        compile project(':spring-social-github') { optional = true }
+        compile project(':spring-social-gowalla') { optional = true }
+        compile project(':spring-social-linkedin') { optional = true }
+        compile project(':spring-social-tripit') { optional = true }
+        compile project(':spring-social-twitter') { optional = true }
+        testCompile "com.h2database:h2:1.2.143"
     }
 }
 
