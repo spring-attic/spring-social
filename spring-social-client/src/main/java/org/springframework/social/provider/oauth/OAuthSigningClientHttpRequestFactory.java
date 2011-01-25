@@ -34,12 +34,17 @@ public final class OAuthSigningClientHttpRequestFactory implements ClientHttpReq
 	
 	private final ClientHttpRequestFactory delegate;
 
+	/**
+	 * Constructs a new oauth signing client request factory.
+	 * @param signer the oauth signer
+	 * @param delegate the request factory delegate
+	 */
 	public OAuthSigningClientHttpRequestFactory(OAuthClientRequestSigner signer, ClientHttpRequestFactory delegate) {
 		this.signer = signer;
 		this.delegate = delegate;
 	}
 
 	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
-		return new OAuthSigningClientHttpRequest(delegate.createRequest(uri, httpMethod), signer);
+		return new OAuthSigningClientHttpRequest(signer, delegate.createRequest(uri, httpMethod));
 	}
 }

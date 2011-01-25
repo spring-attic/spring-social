@@ -31,18 +31,18 @@ import org.springframework.http.client.ClientHttpResponse;
  */
 public final class OAuthSigningClientHttpRequest implements ClientHttpRequest {
 
-	private final ClientHttpRequest delegate;
-	
 	private final OAuthClientRequestSigner signer;
 
+	private final ClientHttpRequest delegate;
+	
 	/**
 	 * Creates an {@link OAuthSigningClientHttpRequest}.
+	 * @param signer The OAuth signer
 	 * @param delegate The wrapped {@link ClientHttpRequest} that is to be signed
-	 * @param signer An OAuth signer
 	 */
-	public OAuthSigningClientHttpRequest(ClientHttpRequest delegate, OAuthClientRequestSigner signer) {
-		this.delegate = delegate;
+	public OAuthSigningClientHttpRequest(OAuthClientRequestSigner signer, ClientHttpRequest delegate) {
 		this.signer = signer;
+		this.delegate = delegate;
 	}
 
 	// implementing HttpMessage

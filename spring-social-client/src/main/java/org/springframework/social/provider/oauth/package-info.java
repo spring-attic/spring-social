@@ -1,4 +1,4 @@
 /**
- * Core classes for signing requests with OAuth
+ * OAuth ClientHttpRequest signing support.
  */
 package org.springframework.social.provider.oauth;
