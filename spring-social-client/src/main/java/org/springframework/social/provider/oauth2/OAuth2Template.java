@@ -18,6 +18,7 @@ package org.springframework.social.provider.oauth2;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
@@ -35,6 +36,8 @@ public class OAuth2Template implements OAuth2Operations {
 	private final String accessTokenUrl;
 
 	private final UriTemplate authorizeUrlTemplate;
+	
+	private final RestTemplate restTemplate = new RestTemplate();
 	
 	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String accessTokenUrl) {
 		this.clientId = clientId;
@@ -63,7 +66,14 @@ public class OAuth2Template implements OAuth2Operations {
 		return new AccessToken(result.get("access_token"), result.get("refresh_token"));
 	}
 
+	public void sign(ClientHttpRequest request) {
+		// TODO implement me
+	}
+
+	
+	// subclassing hooks
+	
 	protected RestOperations getRestOperations() {
-		return new RestTemplate();
+		return restTemplate;
 	}
 }

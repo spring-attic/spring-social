@@ -8,7 +8,9 @@ import org.junit.Test;
 public class OAuth1TemplateTest {
 
 	private static final String ACCESS_TOKEN_URL = "http://www.someprovider.com/oauth/accessToken";
+	
 	private static final String REQUEST_TOKEN_URL = "https://www.someprovider.com/oauth/requestToken";
+	
 	private OAuth1Template oauth1;
 
 	@Before
@@ -29,6 +31,11 @@ public class OAuth1TemplateTest {
 
 	@Test
 	public void exchangeForAccessToken() {
+		// TODO : Flesh out proper test
+	}
+	
+	@Test
+	public void signClientRequest() {
 		// TODO : Flesh out proper test
 	}
 }

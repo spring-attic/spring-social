@@ -15,12 +15,14 @@
  */
 package org.springframework.social.provider.oauth1;
 
+import org.springframework.social.provider.oauth.OAuthClientRequestSigner;
+
 /**
  * A service interface for the OAuth1 flow.
  * This interface allows you to conduct the "OAuth dance" with a service provider on behalf of a user.
  * @author Keith Donald
  */
-public interface OAuth1Operations {
+public interface OAuth1Operations extends OAuthClientRequestSigner {
 
 	/**
 	 * Begin the account connection process by fetching a new request token from this service provider.

@@ -33,8 +33,10 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
@@ -54,6 +56,8 @@ public class OAuth1Template implements OAuth1Operations {
 	
 	private final String accessTokenUrl;
 	
+	private final RestTemplate restTemplate = new RestTemplate();
+
 	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl) {
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
@@ -79,41 +83,20 @@ public class OAuth1Template implements OAuth1Operations {
 		return getTokenFromProvider(accessTokenParameters, accessTokenUrl, requestToken.getSecret());
 	}
 
-	public String buildAuthorizationHeader(String targetUrl, HttpMethod method, Map<String, String> parameters,
-			OAuthToken accessToken) {
-		Map<String, String> oauthParameters = getCommonOAuthParameters();
-		oauthParameters.put("oauth_token", accessToken.getValue());
-
-		return buildAuthorizationHeader(targetUrl, oauthParameters, parameters, method,
-				accessToken.getSecret());
+	public void sign(ClientHttpRequest request) {
+		// TODO implement me
 	}
 
-	// private helpers
-	private String buildAuthorizationHeader(String targetUrl, Map<String, String> oauthParameters,
-			Map<String, String> additionalParameters, HttpMethod method, String tokenSecret) {
-		String baseString = buildBaseString(targetUrl, oauthParameters, additionalParameters, method);
-		String signature = calculateSignature(baseString, tokenSecret);
-		String header = "OAuth ";
-		for (String key : oauthParameters.keySet()) {
-			header += key + "=\"" + encode(oauthParameters.get(key)) + "\", ";
-		}
-		header += "oauth_signature=\"" + encode(signature) + "\"";
-		return header;
-	}
-
-	private OAuthToken getTokenFromProvider(Map<String, String> tokenRequestParameters, String tokenUrl,
-			String tokenSecret) {
+	// internal helpers
+	
+	private OAuthToken getTokenFromProvider(Map<String, String> tokenRequestParameters, String tokenUrl, String tokenSecret) {
 		Map<String, String> oauthParameters = getCommonOAuthParameters();
 		oauthParameters.putAll(tokenRequestParameters);
-		String authHeader = buildAuthorizationHeader(tokenUrl, oauthParameters,
-				Collections.<String, String> emptyMap(), HttpMethod.POST, tokenSecret);
+		String authHeader = buildAuthorizationHeader(tokenUrl, oauthParameters, Collections.<String, String> emptyMap(), HttpMethod.POST, tokenSecret);
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 		headers.add("Authorization", authHeader);
 		HttpEntity<String> request = new HttpEntity<String>(headers);
-
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<String> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, request, String.class);
-
+		ResponseEntity<String> response = getRestOperations().exchange(tokenUrl, HttpMethod.POST, request, String.class);
 		Map<String, String> responseMap = parseResponse(response.getBody());
 		return new OAuthToken(responseMap.get("oauth_token"), responseMap.get("oauth_token_secret"));
 	}
@@ -140,12 +123,35 @@ public class OAuth1Template implements OAuth1Operations {
 		return responseMap;
 	}
 
-	private String buildBaseString(String targetUrl, Map<String, String> parameters,
-			Map<String, String> additionalParameters, HttpMethod method) {
+	// subclassing hooks
+	
+	protected RestOperations getRestOperations() {
+		return restTemplate;
+	}
+	
+	// private helpers
 
+	private String buildAuthorizationHeader(String targetUrl, HttpMethod method, Map<String, String> parameters, OAuthToken accessToken) {
+		Map<String, String> oauthParameters = getCommonOAuthParameters();
+		oauthParameters.put("oauth_token", accessToken.getValue());
+		return buildAuthorizationHeader(targetUrl, oauthParameters, parameters, method, accessToken.getSecret());
+	}
+
+	private String buildAuthorizationHeader(String targetUrl, Map<String, String> oauthParameters,
+			Map<String, String> additionalParameters, HttpMethod method, String tokenSecret) {
+		String baseString = buildBaseString(targetUrl, oauthParameters, additionalParameters, method);
+		String signature = calculateSignature(baseString, tokenSecret);
+		String header = "OAuth ";
+		for (String key : oauthParameters.keySet()) {
+			header += key + "=\"" + encode(oauthParameters.get(key)) + "\", ";
+		}
+		header += "oauth_signature=\"" + encode(signature) + "\"";
+		return header;
+	}
+
+	private String buildBaseString(String targetUrl, Map<String, String> parameters, Map<String, String> additionalParameters, HttpMethod method) {
 		Map<String, String> allParameters = new HashMap<String, String>(parameters);
 		allParameters.putAll(additionalParameters);
-
 		String baseString = method.toString() + "&" + encode(targetUrl) + "&";
 		List<String> keys = new ArrayList<String>(allParameters.keySet());
 		Collections.sort(keys);
@@ -154,7 +160,6 @@ public class OAuth1Template implements OAuth1Operations {
 			baseString += encode(separator + key + "=" + encode(allParameters.get(key)).replace("+", "%20"));
 			separator = "&";
 		}
-
 		return baseString;
 	}
 
@@ -191,5 +196,7 @@ public class OAuth1Template implements OAuth1Operations {
 	}
 
 	private static final String HMAC_SHA1_SIGNATURE_NAME = "HMAC-SHA1";
+
 	private static final String HMAC_SHA1_MAC_NAME = "HmacSHA1";
+	
 }

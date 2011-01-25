@@ -12,7 +12,9 @@ import org.junit.Test;
 import org.springframework.web.client.RestOperations;
 
 public class OAuth2TemplateTest {
+	
 	private OAuth2Template oAuth2Template;
+	
 	private String accessTokenUrl;
 
 	@Before
@@ -58,17 +60,20 @@ public class OAuth2TemplateTest {
 		result.put("access_token", "ACCESS_TOKEN");
 		result.put("refresh_token", "REFRESH_TOKEN");
 		when(rest.postForObject(eq(accessTokenUrl), eq(parameters), eq(Map.class))).thenReturn(result);
-		
 		String authorizeUrl = "http://www.someprovider.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}";
 		OAuth2Template oauth2Template = new OAuth2Template("client_id", "client_secret", authorizeUrl, accessTokenUrl) {
 			protected RestOperations getRestOperations() {
 				return rest;
 			};
 		};
-
-		AccessToken accessToken = oauth2Template.exchangeForAccessToken("http://www.someclient.com/connect/foo",
-				"authCode");
+		AccessToken accessToken = oauth2Template.exchangeForAccessToken("http://www.someclient.com/connect/foo", "authCode");
 		assertEquals("ACCESS_TOKEN", accessToken.getValue());
 		assertEquals("REFRESH_TOKEN", accessToken.getRefreshToken());
 	}
+	
+	@Test
+	public void signClientRequest() {
+		// TODO
+	}
+
 }
