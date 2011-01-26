@@ -22,8 +22,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.security.oauth.client.InterceptorCallingRestTemplate;
+import org.springframework.security.oauth.client.oauth2.OAuth2ClientRequestInterceptor;
 import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * <p>
@@ -40,7 +41,6 @@ import org.springframework.web.client.RestTemplate;
  */
 public class GitHubTemplate implements GitHubOperations {
 	RestOperations restOperations;
-	private final String accessToken;
 
 	/**
 	 * Constructs a GitHubTemplate with the minimal amount of information
@@ -52,8 +52,14 @@ public class GitHubTemplate implements GitHubOperations {
 	 *            authentication.
 	 */
 	public GitHubTemplate(String accessToken) {
-		this.accessToken = accessToken;
-		this.restOperations = new RestTemplate();
+		// RestTemplate restTemplate = new RestTemplate();
+		// temporarily use InterceptorCallingRestTemplate instead of a regular
+		// RestTemplate. This is to simulate the work that Arjen is doing for
+		// SPR-7494. Once Arjen's finished, a regular RestTemplate should be
+		// used with the interceptors registered appropriately.
+		InterceptorCallingRestTemplate restTemplate = new InterceptorCallingRestTemplate();
+		restTemplate.addInterceptor(new OAuth2ClientRequestInterceptor(accessToken));
+		restOperations = restTemplate;
 	}
 
 	public String getProfileId() {
@@ -62,7 +68,7 @@ public class GitHubTemplate implements GitHubOperations {
 
 	@SuppressWarnings("unchecked")
 	public GitHubUserProfile getUserProfile() {
-		Map<String, ?> result = restOperations.getForObject(PROFILE_URL, Map.class, accessToken);
+		Map<String, ?> result = restOperations.getForObject(PROFILE_URL, Map.class);
 		Map<String, ?> user = (Map<String, String>) result.get("user");
 
 		Long gitHubId = Long.valueOf(String.valueOf(user.get("id")));
@@ -91,5 +97,5 @@ public class GitHubTemplate implements GitHubOperations {
 
 	private DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss Z", Locale.ENGLISH);
 
-	static final String PROFILE_URL = "https://github.com/api/v2/json/user/show?access_token={accessToken}";
+	static final String PROFILE_URL = "https://github.com/api/v2/json/user/show";
 }

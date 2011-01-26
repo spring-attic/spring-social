@@ -55,7 +55,7 @@ public class GitHubTemplateTest {
 		userData.put("blog", "http://blog.springsource.com/author/keithd");
 		userData.put("email", "keith.donald at springsource.com");
 		userData.put("created_at", "2001/11/30 12:24:19 -0700");
-		when(restOperations.getForObject(GitHubTemplate.PROFILE_URL, Map.class, "ACCESS_TOKEN")).thenReturn(
+		when(restOperations.getForObject(GitHubTemplate.PROFILE_URL, Map.class)).thenReturn(
 				restResponse);
 
 		GitHubUserProfile profile = github.getUserProfile();

@@ -38,7 +38,8 @@ public class OAuth2ClientRequestInterceptor implements RestTemplateInterceptor {
 		// Draft 10 header: Supported by Facebook
 		//		request.getHeaders().set("Authorization", "OAuth " + accessToken + "");
 		
-		// Draft 12 header: Supported by nobody yet (two variations depending on how you read the spec
+		// Draft 12 header: Supported by nobody yet (two variations depending on
+		// how you read the spec)
 		//		request.getHeaders().set("Authorization", "BEARER " + accessToken + "");
 		//		request.getHeaders().set("Authorization", "OAuth2 " + accessToken + "");
 	}

@@ -43,7 +43,6 @@ import org.springframework.web.client.RestOperations;
  */
 public class GowallaTemplate implements GowallaOperations {
 	RestOperations restOperations;
-	private final String accessToken;
 
 	/**
 	 * Constructs a GowallaTemplate with the minimal amount of information
@@ -55,7 +54,6 @@ public class GowallaTemplate implements GowallaOperations {
 	 *            authentication.
 	 */
 	public GowallaTemplate(String accessToken) {
-		this.accessToken = accessToken;
 		// RestTemplate restTemplate = new RestTemplate();
 		// temporarily use InterceptorCallingRestTemplate instead of a regular
 		// RestTemplate. This is to simulate the work that Arjen is doing for
