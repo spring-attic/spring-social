@@ -20,21 +20,20 @@ import org.springframework.security.oauth.client.RestTemplateInterceptor;
 
 /**
  * ClientRequestInterceptor implementation that adds the OAuth2 access token to the request before execution.
- * This implementation adds the Authorization header using the bearer token style described in the latest draft (draft 12) of the OAuth2 specification:
- * http://tools.ietf.org/html/draft-ietf-oauth-v2-12#section-7.1
- * @author Keith Donald
+ * This implementation adds the Authorization header using the style described in draft 8 of the OAuth2 specification:
+ * http://tools.ietf.org/html/draft-ietf-oauth-v2-08#section-5.1
  * @author Craig Walls
  */
-public class OAuth2ClientRequestInterceptor implements RestTemplateInterceptor {
+public class OAuth2Draft8ClientRequestInterceptor implements RestTemplateInterceptor {
 
 	private String accessToken;
 	
-	public OAuth2ClientRequestInterceptor(String accessToken) {
+	public OAuth2Draft8ClientRequestInterceptor(String accessToken) {
 		this.accessToken = accessToken;
 	}
 
 	public void beforeExecution(ClientRequest request) {
-		request.getHeaders().set("Authorization", "BEARER " + accessToken + "");
+		request.getHeaders().set("Authorization", "Token token=\"" + accessToken + "\"");
 	}
 	
 }

@@ -60,8 +60,8 @@ public class FacebookTemplateTest {
 		resultsMap.put("data", friendsList);
 
 		ResponseEntity<Map> response = new ResponseEntity<Map>(resultsMap, OK);
-		when(restOperations.getForEntity(eq(CONNECTION_URL), eq(Map.class), eq(CURRENT_USER), eq(FRIENDS),
-						eq(ACCESS_TOKEN))).thenReturn(response);
+		when(restOperations.getForEntity(eq(CONNECTION_URL), eq(Map.class), eq(CURRENT_USER), eq(FRIENDS))).thenReturn(
+				response);
 
 		List<String> friendIds = facebook.getFriendIds();
 		assertEquals(3, friendIds.size());
@@ -98,8 +98,7 @@ public class FacebookTemplateTest {
 		byte[] imageBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 		ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(imageBytes, OK);
 		when(
-				restOperations.getForEntity(eq(PROFILE_LARGE_PICTURE_URL), eq(byte[].class), eq(CURRENT_USER),
-						eq(ACCESS_TOKEN)))
+restOperations.getForEntity(eq(PROFILE_LARGE_PICTURE_URL), eq(byte[].class), eq(CURRENT_USER)))
 				.thenReturn(response);
 
 		byte[] profilePicture = facebook.getProfilePicture();
@@ -110,8 +109,8 @@ public class FacebookTemplateTest {
 	public void getProfilePicture_anotherUser() {
 		byte[] imageBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 		ResponseEntity<byte[]> response = new ResponseEntity<byte[]>(imageBytes, OK);
-		when(restOperations.getForEntity(eq(PROFILE_LARGE_PICTURE_URL), eq(byte[].class), eq("54321"),
-						eq(ACCESS_TOKEN))).thenReturn(response);
+		when(restOperations.getForEntity(eq(PROFILE_LARGE_PICTURE_URL), eq(byte[].class), eq("54321"))).thenReturn(
+				response);
 
 		byte[] profilePicture = facebook.getProfilePicture("54321");
 		assertEquals(imageBytes, profilePicture);
@@ -123,8 +122,7 @@ public class FacebookTemplateTest {
 
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.set("message", "Hello Facebook!");
-		verify(restOperations).postForLocation(eq(CONNECTION_URL), eq(map), eq(CURRENT_USER), eq(FEED),
-				eq(ACCESS_TOKEN));
+		verify(restOperations).postForLocation(eq(CONNECTION_URL), eq(map), eq(CURRENT_USER), eq(FEED));
 	}
 
 	@Test
@@ -141,8 +139,7 @@ public class FacebookTemplateTest {
 		map.set("name", linkName);
 		map.set("caption", linkCaption);
 		map.set("description", linkDescription);
-		verify(restOperations).postForLocation(eq(CONNECTION_URL), eq(map), eq(CURRENT_USER), eq(FEED),
-				eq(ACCESS_TOKEN));
+		verify(restOperations).postForLocation(eq(CONNECTION_URL), eq(map), eq(CURRENT_USER), eq(FEED));
 	}
 
 	private FacebookProfile setupRestOperationsForGettingProfile() {
@@ -152,8 +149,8 @@ public class FacebookTemplateTest {
 		fbProfile.name = "Craig Walls";
 		fbProfile.email = "cwalls@vmware.com";
 		fbProfile.id = 12345L;
-		when(restOperations.getForObject(eq(OBJECT_URL + "?access_token={accessToken}"), eq(FacebookProfile.class),
-						eq("me"), eq(ACCESS_TOKEN))).thenReturn(fbProfile);
+		when(restOperations.getForObject(eq(OBJECT_URL), eq(FacebookProfile.class),
+						eq("me"))).thenReturn(fbProfile);
 		return fbProfile;
 	}
 

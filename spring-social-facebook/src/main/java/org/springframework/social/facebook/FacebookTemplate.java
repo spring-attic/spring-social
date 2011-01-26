@@ -22,12 +22,12 @@ import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.CommonsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.security.oauth.client.InterceptorCallingRestTemplate;
+import org.springframework.security.oauth.client.oauth2.OAuth2Draft10ClientRequestInterceptor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * This is the central class for interacting with Facebook.
@@ -51,8 +51,8 @@ import org.springframework.web.client.RestTemplate;
  * @see FacebookWebArgumentResolver
  */
 public class FacebookTemplate implements FacebookOperations {
+
 	RestOperations restOperations;
-	private final String accessToken;
 
 	/**
 	 * Create a new instance of FacebookTemplate.
@@ -64,11 +64,15 @@ public class FacebookTemplate implements FacebookOperations {
 	 *            authentication (or through Facebook's JS library).
 	 */
 	public FacebookTemplate(String accessToken) {
-		this.accessToken = accessToken;
-		RestTemplate restTemplate = new RestTemplate();
-		// must be CommonsClientHttpRequestFactory or else the location header
-		// in an HTTP 302 won't be followed
-		restTemplate.setRequestFactory(new CommonsClientHttpRequestFactory());
+		// RestTemplate restTemplate = new RestTemplate();
+		// temporarily use InterceptorCallingRestTemplate instead of a regular
+		// RestTemplate. This is to simulate the work that Arjen is doing for
+		// SPR-7494. Once Arjen's finished, a regular RestTemplate should be
+		// used with the interceptors registered appropriately.
+		InterceptorCallingRestTemplate restTemplate = new InterceptorCallingRestTemplate();
+		restTemplate.addInterceptor(new OAuth2Draft10ClientRequestInterceptor(accessToken));
+
+		// Facebook returns JSON data with text/javascript content type
 		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
 		restTemplate.getMessageConverters().add(json);
@@ -84,14 +88,12 @@ public class FacebookTemplate implements FacebookOperations {
 	}
 
 	public FacebookProfile getUserProfile() {
-		return restOperations.getForObject(OBJECT_URL + "?access_token={accessToken}", FacebookProfile.class, "me",
-				accessToken);
+		return restOperations.getForObject(OBJECT_URL, FacebookProfile.class, "me");
     }
 
 	public List<String> getFriendIds() {
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restOperations.getForEntity(CONNECTION_URL, Map.class, CURRENT_USER, FRIENDS,
-				accessToken);
+		ResponseEntity<Map> response = restOperations.getForEntity(CONNECTION_URL, Map.class, CURRENT_USER, FRIENDS);
 
 		@SuppressWarnings("unchecked")
 		Map<String, List<Map<String, String>>> resultsMap = response.getBody();
@@ -122,7 +124,7 @@ public class FacebookTemplate implements FacebookOperations {
 	
 	public void publish(String object, String connection, MultiValueMap<String, String> data) {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
-		restOperations.postForLocation(CONNECTION_URL, requestData, object, connection, accessToken);
+		restOperations.postForLocation(CONNECTION_URL, requestData, object, connection);
 	}
 	
 	public byte[] getProfilePicture() {
@@ -131,13 +133,13 @@ public class FacebookTemplate implements FacebookOperations {
 
 	public byte[] getProfilePicture(String profileId) {
 		ResponseEntity<byte[]> imageBytes = restOperations.getForEntity(PROFILE_LARGE_PICTURE_URL, byte[].class,
-				profileId, accessToken);
+				profileId);
 		return imageBytes.getBody();
 	}
 	
-	static final String PROFILE_LARGE_PICTURE_URL = "https://graph.facebook.com/{profile}/picture?type=large&access_token={accessToken}";
+	static final String PROFILE_LARGE_PICTURE_URL = "https://graph.facebook.com/{profile}/picture?type=large";
 	static final String OBJECT_URL = "https://graph.facebook.com/{objectId}";
-	static final String CONNECTION_URL = OBJECT_URL + "/{connection}?access_token={accessToken}";
+	static final String CONNECTION_URL = OBJECT_URL + "/{connection}";
 	
 	static final String FRIENDS = "friends";
 	static final String FEED = "feed";

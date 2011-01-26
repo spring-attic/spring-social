@@ -23,7 +23,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth.client.InterceptorCallingRestTemplate;
-import org.springframework.security.oauth.client.oauth2.OAuth2ClientRequestInterceptor;
+import org.springframework.security.oauth.client.oauth2.OAuth2Draft8ClientRequestInterceptor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
@@ -42,6 +42,7 @@ import org.springframework.web.client.RestOperations;
  * @author Craig Walls
  */
 public class GowallaTemplate implements GowallaOperations {
+
 	RestOperations restOperations;
 
 	/**
@@ -60,7 +61,7 @@ public class GowallaTemplate implements GowallaOperations {
 		// SPR-7494. Once Arjen's finished, a regular RestTemplate should be
 		// used with the interceptors registered appropriately.
 		InterceptorCallingRestTemplate restTemplate = new InterceptorCallingRestTemplate();
-		restTemplate.addInterceptor(new OAuth2ClientRequestInterceptor(accessToken));
+		restTemplate.addInterceptor(new OAuth2Draft8ClientRequestInterceptor(accessToken));
 		restOperations = restTemplate;
 	}
 
