@@ -16,12 +16,13 @@
 package org.springframework.security.oauth.client.oauth2;
 
 import org.springframework.security.oauth.client.ClientRequest;
+import org.springframework.security.oauth.client.RestTemplateInterceptor;
 
 /**
  * ClientRequestInterceptor implementation that adds the OAuth2 access token to the request before execution.
  * @author Keith Donald
  */
-public class OAuth2ClientRequestInterceptor {
+public class OAuth2ClientRequestInterceptor implements RestTemplateInterceptor {
 
 	private String accessToken;
 	
@@ -30,7 +31,16 @@ public class OAuth2ClientRequestInterceptor {
 	}
 
 	public void beforeExecution(ClientRequest request) {
-		// TODO: implement me
+		// Draft 8/9 header: Supported by Gowalla and GitHub
+		System.out.println("Adding authorization header:  " + "Token token=\"" + accessToken + "\"");
+		request.getHeaders().set("Authorization", "Token token=\"" + accessToken + "\"");
+		
+		// Draft 10 header: Supported by Facebook
+		//		request.getHeaders().set("Authorization", "OAuth " + accessToken + "");
+		
+		// Draft 12 header: Supported by nobody yet (two variations depending on how you read the spec
+		//		request.getHeaders().set("Authorization", "BEARER " + accessToken + "");
+		//		request.getHeaders().set("Authorization", "OAuth2 " + accessToken + "");
 	}
 	
 }
