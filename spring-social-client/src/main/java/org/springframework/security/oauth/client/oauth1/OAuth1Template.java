@@ -74,9 +74,9 @@ public class OAuth1Template implements OAuth1Operations {
 	// internal helpers
 	
 	private OAuthToken getTokenFromProvider(Map<String, String> tokenRequestParameters, String tokenUrl, String tokenSecret) {
-		Map<String, String> oauthParameters = OAuth1SigningUtils.getCommonOAuthParameters(consumerKey);
+		Map<String, String> oauthParameters = SigningUtils.getCommonOAuthParameters(consumerKey);
 		oauthParameters.putAll(tokenRequestParameters);
-		String authHeader = OAuth1SigningUtils.buildAuthorizationHeader(tokenUrl, oauthParameters,
+		String authHeader = SigningUtils.buildAuthorizationHeader(tokenUrl, oauthParameters,
 				Collections.<String, String> emptyMap(), HttpMethod.POST, consumerSecret, tokenSecret);
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 		headers.add("Authorization", authHeader);

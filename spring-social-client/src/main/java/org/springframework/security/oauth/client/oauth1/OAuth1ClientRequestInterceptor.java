@@ -40,7 +40,7 @@ public class OAuth1ClientRequestInterceptor implements RestTemplateInterceptor {
 	}
 
 	public void beforeExecution(ClientRequest request) {
-		request.getHeaders().set("Authorization", OAuth1SigningUtils.buildAuthorizationHeader(request, consumerKey, consumerSecret,
+		request.getHeaders().set("Authorization", SigningUtils.buildAuthorizationHeader(request, consumerKey, consumerSecret,
 				accessToken));
 	}
 

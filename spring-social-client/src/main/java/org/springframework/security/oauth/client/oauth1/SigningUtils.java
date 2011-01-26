@@ -21,7 +21,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth.client.ClientRequest;
 
-public class OAuth1SigningUtils {
+class SigningUtils {
 	public static String buildAuthorizationHeader(ClientRequest request, String consumerKey, String consumerSecret,
 			OAuthToken accessToken) {
 		Map<String, String> oauthParameters = getCommonOAuthParameters(consumerKey);
@@ -31,7 +31,7 @@ public class OAuth1SigningUtils {
 		Map<String, String> queryParameters = extractParameters(request.getUri().getQuery());
 		aditionalParameters.putAll(queryParameters);
 		String baseRequestUrl = getBaseUrlWithoutPortOrQueryString(request.getUri());
-		return OAuth1SigningUtils.buildAuthorizationHeader(baseRequestUrl, oauthParameters, aditionalParameters,
+		return SigningUtils.buildAuthorizationHeader(baseRequestUrl, oauthParameters, aditionalParameters,
 				request.getMethod(), consumerSecret, accessToken.getSecret());
 	}
 
@@ -143,8 +143,9 @@ public class OAuth1SigningUtils {
 	}
 
 	public static final String HMAC_SHA1_SIGNATURE_NAME = "HMAC-SHA1";
+
 	private static final String HMAC_SHA1_MAC_NAME = "HmacSHA1";
 
-	private OAuth1SigningUtils() {
+	private SigningUtils() {
 	}
 }
