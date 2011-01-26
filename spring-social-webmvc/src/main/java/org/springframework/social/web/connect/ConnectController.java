@@ -21,11 +21,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.security.oauth.client.oauth1.AuthorizedRequestToken;
+import org.springframework.security.oauth.client.oauth1.OAuthToken;
+import org.springframework.security.oauth.client.oauth2.AccessGrant;
 import org.springframework.social.provider.AuthorizationProtocol;
-import org.springframework.social.provider.AuthorizedRequestToken;
-import org.springframework.social.provider.OAuthToken;
 import org.springframework.social.provider.ServiceProvider;
+import org.springframework.social.provider.ServiceProviderConnection;
 import org.springframework.social.provider.ServiceProviderFactory;
+import org.springframework.social.provider.oauth1.OAuth1ServiceProvider;
+import org.springframework.social.provider.oauth2.OAuth2ServiceProvider;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -139,15 +143,15 @@ public class ConnectController {
 		preConnect(provider, request);
 		Map<String, String> authorizationParameters = new HashMap<String, String>();
 		if (provider.getAuthorizationProtocol() == AuthorizationProtocol.OAUTH_1) {
-			OAuthToken requestToken = provider.fetchNewRequestToken(baseCallbackUrl + name);
+			OAuth1ServiceProvider<?> oauth1Provider = (OAuth1ServiceProvider<?>) provider;
+			OAuthToken requestToken = oauth1Provider.getOAuth1Operations().fetchNewRequestToken(baseCallbackUrl + name);
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
 			authorizationParameters.put("requestToken", requestToken.getValue());
+			return "redirect:" + oauth1Provider.getOAuth1Operations().buildAuthorizeUrl(requestToken.getValue());
 		} else {
-			authorizationParameters.put("redirectUri", baseCallbackUrl + name);
-			authorizationParameters.put("scope", scope);
+			OAuth2ServiceProvider<?> oauth2Provider = (OAuth2ServiceProvider<?>) provider;
+			return "redirect:" + oauth2Provider.getOAuth2Operations().buildAuthorizeUrl(baseCallbackUrl + name, scope);
 		}
-
-		return "redirect:" + provider.buildAuthorizeUrl(authorizationParameters);
 	}
 
 	/**
@@ -184,12 +188,13 @@ public class ConnectController {
 		}
 		request.removeAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(requestToken, verifier);
-		ServiceProvider<?> provider = getServiceProvider(name);
-		if (request.getAttribute(REGISTRATION_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION) != null) {
-			OAuthToken accessToken = provider.fetchAccessToken(authorizedRequestToken);
-			return holdAccessTokenAndGoToRegistration(name, request, provider, accessToken);
-		}
-		provider.connect(accountIdResolver.resolveAccountId(), authorizedRequestToken);
+		OAuth1ServiceProvider<?> provider = (OAuth1ServiceProvider<?>) getServiceProvider(name);
+		OAuthToken accessToken = provider.getOAuth1Operations().exchangeForAccessToken(authorizedRequestToken);
+		// TODO : Come back to reimplement the registration flow
+//		if (request.getAttribute(REGISTRATION_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION) != null) {
+//			return holdAccessGrantAndGoToRegistration(name, request, provider, accessToken);
+//		}
+		provider.connect(accountIdResolver.resolveAccountId(), accessToken);
 		postConnect(provider, request);
 		// FlashMap.setSuccessMessage("Your account is now connected to your "
 		// + provider.getDisplayName() + " account!");
@@ -205,25 +210,27 @@ public class ConnectController {
 	 */
 	@RequestMapping(value = "/connect/{name}", method = RequestMethod.GET, params = "code")
 	public String authorizeCallback(@PathVariable String name, @RequestParam("code") String code, WebRequest request) {
-		ServiceProvider<?> provider = getServiceProvider(name);
+		OAuth2ServiceProvider<?> provider = (OAuth2ServiceProvider<?>) getServiceProvider(name);
 		String redirectUri = baseCallbackUrl + name;
-		if (request.getAttribute(REGISTRATION_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION) != null) {
-			OAuthToken accessToken = provider.fetchAccessToken(redirectUri, code);
-			return holdAccessTokenAndGoToRegistration(name, request, provider, accessToken);
-		}
-		provider.connect(accountIdResolver.resolveAccountId(), redirectUri, code);
+		AccessGrant accessGrant = provider.getOAuth2Operations().exchangeForAccess(code, redirectUri);
+		// TODO : Come back to reimplement the registration flow
+//		if (request.getAttribute(REGISTRATION_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION) != null) {
+//			return holdAccessGrantAndGoToRegistration(name, request, provider, accessGrant);
+//		}
+		provider.connect(accountIdResolver.resolveAccountId(), accessGrant);
 		postConnect(provider, request);
 		return "redirect:/connect/" + name;
 	}
 
-	private String holdAccessTokenAndGoToRegistration(String name, WebRequest request, ServiceProvider<?> provider,
-			OAuthToken accessToken) {
-		request.removeAttribute(REGISTRATION_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION);
-		request.setAttribute(name + "UserProfile", provider.getProviderUserProfile(accessToken),
-				WebRequest.SCOPE_REQUEST);
-		request.setAttribute(ACCESS_TOKEN_ATTRIBUTE + name, accessToken, WebRequest.SCOPE_SESSION);
-		return "connect/" + name + "Register";
-	}
+	// TODO : Come back to reimplement the registration flow
+//	private String holdAccessGrantAndGoToRegistration(String name, WebRequest request, ServiceProvider<?> provider,
+//			AccessGrant accessGrant) {
+//		request.removeAttribute(REGISTRATION_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+//		request.setAttribute(name + "UserProfile", provider.getProviderUserProfile(accessGrant),
+//				WebRequest.SCOPE_REQUEST);
+//		request.setAttribute(ACCESS_TOKEN_ATTRIBUTE + name, accessGrant, WebRequest.SCOPE_SESSION);
+//		return "connect/" + name + "Register";
+//	}
 
 	/**
 	 * Completes the connection process after registration. After the
@@ -233,12 +240,18 @@ public class ConnectController {
 	 */
 	@RequestMapping(value = "/connect/{name}/register", method = RequestMethod.GET)
 	public String completeRegistrationConnection(@PathVariable String name, WebRequest request) {
-		OAuthToken accessToken = (OAuthToken) request.getAttribute(ACCESS_TOKEN_ATTRIBUTE + name,
-				WebRequest.SCOPE_SESSION);
-		if (accessToken != null) {
-			request.removeAttribute(ACCESS_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+		Object storedToken = request.getAttribute(ACCESS_TOKEN_ATTRIBUTE + name, WebRequest.SCOPE_SESSION);
+		if (storedToken != null) {
 			ServiceProvider<?> provider = getServiceProvider(name);
-			provider.connect(accountIdResolver.resolveAccountId(), accessToken);
+			if (provider.getAuthorizationProtocol() == AuthorizationProtocol.OAUTH_1) {
+				OAuth1ServiceProvider<?> oauth1Provider = (OAuth1ServiceProvider<?>) provider;
+				OAuthToken accessToken = (OAuthToken) storedToken;
+				oauth1Provider.connect(accountIdResolver.resolveAccountId(), accessToken);
+			} else if (provider.getAuthorizationProtocol() == AuthorizationProtocol.OAUTH_2) {
+				OAuth2ServiceProvider<?> oauth2Provider = (OAuth2ServiceProvider<?>) provider;
+				AccessGrant accessGrant = (AccessGrant) storedToken;
+				oauth2Provider.connect(accountIdResolver.resolveAccountId(), accessGrant);
+			}
 			postConnect(provider, request);
 		}
 		return "redirect:/connect/" + name;
@@ -250,7 +263,11 @@ public class ConnectController {
 	 */
 	@RequestMapping(value="/connect/{name}", method=RequestMethod.DELETE)
 	public String disconnect(@PathVariable String name) {
-		getServiceProvider(name).disconnect(accountIdResolver.resolveAccountId());
+		ServiceProvider<?> serviceProvider = getServiceProvider(name);
+		List<?> connections = serviceProvider.getConnections(accountIdResolver.resolveAccountId());
+		for (Object object : connections) {
+			((ServiceProviderConnection<?>) object).disconnect();
+		}
 		return "redirect:/connect/" + name;
 	}
 
