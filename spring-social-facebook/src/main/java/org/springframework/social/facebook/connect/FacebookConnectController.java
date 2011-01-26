@@ -21,10 +21,12 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.security.oauth.client.oauth2.AccessGrant;
 import org.springframework.social.facebook.FacebookAccessToken;
 import org.springframework.social.facebook.FacebookOperations;
 import org.springframework.social.facebook.FacebookUserId;
 import org.springframework.social.provider.ServiceProvider;
+import org.springframework.social.provider.oauth2.OAuth2ServiceProvider;
 import org.springframework.social.web.connect.AccountIdResolver;
 import org.springframework.social.web.connect.ConnectInterceptor;
 import org.springframework.stereotype.Controller;
@@ -84,7 +86,8 @@ public class FacebookConnectController {
 			@FacebookUserId(required = false) String facebookUserId, WebRequest request) {
 		if (facebookUserId != null && accessToken != null) {
 			preConnect(facebookProvider, request);
-			facebookProvider.addConnection(accountIdResolver.resolveAccountId(), accessToken, facebookUserId);
+			OAuth2ServiceProvider<?> oauth2Provider = (OAuth2ServiceProvider<?>) facebookProvider;
+			oauth2Provider.connect(accountIdResolver.resolveAccountId(), new AccessGrant(accessToken, null));
 			postConnect(facebookProvider, request);
 
 			// FlashMap.setSuccessMessage("Your Greenhouse account is now connected to your Facebook account!");
@@ -94,7 +97,7 @@ public class FacebookConnectController {
 
 	@RequestMapping(value = "/connect/facebook", method = RequestMethod.DELETE)
 	public String disconnectFacebook(HttpServletRequest request) {
-		facebookProvider.disconnect(accountIdResolver.resolveAccountId());
+		facebookProvider.getConnections(accountIdResolver.resolveAccountId()).get(0).disconnect();
 		return "redirect:/connect/facebook";
 	}
 
