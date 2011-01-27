@@ -147,6 +147,7 @@ project('spring-social-client') {
         compile "org.springframework:spring-web:$springVersion"
 		compile ("org.springframework.security:spring-security-crypto:$springSecurityVersion") { provided = true }
         compile "commons-codec:commons-codec:1.4"
+        compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         testCompile "com.h2database:h2:1.2.143"
     }
 }
