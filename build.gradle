@@ -223,6 +223,7 @@ project('spring-social-config') {
         compile project(':spring-social-tripit') { optional = true }
         compile project(':spring-social-twitter') { optional = true }
         testCompile "com.h2database:h2:1.2.143"
+        testCompile files(this.project(':spring-social-client').sourceSets.test.classesDir)
     }
 }
 
