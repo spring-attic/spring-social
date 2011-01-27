@@ -16,12 +16,11 @@
 package org.springframework.social.samples.twitter;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.springframework.social.provider.AccountConnection;
+import org.springframework.social.provider.ServiceProviderConnection;
 import org.springframework.social.twitter.TwitterOperations;
 import org.springframework.social.twitter.provider.TwitterServiceProvider;
 import org.springframework.stereotype.Controller;
@@ -31,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class TweetController {
+
 	private final TwitterServiceProvider twitterProvider;
 
 	@Inject
@@ -40,30 +40,29 @@ public class TweetController {
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Model model) {
-		Collection<AccountConnection> connections = twitterProvider.getConnections(1);
+		List<ServiceProviderConnection<TwitterOperations>> connections = twitterProvider.getConnections(1);
+		List<String> connectionNames = new ArrayList<String>();
+		for (ServiceProviderConnection<TwitterOperations> serviceProviderConnection : connections) {
+			connectionNames.add(serviceProviderConnection.getServiceApi().getProfileId());
+		}
+
 		if (connections.size() > 0) {
-			model.addAttribute(connections);
+			model.addAttribute("connections", connectionNames);
 			model.addAttribute(new TweetForm());
 			return "tweet";
 		}
+
 		return "redirect:/connect/twitter";
 	}
 
 	@RequestMapping(value = "/tweet", method = RequestMethod.POST)
 	public String postTweet(TweetForm tweetForm) {
-		List<String> tweetToScreenNames = new ArrayList<String>();
-		if (tweetForm.isTweetToAll()) {
-			Collection<AccountConnection> connections = twitterProvider.getConnections(1);
-			for (AccountConnection accountConnection : connections) {
-				tweetToScreenNames.add(accountConnection.getProviderAccountId());
+		List<ServiceProviderConnection<TwitterOperations>> connections = twitterProvider.getConnections(1);
+		for (ServiceProviderConnection<TwitterOperations> connection : connections) {
+			TwitterOperations twitter = connection.getServiceApi();
+			if (tweetForm.isTweetToAll() || twitter.getProfileId().equals(tweetForm.getScreenName())) {
+				twitter.updateStatus(tweetForm.getMessage());
 			}
-		} else {
-			tweetToScreenNames.add(tweetForm.getScreenName());
-		}
-
-		for (String screenName : tweetToScreenNames) {
-			TwitterOperations twitter = twitterProvider.getServiceOperations(1, screenName);
-			twitter.updateStatus(tweetForm.getMessage());
 		}
 
 		return "redirect:/";

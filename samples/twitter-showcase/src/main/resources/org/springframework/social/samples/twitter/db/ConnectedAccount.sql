@@ -1,9 +1,8 @@
-create table AccountConnection (member bigint,
-					provider varchar,
+create table Connection (id identity,
+					accountId varchar not null,
+					providerId varchar not null,
 					accessToken varchar not null,					
 					secret varchar, 
 					refreshToken varchar,
-					accountId varchar,	
-					profileUrl varchar,
-					primary key (member, provider, accessToken));
-create index ProviderAccountKey on AccountConnection(accountId);
+					primary key (id));
+create unique index AccessToken on Connection(accountId, providerId, accessToken);

@@ -11,13 +11,13 @@
 
 <sf:form action="tweet" method="post" modelAttribute="tweetForm">
 	Tweet using
-	<c:if test="${fn:length(accountConnectionList) eq 1}">
-		<b><c:out value="${accountConnectionList[0].providerAccountId}" /></b>
+	<c:if test="${fn:length(connections) eq 1}">
+		<b><c:out value="${connections}" /></b>
 		<input type="hidden" name="screenName" value="<c:out value="${accountConnectionList[0].providerAccountId}" />" />
 	</c:if>
-	<c:if test="${fn:length(accountConnectionList) gt 1}">
+	<c:if test="${fn:length(connections) gt 1}">
 		<sf:select path="screenName">
-			<sf:options items="${accountConnectionList}" itemValue="providerAccountId" itemLabel="providerAccountId"/>
+			<sf:options items="${connections}"/>
 		</sf:select>
 		<sf:checkbox path="tweetToAll" label="Tweet to all"/>
 	</c:if>
