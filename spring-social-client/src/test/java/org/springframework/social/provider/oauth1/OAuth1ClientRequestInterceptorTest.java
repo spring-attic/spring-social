@@ -27,7 +27,6 @@ public class OAuth1ClientRequestInterceptorTest {
 		ClientRequest request = new ClientRequest(headers, body, uri, HttpMethod.POST);
 		interceptor.beforeExecution(request);
 		String authorizationHeader = headers.getFirst("Authorization");
-		System.out.println(authorizationHeader);
 
 		// TODO: Figure out how to test this more precisely with a fixed nonce
 		// and timestamp (and thus a fixed signature)
