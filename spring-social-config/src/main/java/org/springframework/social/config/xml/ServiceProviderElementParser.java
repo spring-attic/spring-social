@@ -24,22 +24,10 @@ public class ServiceProviderElementParser extends AbstractServiceProviderElement
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
 		String name = element.getAttribute("id");
 		String className = element.getAttribute("class");
-		String displayName = element.getAttribute("display-name");
-		if (displayName == null) {
-			displayName = name.substring(0, 1).toUpperCase() + name.substring(1);
-		}
-
 		String consumerKey = element.getAttribute("consumer-key");
 		String consumerSecret = element.getAttribute("consumer-secret");
-		String appIdString = element.getAttribute("app-id");
-		Long appId = appIdString != null && !appIdString.isEmpty() ? Long.valueOf(appIdString) : null;
-		String requestTokenUrl = element.getAttribute("request-token-url");
-		requestTokenUrl = requestTokenUrl != null && requestTokenUrl.isEmpty() ? null : requestTokenUrl;
-		String authorizeUrl = element.getAttribute("authorization-url");
-		String accessTokenUrl = element.getAttribute("access-token-url");
 		String connectionRepositoryBean = element.getAttribute("connection-repository");
-		
-		return registerServiceProviderBean(parserContext, name, className, displayName, consumerKey, consumerSecret,
-				appId, requestTokenUrl, authorizeUrl, accessTokenUrl, connectionRepositoryBean);
+		return registerServiceProviderBean(parserContext, name, className, consumerKey, consumerSecret,
+				connectionRepositoryBean);
 	}
 }

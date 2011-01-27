@@ -22,52 +22,27 @@ import java.lang.reflect.Field;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.security.oauth.client.oauth2.OAuth2Operations;
+import org.springframework.security.oauth.client.oauth2.OAuth2Template;
 import org.springframework.social.facebook.provider.FacebookServiceProvider;
 import org.springframework.social.github.provider.GitHubServiceProvider;
 import org.springframework.social.gowalla.provider.GowallaServiceProvider;
 import org.springframework.social.linkedin.provider.LinkedInServiceProvider;
-import org.springframework.social.provider.ServiceProvider;
-import org.springframework.social.provider.jdbc.ContextServiceProviderFactory;
-import org.springframework.social.provider.jdbc.JdbcServiceProviderFactory;
+import org.springframework.social.provider.oauth1.AbstractOAuth1ServiceProvider;
+import org.springframework.social.provider.oauth2.AbstractOAuth2ServiceProvider;
 import org.springframework.social.provider.support.AbstractServiceProvider;
-import org.springframework.social.provider.support.ServiceProviderParameters;
 import org.springframework.social.tripit.provider.TripItServiceProvider;
 import org.springframework.social.twitter.provider.TwitterServiceProvider;
 
 public class SocialNamespaceHandlerTest {
-	@Test
-	public void jdbcServiceProviderFactory() throws Exception {
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-				"socialNamespaceHandlerTests-jdbcServiceProviderFactory.xml", getClass());
-		JdbcServiceProviderFactory providerFactory = applicationContext.getBean("serviceProviderFactory",
-				JdbcServiceProviderFactory.class);
-		assertNotNull(providerFactory);
-	}
-
-	@Test
-	public void contextServiceProviderFactory() throws Exception {
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-				"socialNamespaceHandlerTests-contextServiceProviderFactory.xml", getClass());
-		ContextServiceProviderFactory providerFactory = applicationContext.getBean("serviceProviderFactory",
-				ContextServiceProviderFactory.class);
-		assertNotNull(providerFactory);
-	}
 
 	@Test
 	public void genericServiceProvider() throws Exception {
 		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
 				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
-		TestServiceProvider provider = applicationContext.getBean("foobar", TestServiceProvider.class);
+		TwitterServiceProvider provider = applicationContext.getBean("tweeter", TwitterServiceProvider.class);
 		assertNotNull(provider);
-		ServiceProviderParameters parameters = provider.getParameters();
-		assertEquals("foobar", parameters.getName());
-		assertEquals("FooBar", parameters.getDisplayName());
-		assertEquals("consumer_key", parameters.getApiKey());
-		assertEquals("consumer_secret", parameters.getSecret());
-		assertEquals((Long) 1234L, parameters.getAppId());
-		assertEquals("http://www.foobar.com/oauth/requestToken", parameters.getRequestTokenUrl());
-		assertTrue(parameters.getAuthorizeUrl().matches("http://www.foobar.com/oauth/authorize"));
-		assertEquals("http://www.foobar.com/oauth/accessToken", parameters.getAccessTokenUrl());
+		assertOAuth1ProviderConfiguration(provider, "twitter");
 	}
 
 	@Test
@@ -75,53 +50,7 @@ public class SocialNamespaceHandlerTest {
 		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
 				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
 		TwitterServiceProvider provider = applicationContext.getBean("twitter", TwitterServiceProvider.class);
-		assertNotNull(provider);
-		ServiceProviderParameters parameters = peekAtServiceProviderParameters(provider);
-		assertEquals("twitter", parameters.getName());
-		assertEquals("Twitter", parameters.getDisplayName());
-		assertEquals("twitter_key", parameters.getApiKey());
-		assertEquals("twitter_secret", parameters.getSecret());
-		assertNull(parameters.getAppId());
-		assertEquals("https://twitter.com/oauth/request_token", parameters.getRequestTokenUrl());
-		assertTrue(parameters.getAuthorizeUrl().matches(
-				"https://twitter.com/oauth/authorize?oauth_token={requestToken}"));
-		assertEquals("https://twitter.com/oauth/access_token", parameters.getAccessTokenUrl());
-	}
-
-	@Test
-	public void facebookServiceProvider() throws Exception {
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
-		FacebookServiceProvider provider = applicationContext.getBean("facebook", FacebookServiceProvider.class);
-		assertNotNull(provider);
-		ServiceProviderParameters parameters = peekAtServiceProviderParameters(provider);
-		assertEquals("facebook", parameters.getName());
-		assertEquals("Facebook", parameters.getDisplayName());
-		assertEquals("facebook_key", parameters.getApiKey());
-		assertEquals("facebook_secret", parameters.getSecret());
-		assertEquals((Long) 1234L, parameters.getAppId());
-		assertNull(parameters.getRequestTokenUrl());
-		assertTrue(parameters.getAuthorizeUrl().matches(
-						"https://graph.facebook.com/oauth/authorize?client_id={clientId}&redirect_uri={redirectUri}&scope={scope}"));
-		assertEquals("https://graph.facebook.com/oauth/access_token", parameters.getAccessTokenUrl());
-	}
-
-	@Test
-	public void gowallaServiceProvider() throws Exception {
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
-		GowallaServiceProvider provider = applicationContext.getBean("gowalla", GowallaServiceProvider.class);
-		assertNotNull(provider);
-		ServiceProviderParameters parameters = peekAtServiceProviderParameters(provider);
-		assertEquals("gowalla", parameters.getName());
-		assertEquals("Gowalla", parameters.getDisplayName());
-		assertEquals("gowalla_key", parameters.getApiKey());
-		assertEquals("gowalla_secret", parameters.getSecret());
-		assertNull(parameters.getAppId());
-		assertNull(parameters.getRequestTokenUrl());
-		assertTrue(parameters.getAuthorizeUrl().matches(
-				"https://gowalla.com/api/oauth/new?client_id={clientId}&redirect_uri={redirectUri}&scope={scope}"));
-		assertEquals("https://gowalla.com/api/oauth/token", parameters.getAccessTokenUrl());
+		assertOAuth1ProviderConfiguration(provider, "twitter");
 	}
 
 	@Test
@@ -129,17 +58,7 @@ public class SocialNamespaceHandlerTest {
 		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
 				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
 		TripItServiceProvider provider = applicationContext.getBean("tripit", TripItServiceProvider.class);
-		assertNotNull(provider);
-		ServiceProviderParameters parameters = peekAtServiceProviderParameters(provider);
-		assertEquals("tripit", parameters.getName());
-		assertEquals("TripIt", parameters.getDisplayName());
-		assertEquals("tripit_key", parameters.getApiKey());
-		assertEquals("tripit_secret", parameters.getSecret());
-		assertNull(parameters.getAppId());
-		assertEquals("https://api.tripit.com/oauth/request_token", parameters.getRequestTokenUrl());
-		assertTrue(parameters.getAuthorizeUrl().matches(
-				"https://www.tripit.com/oauth/authorize?oauth_token={requestToken}&oauth_callback={redirectUri}"));
-		assertEquals("https://api.tripit.com/oauth/access_token", parameters.getAccessTokenUrl());
+		assertOAuth1ProviderConfiguration(provider, "tripit");
 	}
 
 	@Test
@@ -147,17 +66,23 @@ public class SocialNamespaceHandlerTest {
 		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
 				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
 		LinkedInServiceProvider provider = applicationContext.getBean("linkedin", LinkedInServiceProvider.class);
-		assertNotNull(provider);
-		ServiceProviderParameters parameters = peekAtServiceProviderParameters(provider);
-		assertEquals("linkedin", parameters.getName());
-		assertEquals("LinkedIn", parameters.getDisplayName());
-		assertEquals("linkedin_key", parameters.getApiKey());
-		assertEquals("linkedin_secret", parameters.getSecret());
-		assertNull(parameters.getAppId());
-		assertEquals("https://api.linkedin.com/uas/oauth/requestToken", parameters.getRequestTokenUrl());
-		assertTrue(parameters.getAuthorizeUrl().matches(
-				"https://www.linkedin.com/uas/oauth/authorize?oauth_token={requestToken}"));
-		assertEquals("https://api.linkedin.com/uas/oauth/accessToken", parameters.getAccessTokenUrl());
+		assertOAuth1ProviderConfiguration(provider, "linkedin");
+	}
+
+	@Test
+	public void facebookServiceProvider() throws Exception {
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
+				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
+		FacebookServiceProvider provider = applicationContext.getBean("facebook", FacebookServiceProvider.class);
+		assertOAuth2ProviderConfiguration(provider, "facebook");
+	}
+
+	@Test
+	public void gowallaServiceProvider() throws Exception {
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
+				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
+		GowallaServiceProvider provider = applicationContext.getBean("gowalla", GowallaServiceProvider.class);
+		assertOAuth2ProviderConfiguration(provider, "gowalla");
 	}
 
 	@Test
@@ -165,24 +90,45 @@ public class SocialNamespaceHandlerTest {
 		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
 				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
 		GitHubServiceProvider provider = applicationContext.getBean("github", GitHubServiceProvider.class);
-		assertNotNull(provider);
-		ServiceProviderParameters parameters = peekAtServiceProviderParameters(provider);
-		assertEquals("github", parameters.getName());
-		assertEquals("GitHub", parameters.getDisplayName());
-		assertEquals("github_key", parameters.getApiKey());
-		assertEquals("github_secret", parameters.getSecret());
-		assertNull(parameters.getAppId());
-		assertNull(parameters.getRequestTokenUrl());
-		assertTrue(parameters.getAuthorizeUrl().matches(
-						"https://github.com/login/oauth/authorize?client_id={clientId}&redirect_uri={redirectUri}&scope={scope}"));
-		assertEquals("https://github.com/login/oauth/access_token", parameters.getAccessTokenUrl());
+		assertOAuth2ProviderConfiguration(provider, "github");
 	}
 
-	private ServiceProviderParameters peekAtServiceProviderParameters(ServiceProvider<?> bean)
+	private void assertOAuth1ProviderConfiguration(AbstractOAuth1ServiceProvider<?> provider, String name)
+			throws Exception {
+		assertNotNull(provider);
+		assertEquals(name, peekAtServiceProviderProperty(provider, "id"));
+		assertEquals(name + "_key", peekAtOAuth1ServiceProviderProperty(provider, "consumerKey"));
+		assertEquals(name + "_secret", peekAtOAuth1ServiceProviderProperty(provider, "consumerSecret"));
+	}
+
+	private void assertOAuth2ProviderConfiguration(AbstractOAuth2ServiceProvider<?> provider, String name)
+			throws Exception {
+		assertNotNull(provider);
+		assertEquals(name, peekAtServiceProviderProperty(provider, "id"));
+		OAuth2Operations oauth2Operations = provider.getOAuth2Operations();
+		assertEquals(name + "_key", peekAtOAuth2TemplateProperty(oauth2Operations, "clientId"));
+		assertEquals(name + "_secret", peekAtOAuth2TemplateProperty(oauth2Operations, "clientSecret"));
+	}
+
+	private Object peekAtServiceProviderProperty(AbstractServiceProvider<?> provider, String propertyName)
 			throws NoSuchFieldException, IllegalAccessException {
-		Field parametersField = AbstractServiceProvider.class.getDeclaredField("parameters");
+		Field parametersField = AbstractServiceProvider.class.getDeclaredField(propertyName);
 		parametersField.setAccessible(true);
-		return (ServiceProviderParameters) parametersField.get(bean);
+		return parametersField.get(provider);
+	}
+
+	private Object peekAtOAuth1ServiceProviderProperty(AbstractOAuth1ServiceProvider<?> provider, String propertyName)
+			throws NoSuchFieldException, IllegalAccessException {
+		Field parametersField = AbstractOAuth1ServiceProvider.class.getDeclaredField(propertyName);
+		parametersField.setAccessible(true);
+		return parametersField.get(provider);
+	}
+
+	private Object peekAtOAuth2TemplateProperty(OAuth2Operations oauth2Operations, String propertyName)
+			throws NoSuchFieldException, IllegalAccessException {
+		Field parametersField = OAuth2Template.class.getDeclaredField(propertyName);
+		parametersField.setAccessible(true);
+		return parametersField.get(oauth2Operations);
 	}
 
 }

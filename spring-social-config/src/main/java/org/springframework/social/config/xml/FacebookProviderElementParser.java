@@ -22,20 +22,14 @@ import org.w3c.dom.Element;
 
 public class FacebookProviderElementParser extends AbstractServiceProviderElementParser {
 
-	private static final String ACCESS_TOKEN_URL = "https://graph.facebook.com/oauth/access_token";
-	private static final String AUTHORIZATION_URL = "https://graph.facebook.com/oauth/authorize?client_id={clientId}&redirect_uri={redirectUri}&scope={scope}";
-	private static final String REQUEST_TOKEN_URL = null;
-
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
 		String name = element.getAttribute("id");
 		if (name == null || name.isEmpty()) {
 			name = "facebook";
 		}
-		String appIdString = element.getAttribute("app-id");
-		Long appId = appIdString != null && !appIdString.isEmpty() ? Long.valueOf(appIdString) : null;
 
-		return registerServiceProviderBean(parserContext, name, FacebookServiceProvider.class.getName(), "Facebook",
-				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"), appId,
-				REQUEST_TOKEN_URL, AUTHORIZATION_URL, ACCESS_TOKEN_URL, element.getAttribute("connection-repository"));
+		return registerServiceProviderBean(parserContext, name, FacebookServiceProvider.class.getName(),
+				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"),
+				element.getAttribute("connection-repository"));
 	}
 }

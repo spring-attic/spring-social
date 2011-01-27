@@ -28,9 +28,6 @@ public class SocialNamespaceHandler extends NamespaceHandlerSupport {
 		registerBeanDefinitionParser("tripit-provider", new TripItProviderElementParser());
 		registerBeanDefinitionParser("twitter-provider", new TwitterProviderElementParser());
 
-		registerBeanDefinitionParser("context-service-provider-factory",
-				new ContextServiceProviderFactoryElementParser());
-		registerBeanDefinitionParser("jdbc-service-provider-factory", new JdbcServiceProviderFactoryElementParser());
 		registerBeanDefinitionParser("jdbc-connection-repository", new JdbcConnectionRepositoryElementParser());
 	}
 }

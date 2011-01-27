@@ -22,18 +22,14 @@ import org.w3c.dom.Element;
 
 public class TripItProviderElementParser extends AbstractServiceProviderElementParser {
 
-	private static final String ACCESS_TOKEN_URL = "https://api.tripit.com/oauth/access_token";
-	private static final String AUTHORIZATION_URL = "https://www.tripit.com/oauth/authorize?oauth_token={requestToken}&oauth_callback={redirectUri}";
-	private static final String REQUEST_TOKEN_URL = "https://api.tripit.com/oauth/request_token";
-
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
 		String name = element.getAttribute("id");
 		if (name == null || name.isEmpty()) {
 			name = "tripit";
 		}
 
-		return registerServiceProviderBean(parserContext, name, TripItServiceProvider.class.getName(), "TripIt",
-				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"), null, REQUEST_TOKEN_URL,
-				AUTHORIZATION_URL, ACCESS_TOKEN_URL, element.getAttribute("connection-repository"));
+		return registerServiceProviderBean(parserContext, name, TripItServiceProvider.class.getName(),
+				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"),
+				element.getAttribute("connection-repository"));
 	}
 }

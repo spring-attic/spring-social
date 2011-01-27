@@ -22,18 +22,14 @@ import org.w3c.dom.Element;
 
 public class LinkedInProviderElementParser extends AbstractServiceProviderElementParser {
 
-	private static final String ACCESS_TOKEN_URL = "https://api.linkedin.com/uas/oauth/accessToken";
-	private static final String AUTHORIZATION_URL = "https://www.linkedin.com/uas/oauth/authorize?oauth_token={requestToken}";
-	private static final String REQUEST_TOKEN_URL = "https://api.linkedin.com/uas/oauth/requestToken";
-
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
 		String name = element.getAttribute("id");
 		if (name == null || name.isEmpty()) {
 			name = "linkedin";
 		}
 
-		return registerServiceProviderBean(parserContext, name, LinkedInServiceProvider.class.getName(), "LinkedIn",
-				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"), null, REQUEST_TOKEN_URL,
-				AUTHORIZATION_URL, ACCESS_TOKEN_URL, element.getAttribute("connection-repository"));
+		return registerServiceProviderBean(parserContext, name, LinkedInServiceProvider.class.getName(),
+				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"),
+				element.getAttribute("connection-repository"));
 	}
 }

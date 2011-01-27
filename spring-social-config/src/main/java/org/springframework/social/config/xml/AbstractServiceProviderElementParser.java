@@ -20,16 +20,13 @@ import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.social.provider.support.ServiceProviderParameters;
 
 public abstract class AbstractServiceProviderElementParser implements BeanDefinitionParser {
 	protected BeanDefinition registerServiceProviderBean(ParserContext parserContext, String name, String className,
-			String displayName, String consumerKey, String consumerSecret, Long appId, String requestTokenUrl,
-			String authorizeUrl, String accessTokenUrl, String connectionRepositoryBean) {
+			String consumerKey, String consumerSecret, String connectionRepositoryBean) {
 		BeanDefinitionBuilder providerBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(className);
-		ServiceProviderParameters providerParameters = new ServiceProviderParameters(name, displayName, consumerKey,
-				consumerSecret, appId, requestTokenUrl, authorizeUrl, accessTokenUrl);
-		providerBeanBuilder.addConstructorArgValue(providerParameters);
+		providerBeanBuilder.addConstructorArgValue(consumerKey);
+		providerBeanBuilder.addConstructorArgValue(consumerSecret);
 		if (connectionRepositoryBean != null && !connectionRepositoryBean.isEmpty()) {
 			providerBeanBuilder.addConstructorArgReference(connectionRepositoryBean);
 		} else {
