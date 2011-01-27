@@ -28,9 +28,10 @@ import org.springframework.social.tripit.TripItTemplate;
 public final class TripItServiceProvider extends AbstractOAuth1ServiceProvider<TripItOperations> {
 
 	public TripItServiceProvider(String consumerKey, String consumerSecret, ConnectionRepository connectionRepository) {
-		super("tripit", connectionRepository, consumerKey, consumerSecret,
-				new OAuth1Template(consumerKey, consumerSecret, "https://www.tripit.com/oauth/request_token", 
-						"https://www.tripit.com/oauth/authorize", "https://www.tripit.com/oauth/access_token"));
+		super("tripit", connectionRepository, consumerKey, consumerSecret, new OAuth1Template(consumerKey,
+				consumerSecret, "https://api.tripit.com/oauth/request_token",
+				"https://www.tripit.com/oauth/authorize?oauth_token={requestToken}&oauth_callback={redirectUri}",
+				"https://api.tripit.com/oauth/access_token"));
 	}
 
 	@Override

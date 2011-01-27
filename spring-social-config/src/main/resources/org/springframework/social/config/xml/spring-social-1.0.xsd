@@ -176,14 +176,14 @@
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
-			<xsd:attribute name="jdbc-template" use="required" type="xsd:string">
+			<xsd:attribute name="data-source" use="required" type="xsd:string">
 				<xsd:annotation>
 					<xsd:documentation>
-						Specifies the JdbcTemplate through which connections will be managed.
+						Specifies the DataSource through which connections will be managed.
 					</xsd:documentation>
 					<xsd:appinfo>
 						<tool:annotation kind="ref">
-							<tool:expected-type type="org.springframework.jdbc.core.JdbcTemplate"/>
+							<tool:expected-type type="javax.sql.DataSource"/>
 						</tool:annotation>
 					</xsd:appinfo>
 				</xsd:annotation>

@@ -27,11 +27,10 @@ import org.w3c.dom.Element;
 public class JdbcConnectionRepositoryElementParser implements BeanDefinitionParser {
 
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
-		BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder
-.genericBeanDefinition(JdbcConnectionRepository.class);
+		BeanDefinitionBuilder beanBuilder = BeanDefinitionBuilder.genericBeanDefinition(JdbcConnectionRepository.class);
 
-		String jdbcTemplate = element.getAttribute("jdbc-template");
-		beanBuilder.addConstructorArgReference(jdbcTemplate);
+		String dataSource = element.getAttribute("data-source");
+		beanBuilder.addConstructorArgReference(dataSource);
 
 		String stringEncryptor = element.getAttribute("string-encryptor");
 		if (stringEncryptor != null && !stringEncryptor.isEmpty()) {
@@ -41,7 +40,7 @@ public class JdbcConnectionRepositoryElementParser implements BeanDefinitionPars
 		}
 
 		AbstractBeanDefinition beanDefinition = beanBuilder.getBeanDefinition();
-		parserContext.getRegistry().registerBeanDefinition("accountConnectionRepository", beanDefinition);
+		parserContext.getRegistry().registerBeanDefinition("connectionRepository", beanDefinition);
 
 		return beanDefinition;
 	}

@@ -28,9 +28,10 @@ import org.springframework.social.provider.support.ConnectionRepository;
 public final class LinkedInServiceProvider extends AbstractOAuth1ServiceProvider<LinkedInOperations> {
 
 	public LinkedInServiceProvider(String consumerKey, String consumerSecret, ConnectionRepository connectionRepository) {
-		super("linkedin", connectionRepository, consumerKey, consumerSecret,
-				new OAuth1Template(consumerKey, consumerSecret, "https://www.linkedin.com/oauth/request_token", 
-						"https://www.linkedin.com/oauth/authorize", "https://www.linkedin.com/oauth/access_token"));
+		super("linkedin", connectionRepository, consumerKey, consumerSecret, new OAuth1Template(consumerKey,
+				consumerSecret, "https://api.linkedin.com/uas/oauth/requestToken",
+				"https://www.linkedin.com/uas/oauth/authorize?oauth_token={requestToken}",
+				"https://api.linkedin.com/uas/oauth/accessToken"));
 	}
 
 	@Override
