@@ -15,21 +15,17 @@
  */
 package org.springframework.social.config.xml;
 
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.social.tripit.provider.TripItServiceProvider;
-import org.w3c.dom.Element;
 
 public class TripItProviderElementParser extends AbstractServiceProviderElementParser {
 
-	public BeanDefinition parse(Element element, ParserContext parserContext) {
-		String name = element.getAttribute("id");
-		if (name == null || name.isEmpty()) {
-			name = "tripit";
-		}
+	@Override
+	protected String getDefaultProviderName() {
+		return "tripit";
+	}
 
-		return registerServiceProviderBean(parserContext, name, TripItServiceProvider.class.getName(),
-				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"),
-				element.getAttribute("connection-repository"));
+	@Override
+	protected String getImplementationClassName() {
+		return TripItServiceProvider.class.getName();
 	}
 }

@@ -15,21 +15,17 @@
  */
 package org.springframework.social.config.xml;
 
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.social.gowalla.provider.GowallaServiceProvider;
-import org.w3c.dom.Element;
 
 public class GowallaProviderElementParser extends AbstractServiceProviderElementParser {
 
-	public BeanDefinition parse(Element element, ParserContext parserContext) {
-		String name = element.getAttribute("id");
-		if (name == null || name.isEmpty()) {
-			name = "gowalla";
-		}
+	@Override
+	protected String getDefaultProviderName() {
+		return "gowalla";
+	}
 
-		return registerServiceProviderBean(parserContext, name, GowallaServiceProvider.class.getName(),
-				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"),
-				element.getAttribute("connection-repository"));
+	@Override
+	protected String getImplementationClassName() {
+		return GowallaServiceProvider.class.getName();
 	}
 }

@@ -15,21 +15,17 @@
  */
 package org.springframework.social.config.xml;
 
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.social.linkedin.provider.LinkedInServiceProvider;
-import org.w3c.dom.Element;
 
 public class LinkedInProviderElementParser extends AbstractServiceProviderElementParser {
 
-	public BeanDefinition parse(Element element, ParserContext parserContext) {
-		String name = element.getAttribute("id");
-		if (name == null || name.isEmpty()) {
-			name = "linkedin";
-		}
+	@Override
+	protected String getDefaultProviderName() {
+		return "linkedin";
+	}
 
-		return registerServiceProviderBean(parserContext, name, LinkedInServiceProvider.class.getName(),
-				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"),
-				element.getAttribute("connection-repository"));
+	@Override
+	protected String getImplementationClassName() {
+		return LinkedInServiceProvider.class.getName();
 	}
 }

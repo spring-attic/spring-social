@@ -15,21 +15,18 @@
  */
 package org.springframework.social.config.xml;
 
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.social.facebook.provider.FacebookServiceProvider;
-import org.w3c.dom.Element;
 
 public class FacebookProviderElementParser extends AbstractServiceProviderElementParser {
 
-	public BeanDefinition parse(Element element, ParserContext parserContext) {
-		String name = element.getAttribute("id");
-		if (name == null || name.isEmpty()) {
-			name = "facebook";
-		}
-
-		return registerServiceProviderBean(parserContext, name, FacebookServiceProvider.class.getName(),
-				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"),
-				element.getAttribute("connection-repository"));
+	@Override
+	protected String getDefaultProviderName() {
+		return "facebook";
 	}
+
+	@Override
+	protected String getImplementationClassName() {
+		return FacebookServiceProvider.class.getName();
+	}
+
 }

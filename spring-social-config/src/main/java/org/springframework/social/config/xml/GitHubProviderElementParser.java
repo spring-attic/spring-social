@@ -15,21 +15,17 @@
  */
 package org.springframework.social.config.xml;
 
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.social.github.provider.GitHubServiceProvider;
-import org.w3c.dom.Element;
 
 public class GitHubProviderElementParser extends AbstractServiceProviderElementParser {
 
-	public BeanDefinition parse(Element element, ParserContext parserContext) {
-		String name = element.getAttribute("id");
-		if (name == null || name.isEmpty()) {
-			name = "github";
-		}
+	@Override
+	protected String getDefaultProviderName() {
+		return "github";
+	}
 
-		return registerServiceProviderBean(parserContext, name, GitHubServiceProvider.class.getName(),
-				element.getAttribute("consumer-key"), element.getAttribute("consumer-secret"),
-				element.getAttribute("connection-repository"));
+	@Override
+	protected String getImplementationClassName() {
+		return GitHubServiceProvider.class.getName();
 	}
 }

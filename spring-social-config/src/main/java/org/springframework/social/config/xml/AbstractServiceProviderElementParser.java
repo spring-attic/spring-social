@@ -16,25 +16,48 @@
 package org.springframework.social.config.xml;
 
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.w3c.dom.Element;
 
 public abstract class AbstractServiceProviderElementParser implements BeanDefinitionParser {
-	protected BeanDefinition registerServiceProviderBean(ParserContext parserContext, String name, String className,
-			String consumerKey, String consumerSecret, String connectionRepositoryBean) {
-		BeanDefinitionBuilder providerBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(className);
+	private static final String CONNECTION_REPOSITORY_ATTRIBUTE = "connection-repository";
+	private static final String DEFAULT_CONNECTION_REPOSITORY_BEAN_NAME = "connectionRepository";
+
+
+	public BeanDefinition parse(Element element, ParserContext parserContext) {
+		String name = element.getAttribute("id");
+		if (name == null || name.isEmpty()) {
+			name = getDefaultProviderName();
+		}
+
+		return registerServiceProviderBean(element, parserContext, name);
+	}
+
+	protected BeanDefinition registerServiceProviderBean(Element element, ParserContext parserContext, String name) {
+
+		String consumerKey = element.getAttribute("consumer-key");
+		String consumerSecret = element.getAttribute("consumer-secret");
+		String connectionRepositoryBean = getConnectionRepositoryName(element);
+
+		BeanDefinitionBuilder providerBeanBuilder = BeanDefinitionBuilder
+				.genericBeanDefinition(getImplementationClassName());
 		providerBeanBuilder.addConstructorArgValue(consumerKey);
 		providerBeanBuilder.addConstructorArgValue(consumerSecret);
-		if (connectionRepositoryBean != null && !connectionRepositoryBean.isEmpty()) {
-			providerBeanBuilder.addConstructorArgReference(connectionRepositoryBean);
-		} else {
-			providerBeanBuilder.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
-		}
+		providerBeanBuilder.addConstructorArgReference(connectionRepositoryBean);
 
 		BeanDefinition providerBeanDefinition = providerBeanBuilder.getBeanDefinition();
 		parserContext.getRegistry().registerBeanDefinition(name, providerBeanDefinition);
 		return providerBeanDefinition;
 	}
+
+	String getConnectionRepositoryName(Element element) {
+		return (element.hasAttribute(CONNECTION_REPOSITORY_ATTRIBUTE) ? element
+				.getAttribute(CONNECTION_REPOSITORY_ATTRIBUTE) : DEFAULT_CONNECTION_REPOSITORY_BEAN_NAME);
+	}
+
+	abstract protected String getImplementationClassName();
+
+	abstract protected String getDefaultProviderName();
 }

@@ -21,13 +21,23 @@ import org.w3c.dom.Element;
 
 public class ServiceProviderElementParser extends AbstractServiceProviderElementParser {
 
+	private String className;
+	private String name;
+
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
-		String name = element.getAttribute("id");
-		String className = element.getAttribute("class");
-		String consumerKey = element.getAttribute("consumer-key");
-		String consumerSecret = element.getAttribute("consumer-secret");
-		String connectionRepositoryBean = element.getAttribute("connection-repository");
-		return registerServiceProviderBean(parserContext, name, className, consumerKey, consumerSecret,
-				connectionRepositoryBean);
+		name = element.getAttribute("id");
+		className = element.getAttribute("class");
+		return registerServiceProviderBean(element, parserContext, name);
 	}
+
+	@Override
+	protected String getDefaultProviderName() {
+		return name;
+	}
+
+	@Override
+	protected String getImplementationClassName() {
+		return className;
+	}
+
 }
