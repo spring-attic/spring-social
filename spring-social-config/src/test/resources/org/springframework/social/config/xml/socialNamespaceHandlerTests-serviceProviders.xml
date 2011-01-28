@@ -6,7 +6,7 @@
 		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<bean id="connectionRepository" class="org.springframework.social.provider.test.StubConnectionRepository" />
+	<bean id="connectionRepository" class="org.springframework.social.connect.test.StubConnectionRepository" />
 	
 	<social:service-provider id="tweeter"
 							 consumer-key="twitter_key"
