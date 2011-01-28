@@ -15,18 +15,15 @@
  */
 package org.springframework.social.web.connect;
 
-import org.springframework.social.provider.ServiceProvider;
+import org.springframework.social.connect.ServiceProvider;
 import org.springframework.web.context.request.WebRequest;
 
 /**
- * Listens for service provider connection events. Allows for custom logic to be
- * executed before and after connections are established with a specific service
- * provider.
- * 
+ * Listens for service provider connection events.
+ * Allows for custom logic to be executed before and after connections are established with a specific service provider.
  * @author Keith Donald
  * @author Craig Walls
- * @param <S>
- *            The service API hosted by the intercepted service provider.
+ * @param <S> The service API hosted by the intercepted service provider.
  */
 public interface ConnectInterceptor<S> {
 	

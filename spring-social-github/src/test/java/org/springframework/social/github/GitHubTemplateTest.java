@@ -15,9 +15,13 @@
  */
 package org.springframework.social.github;
 
-import static java.util.Calendar.*;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.NOVEMBER;
+import static java.util.Calendar.YEAR;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.Calendar;
 import java.util.Date;

@@ -15,22 +15,23 @@
  */
 package org.springframework.social.config.xml;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.lang.reflect.Field;
 
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.security.oauth.client.oauth2.OAuth2Operations;
-import org.springframework.security.oauth.client.oauth2.OAuth2Template;
+import org.springframework.social.connect.oauth1.AbstractOAuth1ServiceProvider;
+import org.springframework.social.connect.oauth2.AbstractOAuth2ServiceProvider;
+import org.springframework.social.connect.support.AbstractServiceProvider;
 import org.springframework.social.facebook.provider.FacebookServiceProvider;
 import org.springframework.social.github.provider.GitHubServiceProvider;
 import org.springframework.social.gowalla.provider.GowallaServiceProvider;
 import org.springframework.social.linkedin.provider.LinkedInServiceProvider;
-import org.springframework.social.provider.oauth1.AbstractOAuth1ServiceProvider;
-import org.springframework.social.provider.oauth2.AbstractOAuth2ServiceProvider;
-import org.springframework.social.provider.support.AbstractServiceProvider;
+import org.springframework.social.oauth2.OAuth2Operations;
+import org.springframework.social.oauth2.OAuth2Template;
 import org.springframework.social.tripit.provider.TripItServiceProvider;
 import org.springframework.social.twitter.provider.TwitterServiceProvider;
 

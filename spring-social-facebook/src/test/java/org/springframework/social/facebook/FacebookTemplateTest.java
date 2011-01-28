@@ -15,13 +15,21 @@
  */
 package org.springframework.social.facebook;
 
-import static java.util.Collections.*;
-import static org.junit.Assert.*;
-import static org.junit.internal.matchers.IsCollectionContaining.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.http.HttpStatus.*;
-import static org.springframework.social.facebook.FacebookTemplate.*;
+import static java.util.Collections.singletonMap;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.social.facebook.FacebookTemplate.CONNECTION_URL;
+import static org.springframework.social.facebook.FacebookTemplate.CURRENT_USER;
+import static org.springframework.social.facebook.FacebookTemplate.FEED;
+import static org.springframework.social.facebook.FacebookTemplate.FRIENDS;
+import static org.springframework.social.facebook.FacebookTemplate.OBJECT_URL;
+import static org.springframework.social.facebook.FacebookTemplate.PROFILE_LARGE_PICTURE_URL;
 
 import java.util.ArrayList;
 import java.util.HashMap;

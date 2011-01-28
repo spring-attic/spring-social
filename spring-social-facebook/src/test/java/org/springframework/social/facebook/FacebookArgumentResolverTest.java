@@ -15,8 +15,8 @@
  */
 package org.springframework.social.facebook;
 
-import static org.junit.Assert.*;
-import static org.springframework.web.bind.support.WebArgumentResolver.*;
+import static org.junit.Assert.assertEquals;
+import static org.springframework.web.bind.support.WebArgumentResolver.UNRESOLVED;
 
 import java.lang.reflect.Method;
 
