@@ -65,12 +65,6 @@
 	    	<version>3.1.0.CI-SNAPSHOT</version>
 	    </dependency>
 	    
-	    <dependency>
-	        <groupId>org.scribe</groupId>
-	        <artifactId>scribe</artifactId>
-	        <version>1.0.7</version>
-        </dependency>
-				
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
