@@ -20,7 +20,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.springframework.social.provider.ServiceProviderConnection;
+import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.twitter.TwitterOperations;
 import org.springframework.social.twitter.provider.TwitterServiceProvider;
 import org.springframework.stereotype.Controller;

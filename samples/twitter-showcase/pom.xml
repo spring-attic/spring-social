@@ -40,7 +40,7 @@
 		
 		<dependency>
 		    <groupId>org.springframework.social</groupId>
-		    <artifactId>spring-social-client</artifactId>
+		    <artifactId>spring-social-core</artifactId>
 	        <version>${org.springframework.social-version}</version>
 	    </dependency>
 		<dependency>
