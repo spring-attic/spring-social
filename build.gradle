@@ -102,6 +102,14 @@ configure(javaprojects) {
     springVersion = '3.0.5.RELEASE'
     springSecurityVersion = '3.1.0.CI-SNAPSHOT'
 
+    sourceSets {
+        test {
+            resources {
+                srcDirs = ['src/test/java']
+            }
+        }
+    }
+
     // 'provided' dependencies should be transitive (e.g. servlet-api)
     configurations {
         provided { transitive = false }
@@ -134,6 +142,17 @@ configure(javaprojects) {
 
 project('spring-social-core') {
     description = 'Foundational module containing the ServiceProvider "Connect" Framework and Service API invocation support.'
+
+/*
+    sourceSets {
+        test {
+            resources {
+                // have to add src/main/java here, because that's where the connection schema lives
+                srcDirs = ['src/main/java', 'src/test/java']
+            }
+        }
+    }
+*/
     dependencies {
         compile "org.springframework:spring-jdbc:$springVersion"
         compile "org.springframework:spring-web:$springVersion"

@@ -39,7 +39,7 @@ public class SocialNamespaceHandlerTest {
 	@Test
 	public void genericServiceProvider() throws Exception {
 		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
+				"socialNamespaceHandlerTest.xml", getClass());
 		TwitterServiceProvider provider = applicationContext.getBean("tweeter", TwitterServiceProvider.class);
 		assertNotNull(provider);
 		assertOAuth1ProviderConfiguration(provider, "twitter");
@@ -47,48 +47,48 @@ public class SocialNamespaceHandlerTest {
 
 	@Test
 	public void twitterServiceProvider() throws Exception {
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("socialNamespaceHandlerTest.xml",
+				getClass());
 		TwitterServiceProvider provider = applicationContext.getBean("twitter", TwitterServiceProvider.class);
 		assertOAuth1ProviderConfiguration(provider, "twitter");
 	}
 
 	@Test
 	public void tripitServiceProvider() throws Exception {
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("socialNamespaceHandlerTest.xml",
+				getClass());
 		TripItServiceProvider provider = applicationContext.getBean("tripit", TripItServiceProvider.class);
 		assertOAuth1ProviderConfiguration(provider, "tripit");
 	}
 
 	@Test
 	public void linkedinServiceProvider() throws Exception {
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("socialNamespaceHandlerTest.xml",
+				getClass());
 		LinkedInServiceProvider provider = applicationContext.getBean("linkedin", LinkedInServiceProvider.class);
 		assertOAuth1ProviderConfiguration(provider, "linkedin");
 	}
 
 	@Test
 	public void facebookServiceProvider() throws Exception {
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("socialNamespaceHandlerTest.xml",
+				getClass());
 		FacebookServiceProvider provider = applicationContext.getBean("facebook", FacebookServiceProvider.class);
 		assertOAuth2ProviderConfiguration(provider, "facebook");
 	}
 
 	@Test
 	public void gowallaServiceProvider() throws Exception {
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("socialNamespaceHandlerTest.xml",
+				getClass());
 		GowallaServiceProvider provider = applicationContext.getBean("gowalla", GowallaServiceProvider.class);
 		assertOAuth2ProviderConfiguration(provider, "gowalla");
 	}
 
 	@Test
 	public void githubServiceProvider() throws Exception {
-		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-				"socialNamespaceHandlerTests-serviceProviders.xml", getClass());
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("socialNamespaceHandlerTest.xml",
+				getClass());
 		GitHubServiceProvider provider = applicationContext.getBean("github", GitHubServiceProvider.class);
 		assertOAuth2ProviderConfiguration(provider, "github");
 	}
