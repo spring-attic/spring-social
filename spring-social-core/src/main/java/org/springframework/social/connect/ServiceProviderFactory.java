@@ -27,8 +27,8 @@ public interface ServiceProviderFactory {
 	ServiceProvider<?> getServiceProvider(String id);
 
 	/**
-	 * Get a strongly-typed reference to the ServiceProvider identified by the provided name.
+	 * Get a strongly-typed reference to the ServiceProvider identified by the provided id.
 	 */
-	<S> ServiceProvider<S> getServiceProvider(String id, Class<S> serviceType);
+	<S> ServiceProvider<S> getServiceProvider(String id, Class<S> serviceApiType);
 
 }
