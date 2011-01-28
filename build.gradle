@@ -142,17 +142,6 @@ configure(javaprojects) {
 
 project('spring-social-core') {
     description = 'Foundational module containing the ServiceProvider "Connect" Framework and Service API invocation support.'
-
-/*
-    sourceSets {
-        test {
-            resources {
-                // have to add src/main/java here, because that's where the connection schema lives
-                srcDirs = ['src/main/java', 'src/test/java']
-            }
-        }
-    }
-*/
     dependencies {
         compile "org.springframework:spring-jdbc:$springVersion"
         compile "org.springframework:spring-web:$springVersion"
