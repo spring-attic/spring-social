@@ -20,6 +20,8 @@
 		<beans:property name="suffix" value=".jsp" />
 	</beans:bean>
 	
+	<beans:bean class="org.springframework.social.samples.facebook.AnnotationMethodHandlerAdapterPostProcessor" />
+		
 	<!-- Imports user-defined @Controller beans that process client requests -->
 	<beans:import resource="controllers.xml" />
 	

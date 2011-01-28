@@ -24,5 +24,6 @@
 
 	<jdbc:embedded-database id="dataSource" type="H2">
 		<jdbc:script location="classpath:/org/springframework/social/samples/facebook/db/ConnectedAccount.sql" />
+		<jdbc:script location="classpath:/org/springframework/social/samples/facebook/db/ServiceProviders-data.sql" />
 	</jdbc:embedded-database>	
 </beans>
