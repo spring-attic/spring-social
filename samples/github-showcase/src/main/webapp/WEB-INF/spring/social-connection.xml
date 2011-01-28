@@ -15,7 +15,7 @@
 	     -->
 	<bean id="serviceProviderFactory" class="org.springframework.social.provider.ContextServiceProviderFactory" />
 	
-	<!-- Configure a Twitter service provider -->
+	<!-- Configure a GitHub service provider -->
 	<social:github-provider consumer-key="7015754f55b054ec81cb" 
 							consumer-secret="8ba75df7861a0ebb2800b55b686bac6db853671b" />
 

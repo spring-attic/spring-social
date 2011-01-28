@@ -17,7 +17,7 @@ package org.springframework.social.samples.gowalla;
 
 import java.io.Serializable;
 
-import org.springframework.social.provider.AccountIdResolver;
+import org.springframework.social.web.connect.AccountIdResolver;
 
 public class GowallaSampleAccountIdResolver implements AccountIdResolver {
 	public Serializable resolveAccountId() {
