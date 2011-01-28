@@ -1,6 +1,8 @@
 package org.springframework.social.connect.jdbc;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -13,7 +15,6 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.crypto.encrypt.Encryptors;
-import org.springframework.social.connect.jdbc.JdbcConnectionRepository;
 import org.springframework.social.connect.support.Connection;
 
 public class JdbcConnectionRepositoryTest {
@@ -27,7 +28,7 @@ public class JdbcConnectionRepositoryTest {
 		EmbeddedDatabaseFactory factory = new EmbeddedDatabaseFactory();
 		factory.setDatabaseType(EmbeddedDatabaseType.H2);
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-		populator.addScript(new ClassPathResource("Schema.sql", getClass()));
+		populator.addScript(new ClassPathResource("ConnectionRepositorySchema.sql", getClass()));
 		factory.setDatabasePopulator(populator);
 		db = factory.getDatabase();
 		this.repository = new JdbcConnectionRepository(db, Encryptors.noOpText());

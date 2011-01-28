@@ -102,14 +102,6 @@ configure(javaprojects) {
     springVersion = '3.0.5.RELEASE'
     springSecurityVersion = '3.1.0.CI-SNAPSHOT'
 
-    sourceSets {
-        test {
-            resources {
-                srcDirs = ['src/test/resources', 'src/test/java']
-            }
-        }
-    }
-
     // 'provided' dependencies should be transitive (e.g. servlet-api)
     configurations {
         provided { transitive = false }
