@@ -25,7 +25,7 @@ import org.springframework.social.connect.ServiceProviderConnection;
 /**
  * General-purpose base class for ServiceProvider implementations.
  * Assumes provider connections are persisted in a {@link ConnectionRepository}.
- * Subclasses must implement {@link #getAuthorizationProtocol()} and {@link #getApi(Connection)}.
+ * Subclasses must implement {@link #getApi(Connection)}.
  * @author Keith Donald
  * @param <S> The service API exposed by this service provider.
  */
@@ -45,6 +45,8 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		this.id = id;
 		this.connectionRepository = connectionRepository;
 	}
+	
+	// implementing ServiceProvider<S>
 	
 	public String getId() {
 		return id;

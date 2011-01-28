@@ -25,12 +25,14 @@ import org.springframework.social.intercept.ClientRequestInterceptor;
  */
 public class OAuth1ClientRequestInterceptor implements ClientRequestInterceptor {
 
-	private final OAuthToken accessToken;
 	private final String consumerKey;
+	
 	private final String consumerSecret;
 
+	private final OAuthToken accessToken;
+
 	/**
-	 * Creates a OAuth 1.0 client request interceptor.
+	 * Creates an OAuth 1.0 client request interceptor.
 	 * @param accessToken the access token and secret
 	 */
 	public OAuth1ClientRequestInterceptor(String consumerKey, String consumerSecret, OAuthToken accessToken) {
@@ -40,8 +42,7 @@ public class OAuth1ClientRequestInterceptor implements ClientRequestInterceptor 
 	}
 
 	public void beforeExecution(ClientRequest request) {
-		request.getHeaders().set("Authorization", SigningUtils.buildAuthorizationHeader(request, consumerKey, consumerSecret,
-				accessToken));
+		request.getHeaders().set("Authorization", SigningUtils.buildAuthorizationHeader(request, consumerKey, consumerSecret, accessToken));
 	}
 
 }
