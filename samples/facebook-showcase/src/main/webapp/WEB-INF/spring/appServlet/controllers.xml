@@ -12,7 +12,7 @@
 	
 	<bean class="org.springframework.social.web.connect.ConnectController">
 		<constructor-arg ref="serviceProviderFactory" />
-		<constructor-arg value="http://localhost:8080/facebook-showcase-2" />
+		<constructor-arg value="http://localhost:8080/facebook-showcase" />
 		<constructor-arg ref="accountIdResolver" />
 	</bean>
 

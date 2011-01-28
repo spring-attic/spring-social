@@ -13,7 +13,7 @@
 	     In this case, service providers are retrieved as beans from the Spring application context.
 	     <social:jdbc-service-provider-factory> retrieves them through JDBC.  
 	     -->
-	<bean id="serviceProviderFactory" class="org.springframework.social.provider.ContextServiceProviderFactory" />
+	<bean id="serviceProviderFactory" class="org.springframework.social.config.BeanServiceProviderFactory" autowire="constructor" />
 	
 	<!-- Configure a Facebook service provider -->
 	<social:facebook-provider consumer-key="0b754d95f9c9899b0d6c4454b6f2dde7" 
