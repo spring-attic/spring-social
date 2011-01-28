@@ -21,15 +21,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.security.oauth.client.oauth1.AuthorizedRequestToken;
-import org.springframework.security.oauth.client.oauth1.OAuthToken;
-import org.springframework.security.oauth.client.oauth2.AccessGrant;
-import org.springframework.social.provider.AuthorizationProtocol;
-import org.springframework.social.provider.ServiceProvider;
-import org.springframework.social.provider.ServiceProviderConnection;
-import org.springframework.social.provider.ServiceProviderFactory;
-import org.springframework.social.provider.oauth1.OAuth1ServiceProvider;
-import org.springframework.social.provider.oauth2.OAuth2ServiceProvider;
+import org.springframework.social.connect.ServiceProvider;
+import org.springframework.social.connect.ServiceProviderConnection;
+import org.springframework.social.connect.ServiceProviderFactory;
+import org.springframework.social.connect.oauth1.OAuth1ServiceProvider;
+import org.springframework.social.connect.oauth2.OAuth2ServiceProvider;
+import org.springframework.social.oauth1.AuthorizedRequestToken;
+import org.springframework.social.oauth1.OAuthToken;
+import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -79,30 +78,19 @@ import org.springframework.web.context.request.WebRequest;
 public class ConnectController {
 	
 	private final ServiceProviderFactory serviceProviderFactory;
-	
+
+	private final AccountIdResolver accountIdResolver;
+
 	private final String baseCallbackUrl;
 	
 	private MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors;
-
-	private final AccountIdResolver accountIdResolver;
 
 	/**
 	 * Constructs a ConnectController.
 	 * @param serviceProviderFactory the factory that loads the ServiceProviders members wish to connect to
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
 	 */
-	public ConnectController(ServiceProviderFactory serviceProviderFactory, String applicationUrl,
-			AccountIdResolver accountIdResolver) {
-		// TODO: It seems that since we always configure a service provider as a
-		// bean in Spring, whether it be using the namespace or by invoking
-		// getServiceProvider() on the JDBC service provider factory, that
-		// wiring the service provider factory into ConnectController isn't
-		// necessary. Instead, ConnectController just needs a way of finding one
-		// of those service provider beans by its name. If so, then the SPF
-		// should be removed as a constructor argument. This would not only
-		// simplify configuration, but would also prevent 2 instances of SPs
-		// from being created (one created when ConnectController asks for it
-		// and one created in the Spring context).
+	public ConnectController(ServiceProviderFactory serviceProviderFactory, AccountIdResolver accountIdResolver, String applicationUrl) {
 		this.serviceProviderFactory = serviceProviderFactory;
 		this.accountIdResolver = accountIdResolver;
 		this.baseCallbackUrl = applicationUrl + "/connect/";
@@ -142,7 +130,7 @@ public class ConnectController {
 		ServiceProvider<?> provider = getServiceProvider(name);
 		preConnect(provider, request);
 		Map<String, String> authorizationParameters = new HashMap<String, String>();
-		if (provider.getAuthorizationProtocol() == AuthorizationProtocol.OAUTH_1) {
+		if (provider instanceof OAuth1ServiceProvider) {
 			OAuth1ServiceProvider<?> oauth1Provider = (OAuth1ServiceProvider<?>) provider;
 			OAuthToken requestToken = oauth1Provider.getOAuth1Operations().fetchNewRequestToken(baseCallbackUrl + name);
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
@@ -243,11 +231,11 @@ public class ConnectController {
 		Object storedToken = request.getAttribute(ACCESS_TOKEN_ATTRIBUTE + name, WebRequest.SCOPE_SESSION);
 		if (storedToken != null) {
 			ServiceProvider<?> provider = getServiceProvider(name);
-			if (provider.getAuthorizationProtocol() == AuthorizationProtocol.OAUTH_1) {
+			if (provider instanceof OAuth1ServiceProvider) {
 				OAuth1ServiceProvider<?> oauth1Provider = (OAuth1ServiceProvider<?>) provider;
 				OAuthToken accessToken = (OAuthToken) storedToken;
 				oauth1Provider.connect(accountIdResolver.resolveAccountId(), accessToken);
-			} else if (provider.getAuthorizationProtocol() == AuthorizationProtocol.OAUTH_2) {
+			} else if (provider instanceof OAuth2ServiceProvider) {
 				OAuth2ServiceProvider<?> oauth2Provider = (OAuth2ServiceProvider<?>) provider;
 				AccessGrant accessGrant = (AccessGrant) storedToken;
 				oauth2Provider.connect(accountIdResolver.resolveAccountId(), accessGrant);

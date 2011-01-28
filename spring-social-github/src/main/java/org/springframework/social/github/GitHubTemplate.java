@@ -22,8 +22,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.security.oauth.client.InterceptorCallingRestTemplate;
-import org.springframework.security.oauth.client.oauth2.OAuth2Draft8ClientRequestInterceptor;
+import org.springframework.social.intercept.ExtendedRestTemplate;
+import org.springframework.social.oauth2.OAuth2Draft8ClientRequestInterceptor;
 import org.springframework.web.client.RestOperations;
 
 /**
@@ -58,7 +58,7 @@ public class GitHubTemplate implements GitHubOperations {
 		// RestTemplate. This is to simulate the work that Arjen is doing for
 		// SPR-7494. Once Arjen's finished, a regular RestTemplate should be
 		// used with the interceptors registered appropriately.
-		InterceptorCallingRestTemplate restTemplate = new InterceptorCallingRestTemplate();
+		ExtendedRestTemplate restTemplate = new ExtendedRestTemplate();
 		restTemplate.addInterceptor(new OAuth2Draft8ClientRequestInterceptor(accessToken));
 		restOperations = restTemplate;
 	}

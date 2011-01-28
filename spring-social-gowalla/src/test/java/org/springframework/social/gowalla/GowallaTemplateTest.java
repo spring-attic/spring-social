@@ -15,7 +15,7 @@
  */
 package org.springframework.social.gowalla;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 import org.junit.Before;
 import org.junit.Test;

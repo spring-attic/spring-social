@@ -15,14 +15,32 @@
  */
 package org.springframework.social.twitter;
 
-import static java.util.Collections.*;
-import static org.junit.Assert.*;
-import static org.junit.internal.matchers.IsCollectionContaining.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.http.HttpStatus.*;
-import static org.springframework.social.twitter.TwitterResponseStatusCodeTranslator.*;
-import static org.springframework.social.twitter.TwitterTemplate.*;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.social.twitter.TwitterResponseStatusCodeTranslator.DUPLICATE_STATUS_TEXT;
+import static org.springframework.social.twitter.TwitterTemplate.DEFAULT_RESULTS_PER_PAGE;
+import static org.springframework.social.twitter.TwitterTemplate.FRIENDS_STATUSES_URL;
+import static org.springframework.social.twitter.TwitterTemplate.FRIENDS_TIMELINE_URL;
+import static org.springframework.social.twitter.TwitterTemplate.HOME_TIMELINE_URL;
+import static org.springframework.social.twitter.TwitterTemplate.MENTIONS_URL;
+import static org.springframework.social.twitter.TwitterTemplate.PUBLIC_TIMELINE_URL;
+import static org.springframework.social.twitter.TwitterTemplate.RETWEET_URL;
+import static org.springframework.social.twitter.TwitterTemplate.SEARCH_URL;
+import static org.springframework.social.twitter.TwitterTemplate.TWEET_URL;
+import static org.springframework.social.twitter.TwitterTemplate.USER_PROFILE_URL;
+import static org.springframework.social.twitter.TwitterTemplate.USER_TIMELINE_URL;
+import static org.springframework.social.twitter.TwitterTemplate.VERIFY_CREDENTIALS_URL;
 
 import java.util.ArrayList;
 import java.util.Date;

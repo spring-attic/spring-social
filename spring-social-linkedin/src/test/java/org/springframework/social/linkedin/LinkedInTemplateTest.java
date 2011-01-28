@@ -15,10 +15,12 @@
  */
 package org.springframework.social.linkedin;
 
-import static org.junit.Assert.*;
-import static org.junit.internal.matchers.IsCollectionContaining.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.social.linkedin.LinkedInTemplate.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.junit.internal.matchers.IsCollectionContaining.hasItem;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.social.linkedin.LinkedInTemplate.GET_CURRENT_USER_INFO;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -23,8 +23,8 @@ import java.util.Map;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
-import org.springframework.security.oauth.client.InterceptorCallingRestTemplate;
-import org.springframework.security.oauth.client.oauth2.OAuth2Draft10ClientRequestInterceptor;
+import org.springframework.social.intercept.ExtendedRestTemplate;
+import org.springframework.social.oauth2.OAuth2Draft10ClientRequestInterceptor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
@@ -69,7 +69,7 @@ public class FacebookTemplate implements FacebookOperations {
 		// RestTemplate. This is to simulate the work that Arjen is doing for
 		// SPR-7494. Once Arjen's finished, a regular RestTemplate should be
 		// used with the interceptors registered appropriately.
-		InterceptorCallingRestTemplate restTemplate = new InterceptorCallingRestTemplate();
+		ExtendedRestTemplate restTemplate = new ExtendedRestTemplate();
 		restTemplate.addInterceptor(new OAuth2Draft10ClientRequestInterceptor(accessToken));
 
 		// Facebook returns JSON data with text/javascript content type

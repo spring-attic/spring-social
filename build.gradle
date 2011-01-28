@@ -140,66 +140,65 @@ configure(javaprojects) {
 // @see configure(javaprojects) above for general config
 // -----------------------------------------------------------------------------
 
-project('spring-social-client') {
-    description = 'Service Provider Framework'
+project('spring-social-core') {
+    description = 'Foundational module containing the ServiceProvider "Connect" Framework and Service API invocation support.'
     dependencies {
         compile "org.springframework:spring-jdbc:$springVersion"
         compile "org.springframework:spring-web:$springVersion"
 		compile ("org.springframework.security:spring-security-crypto:$springSecurityVersion") { provided = true }
         compile "commons-codec:commons-codec:1.4"
-        compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         testCompile "com.h2database:h2:1.2.143"
     }
 }
 
 project('spring-social-facebook') {
-    description = 'Facebook Service Provider'
+    description = 'Facebook API'
     dependencies {
         compile "commons-httpclient:commons-httpclient:$commonsHttpClientVersion"
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
-        compile project(':spring-social-client')
+        compile project(':spring-social-core')
         compile project(':spring-social-webmvc')
     }
 }
 
 project('spring-social-github') {
-    description = 'Github Service Provider'
+    description = 'Github API'
     dependencies {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
-        compile project(':spring-social-client')
+        compile project(':spring-social-core')
     }
 }
 
 project('spring-social-gowalla') {
-    description = 'Gowalla Service Provider'
+    description = 'Gowalla API'
     dependencies {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
-        compile project(':spring-social-client')
+        compile project(':spring-social-core')
     }
 }
 
 project('spring-social-linkedin') {
-    description = 'LinkedIn Service Provider'
+    description = 'LinkedIn API'
     dependencies {
         compile "commons-httpclient:commons-httpclient:$commonsHttpClientVersion"
-        compile project(':spring-social-client')
+        compile project(':spring-social-core')
     }
 }
 
 project('spring-social-tripit') {
-    description = 'TripIt Service Provider'
+    description = 'TripIt API'
     dependencies {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
-        compile project(':spring-social-client')
+        compile project(':spring-social-core')
     }
 }
 
 project('spring-social-twitter') {
-    description = 'Twitter Service Provider'
+    description = 'Twitter API'
     dependencies {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
-        compile project(':spring-social-client')
+        compile project(':spring-social-core')
     }
 }
 
@@ -207,7 +206,7 @@ project('spring-social-webmvc') {
     description = 'Spring MVC Integration'
     dependencies {
         compile "org.springframework:spring-web:$springVersion"
-        compile project(':spring-social-client')
+        compile project(':spring-social-core')
     }
 }
 
@@ -215,7 +214,7 @@ project('spring-social-config') {
     description = 'Configuration Namespace'
     dependencies {
         compile "org.springframework:spring-beans:$springVersion"
-        compile project(':spring-social-client')
+        compile project(':spring-social-core')
         compile project(':spring-social-facebook') { optional = true }
         compile project(':spring-social-github') { optional = true }
         compile project(':spring-social-gowalla') { optional = true }
@@ -223,7 +222,7 @@ project('spring-social-config') {
         compile project(':spring-social-tripit') { optional = true }
         compile project(':spring-social-twitter') { optional = true }
         testCompile "com.h2database:h2:1.2.143"
-        testCompile files(this.project(':spring-social-client').sourceSets.test.classesDir)
+        testCompile files(this.project(':spring-social-core').sourceSets.test.classesDir)
     }
 }
 

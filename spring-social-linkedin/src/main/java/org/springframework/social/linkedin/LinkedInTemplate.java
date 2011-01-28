@@ -17,9 +17,9 @@ package org.springframework.social.linkedin;
 
 import java.util.List;
 
-import org.springframework.security.oauth.client.InterceptorCallingRestTemplate;
-import org.springframework.security.oauth.client.oauth1.OAuth1ClientRequestInterceptor;
-import org.springframework.security.oauth.client.oauth1.OAuthToken;
+import org.springframework.social.intercept.ExtendedRestTemplate;
+import org.springframework.social.oauth1.OAuth1ClientRequestInterceptor;
+import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.web.client.RestOperations;
 
 /**
@@ -60,9 +60,8 @@ public class LinkedInTemplate implements LinkedInOperations {
 		// RestTemplate. This is to simulate the work that Arjen is doing for
 		// SPR-7494. Once Arjen's finished, a regular RestTemplate should be
 		// used with the interceptors registered appropriately.
-		InterceptorCallingRestTemplate restTemplate = new InterceptorCallingRestTemplate();
-		restTemplate.addInterceptor(new OAuth1ClientRequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken,
-				accessTokenSecret)));
+		ExtendedRestTemplate restTemplate = new ExtendedRestTemplate();
+		restTemplate.addInterceptor(new OAuth1ClientRequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)));
 		this.restOperations = restTemplate;
 	}
 

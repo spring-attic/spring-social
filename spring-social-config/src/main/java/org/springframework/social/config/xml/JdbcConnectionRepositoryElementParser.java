@@ -21,7 +21,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.security.crypto.encrypt.Encryptors;
-import org.springframework.social.provider.jdbc.JdbcConnectionRepository;
+import org.springframework.social.connect.jdbc.JdbcConnectionRepository;
 import org.w3c.dom.Element;
 
 public class JdbcConnectionRepositoryElementParser implements BeanDefinitionParser {

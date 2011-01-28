@@ -15,8 +15,10 @@
  */
 package org.springframework.social.twitter;
 
-import static org.junit.Assert.*;
-import static org.springframework.social.twitter.TwitterResponseStatusCodeTranslator.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.social.twitter.TwitterResponseStatusCodeTranslator.DUPLICATE_STATUS_TEXT;
+import static org.springframework.social.twitter.TwitterResponseStatusCodeTranslator.INVALID_MESSAGE_RECIPIENT_TEXT;
 
 import java.util.Collections;
 import java.util.Map;
