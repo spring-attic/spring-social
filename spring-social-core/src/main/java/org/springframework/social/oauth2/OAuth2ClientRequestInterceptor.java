@@ -27,14 +27,64 @@ import org.springframework.social.intercept.ClientRequestInterceptor;
  */
 public class OAuth2ClientRequestInterceptor implements ClientRequestInterceptor {
 
-	private String accessToken;
+	private final String accessToken;
+	
+	private final PreviousOAuth2Version previousOAuth2Version;
 	
 	public OAuth2ClientRequestInterceptor(String accessToken) {
-		this.accessToken = accessToken;
+		this(accessToken, null);
 	}
 
 	public void beforeExecution(ClientRequest request) {
-		request.getHeaders().set("Authorization", "BEARER " + accessToken + "");
+		request.getHeaders().set("Authorization", getAuthorizationHeaderValue());
+	}
+
+	/**
+	 * Static factory method that constructs a OAuth2ClientRequestInterceptor.
+	 * This implementation adds the Authorization header using the style described in draft 10 of the OAuth2 specification:
+	 * http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-5.1.1
+	 * @author Craig Walls
+	 */
+	public static OAuth2ClientRequestInterceptor draft10(String accessToken) {
+		return new OAuth2ClientRequestInterceptor(accessToken, PreviousOAuth2Version.DRAFT_10);
+	}
+
+	/**
+	 * Static factory method that constructs a OAuth2ClientRequestInterceptor.
+	 * This implementation adds the Authorization header using the style described in draft 8 of the OAuth2 specification:
+	 * http://tools.ietf.org/html/draft-ietf-oauth-v2-08#section-5.1
+	 * @author Craig Walls
+	 */
+	public static OAuth2ClientRequestInterceptor draft8(String accessToken) {
+		return new OAuth2ClientRequestInterceptor(accessToken, PreviousOAuth2Version.DRAFT_8);
+	}
+
+	// internal helpers
+
+	private OAuth2ClientRequestInterceptor(String accessToken, PreviousOAuth2Version previousOAuth2Version) {
+		this.accessToken = accessToken;
+		this.previousOAuth2Version = previousOAuth2Version;
+	}
+
+	private static enum PreviousOAuth2Version {
+
+		DRAFT_10 {
+			public String getAuthorizationHeaderValue(String accessToken) {
+				return "OAuth " + accessToken + "";
+			}
+		},
+		
+		DRAFT_8 {
+			public String getAuthorizationHeaderValue(String accessToken) {
+				return "Token token=\"" + accessToken + "\"";
+			}			
+		};
+		
+		public abstract String getAuthorizationHeaderValue(String accessToken);		
+	}
+	
+	private String getAuthorizationHeaderValue() {
+		return previousOAuth2Version == null ? "BEARER " + accessToken : previousOAuth2Version.getAuthorizationHeaderValue(accessToken);
 	}
 	
 }
