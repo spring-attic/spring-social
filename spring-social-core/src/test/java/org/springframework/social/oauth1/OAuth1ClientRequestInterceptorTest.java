@@ -1,4 +1,4 @@
-package org.springframework.social.connect.oauth1;
+package org.springframework.social.oauth1;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

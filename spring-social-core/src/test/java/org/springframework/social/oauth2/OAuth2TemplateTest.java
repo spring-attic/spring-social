@@ -1,4 +1,4 @@
-package org.springframework.social.connect.oauth2;
+package org.springframework.social.oauth2;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.eq;
