@@ -26,7 +26,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
 /**
- * ClientRequestInterceptor implementation that adds the OAuth2 access token to protected resource requests before execution.
+ * ClientHttpRequestInterceptor implementation that adds the OAuth2 access token to protected resource requests before execution.
  * @author Keith Donald
  * @author Craig Walls
  */
