@@ -17,8 +17,6 @@ package org.springframework.social.twitter;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.social.AccountNotConnectedException;
-import org.springframework.social.OperationNotPermittedException;
 
 /**
  * @author Craig Walls
@@ -52,15 +50,12 @@ public class TwitterTemplateTest {
 	public void updateStatus_withLocation() {
 	}
 
-	@Test(expected = DuplicateTweetException.class)
 	public void updateStatus_duplicateTweet() {
 	}
 
-	@Test(expected = OperationNotPermittedException.class)
 	public void updateStatus_forbidden() {
 	}
 
-	@Test(expected = AccountNotConnectedException.class)
 	public void updateStatus_unauthorized() {
 	}
 
@@ -74,7 +69,6 @@ public class TwitterTemplateTest {
 	public void retweet_forbidden() {
 	}
 
-	@Test(expected = AccountNotConnectedException.class)
 	public void retweet_unauthorized() {
 	}
 
