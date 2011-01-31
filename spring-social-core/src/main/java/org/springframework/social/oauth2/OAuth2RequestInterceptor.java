@@ -15,28 +15,54 @@
  */
 package org.springframework.social.oauth2;
 
-import org.springframework.social.intercept.ClientRequest;
-import org.springframework.social.intercept.ClientRequestInterceptor;
+import java.io.IOException;
+import java.net.URI;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
 
 /**
- * ClientRequestInterceptor implementation that adds the OAuth2 access token to the request before execution.
- * This implementation adds the Authorization header using the bearer token style described in the latest draft (draft 12) of the OAuth2 specification:
- * http://tools.ietf.org/html/draft-ietf-oauth-v2-12#section-7.1
+ * ClientRequestInterceptor implementation that adds the OAuth2 access token to protected resource requests before execution.
  * @author Keith Donald
  * @author Craig Walls
  */
-public class OAuth2ClientRequestInterceptor implements ClientRequestInterceptor {
+public class OAuth2RequestInterceptor implements ClientHttpRequestInterceptor {
 
 	private final String accessToken;
 	
 	private final PreviousOAuth2Version previousOAuth2Version;
-	
-	public OAuth2ClientRequestInterceptor(String accessToken) {
+
+	/**
+	 * Constructs a request interceptor that adds the Authorization header using the bearer token style described in the latest draft (draft 12) of the OAuth2 specification:
+	 * http://tools.ietf.org/html/draft-ietf-oauth-v2-12#section-7.1
+	 * @param accessToken the access token
+	 */
+	public OAuth2RequestInterceptor(String accessToken) {
 		this(accessToken, null);
 	}
-
-	public void beforeExecution(ClientRequest request) {
-		request.getHeaders().set("Authorization", getAuthorizationHeaderValue());
+	
+	public ClientHttpResponse intercept(final HttpRequest request, final byte[] body, ClientHttpRequestExecution execution) throws IOException {
+		HttpRequest protectedResourceRequest = new HttpRequest() {
+			public HttpHeaders getHeaders() {
+				HttpHeaders headers = new HttpHeaders();
+				headers.putAll(request.getHeaders());
+				headers.set("Authorization", getAuthorizationHeaderValue());
+				return headers;
+			}
+			
+			public URI getURI() {
+				return request.getURI();
+			}
+			
+			public HttpMethod getMethod() {
+				return request.getMethod();
+			}
+		};
+		return execution.execute(protectedResourceRequest, body);
 	}
 
 	/**
@@ -45,8 +71,8 @@ public class OAuth2ClientRequestInterceptor implements ClientRequestInterceptor 
 	 * http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-5.1.1
 	 * @author Craig Walls
 	 */
-	public static OAuth2ClientRequestInterceptor draft10(String accessToken) {
-		return new OAuth2ClientRequestInterceptor(accessToken, PreviousOAuth2Version.DRAFT_10);
+	public static OAuth2RequestInterceptor draft10(String accessToken) {
+		return new OAuth2RequestInterceptor(accessToken, PreviousOAuth2Version.DRAFT_10);
 	}
 
 	/**
@@ -55,13 +81,13 @@ public class OAuth2ClientRequestInterceptor implements ClientRequestInterceptor 
 	 * http://tools.ietf.org/html/draft-ietf-oauth-v2-08#section-5.1
 	 * @author Craig Walls
 	 */
-	public static OAuth2ClientRequestInterceptor draft8(String accessToken) {
-		return new OAuth2ClientRequestInterceptor(accessToken, PreviousOAuth2Version.DRAFT_8);
+	public static OAuth2RequestInterceptor draft8(String accessToken) {
+		return new OAuth2RequestInterceptor(accessToken, PreviousOAuth2Version.DRAFT_8);
 	}
 
 	// internal helpers
 
-	private OAuth2ClientRequestInterceptor(String accessToken, PreviousOAuth2Version previousOAuth2Version) {
+	private OAuth2RequestInterceptor(String accessToken, PreviousOAuth2Version previousOAuth2Version) {
 		this.accessToken = accessToken;
 		this.previousOAuth2Version = previousOAuth2Version;
 	}

@@ -23,7 +23,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.social.intercept.ExtendedRestTemplate;
-import org.springframework.social.oauth2.OAuth2ClientRequestInterceptor;
+import org.springframework.social.oauth2.OAuth2RequestInterceptor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
@@ -56,7 +56,7 @@ public class GowallaTemplate implements GowallaOperations {
 	 */
 	public GowallaTemplate(String accessToken) {
 		ExtendedRestTemplate restTemplate = new ExtendedRestTemplate();
-		restTemplate.addInterceptor(OAuth2ClientRequestInterceptor.draft8(accessToken));
+		restTemplate.addInterceptor(OAuth2RequestInterceptor.draft8(accessToken));
 		restOperations = restTemplate;
 	}
 

@@ -18,7 +18,7 @@ package org.springframework.social.tripit;
 import java.util.List;
 
 import org.springframework.social.intercept.ExtendedRestTemplate;
-import org.springframework.social.oauth1.OAuth1ClientRequestInterceptor;
+import org.springframework.social.oauth1.OAuth1RequestInterceptor;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.web.client.RestOperations;
 
@@ -63,7 +63,7 @@ public class TripItTemplate implements TripItOperations {
 		// SPR-7494. Once Arjen's finished, a regular RestTemplate should be
 		// used with the interceptors registered appropriately.
 		ExtendedRestTemplate restTemplate = new ExtendedRestTemplate();
-		restTemplate.addInterceptor(new OAuth1ClientRequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)));
+		restTemplate.addInterceptor(new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)));
 		this.restOperations = restTemplate;
 	}
 

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2011 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.social.oauth1;
 
 import java.io.UnsupportedEncodingException;
@@ -18,25 +33,22 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
-import org.springframework.social.intercept.ClientRequest;
 
 class SigningUtils {
-	public static String buildAuthorizationHeader(ClientRequest request, String consumerKey, String consumerSecret,
-			OAuthToken accessToken) {
-		Map<String, String> oauthParameters = getCommonOAuthParameters(consumerKey);
+	
+	public static String buildAuthorizationHeaderValue(HttpRequest request, byte[] body, String consumerKey, String consumerSecret, OAuthToken accessToken) {
+		Map<String, String> oauthParameters = commonOAuthParameters(consumerKey);
 		oauthParameters.put("oauth_token", accessToken.getValue());
-		Map<String, String> aditionalParameters = extractBodyParameters(request.getHeaders().getContentType(),
-				request.getBody());
-		Map<String, String> queryParameters = extractParameters(request.getUri().getQuery());
+		Map<String, String> aditionalParameters = extractBodyParameters(request.getHeaders().getContentType(), body);
+		Map<String, String> queryParameters = extractParameters(request.getURI().getQuery());
 		aditionalParameters.putAll(queryParameters);
-		String baseRequestUrl = getBaseUrlWithoutPortOrQueryString(request.getUri());
-		return SigningUtils.buildAuthorizationHeader(baseRequestUrl, oauthParameters, aditionalParameters,
-				request.getMethod(), consumerSecret, accessToken.getSecret());
+		String baseRequestUrl = getBaseUrlWithoutPortOrQueryString(request.getURI());
+		return SigningUtils.buildAuthorizationHeaderValue(baseRequestUrl, oauthParameters, aditionalParameters, request.getMethod(), consumerSecret, accessToken.getSecret());
 	}
 
-	public static String buildAuthorizationHeader(String targetUrl, Map<String, String> oauthParameters,
-			Map<String, String> additionalParameters, HttpMethod method, String consumerSecret, String tokenSecret) {
+	public static String buildAuthorizationHeaderValue(String targetUrl, Map<String, String> oauthParameters, Map<String, String> additionalParameters, HttpMethod method, String consumerSecret, String tokenSecret) {
 		String baseString = buildBaseString(targetUrl, oauthParameters, additionalParameters, method);
 		String signature = calculateSignature(baseString, consumerSecret, tokenSecret);
 		String header = "OAuth ";
@@ -47,7 +59,7 @@ class SigningUtils {
 		return header;
 	}
 
-	public static Map<String, String> getCommonOAuthParameters(String consumerKey) {
+	public static Map<String, String> commonOAuthParameters(String consumerKey) {
 		Map<String, String> oauthParameters = new HashMap<String, String>();
 		oauthParameters.put("oauth_consumer_key", consumerKey);
 		oauthParameters.put("oauth_signature_method", HMAC_SHA1_SIGNATURE_NAME);
@@ -57,8 +69,9 @@ class SigningUtils {
 		return oauthParameters;
 	}
 
-	private static String buildBaseString(String targetUrl, Map<String, String> parameters,
-			Map<String, String> additionalParameters, HttpMethod method) {
+	// internal helpers
+	
+	private static String buildBaseString(String targetUrl, Map<String, String> parameters, Map<String, String> additionalParameters, HttpMethod method) {
 		Map<String, String> allParameters = new HashMap<String, String>(parameters);
 		allParameters.putAll(additionalParameters);
 		String baseString = method.toString() + "&" + encode(targetUrl) + "&";
@@ -111,8 +124,7 @@ class SigningUtils {
 			for (String pair : paramPairs) {
 				String[] keyValue = pair.split("=");
 				if (keyValue.length == 2) {
-					// TODO: Determine if this decode step is necessary, since
-					// it's just going to be encoded again later
+					// TODO: Determine if this decode step is necessary, since it's just going to be encoded again later
 					params.put(keyValue[0], decode(keyValue[1]));
 				}
 			}

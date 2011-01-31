@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.social.intercept.ExtendedRestTemplate;
-import org.springframework.social.oauth2.OAuth2ClientRequestInterceptor;
+import org.springframework.social.oauth2.OAuth2RequestInterceptor;
 import org.springframework.web.client.RestOperations;
 
 /**
@@ -54,7 +54,7 @@ public class GitHubTemplate implements GitHubOperations {
 	 */
 	public GitHubTemplate(String accessToken) {
 		ExtendedRestTemplate restTemplate = new ExtendedRestTemplate();
-		restTemplate.addInterceptor(OAuth2ClientRequestInterceptor.draft8(accessToken));
+		restTemplate.addInterceptor(OAuth2RequestInterceptor.draft8(accessToken));
 		restOperations = restTemplate;
 	}
 

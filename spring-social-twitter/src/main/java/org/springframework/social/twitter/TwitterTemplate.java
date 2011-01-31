@@ -31,7 +31,7 @@ import org.springframework.social.AccountNotConnectedException;
 import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.SocialException;
 import org.springframework.social.intercept.ExtendedRestTemplate;
-import org.springframework.social.oauth1.OAuth1ClientRequestInterceptor;
+import org.springframework.social.oauth1.OAuth1RequestInterceptor;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -111,7 +111,7 @@ public class TwitterTemplate implements TwitterOperations {
 		// SPR-7494. Once Arjen's finished, a regular RestTemplate should be
 		// used with the interceptors registered appropriately.
 		ExtendedRestTemplate restTemplate = new ExtendedRestTemplate();	
-		restTemplate.addInterceptor(new OAuth1ClientRequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)));
+		restTemplate.addInterceptor(new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)));
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
 		this.restOperations = restTemplate;
 		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();

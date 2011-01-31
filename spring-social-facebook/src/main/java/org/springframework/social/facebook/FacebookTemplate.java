@@ -24,7 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.intercept.ExtendedRestTemplate;
-import org.springframework.social.oauth2.OAuth2ClientRequestInterceptor;
+import org.springframework.social.oauth2.OAuth2RequestInterceptor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
@@ -65,7 +65,7 @@ public class FacebookTemplate implements FacebookOperations {
 	 */
 	public FacebookTemplate(String accessToken) {
 		ExtendedRestTemplate restTemplate = new ExtendedRestTemplate();
-		restTemplate.addInterceptor(OAuth2ClientRequestInterceptor.draft10(accessToken));
+		restTemplate.addInterceptor(OAuth2RequestInterceptor.draft10(accessToken));
 		// Facebook returns JSON data with text/javascript content type
 		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
