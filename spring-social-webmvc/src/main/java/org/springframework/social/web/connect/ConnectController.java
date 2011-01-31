@@ -16,9 +16,7 @@
 package org.springframework.social.web.connect;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.ServiceProvider;
@@ -27,6 +25,7 @@ import org.springframework.social.connect.ServiceProviderFactory;
 import org.springframework.social.connect.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.connect.oauth2.OAuth2ServiceProvider;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
+import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.stereotype.Controller;
@@ -39,38 +38,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
 /**
- * <p>Generic UI controller for managing the account connection process.  Supported connection flow for OAuth 1 providers:</p>
+ * Generic UI controller for managing the account-to-service-provider connection flow.
  * <ul>
- * GET /connect/{name}  - Get a web page showing Account connection status to provider {name}.<br/>
- * POST /connect/{name} - Initiate an Account connection with provider {name}.<br/>
- * GET /connect/{name}?oauth_token - Receive provider {name} authorization callback and complete Account connection.<br/>
- * DELETE /connect/{name} - Disconnect Account from provider {name}.<br/>
+ * GET /connect/{providerId}  - Get a web page showing connection status to {providerId}.<br/>
+ * POST /connect/{providerId} - Initiate an connection with {providerId}.<br/>
+ * GET /connect/{providerId}?oauth_token||code - Receive {providerId} authorization callback and establish the connection.<br/>
+ * DELETE /connect/{providerId} - Disconnect from {providerId}.<br/>
  * </ul>
- * 
- * <p>The connection flow for OAuth 2 providers is subtly different:</p>
- * <ul>
- * GET /connect/{name}  - Get a web page showing Account connection status to provider {name}.<br/>
- * POST /connect/{name} - Initiate an Account connection with provider {name}.<br/>
- * GET /connect/{name}?code - Receive provider {name} authorization callback and complete Account connection.<br/>
- * DELETE /connect/{name} - Disconnect Account from provider {name}.<br/>
- * </ul>
- * 
- * <p>Also supports a register-then-connect flow. This flow is similar to the connect flows, except that after
- * receiving an access token from the provider, the flow breaks away to an application registration screen, allowing
- * a new user to register with the application with data retrieved from their provider profile. After registration,
- * the application may resume the flow so that a connection may be completed between the member account and their
- * provider profile. The register-then-connect flow is:</p>
- * 
- * <p>The connection flow for OAuth 2 providers is subtly different:</p>
- * <ul>
- * GET /connect/{name}  - Get a web page showing Account connection status to provider {name}.<br/>
- * POST /connect/{name}/register - Initiate an Account connection with registration flow with provider {name}.<br/>
- * GET /connect/{name}?oauth_token or GET /connect/{name}?code - Receive provider {name} authorization callback and complete Account connection.
- *    The flow breaks away to the application registration view at this point.<br/>
- * GET /connect/{name}/register - Resumes the connection flow, establishing the connection.<br/>
- * DELETE /connect/{name} - Disconnect Account from provider {name}.<br/>
- * </ul>
- * 
  * @author Keith Donald
  * @author Craig Walls
  */
@@ -110,10 +84,10 @@ public class ConnectController {
 	/**
 	 * Render the connect form for the service provider identified by {name} to the member as HTML in their web browser.
 	 */
-	@RequestMapping(value="/connect/{name}", method=RequestMethod.GET)
-	public String connect(@PathVariable String name) {
-		String baseViewPath = "connect/" + name;
-		if (getServiceProvider(name).isConnected(accountIdResolver.resolveAccountId())) {
+	@RequestMapping(value="/connect/{providerId}", method=RequestMethod.GET)
+	public String connect(@PathVariable String providerId) {
+		String baseViewPath = "connect/" + providerId;
+		if (getServiceProvider(providerId).isConnected(accountIdResolver.resolveAccountId())) {
 			return baseViewPath + "Connected";
 		} else {
 			return baseViewPath + "Connect";
@@ -124,158 +98,78 @@ public class ConnectController {
 	 * Process a connect form submission by commencing the process of establishing a connection to the provider on behalf of the member.
 	 * Fetches a new request token from the provider, temporarily stores it in the session, then redirects the member to the provider's site for authorization.
 	 */
-	@RequestMapping(value="/connect/{name}", method=RequestMethod.POST)
-	public String connect(@PathVariable String name, WebRequest request,
-			@RequestParam(required = false, defaultValue = "") String scope) {
-		ServiceProvider<?> provider = getServiceProvider(name);
+	@RequestMapping(value="/connect/{providerId}", method=RequestMethod.POST)
+	public String connect(@PathVariable String providerId, @RequestParam(required=false) String scope,  WebRequest request) {
+		ServiceProvider<?> provider = getServiceProvider(providerId);
 		preConnect(provider, request);
-		Map<String, String> authorizationParameters = new HashMap<String, String>();
 		if (provider instanceof OAuth1ServiceProvider) {
-			OAuth1ServiceProvider<?> oauth1Provider = (OAuth1ServiceProvider<?>) provider;
-			OAuthToken requestToken = oauth1Provider.getOAuth1Operations().fetchNewRequestToken(baseCallbackUrl + name);
+			OAuth1Operations oauth1Ops = ((OAuth1ServiceProvider<?>) provider).getOAuth1Operations();
+			OAuthToken requestToken = oauth1Ops.fetchNewRequestToken(baseCallbackUrl + providerId);
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
-			authorizationParameters.put("requestToken", requestToken.getValue());
-			return "redirect:" + oauth1Provider.getOAuth1Operations().buildAuthorizeUrl(requestToken.getValue());
+			return "redirect:" + oauth1Ops.buildAuthorizeUrl(requestToken.getValue());
 		} else {
-			OAuth2ServiceProvider<?> oauth2Provider = (OAuth2ServiceProvider<?>) provider;
-			return "redirect:" + oauth2Provider.getOAuth2Operations().buildAuthorizeUrl(baseCallbackUrl + name, scope);
+			return "redirect:" + ((OAuth2ServiceProvider<?>) provider).getOAuth2Operations().buildAuthorizeUrl(baseCallbackUrl + providerId, scope);
 		}
-	}
-
-	/**
-	 * Initiates a registration/connection flow. Commences the process of
-	 * establishing a connection to the provider on behalf of the member, just
-	 * as with the regular connection flow. The main difference here is that
-	 * once an access token is retrieved, the flow will break away, offering the
-	 * user an application registration screen. Once the user has registered
-	 * with the application, the flow can be resumed and the connection will be
-	 * created.
-	 */
-	@RequestMapping(value = "/connect/{name}/register", method = RequestMethod.POST)
-	public String register(@PathVariable String name, WebRequest request,
-			@RequestParam(required = false, defaultValue = "") String scope) {
-		request.setAttribute(REGISTRATION_FLOW_ATTRIBUTE, true, WebRequest.SCOPE_SESSION);
-		return connect(name, request, scope);
 	}
 
 	/**
 	 * Process the authorization callback from an OAuth 1 service provider.
-	 * Called after the member authorizes the connection, generally done by
-	 * having he or she click "Allow" in their web browser at the provider's
-	 * site. On authorization verification, connects the member's local account
-	 * to the account they hold at the service provider. Removes the request
-	 * token from the session since it is no longer valid after the connection
-	 * is established.
+	 * Called after the member authorizes the connection, generally done by having he or she click "Allow" in their web browser at the provider's site.
+	 * On authorization verification, connects the member's local account to the account they hold at the service provider
+	 * Removes the request token from the session since it is no longer valid after the connection is established.
 	 */
-	@RequestMapping(value="/connect/{name}", method=RequestMethod.GET, params="oauth_token")
-	public String authorizeCallback(@PathVariable String name, @RequestParam("oauth_token") String token,
-			@RequestParam(value = "oauth_verifier", defaultValue = "verifier") String verifier, WebRequest request) {
-		OAuthToken requestToken = (OAuthToken) request.getAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
-		if (requestToken == null) {
-			return "connect/" + name + "Connect";
-		}
-		request.removeAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
-		AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(requestToken, verifier);
-		OAuth1ServiceProvider<?> provider = (OAuth1ServiceProvider<?>) getServiceProvider(name);
-		OAuthToken accessToken = provider.getOAuth1Operations().exchangeForAccessToken(authorizedRequestToken);
-		// TODO : Come back to reimplement the registration flow
-//		if (request.getAttribute(REGISTRATION_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION) != null) {
-//			return holdAccessGrantAndGoToRegistration(name, request, provider, accessToken);
-//		}
-		provider.connect(accountIdResolver.resolveAccountId(), accessToken);
-		postConnect(provider, request);
-		// FlashMap.setSuccessMessage("Your account is now connected to your "
-		// + provider.getDisplayName() + " account!");
-		return "redirect:/connect/" + name;
+	@RequestMapping(value="/connect/{providerId}", method=RequestMethod.GET, params="oauth_token")
+	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier") String verifier, WebRequest request) {
+		AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(extractCachedRequestToken(request), verifier);
+		OAuth1ServiceProvider<?> provider = (OAuth1ServiceProvider<?>) getServiceProvider(providerId);
+		ServiceProviderConnection<?> connection = provider.connect(accountIdResolver.resolveAccountId(), provider.getOAuth1Operations().exchangeForAccessToken(authorizedRequestToken));
+		postConnect(provider, connection, request);
+		return "redirect:/connect/" + providerId;
 	}
 
 	/**
 	 * Process the authorization callback from an OAuth 2 service provider.
-	 * Called after the member authorizes the connection, generally done by
-	 * having he or she click "Allow" in their web browser at the provider's
-	 * site. On authorization verification, connects the member's local account
-	 * to the account they hold at the service provider.
+	 * Called after the member authorizes the connection, generally done by having he or she click "Allow" in their web browser at the provider's site.
+	 * On authorization verification, connects the member's local account to the account they hold at the service provider.
 	 */
-	@RequestMapping(value = "/connect/{name}", method = RequestMethod.GET, params = "code")
-	public String authorizeCallback(@PathVariable String name, @RequestParam("code") String code, WebRequest request) {
-		OAuth2ServiceProvider<?> provider = (OAuth2ServiceProvider<?>) getServiceProvider(name);
-		String redirectUri = baseCallbackUrl + name;
-		AccessGrant accessGrant = provider.getOAuth2Operations().exchangeForAccess(code, redirectUri);
-		// TODO : Come back to reimplement the registration flow
-//		if (request.getAttribute(REGISTRATION_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION) != null) {
-//			return holdAccessGrantAndGoToRegistration(name, request, provider, accessGrant);
-//		}
-		provider.connect(accountIdResolver.resolveAccountId(), accessGrant);
-		postConnect(provider, request);
-		return "redirect:/connect/" + name;
-	}
-
-	// TODO : Come back to reimplement the registration flow
-//	private String holdAccessGrantAndGoToRegistration(String name, WebRequest request, ServiceProvider<?> provider,
-//			AccessGrant accessGrant) {
-//		request.removeAttribute(REGISTRATION_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION);
-//		request.setAttribute(name + "UserProfile", provider.getProviderUserProfile(accessGrant),
-//				WebRequest.SCOPE_REQUEST);
-//		request.setAttribute(ACCESS_TOKEN_ATTRIBUTE + name, accessGrant, WebRequest.SCOPE_SESSION);
-//		return "connect/" + name + "Register";
-//	}
-
-	/**
-	 * Completes the connection process after registration. After the
-	 * application successfully registers a user, it should redirect to this
-	 * handler method's URL to create the connection between the application
-	 * account and the provider account.
-	 */
-	@RequestMapping(value = "/connect/{name}/register", method = RequestMethod.GET)
-	public String completeRegistrationConnection(@PathVariable String name, WebRequest request) {
-		Object storedToken = request.getAttribute(ACCESS_TOKEN_ATTRIBUTE + name, WebRequest.SCOPE_SESSION);
-		if (storedToken != null) {
-			ServiceProvider<?> provider = getServiceProvider(name);
-			if (provider instanceof OAuth1ServiceProvider) {
-				OAuth1ServiceProvider<?> oauth1Provider = (OAuth1ServiceProvider<?>) provider;
-				OAuthToken accessToken = (OAuthToken) storedToken;
-				oauth1Provider.connect(accountIdResolver.resolveAccountId(), accessToken);
-			} else if (provider instanceof OAuth2ServiceProvider) {
-				OAuth2ServiceProvider<?> oauth2Provider = (OAuth2ServiceProvider<?>) provider;
-				AccessGrant accessGrant = (AccessGrant) storedToken;
-				oauth2Provider.connect(accountIdResolver.resolveAccountId(), accessGrant);
-			}
-			postConnect(provider, request);
-		}
-		return "redirect:/connect/" + name;
+	@RequestMapping(value="/connect/{providerId}", method=RequestMethod.GET, params="code")
+	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
+		OAuth2ServiceProvider<?> provider = (OAuth2ServiceProvider<?>) getServiceProvider(providerId);
+		AccessGrant accessGrant = provider.getOAuth2Operations().exchangeForAccess(code, baseCallbackUrl + providerId);
+		ServiceProviderConnection<?> connection = provider.connect(accountIdResolver.resolveAccountId(), accessGrant);
+		postConnect(provider, connection, request);
+		return "redirect:/connect/" + providerId;
 	}
 
 	/**
 	 * Disconnect from the provider.
 	 * The member has decided they no longer wish to use the service provider from this application.
 	 */
-	@RequestMapping(value="/connect/{name}", method=RequestMethod.DELETE)
-	public String disconnect(@PathVariable String name) {
-		ServiceProvider<?> serviceProvider = getServiceProvider(name);
-		List<?> connections = serviceProvider.getConnections(accountIdResolver.resolveAccountId());
-		for (Object object : connections) {
-			((ServiceProviderConnection<?>) object).disconnect();
+	@RequestMapping(value="/connect/{providerId}", method=RequestMethod.DELETE)
+	public String disconnect(@PathVariable String providerId) {
+		ServiceProvider provider = getServiceProvider(providerId);
+		List<ServiceProviderConnection> connections = provider.getConnections(accountIdResolver.resolveAccountId());
+		for (ServiceProviderConnection connection : connections) {
+			connection.disconnect();
 		}
-		return "redirect:/connect/" + name;
+		return "redirect:/connect/" + providerId;
 	}
 
 	// internal helpers
 
-	private ServiceProvider<?> getServiceProvider(String name) {
-		return serviceProviderFactory.getServiceProvider(name);
+	private ServiceProvider<?> getServiceProvider(String providerId) {
+		return serviceProviderFactory.getServiceProvider(providerId);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void preConnect(ServiceProvider<?> provider, WebRequest request) {
 		for (ConnectInterceptor interceptor : interceptingConnectionsTo(provider)) {
 			interceptor.preConnect(provider, request);
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void postConnect(ServiceProvider<?> provider, WebRequest request) {
+	private void postConnect(ServiceProvider<?> provider, ServiceProviderConnection<?> connection, WebRequest request) {
 		for (ConnectInterceptor interceptor : interceptingConnectionsTo(provider)) {
-			interceptor.postConnect(provider, request);
+			interceptor.postConnect(provider, connection, request);
 		}
 	}
 
@@ -287,8 +181,13 @@ public class ConnectController {
 		}
 		return typedInterceptors;
 	}
+
+	private OAuthToken extractCachedRequestToken(WebRequest request) {
+		OAuthToken requestToken = (OAuthToken) request.getAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+		request.removeAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+		return requestToken;
+	}
 	
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
-	private static final String REGISTRATION_FLOW_ATTRIBUTE = "registrationFlow";
-	private static final String ACCESS_TOKEN_ATTRIBUTE = "accessToken_";
+	
 }

@@ -16,6 +16,7 @@
 package org.springframework.social.web.connect;
 
 import org.springframework.social.connect.ServiceProvider;
+import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.web.context.request.WebRequest;
 
 /**
@@ -37,6 +38,6 @@ public interface ConnectInterceptor<S> {
 	 * Called immediately after the connection is established.
 	 * Used to invoke the service API on behalf of the user upon connecting.
 	 */
-	void postConnect(ServiceProvider<S> provider, WebRequest request);
+	void postConnect(ServiceProvider<S> provider, ServiceProviderConnection<S> connection, WebRequest request);
 	
 }
