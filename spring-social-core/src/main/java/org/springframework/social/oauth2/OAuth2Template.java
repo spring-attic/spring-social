@@ -18,6 +18,8 @@ package org.springframework.social.oauth2;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
@@ -54,12 +56,12 @@ public class OAuth2Template implements OAuth2Operations {
 	}
 
 	public AccessGrant exchangeForAccess(String authorizationCode, String redirectUri) {
-		Map<String, String> requestParameters = new HashMap<String, String>();
-		requestParameters.put("client_id", clientId);
-		requestParameters.put("client_secret", clientSecret);
-		requestParameters.put("code", authorizationCode);
-		requestParameters.put("redirect_uri", redirectUri);
-		requestParameters.put("grant_type", "authorization_code");
+		MultiValueMap<String, String> requestParameters = new LinkedMultiValueMap<String, String>();
+		requestParameters.set("client_id", clientId);
+		requestParameters.set("client_secret", clientSecret);
+		requestParameters.set("code", authorizationCode);
+		requestParameters.set("redirect_uri", redirectUri);
+		requestParameters.set("grant_type", "authorization_code");
 		@SuppressWarnings("unchecked")
 		Map<String, String> result = getRestOperations().postForObject(accessTokenUrl, requestParameters, Map.class);
 		return new AccessGrant(result.get("access_token"), result.get("refresh_token"));
