@@ -158,7 +158,6 @@ project('spring-social-facebook') {
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
-        compile project(':spring-social-webmvc')
     }
 }
 
@@ -202,8 +201,8 @@ project('spring-social-twitter') {
     }
 }
 
-project('spring-social-webmvc') {
-    description = 'Spring MVC Integration'
+project('spring-social-web') {
+    description = 'Spring Web Integration'
     dependencies {
         compile "org.springframework:spring-web:$springVersion"
         compile project(':spring-social-core')
