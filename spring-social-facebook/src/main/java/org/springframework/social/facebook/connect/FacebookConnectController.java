@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.ServiceProvider;
+import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.oauth2.OAuth2ServiceProvider;
 import org.springframework.social.facebook.FacebookAccessToken;
 import org.springframework.social.facebook.FacebookOperations;
@@ -52,26 +53,23 @@ public class FacebookConnectController {
 
 	private final AccountIdResolver accountIdResolver;
 
-	public FacebookConnectController(ServiceProvider<FacebookOperations> facebookProvider,
-			AccountIdResolver accountIdResolver) {
+	public FacebookConnectController(ServiceProvider<FacebookOperations> facebookProvider, AccountIdResolver accountIdResolver) {
 		this.facebookProvider = facebookProvider;
 		this.accountIdResolver = accountIdResolver;
 		this.interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
 	}
 
 	/**
-	 * Configure the list of interceptors that should receive callbacks during
-	 * the connection process.
+	 * Configure the list of interceptors that should receive callbacks during the connection process.
 	 */
 	public void setInterceptors(List<ConnectInterceptor<?>> interceptors) {
 		for (ConnectInterceptor<?> interceptor : interceptors) {
-			Class<?> providerType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(),
-					ConnectInterceptor.class);
+			Class<?> providerType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(), ConnectInterceptor.class);
 			this.interceptors.add(providerType, interceptor);
 		}
 	}
 
-	@RequestMapping(value = "/connect/facebook", method = RequestMethod.GET)
+	@RequestMapping(value="/connect/facebook", method=RequestMethod.GET)
 	public String connectView(@FacebookUserId(required = false) String facebookUserId, Model model) {
 		if (facebookProvider.isConnected(accountIdResolver.resolveAccountId())) {
 			model.addAttribute("facebookUserId", facebookUserId);
@@ -81,37 +79,34 @@ public class FacebookConnectController {
 		}
 	}
 
-	@RequestMapping(value = "/connect/facebook", method = RequestMethod.POST)
-	public String connectAccountToFacebook(@FacebookAccessToken(required = false) String accessToken,
-			@FacebookUserId(required = false) String facebookUserId, WebRequest request) {
+	@RequestMapping(value="/connect/facebook", method=RequestMethod.POST)
+	public String connectAccountToFacebook(@FacebookAccessToken(required = false) String accessToken, @FacebookUserId(required = false) String facebookUserId, WebRequest request) {
 		if (facebookUserId != null && accessToken != null) {
 			preConnect(facebookProvider, request);
 			OAuth2ServiceProvider<?> oauth2Provider = (OAuth2ServiceProvider<?>) facebookProvider;
-			oauth2Provider.connect(accountIdResolver.resolveAccountId(), new AccessGrant(accessToken, null));
-			postConnect(facebookProvider, request);
-
-			// FlashMap.setSuccessMessage("Your Greenhouse account is now connected to your Facebook account!");
+			ServiceProviderConnection<?> connection = oauth2Provider.connect(accountIdResolver.resolveAccountId(), new AccessGrant(accessToken, null));
+			postConnect(facebookProvider, connection, request);
 		}
 		return "redirect:/connect/facebook";
 	}
 
-	@RequestMapping(value = "/connect/facebook", method = RequestMethod.DELETE)
+	@RequestMapping(value="/connect/facebook", method=RequestMethod.DELETE)
 	public String disconnectFacebook(HttpServletRequest request) {
 		facebookProvider.getConnections(accountIdResolver.resolveAccountId()).get(0).disconnect();
 		return "redirect:/connect/facebook";
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	// internal helpers
+	
 	private void preConnect(ServiceProvider<?> provider, WebRequest request) {
 		for (ConnectInterceptor interceptor : interceptingConnectionsTo(provider)) {
 			interceptor.preConnect(provider, request);
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void postConnect(ServiceProvider<?> provider, WebRequest request) {
+	private void postConnect(ServiceProvider<?> provider, ServiceProviderConnection connection, WebRequest request) {
 		for (ConnectInterceptor interceptor : interceptingConnectionsTo(provider)) {
-			interceptor.postConnect(provider, request);
+			interceptor.postConnect(provider, connection, request);
 		}
 	}
 
@@ -123,4 +118,5 @@ public class FacebookConnectController {
 		}
 		return typedInterceptors;
 	}
+	
 }
