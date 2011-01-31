@@ -120,8 +120,8 @@ public class ConnectController {
 	 */
 	@RequestMapping(value="/connect/{providerId}", method=RequestMethod.GET, params="oauth_token")
 	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier") String verifier, WebRequest request) {
-		AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(extractCachedRequestToken(request), verifier);
 		OAuth1ServiceProvider<?> provider = (OAuth1ServiceProvider<?>) getServiceProvider(providerId);
+		AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(extractCachedRequestToken(request), verifier);
 		ServiceProviderConnection<?> connection = provider.connect(accountIdResolver.resolveAccountId(), provider.getOAuth1Operations().exchangeForAccessToken(authorizedRequestToken));
 		postConnect(provider, connection, request);
 		return "redirect:/connect/" + providerId;
