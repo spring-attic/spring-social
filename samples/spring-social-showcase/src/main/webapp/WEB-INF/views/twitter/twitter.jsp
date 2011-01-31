@@ -9,11 +9,12 @@
 <body>
 <h1>Spring Social Showcase: Send a Tweet</h1>
 
-<sf:form action="tweet" method="post" modelAttribute="tweetForm">
+<c:url var="tweetUrl" value="/twitter/tweet" />
+<sf:form action="${tweetUrl}" method="post" modelAttribute="tweetForm">
 	Tweet using
 	<c:if test="${fn:length(connections) eq 1}">
-		<b><c:out value="${connections}" /></b>
-		<input type="hidden" name="screenName" value="<c:out value="${accountConnectionList[0].providerAccountId}" />" />
+		<b><c:out value="${connections[0]}" /></b>
+		<input type="hidden" name="screenName" value="<c:out value="${connections[0]}" />" />
 	</c:if>
 	<c:if test="${fn:length(connections) gt 1}">
 		<sf:select path="screenName">

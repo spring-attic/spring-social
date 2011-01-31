@@ -59,6 +59,7 @@ public class TwitterShowcaseController {
 	@RequestMapping(value = "/twitter/tweet", method = RequestMethod.POST)
 	public String postTweet(Principal user, TweetForm tweetForm) {
 		List<ServiceProviderConnection<TwitterOperations>> connections = twitterProvider.getConnections(user.getName());
+
 		for (ServiceProviderConnection<TwitterOperations> connection : connections) {
 			TwitterOperations twitter = connection.getServiceApi();
 			if (tweetForm.isTweetToAll() || twitter.getProfileId().equals(tweetForm.getScreenName())) {

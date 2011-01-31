@@ -1,0 +1,1 @@
+insert into Account (username, password, firstName, lastName, email) values ('habuma', 'df72ad4ec4b97907aa829f13ba4912e4109b36e7d69d6987ea81bc954564019b', 'Craig', 'Walls', 'cwalls@vmware.com');
