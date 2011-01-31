@@ -8,22 +8,8 @@
 
 	<bean id="connectionRepository" class="org.springframework.social.connect.test.StubConnectionRepository" />
 	
-	<social:service-provider id="tweeter"
-							 consumer-key="twitter_key"
-							 consumer-secret="twitter_secret"
-							 class="org.springframework.social.twitter.provider.TwitterServiceProvider" />
+	<social:service-provider class="org.springframework.social.twitter.provider.TwitterServiceProvider" client-key="twitter_key" client-secret="twitter_secret" />
 
-
-	<social:twitter-provider consumer-key="twitter_key" consumer-secret="twitter_secret" />
-
- 	<social:tripit-provider consumer-key="tripit_key" consumer-secret="tripit_secret" />
-
- 	<social:linkedin-provider consumer-key="linkedin_key" consumer-secret="linkedin_secret" />
-
-	<social:facebook-provider consumer-key="facebook_key" consumer-secret="facebook_secret" />
-
-	<social:gowalla-provider consumer-key="gowalla_key" consumer-secret="gowalla_secret" />
-
-	<social:github-provider consumer-key="github_key" consumer-secret="github_secret" />
+	<social:service-provider class="org.springframework.social.facebook.provider.FacebookServiceProvider" client-key="facebook_key" client-secret="facebook_secret" />
 
 </beans>

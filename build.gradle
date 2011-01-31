@@ -215,12 +215,8 @@ project('spring-social-config') {
     dependencies {
         compile "org.springframework:spring-beans:$springVersion"
         compile project(':spring-social-core')
-        compile project(':spring-social-facebook') { optional = true }
-        compile project(':spring-social-github') { optional = true }
-        compile project(':spring-social-gowalla') { optional = true }
-        compile project(':spring-social-linkedin') { optional = true }
-        compile project(':spring-social-tripit') { optional = true }
-        compile project(':spring-social-twitter') { optional = true }
+        testCompile project(':spring-social-facebook')
+        testCompile project(':spring-social-twitter')
         testCompile "com.h2database:h2:1.2.143"
         testCompile project(':spring-social-core').sourceSets.test.classes
     }

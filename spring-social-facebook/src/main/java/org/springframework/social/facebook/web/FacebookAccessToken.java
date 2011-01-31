@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook;
+package org.springframework.social.facebook.web;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -21,24 +21,25 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+
 /**
  * Annotation that indicates to {@link FacebookWebArgumentResolver} that a
- * controller method parameter should be bound to the user's Facebook ID,
- * assuming that user has signed in with Facebook.
+ * controller method parameter should be bound to the Facebook access token
+ * given when the user signed in with Facebook.
  * 
  * @author Craig Walls
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface FacebookUserId {
+public @interface FacebookAccessToken {
 	/**
-	 * Whether the Facebook user ID is required.
+	 * Whether the Facebook access token is required.
 	 * <p>
 	 * Default is <code>true</code>, leading to an exception being thrown in
-	 * case the Facebook cookie is missing or if the user ID can't be found in
-	 * the cookie. Switch this to <code>false</code> if you prefer a
-	 * <code>null</value> in case of the missing cookie/user ID.
+	 * case the Facebook cookie is missing or if the access token can't be found
+	 * in the cookie. Switch this to <code>false</code> if you prefer a
+	 * <code>null</value> in case of the missing cookie/token.
 	 * </p>
 	 */
 	boolean required() default true;
