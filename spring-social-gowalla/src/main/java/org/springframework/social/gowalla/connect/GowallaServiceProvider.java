@@ -10,8 +10,7 @@ public class GowallaServiceProvider extends AbstractOAuth2ServiceProvider<Gowall
 
 	public GowallaServiceProvider(String clientId, String clientSecret, ConnectionRepository connectionRepository) {
 		super("gowalla", connectionRepository, new OAuth2Template(clientId, clientSecret,
-				"https://gowalla.com/api/oauth/new?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}",
-				"https://gowalla.com/api/oauth/token"));
+				"https://gowalla.com/api/oauth/new?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}", "https://gowalla.com/api/oauth/token"));
 	}
 
 	protected GowallaOperations getApi(String accessToken) {
