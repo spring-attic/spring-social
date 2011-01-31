@@ -27,26 +27,16 @@ class ServiceProviderElementParser implements BeanDefinitionParser {
 		String providerClassName = element.getAttribute("class");
 		String clientKey = element.getAttribute("client-key");
 		String clientSecret = element.getAttribute("client-secret");
-		String connectionRepositoryBean = getConnectionRepositoryName(element);
+		String connectionRepository = element.getAttribute("connection-repository");
 
 		BeanDefinitionBuilder providerBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(providerClassName);
 		providerBeanBuilder.addConstructorArgValue(clientKey);
 		providerBeanBuilder.addConstructorArgValue(clientSecret);
-		providerBeanBuilder.addConstructorArgReference(connectionRepositoryBean);
+		providerBeanBuilder.addConstructorArgReference(connectionRepository);
 
 		BeanDefinition providerBeanDefinition = providerBeanBuilder.getBeanDefinition();
 		parserContext.getReaderContext().registerWithGeneratedName(providerBeanDefinition);
 		return providerBeanDefinition;
 	}
-
-	// internal helpers
-	
-	private String getConnectionRepositoryName(Element element) {
-		return element.hasAttribute(CONNECTION_REPOSITORY_ATTRIBUTE) ? element.getAttribute(CONNECTION_REPOSITORY_ATTRIBUTE) : DEFAULT_CONNECTION_REPOSITORY_BEAN_NAME;
-	}
-
-	private static final String CONNECTION_REPOSITORY_ATTRIBUTE = "connection-repository";
-	
-	private static final String DEFAULT_CONNECTION_REPOSITORY_BEAN_NAME = "connectionRepository";
 
 }
