@@ -15,6 +15,7 @@
  */
 package org.springframework.social.samples.twitter;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +40,8 @@ public class TwitterShowcaseController {
 	}
 
 	@RequestMapping(value = "/twitter", method = RequestMethod.GET)
-	public String home(Model model) {
-		List<ServiceProviderConnection<TwitterOperations>> connections = twitterProvider.getConnections(1);
+	public String home(Principal user, Model model) {
+		List<ServiceProviderConnection<TwitterOperations>> connections = twitterProvider.getConnections(user.getName());
 		List<String> connectionNames = new ArrayList<String>();
 		for (ServiceProviderConnection<TwitterOperations> serviceProviderConnection : connections) {
 			connectionNames.add(serviceProviderConnection.getServiceApi().getProfileId());
@@ -49,15 +50,15 @@ public class TwitterShowcaseController {
 		if (connections.size() > 0) {
 			model.addAttribute("connections", connectionNames);
 			model.addAttribute(new TweetForm());
-			return "twitter";
+			return "twitter/twitter";
 		}
 
 		return "redirect:/connect/twitter";
 	}
 
 	@RequestMapping(value = "/twitter/tweet", method = RequestMethod.POST)
-	public String postTweet(TweetForm tweetForm) {
-		List<ServiceProviderConnection<TwitterOperations>> connections = twitterProvider.getConnections(1);
+	public String postTweet(Principal user, TweetForm tweetForm) {
+		List<ServiceProviderConnection<TwitterOperations>> connections = twitterProvider.getConnections(user.getName());
 		for (ServiceProviderConnection<TwitterOperations> connection : connections) {
 			TwitterOperations twitter = connection.getServiceApi();
 			if (tweetForm.isTweetToAll() || twitter.getProfileId().equals(tweetForm.getScreenName())) {
