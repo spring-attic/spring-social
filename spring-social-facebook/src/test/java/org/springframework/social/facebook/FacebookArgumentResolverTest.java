@@ -26,6 +26,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.social.facebook.web.FacebookAccessToken;
+import org.springframework.social.facebook.web.FacebookUserId;
+import org.springframework.social.facebook.web.FacebookWebArgumentResolver;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 

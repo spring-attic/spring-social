@@ -1,4 +1,4 @@
-package org.springframework.social.gowalla.provider;
+package org.springframework.social.gowalla.connect;
 
 import org.springframework.social.connect.oauth2.AbstractOAuth2ServiceProvider;
 import org.springframework.social.connect.support.ConnectionRepository;

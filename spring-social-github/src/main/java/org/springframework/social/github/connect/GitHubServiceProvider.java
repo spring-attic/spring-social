@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.github.provider;
+package org.springframework.social.github.connect;
 
 import org.springframework.social.connect.oauth2.AbstractOAuth2ServiceProvider;
 import org.springframework.social.connect.support.ConnectionRepository;

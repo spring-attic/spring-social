@@ -15,20 +15,19 @@
  */
 package org.springframework.social.config.xml;
 
-import static org.junit.Assert.assertNotNull;
-
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.social.twitter.provider.TwitterServiceProvider;
+import org.springframework.social.facebook.connect.FacebookServiceProvider;
+import org.springframework.social.twitter.connect.TwitterServiceProvider;
 
 public class SocialNamespaceHandlerTest {
 
 	@Test
 	public void serviceProvider() throws Exception {
 		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("socialNamespaceHandlerTest.xml", getClass());
-		TwitterServiceProvider provider = applicationContext.getBean(TwitterServiceProvider.class);
-		assertNotNull(provider);
+		applicationContext.getBean(TwitterServiceProvider.class);
+		applicationContext.getBean(FacebookServiceProvider.class);
 	} 
 
 }
