@@ -13,44 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.config;
+package org.springframework.social.web.connect;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.social.connect.ServiceProvider;
-import org.springframework.social.connect.ServiceProviderFactory;
 
 /**
  * Implementation of ServiceProviderFactory that retrieves service providers, by name, from the application context.
  * @author Craig Walls
  */
-public class BeanServiceProviderFactory implements ServiceProviderFactory {
+public class ServiceProviderLocator {
 
 	private final Map<String, ServiceProvider<?>> serviceProviders;
 
-	public BeanServiceProviderFactory(ListableBeanFactory beanFactory) {
+	public ServiceProviderLocator(ListableBeanFactory beanFactory) {
 		Map<String, ServiceProvider> providers = beanFactory.getBeansOfType(ServiceProvider.class);
 		serviceProviders = new HashMap<String, ServiceProvider<?>>(providers.size(), 1);
 		for (ServiceProvider<?> provider : providers.values()) {
 			serviceProviders.put(provider.getId(), provider);
 		}
 	}
+	
 	public ServiceProvider<?> getServiceProvider(String id) {
 		return serviceProviders.get(id);
 	}
-
-	public <S> ServiceProvider<S> getServiceProvider(String id, Class<S> serviceApiType) {
-		ServiceProvider<?> provider = serviceProviders.get(id);
-		if (provider == null) {
-			throw new IllegalArgumentException("No such provider with id '" + id + "'");
-		}
-		if (serviceApiType.isAssignableFrom(provider.getClass())) {
-			return (ServiceProvider<S>) provider;			
-		} else {
-			throw new IllegalArgumentException("ServiceProvider '" + id + "' not for serviceApiType " + serviceApiType);			
-		}
-	}
-
+	
 }

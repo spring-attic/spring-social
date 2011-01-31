@@ -16,28 +16,37 @@
 package org.springframework.social.config.xml;
 
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 
-public class ServiceProviderElementParser extends AbstractServiceProviderElementParser {
-
-	private String className;
-	private String name;
-
+class ServiceProviderElementParser implements BeanDefinitionParser {
+	
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
-		name = element.getAttribute("id");
-		className = element.getAttribute("class");
-		return registerServiceProviderBean(element, parserContext, name);
+		String providerClassName = element.getAttribute("class");
+		String clientKey = element.getAttribute("client-key");
+		String clientSecret = element.getAttribute("client-secret");
+		String connectionRepositoryBean = getConnectionRepositoryName(element);
+
+		BeanDefinitionBuilder providerBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(providerClassName);
+		providerBeanBuilder.addConstructorArgValue(clientKey);
+		providerBeanBuilder.addConstructorArgValue(clientSecret);
+		providerBeanBuilder.addConstructorArgReference(connectionRepositoryBean);
+
+		BeanDefinition providerBeanDefinition = providerBeanBuilder.getBeanDefinition();
+		parserContext.getReaderContext().registerWithGeneratedName(providerBeanDefinition);
+		return providerBeanDefinition;
 	}
 
-	@Override
-	protected String getDefaultProviderName() {
-		return name;
+	// internal helpers
+	
+	private String getConnectionRepositoryName(Element element) {
+		return element.hasAttribute(CONNECTION_REPOSITORY_ATTRIBUTE) ? element.getAttribute(CONNECTION_REPOSITORY_ATTRIBUTE) : DEFAULT_CONNECTION_REPOSITORY_BEAN_NAME;
 	}
 
-	@Override
-	protected String getImplementationClassName() {
-		return className;
-	}
+	private static final String CONNECTION_REPOSITORY_ATTRIBUTE = "connection-repository";
+	
+	private static final String DEFAULT_CONNECTION_REPOSITORY_BEAN_NAME = "connectionRepository";
 
 }
