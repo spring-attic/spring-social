@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.samples.twitter;
+package org.springframework.social.showcase.twitter;
 
 import java.security.Principal;
 import java.util.ArrayList;

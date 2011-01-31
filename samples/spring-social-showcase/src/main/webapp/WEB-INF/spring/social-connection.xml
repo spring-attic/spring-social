@@ -18,4 +18,8 @@
 							 client-key="YR571S2JiVBOFyJS5MEg" 
 							 client-secret="Kb8hS0luftwCJX3qVoyiLUMfZDtK1EozFoUkjNLUMx4" />
 
+	<social:service-provider class="org.springframework.social.facebook.connect.FacebookServiceProvider"
+							 client-key="0b754d95f9c9899b0d6c4454b6f2dde7" 
+							 client-secret="fa8a9825f555a7a8949ec48fb93bda58" />
+
 </beans>

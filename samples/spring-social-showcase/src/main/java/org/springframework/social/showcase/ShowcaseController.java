@@ -1,4 +1,4 @@
-package org.springframework.social.samples.showcase;
+package org.springframework.social.showcase;
 
 import java.security.Principal;
 import java.util.List;

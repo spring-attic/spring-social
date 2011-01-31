@@ -1,4 +1,4 @@
-package org.springframework.social.samples.showcase;
+package org.springframework.social.showcase;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
