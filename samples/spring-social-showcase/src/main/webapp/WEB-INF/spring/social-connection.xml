@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:social="http://www.springframework.org/schema/spring-social"
+	xsi:schemaLocation="http://www.springframework.org/schema/spring-social http://www.springframework.org/schema/social/spring-social-1.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- Configure a connection repository through which account-to-provider connections will be stored -->	
+	<bean id="connectionRepository" class="org.springframework.social.connect.jdbc.JdbcConnectionRepository">
+		<constructor-arg ref="dataSource" />
+		<constructor-arg>
+			<bean class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="noOpText" />
+		</constructor-arg>
+	</bean>
+	
+	<!-- Configure a Twitter service provider -->
+	<social:service-provider class="org.springframework.social.twitter.connect.TwitterServiceProvider" 
+							 client-key="YR571S2JiVBOFyJS5MEg" 
+							 client-secret="Kb8hS0luftwCJX3qVoyiLUMfZDtK1EozFoUkjNLUMx4" />
+
+</beans>
