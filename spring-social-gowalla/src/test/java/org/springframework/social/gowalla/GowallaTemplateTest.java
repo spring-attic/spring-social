@@ -15,28 +15,23 @@
  */
 package org.springframework.social.gowalla;
 
-import static org.mockito.Mockito.mock;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.web.client.RestOperations;
 
 /**
  * @author Craig Walls
  */
 public class GowallaTemplateTest {
+
 	private GowallaTemplate gowalla;
-	private RestOperations restOperations;
 
 	@Before
 	public void setup() {
 		gowalla = new GowallaTemplate("ACCESS_TOKEN");
-		restOperations = mock(RestOperations.class);
-		gowalla.restOperations = restOperations;
 	}
 
 	@Test
 	public void getProfileId() {
-		// assertEquals("12345", gowalla.getProfileId());
+		
 	}
 }

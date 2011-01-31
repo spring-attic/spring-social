@@ -27,31 +27,26 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.social.AccountNotConnectedException;
 import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.SocialException;
-import org.springframework.social.intercept.ExtendedRestTemplate;
 import org.springframework.social.oauth1.OAuth1RequestInterceptor;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
-import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * <p>
  * This is the central class for interacting with Twitter.
- * </p>
- * 
  * <p>
  * Most (not all) Twitter operations require OAuth authentication. To perform
  * such operations, {@link TwitterTemplate} must be constructed with the minimal
  * amount of information required to sign requests to Twitter's API with an
  * OAuth <code>Authorization</code> header.
  * </p>
- * 
  * <p>
  * There are a few operations, such as searching, that do not require OAuth
  * authentication. In those cases, you may use a {@link TwitterTemplate} that is
@@ -59,66 +54,43 @@ import org.springframework.web.client.RestTemplate;
  * Attempts to perform secured operations through such an instance, however,
  * will result in {@link AccountNotConnectedException} being thrown.
  * </p>
- * 
  * @author Craig Walls
  */
 public class TwitterTemplate implements TwitterOperations {
 
-	RestOperations restOperations;
+	private final RestTemplate restTemplate;
 	
-	private ResponseStatusCodeTranslator statusCodeTranslator;
+	private final ResponseStatusCodeTranslator statusCodeTranslator;
 
 	/**
 	 * Create a new instance of TwitterTemplate.
-	 * 
-	 * This constructor creates a new TwitterTemplate able to perform
-	 * unauthenticated operations against Twitter's API.
-	 * 
-	 * Some operations, such as search, do not require OAuth authentication. A
-	 * TwitterTemplate created with this constructor will support those
-	 * operations. Those operations requiring authentication will throw
-	 * {@link AccountNotConnectedException}.
+	 * This constructor creates a new TwitterTemplate able to perform unauthenticated operations against Twitter's API.
+	 * Some operations, such as search, do not require OAuth authentication.
+	 * A TwitterTemplate created with this constructor will support those operations.
+	 * Those operations requiring authentication will throw {@link AccountNotConnectedException}.
 	 */
 	public TwitterTemplate() {
-		RestTemplate restTemplate = new RestTemplate();
+		restTemplate = new RestTemplate();
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
-		this.restOperations = restTemplate;
 		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
 	}
 
 	/**
 	 * Create a new instance of TwitterTemplate.
-	 * 
-	 * This constructor creates a new TwitterTemplate given the minimal amount
-	 * of information required to sign a request and builds up a
-	 * {@link RestOperations} internally using this information.
-	 * 
-	 * @param apiKey
-	 *            the application's API key.
-	 * @param apiSecret
-	 *            the application's API secret.
-	 * @param accessToken
-	 *            the user's access token, given after successful OAuth
-	 *            authentication.
-	 * @param accessTokenSecret
-	 *            the access token secret, given along with the access token
-	 *            after successful OAuth authentication.
+	 * @param apiKey the application's API key
+	 * @param apiSecret the application's API secret
+	 * @param accessToken an access token acquired through OAuth authentication with LinkedIn
+	 * @param accessTokenSecret an access token secret acquired through OAuth authentication with LinkedIn
 	 */
 	public TwitterTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
-		// RestTemplate restTemplate = new RestTemplate();
-		// temporarily use InterceptorCallingRestTemplate instead of a regular
-		// RestTemplate. This is to simulate the work that Arjen is doing for
-		// SPR-7494. Once Arjen's finished, a regular RestTemplate should be
-		// used with the interceptors registered appropriately.
-		ExtendedRestTemplate restTemplate = new ExtendedRestTemplate();	
-		restTemplate.addInterceptor(new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)));
+		restTemplate = new RestTemplate();
+		restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)) });
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
-		this.restOperations = restTemplate;
 		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
 	}
 
 	public String getProfileId() {
-		Map<?, ?> response = restOperations.getForObject(VERIFY_CREDENTIALS_URL, Map.class);
+		Map<?, ?> response = restTemplate.getForObject(VERIFY_CREDENTIALS_URL, Map.class);
 		return (String) response.get("screen_name");
 	}
 
@@ -127,13 +99,12 @@ public class TwitterTemplate implements TwitterOperations {
 	}
 
 	public TwitterProfile getProfile(String screenName) {
-		Map<?, ?> response = restOperations.getForObject(USER_PROFILE_URL + "?screen_name={screenName}", Map.class,
-				screenName);
+		Map<?, ?> response = restTemplate.getForObject(USER_PROFILE_URL + "?screen_name={screenName}", Map.class, screenName);
 		return getProfileFromResponseMap(response);
 	}
 
 	public TwitterProfile getProfile(long userId) {
-		Map<?, ?> response = restOperations.getForObject(USER_PROFILE_URL + "?user_id={userId}", Map.class, userId);
+		Map<?, ?> response = restTemplate.getForObject(USER_PROFILE_URL + "?user_id={userId}", Map.class, userId);
 		return getProfileFromResponseMap(response);
 	}
 
@@ -151,9 +122,7 @@ public class TwitterTemplate implements TwitterOperations {
 	}
 
 	public List<String> getFriends(String screenName) {
-		@SuppressWarnings("unchecked")
-		List<Map<String, String>> response = restOperations.getForObject(FRIENDS_STATUSES_URL, List.class,
-				Collections.singletonMap("screen_name", screenName));
+		List<Map<String, String>> response = restTemplate.getForObject(FRIENDS_STATUSES_URL, List.class, Collections.singletonMap("screen_name", screenName));
 		List<String> friends = new ArrayList<String>(response.size());
 		for (Map<String, String> item : response) {
 			friends.add(item.get("screen_name"));
@@ -169,37 +138,28 @@ public class TwitterTemplate implements TwitterOperations {
 		MultiValueMap<String, Object> tweetParams = new LinkedMultiValueMap<String, Object>();
 		tweetParams.add("status", message);
 		tweetParams.setAll(details.toParameterMap());
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restOperations.postForEntity(TWEET_URL, tweetParams, Map.class);
+		ResponseEntity<Map> response = restTemplate.postForEntity(TWEET_URL, tweetParams, Map.class);
 		handleResponseErrors(response);
 	}
 
 	public void retweet(long tweetId) {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restOperations.postForEntity(RETWEET_URL, "", Map.class,
-				Collections.singletonMap("tweet_id", Long.toString(tweetId)));
+		ResponseEntity<Map> response = restTemplate.postForEntity(RETWEET_URL, "", Map.class, Collections.singletonMap("tweet_id", Long.toString(tweetId)));
 		handleResponseErrors(response);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public List<Tweet> getMentions() {
-		List response = restOperations.getForObject(MENTIONS_URL, List.class);
+		List response = restTemplate.getForObject(MENTIONS_URL, List.class);
 		List<Map<String, Object>> results = (List<Map<String, Object>>) response;
-
 		List<Tweet> tweets = new ArrayList<Tweet>();
 		for (Map<String, Object> item : results) {
 			tweets.add(populateTweetFromTimelineItem(item));
 		}
-
 		return tweets;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public List<DirectMessage> getDirectMessagesReceived() {
-		ResponseEntity<List> response = restOperations.getForEntity(DIRECT_MESSAGES_URL, List.class);
-		@SuppressWarnings("unchecked")
+		ResponseEntity<List> response = restTemplate.getForEntity(DIRECT_MESSAGES_URL, List.class);
 		List<Map<String, Object>> results = (List<Map<String, Object>>) response.getBody();
-
 		List<DirectMessage> messages = new ArrayList<DirectMessage>();
 		for (Map<String, Object> item : results) {
 			DirectMessage message = new DirectMessage();
@@ -229,46 +189,37 @@ public class TwitterTemplate implements TwitterOperations {
 
 	private void sendDirectMessage(String text, MultiValueMap<String, Object> dmParams) {
 		dmParams.add("text", text);
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restOperations.postForEntity(SEND_DIRECT_MESSAGE_URL, dmParams, Map.class);
+		ResponseEntity<Map> response = restTemplate.postForEntity(SEND_DIRECT_MESSAGE_URL, dmParams, Map.class);
 		handleResponseErrors(response);
 	}
 
-	@SuppressWarnings("rawtypes")
 	public List<Tweet> getPublicTimeline() {
-		List response = restOperations.getForObject(PUBLIC_TIMELINE_URL, List.class);
+		List response = restTemplate.getForObject(PUBLIC_TIMELINE_URL, List.class);
 		return extractTimelineTweetsFromResponse(response);
 	}
 
-	@SuppressWarnings("rawtypes")
 	public List<Tweet> getHomeTimeline() {
-		List response = restOperations.getForObject(HOME_TIMELINE_URL, List.class);
+		List response = restTemplate.getForObject(HOME_TIMELINE_URL, List.class);
 		return extractTimelineTweetsFromResponse(response);
 	}
 
-	@SuppressWarnings("rawtypes")
 	public List<Tweet> getFriendsTimeline() {
-		List response = restOperations.getForObject(FRIENDS_TIMELINE_URL, List.class);
+		List response = restTemplate.getForObject(FRIENDS_TIMELINE_URL, List.class);
 		return extractTimelineTweetsFromResponse(response);
 	}
 
-	@SuppressWarnings("rawtypes")
 	public List<Tweet> getUserTimeline() {
-		List response = restOperations.getForObject(USER_TIMELINE_URL, List.class);
+		List response = restTemplate.getForObject(USER_TIMELINE_URL, List.class);
 		return extractTimelineTweetsFromResponse(response);
 	}
 
-	@SuppressWarnings("rawtypes")
 	public List<Tweet> getUserTimeline(String screenName) {
-		List response = restOperations.getForObject(USER_TIMELINE_URL + "?screen_name={screenName}",
-				List.class, screenName);
+		List response = restTemplate.getForObject(USER_TIMELINE_URL + "?screen_name={screenName}", List.class, screenName);
 		return extractTimelineTweetsFromResponse(response);
 	}
 
-	@SuppressWarnings("rawtypes")
 	public List<Tweet> getUserTimeline(long userId) {
-		List response = restOperations.getForObject(USER_TIMELINE_URL + "?user_id={userId}",
-				List.class, userId);
+		List response = restTemplate.getForObject(USER_TIMELINE_URL + "?user_id={userId}", List.class, userId);
 		return extractTimelineTweetsFromResponse(response);
 	}
 
@@ -285,7 +236,6 @@ public class TwitterTemplate implements TwitterOperations {
 		parameters.put("query", query);
 		parameters.put("rpp", String.valueOf(resultsPerPage));
 		parameters.put("page", String.valueOf(page));
-
 		String searchUrl = SEARCH_URL;
 		if (sinceId > 0) {
 			searchUrl += "&since_id={since}";
@@ -295,33 +245,32 @@ public class TwitterTemplate implements TwitterOperations {
 			searchUrl += "&max_id={max}";
 			parameters.put("max", String.valueOf(maxId));
 		}
-
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restOperations.getForEntity(searchUrl, Map.class, parameters);
+		ResponseEntity<Map> response = restTemplate.getForEntity(searchUrl, Map.class, parameters);
 		// handleResponseErrors(response);
-
-		@SuppressWarnings("unchecked")
 		Map<String, Object> resultsMap = response.getBody();
-
-		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> items = (List<Map<String, Object>>) resultsMap.get("results");
 		List<Tweet> tweets = new ArrayList<Tweet>(resultsMap.size());
 		for (Map<String, Object> item : items) {
 			tweets.add(populateTweetFromSearchResults(item));
 		}
-
 		return buildSearchResults(resultsMap, tweets);
 	}
 
-	SearchResults buildSearchResults(Map<String, Object> response, List<Tweet> tweets) {
+	// subclassing hooks
+	
+	protected RestTemplate getRestTemplate() {
+		return restTemplate;
+	}
+	
+	// internal helpers
+	
+	private SearchResults buildSearchResults(Map<String, Object> response, List<Tweet> tweets) {
 		Number maxId = response.containsKey("max_id") ? (Number) response.get("max_id") : 0;
 		Number sinceId = response.containsKey("since_id") ? (Number) response.get("since_id") : 0;
 		return new SearchResults(tweets, maxId.longValue(), sinceId.longValue(), response.get("next_page") == null);
 	}
 
-	@SuppressWarnings("rawtypes")
 	private List<Tweet> extractTimelineTweetsFromResponse(List response) {
-		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> results = (List<Map<String, Object>>) response;
 		List<Tweet> tweets = new ArrayList<Tweet>();
 		for (Map<String, Object> item : results) {
@@ -330,7 +279,6 @@ public class TwitterTemplate implements TwitterOperations {
 		return tweets;
 	}
 
-	@SuppressWarnings("unchecked")
 	private Tweet populateTweetFromTimelineItem(Map<String, Object> item) {
 		Tweet tweet = new Tweet();
 		tweet.setId(Long.valueOf(String.valueOf(item.get("id"))));
@@ -373,7 +321,6 @@ public class TwitterTemplate implements TwitterOperations {
 		}
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void handleResponseErrors(ResponseEntity<Map> response) {
 		SocialException exception = statusCodeTranslator.translate(response);
 		if (exception != null) {

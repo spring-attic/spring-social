@@ -18,8 +18,6 @@ package org.springframework.social.twitter;
 import java.util.Collection;
 import java.util.List;
 
-import org.springframework.social.SocialException;
-
 /**
  * Interface specifying a basic set of operations for interacting with Twitter.
  * Implemented by TwitterTemplate. Not often used directly, but a useful option
@@ -31,189 +29,113 @@ public interface TwitterOperations {
 
 	/**
 	 * Retrieves the user's Twitter screen name.
-	 * 
 	 * @return the user's screen name at Twitter
 	 */
 	String getProfileId();
 
 	/**
-	 * <p>
 	 * Retrieves the authenticated user's Twitter profile details.
-	 * </p>
-	 * 
 	 * @return a {@link TwitterProfile} object representing the user's profile.
 	 */
 	TwitterProfile getProfile();
 
 	/**
-	 * <p>
 	 * Retrieves a specific user's Twitter profile details.
-	 * </p>
-	 * 
-	 * <p>
 	 * Note that this method does not require authentication.
-	 * </p>
-	 * 
-	 * @param screenName
-	 *            the screen name for the user whose details are to be
-	 *            retrieved.
+	 * @param screenName the screen name for the user whose details are to be retrieved.
 	 * @return a {@link TwitterProfile} object representing the user's profile.
 	 */
 	TwitterProfile getProfile(String screenName);
 
 	/**
-	 * <p>
 	 * Retrieves a specific user's Twitter profile details.
-	 * </p>
-	 * 
-	 * <p>
 	 * Note that this method does not require authentication.
-	 * </p>
-	 * 
-	 * @param userId
-	 *            the user ID for the user whose details are to be retrieved.
+	 * @param userId the user ID for the user whose details are to be retrieved.
 	 * @return a {@link TwitterProfile} object representing the user's profile.
 	 */
 	TwitterProfile getProfile(long userId);
 
 	/**
 	 * Retrieves a list of users that the given user follows.
-	 * 
-	 * @param screenName
-	 *            The user's Twitter screen name
+	 * @param screenName The user's Twitter screen name
 	 * @return a list of user screen names
 	 */
 	List<String> getFriends(String screenName);
 
 	/**
 	 * Updates the user's status.
-	 * 
-	 * @param status
-	 *            The status message
-	 * 
-	 * @throws SocialException
-	 *             if an error response is received from Twitter
+	 * @param status The status message
 	 */
 	void updateStatus(String status);
 
 	/**
-	 * Updates the user's status, including additional metadata concerning the
-	 * status.
-	 * 
-	 * @param status
-	 *            The status message
-	 * @param details
-	 *            Metadata pertaining to the status
-	 * 
-	 * @throws SocialException
-	 *             if an error response is received from Twitter
+	 * Updates the user's status, including additional metadata concerning the status.
+	 * @param status The status message
+	 * @param details Metadata pertaining to the status
 	 */
 	void updateStatus(String status, StatusDetails details);
 
 	/**
 	 * Posts a retweet of an existing tweet.
-	 * 
-	 * @param tweetId
-	 *            The ID of the tweet to be retweeted
-	 * 
-	 * @throws SocialException
-	 *             if an error response is received from Twitter
+	 * @param tweetId The ID of the tweet to be retweeted
 	 */
 	void retweet(long tweetId);
 
 	/**
 	 * Retrieve the 20 most recent tweets that mention the authenticated user.
-	 * 
-	 * @return a collection of {@link Tweet} objects that mention the
-	 *         authenticated user.
+	 * @return a collection of {@link Tweet} objects that mention the authenticated user.
 	 */
 	Collection<Tweet> getMentions();
 
 	/**
-	 * Retrieve the 20 most recently received direct messages for the
-	 * authenticating user.
-	 * 
-	 * @return a collection of {@link DirectMessage} with the authenticating
-	 *         user as the recipient.
+	 * Retrieve the 20 most recently received direct messages for the authenticating user.
+	 * @return a collection of {@link DirectMessage} with the authenticating user as the recipient.
 	 */
 	Collection<DirectMessage> getDirectMessagesReceived();
 
 	/**
-	 * <p>
 	 * Sends a direct message to another Twitter user.
-	 * </p>
-	 * 
-	 * <p>
 	 * The recipient of the message must follow the authenticated user in order
 	 * for the message to be delivered. If the recipient is not following the
-	 * authenticated user, an {@link InvalidMessageRecipientException} will be
-	 * thrown.
-	 * </p>
-	 * 
-	 * @param toScreenName
-	 *            the screen name of the recipient of the messages.
-	 * @param text
-	 *            the message text.
-	 * 
-	 * @throws InvalidMessageRecipientException
-	 *             if the recipient is not following the authenticating user.
-	 * @throws DuplicateTweetException
-	 *             if the message duplicates a previously sent message.
+	 * authenticated user, an {@link InvalidMessageRecipientException} will be thrown.
+	 * @param toScreenName the screen name of the recipient of the messages.
+	 * @param text the message text.
+	 * @throws InvalidMessageRecipientException if the recipient is not following the authenticating user.
+	 * @throws DuplicateTweetException if the message duplicates a previously sent message.
 	 */
 	void sendDirectMessage(String toScreenName, String text);
 
 	/**
-	 * <p>
 	 * Sends a direct message to another Twitter user.
-	 * </p>
-	 * 
-	 * <p>
 	 * The recipient of the message must follow the authenticated user in order
 	 * for the message to be delivered. If the recipient is not following the
-	 * authenticated user, an {@link InvalidMessageRecipientException} will be
-	 * thrown.
-	 * </p>
-	 * 
-	 * @param toUserId
-	 *            the Twitter user ID of the recipient of the messages.
-	 * @param text
-	 *            the message text.
-	 * 
-	 * @throws InvalidMessageRecipientException
-	 *             if the recipient is not following the authenticating user.
-	 * @throws DuplicateTweetException
-	 *             if the message duplicates a previously sent message.
+	 * authenticated user, an {@link InvalidMessageRecipientException} will be thrown.
+	 * @param toUserId the Twitter user ID of the recipient of the messages.
+	 * @param text the message text.
+	 * @throws InvalidMessageRecipientException if the recipient is not following the authenticating user.
+	 * @throws DuplicateTweetException if the message duplicates a previously sent message.
 	 */
 	void sendDirectMessage(long toUserId, String text);
 
 	/**
-	 * <p>
 	 * Retrieves the 20 most recently posted tweets from the public timeline.
 	 * The public timeline is the timeline containing tweets from all Twitter
 	 * users. As this is the public timeline, authentication is not required to
 	 * use this method.
-	 * </p>
-	 * 
 	 * <p>
 	 * Note that Twitter caches public timeline results for 60 seconds. Calling
 	 * this method more frequently than that will count against rate limits and
 	 * will not return any new results.
 	 * </p>
-	 * 
 	 * @return a collection of {@link Tweet}s in the public timeline.
 	 */
 	Collection<Tweet> getPublicTimeline();
 
 	/**
-	 * <p>
 	 * Retrieves the 20 most recently posted tweets, including retweets, from
 	 * the authenticating user's home timeline. The home timeline includes
-	 * tweets from the user's timeline and the timeline of anyone that they
-	 * follow.
-	 * </p>
-	 * 
-	 * @return a collection of {@link Tweet}s in the authenticating user's home
-	 *         timeline.
+	 * tweets from the user's timeline and the timeline of anyone that they follow.
+	 * @return a collection of {@link Tweet}s in the authenticating user's home timeline.
 	 */
 	Collection<Tweet> getHomeTimeline();
 
@@ -224,89 +146,57 @@ public interface TwitterOperations {
 	 * tweets from the user's timeline and the timeline of anyone that they
 	 * follow, with the exception of any retweets.
 	 * </p>
-	 * 
-	 * @return a collection of {@link Tweet}s in the authenticating user's
-	 *         friends timeline.
+	 * @return a collection of {@link Tweet}s in the authenticating user's friends timeline.
 	 */
 	Collection<Tweet> getFriendsTimeline();
 
 	/**
 	 * Retrieves the 20 most recent tweets posted by the authenticating user.
-	 * 
-	 * @return a collection of {@link Tweet}s that have been posted by the
-	 *         authenticating user.
+	 * @return a collection of {@link Tweet}s that have been posted by the authenticating user.
 	 */
 	Collection<Tweet> getUserTimeline();
 
 	/**
 	 * Retrieves the 20 most recent tweets posted by the given user.
-	 * 
-	 * @param screenName
-	 *            The screen name of the user whose timeline is being requested.
-	 * @return a collection of {@link Tweet}s from the specified user's
-	 *         timeline.
+	 * @param screenName The screen name of the user whose timeline is being requested.
+	 * @return a collection of {@link Tweet}s from the specified user's timeline.
 	 */
 	Collection<Tweet> getUserTimeline(String screenName);
 
 	/**
 	 * Retrieves the 20 most recent tweets posted by the given user.
-	 * 
-	 * @param userId
-	 *            The user ID of the user whose timeline is being requested.
-	 * @return a collection of {@link Tweet}s from the specified user's
-	 *         timeline.
+	 * @param userId The user ID of the user whose timeline is being requested.
+	 * @return a collection of {@link Tweet}s from the specified user's timeline.
 	 */
 	Collection<Tweet> getUserTimeline(long userId);
 
 	/**
 	 * Searches Twitter, returning the first 50 matching {@link Tweet}s
-	 * 
-	 * @param query
-	 *            The search query string
-	 * @return a {@link SearchResults} containing the search results metadata
-	 *         and a list of matching {@link Tweet}s
-	 * 
+	 * @param query The search query string
+	 * @return a {@link SearchResults} containing the search results metadata and a list of matching {@link Tweet}s
 	 * @see SearchResults, {@link Tweet}
 	 */
 	SearchResults search(String query);
 
 	/**
-	 * Searches Twitter, returning a specific page out of the complete set of
-	 * results.
-	 * 
-	 * @param query
-	 *            The search query string
-	 * @param page
-	 *            The page to return
-	 * @param pageSize
-	 *            The number of {@link Tweet}s per page
-	 * 
-	 * @return a {@link SearchResults} containing the search results metadata
-	 *         and a list of matching {@link Tweet}s
-	 * 
+	 * Searches Twitter, returning a specific page out of the complete set of results.
+	 * @param query The search query string
+	 * @param page The page to return
+	 * @param pageSize The number of {@link Tweet}s per page
+	 * @return a {@link SearchResults} containing the search results metadata and a list of matching {@link Tweet}s
 	 * @see SearchResults, {@link Tweet}
 	 */
 	SearchResults search(String query, int page, int pageSize);
 
 	/**
 	 * Searches Twitter, returning a specific page out of the complete set of
-	 * results. Results are filtered to those whose ID falls between sinceId and
-	 * maxId
-	 * 
-	 * @param query
-	 *            The search query string
-	 * @param page
-	 *            The page to return
-	 * @param pageSize
-	 *            The number of {@link Tweet}s per page
-	 * @param sinceId
-	 *            The minimum {@link Tweet} ID to return in the results
-	 * @param maxId
-	 *            The maximum {@link Tweet} ID to return in the results
-	 * 
-	 * @return a {@link SearchResults} containing the search results metadata
-	 *         and a list of matching {@link Tweet}s
-	 * 
+	 * results. Results are filtered to those whose ID falls between sinceId and maxId.
+	 * @param query The search query string
+	 * @param page The page to return
+	 * @param pageSize The number of {@link Tweet}s per page
+	 * @param sinceId The minimum {@link Tweet} ID to return in the results
+	 * @param maxId The maximum {@link Tweet} ID to return in the results
+	 * @return a {@link SearchResults} containing the search results metadata and a list of matching {@link Tweet}s
 	 * @see SearchResults, {@link Tweet}
 	 */
 	SearchResults search(String query, int page, int pageSize, int sinceId, int maxId);

@@ -47,7 +47,12 @@ public class FacebookTemplate implements FacebookOperations {
 	 * @param accessToken An access token given by Facebook after a successful OAuth 2 authentication (or through Facebook's JS library).
 	 */
 	public FacebookTemplate(String accessToken) {
-		this.restTemplate = createRestTemplate(accessToken);
+		restTemplate = new RestTemplate();
+		restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft10(accessToken) });
+		// Facebook returns JSON data with text/javascript content type
+		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
+		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
+		restTemplate.getMessageConverters().add(json);
 	}
 
 	public String getProfileId() {
@@ -110,16 +115,6 @@ public class FacebookTemplate implements FacebookOperations {
 	}
 	
 	// internal helpers
-	
-	private RestTemplate createRestTemplate(String accessToken) {
-		RestTemplate restTemplate = new RestTemplate();
-		restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft10(accessToken) });
-		// Facebook returns JSON data with text/javascript content type
-		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
-		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
-		restTemplate.getMessageConverters().add(json);
-		return restTemplate;
-	}
 
 	static final String OBJECT_URL = "https://graph.facebook.com/{objectId}";
 	static final String CONNECTION_URL = OBJECT_URL + "/{connection}";

@@ -22,26 +22,24 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.social.intercept.ExtendedRestTemplate;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.social.oauth2.OAuth2RequestInterceptor;
-import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * <p>
  * The central class for interacting with TripIt.
  * </p>
- * 
  * <p>
  * TripIt operations require OAuth 1 authentication. Therefore TripIt template
  * must be given the minimal amount of information required to sign requests to
  * the TripIt API with an OAuth <code>Authorization</code> header.
  * </p>
- * 
  * @author Craig Walls
  */
 public class GitHubTemplate implements GitHubOperations {
 
-	RestOperations restOperations;
+	private final RestTemplate restTemplate;
 
 	/**
 	 * Constructs a GitHubTemplate with the minimal amount of information
@@ -53,9 +51,8 @@ public class GitHubTemplate implements GitHubOperations {
 	 *            authentication.
 	 */
 	public GitHubTemplate(String accessToken) {
-		ExtendedRestTemplate restTemplate = new ExtendedRestTemplate();
-		restTemplate.addInterceptor(OAuth2RequestInterceptor.draft8(accessToken));
-		restOperations = restTemplate;
+		restTemplate = new RestTemplate();
+		restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft8(accessToken) });
 	}
 
 	public String getProfileId() {
@@ -64,9 +61,8 @@ public class GitHubTemplate implements GitHubOperations {
 
 	@SuppressWarnings("unchecked")
 	public GitHubUserProfile getUserProfile() {
-		Map<String, ?> result = restOperations.getForObject(PROFILE_URL, Map.class);
+		Map<String, ?> result = restTemplate.getForObject(PROFILE_URL, Map.class);
 		Map<String, ?> user = (Map<String, String>) result.get("user");
-
 		Long gitHubId = Long.valueOf(String.valueOf(user.get("id")));
 		String username = String.valueOf(user.get("login"));
 		String name = String.valueOf(user.get("name"));
@@ -75,7 +71,6 @@ public class GitHubTemplate implements GitHubOperations {
 		String blog = user.get("blog") != null ? String.valueOf(user.get("blog")) : null;
 		String email = user.get("email") != null ? String.valueOf(user.get("email")) : null;
 		Date createdDate = toDate(String.valueOf(user.get("created_at")), dateFormat);
-
 		return new GitHubUserProfile(gitHubId, username, name, location, company, blog, email, createdDate);
 	}
 
@@ -83,6 +78,14 @@ public class GitHubTemplate implements GitHubOperations {
 		return "https://github.com/" + getProfileId();
 	}
 	
+	// subclassing hooks
+	
+	protected RestTemplate getRestTemplate() {
+		return restTemplate;
+	}
+	
+	// internal helpers
+
 	private Date toDate(String dateString, DateFormat dateFormat) {
 		try {
 			return dateFormat.parse(dateString);

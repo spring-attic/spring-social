@@ -17,54 +17,34 @@ package org.springframework.social.tripit;
 
 import java.util.List;
 
-import org.springframework.social.intercept.ExtendedRestTemplate;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.social.oauth1.OAuth1RequestInterceptor;
 import org.springframework.social.oauth1.OAuthToken;
-import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.RestTemplate;
 
 /**
- * <p>
  * The central class for interacting with TripIt.
- * </p>
- * 
  * <p>
  * TripIt operations require OAuth 1 authentication. Therefore TripIt template
  * must be given the minimal amount of information required to sign requests to
  * the TripIt API with an OAuth <code>Authorization</code> header.
  * </p>
- * 
  * @author Craig Walls
  */
 public class TripItTemplate implements TripItOperations {
-	RestOperations restOperations;
+	
+	private final RestTemplate restTemplate;
 
 	/**
-	 * Constructs a TripItTemplate with the minimal amount of information
-	 * required to sign requests with an OAuth <code>Authorization</code>
-	 * header.
-	 * 
-	 * @param apiKey
-	 *            The application's API key as given by TripIt when registering
-	 *            the application.
-	 * @param apiSecret
-	 *            The application's API secret as given by TripIt when
-	 *            registering the application.
-	 * @param accessToken
-	 *            An access token granted to the application after OAuth
-	 *            authentication.
-	 * @param accessTokenSecret
-	 *            An access token secret granted to the application after OAuth
-	 *            authentication.
+	 * Constructs a TripItTemplate with the minimal amount of information required to sign requests with an OAuth <code>Authorization</code> header.
+	 * @param apiKey the application's API key
+	 * @param apiSecret the application's API secret
+	 * @param accessToken an access token acquired through OAuth authentication with LinkedIn
+	 * @param accessTokenSecret an access token secret acquired through OAuth authentication with LinkedIn
 	 */
 	public TripItTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
-		// RestTemplate restTemplate = new RestTemplate();
-		// temporarily use InterceptorCallingRestTemplate instead of a regular
-		// RestTemplate. This is to simulate the work that Arjen is doing for
-		// SPR-7494. Once Arjen's finished, a regular RestTemplate should be
-		// used with the interceptors registered appropriately.
-		ExtendedRestTemplate restTemplate = new ExtendedRestTemplate();
-		restTemplate.addInterceptor(new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)));
-		this.restOperations = restTemplate;
+		restTemplate = new RestTemplate();
+		restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)) });
 	}
 
 	public String getProfileId() {
@@ -76,13 +56,18 @@ public class TripItTemplate implements TripItOperations {
 	}
 
 	public TripItProfile getUserProfile() {
-		TripItProfileResponse response = restOperations.getForObject(
-				"https://api.tripit.com/v1/get/profile?format=json", TripItProfileResponse.class);
+		TripItProfileResponse response = restTemplate.getForObject("https://api.tripit.com/v1/get/profile?format=json", TripItProfileResponse.class);
 		return response.getProfile();
 	}
 
 	public List<Trip> getUpcomingTrips() {
-		return restOperations.getForObject("https://api.tripit.com/v1/list/trip/traveler/true/past/false?format=json",
-				TripListResponse.class).getTrips();
+		return restTemplate.getForObject("https://api.tripit.com/v1/list/trip/traveler/true/past/false?format=json", TripListResponse.class).getTrips();
 	}
+	
+	// subclassing hooks
+	
+	protected RestTemplate getRestTemplate() {
+		return restTemplate;
+	}
+
 }
