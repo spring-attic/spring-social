@@ -16,8 +16,11 @@
 package org.springframework.social.oauth2;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
@@ -45,6 +48,7 @@ public class OAuth2Template implements OAuth2Operations {
 		this.clientSecret = clientSecret;
 		this.authorizeUrlTemplate = new UriTemplate(authorizeUrl);
 		this.accessTokenUrl = accessTokenUrl;
+		addTextToMapMessageConverter();
 	}
 
 	public String buildAuthorizeUrl(String redirectUri, String scope) {
@@ -63,13 +67,44 @@ public class OAuth2Template implements OAuth2Operations {
 		requestParameters.set("redirect_uri", redirectUri);
 		requestParameters.set("grant_type", "authorization_code");
 		@SuppressWarnings("unchecked")
-		Map<String, String> result = getRestOperations().postForObject(accessTokenUrl, requestParameters, Map.class);
-		return new AccessGrant(result.get("access_token"), result.get("refresh_token"));
+		Map<String, ?> result = getRestOperations().postForObject(accessTokenUrl, requestParameters, Map.class);
+		return new AccessGrant(valueOf(result.get("access_token")), valueOf(result.get("refresh_token")));
 	}
 
 	// subclassing hooks
 	
 	protected RestOperations getRestOperations() {
 		return restTemplate;
+	}
+	
+	// private helpers
+	// TODO : Can probably tweak RestTemplate's message converters to deal with this better.
+	private String valueOf(Object object) {
+		if (object == null) {
+			return null;
+		} else if (object instanceof List) {
+			List list = (List) object;
+			if (list.size() > 0) {
+				return String.valueOf(list.get(0));
+			}
+			return null;
+		}
+		return String.valueOf(object);
+	}
+
+	/*
+	 * Facebook returns form-encoded results with a content type of "text/plain". The "text/plain" content type prevents
+	 * any of the default encoders from being able to parse the results, even though FormHttpMessageConverter is
+	 * perfectly capable of doing so. This method adds another FormHttpMessageConverter that can read "text/plain" into
+	 * a Map so that this works for Facebook.
+	 */
+	private void addTextToMapMessageConverter() {
+		FormHttpMessageConverter messageConverter = new FormHttpMessageConverter() {
+			public boolean canRead(Class<?> clazz, MediaType mediaType) {
+				return clazz.equals(Map.class) && mediaType != null && mediaType.getType().equals("text")
+						&& mediaType.getSubtype().equals("plain");
+			}
+		};
+		restTemplate.getMessageConverters().add(messageConverter);
 	}
 }
