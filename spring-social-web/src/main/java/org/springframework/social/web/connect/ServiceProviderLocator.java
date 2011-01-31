@@ -18,6 +18,7 @@ package org.springframework.social.web.connect;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.social.connect.ServiceProvider;
 
@@ -30,7 +31,7 @@ public class ServiceProviderLocator {
 	private final Map<String, ServiceProvider<?>> serviceProviders;
 
 	public ServiceProviderLocator(ListableBeanFactory beanFactory) {
-		Map<String, ServiceProvider> providers = beanFactory.getBeansOfType(ServiceProvider.class);
+		Map<String, ServiceProvider> providers = BeanFactoryUtils.beansOfTypeIncludingAncestors(beanFactory, ServiceProvider.class);
 		serviceProviders = new HashMap<String, ServiceProvider<?>>(providers.size(), 1);
 		for (ServiceProvider<?> provider : providers.values()) {
 			serviceProviders.put(provider.getId(), provider);
