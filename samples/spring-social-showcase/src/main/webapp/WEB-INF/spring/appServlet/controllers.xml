@@ -14,6 +14,12 @@
 	
 	<bean class="org.springframework.social.web.connect.ConnectController">
 		<constructor-arg value="${application.url}" />
+		<property name="interceptors">
+			<list>
+				<bean class="org.springframework.social.showcase.twitter.TweetAfterConnectInterceptor" />
+				<bean class="org.springframework.social.showcase.facebook.PostToWallAfterConnectInterceptor" />
+			</list>
+		</property>
 	</bean>
 	
 	<import resource="../properties.xml" />   	

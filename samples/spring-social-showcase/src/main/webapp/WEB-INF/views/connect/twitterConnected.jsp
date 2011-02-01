@@ -20,6 +20,7 @@
 		<p><a href="<s:url value="/" />">Return to home page</a></p>
 	</div>
 	<p><button type="submit"><img src="<c:url value="/resources/social/twitter/signin.png" />"/></button></p>
+	<label for="postTweet"><input id="postTweet" type="checkbox" name="postTweet" /> Post a tweet about connecting with Spring Social Showcase</label>
 </form>
 
 </body>

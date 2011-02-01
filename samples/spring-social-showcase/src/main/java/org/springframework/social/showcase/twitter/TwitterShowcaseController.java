@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.twitter.TwitterOperations;
+import org.springframework.social.twitter.TwitterProfile;
 import org.springframework.social.twitter.connect.TwitterServiceProvider;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,13 +43,13 @@ public class TwitterShowcaseController {
 	@RequestMapping(value = "/twitter", method = RequestMethod.GET)
 	public String home(Principal user, Model model) {
 		List<ServiceProviderConnection<TwitterOperations>> connections = twitterProvider.getConnections(user.getName());
-		List<String> connectionNames = new ArrayList<String>();
+		List<TwitterProfile> connectedProfiles = new ArrayList<TwitterProfile>();
 		for (ServiceProviderConnection<TwitterOperations> serviceProviderConnection : connections) {
-			connectionNames.add(serviceProviderConnection.getServiceApi().getProfileId());
+			connectedProfiles.add(serviceProviderConnection.getServiceApi().getProfile());
 		}
 
 		if (connections.size() > 0) {
-			model.addAttribute("connections", connectionNames);
+			model.addAttribute("connectedProfiles", connectedProfiles);
 			model.addAttribute(new TweetForm());
 			return "twitter/twitter";
 		}

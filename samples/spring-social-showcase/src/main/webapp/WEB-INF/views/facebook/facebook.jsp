@@ -11,7 +11,18 @@
 
 	<p>Hello, <c:out value="${fbUser.firstName}"/>!  (<a href="<c:url value="/connect/facebook"/>">Disconnect from Facebook</a>)</p>
 	
+	<p>Your Facebook profile:</p>
+	<dl>
+		<dt>Facebook ID:</dt>
+		<dd><c:out value="${fbUser.id}"/></dd>
+		<dt>Name:</dt>
+		<dd><c:out value="${fbUser.name}"/></dd>
+		<dt>Email:</dt>
+		<dd><c:out value="${email}"/></dd>
+	</dl>
+	<hr/>
 	<form method="POST" action="<c:url value="/facebook/wall" />">
+		<p>Post to your Facebook wall:<p>
 		<textarea id="message" name="message" rows="5" cols="40"></textarea><br/>
 		<input type="submit" value="Post" />
 	</form>
