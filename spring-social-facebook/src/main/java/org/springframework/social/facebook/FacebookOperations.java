@@ -45,12 +45,6 @@ public interface FacebookOperations {
 	FacebookProfile getUserProfile();
 
 	/**
-	 * Retrieve the URL to the user's Facebook profile.
-	 * @return the URL to the user's Facebook profile.
-	 */
-	String getProfileUrl();
-
-	/**
 	 * Get a list of the user's friends.
 	 * @return a list of <code>String</code>s where each entry is the Facebook ID of one of the user's friends.
 	 */
@@ -76,17 +70,4 @@ public interface FacebookOperations {
 	 * @param data The data to be published.
 	 */
 	void publish(String object, String connection, MultiValueMap<String, String> data);
-
-	/**
-	 * Retrieves the current user's profile picture as an array of bytes.
-	 * @return the user's profile picture in bytes.
-	 */
-	byte[] getProfilePicture();
-
-	/**
-	 * Retrieves a user's profile picture as an array of bytes.
-	 * @param profileId the Facebook ID of the user.
-	 * @return the user's profile picture in bytes.
-	 */
-	byte[] getProfilePicture(String profileId);
 }

@@ -128,6 +128,17 @@ public class TwitterProfile implements Serializable {
 		return profileImageUrl;
 	}
 
+	/**
+	 * <p>
+	 * The URL of the user's profile.
+	 * </p>
+	 * 
+	 * @return The URL of the user's profile.
+	 */
+	public String getProfileUrl() {
+		return "http://www.twitter.com/" + screenName;
+	}
+
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
 	}

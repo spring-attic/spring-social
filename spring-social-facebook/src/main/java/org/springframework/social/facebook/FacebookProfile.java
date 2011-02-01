@@ -88,4 +88,24 @@ public class FacebookProfile implements Serializable {
 	public String getEmail() {
 	    return email;
     }
+
+	/**
+	 * <p>
+	 * The URL of the user's profile image in "normal" size.
+	 * </p>
+	 * 
+	 * @return The URL of the user's normal-sized profile image.
+	 */
+	public String getProfileImageUrl() {
+		return "https://graph.facebook.com/" + id + "/picture";
+	}
+
+	/**
+	 * Retrieve the URL to the user's Facebook profile.
+	 * 
+	 * @return the URL to the user's Facebook profile.
+	 */
+	public String getProfileUrl() {
+		return "http://www.facebook.com/profile.php?id=" + id;
+	}
 }

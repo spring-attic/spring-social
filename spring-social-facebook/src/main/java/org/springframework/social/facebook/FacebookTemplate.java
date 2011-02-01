@@ -59,10 +59,6 @@ public class FacebookTemplate implements FacebookOperations {
 		return Long.toString(getUserProfile().getId());
 	}
 
-	public String getProfileUrl() {
-		return "http://www.facebook.com/profile.php?id=" + getProfileId();
-	}
-
 	public FacebookProfile getUserProfile() {
 		return restTemplate.getForObject(OBJECT_URL, FacebookProfile.class, "me");
     }
@@ -99,15 +95,6 @@ public class FacebookTemplate implements FacebookOperations {
 		restTemplate.postForLocation(CONNECTION_URL, requestData, object, connection);
 	}
 	
-	public byte[] getProfilePicture() {
-		return getProfilePicture(CURRENT_USER_ID);
-	}
-
-	public byte[] getProfilePicture(String profileId) {
-		ResponseEntity<byte[]> imageBytes = restTemplate.getForEntity(PROFILE_LARGE_PICTURE_URL, byte[].class, profileId);
-		return imageBytes.getBody();
-	}
-
 	// subclassing hooks
 	
 	protected RestTemplate getRestTemplate() {
@@ -118,7 +105,6 @@ public class FacebookTemplate implements FacebookOperations {
 
 	static final String OBJECT_URL = "https://graph.facebook.com/{objectId}";
 	static final String CONNECTION_URL = OBJECT_URL + "/{connection}";
-	static final String PROFILE_LARGE_PICTURE_URL = "https://graph.facebook.com/{profile}/picture?type=large";
 	
 	static final String FRIENDS = "friends";
 	static final String FEED = "feed";

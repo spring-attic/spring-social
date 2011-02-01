@@ -10,11 +10,12 @@
 <h1>Spring Social Showcase: Send a Tweet</h1>
 
 <p>Your Spring Social Showcase account is connected to the following Twitter profiles:</p>
-<ul>
-	<c:forEach items="${connectedProfiles}" var="profile">
-		<li><img src="${profile.profileImageUrl}"/> <c:out value="${profile.name}"/> (<c:out value="${profile.screenName}"/>)</li>
-	</c:forEach>
-</ul>
+<c:forEach items="${connectedProfiles}" var="profile">
+	<div>
+		<p><a href="${profile.profileUrl}" target="_blank"><img src="${profile.profileImageUrl}" border="0"/></a></p>
+		<p><c:out value="${profile.name}"/> (<c:out value="${profile.screenName}"/>)</p>
+	</div>
+</c:forEach>
 
 <c:url value="/connect/twitter" var="disconnectUrl"/>
 <form id="disconnect" action="${disconnectUrl}" method="post">
