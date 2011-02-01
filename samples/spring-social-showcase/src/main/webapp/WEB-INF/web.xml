@@ -9,6 +9,12 @@
 		<param-value>/WEB-INF/spring/root-context.xml</param-value>
 	</context-param>
 	
+	<!-- Sets the default profile to use in the absence of any profiles set at deployment time. -->
+	<context-param>
+		<param-name>spring.profile.default</param-name>
+		<param-value>default</param-value>
+	</context-param>
+		
 	<!-- Creates the Spring Container shared by all Servlets and Filters -->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>

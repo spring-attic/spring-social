@@ -9,6 +9,8 @@
 <body>
 <h1>Spring Social Showcase</h1>
 
+<a href="<c:url value="/signout" />">Sign Out</a>
+
 <ul>
 	<li><a href="twitter">Twitter</a> (Connected? <c:out value="${twitter_status}"/>)</li>
 	<li><a href="facebook">Facebook</a> (Connected? <c:out value="${facebook_status}"/>)</li>

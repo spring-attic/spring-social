@@ -26,6 +26,13 @@
 		<input id="password" name="j_password" type="password" size="25" />	
 	</fieldset>
 	<p><button type="submit">Sign In</button></p>
+	
+	<p>Some test user/password pairs you may use are:</p>
+	<ul>
+		<li>habuma/habuma</li>
+		<li>kdonald/kdonald</li>
+		<li>rclarkson/rclarkson</li>
+	</ul>
 </form>
 
 </body>

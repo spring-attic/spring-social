@@ -20,7 +20,6 @@
 		</p>
 	</div>
 	
-	<!-- TODO: FIX THE DISCONNECT BUTTON -->
 	<button type="submit" onclick="FB.logout(function(response) { return true; } );">Disconnect</button>	
 	<input type="hidden" name="_method" value="delete" />
 </form>

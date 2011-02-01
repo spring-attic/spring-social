@@ -4,6 +4,7 @@ import java.security.Principal;
 
 import javax.inject.Inject;
 
+import org.springframework.social.facebook.FacebookOperations;
 import org.springframework.social.facebook.FacebookProfile;
 import org.springframework.social.facebook.connect.FacebookServiceProvider;
 import org.springframework.stereotype.Controller;
@@ -23,8 +24,7 @@ public class FacebookShowcaseController {
 	@RequestMapping(value = "/facebook", method = RequestMethod.GET)
 	public String home(Principal user, Model model) {
 		if (facebookProvider.isConnected(user.getName())) {
-			FacebookProfile userProfile = facebookProvider.getConnections(user.getName()).get(0).getServiceApi()
-					.getUserProfile();
+			FacebookProfile userProfile = getFacebookApi(user).getUserProfile();
 			model.addAttribute("fbUser", userProfile);
 			return "facebook/facebook";
 		}
@@ -33,7 +33,11 @@ public class FacebookShowcaseController {
 
 	@RequestMapping(value = "/facebook/wall", method = RequestMethod.POST)
 	public String postToWall(Principal user, String message) {
-		facebookProvider.getConnections(user.getName()).get(0).getServiceApi().updateStatus(message);
+		getFacebookApi(user).updateStatus(message);
 		return "redirect:/facebook";
+	}
+
+	private FacebookOperations getFacebookApi(Principal user) {
+		return facebookProvider.getConnections(user.getName()).get(0).getServiceApi();
 	}
 }

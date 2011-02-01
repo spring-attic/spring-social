@@ -21,14 +21,10 @@ public class ShowcaseController {
 
 	@RequestMapping("/")
 	public String home(Principal user, Model model) {
-		if (user != null) {
-			for (ServiceProvider<?> serviceProvider : serviceProviders) {
-				model.addAttribute(serviceProvider.getId() + "_status", serviceProvider.getConnections(user.getName())
-						.size() > 0 ? "Yes" : "No");
-			}
-			return "home";
+		for (ServiceProvider<?> serviceProvider : serviceProviders) {
+			model.addAttribute(serviceProvider.getId() + "_status", serviceProvider.getConnections(user.getName())
+					.size() > 0 ? "Yes" : "No");
 		}
-
-		return "homeGuest";
+		return "home";
 	}
 }
