@@ -11,7 +11,7 @@
 
 <ul>
 	<li><a href="twitter">Twitter</a> (Connected? <c:out value="${twitter_status}"/>)</li>
-	<li><a href="facebook">Facebook</a> (Connected? <c:out value="${twitter_status}"/>)</li>
+	<li><a href="facebook">Facebook</a> (Connected? <c:out value="${facebook_status}"/>)</li>
 </ul>
 
 </body>
