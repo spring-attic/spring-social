@@ -26,8 +26,6 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.social.connect.ServiceProvider;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.oauth1.OAuth1ServiceProvider;
@@ -69,6 +67,8 @@ public class ConnectController implements BeanFactoryAware {
 
 	private final ConnectionRepository connectionRepository;
 
+	private SignInStrategy signInStrategy;
+
 	/**
 	 * Constructs a ConnectController.
 	 * @param serviceProviderLocator the factory that loads the ServiceProviders members wish to connect to
@@ -92,6 +92,13 @@ public class ConnectController implements BeanFactoryAware {
 			Class<?> providerType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(),  ConnectInterceptor.class);
 			this.interceptors.add(providerType, interceptor);
 		}
+	}
+
+	/**
+	 * Configure the signin strategy to use when signing in using a provider connection.
+	 */
+	public void setSignInStrategy(SignInStrategy signInStrategy) {
+		this.signInStrategy = signInStrategy;
 	}
 
 	/**
@@ -125,6 +132,10 @@ public class ConnectController implements BeanFactoryAware {
 		}
 	}
 
+	/**
+	 * Process a signin-with form submission by commencing the process of establishing a connection to the provider on behalf of the member.
+	 * This differs from the standard connection process in that a new connection is not created, but an existing connection is used to find a user account and signin automatically.
+	 */
 	@RequestMapping(value = "{providerId}/signin", method = RequestMethod.POST)
 	public String signin(@PathVariable String providerId, WebRequest request) {
 		request.setAttribute(SIGNIN_FLOW_ATTRIBUTE, true, WebRequest.SCOPE_SESSION);
@@ -178,9 +189,9 @@ public class ConnectController implements BeanFactoryAware {
 	private void signinWithAccessToken(String providerId, String accessToken) {
 		Serializable accountId = connectionRepository.findAccountIdByAccessToken(providerId, accessToken);
 		if (accountId != null) {
-			SecurityContextHolder.getContext().setAuthentication(
-					new UsernamePasswordAuthenticationToken(accountId, null, null));
+			getSignInStrategy().signIn(accountId);
 		}
+		// TODO: What to do if there is no matching connection?
 	}
 
 	/**
@@ -236,6 +247,10 @@ public class ConnectController implements BeanFactoryAware {
 		OAuthToken requestToken = (OAuthToken) request.getAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		request.removeAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		return requestToken;
+	}
+
+	private SignInStrategy getSignInStrategy() {
+		return signInStrategy != null ? signInStrategy : new AccountIdAsPrincipalSignInStrategy();
 	}
 	
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
