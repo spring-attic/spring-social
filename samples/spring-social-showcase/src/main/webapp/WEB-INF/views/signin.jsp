@@ -35,5 +35,12 @@
 	</ul>
 </form>
 
+<form action="<c:url value="/connect/twitter/signin" />" method="post">
+	<button type="submit">Sign In With Twitter</button>
+</form>
+
+<form action="<c:url value="/connect/facebook/signin" />" method="post">
+	<button type="submit">Sign In With Facebook</button>
+</form>
 </body>
 </html>

@@ -45,4 +45,8 @@ public interface ConnectionRepository {
 	 */
 	void removeConnection(Serializable accountId, String providerId, Long connectionId);
 
+	/**
+	 * Looks up an account ID that is connected to a provider for a given access token.
+	 */
+	Serializable findAccountIdByAccessToken(String provider, String accessToken);
 }

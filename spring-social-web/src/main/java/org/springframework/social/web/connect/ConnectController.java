@@ -26,10 +26,13 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.social.connect.ServiceProvider;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.connect.oauth2.OAuth2ServiceProvider;
+import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
@@ -64,12 +67,15 @@ public class ConnectController implements BeanFactoryAware {
 	
 	private MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors;
 
+	private final ConnectionRepository connectionRepository;
+
 	/**
 	 * Constructs a ConnectController.
 	 * @param serviceProviderLocator the factory that loads the ServiceProviders members wish to connect to
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
 	 */
-	public ConnectController(String applicationUrl) {
+	public ConnectController(ConnectionRepository connectionRepository, String applicationUrl) {
+		this.connectionRepository = connectionRepository;
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 		this.interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
 	}
@@ -119,6 +125,12 @@ public class ConnectController implements BeanFactoryAware {
 		}
 	}
 
+	@RequestMapping(value = "{providerId}/signin", method = RequestMethod.POST)
+	public String signin(@PathVariable String providerId, WebRequest request) {
+		request.setAttribute(SIGNIN_FLOW_ATTRIBUTE, true, WebRequest.SCOPE_SESSION);
+		return connect(providerId, null, request);
+	}
+
 	/**
 	 * Process the authorization callback from an OAuth 1 service provider.
 	 * Called after the member authorizes the connection, generally done by having he or she click "Allow" in their web browser at the provider's site.
@@ -129,7 +141,15 @@ public class ConnectController implements BeanFactoryAware {
 	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier") String verifier, WebRequest request) {
 		OAuth1ServiceProvider<?> provider = (OAuth1ServiceProvider<?>) getServiceProvider(providerId);
 		AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(extractCachedRequestToken(request), verifier);
-		ServiceProviderConnection<?> connection = provider.connect(accountId(request.getUserPrincipal()), provider.getOAuth1Operations().exchangeForAccessToken(authorizedRequestToken));
+		OAuthToken accessToken = provider.getOAuth1Operations().exchangeForAccessToken(authorizedRequestToken);
+
+		if (request.getAttribute(SIGNIN_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION) != null) {
+			request.removeAttribute(SIGNIN_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+			signinWithAccessToken(providerId, accessToken.getValue());
+			return "redirect:/";
+		}
+
+		ServiceProviderConnection<?> connection = provider.connect(accountId(request.getUserPrincipal()), accessToken);
 		postConnect(provider, connection, request);
 		return "redirect:/connect/" + providerId;
 	}
@@ -143,9 +163,24 @@ public class ConnectController implements BeanFactoryAware {
 	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
 		OAuth2ServiceProvider<?> provider = (OAuth2ServiceProvider<?>) getServiceProvider(providerId);
 		AccessGrant accessGrant = provider.getOAuth2Operations().exchangeForAccess(code, callbackUrl(providerId));
+
+		if (request.getAttribute(SIGNIN_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION) != null) {
+			request.removeAttribute(SIGNIN_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+			signinWithAccessToken(providerId, accessGrant.getAccessToken());
+			return "redirect:/";
+		}
+
 		ServiceProviderConnection<?> connection = provider.connect(accountId(request.getUserPrincipal()), accessGrant);
 		postConnect(provider, connection, request);
 		return "redirect:/connect/" + providerId;
+	}
+
+	private void signinWithAccessToken(String providerId, String accessToken) {
+		Serializable accountId = connectionRepository.findAccountIdByAccessToken(providerId, accessToken);
+		if (accountId != null) {
+			SecurityContextHolder.getContext().setAuthentication(
+					new UsernamePasswordAuthenticationToken(accountId, null, null));
+		}
 	}
 
 	/**
@@ -205,4 +240,6 @@ public class ConnectController implements BeanFactoryAware {
 	
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
 	
+	private static final String SIGNIN_FLOW_ATTRIBUTE = "signInFlow";
+
 }

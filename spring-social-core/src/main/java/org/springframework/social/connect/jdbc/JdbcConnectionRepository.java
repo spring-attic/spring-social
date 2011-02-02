@@ -72,6 +72,16 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 		}
 	}
 
+	public Serializable findAccountIdByAccessToken(String provider, String accessToken) {
+		List<Serializable> matches = jdbcTemplate.query("select accountId from Connection where providerId = ? and accessToken = ?", new RowMapper<Serializable>() {
+			public Serializable mapRow(ResultSet rs, int rowNum) throws SQLException {
+						return (Serializable) rs.getObject("accountId");
+			}
+		}, provider, encrypt(accessToken));
+
+		return !matches.isEmpty() ? matches.get(0) : null;
+	}
+
 	// internal helpers
 	
 	private String encrypt(String text) {
