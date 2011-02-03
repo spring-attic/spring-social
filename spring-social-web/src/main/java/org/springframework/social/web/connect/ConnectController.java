@@ -187,7 +187,7 @@ public class ConnectController implements BeanFactoryAware {
 	}
 
 	private void signinWithAccessToken(String providerId, String accessToken) {
-		Serializable accountId = connectionRepository.findAccountIdByAccessToken(providerId, accessToken);
+		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(providerId, accessToken);
 		if (accountId != null) {
 			getSignInStrategy().signIn(accountId);
 		}

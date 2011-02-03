@@ -27,26 +27,41 @@ public interface ConnectionRepository {
 
 	/**
 	 * True if a connection exists between the account and the provider, false otherwise.
+	 * @param accountId the user's account identifier
+	 * @param providerId the provider's identifier
 	 */
 	boolean isConnected(Serializable accountId, String providerId);
 
 	/**
 	 * Finds the connections between the account and the provider.
+	 * @param accountId the user's account identifier
+	 * @param providerId the provider's identifier
 	 */
 	List<Connection> findConnections(Serializable accountId, String providerId);
 
 	/**
+	 * Returns the id of the account connected to the provider by the access token.
+	 * Designed to support sign-in by connection use cases.
+	 * @param accountId the user's account identifier
+	 * @param providerId the provider's identifier
+	 */
+	Serializable findAccountIdByConnectionAccessToken(String provider, String accessToken);
+
+	/**
 	 * Saves a connection.
+	 * @param accountId the user's account identifier
+	 * @param providerId the provider's identifier
+	 * @param connection the connection to save
+	 * @return the saved connection instance, guaranteed to have its persistent {@link Connection#getId() id} populated.
 	 */
 	Connection saveConnection(Serializable accountId, String providerId, Connection connection);
 
 	/**
 	 * Removes a connection.
+	 * @param accountId the user's account identifier
+	 * @param providerId the provider's identifier
+	 * @param connection the internal id of the connection to remove
 	 */
 	void removeConnection(Serializable accountId, String providerId, Long connectionId);
 
-	/**
-	 * Looks up an account ID that is connected to a provider for a given access token.
-	 */
-	Serializable findAccountIdByAccessToken(String provider, String accessToken);
 }

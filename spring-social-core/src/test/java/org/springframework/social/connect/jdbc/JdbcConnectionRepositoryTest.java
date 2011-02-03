@@ -1,6 +1,8 @@
 package org.springframework.social.connect.jdbc;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -99,12 +101,12 @@ public class JdbcConnectionRepositoryTest {
 	}
 
 	@Test
-	public void findAccountIdForAccessToken() {
-		assertNull(repository.findAccountIdByAccessToken("facebook", "access_token"));
+	public void findAccountIdByConnectionAccessToken() {
+		assertNull(repository.findAccountIdByConnectionAccessToken("facebook", "access_token"));
 		assertEquals(false, repository.isConnected("rclarkson", "twitter"));
 		repository.saveConnection("rclarkson", "twitter", Connection.oauth1("access_token", "token_secret"));
 		assertEquals(true, repository.isConnected("rclarkson", "twitter"));
-		assertEquals("rclarkson", repository.findAccountIdByAccessToken("twitter", "access_token"));
+		assertEquals("rclarkson", repository.findAccountIdByConnectionAccessToken("twitter", "access_token"));
 	}
 
 }
