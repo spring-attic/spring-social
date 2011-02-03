@@ -20,7 +20,7 @@ import java.io.Serializable;
 /**
  * @author Craig Walls
  */
-public interface SignInBridge {
+public interface SignInControllerGateway {
 	
 	void signIn(Serializable accountId);
 	
