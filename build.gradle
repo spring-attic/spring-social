@@ -105,7 +105,7 @@ configure(javaprojects) {
     sourceSets {
         test {
             resources {
-                srcDirs = ['src/test/java']
+                srcDirs = ['src/test/java', 'src/test/resources']
             }
         }
     }
@@ -198,6 +198,8 @@ project('spring-social-twitter') {
     dependencies {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
+        // to be able to use the mock rest server
+        testCompile project(':spring-social-core').sourceSets.test.classes
     }
 }
 
