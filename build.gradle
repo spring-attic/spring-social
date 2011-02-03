@@ -207,7 +207,6 @@ project('spring-social-web') {
     description = 'Spring Web Integration'
     dependencies {
         compile "org.springframework:spring-web:$springVersion"
-		compile ("org.springframework.security:spring-security-core:$springSecurityVersion") { optional = true }
         compile project(':spring-social-core')
     }
 }
