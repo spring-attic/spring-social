@@ -12,7 +12,7 @@
 	<context:component-scan base-package="org.springframework.social.showcase.twitter" />
 	<context:component-scan base-package="org.springframework.social.showcase.facebook" />
 	
-	<bean class="org.springframework.social.web.connect.ConnectController" autowire="constructor">
+	<bean class="org.springframework.social.web.connect.ConnectController">
 		<constructor-arg ref="connectionRepository" />
 		<constructor-arg value="${application.url}" />
 		<property name="interceptors">

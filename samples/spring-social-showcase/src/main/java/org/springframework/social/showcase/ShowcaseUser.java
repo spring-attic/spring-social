@@ -13,34 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.showcase.twitter;
+package org.springframework.social.showcase;
 
-public class TweetForm {
-	private String screenName;
-	private boolean tweetToAll;
-	private String message;
+public class ShowcaseUser {
+	private final String firstName;
 
-	public void setScreenName(String screenName) {
-		this.screenName = screenName;
+	private final String lastName;
+
+	private final String email;
+
+	public ShowcaseUser(String firstName, String lastName, String email) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
 	}
 
-	public String getScreenName() {
-		return screenName;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
+	public String getLastName() {
+		return lastName;
 	}
 
-	public String getMessage() {
-		return message;
+	public String getEmail() {
+		return email;
 	}
 
-	public void setTweetToAll(boolean tweetToAll) {
-		this.tweetToAll = tweetToAll;
-	}
-
-	public boolean isTweetToAll() {
-		return tweetToAll;
-	}
 }
