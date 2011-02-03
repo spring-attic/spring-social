@@ -209,6 +209,4 @@ public class ConnectController implements BeanFactoryAware {
 
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
 	
-	private static final String SIGNIN_FLOW_ATTRIBUTE = "signInFlow";
-
 }
