@@ -8,20 +8,17 @@
 <body>
 <h1>Spring Social Showcase: Connected to Twitter</h1>
 
-<c:if test="${not empty message}">
-<div class="${message.type.cssClass}">${message.text}</div>
-</c:if>
-
-<form action="<c:url value="/connect/twitter" />" method="POST">
+<form id="disconnect" method="post">
 	<div class="formInfo">
 		<p>The Spring Social Showcase sample application is already connected to your Twitter account.
-			Click the button to create another connection with Twitter.</p>
-			
-		<p><a href="<s:url value="/" />">Return to home page</a></p>
+			Click the button if you wish to disconnect.			
 	</div>
-	<p><button type="submit"><img src="<c:url value="/resources/social/twitter/signin.png" />"/></button></p>
-	<label for="postTweet"><input id="postTweet" type="checkbox" name="postTweet" /> Post a tweet about connecting with Spring Social Showcase</label>
+
+	<button type="submit">Disconnect</button>	
+	<input type="hidden" name="_method" value="delete" />
 </form>
+
+<p><a href="<s:url value="/" />">Return to home page</a></p>
 
 </body>
 </html>

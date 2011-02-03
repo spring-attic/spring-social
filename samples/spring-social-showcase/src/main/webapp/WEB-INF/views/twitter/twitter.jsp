@@ -23,6 +23,16 @@
 	<input type="hidden" name="_method" value="delete" />
 </form>
 
+<form action="<c:url value="/connect/twitter" />" method="POST">
+	<p>You may connect multiple Twitter profiles with a Spring Social Showcase account. To connect with another
+	Twitter profile, click the button.</p>
+	<p>(Note: If you are still logged into Twitter as any one of the profiles that are already connected, you'll need to
+	click the "Sign Out" link when Twitter prompts you to allow access to Spring Social Showcase and then login as a
+	different Twitter user.)</p>
+	<p><button type="submit">Connect another Twitter profile</button></p>
+	<label for="postTweet"><input id="postTweet" type="checkbox" name="postTweet" /> Post a tweet about connecting with Spring Social Showcase</label>
+</form>
+
 <c:url var="tweetUrl" value="/twitter/tweet" />
 <sf:form action="${tweetUrl}" method="post" modelAttribute="tweetForm">
 	Tweet as
@@ -30,9 +40,9 @@
 		<b><c:out value="${connectedProfiles[0].screenName}" /></b>
 		<input type="hidden" name="screenName" value="<c:out value="${connectedProfiles[0].screenName}" />" />
 	</c:if>
-	<c:if test="${fn:length(connections) gt 1}">
+	<c:if test="${fn:length(connectedProfiles) gt 1}">
 		<sf:select path="screenName">
-			<sf:options items="${connectedProfiles[0]}" itemLabel="screenName" itemValue="screenName" />
+			<sf:options items="${connectedProfiles}" itemLabel="name" itemValue="screenName" />
 		</sf:select>
 		<sf:checkbox path="tweetToAll" label="Tweet to all"/>
 	</c:if>
