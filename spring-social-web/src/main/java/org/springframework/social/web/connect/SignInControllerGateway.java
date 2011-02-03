@@ -18,11 +18,10 @@ package org.springframework.social.web.connect;
 import java.io.Serializable;
 
 /**
- * Strategy interface for {@link ConnectController}'s signin-with connection flow.
- * Different applications will have different security setups. Implementations of this interface will provider application-specific signin given an account ID.
- * 
  * @author Craig Walls
  */
-public interface SignInStrategy {
+public interface SignInControllerGateway {
+	
 	void signIn(Serializable accountId);
+	
 }
