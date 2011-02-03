@@ -30,7 +30,6 @@ import org.springframework.social.connect.ServiceProvider;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.connect.oauth2.OAuth2ServiceProvider;
-import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
@@ -65,17 +64,12 @@ public class ConnectController implements BeanFactoryAware {
 	
 	private MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors;
 
-	private final ConnectionRepository connectionRepository;
-
-	private SignInStrategy signInStrategy;
-
 	/**
 	 * Constructs a ConnectController.
 	 * @param serviceProviderLocator the factory that loads the ServiceProviders members wish to connect to
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
 	 */
-	public ConnectController(ConnectionRepository connectionRepository, String applicationUrl) {
-		this.connectionRepository = connectionRepository;
+	public ConnectController(String applicationUrl) {
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 		this.interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
 	}
@@ -95,22 +89,14 @@ public class ConnectController implements BeanFactoryAware {
 	}
 
 	/**
-	 * Configure the signin strategy to use when signing in using a provider connection.
-	 */
-	public void setSignInStrategy(SignInStrategy signInStrategy) {
-		this.signInStrategy = signInStrategy;
-	}
-
-	/**
 	 * Render the connect form for the service provider identified by {name} to the member as HTML in their web browser.
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET)
 	public String connect(@PathVariable String providerId, Principal user) {
-		String baseViewPath = "connect/" + providerId;
 		if (getServiceProvider(providerId).isConnected(accountId(user))) {
-			return baseViewPath + "Connected";
+			return baseViewPath(providerId) + "Connected";
 		} else {
-			return baseViewPath + "Connect";
+			return baseViewPath(providerId) + "Connect";
 		}
 	}
 
@@ -133,16 +119,6 @@ public class ConnectController implements BeanFactoryAware {
 	}
 
 	/**
-	 * Process a signin-with form submission by commencing the process of establishing a connection to the provider on behalf of the member.
-	 * This differs from the standard connection process in that a new connection is not created, but an existing connection is used to find a user account and signin automatically.
-	 */
-	@RequestMapping(value = "{providerId}/signin", method = RequestMethod.POST)
-	public String signin(@PathVariable String providerId, WebRequest request) {
-		request.setAttribute(SIGNIN_FLOW_ATTRIBUTE, true, WebRequest.SCOPE_SESSION);
-		return connect(providerId, null, request);
-	}
-
-	/**
 	 * Process the authorization callback from an OAuth 1 service provider.
 	 * Called after the member authorizes the connection, generally done by having he or she click "Allow" in their web browser at the provider's site.
 	 * On authorization verification, connects the member's local account to the account they hold at the service provider
@@ -153,13 +129,6 @@ public class ConnectController implements BeanFactoryAware {
 		OAuth1ServiceProvider<?> provider = (OAuth1ServiceProvider<?>) getServiceProvider(providerId);
 		AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(extractCachedRequestToken(request), verifier);
 		OAuthToken accessToken = provider.getOAuth1Operations().exchangeForAccessToken(authorizedRequestToken);
-
-		if (request.getAttribute(SIGNIN_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION) != null) {
-			request.removeAttribute(SIGNIN_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION);
-			signinWithAccessToken(providerId, accessToken.getValue());
-			return "redirect:/";
-		}
-
 		ServiceProviderConnection<?> connection = provider.connect(accountId(request.getUserPrincipal()), accessToken);
 		postConnect(provider, connection, request);
 		return "redirect:/connect/" + providerId;
@@ -174,24 +143,9 @@ public class ConnectController implements BeanFactoryAware {
 	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
 		OAuth2ServiceProvider<?> provider = (OAuth2ServiceProvider<?>) getServiceProvider(providerId);
 		AccessGrant accessGrant = provider.getOAuth2Operations().exchangeForAccess(code, callbackUrl(providerId));
-
-		if (request.getAttribute(SIGNIN_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION) != null) {
-			request.removeAttribute(SIGNIN_FLOW_ATTRIBUTE, WebRequest.SCOPE_SESSION);
-			signinWithAccessToken(providerId, accessGrant.getAccessToken());
-			return "redirect:/";
-		}
-
 		ServiceProviderConnection<?> connection = provider.connect(accountId(request.getUserPrincipal()), accessGrant);
 		postConnect(provider, connection, request);
 		return "redirect:/connect/" + providerId;
-	}
-
-	private void signinWithAccessToken(String providerId, String accessToken) {
-		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(providerId, accessToken);
-		if (accountId != null) {
-			getSignInStrategy().signIn(accountId);
-		}
-		// TODO: What to do if there is no matching connection?
 	}
 
 	/**
@@ -235,6 +189,10 @@ public class ConnectController implements BeanFactoryAware {
 		return typedInterceptors;
 	}
 
+	private String baseViewPath(String providerId) {
+		return "connect/" + providerId;		
+	}
+	
 	private Serializable accountId(Principal user) {
 		return user.getName();
 	}
@@ -249,10 +207,6 @@ public class ConnectController implements BeanFactoryAware {
 		return requestToken;
 	}
 
-	private SignInStrategy getSignInStrategy() {
-		return signInStrategy != null ? signInStrategy : new AccountIdAsPrincipalSignInStrategy();
-	}
-	
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
 	
 	private static final String SIGNIN_FLOW_ATTRIBUTE = "signInFlow";
