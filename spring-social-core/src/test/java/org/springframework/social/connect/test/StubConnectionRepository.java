@@ -84,7 +84,7 @@ public class StubConnectionRepository implements ConnectionRepository {
 		}
 	}
 	
-	public Serializable findAccountIdByAccessToken(String provider, String accessToken) {
+	public Serializable findAccountIdByConnectionAccessToken(String provider, String accessToken) {
 		// TODO Auto-generated method stub
 		return null;
 	}
