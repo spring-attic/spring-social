@@ -15,8 +15,17 @@
  */
 package org.springframework.social.github;
 
+import static org.junit.Assert.*;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.web.client.test.RequestMatchers.*;
+import static org.springframework.web.client.test.ResponseCreators.*;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.test.MockRestServiceServer;
 
 /**
  * @author Craig Walls
@@ -24,14 +33,41 @@ import org.junit.Test;
 public class GitHubTemplateTest {
 
 	private GitHubTemplate github;
+	private MockRestServiceServer mockServer;
+	private HttpHeaders responseHeaders;
 
 	@Before
 	public void setup() {
 		github = new GitHubTemplate("ACCESS_TOKEN");
+		mockServer = MockRestServiceServer.createServer(github.getRestTemplate());
+		responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+	}
+
+	@Test
+	public void getUserProfile() throws Exception {
+		mockServer.expect(requestTo("https://github.com/api/v2/json/user/show")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("profile.json", getClass()), responseHeaders));
+		GitHubUserProfile profile = github.getUserProfile();
+		assertEquals("habuma", profile.getUsername());
+		assertEquals("Craig Walls", profile.getName());
+		assertEquals("SpringSource", profile.getCompany());
+		assertEquals("http://blog.springsource.com/author/cwalls", profile.getBlog());
+		assertEquals("cwalls@vmware.com", profile.getEmail());
+		assertEquals(123456, profile.getId());
 	}
 
 	@Test
 	public void getProfileId() {
+		mockServer.expect(requestTo("https://github.com/api/v2/json/user/show")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("profile.json", getClass()), responseHeaders));
+		assertEquals("habuma", github.getProfileId());
+	}
 
+	@Test
+	public void getProfileUrl() {
+		mockServer.expect(requestTo("https://github.com/api/v2/json/user/show")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("profile.json", getClass()), responseHeaders));
+		assertEquals("https://github.com/habuma", github.getProfileUrl());
 	}
 }

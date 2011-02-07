@@ -95,7 +95,7 @@ public class TwitterTemplateTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/update.json"))
 				.andExpect(method(POST))
 				.andExpect(body("status=Test+Message"))
-.andRespond(withResponse("{}", responseHeaders));
+				.andRespond(withResponse("{}", responseHeaders));
 
 		twitter.updateStatus("Test Message");
 
