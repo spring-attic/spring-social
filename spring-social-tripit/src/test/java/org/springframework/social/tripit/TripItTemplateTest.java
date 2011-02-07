@@ -15,8 +15,19 @@
  */
 package org.springframework.social.tripit;
 
+import static org.junit.Assert.*;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.web.client.test.RequestMatchers.*;
+import static org.springframework.web.client.test.ResponseCreators.*;
+
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.test.MockRestServiceServer;
 
 /**
  * @author Craig Walls
@@ -24,26 +35,67 @@ import org.junit.Test;
 public class TripItTemplateTest {
 	
 	private TripItTemplate tripIt;
+	private MockRestServiceServer mockServer;
+	private HttpHeaders responseHeaders;
 	
 	@Before
 	public void setup() {
 		tripIt = new TripItTemplate("API_KEY", "API_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET");
+		mockServer = MockRestServiceServer.createServer(tripIt.getRestTemplate());
+		responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 	}
 
 	@Test
 	public void getUserProfile() {
+		mockServer.expect(requestTo("https://api.tripit.com/v1/get/profile?format=json")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("profile.json", getClass()), responseHeaders));
+		TripItProfile profile = tripIt.getUserProfile();
+		assertEquals("123456", profile.getId());
+		assertEquals("habuma", profile.getScreenName());
+		assertEquals("Craig Walls", profile.getPublicDisplayName());
+		assertEquals("Plano, TX", profile.getHomeCity());
+		assertEquals("SpringSource", profile.getCompany());
+		assertEquals("http://www.tripit.com/user/habuma", profile.getProfileUrl());
 	}
 
 	@Test
 	public void getProfileId() {
+		mockServer.expect(requestTo("https://api.tripit.com/v1/get/profile?format=json")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("profile.json", getClass()), responseHeaders));
+		assertEquals("123456", tripIt.getProfileId());
 	}
 
 	@Test
 	public void getProfileUrl() {
+		mockServer.expect(requestTo("https://api.tripit.com/v1/get/profile?format=json")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("profile.json", getClass()), responseHeaders));
+		assertEquals("http://www.tripit.com/user/habuma", tripIt.getProfileUrl());
 	}
 
 	@Test
 	public void getTrips() {
+		mockServer.expect(requestTo("https://api.tripit.com/v1/list/trip/traveler/true/past/false?format=json"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("trips.json", getClass()), responseHeaders));
+
+		List<Trip> trips = tripIt.getUpcomingTrips();
+		assertEquals(2, trips.size());
+		Trip trip = trips.get(0);
+		assertEquals(12736853, trip.getId());
+		assertEquals("Minneapolis, MN, March 2011", trip.getDisplayName());
+		assertEquals("Minneapolis, MN", trip.getPrimaryLocation());
+		assertEquals("http://www.tripit.com//trip/show/id/12736853", trip.getTripUrl());
+		assertEquals(1299196800000L, trip.getStartDate().getTime());
+		assertEquals(1299283200000L, trip.getEndDate().getTime());
+		trip = trips.get(1);
+		assertEquals(12400396, trip.getId());
+		assertEquals("Madison, WI, February 2011", trip.getDisplayName());
+		assertEquals("Madison, WI", trip.getPrimaryLocation());
+		assertEquals("http://www.tripit.com//trip/show/id/12400396", trip.getTripUrl());
+		assertEquals(1298592000000L, trip.getStartDate().getTime());
+		assertEquals(1298764800000L, trip.getEndDate().getTime());
+
 	}
 
 }

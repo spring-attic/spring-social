@@ -62,7 +62,8 @@ public class LinkedInTemplate implements LinkedInOperations {
 	}
 
 	public List<LinkedInProfile> getConnections() {
-		LinkedInConnections connections = restTemplate.getForObject("http://api.linkedin.com/v1/people/~/connections", LinkedInConnections.class);
+		LinkedInConnections connections = restTemplate.getForObject("https://api.linkedin.com/v1/people/~/connections",
+				LinkedInConnections.class);
 		return connections.getConnections();
 	}
 
