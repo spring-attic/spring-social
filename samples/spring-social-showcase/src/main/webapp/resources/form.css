@@ -1,0 +1,7 @@
+form input, form select {
+	display: block;
+}
+
+span.error {
+	color: #D8000C;
+}

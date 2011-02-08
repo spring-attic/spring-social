@@ -66,6 +66,7 @@ public class FacebookSigninController {
 		String accessToken = resolveAccessTokenValue(request);
 		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(FACEBOOK_PROVIDER_ID,
 				accessToken);
+
 		if (accountId == null) {
 			return noConnectionView;
 		}

@@ -5,15 +5,8 @@
 <html>
 <head>
 	<title>Spring Social Showcase: Sign In</title>
-
 	<script type="text/javascript" src="<c:url value="/resources/jquery/1.4/jquery.js" />"></script>	
-	
-  <script type="text/javascript" src="http://platform.linkedin.com/in.js">
-    api_key: 8U1nfplbpkkBTIKDcuonVY_gZ_9Pl0UOhbXr6qNIL1ByPz4ZietgM92sR-mMzpTM
-    onLoad: onLinkedInLoad
-    authorize: true
-  </script>
-    <script src="http://platform.twitter.com/anywhere.js?id=YR571S2JiVBOFyJS5MEg&v=1" type="text/javascript"></script>
+	<link rel="stylesheet" href="<c:url value="/resources/form.css" />" type="text/css" media="screen" />
 </head>
 <body>
 <h1>Spring Social Showcase: Sign In</h1>
@@ -64,6 +57,7 @@
 	</form>
 	<script type='text/javascript'>	
 		FB.init({appId: '0b754d95f9c9899b0d6c4454b6f2dde7', status: true, cookie: true, xfbml: true});
+		FB.Event.subscribe('auth.sessionChange', function(response) { if (response.session) {} else {} });
 	</script>	
 </body>
 </html>
