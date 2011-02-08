@@ -50,7 +50,7 @@ public class TwitterSigninController implements BeanFactoryAware {
 
 	private final SignInControllerGateway signinGateway;
 
-	private String noConnectionView = "redirect:/";
+	private String noConnectionView = "redirect:/signup";
 
 	public TwitterSigninController(ConnectionRepository connectionRepository, SignInControllerGateway signinGateway,
 			String applicationUrl) {

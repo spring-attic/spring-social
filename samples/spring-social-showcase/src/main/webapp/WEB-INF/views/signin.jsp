@@ -37,10 +37,12 @@
 	
 	<p>Some test user/password pairs you may use are:</p>
 	<ul>
-		<li>habuma/habuma</li>
-		<li>kdonald/kdonald</li>
-		<li>rclarkson/rclarkson</li>
+		<li>habuma/freebirds</li>
+		<li>kdonald/melbourne</li>
+		<li>rclarkson/atlanta</li>
 	</ul>
+	
+	<p>Or you can <a href="<c:url value="/signup"/>">signup</a> with a new account.</p>
 </form>
 
 

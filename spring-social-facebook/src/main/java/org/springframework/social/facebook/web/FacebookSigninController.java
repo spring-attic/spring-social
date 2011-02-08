@@ -40,7 +40,7 @@ public class FacebookSigninController {
 
 	private final SignInControllerGateway signinGateway;
 
-	private String noConnectionView = "redirect:/";
+	private String noConnectionView = "redirect:/signup";
 
 	private final String apiKey;
 

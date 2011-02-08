@@ -20,16 +20,4 @@
 							 client-key="0b754d95f9c9899b0d6c4454b6f2dde7" 
 							 client-secret="fa8a9825f555a7a8949ec48fb93bda58" />
 
-	<!-- Profile-specific beans -->
-		
-	<beans profile="default">
-		<bean id="stringEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="noOpText" />
-	</beans>
-
-	<beans profile="standard">
-		<bean id="stringEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="queryableText">
-			<constructor-arg value="${security.encryptPassword}" />
-			<constructor-arg value="${security.encryptSalt}" />
-		</bean>		
-	</beans>
 </beans>

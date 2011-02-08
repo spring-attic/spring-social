@@ -12,16 +12,20 @@
 		<intercept-url pattern="/favicon.ico" access="permitAll" />
 		<intercept-url pattern="/resources/**" access="permitAll" />
 		<intercept-url pattern="/signin/**" access="permitAll" />
+		<intercept-url pattern="/signup/**" access="permitAll" />
 		<intercept-url pattern="/**" access="isAuthenticated()"  />
 	</http>
 
 	<authentication-manager alias="authenticationManager">
         <authentication-provider>
-			<password-encoder hash="sha-256"/>
+			<password-encoder ref="passwordEncoder" />
         	<jdbc-user-service data-source-ref="dataSource" 
-        					   users-by-username-query="select username, password, true from Account where username = ?"
-        					   authorities-by-username-query="select username, 'ROLE_USER' from Account where username = ?"/>
+        					   users-by-username-query="select username, password, true from ShowcaseUser where username = ?"
+        					   authorities-by-username-query="select username, 'ROLE_USER' from ShowcaseUser where username = ?"/>
         </authentication-provider>
 	</authentication-manager>
+
+	<beans:bean id="passwordEncoder" class="org.springframework.security.authentication.encoding.PlaintextPasswordEncoder" />
+	<beans:bean id="stringEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="noOpText" />
 
 </beans:beans>
