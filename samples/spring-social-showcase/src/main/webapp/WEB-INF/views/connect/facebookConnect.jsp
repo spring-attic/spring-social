@@ -30,11 +30,8 @@
 		<label for="postToWall"><input id="postToWall" type="checkbox" name="postToWall" /> Tell your friends about Spring Social Showcase on your Facebook wall</label>
 	</form>
 	
-	<p>...or...</p>
-	
 	<form id="fb_signin" action="<c:url value="/connect/facebook" />" method="POST">
 		<div id="fb-root"></div>	
-		<input type="hidden" name="huh" value="What the crap?" />
 		<p><fb:login-button perms="email,publish_stream,offline_access" onlogin="signInWithFacebook();" v="2" length="long">Connect to Facebook</fb:login-button></p>
 	</form>
 	

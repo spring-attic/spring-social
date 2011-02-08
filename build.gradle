@@ -208,6 +208,7 @@ project('spring-social-twitter') {
     dependencies {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
+        compile project(':spring-social-web')
         // to be able to use the mock rest server
         testCompile project(':spring-social-core').sourceSets.test.classes
     }

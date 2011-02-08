@@ -23,6 +23,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
@@ -56,7 +58,8 @@ public class OAuth1Template implements OAuth1Operations {
 	public OAuthToken fetchNewRequestToken(String callbackUrl) {
 		Map<String, String> requestTokenParameters = new HashMap<String, String>();
 		requestTokenParameters.put("oauth_callback", callbackUrl);
-		return getTokenFromProvider(requestTokenUrl, requestTokenParameters, null);
+		return getTokenFromProvider(requestTokenUrl, requestTokenParameters, Collections.<String, String> emptyMap(),
+				null);
 	}
 
 	public String buildAuthorizeUrl(String requestToken) {
@@ -67,24 +70,32 @@ public class OAuth1Template implements OAuth1Operations {
 		Map<String, String> accessTokenParameters = new HashMap<String, String>();
 		accessTokenParameters.put("oauth_token", requestToken.getValue());
 		accessTokenParameters.put("oauth_verifier", requestToken.getVerifier());
-		return getTokenFromProvider(accessTokenUrl, accessTokenParameters, requestToken.getSecret());
+		return getTokenFromProvider(getAccessTokenUrl(), accessTokenParameters, Collections.<String, String> emptyMap(),
+				requestToken.getSecret());
 	}
 
 	// internal helpers
 	
-	private OAuthToken getTokenFromProvider(String tokenUrl, Map<String, String> tokenRequestParameters, String tokenSecret) {
+	protected OAuthToken getTokenFromProvider(String tokenUrl, Map<String, String> tokenRequestParameters,
+			Map<String, String> additionalParameters, String tokenSecret) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", getAuthorizationHeaderValue(tokenUrl, tokenRequestParameters, tokenSecret));
-		HttpEntity<String> request = new HttpEntity<String>(headers);
+		headers.add("Authorization",
+				getAuthorizationHeaderValue(tokenUrl, tokenRequestParameters, additionalParameters, tokenSecret));
+		MultiValueMap<String, String> bodyParameters = new LinkedMultiValueMap<String, String>();
+		bodyParameters.setAll(additionalParameters);
+		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(
+				bodyParameters, headers);
 		ResponseEntity<String> response = getRestOperations().exchange(tokenUrl, HttpMethod.POST, request, String.class);
 		Map<String, String> responseMap = parseResponse(response.getBody());
 		return new OAuthToken(responseMap.get("oauth_token"), responseMap.get("oauth_token_secret"));
 	}
 
-	private String getAuthorizationHeaderValue(String tokenUrl, Map<String, String> tokenRequestParameters, String tokenSecret) {
+	private String getAuthorizationHeaderValue(String tokenUrl, Map<String, String> tokenRequestParameters,
+			Map<String, String> additionalParameters, String tokenSecret) {
 		Map<String, String> oauthParameters = SigningUtils.commonOAuthParameters(consumerKey);
 		oauthParameters.putAll(tokenRequestParameters);
-		return SigningUtils.buildAuthorizationHeaderValue(tokenUrl, oauthParameters, Collections.<String, String> emptyMap(), HttpMethod.POST, consumerSecret, tokenSecret);		
+		return SigningUtils.buildAuthorizationHeaderValue(tokenUrl, oauthParameters, additionalParameters,
+				HttpMethod.POST, consumerSecret, tokenSecret);
 	}
 	
 	private Map<String, String> parseResponse(String response) {
@@ -103,5 +114,9 @@ public class OAuth1Template implements OAuth1Operations {
 	
 	protected RestOperations getRestOperations() {
 		return restTemplate;
+	}
+
+	protected String getAccessTokenUrl() {
+		return accessTokenUrl;
 	}
 }

@@ -13,7 +13,6 @@
 	<context:component-scan base-package="org.springframework.social.showcase.facebook" />
 	
 	<bean class="org.springframework.social.web.connect.ConnectController">
-		<constructor-arg ref="connectionRepository" />
 		<constructor-arg value="${application.url}" />
 		<property name="interceptors">
 			<list>
@@ -21,6 +20,20 @@
 				<bean class="org.springframework.social.showcase.facebook.PostToWallAfterConnectInterceptor" />
 			</list>
 		</property>
+	</bean>
+	
+	<bean class="org.springframework.social.web.connect.ProviderSigninController">
+		<constructor-arg ref="connectionRepository" />
+		<constructor-arg>
+			<bean class="org.springframework.social.showcase.AccountIdAsPrincipalSigninGateway" />
+		</constructor-arg>
+	</bean>
+	
+	<bean class="org.springframework.social.twitter.web.TwitterSigninController">
+		<constructor-arg ref="connectionRepository" />
+		<constructor-arg>
+			<bean class="org.springframework.social.showcase.AccountIdAsPrincipalSigninGateway" />
+		</constructor-arg>
 	</bean>
 	
 	<import resource="../properties.xml" />   	
