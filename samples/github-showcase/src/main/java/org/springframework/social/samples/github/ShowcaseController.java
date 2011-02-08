@@ -37,15 +37,11 @@ public class ShowcaseController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Model model) {
 		if (gitHubProvider.isConnected(1)) {
-			String gitHubId = gitHubProvider.getProviderAccountId(1);
+			GitHubOperations gitHub = gitHubProvider.getConnections(1).get(0).getServiceApi();
+			String gitHubId = gitHub.getProfileId();
 			model.addAttribute("gitHubId", gitHubId);
-
-			GitHubOperations gitHub = gitHubProvider.getServiceOperations(1);
-			gitHub.getProfileId();
-
 			GitHubUserProfile user = gitHub.getUserProfile();
 			model.addAttribute("gitHubUser", user);
-
 			return "home";
 		}
 		return "redirect:/connect/github";

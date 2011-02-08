@@ -16,91 +16,92 @@
 package org.springframework.social.linkedin;
 
 import static org.junit.Assert.*;
-import static org.junit.internal.matchers.IsCollectionContaining.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.social.linkedin.LinkedInTemplate.*;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.web.client.test.RequestMatchers.*;
+import static org.springframework.web.client.test.ResponseCreators.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.web.client.RestOperations;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.test.MockRestServiceServer;
 
 /**
  * @author Craig Walls
  */
 public class LinkedInTemplateTest {
+
 	private LinkedInTemplate linkedIn;
-	private RestOperations restOperations;
+	private MockRestServiceServer mockServer;
+	private HttpHeaders responseHeaders;
 
 	@Before
 	public void setup() {
 		linkedIn = new LinkedInTemplate("API_KEY", "API_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET");
-		restOperations = mock(RestOperations.class);
-		linkedIn.restOperations = restOperations;
+		mockServer = MockRestServiceServer.createServer(linkedIn.getRestTemplate());
+		responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.APPLICATION_XML);
 	}
 
 	@Test
 	public void getUserProfile() {
-		setupRestOperationsForReturningALinkedInProfile();
-
-		LinkedInProfile actual = linkedIn.getUserProfile();
-		assertEquals("24680", actual.getId());
-		assertEquals("Java Developer", actual.getHeadline());
-		assertEquals("Craig", actual.getFirstName());
-		assertEquals("Walls", actual.getLastName());
-		assertEquals("Software", actual.getIndustry());
-		assertEquals("http://linkedin.com/pub/24680", actual.getPublicProfileUrl());
-		assertEquals("http://linkedin.com/std/24680", actual.getStandardProfileUrl());
+		mockServer.expect(requestTo("https://api.linkedin.com/v1/people/~:public")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("profile.xml", getClass()), responseHeaders));
+		LinkedInProfile profile = linkedIn.getUserProfile();
+		assertEquals("z37f0n3A05", profile.getId());
+		assertEquals("Just a guy", profile.getHeadline());
+		assertEquals("Craig", profile.getFirstName());
+		assertEquals("Walls", profile.getLastName());
+		assertEquals("Computer Software", profile.getIndustry());
+		assertEquals("http://www.linkedin.com/in/habuma", profile.getPublicProfileUrl());
+		assertEquals("http://www.linkedin.com/standardProfileUrl", profile.getStandardProfileUrl());
 	}
 
 	@Test
 	public void getProfileId() {
-		setupRestOperationsForReturningALinkedInProfile();
-		assertEquals("24680", linkedIn.getProfileId());
+		mockServer.expect(requestTo("https://api.linkedin.com/v1/people/~:public")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("profile.xml", getClass()), responseHeaders));
+		assertEquals("z37f0n3A05", linkedIn.getProfileId());
 	}
 
 	@Test
 	public void getProfileUrl() {
-		setupRestOperationsForReturningALinkedInProfile();
-		assertEquals("http://linkedin.com/pub/24680", linkedIn.getProfileUrl());
+		mockServer.expect(requestTo("https://api.linkedin.com/v1/people/~:public")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("profile.xml", getClass()), responseHeaders));
+		assertEquals("http://www.linkedin.com/in/habuma", linkedIn.getProfileUrl());
 	}
 
 	@Test
 	public void getConnections() {
-		LinkedInConnections connections = new LinkedInConnections();
-		connections.connections = new ArrayList<LinkedInProfile>();
-		LinkedInProfile keith = createProfile("11223", "Keith", "Donald", "Spring Developer", "Software",
-				"http://linkedin.com/pub/11223", "http://linkedin.com/std/11223");
-		LinkedInProfile roy = createProfile("99887", "Roy", "Clarkson", "Mobile Developer", "Software",
-				"http://linkedin.com/pub/99887", "http://linkedin.com/std/99887");
-		connections.connections.add(keith);
-		connections.connections.add(roy);
-		when(restOperations.getForObject("http://api.linkedin.com/v1/people/~/connections", LinkedInConnections.class))
-				.thenReturn(connections);
-
-		List<LinkedInProfile> actual = linkedIn.getConnections();
-		assertThat(actual, hasItem(keith));
-		assertThat(actual, hasItem(roy));
+		mockServer.expect(requestTo("https://api.linkedin.com/v1/people/~/connections")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("connections.xml", getClass()), responseHeaders));
+		List<LinkedInProfile> connections = linkedIn.getConnections();
+		assertEquals(4, connections.size());
+		assertProfile(connections.get(0), "kR0lnX1ll8", "SpringSource Cofounder", "Keith", "Donald", "Computer Software",
+				"http://www.linkedin.com/profile?viewProfile=&key=2526541&authToken=61Sm&authType=name&trk=api*a121026*s129482*");
+		assertProfile(connections.get(1), "VRcwcqPCtP", "GM, SpringSource and SVP, Middleware at VMware", "Rod",
+				"Johnson",
+				"Computer Software",
+				"http://www.linkedin.com/profile?viewProfile=&key=210059&authToken=3hU1&authType=name&trk=api*a121026*s129482*");
+		assertProfile(connections.get(2), "Ia7uR1OmDB", "Spring and AOP expert; author AspectJ in Action", "Ramnivas",
+				"Laddad", "Computer Software",
+				"http://www.linkedin.com/profile?viewProfile=&key=208994&authToken=P5K9&authType=name&trk=api*a121026*s129482*");
+		assertProfile(connections.get(3), "gKEMq4CMdl", "Head of Groovy Development at SpringSource", "Guillaume",
+				"Laforge", "Information Technology and Services",
+				"http://www.linkedin.com/profile?viewProfile=&key=822306&authToken=YmIW&authType=name&trk=api*a121026*s129482*");
 	}
 
-	private void setupRestOperationsForReturningALinkedInProfile() {
-		LinkedInProfile profile = createProfile("24680", "Craig", "Walls", "Java Developer", "Software",
-				"http://linkedin.com/pub/24680", "http://linkedin.com/std/24680");
-		when(restOperations.getForObject(GET_CURRENT_USER_INFO, LinkedInProfile.class)).thenReturn(profile);
+	private void assertProfile(LinkedInProfile connection, String id, String headline, String firstName,
+			String lastName, String industry, String standardUrl) {
+		assertEquals(id, connection.getId());
+		assertEquals(headline, connection.getHeadline());
+		assertEquals(firstName, connection.getFirstName());
+		assertEquals(lastName, connection.getLastName());
+		assertEquals(industry, connection.getIndustry());
+		assertEquals(standardUrl, connection.getStandardProfileUrl());
 	}
 
-	private LinkedInProfile createProfile(String id, String firstName, String lastName, String headline,
-			String industry, String publicUrl, String standardUrl) {
-		LinkedInProfile profile = new LinkedInProfile();
-		profile.id = id;
-		profile.headline = headline;
-		profile.firstName = firstName;
-		profile.lastName = lastName;
-		profile.industry = industry;
-		profile.publicProfileUrls = new String[] { publicUrl };
-		profile.standardProfileUrls = new String[] { standardUrl };
-		return profile;
-	}
 }

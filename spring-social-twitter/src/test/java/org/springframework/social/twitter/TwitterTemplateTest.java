@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,339 +15,298 @@
  */
 package org.springframework.social.twitter;
 
-import static java.util.Collections.*;
 import static org.junit.Assert.*;
-import static org.junit.internal.matchers.IsCollectionContaining.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.http.HttpStatus.*;
-import static org.springframework.social.twitter.TwitterResponseStatusCodeTranslator.*;
-import static org.springframework.social.twitter.TwitterTemplate.*;
+import static org.springframework.web.client.test.RequestMatchers.*;
+import static org.springframework.web.client.test.ResponseCreators.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.social.AccountNotConnectedException;
 import org.springframework.social.OperationNotPermittedException;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestOperations;
+import org.springframework.web.client.test.MockRestServiceServer;
 
 /**
  * @author Craig Walls
  */
 public class TwitterTemplateTest {
-	private RestOperations restOperations;
+
 	private TwitterTemplate twitter;
+	private MockRestServiceServer mockServer;
+	private HttpHeaders responseHeaders;
 
 	@Before
 	public void setup() {
-		restOperations = mock(RestOperations.class);
 		twitter = new TwitterTemplate();
-		twitter.restOperations = restOperations;
+		mockServer = MockRestServiceServer.createServer(twitter.getRestTemplate());
+		responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 	}
 
 	@Test
 	public void getProfileId() {
-		when(restOperations.getForObject(eq(VERIFY_CREDENTIALS_URL), eq(Map.class))).thenReturn(
-				singletonMap("screen_name", "habuma"));
+		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+		mockServer.expect(requestTo("https://api.twitter.com/1/account/verify_credentials.json"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("verify-credentials.json", getClass()), responseHeaders));
+
 		assertEquals("habuma", twitter.getProfileId());
 	}
 
 	@Test
-	public void getProfile() {
-		Map<String, String> profileMap = new HashMap<String, String>();
-		profileMap.put("id", "7078572");
-		profileMap.put("screen_name", "habuma");
-		profileMap.put("name", "Craig Walls");
-		profileMap.put("location", "Plano, TX");
-		profileMap.put("description", "Description");
-		profileMap.put("url", "http://www.springsource.org");
-		profileMap.put("profile_image_url", "http://a3.twimg.com/profile_images/1205746571/me2_300_normal.jpg");
-		profileMap.put("created_at", "Mon Jun 25 23:50:04 +0000 2007");
+	public void getProfile() throws Exception {
+		mockServer.expect(requestTo("https://api.twitter.com/1/account/verify_credentials.json"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("verify-credentials.json", getClass()), responseHeaders));
+		mockServer.expect(requestTo("https://api.twitter.com/1/users/show.json?screen_name=habuma"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("twitter-profile.json", getClass()), responseHeaders));
 
-		when(
-				restOperations.getForObject(eq(USER_PROFILE_URL + "?screen_name={screenName}"), eq(Map.class),
-						eq("habuma"))).thenReturn(profileMap);
-
-		TwitterProfile profile = twitter.getUserProfile("habuma");
-		assertEquals(7078572, profile.getId());
+		TwitterProfile profile = twitter.getUserProfile();
+		assertEquals(12345, profile.getId());
 		assertEquals("habuma", profile.getScreenName());
 		assertEquals("Craig Walls", profile.getName());
+		assertEquals("Spring Guy", profile.getDescription());
 		assertEquals("Plano, TX", profile.getLocation());
-		assertEquals("Description", profile.getDescription());
 		assertEquals("http://www.springsource.org", profile.getUrl());
-		assertEquals("http://a3.twimg.com/profile_images/1205746571/me2_300_normal.jpg", profile.getProfileImageUrl());
-		Date createdDate = profile.getCreatedDate();
-		// it's a fixed point in time, so this is the easiest way to assert that
-		// the date is handled correctly
-		assertEquals(1182815404000L, createdDate.getTime());
+		assertEquals("http://a3.twimg.com/profile_images/1205746571/me2_300.jpg", profile.getProfileImageUrl());
 	}
 
 	@Test
-	public void getFollowed() {
-		List<Map<String, String>> friendsList = new ArrayList<Map<String,String>>();
-		friendsList.add(singletonMap("screen_name", "kdonald"));
-		friendsList.add(singletonMap("screen_name", "royclarkson"));
-		friendsList.add(singletonMap("screen_name", "springrod"));
-		when(restOperations.getForObject(eq(FRIENDS_STATUSES_URL), eq(List.class), 
-				eq(singletonMap("screen_name", "habuma")))).thenReturn(friendsList);
+	public void getFriends() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/friends.json?screen_name=habuma"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("friends.json", getClass()), responseHeaders));
 
-		List<String> followed = twitter.getFriends("habuma");
-		assertEquals(3, followed.size());
-		assertThat(followed, hasItem("kdonald"));
-		assertThat(followed, hasItem("royclarkson"));
-		assertThat(followed, hasItem("springrod"));
+		List<String> friends = twitter.getFriends("habuma");
+		assertEquals(2, friends.size());
+		assertTrue(friends.contains("kdonald"));
+		assertTrue(friends.contains("rclarkson"));
 	}
 
 	@Test
 	public void updateStatus() {
-		testTweet(new ResponseEntity<Map>(emptyMap(), OK));
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/update.json"))
+				.andExpect(method(POST))
+				.andExpect(body("status=Test+Message"))
+				.andRespond(withResponse("{}", responseHeaders));
+
+		twitter.updateStatus("Test Message");
+
+		mockServer.verify();
 	}
 
 	@Test
 	public void updateStatus_withLocation() {
-		testTweetWithLocation(new ResponseEntity<Map>(emptyMap(), OK));
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/update.json"))
+				.andExpect(method(POST))
+				.andExpect(body("status=Test+Message&long=-111.2&lat=123.1"))
+				.andRespond(withResponse("{}", responseHeaders));
+
+		StatusDetails details = new StatusDetails();
+		details.setLocation(123.1f, -111.2f);
+		twitter.updateStatus("Test Message", details);
+
+		mockServer.verify();
 	}
 
 	@Test(expected = DuplicateTweetException.class)
 	public void updateStatus_duplicateTweet() {
-		testTweet(new ResponseEntity<Map>(singletonMap("error", DUPLICATE_STATUS_TEXT), FORBIDDEN));
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/update.json"))
+				.andExpect(method(POST))
+				.andExpect(body("status=Test+Message"))
+				.andRespond(withResponse("{\"error\":\"You already said that\"}", responseHeaders, FORBIDDEN, ""));
+
+		twitter.updateStatus("Test Message");
 	}
 
 	@Test(expected = OperationNotPermittedException.class)
 	public void updateStatus_forbidden() {
-		testTweet(new ResponseEntity<Map>(singletonMap("error", "You can't do that!"), FORBIDDEN));
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/update.json"))
+				.andExpect(method(POST))
+				.andExpect(body("status=Test+Message"))
+				.andRespond(withResponse("{\"error\":\"Forbidden\"}", responseHeaders, FORBIDDEN, ""));
+
+		twitter.updateStatus("Test Message");
 	}
 
 	@Test(expected = AccountNotConnectedException.class)
 	public void updateStatus_unauthorized() {
-		testTweet(new ResponseEntity<Map>(singletonMap("error", "who are you?"), UNAUTHORIZED));
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/update.json"))
+				.andExpect(method(POST))
+				.andExpect(body("status=Test+Message"))
+				.andRespond(withResponse("{\"error\":\"Not authenticated\"}", responseHeaders, UNAUTHORIZED, ""));
+
+		twitter.updateStatus("Test Message");
 	}
 
 	@Test
 	public void retweet() {
-		testRetweet(new ResponseEntity<Map>(emptyMap(), OK));
+		mockServer.expect(requestTo("https://api.twitter.com/1//statuses/retweet/12345.json"))
+				.andExpect(method(POST))
+				.andRespond(withResponse("{}", responseHeaders));
+
+		twitter.retweet(12345);
+
+		mockServer.verify();
 	}
 
-	@Test(expected = DuplicateTweetException.class)
+	@Test(expected=DuplicateTweetException.class)
 	public void retweet_duplicateTweet() {
-		testRetweet(new ResponseEntity<Map>(singletonMap("error", DUPLICATE_STATUS_TEXT), FORBIDDEN));
+		mockServer.expect(requestTo("https://api.twitter.com/1//statuses/retweet/12345.json"))
+				.andExpect(method(POST))
+				.andRespond(withResponse("{\"error\":\"You already said that\"}", responseHeaders, FORBIDDEN, ""));
+
+		twitter.retweet(12345);
 	}
 
 	@Test(expected = OperationNotPermittedException.class)
 	public void retweet_forbidden() {
-		testRetweet(new ResponseEntity<Map>(singletonMap("error", "You can't do that!"), FORBIDDEN));
+		mockServer.expect(requestTo("https://api.twitter.com/1//statuses/retweet/12345.json"))
+				.andExpect(method(POST))
+				.andRespond(withResponse("{\"error\":\"Forbidden\"}", responseHeaders, FORBIDDEN, ""));
+
+		twitter.retweet(12345);
 	}
 
 	@Test(expected = AccountNotConnectedException.class)
 	public void retweet_unauthorized() {
-		testRetweet(new ResponseEntity<Map>(singletonMap("error", "who are you?"), UNAUTHORIZED));
+		mockServer.expect(requestTo("https://api.twitter.com/1//statuses/retweet/12345.json"))
+				.andExpect(method(POST))
+				.andRespond(withResponse("{\"error\":\"Not authenticated\"}", responseHeaders, UNAUTHORIZED, ""));
+
+		twitter.retweet(12345);
 	}
 
 	@Test
 	public void getMentions() {
-		List<Map<String, Object>> resultList = createTimelineData();
-		when(restOperations.getForObject(eq(MENTIONS_URL), eq(List.class))).thenReturn(resultList);
-		List<Tweet> timeline = twitter.getMentions();
-		assertTimelineData(timeline);
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/mentions.json"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
+		List<Tweet> mentions = twitter.getMentions();
+		assertTimelineTweets(mentions);
 	}
 
 	@Test
 	public void getPublicTimeline() {
-		List<Map<String, Object>> resultList = createTimelineData();
-		when(restOperations.getForObject(eq(PUBLIC_TIMELINE_URL), eq(List.class))).thenReturn(resultList);
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/public_timeline.json"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
 		List<Tweet> timeline = twitter.getPublicTimeline();
-		assertTimelineData(timeline);
+		assertTimelineTweets(timeline);
 	}
 
 	@Test
 	public void getHomeTimeline() {
-		List<Map<String, Object>> resultList = createTimelineData();
-		when(restOperations.getForObject(eq(HOME_TIMELINE_URL), eq(List.class))).thenReturn(resultList);
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/home_timeline.json"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
 		List<Tweet> timeline = twitter.getHomeTimeline();
-		assertTimelineData(timeline);
+		assertTimelineTweets(timeline);
 	}
 
 	@Test
 	public void getFriendsTimeline() {
-		List<Map<String, Object>> resultList = createTimelineData();
-		when(restOperations.getForObject(eq(FRIENDS_TIMELINE_URL), eq(List.class))).thenReturn(resultList);
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/friends_timeline.json"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
 		List<Tweet> timeline = twitter.getFriendsTimeline();
-		assertTimelineData(timeline);
+		assertTimelineTweets(timeline);
 	}
 
 	@Test
 	public void getUserTimeline() {
-		List<Map<String, Object>> resultList = createTimelineData();
-		when(restOperations.getForObject(eq(USER_TIMELINE_URL), eq(List.class))).thenReturn(resultList);
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/user_timeline.json"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
 		List<Tweet> timeline = twitter.getUserTimeline();
-		assertTimelineData(timeline);
+		assertTimelineTweets(timeline);
 	}
 
 	@Test
 	public void getUserTimeline_forScreenName() {
-		List<Map<String, Object>> resultList = createTimelineData();
-		when(restOperations.getForObject(eq(USER_TIMELINE_URL + "?screen_name={screenName}"), eq(List.class),
-						eq("habuma")))
-				.thenReturn(resultList);
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/user_timeline.json?screen_name=habuma"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
 		List<Tweet> timeline = twitter.getUserTimeline("habuma");
-		assertTimelineData(timeline);
+		assertTimelineTweets(timeline);
 	}
 
 	@Test
 	public void getUserTimeline_forUserId() {
-		List<Map<String, Object>> resultList = createTimelineData();
-		when(restOperations.getForObject(eq(USER_TIMELINE_URL + "?user_id={userId}"), eq(List.class), eq(1234L)))
-				.thenReturn(resultList);
-		List<Tweet> timeline = twitter.getUserTimeline(1234L);
-		assertTimelineData(timeline);
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/user_timeline.json?user_id=12345"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
+		List<Tweet> timeline = twitter.getUserTimeline(12345);
+		assertTimelineTweets(timeline);
 	}
 
 	@Test
 	public void search_queryOnly() {
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("query", "Spring");
-		parameters.put("rpp", String.valueOf(DEFAULT_RESULTS_PER_PAGE));
-		parameters.put("page", String.valueOf(1));
-		ResponseEntity<Map> response = buildSearchResponse();
-		when(restOperations.getForEntity(eq(SEARCH_URL), eq(Map.class), eq(parameters))).thenReturn(response);
-		SearchResults search = twitter.search("Spring");
-
-		assertEquals(2, search.getTweets().size());
-
-		verify(restOperations).getForEntity(eq(SEARCH_URL), eq(Map.class), eq(parameters));
+		mockServer.expect(requestTo("https://search.twitter.com/search.json?q=%23spring&rpp=50&page=1"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("search.json", getClass()), responseHeaders));
+		SearchResults searchResults = twitter.search("#spring");
+		assertEquals(10, searchResults.getSinceId());
+		assertEquals(999, searchResults.getMaxId());
+		List<Tweet> tweets = searchResults.getTweets();
+		assertSearchTweets(tweets);
 	}
 
 	@Test
 	public void search_pageAndResultsPerPage() {
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("query", "Spring");
-		parameters.put("rpp", String.valueOf(42));
-		parameters.put("page", String.valueOf(5));
-		ResponseEntity<Map> response = buildSearchResponse();
-		when(restOperations.getForEntity(eq(SEARCH_URL), eq(Map.class), eq(parameters))).thenReturn(response);
-		SearchResults search = twitter.search("Spring", 5, 42);
-
-		assertEquals(2, search.getTweets().size());
-
-		verify(restOperations).getForEntity(eq(SEARCH_URL), eq(Map.class), eq(parameters));
+		mockServer.expect(requestTo("https://search.twitter.com/search.json?q=%23spring&rpp=10&page=2"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("search.json", getClass()), responseHeaders));
+		SearchResults searchResults = twitter.search("#spring", 2, 10);
+		assertEquals(10, searchResults.getSinceId());
+		assertEquals(999, searchResults.getMaxId());
+		List<Tweet> tweets = searchResults.getTweets();
+		assertSearchTweets(tweets);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	public void search_sinceAndMaxId() {
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("query", "Spring");
-		parameters.put("rpp", String.valueOf(42));
-		parameters.put("page", String.valueOf(5));
-		parameters.put("since", String.valueOf(99));
-		parameters.put("max", String.valueOf(199));
-		ResponseEntity<Map> response = buildSearchResponse();
-		response.getBody().put("since_id", 99);
-		response.getBody().put("max_id", 199);
-		when(restOperations.getForEntity(eq(SEARCH_URL + "&since_id={since}&max_id={max}"), eq(Map.class),
-						eq(parameters))).thenReturn(response);
-		SearchResults search = twitter.search("Spring", 5, 42, 99, 199);
-
-		assertEquals(2, search.getTweets().size());
-		assertEquals(99, search.getSinceId());
-		assertEquals(199, search.getMaxId());
-
-		verify(restOperations).getForEntity(eq(SEARCH_URL + "&since_id={since}&max_id={max}"), eq(Map.class),
-				eq(parameters));
+		mockServer.expect(requestTo("https://search.twitter.com/search.json?q=%23spring&rpp=10&page=2&since_id=123&max_id=54321"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("search.json", getClass()), responseHeaders));
+		SearchResults searchResults = twitter.search("#spring", 2, 10, 123, 54321);
+		assertEquals(10, searchResults.getSinceId());
+		assertEquals(999, searchResults.getMaxId());
+		List<Tweet> tweets = searchResults.getTweets();
+		assertSearchTweets(tweets);
 	}
 
-	private ResponseEntity<Map> buildSearchResponse() {
-		Map<String, Object> resultsMap = new HashMap<String, Object>();
-		List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
-		items.add(tweetItemMap("123", "habuma", "Spring is cool", "Tue, 26 Oct 2010 14:46:57 +0000",
-				"1249690", "en", "http://a3.twimg.com/profile_images/55946103/me_normal.jpg", "Twitter for iPhone"));
-		items.add(tweetItemMap("456", "habuma", "Had lots of fun at #s2gx", "Mon, 25 Oct 2010 11:42:59 +0000",
-				"1249690", "en", "http://a3.twimg.com/profile_images/55946103/me_normal.jpg", "Greenhouse"));
-		resultsMap.put("results", items);
-		ResponseEntity<Map> response = new ResponseEntity<Map>(resultsMap, OK);
-		return response;
+	// test helpers
+	private void assertTimelineTweets(List<Tweet> tweets) {
+		assertEquals(2, tweets.size());
+		Tweet tweet1 = tweets.get(0);
+		assertEquals(12345, tweet1.getId());
+		assertEquals("Tweet 1", tweet1.getText());
+		assertEquals("habuma", tweet1.getFromUser());
+		assertEquals(112233, tweet1.getFromUserId());
+		assertEquals("http://a3.twimg.com/profile_images/1205746571/me2_300.jpg", tweet1.getProfileImageUrl());
+		assertEquals("Spring Social Showcase", tweet1.getSource());
+		assertEquals(1279042701000L, tweet1.getCreatedAt().getTime());
+		Tweet tweet2 = tweets.get(1);
+		assertEquals(54321, tweet2.getId());
+		assertEquals("Tweet 2", tweet2.getText());
+		assertEquals("rclarkson", tweet2.getFromUser());
+		assertEquals(332211, tweet2.getFromUserId());
+		assertEquals("http://a3.twimg.com/profile_images/1205746571/me2_300.jpg", tweet2.getProfileImageUrl());
+		assertEquals("Twitter", tweet2.getSource());
+		assertEquals(1279654701000L, tweet2.getCreatedAt().getTime());
 	}
 
-	private Map<String, Object> tweetItemMap(String id, String fromUser, String text, String createdAt,
-			String fromUserId, String isoLanguageCode, String profileImageUrl, String source) {
-		Map<String, Object> item = new HashMap<String, Object>();
-		item.put("id", id);
-		item.put("from_user", fromUser);
-		item.put("text", text);
-		item.put("created_at", createdAt);
-		item.put("from_user_id", fromUserId);
-		item.put("iso_language_code", isoLanguageCode);
-		item.put("profile_image_url", profileImageUrl);
-		item.put("source", source);
-		return item;
-	}
-
-	private void testRetweet(ResponseEntity<Map> response) {
-		when(restOperations.postForEntity(eq(RETWEET_URL), eq(""), eq(Map.class), eq(singletonMap("tweet_id", "12345"))))
-				.thenReturn(response);
-		twitter.retweet(12345L);
-		verify(restOperations).postForEntity(eq(RETWEET_URL), eq(""), eq(Map.class),
-				eq(singletonMap("tweet_id", "12345")));
-	}
-
-	private void testTweet(ResponseEntity<Map> response) {
-		MultiValueMap<String, Object> tweetParams = new LinkedMultiValueMap<String, Object>();
-		tweetParams.add("status", "Hello Spring!");
-		when(restOperations.postForEntity(eq(TWEET_URL), eq(tweetParams), eq(Map.class))).thenReturn(response);
-
-		twitter.updateStatus("Hello Spring!");
-
-		verify(restOperations).postForEntity(eq(TWEET_URL), eq(tweetParams), eq(Map.class));
-	}
-
-	private void testTweetWithLocation(ResponseEntity<Map> response) {
-		MultiValueMap<String, Object> tweetParams = new LinkedMultiValueMap<String, Object>();
-		tweetParams.add("status", "Hello Spring!");
-		tweetParams.add("lat", "32.975");
-		tweetParams.add("long", "-96.72");
-		when(restOperations.postForEntity(eq(TWEET_URL), eq(tweetParams), eq(Map.class))).thenReturn(response);
-
-		twitter.updateStatus("Hello Spring!", new StatusDetails().setLocation(32.975f, -96.72f));
-
-		verify(restOperations).postForEntity(eq(TWEET_URL), eq(tweetParams), eq(Map.class));
-	}
-
-	private void assertTimelineData(List<Tweet> timeline) {
-		assertEquals(1, timeline.size());
-		Tweet mention = timeline.get(0);
-		assertEquals(42, mention.getId());
-		assertEquals("Test Tweet", mention.getText());
-		assertEquals("habuma", mention.getFromUser());
-		assertEquals(1234, mention.getFromUserId());
-		assertEquals("http://www.twitter.com/images/foo.jpg", mention.getProfileImageUrl());
-		assertEquals("web", mention.getSource());
-		assertEquals(4321, mention.getToUserId().longValue());
-		Date createdAt = mention.getCreatedAt();
-		assertNotNull(createdAt);
-	}
-
-	private List<Map<String, Object>> createTimelineData() {
-		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-		Map<String, Object> resultMap = new HashMap<String, Object>();
-		resultMap.put("id", 42L);
-		resultMap.put("text", "Test Tweet");
-		Map<String, Object> userMap = new HashMap<String, Object>();
-		userMap.put("screen_name", "habuma");
-		userMap.put("id", 1234L);
-		userMap.put("profile_image_url", "http://www.twitter.com/images/foo.jpg");
-		resultMap.put("user", userMap);
-		resultMap.put("source", "web");
-		resultMap.put("in_reply_to_user_id", 4321L);
-		resultMap.put("created_at", "Sun Dec 12 14:45:48 +0000 2010");
-		resultList.add(resultMap);
-		return resultList;
+	private void assertSearchTweets(List<Tweet> tweets) {
+		assertTimelineTweets(tweets);
+		assertEquals("en", tweets.get(0).getLanguageCode());
+		assertEquals("de", tweets.get(1).getLanguageCode());
 	}
 }

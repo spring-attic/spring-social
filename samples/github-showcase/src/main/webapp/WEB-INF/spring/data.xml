@@ -23,6 +23,6 @@
 	</bean>
 
 	<jdbc:embedded-database id="dataSource" type="H2">
-		<jdbc:script location="classpath:/org/springframework/social/samples/github/db/ConnectedAccount.sql" />
+		<jdbc:script location="classpath:/org/springframework/social/connect/jdbc/ConnectionRepositorySchema.sql" />
 	</jdbc:embedded-database>	
 </beans>

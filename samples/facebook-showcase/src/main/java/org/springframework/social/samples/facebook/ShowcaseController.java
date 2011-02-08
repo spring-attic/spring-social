@@ -36,7 +36,7 @@ public class ShowcaseController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Model model) {
 		if (facebookProvider.isConnected(1)) {
-			FacebookProfile userProfile = facebookProvider.getServiceOperations(1).getUserProfile();
+			FacebookProfile userProfile = facebookProvider.getConnections(1).get(0).getServiceApi().getUserProfile();
 			model.addAttribute("fbUser", userProfile);
 			return "home";
 		}
@@ -45,7 +45,7 @@ public class ShowcaseController {
 
 	@RequestMapping(value = "/wall", method = RequestMethod.POST)
 	public String postToWall(String message) {
-		facebookProvider.getServiceOperations(1).updateStatus(message);
+		facebookProvider.getConnections(1).get(0).getServiceApi().updateStatus(message);
 		return "redirect:/";
 	}
 }

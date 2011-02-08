@@ -1,0 +1,13 @@
+{
+	"Profile" : {
+		"screen_name" : "habuma",
+		"public_display_name" : "Craig Walls",
+		"home_city" : "Plano, TX",
+		"company" : "SpringSource",
+		"profile_url" : "user/habuma",
+		"@attributes" : {
+			"ref" : "123456"
+		}
+	}, 
+	"timestamp" : 123456780
+}

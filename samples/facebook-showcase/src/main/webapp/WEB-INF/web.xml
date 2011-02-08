@@ -29,7 +29,7 @@
 		<servlet-name>appServlet</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
-	
+
 	<!-- Enables support for DELETE and PUT request methods with web browser clients -->
 	<filter>
 		<filter-name>hiddenHttpMethodFilter</filter-name>
@@ -40,4 +40,5 @@
 		<filter-name>hiddenHttpMethodFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+
 </web-app>

@@ -12,7 +12,7 @@
 	<!-- String encryptor for encrypting OAuth specifics in the DB -->
 	<bean id="stringEncryptor" class="org.springframework.security.encrypt.NoOpStringEncryptor" factory-method="getInstance" />				
 
-	<!-- Twitter service provider -->
+	<!-- Facebook service provider -->
 	<bean id="facebookProvider" factory-bean="serviceProviderFactory" factory-method="getServiceProvider">
 		<constructor-arg value="facebook" />
 	</bean>

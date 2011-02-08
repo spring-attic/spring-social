@@ -16,143 +16,86 @@
 package org.springframework.social.tripit;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.web.client.test.RequestMatchers.*;
+import static org.springframework.web.client.test.ResponseCreators.*;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.web.client.RestOperations;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.test.MockRestServiceServer;
 
 /**
  * @author Craig Walls
  */
 public class TripItTemplateTest {
+	
 	private TripItTemplate tripIt;
-	private RestOperations restOperations;
-
+	private MockRestServiceServer mockServer;
+	private HttpHeaders responseHeaders;
+	
 	@Before
 	public void setup() {
 		tripIt = new TripItTemplate("API_KEY", "API_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET");
-		restOperations = mock(RestOperations.class);
-		tripIt.restOperations = restOperations;
+		mockServer = MockRestServiceServer.createServer(tripIt.getRestTemplate());
+		responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 	}
 
 	@Test
 	public void getUserProfile() {
-		setupRestOperationsToTripItRetrieveProfile();
-
-		TripItProfile userProfile = tripIt.getUserProfile();
-		assertEquals("12345", userProfile.getId());
-		assertEquals("Craig Walls", userProfile.getPublicDisplayName());
-		assertEquals("habuma", userProfile.getScreenName());
-		assertEquals("SpringSource", userProfile.getCompany());
-		assertEquals("Plano, TX", userProfile.getHomeCity());
-		assertEquals("http://www.tripit.com/habuma", userProfile.getProfileUrl());
+		mockServer.expect(requestTo("https://api.tripit.com/v1/get/profile?format=json")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("profile.json", getClass()), responseHeaders));
+		TripItProfile profile = tripIt.getUserProfile();
+		assertEquals("123456", profile.getId());
+		assertEquals("habuma", profile.getScreenName());
+		assertEquals("Craig Walls", profile.getPublicDisplayName());
+		assertEquals("Plano, TX", profile.getHomeCity());
+		assertEquals("SpringSource", profile.getCompany());
+		assertEquals("http://www.tripit.com/user/habuma", profile.getProfileUrl());
 	}
 
 	@Test
 	public void getProfileId() {
-		setupRestOperationsToTripItRetrieveProfile();
-		assertEquals("12345", tripIt.getProfileId());
+		mockServer.expect(requestTo("https://api.tripit.com/v1/get/profile?format=json")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("profile.json", getClass()), responseHeaders));
+		assertEquals("123456", tripIt.getProfileId());
 	}
 
 	@Test
 	public void getProfileUrl() {
-		setupRestOperationsToTripItRetrieveProfile();
-		assertEquals("http://www.tripit.com/habuma", tripIt.getProfileUrl());
+		mockServer.expect(requestTo("https://api.tripit.com/v1/get/profile?format=json")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("profile.json", getClass()), responseHeaders));
+		assertEquals("http://www.tripit.com/user/habuma", tripIt.getProfileUrl());
 	}
 
 	@Test
-	public void getTrips_singleTrip() throws Exception {
-		Map<String, Object> responseMap = new HashMap<String, Object>();
-		Map<String, Object> tripMap = new HashMap<String, Object>();
-		tripMap.put("id", 100);
-		tripMap.put("display_name", "Trip to Chicago");
-		tripMap.put("primary_location", "Chicago, IL");
-		tripMap.put("start_date", "2010-10-19");
-		tripMap.put("end_date", "2010-10-22");
-		tripMap.put("relative_url", "/trips/100");
-		responseMap.put("Trip", tripMap);
-		when(
-				restOperations.getForObject("https://api.tripit.com/v1/list/trip/traveler/true/past/false?format=json",
-						Map.class)).thenReturn(responseMap);
 
-		List<Trip> trips = tripIt.getUpcomingTrips();
-		assertEquals(1, trips.size());
-		Trip trip = trips.get(0);
-		assertEquals(100, trip.getId());
-		assertEquals("Trip to Chicago", trip.getDisplayName());
-		assertEquals("Chicago, IL", trip.getPrimaryLocation());
-		assertEquals("http://www.tripit.com/trips/100", trip.getTripUrl());
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-		assertEquals(dateFormatter.parse("2010-10-19"), trip.getStartDate());
-		assertEquals(dateFormatter.parse("2010-10-22"), trip.getEndDate());
-	}
-
-	@Test
-	public void getTrips_moreThanOneTrip() throws Exception {
-		Map<String, Object> responseMap = new HashMap<String, Object>();
-		List<Map<String, Object>> tripList = new ArrayList<Map<String, Object>>();
-		Map<String, Object> tripMap = new HashMap<String, Object>();
-		tripMap.put("id", 100);
-		tripMap.put("display_name", "Trip to Chicago");
-		tripMap.put("primary_location", "Chicago, IL");
-		tripMap.put("start_date", "2010-10-19");
-		tripMap.put("end_date", "2010-10-22");
-		tripMap.put("relative_url", "/trips/100");
-		tripList.add(tripMap);
-		tripMap = new HashMap<String, Object>();
-		tripMap.put("id", 200);
-		tripMap.put("display_name", "Reston Trip");
-		tripMap.put("primary_location", "Reston, VA");
-		tripMap.put("start_date", "2010-11-05");
-		tripMap.put("end_date", "2010-11-07");
-		tripMap.put("relative_url", "/trips/200");
-		tripList.add(tripMap);
-		responseMap.put("Trip", tripList);
-		when(
-				restOperations.getForObject("https://api.tripit.com/v1/list/trip/traveler/true/past/false?format=json",
-						Map.class)).thenReturn(responseMap);
+	public void getTrips() {
+		mockServer.expect(requestTo("https://api.tripit.com/v1/list/trip/traveler/true/past/false?format=json"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("trips.json", getClass()), responseHeaders));
 
 		List<Trip> trips = tripIt.getUpcomingTrips();
 		assertEquals(2, trips.size());
 		Trip trip = trips.get(0);
-		assertEquals(100, trip.getId());
-		assertEquals("Trip to Chicago", trip.getDisplayName());
-		assertEquals("Chicago, IL", trip.getPrimaryLocation());
-		assertEquals("http://www.tripit.com/trips/100", trip.getTripUrl());
-		SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-		assertEquals(dateFormatter.parse("2010-10-19"), trip.getStartDate());
-		assertEquals(dateFormatter.parse("2010-10-22"), trip.getEndDate());
-
+		assertEquals(12736853, trip.getId());
+		assertEquals("Minneapolis, MN, March 2011", trip.getDisplayName());
+		assertEquals("Minneapolis, MN", trip.getPrimaryLocation());
+		assertEquals("http://www.tripit.com/trip/show/id/12736853", trip.getTripUrl());
+		// assertEquals(1299196800000L, trip.getStartDate().getTime());
+		// assertEquals(1299283200000L, trip.getEndDate().getTime());
 		trip = trips.get(1);
-		assertEquals(200, trip.getId());
-		assertEquals("Reston Trip", trip.getDisplayName());
-		assertEquals("Reston, VA", trip.getPrimaryLocation());
-		assertEquals("http://www.tripit.com/trips/200", trip.getTripUrl());
-		assertEquals(dateFormatter.parse("2010-11-5"), trip.getStartDate());
-		assertEquals(dateFormatter.parse("2010-11-7"), trip.getEndDate());
+		assertEquals(12400396, trip.getId());
+		assertEquals("Madison, WI, February 2011", trip.getDisplayName());
+		assertEquals("Madison, WI", trip.getPrimaryLocation());
+		assertEquals("http://www.tripit.com/trip/show/id/12400396", trip.getTripUrl());
+		// assertEquals(1298592000000L, trip.getStartDate().getTime());
+		// assertEquals(1298764800000L, trip.getEndDate().getTime());
 	}
 
-	private void setupRestOperationsToTripItRetrieveProfile() {
-		Map<String, Object> responseMap = new HashMap<String, Object>();
-		Map<String, Object> profileMap = new HashMap<String, Object>();
-		Map<String, String> attributesMap = new HashMap<String, String>();
-		attributesMap.put("ref", "12345");
-		profileMap.put("@attributes", attributesMap);
-		profileMap.put("screen_name", "habuma");
-		profileMap.put("public_display_name", "Craig Walls");
-		profileMap.put("company", "SpringSource");
-		profileMap.put("home_city", "Plano, TX");
-		profileMap.put("profile_url", "habuma");
-		responseMap.put("Profile", profileMap);
-
-		when(restOperations.getForObject("https://api.tripit.com/v1/get/profile?format=json", Map.class)).thenReturn(
-				responseMap);
-	}
 }

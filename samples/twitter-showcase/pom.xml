@@ -40,7 +40,7 @@
 		
 		<dependency>
 		    <groupId>org.springframework.social</groupId>
-		    <artifactId>spring-social-client</artifactId>
+		    <artifactId>spring-social-core</artifactId>
 	        <version>${org.springframework.social-version}</version>
 	    </dependency>
 		<dependency>
@@ -60,11 +60,11 @@
 	    </dependency>
 	    
 	    <dependency>
-	        <groupId>org.scribe</groupId>
-	        <artifactId>scribe</artifactId>
-	        <version>1.0.7</version>
-        </dependency>
-				
+	    	<groupId>org.springframework.security</groupId>
+	    	<artifactId>spring-security-crypto</artifactId>
+	    	<version>3.1.0.CI-SNAPSHOT</version>
+	    </dependency>
+	    
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>

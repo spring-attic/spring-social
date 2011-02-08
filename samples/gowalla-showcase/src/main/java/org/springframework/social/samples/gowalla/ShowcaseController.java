@@ -36,12 +36,10 @@ public class ShowcaseController {
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String home(Model model) {
 		if (gowallaProvider.isConnected(1)) {
-			String gowallaId = gowallaProvider.getProviderAccountId(1);
+			GowallaOperations gowalla = gowallaProvider.getConnections(1).get(0).getServiceApi();
+			String gowallaId = gowalla.getProfileId();
 			model.addAttribute("gowallaId", gowallaId);
-
-			GowallaOperations gowalla = gowallaProvider.getServiceOperations(1);
 			model.addAttribute("topCheckins", gowalla.getTopCheckins(gowallaId));
-
 			return "home";
 		}
 		return "redirect:/connect/gowalla";

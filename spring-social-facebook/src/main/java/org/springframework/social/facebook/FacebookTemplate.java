@@ -22,71 +22,55 @@ import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.social.oauth2.OAuth2RequestInterceptor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 /**
  * This is the central class for interacting with Facebook.
- * 
  * <p>
  * All operations through Facebook require OAuth 2-based authentication.
- * Therefore, FacebookTemplate must be given an access token at construction
- * time.
+ * Therefore, FacebookTemplate must be given an access token at construction time.
  * </p>
- * 
- * <p>
- * The easiest way to get an access token is to use the XFBML
- * &lt;fb:login-button&gt; tag to require the user to signin to Facebook. Then,
- * after a successful signin, the access token can be found in the cookie whose
- * name is "fbs_{application key}". In Spring MVC, the
- * {@link FacebookWebArgumentResolver} can extract the access token from the
- * cookie and make it available as a String argument to the controller method.
- * </p>
- * 
  * @author Craig Walls
- * @see FacebookWebArgumentResolver
  */
 public class FacebookTemplate implements FacebookOperations {
-	RestOperations restOperations;
-	private final String accessToken;
+
+	private final RestTemplate restTemplate;
 
 	/**
 	 * Create a new instance of FacebookTemplate.
-	 * 
 	 * This constructor creates the FacebookTemplate using a given access token.
-	 * 
-	 * @param accessToken
-	 *            An access token given by Facebook after a successful OAuth 2
-	 *            authentication (or through Facebook's JS library).
+	 * @param accessToken An access token given by Facebook after a successful OAuth 2 authentication (or through Facebook's JS library).
 	 */
 	public FacebookTemplate(String accessToken) {
-		this.accessToken = accessToken;
-		RestTemplate restTemplate = new RestTemplate();
+		restTemplate = new RestTemplate();
+		restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft10(accessToken) });
+		// Facebook returns JSON data with text/javascript content type
 		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
 		restTemplate.getMessageConverters().add(json);
-		this.restOperations = restTemplate;
 	}
 
 	public String getProfileId() {
 		return Long.toString(getUserProfile().getId());
 	}
 
-	public String getProfileUrl() {
-		return "http://www.facebook.com/profile.php?id=" + getProfileId();
-	}
+    public String getProfileUrl() {
+        return "http://www.facebook.com/profile.php?id=" + getProfileId();
+    }
 
 	public FacebookProfile getUserProfile() {
-		return getUserProfile(CURRENT_USER);
+		return getUserProfile(CURRENT_USER_ID);
 	}
 
 	public FacebookProfile getUserProfile(String facebookId) {
 		@SuppressWarnings("unchecked")
-		Map<String, ?> profileMap = restOperations.getForObject(OBJECT_URL + "?access_token={accessToken}", Map.class,
-				facebookId, accessToken);
+		Map<String, ?> profileMap = restTemplate.getForObject(OBJECT_URL, Map.class,
+				facebookId);
 
 		long id = Long.valueOf(String.valueOf(profileMap.get("id")));
 		String firstName = String.valueOf(profileMap.get("first_name"));
@@ -96,14 +80,9 @@ public class FacebookTemplate implements FacebookOperations {
     }
 
 	public List<String> getFriendIds() {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restOperations.getForEntity(CONNECTION_URL, Map.class, CURRENT_USER, FRIENDS,
-				accessToken);
-
-		@SuppressWarnings("unchecked")
+		ResponseEntity<Map> response = restTemplate.getForEntity(CONNECTION_URL, Map.class, CURRENT_USER_ID, FRIENDS);
 		Map<String, List<Map<String, String>>> resultsMap = response.getBody();
 		List<Map<String, String>> friends = resultsMap.get("data");
-		
 		List<String> friendIds = new ArrayList<String>();
 		for (Map<String, String> friendData : friends) {
 	        friendIds.add(friendData.get("id"));
@@ -114,7 +93,7 @@ public class FacebookTemplate implements FacebookOperations {
 	public void updateStatus(String message) {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.set("message", message);
-		publish(CURRENT_USER, FEED, map);
+		publish(CURRENT_USER_ID, FEED, map);
 	}
 	
 	public void updateStatus(String message, FacebookLink link) {
@@ -124,12 +103,12 @@ public class FacebookTemplate implements FacebookOperations {
 		map.set("caption", link.getCaption());
 		map.set("description", link.getDescription());
 		map.set("message", message);
-		publish(CURRENT_USER, FEED, map);
+		publish(CURRENT_USER_ID, FEED, map);
 	}
 	
 	public void publish(String object, String connection, MultiValueMap<String, String> data) {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
-		restOperations.postForLocation(CONNECTION_URL, requestData, object, connection, accessToken);
+		restTemplate.postForLocation(CONNECTION_URL, requestData, object, connection);
 	}
 	
 	public String getProfilePictureUrl() {
@@ -140,10 +119,16 @@ public class FacebookTemplate implements FacebookOperations {
 		return "https://graph.facebook.com/" + profileId + "/picture";
 	}
 
+	// subclassing hooks
+	
+	protected RestTemplate getRestTemplate() {
+		return restTemplate;
+	}
+	
 	static final String OBJECT_URL = "https://graph.facebook.com/{objectId}";
-	static final String CONNECTION_URL = OBJECT_URL + "/{connection}?access_token={accessToken}";
+	static final String CONNECTION_URL = OBJECT_URL + "/{connection}";
 	
 	static final String FRIENDS = "friends";
 	static final String FEED = "feed";
-	static final String CURRENT_USER = "me";
+	static final String CURRENT_USER_ID = "me";
 }

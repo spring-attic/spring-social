@@ -13,240 +13,49 @@
 		]]></xsd:documentation>
 	</xsd:annotation>
 
-	<xsd:complexType name="baseProviderType" abstract="true">
-		<xsd:annotation>
-			<xsd:documentation><![CDATA[
-			]]></xsd:documentation>
-		</xsd:annotation>
-		<xsd:attribute name="id" type="xsd:string" />
-		<xsd:attribute name="consumer-key" use="required" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation>
-					Specifies the application's OAuth consumer/API key, as obtained when registering the application
-					with the provider.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="consumer-secret" use="required" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation>
-					Specifies the application's OAuth consumer/API secret, as obtained when registering the application
-					with the provider.
-				</xsd:documentation>
-			</xsd:annotation>
-		</xsd:attribute>
-		<xsd:attribute name="connection-repository" type="xsd:string">
-			<xsd:annotation>
-				<xsd:documentation>
-					A reference to a AccountConnectionRepository bean that will store connections made for this
-					service provider.
-				</xsd:documentation>
-				<xsd:appinfo>
-					<tool:annotation kind="ref">
-						<tool:expected-type type="org.springframework.social.connect.AccountConnectionRepository"/>
-					</tool:annotation>
-				</xsd:appinfo>
-			</xsd:annotation>
-		</xsd:attribute>
-	</xsd:complexType>
-
-	<xsd:element name="facebook-provider">
-		<xsd:annotation>
-			<xsd:documentation>
-				Configures a Facebook service provider.
-			</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="baseProviderType">
-					<xsd:attribute name="app-id" type="xsd:string">
-						<xsd:annotation>
-							<xsd:documentation>
-								Sets an optional application ID assigned by the provider. For example, Facebook assigns an
-								"API Key" and "App Secret" (which correspond to the consumer-key and consumer-secret attributes)
-								along with an "App ID" that may be required by some parts of the Facebook API.
-							</xsd:documentation>
-						</xsd:annotation>
-					</xsd:attribute>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
-	<xsd:element name="github-provider">
-		<xsd:annotation>
-			<xsd:documentation>
-				Configures a GitHub service provider.
-			</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="baseProviderType" />
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
-	<xsd:element name="gowalla-provider">
-		<xsd:annotation>
-			<xsd:documentation>
-				Configures a Gowalla service provider.
-			</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="baseProviderType" />
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
-
-	<xsd:element name="linkedin-provider">
-		<xsd:annotation>
-			<xsd:documentation>
-				Configures a LinkedIn service provider.
-			</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="baseProviderType" />
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
-
-	<xsd:element name="tripit-provider">
-		<xsd:annotation>
-			<xsd:documentation>
-				Configures a TripIt service provider.
-			</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="baseProviderType" />
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
-	<xsd:element name="twitter-provider">
-		<xsd:annotation>
-			<xsd:documentation>
-				Configures a Twitter service provider.
-			</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="baseProviderType" />
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
 	<xsd:element name="service-provider">
 		<xsd:annotation>
-			<xsd:documentation>
-				Configures a service provider.
+			<xsd:documentation source="java:org.springframework.social.connect.ServiceProvider">
+				Configures a ServiceProvider.
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="baseProviderType">
-					<xsd:attribute name="display-name" type="xsd:string">
-						<xsd:annotation>
-							<xsd:documentation>
-								Gives the provider a human-friendly name that can be used to describe the provider to a user.
-								If not specified, this will default to the value of the id with the first character
-								capitalized.
-							</xsd:documentation>
-						</xsd:annotation>
-					</xsd:attribute>
-					<xsd:attribute name="class" use="required" type="xsd:string">
-						<xsd:annotation>
-							<xsd:documentation>
-								Specifies the fully-qualified name of the class that implements this service provider. The class
-								should implement org.springframework.social.connect.ServiceProvider or extend one of the
-								abstract classes that implement it.
-							</xsd:documentation>
-							<xsd:appinfo>
-								<tool:annotation>
-									<tool:expected-type type="java.lang.Class"/>
-									<tool:assignable-to type="org.springframework.social.connect.ServiceProvider"/>
-								</tool:annotation>
-							</xsd:appinfo>
-						</xsd:annotation>
-					</xsd:attribute> 
-					<xsd:attribute name="app-id" type="xsd:string">
-						<xsd:annotation>
-							<xsd:documentation>
-								Sets an optional application ID assigned by the provider. For example, Facebook assigns an
-								"API Key" and "App Secret" (which correspond to the consumer-key and consumer-secret attributes)
-								along with an "App ID" that may be required by some parts of the Facebook API.
-							</xsd:documentation>
-						</xsd:annotation>
-					</xsd:attribute>
-					<xsd:attribute name="request-token-url" type="xsd:anyURI">
-						<xsd:annotation>
-							<xsd:documentation>
-								Specifies a URL at the provider from which the application may obtain a request token. 
-								Since the request token URL is only applicable in the context of OAuth 1, leaving this 
-								attribute unspecified implies that this is an OAuth 2 provider. 
-							</xsd:documentation>
-						</xsd:annotation>
-					</xsd:attribute>
-					<xsd:attribute name="authorization-url" use="required" type="xsd:anyURI">
-						<xsd:annotation>
-							<xsd:documentation>
-								Specifies a URL at the provider that the user will be redirected to in order to obtain 
-								their permission for the application to interact with the provider on their behalf. 
-							</xsd:documentation>
-						</xsd:annotation>
-					</xsd:attribute>
-					<xsd:attribute name="access-token-url" use="required" type="xsd:anyURI">
-						<xsd:annotation>
-							<xsd:documentation>
-								Specifies a URL at the provider through which the application may obtain an access token.
-							</xsd:documentation>
-						</xsd:annotation>
-					</xsd:attribute>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-	
-	<xsd:element name="context-service-provider-factory">
-		<xsd:annotation>
-			<xsd:documentation>
-				Configures a JDBC-backed service provider factory.
-			</xsd:documentation>
-		</xsd:annotation>
-	</xsd:element>
-	
-	<xsd:element name="jdbc-service-provider-factory">
-		<xsd:annotation>
-			<xsd:documentation>
-				Configures a JDBC-backed service provider factory.
-			</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:attribute name="jdbc-template" use="required" type="xsd:string">
+			<xsd:attribute name="class" use="required" type="xsd:string">
 				<xsd:annotation>
 					<xsd:documentation>
-						Specifies the JdbcTemplate through which service providers will be managed.
+						The ServiceProvider implementation class name.
 					</xsd:documentation>
 					<xsd:appinfo>
-						<tool:annotation kind="ref">
-							<tool:expected-type type="org.springframework.jdbc.core.JdbcTemplate"/>
-						</tool:annotation>
+						<tool:annotation>
+							<tool:expected-type type="java.lang.Class" />
+							<tool:assignable-to type="org.springframework.social.connect.ServiceProvider" />
+						</tool:annotation>					
 					</xsd:appinfo>
 				</xsd:annotation>
-			</xsd:attribute>
-			<xsd:attribute name="string-encryptor" type="xsd:string">
+			</xsd:attribute>		
+			<xsd:attribute name="client-key" use="required" type="xsd:string">
 				<xsd:annotation>
 					<xsd:documentation>
-						Sets a string encryptor to encrypt/decrypt an application's OAuth credentials. Defaults to
-						a no-op string encryptor.
+						Specifies the application's OAuth consumer/API key, as obtained when registering the application with the provider.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="client-secret" use="required" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+						Specifies the application's OAuth consumer/API secret, as obtained when registering the application with the provider.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="connection-repository" type="xsd:string" default="connectionRepository">
+				<xsd:annotation>
+					<xsd:documentation source="java:org.springframework.social.connect.support.ConnectionRepository">
+						A reference to a ConnectionRepository bean that will store connections made for this service provider.
+						If not specified, defaults to a bean named "connectionRepository".
 					</xsd:documentation>
 					<xsd:appinfo>
 						<tool:annotation kind="ref">
-							<tool:expected-type type="org.springframework.security.encrypt.StringEncryptor"/>
+							<tool:expected-type type="org.springframework.social.connect.support.ConnectionRepository" />
 						</tool:annotation>
 					</xsd:appinfo>
 				</xsd:annotation>
@@ -254,38 +63,4 @@
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="jdbc-connection-repository">
-		<xsd:annotation>
-			<xsd:documentation>
-				Configures a JDBC-backed account connection repository
-			</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:attribute name="jdbc-template" use="required" type="xsd:string">
-				<xsd:annotation>
-					<xsd:documentation>
-						Specifies the JdbcTemplate through which connections will be managed.
-					</xsd:documentation>
-					<xsd:appinfo>
-						<tool:annotation kind="ref">
-							<tool:expected-type type="org.springframework.jdbc.core.JdbcTemplate"/>
-						</tool:annotation>
-					</xsd:appinfo>
-				</xsd:annotation>
-			</xsd:attribute>
-			<xsd:attribute name="string-encryptor" type="xsd:string">
-				<xsd:annotation>
-					<xsd:documentation>
-						Sets a string encryptor to encrypt/decrypt a user's connection tokens. Defaults to
-						a no-op string encryptor.
-					</xsd:documentation>
-					<xsd:appinfo>
-						<tool:annotation kind="ref">
-							<tool:expected-type type="org.springframework.security.encrypt.StringEncryptor"/>
-						</tool:annotation>
-					</xsd:appinfo>
-				</xsd:annotation>
-			</xsd:attribute>
-		</xsd:complexType>
-	</xsd:element>	
 </xsd:schema>

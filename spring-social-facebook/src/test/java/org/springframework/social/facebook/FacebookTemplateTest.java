@@ -15,120 +15,97 @@
  */
 package org.springframework.social.facebook;
 
-import static java.util.Collections.*;
 import static org.junit.Assert.*;
-import static org.junit.internal.matchers.IsCollectionContaining.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.http.HttpStatus.*;
-import static org.springframework.social.facebook.FacebookTemplate.*;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.web.client.test.RequestMatchers.*;
+import static org.springframework.web.client.test.ResponseCreators.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestOperations;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.test.MockRestServiceServer;
 
 /**
  * @author Craig Walls
  */
 public class FacebookTemplateTest {
+	
 	private static final String ACCESS_TOKEN = "someAccessToken";
+	
 	private FacebookTemplate facebook;
-	private RestOperations restOperations;
+	private MockRestServiceServer mockServer;
+	private HttpHeaders responseHeaders;
 
 	@Before
 	public void setup() {
 		facebook = new FacebookTemplate(ACCESS_TOKEN);
-		restOperations = mock(RestOperations.class);
-		facebook.restOperations = restOperations;
+		mockServer = MockRestServiceServer.createServer(facebook.getRestTemplate());
+		responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 	}
 
+	// TODO complete with testing of json response reading/request writing behavior
+	// the use of a mock object before was not testing this important interaction
+	
 	@Test
 	public void getFriendIds() {
-		Map<String, List<Map<String, String>>> resultsMap = new HashMap<String, List<Map<String, String>>>();
-		List<Map<String, String>> friendsList = new ArrayList<Map<String, String>>();
-		friendsList.add(singletonMap("id", "12345"));
-		friendsList.add(singletonMap("id", "67890"));
-		friendsList.add(singletonMap("id", "24680"));
-		resultsMap.put("data", friendsList);
-
-		ResponseEntity<Map> response = new ResponseEntity<Map>(resultsMap, OK);
-		when(restOperations.getForEntity(eq(CONNECTION_URL), eq(Map.class), eq(CURRENT_USER), eq(FRIENDS),
-						eq(ACCESS_TOKEN))).thenReturn(response);
+		mockServer.expect(requestTo("https://graph.facebook.com/me/friends")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("friends.json", getClass()), responseHeaders));
 
 		List<String> friendIds = facebook.getFriendIds();
 		assertEquals(3, friendIds.size());
-		assertThat(friendIds, hasItem("12345"));
-		assertThat(friendIds, hasItem("67890"));
-		assertThat(friendIds, hasItem("24680"));
+		assertTrue(friendIds.contains("12345"));
+		assertTrue(friendIds.contains("67890"));
+		assertTrue(friendIds.contains("24680"));
 	}
 
 	@Test
 	public void getUserProfile() {
-		setupRestOperationsForGettingProfile();
-		FacebookProfile actual = facebook.getUserProfile();
-		assertEquals("Craig", actual.getFirstName());
-		assertEquals("Walls", actual.getLastName());
-		assertEquals("cwalls@vmware.com", actual.getEmail());
-		assertEquals(12345L, actual.getId());
+		mockServer.expect(requestTo("https://graph.facebook.com/me")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("me.json", getClass()), responseHeaders));
+
+		FacebookProfile profile = facebook.getUserProfile();
+		assertEquals(123456789, profile.getId());
+		assertEquals("Craig", profile.getFirstName());
+		assertEquals("Walls", profile.getLastName());
+//		assertEquals("Craig Walls", profile.getName());
+		assertEquals("cwalls@vmware.com", profile.getEmail());
+		assertEquals("http://www.facebook.com/profile.php?id=123456789", profile.getProfileUrl());
+		assertEquals("https://graph.facebook.com/123456789/picture", profile.getProfileImageUrl());
 	}
 
 	@Test
 	public void getProfileId() {
-		setupRestOperationsForGettingProfile();
-		assertEquals("12345", facebook.getProfileId());
+		mockServer.expect(requestTo("https://graph.facebook.com/me")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("me.json", getClass()), responseHeaders));
+
+		assertEquals("123456789", facebook.getProfileId());
 	}
 
 	@Test
-	public void getProfileUrl() {
-		setupRestOperationsForGettingProfile();
-		assertEquals("http://www.facebook.com/profile.php?id=12345", facebook.getProfileUrl());
+	public void updateStatus() throws Exception {
+		responseHeaders.setLocation(new URI("http://www.facebook.com/me"));
+		String requestBody = "message=Hello+Facebook+World";
+		mockServer.expect(requestTo("https://graph.facebook.com/me/feed")).andExpect(method(POST))
+				.andExpect(body(requestBody)).andRespond(withResponse("", responseHeaders));
+		facebook.updateStatus("Hello Facebook World");
+		mockServer.verify();
 	}
 
 	@Test
-	public void updateStatus() {
-		facebook.updateStatus("Hello Facebook!");
-
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		map.set("message", "Hello Facebook!");
-		verify(restOperations).postForLocation(eq(CONNECTION_URL), eq(map), eq(CURRENT_USER), eq(FEED),
-				eq(ACCESS_TOKEN));
+	public void updateStatus_withLink() throws Exception {
+		responseHeaders.setLocation(new URI("http://www.facebook.com/me"));
+		String requestBody = "link=someLink&name=some+name&caption=some+caption&description=some+description&message=Hello+Facebook+World";
+		mockServer.expect(requestTo("https://graph.facebook.com/me/feed")).andExpect(method(POST))
+				.andExpect(body(requestBody)).andRespond(withResponse("", responseHeaders));
+		FacebookLink link = new FacebookLink("someLink", "some name", "some caption", "some description");
+		facebook.updateStatus("Hello Facebook World", link);
+		mockServer.verify();
 	}
-
-	@Test
-	public void updateStatus_withLink() {
-		String linkUrl = "http://www.springsource.com";
-		String linkName = "SpringSource";
-		String linkCaption = "SpringSource Home Page";
-		String linkDescription = "SpringSource is the leader in Java application and infrastructure management.";
-		facebook.updateStatus("Hello Facebook!", new FacebookLink(linkUrl, linkName, linkCaption, linkDescription));
-
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		map.set("message", "Hello Facebook!");
-		map.set("link", linkUrl);
-		map.set("name", linkName);
-		map.set("caption", linkCaption);
-		map.set("description", linkDescription);
-		verify(restOperations).postForLocation(eq(CONNECTION_URL), eq(map), eq(CURRENT_USER), eq(FEED),
-				eq(ACCESS_TOKEN));
-	}
-
-	private void setupRestOperationsForGettingProfile() {
-		Map<String, Object> profileMap = new HashMap<String, Object>();
-		profileMap.put("first_name", "Craig");
-		profileMap.put("last_name", "Walls");
-		profileMap.put("email", "cwalls@vmware.com");
-		profileMap.put("id", 12345L);
-		when(restOperations.getForObject(eq(OBJECT_URL + "?access_token={accessToken}"), eq(Map.class), eq("me"),
-						eq(ACCESS_TOKEN))).thenReturn(profileMap);
-	}
-
-
+	
 }

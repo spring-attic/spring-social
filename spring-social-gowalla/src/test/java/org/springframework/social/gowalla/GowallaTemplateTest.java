@@ -15,28 +15,64 @@
  */
 package org.springframework.social.gowalla;
 
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.web.client.test.RequestMatchers.*;
+import static org.springframework.web.client.test.ResponseCreators.*;
+
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.web.client.RestOperations;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.test.MockRestServiceServer;
 
 /**
  * @author Craig Walls
  */
 public class GowallaTemplateTest {
+
 	private GowallaTemplate gowalla;
-	private RestOperations restOperations;
+	private MockRestServiceServer mockServer;
+	private HttpHeaders responseHeaders;
 
 	@Before
 	public void setup() {
 		gowalla = new GowallaTemplate("ACCESS_TOKEN");
-		restOperations = mock(RestOperations.class);
-		gowalla.restOperations = restOperations;
+		mockServer = MockRestServiceServer.createServer(gowalla.getRestTemplate());
+		responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 	}
 
 	@Test
 	public void getProfileId() {
-		// assertEquals("12345", gowalla.getProfileId());
+		mockServer.expect(requestTo("https://api.gowalla.com/users/me")).andExpect(method(GET))
+				.andRespond(
+						withResponse("{\"username\":\"habuma\",\"pins_count\":17,\"stamps_count\":2}", responseHeaders));
+		assertEquals("habuma", gowalla.getProfileId());
+	}
+
+	@Test
+	public void getProfileUrl() {
+		mockServer.expect(requestTo("https://api.gowalla.com/users/me")).andExpect(method(GET))
+				.andRespond(withResponse("{\"username\":\"habuma\",\"pins_count\":17,\"stamps_count\":2}", responseHeaders));
+		assertEquals("http://www.gowalla.com/users/habuma", gowalla.getProfileUrl());
+	}
+
+	@Test
+	public void getTopCheckins() {
+		mockServer.expect(requestTo("https://api.gowalla.com/users/habuma/top_spots")).andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("top_spots.json", getClass()), responseHeaders));
+
+		List<Checkin> checkins = gowalla.getTopCheckins("habuma");
+		assertEquals(3, checkins.size());
+		assertEquals("Burrito Shack", checkins.get(0).getName());
+		assertEquals(100, checkins.get(0).getCount());
+		assertEquals("Chicken Hut", checkins.get(1).getName());
+		assertEquals(25, checkins.get(1).getCount());
+		assertEquals("Burger Bell", checkins.get(2).getName());
+		assertEquals(3, checkins.get(2).getCount());
 	}
 }

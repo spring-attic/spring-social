@@ -1,0 +1,48 @@
+{
+   "id": "123456789",
+   "name": "Craig Walls",
+   "first_name": "Craig",
+   "last_name": "Walls",
+   "link": "http://www.facebook.com/habuma",
+   "quotes": "Awesomeness",
+   "work": [
+      {
+         "employer": {
+            "id": "119387448093014",
+            "name": "SpringSource"
+         },
+         "start_date": "0000-00",
+         "end_date": "0000-00"
+      }
+   ],
+   "education": [
+      {
+         "school": {
+            "id": "103768553006294",
+            "name": "New Mexico"
+         },
+         "year": {
+            "id": "117348274968344",
+            "name": "1994"
+         },
+         "type": "College"
+      },
+      {
+         "school": {
+            "id": "115157218496067",
+            "name": "Jal High School"
+         },
+         "year": {
+            "id": "127132740657422",
+            "name": "1989"
+         },
+         "type": "High School"
+      }
+   ],
+   "gender": "male",
+   "email": "cwalls\u0040vmware.com",
+   "timezone": -6,
+   "locale": "en_US",
+   "verified": true,
+   "updated_time": "2010-08-22T00:01:59+0000"
+}

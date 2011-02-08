@@ -10,7 +10,7 @@
 	<properties>
 		<java-version>1.6</java-version>
 		<org.springframework.social-version>1.0.0.BUILD-SNAPSHOT</org.springframework.social-version>
-		<org.springframework-version>3.0.5.RELEASE</org.springframework-version>
+		<org.springframework-version>3.1.0.BUILD-SNAPSHOT</org.springframework-version>
 		<org.slf4j-version>1.5.10</org.slf4j-version>
 	</properties>
 	<dependencies>
@@ -59,12 +59,12 @@
 	        <version>${org.springframework.social-version}</version>
 	    </dependency>
 	    
-	    <dependency>
-	        <groupId>org.scribe</groupId>
-	        <artifactId>scribe</artifactId>
-	        <version>1.0.7</version>
-        </dependency>
-				
+		<dependency>
+	    	<groupId>org.springframework.security</groupId>
+	    	<artifactId>spring-security-crypto</artifactId>
+	    	<version>3.1.0.CI-SNAPSHOT</version>
+	    </dependency>
+	    				
 		<!-- Logging -->
 		<dependency>
 			<groupId>org.slf4j</groupId>

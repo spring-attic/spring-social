@@ -22,40 +22,35 @@ import java.util.Map;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.social.oauth2.OAuth2RequestInterceptor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 /**
  * <p>
  * The central class for interacting with TripIt.
  * </p>
- * 
  * <p>
  * TripIt operations require OAuth 1 authentication. Therefore TripIt template
  * must be given the minimal amount of information required to sign requests to
  * the TripIt API with an OAuth <code>Authorization</code> header.
  * </p>
- * 
  * @author Craig Walls
  */
 public class GowallaTemplate implements GowallaOperations {
-	RestOperations restOperations;
-	private final String accessToken;
+
+	private final RestTemplate restTemplate;
 
 	/**
 	 * Constructs a GowallaTemplate with the minimal amount of information
-	 * required to sign requests with an OAuth <code>Authorization</code>
-	 * header.
-	 * 
-	 * @param accessToken
-	 *            An access token granted to the application after OAuth
-	 *            authentication.
+	 * required to sign requests with an OAuth <code>Authorization</code> header.
+	 * @param accessToken An access token granted to the application after OAuth authentication.
 	 */
 	public GowallaTemplate(String accessToken) {
-		this.accessToken = accessToken;
-		this.restOperations = new RestTemplate();
+		restTemplate = new RestTemplate();
+		restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft8(accessToken) });		
 	}
 
 	public String getProfileId() {
@@ -68,10 +63,7 @@ public class GowallaTemplate implements GowallaOperations {
 
 	public GowallaProfile getUserProfile(String userId) {
 		HttpEntity<?> requestEntity = new HttpEntity<String>(buildBaseHeaders());
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restOperations.exchange(PROFILE_URL, HttpMethod.GET, requestEntity, Map.class,
-				userId);
-		@SuppressWarnings("unchecked")
+		ResponseEntity<Map> response = restTemplate.exchange(PROFILE_URL, HttpMethod.GET, requestEntity, Map.class, userId);
 		Map<String, ?> profileInfo = response.getBody();
 		int pinsCount = Integer.valueOf(String.valueOf(profileInfo.get("pins_count")));
 		int stampsCount = Integer.valueOf(String.valueOf(profileInfo.get("stamps_count")));
@@ -88,11 +80,7 @@ public class GowallaTemplate implements GowallaOperations {
 	
 	public List<Checkin> getTopCheckins(String userId) {
 		HttpEntity<?> requestEntity = new HttpEntity<String>(buildBaseHeaders());
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restOperations.exchange(TOP_CHECKINS_URL, HttpMethod.GET, requestEntity,
-				Map.class, userId);
-
-		@SuppressWarnings("unchecked")
+		ResponseEntity<Map> response = restTemplate.exchange(TOP_CHECKINS_URL, HttpMethod.GET, requestEntity, Map.class, userId);
 		List<Map<String, ?>> checkinsList = (List<Map<String, ?>>) response.getBody().get("top_spots");
 		List<Checkin> checkins = new ArrayList<Checkin>();
 		for (Map<String, ?> checkinMap : checkinsList) {
@@ -101,10 +89,17 @@ public class GowallaTemplate implements GowallaOperations {
 		return checkins;
 	}
 
+	// subclassing hooks
+	
+	protected RestTemplate getRestTemplate() {
+		return restTemplate;
+	}
+
+	// internal helpers
+	
 	private MultiValueMap<String, String> buildBaseHeaders() {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<String, String>();
 		headers.add("Accept", "application/json");
-		headers.add("Authorization", "Token token=\"" + accessToken + "\"");
 		return headers;
 	}
 
