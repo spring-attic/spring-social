@@ -45,25 +45,10 @@
 
 
 <!-- TWITTER @ANYWHERE SIGNIN -->
-	<script type="text/javascript">
-		twttr.anywhere.config({ callbackURL: "http://localhost:8080/spring-social-showcase/signin" });
-		twttr.anywhere(function (T) {
-			twttr.anywhere.signOut();
-			T("#loginButton").connectButton({
-				authComplete: function(user, bridgeCode) {
-					// bridge code must be traded for access token
-					$('#tw_signin #bridgeCode').val(bridgeCode);
-					$('#tw_signin').submit();
-				}
-			});
-		});
-	</script>
-	
-	
 	<form id="tw_signin" action="<c:url value="/signin/twitter"/>" method="POST">
-		<div id="loginButton"></div>
-		<input type="hidden" id="bridgeCode" name="bridgeCode" value="" />
+		<button type="submit"><img src="<c:url value="/resources/social/twitter/sign-in-with-twitter-d.png"/>" /></button>
 	</form>
+<%--
 <!-- FACEBOOK SIGNIN -->
 	<script src='http://connect.facebook.net/en_US/all.js'></script>
 	<script>
@@ -84,21 +69,7 @@
 		<p><fb:login-button onlogin="signInWithFacebook();" v="2" length="long">Login with Facebook</fb:login-button></p>
 		<input type="hidden" id="accessToken" name="accessToken" value="" />
 	</form>
-<%--
-<hr/>
-	<script>
-		function onLinkedInLoad() {
-		    IN.Event.on(IN, "auth", onLinkedInAuth);
-		}
-		
-		function onLinkedInAuth() {
-			// note that this token is temporary (~30 mins) and you'll get a new one each time.
-			// need a way to trade it in on a long-lasting token
-			$('#liToken').replaceWith("Access Token: " + IN.ENV.auth.oauth_token);
-		}
-	</script>
-	<script type="in/login" ></script>
-	<div id="liToken"></div>
- --%>	
+ --%>
+
 </body>
 </html>

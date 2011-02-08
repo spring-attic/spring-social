@@ -76,7 +76,7 @@ public class OAuth1Template implements OAuth1Operations {
 
 	// internal helpers
 	
-	protected OAuthToken getTokenFromProvider(String tokenUrl, Map<String, String> tokenRequestParameters,
+	private OAuthToken getTokenFromProvider(String tokenUrl, Map<String, String> tokenRequestParameters,
 			Map<String, String> additionalParameters, String tokenSecret) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization",

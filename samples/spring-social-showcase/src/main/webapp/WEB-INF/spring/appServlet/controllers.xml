@@ -22,18 +22,12 @@
 		</property>
 	</bean>
 	
-	<bean class="org.springframework.social.web.connect.ProviderSigninController">
-		<constructor-arg ref="connectionRepository" />
-		<constructor-arg>
-			<bean class="org.springframework.social.showcase.AccountIdAsPrincipalSigninGateway" />
-		</constructor-arg>
-	</bean>
-	
 	<bean class="org.springframework.social.twitter.web.TwitterSigninController">
 		<constructor-arg ref="connectionRepository" />
 		<constructor-arg>
 			<bean class="org.springframework.social.showcase.AccountIdAsPrincipalSigninGateway" />
 		</constructor-arg>
+		<constructor-arg value="${application.url}" />
 	</bean>
 	
 	<import resource="../properties.xml" />   	

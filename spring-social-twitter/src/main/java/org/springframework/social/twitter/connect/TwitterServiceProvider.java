@@ -17,6 +17,7 @@ package org.springframework.social.twitter.connect;
 
 import org.springframework.social.connect.oauth1.AbstractOAuth1ServiceProvider;
 import org.springframework.social.connect.support.ConnectionRepository;
+import org.springframework.social.oauth1.OAuth1Template;
 import org.springframework.social.twitter.TwitterOperations;
 import org.springframework.social.twitter.TwitterTemplate;
 
@@ -28,14 +29,9 @@ import org.springframework.social.twitter.TwitterTemplate;
 public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<TwitterOperations> {
 
 	public TwitterServiceProvider(String consumerKey, String consumerSecret, ConnectionRepository connectionRepository) {
-		super("twitter", connectionRepository, consumerKey, consumerSecret, new TwitterOAuth1Template(consumerKey,
+		super("twitter", connectionRepository, consumerKey, consumerSecret, new OAuth1Template(consumerKey,
 				consumerSecret, "https://twitter.com/oauth/request_token",
 				"https://twitter.com/oauth/authorize?oauth_token={requestToken}", "https://twitter.com/oauth/access_token"));
-	}
-
-	public String exchangeBridgeCodeForAccessToken(String bridgeCode) {
-		TwitterOAuth1Template twitterOAuthOperations = (TwitterOAuth1Template) getOAuth1Operations();
-		return twitterOAuthOperations.exchangeForAccessToken(bridgeCode).getValue();
 	}
 
 	@Override
