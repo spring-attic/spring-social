@@ -20,7 +20,10 @@ import static org.springframework.http.HttpMethod.*;
 import static org.springframework.web.client.test.RequestMatchers.*;
 import static org.springframework.web.client.test.ResponseCreators.*;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -74,7 +77,6 @@ public class TripItTemplateTest {
 	}
 
 	@Test
-
 	public void getTrips() {
 		mockServer.expect(requestTo("https://api.tripit.com/v1/list/trip/traveler/true/past/false?format=json"))
 				.andExpect(method(GET))
@@ -87,15 +89,20 @@ public class TripItTemplateTest {
 		assertEquals("Minneapolis, MN, March 2011", trip.getDisplayName());
 		assertEquals("Minneapolis, MN", trip.getPrimaryLocation());
 		assertEquals("http://www.tripit.com/trip/show/id/12736853", trip.getTripUrl());
-		// assertEquals(1299196800000L, trip.getStartDate().getTime());
-		// assertEquals(1299283200000L, trip.getEndDate().getTime());
+		assertDateEquals("2011-03-04", trip.getStartDate());
+		assertDateEquals("2011-03-05", trip.getEndDate());
 		trip = trips.get(1);
 		assertEquals(12400396, trip.getId());
 		assertEquals("Madison, WI, February 2011", trip.getDisplayName());
 		assertEquals("Madison, WI", trip.getPrimaryLocation());
 		assertEquals("http://www.tripit.com/trip/show/id/12400396", trip.getTripUrl());
-		// assertEquals(1298592000000L, trip.getStartDate().getTime());
-		// assertEquals(1298764800000L, trip.getEndDate().getTime());
+		assertDateEquals("2011-02-25", trip.getStartDate());
+		assertDateEquals("2011-02-27", trip.getEndDate());
 	}
 
+	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+	private void assertDateEquals(String expected, Date actual) {
+		assertEquals(expected, dateFormatter.format(actual));
+	}
 }

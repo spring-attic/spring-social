@@ -20,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -109,7 +110,7 @@ public class TripItTemplate implements TripItOperations {
 		return trips;
 	}
 
-	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 
 	private Date parseDate(String dateString) {
 		try {
