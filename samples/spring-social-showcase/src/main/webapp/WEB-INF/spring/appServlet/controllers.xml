@@ -30,6 +30,14 @@
 		<constructor-arg value="${application.url}" />
 	</bean>
 	
+	<bean class="org.springframework.social.facebook.web.FacebookSigninController">
+		<constructor-arg ref="connectionRepository" />
+		<constructor-arg>
+			<bean class="org.springframework.social.showcase.AccountIdAsPrincipalSigninGateway" />
+		</constructor-arg>
+		<constructor-arg value="0b754d95f9c9899b0d6c4454b6f2dde7" />
+	</bean>
+	
 	<import resource="../properties.xml" />   	
 
 </beans>

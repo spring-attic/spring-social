@@ -44,32 +44,24 @@
 </form>
 
 
-<!-- TWITTER @ANYWHERE SIGNIN -->
+<!-- TWITTER SIGNIN -->
 	<form id="tw_signin" action="<c:url value="/signin/twitter"/>" method="POST">
 		<button type="submit"><img src="<c:url value="/resources/social/twitter/sign-in-with-twitter-d.png"/>" /></button>
 	</form>
-<%--
+
 <!-- FACEBOOK SIGNIN -->
 	<script src='http://connect.facebook.net/en_US/all.js'></script>
 	<script>
 		function signInWithFacebook() {
-			// Good OAuth 2 access token. Ready for use with Graph API
-			$('#fb_signin #accessToken').val(FB.getSession().access_token);
 			$('#fb_signin').submit();
 		}
 	</script>	
-	<script type='text/javascript'>	
-		FB.init({appId: '0b754d95f9c9899b0d6c4454b6f2dde7', status: true, cookie: true, xfbml: true});
-		FB.Event.subscribe('auth.sessionChange', function(response) { if (response.session) {} else {} });
-	</script>
-
-	
 	<form id="fb_signin" action="<c:url value="/signin/facebook"/>" method="POST">
 		<div id="fb-root"></div>
 		<p><fb:login-button onlogin="signInWithFacebook();" v="2" length="long">Login with Facebook</fb:login-button></p>
-		<input type="hidden" id="accessToken" name="accessToken" value="" />
 	</form>
- --%>
-
+	<script type='text/javascript'>	
+		FB.init({appId: '0b754d95f9c9899b0d6c4454b6f2dde7', status: true, cookie: true, xfbml: true});
+	</script>	
 </body>
 </html>

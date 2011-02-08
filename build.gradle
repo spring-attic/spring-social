@@ -158,6 +158,7 @@ project('spring-social-facebook') {
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
+        compile project(':spring-social-web') { optional = true }
         // to be able to use the mock rest server
         testCompile project(':spring-social-core').sourceSets.test.classes
     }
@@ -208,7 +209,7 @@ project('spring-social-twitter') {
     dependencies {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
-        compile project(':spring-social-web')
+        compile project(':spring-social-web') { optional = true }
         // to be able to use the mock rest server
         testCompile project(':spring-social-core').sourceSets.test.classes
     }
