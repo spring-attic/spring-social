@@ -26,12 +26,14 @@ import java.io.Serializable;
 public class FacebookProfile implements Serializable {
 
 	private final long id;
+	private final String name;
 	private final String firstName;
 	private final String lastName;
 	private final String email;
 
-	public FacebookProfile(long id, String firstName, String lastName, String email) {
+	public FacebookProfile(long id, String name, String firstName, String lastName, String email) {
 		this.id = id;
+		this.name = name;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
@@ -44,6 +46,15 @@ public class FacebookProfile implements Serializable {
 	 */
 	public long getId() {
 		return id;
+	}
+
+	/**
+	 * The user's full name
+	 * 
+	 * @return The user's full name
+	 */
+	public String getName() {
+		return name;
 	}
 
 	/**
@@ -92,4 +103,5 @@ public class FacebookProfile implements Serializable {
 	public String getProfileUrl() {
 		return "http://www.facebook.com/profile.php?id=" + id;
 	}
+
 }

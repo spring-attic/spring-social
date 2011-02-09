@@ -73,10 +73,11 @@ public class FacebookTemplate implements FacebookOperations {
 				facebookId);
 
 		long id = Long.valueOf(String.valueOf(profileMap.get("id")));
+		String name = String.valueOf(profileMap.get("name"));
 		String firstName = String.valueOf(profileMap.get("first_name"));
 		String lastName = String.valueOf(profileMap.get("last_name"));
 		String email = String.valueOf(profileMap.get("email"));
-		return new FacebookProfile(id, firstName, lastName, email);
+		return new FacebookProfile(id, name, firstName, lastName, email);
     }
 
 	public List<String> getFriendIds() {
