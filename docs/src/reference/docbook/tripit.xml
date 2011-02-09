@@ -15,9 +15,9 @@ String accessToken = "..."; // The access token granted after OAuth authorizatio
 String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
 TripItOperations tripit = new TripItTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]></programlisting>
 
-  <para>Optionally, if you're using Spring Social's service provider framework (as described in <xref linkend="serviceprovider"/>), <classname>TripItServiceProvider</classname>'s <methodname>getServiceOperations()</methodname> can handle the creation of a <classname>TripItTemplate</classname> for you:</para>
+  <para>If you're using Spring Social's service provider framework (as described in <xref linkend="serviceprovider"/>), you can get a <interfacename>TripItOperations</interfacename> by calling the <methodname>getServiceApi()</methodname> method on one of the connections given by <classname>TripItServiceProvider</classname>'s <methodname>getConnections()</methodname> method::</para>
   
-  <programlisting><![CDATA[TripItOperations tripit = tripItProvider.getServiceOperations(accountId);]]></programlisting>
+  <programlisting><![CDATA[TripItOperations tripit = tripitProvider.getConnections(accountId).get(0).getServiceApi();]]></programlisting>
   
   <para>In this case, <classname>TripItServiceProvider</classname> is being asked to give a <interfacename>TripItOperations</interfacename> constructed using connection data established beforehand using the service provider's <methodname>connect()</methodname> method or via <classname>ConnectController</classname>.</para>
   

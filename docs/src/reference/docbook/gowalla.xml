@@ -12,9 +12,9 @@
   <programlisting><![CDATA[String accessToken = "f8FX29g..."; // access token received from Gowalla after OAuth authorization
 GowallaOperations gowalla = new GowallaTemplate(accessToken);]]></programlisting>
   
-  <para>If you are using the service provider framework described in <xref linkend="serviceprovider"/>, you can get an instance of <classname>GowallaTemplate</classname> by calling one of the <methodname>getServiceOperations()</methodname> methods on <classname>GowallaServiceProvider</classname>:</para>
+  <para>If you are using the service provider framework described in <xref linkend="serviceprovider"/>, you can get an instance of <classname>GowallaTemplate</classname> by calling the <methodname>getServiceApi()</methodname> method on one of the connections given by <classname>GowallaServiceProvider</classname>'s <methodname>getConnections()</methodname> method:</para>
 
-  <programlisting><![CDATA[GowallaOperations gowalla = gowallaProvider.getServiceOperations(accountId);]]></programlisting>
+  <programlisting><![CDATA[GowallaOperations gowalla = gowallaProvider.getConnections(accountId).get(0).getServiceApi();]]></programlisting>
 
   <para>Here, <classname>GowallaServiceProvider</classname> is being asked for a <interfacename>GowallaOperations</interfacename> that was created using the connection details for the given account ID. The connection should have been created beforehand via the service provider's <methodname>connect()</methodname> method or using <classname>ConnectController</classname>.</para>  
 

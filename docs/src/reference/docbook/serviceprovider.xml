@@ -3,6 +3,8 @@
     xmlns:xlink="http://www.w3.org/1999/xlink">
   <title>Service Provider Framework</title>
 
+  <para>In Spring Social, a social service such as Twitter or Facebook is modeled as a service provider. With a service provider, an application may create/sever connections and obtain an API through which the application may interact with the service on a user's behalf.</para>
+
   <section xml:id="section_serviceproviderconfig">
       <title>Configuring Service Providers</title>
       
@@ -22,100 +24,123 @@
 
       <para>The <code><![CDATA[<social:service-provider>]]></code> element can be used to configure any service provider in Spring. For example, to configure a Twitter provider:</para>
       
-<programlisting><![CDATA[<social:service-provider id="twitter"
-    consumer-key="twitter_key"
-    consumer-secret="twitter_secret"
-    display-name="Twitter"
-    class="org.springframework.social.twitter.provider.TwitterServiceProvider"
-    request-token-url="https://twitter.com/oauth/request_token" 
-    authorization-url="https://twitter.com/oauth/authorize?oauth_token={requestToken}"
-    access-token-url="https://twitter.com/oauth/access_token" />]]></programlisting>
+<programlisting><![CDATA[<social:service-provider 
+    class="org.springframework.social.twitter.connect.TwitterServiceProvider" 
+    client-key="..." 
+    client-secret="..." />]]></programlisting>
 
-      <para>The <code>consumer-key</code> and <code>consumer-secret</code> attributes specify the key and secret values assigned to your application when you registered it with the provider.</para>
-      
-      <para>The <code>display-name</code> attribute sets a name that describes the provider in user-friendly terms when referring to the provider in the application's user-interface. This is an optional parameter; if left blank, it will default to the value of the <code>id</code> attribute with the first character capitalized.</para>
-      
-      <para>The <code>request-token-url</code>, <code>authorization-url</code>, and <code>access-token-url</code> attributes set the URLs that Spring should use when coordinating authorization with the provider. The <code>request-token-url</code> is optional; if left blank, the provider is assumed to be an OAuth 2 provider.</para>
-      
-      <para>The <code>class</code> attribute specifies the fully-qualified name of the provider implementation. A service provider implementation should implement the <interfacename>ServiceProvider</interfacename> interface or extend either <classname>AbstractServiceProvider</classname>, <classname>AbstractOAuth1ServiceProvider</classname>, or <classname>AbstractOAuth2ServiceProvider</classname>.</para>
-        
-      <para>To make things simpler, the Spring Social namespace also offers a handful of configuration elements for the service providers for which Spring Social provides implementations (currently Twitter, Facebook, Gowalla, LinkedIn, and TripIt). For example, to configure a Twitter service provider:</para>
-      
-        <programlisting><![CDATA[<social:twitter-provider consumer-key="twitter_key" 
-    consumer-secret="twitter_secret" />]]></programlisting>
-        
-        <para>Similarly, a Facebook service provider can be configured like this:</para>
-        
-        <programlisting><![CDATA[<social:facebook-provider consumer-key="facebook_key" 
-    consumer-secret="facebook_secret" app-id="1234" />]]></programlisting>
-        
-        <para>Note that the Facebook service provider also takes an <code>app-id</code> attribute. Applications registered with Facebook are assigned an application ID along with the consumer key and secret that may be used by some parts of Facebook's API (such as the "Like" button).</para>
-        
-        <para>For a Gowalla service provider, the following XML may be used:</para>
-        
-        <programlisting><![CDATA[<social:gowalla-provider consumer-key="gowalla_key" 
-    consumer-secret="gowalla_secret" />]]></programlisting>
-        
-        <para>Or for a TripIt service provider:</para>
-        
-        <programlisting><![CDATA[<social:tripit-provider consumer-key="tripit_key" 
-    consumer-secret="tripit_secret" />]]></programlisting>
-        
-        <para>Finally, a LinkedIn service provider may be configured as follows:</para>
-        
-        <programlisting><![CDATA[<social:linkedin-provider consumer-key="linkedin_key" 
-    consumer-secret="linkedin_secret" />]]></programlisting>
-</section>
-<section xml:id="section_knownserviceproviderconfig">
-        <title>Configuring service providers in RDBMS</title>
-        
-        <para>Configuring service providers in Spring configuration is straightforward and very convenient. However, should you need to edit any of the service provider details, you would need to edit the Spring configuration and redeploy your application.</para>
-        
-        <para>One reason that you may need to edit your service provider details is if you reset your client key and secret. Let's say that those values fell into the wrong hands and some other application out there is posing as your application. Most OAuth providers make it easy to assign a new key/secret pair to applications, voiding the previous pair. But if your service provider is configured in Spring configuration, that means you'll need to make the changes, rebuild your application and then redeploy it.</para>
-        
-        <para>Optionally, you may choose to configure your service providers externally in a relational database. Spring Social's <classname>JdbcServiceProviderFactory</classname> can create service providers from configuration details stored in RDBMS.</para>
+      <para>The <code>client-key</code> and <code>client-secret</code> attributes specify the key and secret values assigned to your application when you registered it with the provider.</para>
             
-        <para>First, you must have a <code>ServiceProvider</code> table in your database. The following DDL creates a table suitable for use with <classname>JdbcServiceProviderFactory</classname>:</para> 
+      <para>The <code>class</code> attribute specifies the fully-qualified name of the provider implementation. Spring Social comes with several ready-to-use service provider implementations:</para>
+      
+      <itemizedlist>
+          <listitem><para><classname>org.springframework.social.facebook.connect.FacebookServiceProvider</classname></para></listitem>
+          <listitem><para><classname>org.springframework.social.github.connect.GitHubServiceProvider</classname></para></listitem>
+          <listitem><para><classname>org.springframework.social.gowalla.connect.GowallaServiceProvider</classname></para></listitem>
+          <listitem><para><classname>org.springframework.social.linkedin.connect.LinkedInServiceProvider</classname></para></listitem>
+          <listitem><para><classname>org.springframework.social.tripit.connect.TripItServiceProvider</classname></para></listitem>
+          <listitem><para><classname>org.springframework.social.twitter.connect.TwitterServiceProvider</classname></para></listitem>
+      </itemizedlist>
 
-        <programlisting><![CDATA[create table ServiceProvider (name varchar,
-    displayName varchar not null,
-    implementation varchar not null,
-    apiKey varchar not null,					
-    secret varchar,
-    appId bigint,
-    requestTokenUrl varchar,
-    authorizeUrl varchar,
-    accessTokenUrl varchar,
-    primary key (name));]]></programlisting>
+      <para>You may also create your own service providers by implementing the <interfacename>ServiceProvider</interfacename> interface or extending either <classname>AbstractServiceProvider</classname>, <classname>AbstractOAuth1ServiceProvider</classname>, or <classname>AbstractOAuth2ServiceProvider</classname>.</para>
 
-        <para>With the <code>ServiceProvider</code> table in place, you may insert rows to represent each of the service providers your application will interact with. For example, you may insert a row for a Twitter service provider:</para>
-
-        <programlisting><![CDATA[insert into ServiceProvider (name, displayName, implementation, apiKey, secret, requestTokenUrl, authorizeUrl, 
-      accessTokenUrl) values 
-   ('twitter', 'Twitter', 'org.springframework.social.twitter.provider.TwitterServiceProvider', 
-      'twitter_key', 'twitter_secret', 'https://twitter.com/oauth/request_token',
-      'https://twitter.com/oauth/authorize?oauth_token={requestToken}',      
-      'https://twitter.com/oauth/access_token');]]></programlisting>
-
-        <para>Next, configure <classname>JdbcServiceProviderFactory</classname> in Spring:</para> 
-        
-    	<programlisting><![CDATA[<bean id="serviceProviderFactory" class="org.springframework.social.provider.jdbc.JdbcServiceProviderFactory">
-    <constructor-arg ref="jdbcTemplate" />
-	<constructor-arg ref="stringEncryptor" />
+      <section xml:id="section_config_connectionrepository">
+          <title>Connection Repository</title>
+          
+          <para>In addition to the service provider itself, you'll also need to configure a connection repository bean for service providers to persist connections. Spring Social comes with <classname>JdbcConnectionRepository</classname>, a connection repository that persists connections to a relational database via JDBC. The following XML shows how to configure a <classname>JdbcConnectionRepository</classname> bean:</para>
+          
+          <programlisting><![CDATA[<bean id="connectionRepository" class="org.springframework.social.connect.jdbc.JdbcConnectionRepository">
+    <constructor-arg ref="dataSource" />
+    <constructor-arg ref="textEncryptor" />
 </bean>]]></programlisting>
 
-        <para>The constructor takes two arguments. The first is a reference to a <classname>JdbcTemplate</classname> through which <classname>JdbcServiceProviderFactory</classname> will access the <code>ServiceProvider</code> table. The second is a reference to an implementation of <interfacename>StringEncryptor</interfacename> that will be used to encrypt/decrypt consumer keys and secrets as they're stored/retrieved from the <code>ServiceProvider</code> table.</para>
-        
-        <para>To simplify configuration of a <classname>JdbcServiceProviderFactory</classname>, the Spring Social configuration namespace also offers a <code><![CDATA[<social:jdbc-service-provider-factory>]]></code> element that can be used instead of the explicit bean declaration:</para>
+          <para><classname>JdbcConnectionRepository</classname> is constructed with a reference to a <classname>DataSource</classname> through which it will communicate with the database and a <interfacename>TextEncryptor</interfacename> that it will use to encrypt/decrypt sensitive connection details (such as access tokens and secrets).</para>
+          
+          <para>The <interfacename>TextEncryptor</interfacename> is defined in Spring Security 3.1 in the <code>org.springframework.security.crypto.encrypt</code> package. Spring Security 3.1 also includes an <classname>Encryptors</classname> class which acts as a factory for common encryptor implementations. For example, to configure a no-op text encryptor (one that doesn't perform any encryption at all):</para>
 
-    	<programlisting><![CDATA[<social:jdbc-service-provider-factory jdbc-template="jdbcTemplate" />]]></programlisting>
-    	
-    	<para>Here, the <code>jdbc-template</code> attribute refers to a <classname>JdbcTemplate</classname> bean. Optionally, a <code>string-encryptor</code> attribute may refer to a <interfacename>StringEncryptor</interfacename> bean. However, if <code>string-encryptor</code> is not specified, it will default to a no-op implementation that does no encryption on the key/secret pairs.</para>
-    	
-        <para>Finally, use <classname>JdbcServiceProviderFactory</classname>'s <methodname>getServiceProvider()</methodname> method to declare the service provider beans themselves:</para>
-    	
-    	<programlisting><![CDATA[<bean id="twitterProvider" factory-bean="serviceProviderFactory" factory-method="getServiceProvider">
-	<constructor-arg value="twitter" />
-</bean>]]></programlisting>    	
+          <programlisting><![CDATA[<bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="noOpText" />]]></programlisting>
+          
+          <para>Or, to configure a text encryptor that uses standard password-based encryption:</para>
+          
+          <programlisting><![CDATA[<bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="text">
+    <constructor-arg value="password"/>
+    <constructor-arg value="salt"/>    
+</bean>]]></programlisting>
+
+          <para>Note that the ID of the connection repository bean is significant. By default, the <code><![CDATA[<social:service-provider>]]></code> element will assume that the connection repository bean's ID is "connectionRepository". If, however, you give the connection repository bean a different ID, then you'll need to specify the connection repository when configuring a <code><![CDATA[<social:service-provider>]]></code>:</para>
+
+          <programlisting><![CDATA[<social:service-provider 
+              class="org.springframework.social.twitter.connect.TwitterServiceProvider" 
+              client-key="..." 
+              client-secret="..."
+              connection-repository="connectionStorage" />]]></programlisting>
+              
+      </section>
+
+
+  </section>
+  <section xml:id="section_usingserviceproviders">
+      <title>Using Service Providers</title>
+      
+      <para>Once you have a server provider configured in Spring, there are a handful of things you can do with the service provider, including:</para>
+      
+      <itemizedlist>
+          <listitem><para>Manage connections between an application account and a provider profile.</para></listitem>
+          <listitem><para>Access provider API for interacting with the service provider on behalf of the user.</para></listitem>
+      </itemizedlist>
+            
+      <section xml:id="section_sp_manageConnections">
+          <title>Managing provider connections</title>
+          
+          <para>The <interfacename>ServiceProvider</interfacename> interface affords a few methods for managing connections between an application account and a user's profile at the provider:</para>
+          
+          <programlisting><![CDATA[boolean isConnected(Serializable accountId);
+List<ServiceProviderConnection<S>> getConnections(Serializable accountId);]]></programlisting>
+          
+          <para>The <methodname>isConnected()</methodname> method is useful for determining if any connections have been made between the user's application account (specified with the account ID) and the provider.</para>
+
+          <para>To work with the connections themselves, call the <methodname>getConnections()</methodname> method. Notice that this method returns a list of <interfacename>ServiceProviderConnection</interfacename>s and not a single connection. That's because it is possible for a user to connect their account with multiple profiles on the provider. For example, if a user has multiple Twitter profiles, any one or all of them may be connected to their local account.</para>
+          
+          <section xml:id="section_sp_checkConnections">
+              <title>Obtaining a provider API from a connection</title>
+              
+              <para>Once you have one or more <interfacename>ServiceProviderConnection</interfacename>s, you may access the provider API by calling <methodname>getServiceApi()</methodname>. For example, suppose that you're working with <classname>FacebookServiceProvider</classname>. Here's how you might get an instance of <interfacename>FacebookOperations</interfacename> so that you may interact with Facebook on behalf of a user:</para>
+              
+              <programlisting><![CDATA[FacebookOperations facebook = facebookProvider.getConnections(accountId).get(0).getServiceApi();]]></programlisting>
+              
+              <para>Here, the <methodname>getServiceApi()</methodname> method is being called for the first of the connections returned from <methodname>getConnections()</methodname>. In the case of <classname>FacebookServiceProvider</classname>, the service API is defined by the <interfacename>FacebookOperations</interfacename> interface, which is covered in detail in <xref linkend="facebook"/>.</para>
+          </section>      
+          
+          
+          <section xml:id="section_sp_connect">
+              <title>Creating connections through a service provider</title>
+              <para>In addition to the core methods of <interfacename>ServiceProvider</interfacename>, a service provider implementation will give you a <methodname>connect()</methodname> method for creating a connection. The <methodname>connect()</methodname> will vary depending on whether you are working with an OAuth 1-based service provider or an OAuth 2-based service provider. For an OAuth 1 service provider, the <methodname>connect()</methodname> signature is:</para>
+
+              <programlisting><![CDATA[ServiceProviderConnection<S> connect(Serializable accountId, OAuthToken accessToken);]]></programlisting>
+              
+              <para>To create a connection with an OAuth 1 provider, call it, passing in a local application account ID and an access token that was granted for the profile to be connected to:</para>
+              
+              <programlisting><![CDATA[ServiceProviderConnection<?> connection = provider.connect(accountId, new OAuthToken(token, secret));]]></programlisting>
+              
+      		
+              <para>The <classname>OAuthToken</classname> is created given an access token value and the access token secret.</para>
+              
+              <para>For an OAuth 2 service provider, the <methodname>connect()</methodname> signature is slightly different:</para>
+
+              <programlisting><![CDATA[ServiceProviderConnection<S> connect(Serializable accountId, AccessGrant accessToken);]]></programlisting>
+              
+              <para>OAuth 2 access tokens are not paired with an access token secret. They may, however, come with a refresh token. Therefore, to create a connection with an OAuth 2 provider profile:</para>
+              
+              <programlisting><![CDATA[ServiceProviderConnection<?> connection = provider.connect(accountId, new AccessGrant(accessToken, refreshToken));]]></programlisting>              
+              
+              <para>In either case, using these methods assumes that you have already gone through the OAuth dance and have obtained an access token. Since the OAuth authorization flow is non-trivial, it's typically best to take advantage of Spring Social's <classname>ConnectController</classname> (described in <xref linkend="connect-controller"/>) to handle OAuth authorization and the creation of connections.</para>
+          </section>
+      </section>
+      
+      <section xml:id="section_sp_oauthOperations">
+          <title>OAuth Operations</title>
+          
+          <para>TODO</para>
+      </section>
   </section>
 </chapter>

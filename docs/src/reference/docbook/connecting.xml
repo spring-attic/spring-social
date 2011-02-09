@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="connecting"
     xmlns:xlink="http://www.w3.org/1999/xlink">
-  <title>Connecting to Social Providers</title>
+  <title>Connecting to Service Providers</title>
 
-  <para>Most social connections are based on OAuth authorization. Authorizing an application to access a social provider on behalf of a user involves a back-and-forth conversation between the application, the social network, and the user. This conversation, commonly referred to as the "OAuth Dance", involves the application asking the user to tell the social network that it's okay for the application to access and manipulate their social information. The outcome of the dance is an access token that the application can use as a sort of valet key to interact with the social network on the user's behalf.</para>
+  <para>Most connections with social providers are based on OAuth <footnote><para><ulink url="http://oauth.net" /></para></footnote>. OAuth is an open protocol that makes it possible for a client to access a service on behalf of a user without the client being aware of the user's credentials.</para>
+      
+  <para>Authorizing an application to access a social provider on behalf of a user involves a back-and-forth conversation between the application, the social network, and the user. This conversation, commonly referred to as the "OAuth Dance", involves the application asking the user to tell the social network that it's okay for the application to access and manipulate their social information. The outcome of the dance is an access token that the application can use as a sort of valet key to interact with the social network on the user's behalf.</para>
   
   <section id="connect-controller">
     <title>Creating connections with <classname>ConnectController</classname></title>
@@ -14,27 +16,19 @@
 
     <programlisting><![CDATA[
 <bean class="org.springframework.social.web.connect.ConnectController">
-	<constructor-arg ref="serviceProviderFactory" />
-	<constructor-arg ref="accountIdResolver" />
-	<constructor-arg value="http://localhost:8080/myapplication" />
+   <constructor-arg value="http://localhost:8080/myapplication" />
 </bean>
 ]]></programlisting>
 
 
-    <para><classname>ConnectController</classname> is constructed with three arguments:</para>
-    
-    <itemizedlist>
-        <listitem><para>A reference to an instance of a <interfacename>ServiceProviderFactory</interfacename> to assist <classname>ConnectController</classname> in obtaining service providers.</para></listitem>
-        <listitem><para>A reference to an instance of an <interfacename>AccountIdResolver</interfacename> so that <classname>ConnectController</classname> will know which application account to create connections for.</para></listitem>
-        <listitem><para>The base URL for the application. <classname>ConnectController</classname> will use this to construct callback URLs used in the OAuth dance.</para></listitem>
-    </itemizedlist>
+    <para><classname>ConnectController</classname> is constructed with the base URL for the application. <classname>ConnectController</classname> will use this to construct callback URLs used in the OAuth dance.</para>
 
     <para><classname>ConnectController</classname> can handle the application's side of the OAuth dance for either OAuth 1 or OAuth 2 providers. For OAuth 1 providers, <classname>ConnectController</classname> supports the following flow:</para>
     
     <itemizedlist>
         <listitem><para><code>GET /connect/{provider}</code> - Displays a web page showing connection status to the provider.</para></listitem>
         <listitem><para><code>POST /connect/{provider}</code> - Initiates the connection flow with the provider.</para></listitem>
-        <listitem><para><code>GET /connect/{provider}?oauth_token={request token}</code> - Receives the authorization callback from the provider, accepting a request token. Uses the request token to request an access token and complete the connection.</para></listitem>
+        <listitem><para><code>GET /connect/{provider}?oauth_token={request token}&amp;oauth_verifier={verifier}</code> - Receives the authorization callback from the provider, accepting a verification code. Exchanges this verification code along with the request token for an access token and completes the connection.</para></listitem>
         <listitem><para><code>DELETE /connect/{provider}</code> - Severs a connection with the provider.</para></listitem>
     </itemizedlist>
 
@@ -43,8 +37,6 @@
     <itemizedlist>
         <listitem><para><code>GET /connect/{provider}?code={code}</code> - Receives the authorization callback from the provider, accepting an authorization code. Uses the code to request an access token and complete the connection.</para></listitem>
     </itemizedlist>
-    
-    <para><classname>ConnectController</classname> also supports a registration-then-connect flow, which is covered in <xref linkend="registration-flow"/>.</para>
 
     <section id="connect-controller-flow-1">
       <title>Displaying a connection page</title>
@@ -167,7 +159,7 @@
     <section id="connect-controller-flow-3">
       <title>Responding to the authorization callback</title>
       
-      <para>After the user agrees to allow the application have access to their profile on the provider, the provider will redirect their browser back to the application's authorization URL with a code that can be exchanged for an access token. For OAuth 1.0a providers, the callback URL is expected to receive the code (known as a verifier in OAuth 1 terms) in a <code>verifier</code> parameter. For OAuth 2, the code will be in a <code>code</code> parameter.</para>
+      <para>After the user agrees to allow the application have access to their profile on the provider, the provider will redirect their browser back to the application's authorization URL with a code that can be exchanged for an access token. For OAuth 1.0a providers, the callback URL is expected to receive the code (known as a verifier in OAuth 1 terms) in an <code>oauth_verifier</code> parameter. For OAuth 2, the code will be in a <code>code</code> parameter.</para>
       
       <para><classname>ConnectController</classname> will handle the callback request and trade in the verifier/code for an access token. Once the access token has been received, the OAuth dance is complete and the application may use the access token to interact with the provider on behalf of the user. The last thing that <classname>ConnectController</classname> does is to hand off the access token to the <interfacename>ServiceProvider</interfacename> implementation to be stored for future user.</para>
     </section>
@@ -178,7 +170,6 @@
       <para>To delete a connection via <classname>ConnectController</classname>, submit a DELETE request to "/connect/{provider}".</para>
       
       <para>In order to support this through a form in a web browser, you'll need to have Spring's <ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/filter/HiddenHttpMethodFilter.html"><classname>HiddenHttpMethodFilter</classname></ulink> configured in your application's web.xml. Then you can provide a disconnect button via a form like this:</para>
-      
       
         <programlisting><![CDATA[<form action="<c:url value="/connect/twitter" />" method="post">
    <div class="formInfo">
@@ -194,45 +185,6 @@
     </section>
   </section>
 
-  <section id="registration-flow">
-      <title>Registering users with social profile data</title>
-      
-      <para>A convenient feature of many social-ready applications is the ability for a new user to register with the application, creating their new account with data extracted from one of their social network profiles. It's convenient to the user, as they won't have to enter all of their information and can be assured that the data is consistent. It's also convenient for the social application, as it can trust that some of the data has already been vetted by the social provider (such as confirming email addresses).</para>
-      
-      <para>In the connection flow described in <xref linkend="connect-controller"/>, <classname>ConnectController</classname> assumes that the user already has created an account with the application and simply wants to connect that account to one of their social network profiles. But <classname>ConnectController</classname> also supports a register-then-connect flow that enables a new user to create a new account using social profile data and then connect that account as part of the registration process.</para>
-      
-      <para>The register-then-connect flow is quite similar to the connect flow, but with a few small differences.</para>
-      
-      <orderedlist>
-          <listitem><para><code>GET /connect/{provider}/register</code> - Displays a web page showing connection status to the provider.</para></listitem>
-          <listitem><para><code>POST /connect/{provider}</code> - Initiates the register-then-connect flow.</para></listitem>
-          <listitem><para><code>GET /connect/{provider}?oauth_token={token}</code> or <code>GET /connect/{provider}?code={code}</code>- Receives the authorization callback from the provider, accepting a request token or code. After requesting an access token, the user will be redirected to a registration form with an object containing the user profile data in the request.</para></listitem>
-          <listitem><para><code>GET /connect/{provider}/register</code> - The application should redirect to this URL after a successful registration to resume the flow and complete the connection.</para></listitem>
-          <listitem><para><code>DELETE /connect/{provider}</code> - Severs a connection with the provider.</para></listitem>
-      </orderedlist>
-      
-      <para>Unlike the connect flow where step 3 both retrieves an access token from the provider and establishes the connection, step 3 in the register-then-connect flow only retrieves the access token. It cannot create the connection since the user has not yet registered and there is no account to connect with.</para>
-      
-      <para>Once <classname>ConnectController</classname> has an access token, it stores it away (in the session) and sends the user to a registration form. The view name of the registration form is derived from the provider name. If the provider name is "github", then the registration view name will be "connect/githubRegister".</para>
-      
-      <para>Before going to the registration view, however, <classname>ConnectController</classname> retrieves a user profile object from the provider and places it into the request as an attribute named "{provider}UserProfile". If the provider's name is "github", then the attribute name is "githubUserProfile". This object can be used to prepopulate the application's registration form with data from the user's social profile. The type of the profile object will vary from provider to provider and is determined by the object returned from the provider implementation's <methodname>getProviderUserProfile()</methodname> method.</para>
-      
-      <para>The application is expected to provider a controller to handler submission of the registration form and, after successful registration, redirect the browser to <classname>ConnectController</classname>'s via the "/connect/{provider}/register" URL.</para>
-      
-      <para>For example, the GitHub showcase sample has a Spring MVC controller with the following handler method to process registration form submission:</para>
-      
-      
-        <programlisting><![CDATA[@RequestMapping(value = "/signup", method = RequestMethod.POST)
-   public String register(ShowcaseUser user) {
-   
-      // ... create a new account
-   
-      return "redirect:/connect/github/register";
-   }]]></programlisting>
-      
-      <para>After the account has been created, the controller redirects to "/connect/github/register", which is handled by <classname>ConnectController</classname>. <classname>ConnectController</classname> will then pull the access token from the session and use it to complete the connection between the newly created account and the user's social profile.</para>
-  </section>
-
   <section id="connect-interceptors">
     <title>Connection interceptors</title>
 
@@ -241,115 +193,49 @@
     <para><classname>ConnectController</classname> may be configured with one or more connection interceptors that it will call at points in the OAuth flow. These interceptors are defined by the <interfacename>ConnectInterceptor</interfacename> interface:</para>
     
     <programlisting><![CDATA[public interface ConnectInterceptor<S> {
-   void preConnect(ServiceProvider<S> provider, WebRequest request);
-   void postConnect(ServiceProvider<S> provider, WebRequest request);
+    void preConnect(ServiceProvider<S> provider, WebRequest request);
+    void postConnect(ServiceProvider<S> provider, ServiceProviderConnection<S> connection, WebRequest request);
 }]]></programlisting>
 
     <para>The <methodname>preConnect()</methodname> method will be called by <classname>ConnectController</classname> just before redirecting the browser to the provider's authorization page. <methodname>postConnect()</methodname> will be called immediately after a connection has been established between the member account and the provider profile.</para>
     
     <para>For example, suppose that after a connection is made, you want to immediately tweet that connection to the user's Twitter timeline. To accomplish that, you might write the following connection interceptor:</para>
     
-    <programlisting><![CDATA[package org.springframework.social.samples.twitter;
-import org.springframework.social.provider.ServiceProvider;
-import org.springframework.social.web.connect.ConnectInterceptor;
+    <programlisting><![CDATA[package org.springframework.social.showcase.twitter;
+import org.springframework.social.connect.ServiceProvider;
+import org.springframework.social.connect.ServiceProviderConnection;
+import org.springframework.social.twitter.DuplicateTweetException;
 import org.springframework.social.twitter.TwitterOperations;
+import org.springframework.social.web.connect.ConnectInterceptor;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.WebRequest;
 
-public class TwitterConnectInterceptor implements ConnectInterceptor<TwitterOperations> {
+public class TweetAfterConnectInterceptor implements ConnectInterceptor<TwitterOperations> {
+
 	public void preConnect(ServiceProvider<TwitterOperations> provider, WebRequest request) {
-		// nothing to do
+	    // nothing to do
 	}
 
-	public void postConnect(ServiceProvider<TwitterOperations> provider, WebRequest request) {
-		provider.getServiceOperations(getAccountId()).updateStatus("I just connected with the Spring Social Showcase!");
+	public void postConnect(ServiceProvider<TwitterOperations> provider,
+			ServiceProviderConnection<TwitterOperations> connection, WebRequest request) {
+		connection.getServiceApi().updateStatus("I've connected with the Spring Social Showcase!");
 	}
 
-	private Long getAccountId() {
-		// ...
-	}
-}]]></programlisting>
+}
+]]></programlisting>
 
     <para>Then wire this interceptor into <classname>ConnectController</classname>:</para>
     
-        <programlisting><![CDATA[
-    <bean class="org.springframework.social.web.connect.ConnectController">
-    	<constructor-arg ref="serviceProviderFactory" />
-    	<constructor-arg value="http://localhost:8080/myapplication" />
-    	<constructor-arg ref="accountIdResolver" />
-    	<property name="interceptors">
-    	    <list>
-    	        <bean class="org.springframework.social.samples.twitter.TwitterConnectInterceptor" />
-	        </list>
-	    </property>
-    </bean>
-    ]]></programlisting>
+        <programlisting><![CDATA[<bean class="org.springframework.social.web.connect.ConnectController">
+	<constructor-arg value="http://localhost:8080/myapplication" />
+	<property name="interceptors">
+	    <list>
+	        <bean class="org.springframework.social.showcase.twitter.TweetAfterConnectInterceptor" />
+        </list>
+    </property>
+</bean>]]></programlisting>
     
     <para>Note that the <code>interceptors</code> property is a list and can take as many interceptors as you'd like to wire into it. When it comes time for <classname>ConnectController</classname> to call into the interceptors, it will only invoke the interceptor methods for those interceptors accept service operations type matching the service provider's operations type. In the example given here, only connections made through a service provider whose operation type is <interfacename>TwitterOperations</interfacename> will trigger the interceptor's methods.</para>
   </section>
-  
-  <section id="facebook-connect-controller">
-    <title><classname>FacebookConnectController</classname></title>
 
-    <para>In addition to the OAuth 2 web server profile, Facebook also offers connectivity via JavaScript and the Facebook markup language. Spring Social supports this kind of Facebook connectivity with <classname>FacebookConnectController</classname>.</para>
-    
-    <programlisting><![CDATA[<%@ page session="false" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="s" %>
-<%@ taglib uri="http://www.springframework.org/spring-social/facebook/tags" prefix="facebook" %>
-<html>
-    <head>
-    	<title>Facebook Showcase: Connect to Facebook</title>
-    	<script type="text/javascript" src="<c:url value="/resources/jquery/1.4/jquery.js" />"></script>	
-    	<script>
-    		function signInWithFacebook() {
-    			FB.getLoginStatus(function(response) {
-    		        if (response.session) {
-    		    		$('#fb_signin').submit();
-    		        }
-    		      });
-
-    		}
-    	</script>
-    </head>
-    <body>
-        <h1>Facebook Showcase: Connect to Facebook</h1>
-
-        <form id="fb_signin" action="<c:url value="/connect/facebook" />" method="post">
-    	    <div class="formInfo">
-    		    <p>Click the button to connect Facebook Showcase with your Facebook account.</p>
-    	    </div>
-    	    <div id="fb-root"></div>	
-    	    <p><fb:login-button perms="email,publish_stream,offline_access" 
-    	       onlogin="signInWithFacebook();" v="2" length="long">Connect to Facebook</fb:login-button></p>
-        </form>
-        
-        <facebook:init />
-    </body>
-</html>]]></programlisting>
-    
-    
-    <para>When the user clicks on the "Connect to Facebook" button, they will be presented with the following authorization dialog<footnote><para>If the user hasn't yet signed in to Facebook, they will first be prompted with a signin page by Facebook.</para></footnote>:</para>
-    
-    <mediaobject>
-      <imageobject role="fo">
-          <imagedata fileref="images/facebook-authorize-loginbutton.png"
-            format="PNG" align="center" scale="40"/>
-      </imageobject>
-      <imageobject role="html">
-          <imagedata fileref="images/facebook-authorize-loginbutton.png" format="PNG" align="center" scale="40"/>
-      </imageobject>
-    </mediaobject>
-    
-    
-    
-    <para>When the user clicks on the "Allow" button, the dialog will close and the access token will be written to a cookie. If the user clicks on the "Don't Allow" button, the dialog will still close, but no cookie will be written.</para>
-    
-    <para>TODO: Finish this section</para>
-    
-    <programlisting><![CDATA[<bean class="org.springframework.social.facebook.connect.FacebookConnectController">
-        <constructor-arg ref="facebookProvider" />
-        <constructor-arg ref="accountIdResolver" />
-</bean>]]></programlisting>
-
-  </section>
 </chapter>

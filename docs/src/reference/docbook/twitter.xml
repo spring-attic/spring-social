@@ -21,9 +21,9 @@
   
   <para>When constructed with the default constructor, <classname>TwitterTemplate</classname> will allow a few simple operations that do not require authorization, such as searching. Other operations, such as tweeting will fail with an <classname>AccountNotConnectedException</classname> being thrown.</para>
   
-  <para>If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>TwitterOperations</interfacename> by calling on of <classname>TwitterServiceProvider</classname>'s <methodname>getServiceOperations()</methodname> methods. For instance:</para>
+  <para>If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>TwitterOperations</interfacename> by calling the <methodname>getServiceApi()</methodname> method on one of the connections given by <classname>TwitterServiceProvider</classname>'s <methodname>getConnections()</methodname> method. For instance:</para>
   
-  <programlisting><![CDATA[TwitterOperations twitter = twitterProvider.getServiceOperations(accountId);]]></programlisting>
+  <programlisting><![CDATA[TwitterOperations twitter = twitterProvider.getConnections(accountId).get(0).getServiceApi();]]></programlisting>
   
   <para>Here, <classname>TwitterServiceProvider</classname> is being asked for a <interfacename>TwitterOperations</interfacename> that was created using connection details established previously via the service provider's <methodname>connect()</methodname> method or through <classname>ConnectController</classname>.</para>
   

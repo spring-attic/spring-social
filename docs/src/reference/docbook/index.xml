@@ -50,9 +50,9 @@
     	 <para>In order for an application to access a social network on behalf of a user, the user must grant the application permission. This involves a 3-way conversation between the user, the application and the social provider. Spring Social's service provider abstraction and connection controllers simplify this authorization.</para>
     </partintro>
     
-    <xi:include href="./connecting.xml"/>
     <xi:include href="./serviceprovider.xml"/>
-    
+    <xi:include href="./connecting.xml"/>
+    <xi:include href="./signin.xml" />
   </part>
   
   <part id="spring-social-templates">

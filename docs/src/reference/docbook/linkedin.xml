@@ -15,9 +15,9 @@ String accessToken = "..."; // The access token granted after OAuth authorizatio
 String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
 LinkedInOperations linkedin = new LinkedInTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]></programlisting>
   
-  <para>If you're using the service provider framework described in <xref linkend="serviceprovider"/>, you can get an instance of <classname>LinkedInTemplate</classname> by calling one of the <methodname>getServiceOperations()</methodname> methods on <classname>LinkedInServiceProvider</classname> For example:</para>
+  <para>If you're using the service provider framework described in <xref linkend="serviceprovider"/>, you can get an instance of <classname>LinkedInTemplate</classname> by calling the <methodname>getServiceApi()</methodname> method on one of the connections given by <classname>LinkedInServiceProvider</classname>'s <methodname>getConnections()</methodname> method. For example:</para>
 
-  <programlisting><![CDATA[LinkedInOperations linkedin = linkedInProvider.getServiceOperations(accountId);]]></programlisting>
+  <programlisting><![CDATA[LinkedInOperations linkedin = linkedinProvider.getConnections(accountId).get(0).getServiceApi();]]></programlisting>
   
   <para>In this case, the <methodname>getServiceOperations()</methodname> is asked to return a <interfacename>LinkedInOperations</interfacename> instance created using connection details established using the service provider's <methodname>connect()</methodname> method or via <classname>ConnectController</classname>.</para>
   
