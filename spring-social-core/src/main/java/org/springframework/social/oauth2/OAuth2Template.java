@@ -23,7 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
@@ -67,13 +66,13 @@ public class OAuth2Template implements OAuth2Operations {
 		requestParameters.set("redirect_uri", redirectUri);
 		requestParameters.set("grant_type", "authorization_code");
 		@SuppressWarnings("unchecked")
-		Map<String, ?> result = getRestOperations().postForObject(accessTokenUrl, requestParameters, Map.class);
+		Map<String, ?> result = restTemplate.postForObject(accessTokenUrl, requestParameters, Map.class);
 		return new AccessGrant(valueOf(result.get("access_token")), valueOf(result.get("refresh_token")));
 	}
 
-	// subclassing hooks
+	// testing hooks
 	
-	protected RestOperations getRestOperations() {
+	RestTemplate getRestTemplate() {
 		return restTemplate;
 	}
 	

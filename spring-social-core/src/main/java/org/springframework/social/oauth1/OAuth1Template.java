@@ -25,7 +25,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplate;
 
@@ -70,7 +69,7 @@ public class OAuth1Template implements OAuth1Operations {
 		Map<String, String> accessTokenParameters = new HashMap<String, String>();
 		accessTokenParameters.put("oauth_token", requestToken.getValue());
 		accessTokenParameters.put("oauth_verifier", requestToken.getVerifier());
-		return getTokenFromProvider(getAccessTokenUrl(), accessTokenParameters, Collections.<String, String> emptyMap(),
+		return getTokenFromProvider(accessTokenUrl, accessTokenParameters, Collections.<String, String> emptyMap(),
 				requestToken.getSecret());
 	}
 
@@ -79,15 +78,12 @@ public class OAuth1Template implements OAuth1Operations {
 	private OAuthToken getTokenFromProvider(String tokenUrl, Map<String, String> tokenRequestParameters,
 			Map<String, String> additionalParameters, String tokenSecret) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization",
-				getAuthorizationHeaderValue(tokenUrl, tokenRequestParameters, additionalParameters, tokenSecret));
+		headers.add("Authorization", getAuthorizationHeaderValue(tokenUrl, tokenRequestParameters, additionalParameters, tokenSecret));
 		MultiValueMap<String, String> bodyParameters = new LinkedMultiValueMap<String, String>();
 		bodyParameters.setAll(additionalParameters);
-		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(
-				bodyParameters, headers);
+		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(bodyParameters, headers);
 		@SuppressWarnings("rawtypes")
-		ResponseEntity<MultiValueMap> response = getRestOperations().exchange(tokenUrl, HttpMethod.POST, request,
-				MultiValueMap.class);
+		ResponseEntity<MultiValueMap> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, request, MultiValueMap.class);
 		@SuppressWarnings("unchecked")
 		MultiValueMap<String, String> responseMap = response.getBody();
 		return new OAuthToken(responseMap.getFirst("oauth_token"), responseMap.getFirst("oauth_token_secret"));
@@ -101,13 +97,8 @@ public class OAuth1Template implements OAuth1Operations {
 				HttpMethod.POST, consumerSecret, tokenSecret);
 	}
 	
-	// subclassing hooks
-	
-	protected RestOperations getRestOperations() {
+	// testing hooks
+	RestTemplate getRestTemplate() {
 		return restTemplate;
-	}
-
-	protected String getAccessTokenUrl() {
-		return accessTokenUrl;
 	}
 }

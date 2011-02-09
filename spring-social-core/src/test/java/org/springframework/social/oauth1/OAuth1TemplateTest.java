@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.test.MockRestServiceServer;
 
 public class OAuth1TemplateTest {
@@ -34,7 +33,7 @@ public class OAuth1TemplateTest {
 
 	@Test
 	public void fetchNewRequestToken() {
-		MockRestServiceServer mockServer = MockRestServiceServer.createServer((RestTemplate) oauth1.getRestOperations());
+		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauth1.getRestTemplate());
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		mockServer.expect(requestTo("https://www.someprovider.com/oauth/requestToken"))
@@ -55,8 +54,7 @@ public class OAuth1TemplateTest {
 
 	@Test
 	public void exchangeForAccessToken() {
-		MockRestServiceServer mockServer = MockRestServiceServer
-				.createServer((RestTemplate) oauth1.getRestOperations());
+		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauth1.getRestTemplate());
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		mockServer
