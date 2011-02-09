@@ -1,0 +1,20 @@
+[
+	{
+		"id" : 12345,
+		"text" : "Hello there",
+		"sender_id" : 24680,
+		"sender_screen_name" : "rclarkson",
+		"recipient_id" : 13579,
+		"recipient_screen_name" : "kdonald",
+		"created_at" : "Tue Jul 13 17:38:21 +0000 2010"
+	},
+	{
+		"id" : 23456,
+		"text" : "Back at ya",
+		"sender_id" : 13579,
+		"sender_screen_name" : "kdonald",
+		"recipient_id" : 24680,
+		"recipient_screen_name" : "rclarkson",
+		"created_at" : "Wed Jul 14 12:13:19 +0000 2010"
+	}	
+]

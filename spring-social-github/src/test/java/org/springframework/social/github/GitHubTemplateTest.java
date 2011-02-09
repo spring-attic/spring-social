@@ -47,6 +47,7 @@ public class GitHubTemplateTest {
 	@Test
 	public void getUserProfile() throws Exception {
 		mockServer.expect(requestTo("https://github.com/api/v2/json/user/show")).andExpect(method(GET))
+				.andExpect(header("Authorization", "Token token=\"ACCESS_TOKEN\""))
 				.andRespond(withResponse(new ClassPathResource("profile.json", getClass()), responseHeaders));
 		GitHubUserProfile profile = github.getUserProfile();
 		assertEquals("habuma", profile.getUsername());
@@ -60,6 +61,7 @@ public class GitHubTemplateTest {
 	@Test
 	public void getProfileId() {
 		mockServer.expect(requestTo("https://github.com/api/v2/json/user/show")).andExpect(method(GET))
+				.andExpect(header("Authorization", "Token token=\"ACCESS_TOKEN\""))
 				.andRespond(withResponse(new ClassPathResource("profile.json", getClass()), responseHeaders));
 		assertEquals("habuma", github.getProfileId());
 	}
@@ -67,6 +69,7 @@ public class GitHubTemplateTest {
 	@Test
 	public void getProfileUrl() {
 		mockServer.expect(requestTo("https://github.com/api/v2/json/user/show")).andExpect(method(GET))
+				.andExpect(header("Authorization", "Token token=\"ACCESS_TOKEN\""))
 				.andRespond(withResponse(new ClassPathResource("profile.json", getClass()), responseHeaders));
 		assertEquals("https://github.com/habuma", github.getProfileUrl());
 	}

@@ -49,14 +49,15 @@ public class GowallaTemplateTest {
 	@Test
 	public void getProfileId() {
 		mockServer.expect(requestTo("https://api.gowalla.com/users/me")).andExpect(method(GET))
-				.andRespond(
-						withResponse("{\"username\":\"habuma\",\"pins_count\":17,\"stamps_count\":2}", responseHeaders));
+				.andExpect(header("Authorization", "Token token=\"ACCESS_TOKEN\""))
+				.andRespond(withResponse("{\"username\":\"habuma\",\"pins_count\":17,\"stamps_count\":2}", responseHeaders));
 		assertEquals("habuma", gowalla.getProfileId());
 	}
 
 	@Test
 	public void getProfileUrl() {
 		mockServer.expect(requestTo("https://api.gowalla.com/users/me")).andExpect(method(GET))
+				.andExpect(header("Authorization", "Token token=\"ACCESS_TOKEN\""))
 				.andRespond(withResponse("{\"username\":\"habuma\",\"pins_count\":17,\"stamps_count\":2}", responseHeaders));
 		assertEquals("http://www.gowalla.com/users/habuma", gowalla.getProfileUrl());
 	}
@@ -64,6 +65,7 @@ public class GowallaTemplateTest {
 	@Test
 	public void getTopCheckins() {
 		mockServer.expect(requestTo("https://api.gowalla.com/users/habuma/top_spots")).andExpect(method(GET))
+				.andExpect(header("Authorization", "Token token=\"ACCESS_TOKEN\""))
 				.andRespond(withResponse(new ClassPathResource("top_spots.json", getClass()), responseHeaders));
 
 		List<Checkin> checkins = gowalla.getTopCheckins("habuma");

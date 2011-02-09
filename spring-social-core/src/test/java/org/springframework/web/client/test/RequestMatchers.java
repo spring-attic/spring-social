@@ -96,6 +96,7 @@ public abstract class RequestMatchers {
 		return new RequestMatcher() {
 			public void match(ClientHttpRequest request) throws AssertionError {
 				List<String> actual = request.getHeaders().get(header);
+				AssertionErrors.assertTrue("Expected header in request: " + header, actual != null);
 				AssertionErrors.assertTrue("Unexpected header", actual.contains(value));
 			}
 		};
