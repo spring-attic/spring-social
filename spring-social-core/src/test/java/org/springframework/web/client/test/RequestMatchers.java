@@ -102,6 +102,30 @@ public abstract class RequestMatchers {
 		};
 	}
 	
+	public static RequestMatcher headerContains(final String header, final String substring) {
+		Assert.notNull(header, "'header' must not be null");
+		Assert.notNull(substring, "'substring' must not be null");
+		return new RequestMatcher() {
+			public void match(ClientHttpRequest request) throws AssertionError {
+				List<String> actualHeaders = request.getHeaders().get(header);
+				AssertionErrors.assertTrue("Expected header in request: " + header, actualHeaders != null);
+
+				boolean foundMatch = false;
+				for (String headerValue : actualHeaders) {
+					System.out.println(headerValue);
+					if (headerValue.contains(substring)) {
+						foundMatch = true;
+						break;
+					}
+				}
+
+				AssertionErrors.assertTrue(
+						"Header \"" + header + "\" didn't contain expected text <" + substring + ">",
+						foundMatch);
+			}
+		};
+	}
+
 	/**
 	 * Expects the given request body content
 	 * 

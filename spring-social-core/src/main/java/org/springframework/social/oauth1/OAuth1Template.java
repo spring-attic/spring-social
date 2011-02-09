@@ -85,9 +85,12 @@ public class OAuth1Template implements OAuth1Operations {
 		bodyParameters.setAll(additionalParameters);
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(
 				bodyParameters, headers);
-		ResponseEntity<String> response = getRestOperations().exchange(tokenUrl, HttpMethod.POST, request, String.class);
-		Map<String, String> responseMap = parseResponse(response.getBody());
-		return new OAuthToken(responseMap.get("oauth_token"), responseMap.get("oauth_token_secret"));
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<MultiValueMap> response = getRestOperations().exchange(tokenUrl, HttpMethod.POST, request,
+				MultiValueMap.class);
+		@SuppressWarnings("unchecked")
+		MultiValueMap<String, String> responseMap = response.getBody();
+		return new OAuthToken(responseMap.getFirst("oauth_token"), responseMap.getFirst("oauth_token_secret"));
 	}
 
 	private String getAuthorizationHeaderValue(String tokenUrl, Map<String, String> tokenRequestParameters,
@@ -98,18 +101,6 @@ public class OAuth1Template implements OAuth1Operations {
 				HttpMethod.POST, consumerSecret, tokenSecret);
 	}
 	
-	private Map<String, String> parseResponse(String response) {
-		Map<String, String> responseMap = new HashMap<String, String>();
-		String[] responseEntries = response.split("&");
-		for (String entry : responseEntries) {
-			String[] keyValuePair = entry.split("=");
-			if (keyValuePair.length > 1) {
-				responseMap.put(keyValuePair[0], keyValuePair[1]);
-			}
-		}
-		return responseMap;
-	}
-
 	// subclassing hooks
 	
 	protected RestOperations getRestOperations() {
