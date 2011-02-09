@@ -77,8 +77,6 @@ public class FacebookTemplateTest {
 		assertEquals("Walls", profile.getLastName());
 		assertEquals("Craig Walls", profile.getName());
 		assertEquals("cwalls@vmware.com", profile.getEmail());
-		assertEquals("http://www.facebook.com/profile.php?id=123456789", profile.getProfileUrl());
-		assertEquals("https://graph.facebook.com/123456789/picture", profile.getProfileImageUrl());
 	}
 
 	@Test
@@ -97,16 +95,6 @@ public class FacebookTemplateTest {
 				.andRespond(withResponse(new ClassPathResource("me.json", getClass()), responseHeaders));
 
 		assertEquals("http://www.facebook.com/profile.php?id=123456789", facebook.getProfileUrl());
-	}
-
-	@Test
-	public void getProfilePictureUrl() {
-		mockServer.expect(requestTo("https://graph.facebook.com/me")).andExpect(method(GET))
-				.andExpect(header("Authorization", "OAuth someAccessToken"))
-				.andRespond(withResponse(new ClassPathResource("me.json", getClass()), responseHeaders));
-
-		assertEquals("https://graph.facebook.com/123456789/picture", facebook.getProfilePictureUrl());
-		assertEquals("https://graph.facebook.com/habuma/picture", facebook.getProfilePictureUrl("habuma"));
 	}
 
 	@Test

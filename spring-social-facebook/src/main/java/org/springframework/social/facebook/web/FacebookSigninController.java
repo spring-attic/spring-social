@@ -30,11 +30,13 @@ import org.springframework.social.web.connect.SignInControllerGateway;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+/**
+ * Controller that enables a user to authenticate to an application by signing into Facebook.
+ * @author Craig Walls
+ */
 @Controller
 @RequestMapping("/signin/")
 public class FacebookSigninController {
-
-	private static final String FACEBOOK_PROVIDER_ID = "facebook";
 
 	private final ConnectionRepository connectionRepository;
 
@@ -44,6 +46,12 @@ public class FacebookSigninController {
 
 	private final String apiKey;
 
+	/**
+	 * Constructs the FacebookSigninController.
+	 * @param connectionRepository a connection repository used to lookup the account ID connected to the Facebook profile.
+	 * @param signinGateway the signin strategy used to authenticate the user with the application.
+	 * @param apiKey the Facebook API key used to retrieve the Facebook cookie containing the access token.
+	 */
 	public FacebookSigninController(ConnectionRepository connectionRepository, SignInControllerGateway signinGateway,
 			String apiKey) {
 		this.connectionRepository = connectionRepository;
@@ -54,18 +62,21 @@ public class FacebookSigninController {
 	/**
 	 * Sets the view that will be displayed should no connection be found for the Twitter profile.
 	 * 
-	 * @param noConnectionView
-	 *            the view to display when no connection can be found
+	 * @param noConnectionView the view to display when no connection can be found
 	 */
 	public void setNoConnectionView(String noConnectionView) {
 		this.noConnectionView = noConnectionView;
 	}
 
+	/**
+	 * Retrieves the user's Facebook access token from a cookie written after a successful login using Facebook's &lt;fb:login-button&gt; tag.
+	 * Uses that access token to lookup the connected account ID and attempts to authenticate to the application for that account.
+	 * If there is no connection for access token, the flow will transition to the no-connection view, "redirect:/signup" by default.
+	 */
 	@RequestMapping(value = FACEBOOK_PROVIDER_ID, method = POST)
 	public String signin(HttpServletRequest request) {
 		String accessToken = resolveAccessTokenValue(request);
-		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(FACEBOOK_PROVIDER_ID,
-				accessToken);
+		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(FACEBOOK_PROVIDER_ID, accessToken);
 
 		if (accountId == null) {
 			return noConnectionView;
@@ -118,4 +129,7 @@ public class FacebookSigninController {
 		}
 		return data;
 	}
+
+	private static final String FACEBOOK_PROVIDER_ID = "facebook";
+
 }

@@ -111,14 +111,6 @@ public class FacebookTemplate implements FacebookOperations {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
 		restTemplate.postForLocation(CONNECTION_URL, requestData, object, connection);
 	}
-	
-	public String getProfilePictureUrl() {
-		return getProfilePictureUrl(getProfileId());
-	}
-
-	public String getProfilePictureUrl(String profileId) {
-		return "https://graph.facebook.com/" + profileId + "/picture";
-	}
 
 	// subclassing hooks
 	
