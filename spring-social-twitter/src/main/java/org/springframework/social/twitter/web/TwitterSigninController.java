@@ -36,11 +36,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
+/**
+ * Controller that performs Twitter's "sign in with Twitter" OAuth flow, as described at http://dev.twitter.com/pages/sign_in_with_twitter.
+ * Upon completing the signin flow, looks up the application account ID connected with the Twitter profile and signs in.
+ * If no connection can be found, the controller goes to a no-connection view, "redirect:/signup" by default.  
+ * @author Craig Walls
+ */
 @Controller
 @RequestMapping("/signin/")
 public class TwitterSigninController implements BeanFactoryAware {
-
-	private static final String TWITTER_PROVIDER_ID = "twitter";
 
 	private ServiceProviderLocator serviceProviderLocator;
 
@@ -52,6 +56,12 @@ public class TwitterSigninController implements BeanFactoryAware {
 
 	private String noConnectionView = "redirect:/signup";
 
+	/**
+	 * Constructs the Twitter sign in controller.
+	 * @param connectionRepository a connection repository used to lookup the account ID connected to the Twitter profile.
+	 * @param signinGateway the signin strategy used to authenticate the user with the application.
+	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
+	 */
 	public TwitterSigninController(ConnectionRepository connectionRepository, SignInControllerGateway signinGateway,
 			String applicationUrl) {
 		this.connectionRepository = connectionRepository;
@@ -71,6 +81,9 @@ public class TwitterSigninController implements BeanFactoryAware {
 		this.noConnectionView = noConnectionView;
 	}
 
+	/**
+	 * Initiates the sign-in with Twitter flow by fetching a request token and redirecting to Twitter's authentication URL.
+	 */
 	@RequestMapping(value = TWITTER_PROVIDER_ID, method = RequestMethod.POST)
 	public String signin(WebRequest request) {
 		// TODO: Address the duplication between this controller and ConnectController
@@ -81,6 +94,11 @@ public class TwitterSigninController implements BeanFactoryAware {
 		return "redirect:https://api.twitter.com/oauth/authenticate?oauth_token=" + requestToken.getValue();
 	}
 
+	/**
+	 * Processes the authentication callback from Twitter after the user authenticates with Twitter. Exchanges the
+	 * request token and given verifier for an access token. Uses that access token to lookup a connected account ID to signin with.
+	 * If there is no connection for access token, the flow will transition to the no-connection view, "redirect:/signup" by default.
+	 */
 	@RequestMapping(value = TWITTER_PROVIDER_ID, method = RequestMethod.GET, params = "oauth_token")
 	public String oauth1Callback(@RequestParam("oauth_token") String token,
 			@RequestParam(value = "oauth_verifier") String verifier, WebRequest request) {
@@ -113,5 +131,7 @@ public class TwitterSigninController implements BeanFactoryAware {
 	}
 
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
+
+	private static final String TWITTER_PROVIDER_ID = "twitter";
 
 }

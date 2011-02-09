@@ -23,7 +23,7 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.social.connect.ServiceProvider;
 
 /**
- * Implementation of ServiceProviderFactory that retrieves service providers, by name, from the application context.
+ * Looks up service providers, by name, from the application context.
  * @author Craig Walls
  */
 public class ServiceProviderLocator {
