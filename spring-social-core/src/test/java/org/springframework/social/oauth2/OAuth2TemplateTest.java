@@ -1,19 +1,22 @@
 package org.springframework.social.oauth2;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.HashMap;
-import java.util.Map;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.web.client.test.RequestMatchers.*;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.web.client.RestOperations;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.test.MockRestServiceServer;
+import org.springframework.web.client.test.ResponseCreators;
 
 public class OAuth2TemplateTest {
 	
+	private static final String ACCESS_TOKEN_URL = "http://www.someprovider.com/oauth/accessToken";
+
 	private OAuth2Template oAuth2Template;
 	
 	private String accessTokenUrl;
@@ -21,8 +24,7 @@ public class OAuth2TemplateTest {
 	@Before
 	public void setup() {
 		String authorizeUrl = "http://www.someprovider.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}";
-		accessTokenUrl = "http://www.someprovider.com/oauth/accessToken";
-		oAuth2Template = new OAuth2Template("client_id", "client_secret", authorizeUrl, accessTokenUrl);
+		oAuth2Template = new OAuth2Template("client_id", "client_secret", authorizeUrl, ACCESS_TOKEN_URL);
 	}
 
 	@Test
@@ -49,28 +51,20 @@ public class OAuth2TemplateTest {
 	}
 
 	@Test
-	@Ignore("Revisit this with a better response-content-based test later")
 	public void exchangeForAccess() {
-		final RestOperations rest = mock(RestOperations.class);
-		Map<String, String> parameters = new HashMap<String, String>();
-		parameters.put("client_id", "client_id");
-		parameters.put("client_secret", "client_secret");
-		parameters.put("code", "authCode");
-		parameters.put("redirect_uri", "http://www.someclient.com/connect/foo");
-		parameters.put("grant_type", "authorization_code");
-		Map<String, String> result = new HashMap<String, String>();
-		result.put("access_token", "ACCESS_TOKEN");
-		result.put("refresh_token", "REFRESH_TOKEN");
-		when(rest.postForObject(eq(accessTokenUrl), eq(parameters), eq(Map.class))).thenReturn(result);
-		String authorizeUrl = "http://www.someprovider.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}";
-		OAuth2Template oauth2Template = new OAuth2Template("client_id", "client_secret", authorizeUrl, accessTokenUrl) {
-			protected RestOperations getRestOperations() {
-				return rest;
-			};
-		};
-		AccessGrant accessToken = oauth2Template.exchangeForAccess("authCode", "http://www.someclient.com/connect/foo");
-		assertEquals("ACCESS_TOKEN", accessToken.getAccessToken());
-		assertEquals("REFRESH_TOKEN", accessToken.getRefreshToken());
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
+		MockRestServiceServer mockServer = MockRestServiceServer.createServer((RestTemplate) oAuth2Template
+				.getRestOperations());
+		mockServer.expect(requestTo(ACCESS_TOKEN_URL))
+				.andExpect(method(POST))
+				.andExpect(body("client_id=client_id&client_secret=client_secret&code=code&" +
+								"redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fcallback&grant_type=authorization_code"))
+				.andRespond(ResponseCreators.withResponse(new ClassPathResource("accessToken.json", getClass()),
+								responseHeaders));
+		AccessGrant accessGrant = oAuth2Template.exchangeForAccess("code", "http://www.someclient.com/callback");
+		assertEquals("accessToken", accessGrant.getAccessToken());
+		assertEquals("refreshToken", accessGrant.getRefreshToken());
 	}
 	
 	@Test
