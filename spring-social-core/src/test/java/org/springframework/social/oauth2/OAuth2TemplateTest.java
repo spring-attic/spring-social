@@ -53,6 +53,7 @@ public class OAuth2TemplateTest {
 	@Test
 	public void exchangeForAccess() {
 		HttpHeaders responseHeaders = new HttpHeaders();
+		// TODO : Facebook returns the token as URL-encoded with text/plain content type. Test for other providers.
 		responseHeaders.setContentType(MediaType.TEXT_PLAIN);
 		MockRestServiceServer mockServer = MockRestServiceServer.createServer((RestTemplate) oAuth2Template
 				.getRestOperations());
