@@ -102,6 +102,13 @@ public abstract class RequestMatchers {
 		};
 	}
 	
+	/**
+	 * Expects that the specified request header contains a subtring
+	 * 
+	 * @param header the header name
+	 * @param substring the substring that must appear in the header
+	 * @return the request matcher
+	 */
 	public static RequestMatcher headerContains(final String header, final String substring) {
 		Assert.notNull(header, "'header' must not be null");
 		Assert.notNull(substring, "'substring' must not be null");
@@ -119,8 +126,7 @@ public abstract class RequestMatchers {
 					}
 				}
 
-				AssertionErrors.assertTrue(
-						"Header \"" + header + "\" didn't contain expected text <" + substring + ">",
+				AssertionErrors.assertTrue("Header \"" + header + "\" didn't contain expected text <" + substring + ">",
 						foundMatch);
 			}
 		};
