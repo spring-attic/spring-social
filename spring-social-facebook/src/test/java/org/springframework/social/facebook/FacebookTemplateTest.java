@@ -75,7 +75,7 @@ public class FacebookTemplateTest {
 		assertEquals(123456789, profile.getId());
 		assertEquals("Craig", profile.getFirstName());
 		assertEquals("Walls", profile.getLastName());
-//		assertEquals("Craig Walls", profile.getName());
+		assertEquals("Craig Walls", profile.getName());
 		assertEquals("cwalls@vmware.com", profile.getEmail());
 		assertEquals("http://www.facebook.com/profile.php?id=123456789", profile.getProfileUrl());
 		assertEquals("https://graph.facebook.com/123456789/picture", profile.getProfileImageUrl());
