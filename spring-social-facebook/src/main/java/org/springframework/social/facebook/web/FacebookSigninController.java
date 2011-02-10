@@ -56,6 +56,11 @@ public class FacebookSigninController {
 			String apiKey) {
 		this.connectionRepository = connectionRepository;
 		this.signinGateway = signinGateway;
+		// TODO: This key is used to lookup the Facebook cookie. But I wonder if it's necessary. Shouldn't there only be
+		// one"fbs_*" cookie in any given application? If so, then just look for any cookie that starts with "fbs_" and
+		// use it.
+		// Alternatively, the Facebook service provider could be looked up here and could expose its API key as a
+		// property. Then this controller could just get the API key from the provider.
 		this.apiKey = apiKey;
 	}
 

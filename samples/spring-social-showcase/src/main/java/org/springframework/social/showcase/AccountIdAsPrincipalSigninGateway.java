@@ -8,7 +8,6 @@ import org.springframework.social.web.connect.SignInControllerGateway;
 
 public class AccountIdAsPrincipalSigninGateway implements SignInControllerGateway {
 
-	@Override
 	public void signIn(Serializable accountId) {
 		SecurityContextHolder.getContext().setAuthentication(
 				new UsernamePasswordAuthenticationToken(accountId, null, null));

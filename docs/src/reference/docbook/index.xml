@@ -56,7 +56,7 @@
   </part>
   
   <part id="spring-social-templates">
-    <title>Social Templates</title>
+    <title>Interacting</title>
     <partintro id="spring-social-templates-partintro">
     	 <para>Spring Social comes with a selection of social templates to perform operations against a variety of social networks.</para>
     </partintro>

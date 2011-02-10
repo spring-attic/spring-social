@@ -3,5 +3,142 @@
     xmlns:xlink="http://www.w3.org/1999/xlink">
   <title>Signing in With Social Services</title>
 
-  <para>TODO</para>
+  <para>To make it easier for users to sign in to your application, Spring Social makes it possible for them to authenticate to your application by signing into either Twitter or Facebook.</para>
+  
+  <section xml:id="signin_with_twitter">
+      <title>Sign in with Twitter</title>
+      
+      <para>Spring Social's <classname>TwitterSigninController</classname> is a Spring MVC controller that processes the "Sign in with Twitter" flow described at <ulink url="http://dev.twitter.com/pages/sign_in_with_twitter"/>. Essentially, this process is an OAuth 1 authorization flow, quite similar to the flow that <classname>ConnectController</classname> processes for connecting an account with Twitter. The key difference is that instead of presenting the user with an authorization page that asks for permission to be granted to the application, the sign in flow presents a simple authentication page that only asks the user to sign in to Twitter.</para>
+      
+      <para>At the end of process, <classname>TwitterSigninController</classname> attempts to find a previously established connection and uses the connected account to authenticate the user to the application.</para>
+      
+      <para>To add "Sign in with Twitter" capability to your Spring application, configure <classname>TwitterSigninController</classname> as a bean in your Spring MVC application:</para>
+      
+      <programlisting><![CDATA[<bean class="org.springframework.social.twitter.web.TwitterSigninController">
+	<constructor-arg ref="connectionRepository" />
+	<constructor-arg ref="signinGateway" />
+	<constructor-arg value="http://localhost:8080/myapplication" />
+</bean>]]></programlisting>
+
+      <para><classname>TwitterSigninController</classname> is constructed with three arguments:</para>
+      
+      <itemizedlist>
+          <listitem><para>A reference to a connection repository bean. After signing into Twitter, <classname>TwitterSigninController</classname> will use the connection repository to find an account ID that is connected to the Twitter profile.</para></listitem>
+          <listitem><para>A reference to an implementation of <interfacename>SignInControllerGateway</interfacename>, used to perform the actual authentication into the application.</para></listitem>
+          <listitem><para>The application's base URL, used to construct a callback URL for the OAuth flow.</para></listitem>
+      </itemizedlist>
+
+      <para><classname>TwitterSigninController</classname> supports the following flow:</para>
+
+      <itemizedlist>
+          <listitem><para><code>POST /signin/twitter</code> - Initiates the "Sign in with Twitter" flow, fetching a request token from Twitter and redirecting to Twitter's authentication page.</para></listitem>
+          <listitem><para><code>GET /signin/twitter?oauth_token={request token}&amp;oauth_verifier={verifier}</code> - Receives the authentication callback from Twitter, accepting a verification code. Exchanges this verification code along with the request token for an access token. It uses this access token to lookup a connected account and then authenticates to the application through the sign in gateway. </para>
+          <itemizedlist>
+              <listitem><para>If the received access token doesn't match any existing connection, <classname>TwitterSigninController</classname> will proceed to a no-connection view. The default no-connection view is "redirect:/signup".</para></listitem>
+          </itemizedlist>
+          </listitem>
+      </itemizedlist>
+
+      <para><classname>TwitterSigninController</classname> handles the authentication flow with Twitter, but relies on an implementation of <interfacename>SignInControllerGateway</interfacename> to perform the actual authentication into the application. <interfacename>SignInControllerGateway</interfacename> is defined as follows:</para>
+
+      <programlisting><![CDATA[public interface SignInControllerGateway {
+	void signIn(Serializable accountId);	
+}]]></programlisting>
+
+      <para>Different applications will implement security differently, so each application must implement <interfacename>SignInControllerGateway</interfacename> in a way that fits its unique security scheme.</para>
+      
+      <para>As an example, suppose that an application's security is based Spring Security and simply uses a user's account ID as their principal. In that case, a simple implementation of <interfacename>SignInControllerGateway</interfacename> might look like this:</para>
+
+      <programlisting><![CDATA[package org.springframework.social.showcase;
+import java.io.Serializable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.social.web.connect.SignInControllerGateway;
+
+public class AccountIdAsPrincipalSigninGateway implements SignInControllerGateway {
+	public void signIn(Serializable accountId) {
+		SecurityContextHolder.getContext().setAuthentication(
+				new UsernamePasswordAuthenticationToken(accountId, null, null));
+	}
+}]]></programlisting>
+
+      <para>The last thing to do is to add a "Sign in with Twitter" button to your application:</para>
+          
+      <programlisting><![CDATA[<form id="tw_signin" action="<c:url value="/signin/twitter"/>" method="POST">
+	<button type="submit"><img src="<c:url value="/resources/social/twitter/sign-in-with-twitter-d.png"/>" /></button>
+</form>]]></programlisting>
+
+      <para>Clicking this button will trigger a POST request to "/signin/twitter", kicking off the Twitter sign in flow. If the user has not yet signed into Twitter, the user will be presented with the following page from Twitter:</para>
+
+    <mediaobject>
+      <imageobject role="fo">
+          <imagedata fileref="images/sign-in-with-twitter.png"
+            format="PNG" align="center" scale="40"/>
+      </imageobject>
+      <imageobject role="html">
+          <imagedata fileref="images/sign-in-with-twitter.png" format="PNG" align="center" scale="40"/>
+      </imageobject>
+    </mediaobject>
+
+    <para>After signing in, the flow will redirect back to the application to complete the sign in process.</para>
+    
+    <para>If the user has already signed into Twitter prior to clicking the sign in button, Twitter will redirect the flow back to the application without presenting the user with a sign in page.</para>
+  </section>
+
+  <section xml:id="signin_with_facebook">
+      <title>Sign in with Facebook</title>
+      
+      <para>Spring Social's <classname>FacebookSigninController</classname>, when paired with Facebook's <code><![CDATA[<fb:login-button>]]></code> XFBML tag<footnote><para><ulink url="http://developers.facebook.com/docs/reference/plugins/login/"/></para></footnote>, enables a user to authenticate to an application by first signing into Facebook.</para>
+      
+      <para>Facebook's XFBML tag collection includes <code><![CDATA[<fb:login-button>]]></code>, which displays a login button. When a user clicks on that button, they will be presented with a Facebook Login dialog that looks similar to this:</para>
+      
+      <mediaobject>
+        <imageobject role="fo">
+            <imagedata fileref="images/sign-in-with-facebook.png"
+              format="PNG" align="center" scale="40"/>
+        </imageobject>
+        <imageobject role="html">
+            <imagedata fileref="images/sign-in-with-facebook.png" format="PNG" align="center" scale="40"/>
+        </imageobject>
+      </mediaobject>
+      
+      <para>After successfully signing into Facebook, a cookie will be written that contains an access token. If the user has previously established a connection between their account and their Facebook profile, this access token will be the same token that was issued before. <classname>FacebookSigninController</classname> works by extracting that access token from the cookie and using it to lookup a connected account and authenticate to that account.</para>
+      
+      <para>To enable "Sign in with Facebook" functionality in your application, start by configuring <classname>FacebookSigninController</classname> as a bean in the Spring MVC configuration:</para>
+      
+      <programlisting><![CDATA[<bean class="org.springframework.social.facebook.web.FacebookSigninController">
+    <constructor-arg ref="connectionRepository" />
+    <constructor-arg ref="signinGateway" />
+    <constructor-arg value="]]><emphasis>Facebook API Key</emphasis><![CDATA[" />
+</bean>]]></programlisting>
+
+    <para>As with <classname>TwitterSigninController</classname>, <classname>FacebookSigninController</classname> depends on a connection repository to lookup connections and a sign in gateway to handle the actual application authentication.</para>
+    
+    <para>However, since Facebook's sign in process is not based on an OAuth 1 flow, <classname>FacebookSigninController</classname> does not need the base URL to create a callback URL from. Instead, <classname>FacebookSigninController</classname> needs to know the application's Facebook API Key that was issued to the application when it was first registered in Facebook. (The API key is the same value given as the <code>client-key</code> when registering a Facebook service provider with <code><![CDATA[<social:service-provider]]></code>.)</para>
+      
+    <para>With <classname>FacebookSigninController</classname>configured, the next thing to do is enable Facebook's JavaScript library and XFBML in your application's sign in page. To import the Facebook JavaScript library:</para>
+      
+    <programlisting><![CDATA[<script src='http://connect.facebook.net/en_US/all.js'></script>]]></programlisting>
+
+    <para>You'll also need to initialize the library by placing the following <code><![CDATA[<script>]]></code> on the page:</para>
+
+  	<programlisting><![CDATA[<script type='text/javascript'>	
+  		FB.init({appId: ']]><emphasis>Facebook API Key</emphasis><![CDATA[', status: true, cookie: true, xfbml: true});
+  	</script>]]></programlisting>
+    
+    <para>Notice that <code><![CDATA[FB.init()]]></code> must be given your application's API Key. Again, this is API key assigned to your application when you registered it with Facebook. It's also important that <code><![CDATA[cookie]]></code> be set to true so that the access token will be written to a cookie and that <code><![CDATA[xfbml]]></code> be set to true so that the <code><![CDATA[<fb:login-button>]]></code> XFBML tag will be correctly parsed.</para>
+    
+    <para>Finally, add the <code><![CDATA[<fb:login-button>]]></code> to the page:</para>
+    
+  	<programlisting><![CDATA[<form id="fb_signin" action="<c:url value="/signin/facebook"/>" method="POST">
+  		<div id="fb-root"></div>
+  		<p><fb:login-button onlogin="$('#fb_signin').submit();" v="2" length="long">Signin with Facebook</fb:login-button></p>
+  	</form>]]></programlisting>
+  	
+  	<para>Notice that here <code><![CDATA[<fb:login-button>]]></code> is within a form that submits to "/signin/facebook" (the URL that <classname>FacebookSigninController</classname> handles). Although it's not strictly required that <code><![CDATA[<fb:login-button>]]></code> be within this form, the form itself is necessary to trigger <classname>FacebookSigninController</classname>. <code><![CDATA[<fb:login-button>]]></code> doesn't directly submit this form, so it doesn't matter whether or not it is in the form.</para>
+  	
+  	<para><code><![CDATA[<fb:login-button>]]></code>'s <code>onlogin</code> attribute indicates what action should be taken upon successful Facebook login. In this case, <code>onlogin</code> is set to use JQuery to submit the form, triggering <classname>FacebookSigninController</classname> to authenticate the user to the application.</para>
+  	
+  	<!-- TODO: What about <facebook:init> ??? -->
+  </section>
 </chapter>
