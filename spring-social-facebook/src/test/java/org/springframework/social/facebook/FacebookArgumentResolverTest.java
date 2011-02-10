@@ -15,8 +15,8 @@
  */
 package org.springframework.social.facebook;
 
-import static org.junit.Assert.assertEquals;
-import static org.springframework.web.bind.support.WebArgumentResolver.UNRESOLVED;
+import static org.junit.Assert.*;
+import static org.springframework.web.bind.support.WebArgumentResolver.*;
 
 import java.lang.reflect.Method;
 
@@ -26,8 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.social.facebook.web.FacebookAccessToken;
-import org.springframework.social.facebook.web.FacebookUserId;
+import org.springframework.social.facebook.web.FacebookCookieValue;
 import org.springframework.social.facebook.web.FacebookWebArgumentResolver;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -178,13 +177,14 @@ public class FacebookArgumentResolverTest {
 	}
 
 	@SuppressWarnings("unused")
-	private void annotatedMethod(@FacebookUserId String userId, @FacebookAccessToken String accessToken,
+	private void annotatedMethod(@FacebookCookieValue("uid") String userId,
+			@FacebookCookieValue("access_token") String accessToken,
 			String someOtherParameter) {
 
 	}
 
 	@SuppressWarnings("unused")
-	private void unrequiredAnnotatedMethod(@FacebookUserId(required = false) String userId,
-			@FacebookAccessToken(required = false) String accessToken, String someOtherParameter) {
+	private void unrequiredAnnotatedMethod(@FacebookCookieValue(value = "uid", required = false) String userId,
+			@FacebookCookieValue(value = "access_token", required = false) String accessToken, String someOtherParameter) {
 	}
 }

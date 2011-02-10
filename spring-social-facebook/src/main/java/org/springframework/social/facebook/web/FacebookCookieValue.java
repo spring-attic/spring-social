@@ -21,26 +21,25 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-
 /**
- * Annotation that indicates to {@link FacebookWebArgumentResolver} that a
- * controller method parameter should be bound to the Facebook access token
- * given when the user signed in with Facebook.
+ * Annotation that indicates to {@link FacebookWebArgumentResolver} that a controller method parameter should be bound
+ * to a value from the Facebook cookie written when the user signed in with Facebook.
  * 
  * @author Craig Walls
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface FacebookAccessToken {
+public @interface FacebookCookieValue {
+	/**
+	 * The specific element of the cookie to be bound (e.g., "uid", "access_token", etc)
+	 */
+	public String value() default "";
+
 	/**
 	 * Whether the Facebook access token is required.
-	 * <p>
-	 * Default is <code>true</code>, leading to an exception being thrown in
-	 * case the Facebook cookie is missing or if the access token can't be found
-	 * in the cookie. Switch this to <code>false</code> if you prefer a
-	 * <code>null</value> in case of the missing cookie/token.
-	 * </p>
+	 * Default is true, leading to an exception being thrown in case the Facebook cookie is missing or if the value can't be found in the cookie. 
+	 * Switch this to false if you prefer a null in case of the missing cookie/value.
 	 */
 	boolean required() default true;
 }

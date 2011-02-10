@@ -18,11 +18,8 @@ package org.springframework.social.facebook.web;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.social.connect.support.ConnectionRepository;
@@ -91,48 +88,14 @@ public class FacebookSigninController {
 		return "redirect:/";
 	}
 
-	// TODO: What follows is largely duplicated from FacebookWebArgumentResolver. I put it here because...
-	// 1. I don't want to force a developer to register the web argument resolver to use this controller
-	// 2. The value of FacebookWebArgumentResolver and its annotations is now questionable. Those annotation truly only
-	//    existed for the sake of Greenhouse's Facebook signin controller. While they may be useful outside of this
-	//    controller, the service provider framework's handling of access tokens is better.
-	// Therefore, consider getting rid of FacebookWebArgumentResolver and its annotations
-
 	private String resolveAccessTokenValue(HttpServletRequest request) {
-		Map<String, String> cookieData = getFacebookCookieData(request.getCookies());
+		Map<String, String> cookieData = FacebookCookieParser.getFacebookCookieData(request.getCookies(), apiKey);
 		String accessToken = cookieData.get("access_token");
-		if (accessToken != null) {
-			accessToken = accessToken.replaceAll("\\%7C", "|");
-		}
-
 		if (accessToken != null) {
 			return accessToken;
 		}
 
-		throw new IllegalStateException("FacebookSigninController cannot find an access token in the Facebook cookie. "
-				+ "Ensure that Facebook authentication has taken place before arriving at this state.");
-	}
-
-	private Map<String, String> getFacebookCookieData(Cookie[] cookies) {
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("fbs_" + apiKey)) {
-					return extractDataFromCookie(cookie.getValue());
-				}
-			}
-		}
-
-		return Collections.<String, String> emptyMap();
-	}
-
-	private Map<String, String> extractDataFromCookie(String cookieValue) {
-		HashMap<String, String> data = new HashMap<String, String>();
-		String[] fields = cookieValue.split("\\&");
-		for (String field : fields) {
-			String[] keyValue = field.split("\\=");
-			data.put(keyValue[0], keyValue[1]);
-		}
-		return data;
+		throw new IllegalStateException("FacebookSigninController cannot find an access token in the Facebook cookie.");
 	}
 
 	private static final String FACEBOOK_PROVIDER_ID = "facebook";
