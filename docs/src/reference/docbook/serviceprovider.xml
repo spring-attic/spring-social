@@ -144,7 +144,89 @@ List<ServiceProviderConnection<S>> getConnections(Serializable accountId);]]></p
       <section xml:id="section_sp_oauthOperations">
           <title>OAuth Operations</title>
           
-          <para>TODO</para>
+          <para>Although the service providers and <classname>ConnectController</classname> handle much of the details of working with OAuth, if you want to work with OAuth directly, you can do so through <classname>OAuth1Template</classname> and <classname>OAuth2Template</classname>.</para>
+          
+          <para>To directly create an instance of <classname>OAuth1Template</classname>, you must instantiate it with the details of the OAuth 1 service given as constructor arguments. For example, to ready an <classname>OAuth1Template</classname> for use with Twitter:</para>
+          
+          <programlisting><![CDATA[String consumerKey = "...]]><emphasis>Twitter consumer key</emphasis><![CDATA[...";
+String consumerSecret = "...]]><emphasis>Twitter consumer secret</emphasis><![CDATA[...";
+String requestTokenUrl = "https://api.twitter.com/oauth/request_token";
+String authorizeUrl = "https://api.twitter.com/oauth/authorize?oauth_token={request_token}";
+String accessTokenUrl = "https://api.twitter.com/oauth/access_token";
+OAuth1Template oauth1Template = new OAuth1Template(consumerKey, consumerSecret, requestTokenUrl, authorizeUrl,
+		accessTokenUrl);]]></programlisting>
+		
+		  <para>Or, if you have an OAuth 1 service provider (such as <classname>TwitterServiceProvider</classname>), it's even easier to call the service provider's <methodname>getOAuth1Operations()</methodname> method:</para>
+		  
+          <programlisting><![CDATA[OAuth1Operations oauth1Template = twitterProvider.getOAuth1Operations();]]></programlisting>
+		            
+		  <para>Similarly, you can create an <classname>OAuth2Template</classname> by calling it's constructor with the service's OAuth 2 details. For example, here's how you may create a Facebook-ready instance of <classname>OAuth2Template</classname>:</para>
+		  
+          <programlisting><![CDATA[String clientId = "...]]><emphasis>Facebook API Key</emphasis><![CDATA[...";
+String clientSecret = "...]]><emphasis>Facebook App Secret</emphasis><![CDATA[...";
+String authorizeUrl = "https://graph.facebook.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}";
+String accessTokenUrl = "https://graph.facebook.com/oauth/access_token";
+OAuth2Template oauth2 = new OAuth2Template(clientId, clientSecret, authorizeUrl, accessTokenUrl);]]></programlisting>
+  		
+  		  <para>Or you can easily retrieve an <classname>OAuth2Template</classname> from an OAuth 2 service provider by calling its <methodname>getOAuth2Operations()</methodname> method:</para>
+  		  
+  		  <programlisting><![CDATA[OAuth2Operations oauth2Template = facebookProvider.getOAuth2Operations();]]></programlisting>
+          
+          <para><classname>OAuth1Template</classname> and <classname>OAuth2Template</classname> implement the <interfacename>OAuth1Operations</interfacename> and <interfacename>OAuth2Operations</interfacename> interfaces, respectively. Through these interfaces, you may participate in the "OAuth Dance".</para>
+          
+          <section>
+              <title><interfacename>OAuth1Operations</interfacename></title>
+              
+              <para>The <interfacename>OAuth1Operations</interfacename> interface defines three methods, as follows:</para>
+              
+              <programlisting><![CDATA[public interface OAuth1Operations {
+
+	OAuthToken fetchNewRequestToken(String callbackUrl);
+	String buildAuthorizeUrl(String requestToken);
+	OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken);
+	
+}]]></programlisting>
+              
+              <para>To begin the OAuth 1 process, call <methodname>fetchNewRequestToken()</methodname>, passing in the callback URL. <methodname>fetchNewRequestToken()</methodname> will return an <classname>OAuthToken</classname> containing the request token value and secret.</para>
+              
+              <para>At this point in the OAuth 1 dance, you should redirect the user's browser to the service's authorization URL. The <methodname>buildAuthorizeUrl()</methodname> method builds that authorization URL for you, given the request token value (which can be obtained by calling <classname>OAuthToken</classname>'s <methodname>getValue()</methodname> method).</para>
+              
+              <para>After the user agrees to grant your application access, the service will redirect the user's browser back to the callback URL you gave to <methodname>fetchNewRequestToken()</methodname> with an <code>oauth_verifier</code> parameter<footnote><para>The <code>oauth_verifier</code> parameter is only applicable for OAuth 1.0a-based services. OAuth 1.0-based services will not give back a verifier. In that case, assume a <code>null</code> value for the verifier.</para></footnote>.</para>
+              
+              <para>To complete the OAuth dance, create an instance of <classname>AuthorizedRequestToken</classname> to contain the request token and verifier and pass it as a parameter to <methodname>exchangeForAccessToken()</methodname>:</para>
+              
+              <programlisting><![CDATA[AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(requestToken, verifier);
+OAuthToken accessToken = oauth1Template.exchangeForAccessToken(authorizedRequestToken);]]></programlisting>
+
+              <para>The <methodname>exchangeForAccessToken()</methodname> method will return another <classname>OAuthToken</classname>, this time containing the access token and secret. This access token may be used to interact with the service on behalf of the user and may be stored away for future use.</para>
+              
+              <para>Again, the operations afforded by <interfacename>OAuth1Operations</interfacename> are lower-level OAuth operations. <classname>ConnectController</classname> handles these interactions internally so that you shouldn't need to deal directly with the <interfacename>OAuth1Operations</interfacename> interface.</para>
+          </section>
+
+          <section>
+              <title><interfacename>OAuth2Operations</interfacename></title>
+              
+              <para>The OAuth 2 dance is simpler than the OAuth 1 dance. Thus, the <interfacename>OAuth2Operations</interfacename> interface is slightly simpler than its OAuth 1 counterpart. <interfacename>OAuth2Operations</interfacename> is defined as follows:</para>
+              
+              <programlisting><![CDATA[public interface OAuth2Operations {
+
+    String buildAuthorizeUrl(String redirectUri, String scope);
+    AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri);
+
+}]]></programlisting>
+            
+              <para>OAuth 2 doesn't require (or even support) request tokens. Therefore, the first step in the OAuth 2 dance is to redirect the user to the service's authorization URL. <interfacename>OAuth2Operations</interfacename>' <methodname>buildAuthorizeUrl()</methodname> can provide you with that URL given your application's redirect URI and an optional scope value.</para>
+              
+              <para>The redirect URI is significant in that it must match the application's configuration with the service itself. When you register your application with a service provider, you must specify a redirect URI or some base application URI. If the redirect URI given in the authorization URL does not match, the provider may refuse to grant access to your application.</para>
+              
+              <para>The scope value is a comma-delimited <classname>String</classname> of values that specifies what level of access the application is asking permission for. The values given will vary by provider. Some providers, such as Facebook, have a rich and fine-grained set of scope permissions, while some other providers don't support scoping at all. Consult the service's document for details on what permissions may be given as the scope parameter. Scope is optional, however, so leaving it blank or passing in <code>null</code> effectively asks for the default scope (which is also defined by the service).</para>
+              
+              <para>After the user agrees to grant your application access, the service will redirect them back to the redirect URI with a <code>code</code> parameter. This code may be exchanged for an access token by passing it to <interfacename>OAuth2Operations</interfacename>' <methodname>exchangeForAccess()</methodname> method, along with the redirect URI.</para>
+              
+              <para>The <methodname>exchangeForAccess()</methodname> method will complete the OAuth 2 dance, returning an <classname>AccessGrant</classname> which contains an access token useful for interacting with the service API. It may also contain a refresh token, useful for refreshing an expired access token.</para>
+              
+              <para>It bears repeating that working directly with a service through <interfacename>OAuth2Operations</interfacename> is a low-level effort. It is simpler to leverage <classname>ConnectController</classname> to perform the OAuth authorization flow than to roll your own implementation.</para>
+          </section>
       </section>
   </section>
 </chapter>
