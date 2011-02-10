@@ -45,7 +45,6 @@ class FacebookCookieParser {
 					if (signature.equals(cookieData.get("sig"))) {
 						return cookieData;
 					}
-					System.out.println(signature);
 					break;
 				}
 			}

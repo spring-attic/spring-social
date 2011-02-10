@@ -32,6 +32,7 @@
 		<constructor-arg ref="connectionRepository" />
 		<constructor-arg ref="signinGateway" />
 		<constructor-arg value="0b754d95f9c9899b0d6c4454b6f2dde7" />
+		<constructor-arg value="fa8a9825f555a7a8949ec48fb93bda58" />
 	</bean>
 	
 	<bean id="signinGateway" class="org.springframework.social.showcase.AccountIdAsPrincipalSigninGateway" />
