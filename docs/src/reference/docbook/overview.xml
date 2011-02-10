@@ -5,8 +5,8 @@
 
   <section id="overview-introduction">
     <title>Introduction</title>
-    <para>
-    </para>
+
+    <para>The Spring Social project enables Spring applications to connect with users' profiles on service providers such as Facebook and Twitter and interact with those services on behalf of the user.</para>
   </section>
 
 </chapter>

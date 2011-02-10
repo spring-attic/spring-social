@@ -3,9 +3,12 @@
     xmlns:xlink="http://www.w3.org/1999/xlink">
   <title>Connecting to Service Providers</title>
 
-  <para>Most connections with social providers are based on OAuth <footnote><para><ulink url="http://oauth.net" /></para></footnote>. OAuth is an open protocol that makes it possible for a client to access a service on behalf of a user without the client being aware of the user's credentials.</para>
+  <section id="section_connecting_introduction">
+      <title>Introduction</title>
+      <para>Most connections with social providers are based on OAuth <footnote><para><ulink url="http://oauth.net" /></para></footnote>. OAuth is an open protocol that makes it possible for a client to access a service on behalf of a user without the client being aware of the user's credentials.</para>
       
-  <para>Authorizing an application to access a social provider on behalf of a user involves a back-and-forth conversation between the application, the social network, and the user. This conversation, commonly referred to as the "OAuth Dance", involves the application asking the user to tell the social network that it's okay for the application to access and manipulate their social information. The outcome of the dance is an access token that the application can use as a sort of valet key to interact with the social network on the user's behalf.</para>
+      <para>Authorizing an application to access a social provider on behalf of a user involves a back-and-forth conversation between the application, the social network, and the user. This conversation, commonly referred to as the "OAuth Dance", involves the application asking the user to tell the social network that it's okay for the application to access and manipulate their social information. The outcome of the dance is an access token that the application can use as a sort of valet key to interact with the social network on the user's behalf.</para>
+  </section>
   
   <section id="connect-controller">
     <title>Creating connections with <classname>ConnectController</classname></title>

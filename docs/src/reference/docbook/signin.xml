@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="signin"
     xmlns:xlink="http://www.w3.org/1999/xlink">
-  <title>Signing in With Social Services</title>
+  <title>Signing in with Social Services</title>
 
   <para>To make it easier for users to sign in to your application, Spring Social makes it possible for them to authenticate to your application by signing into either Twitter or Facebook.</para>
   

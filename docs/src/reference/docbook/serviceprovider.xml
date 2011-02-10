@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="serviceprovider"
     xmlns:xlink="http://www.w3.org/1999/xlink">
-  <title>Service Provider Framework</title>
+  <title>Service Providers</title>
 
-  <para>In Spring Social, a social service such as Twitter or Facebook is modeled as a service provider. With a service provider, an application may create/sever connections and obtain an API through which the application may interact with the service on a user's behalf.</para>
+  <section xml:id="section_serviceprovider_introduction">
+      <title>Introduction</title>
+      
+      <para>In Spring Social, a social service such as Twitter or Facebook is modeled as a service provider. With a service provider, an application may create/sever connections and obtain an API through which the application may interact with the service on a user's behalf.</para>
+  </section>
 
   <section xml:id="section_serviceproviderconfig">
       <title>Configuring Service Providers</title>

@@ -22,12 +22,12 @@
 
     <authorgroup>
       <author>
-        <firstname>Keith</firstname>
-        <surname>Donald</surname>
-      </author>
-      <author>
         <firstname>Craig</firstname>
         <surname>Walls</surname>
+      </author>
+      <author>
+        <firstname>Keith</firstname>
+        <surname>Donald</surname>
       </author>
     </authorgroup>
 
@@ -36,36 +36,9 @@
 
   <toc></toc>
   
-  <part id="spring-social-introduction">
-    <title>Introducing the Spring Social project</title>
-    <partintro id="spring-social-partintro">
-    	 <para>The Spring Social project simplifies the development of socialized applications.</para>
-    </partintro>
     <xi:include href="./overview.xml"/>
-  </part>
-  
-  <part id="spring-social-connecting">
-    <title>Connecting</title>
-    <partintro id="spring-social-connecting-partintro">
-    	 <para>In order for an application to access a social network on behalf of a user, the user must grant the application permission. This involves a 3-way conversation between the user, the application and the social provider. Spring Social's service provider abstraction and connection controllers simplify this authorization.</para>
-    </partintro>
-    
     <xi:include href="./serviceprovider.xml"/>
     <xi:include href="./connecting.xml"/>
     <xi:include href="./signin.xml" />
-  </part>
-  
-  <part id="spring-social-templates">
-    <title>Interacting</title>
-    <partintro id="spring-social-templates-partintro">
-    	 <para>Spring Social comes with a selection of social templates to perform operations against a variety of social networks.</para>
-    </partintro>
-    <xi:include href="./facebook.xml"/>
-    <xi:include href="./github.xml"/>
-    <xi:include href="./gowalla.xml"/>
-    <xi:include href="./linkedin.xml"/>
-    <xi:include href="./tripit.xml"/>
-    <xi:include href="./twitter.xml"/>
-
-  </part>  
+    <xi:include href="./apis.xml" />
 </book>
