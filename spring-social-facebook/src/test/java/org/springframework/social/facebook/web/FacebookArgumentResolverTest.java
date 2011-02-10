@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook;
+package org.springframework.social.facebook.web;
 
 import static org.junit.Assert.*;
 import static org.springframework.web.bind.support.WebArgumentResolver.*;
@@ -26,8 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.MethodParameter;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.social.facebook.web.FacebookCookieValue;
-import org.springframework.social.facebook.web.FacebookWebArgumentResolver;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.ServletWebRequest;
 
@@ -35,12 +33,19 @@ import org.springframework.web.context.request.ServletWebRequest;
  * @author Craig Walls
  */
 public class FacebookArgumentResolverTest {
+	private static final String GOOD_TEST_COOKIE_VALUE = "uid=24680&access_token=a1b2c3d4%7Ce5f6&sig=624a33571227a6f7fbdec1d0e8a223b0";
+
+	private static final String BAD_TEST_COOKIE_VALUE = "foo=bar&cat=feline&sig=1a17ddaee986e58ad008221ee04bda3a";
+
 	private static final String API_KEY = "API_KEY";
+
+	private static final String APP_SECRET = "APP_SECRET";
+
 	private FacebookWebArgumentResolver resolver;
 
 	@Before
 	public void setup() {
-		resolver = new FacebookWebArgumentResolver(API_KEY);
+		resolver = new FacebookWebArgumentResolver(API_KEY, APP_SECRET);
 	}
 
 	@Test(expected = IllegalStateException.class)
@@ -122,7 +127,7 @@ public class FacebookArgumentResolverTest {
 	@Test(expected = IllegalStateException.class)
 	public void resolveUserIdArgument_facebookCookieWithoutEntries_required() throws Exception {
 		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
-		httpServletRequest.setCookies(new Cookie("fbs_" + API_KEY, "foo=bar&cat=feline"));
+		httpServletRequest.setCookies(new Cookie("fbs_" + API_KEY, BAD_TEST_COOKIE_VALUE));
 		NativeWebRequest request = new ServletWebRequest(httpServletRequest);
 		Method method = FacebookArgumentResolverTest.class.getDeclaredMethod("annotatedMethod", String.class,
 				String.class, String.class);
@@ -134,7 +139,7 @@ public class FacebookArgumentResolverTest {
 	@Test(expected = IllegalStateException.class)
 	public void resolveAccessTokenArgument_facebookCookieWithoutEntries_required() throws Exception {
 		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
-		httpServletRequest.setCookies(new Cookie("fbs_" + API_KEY, "foo=bar&cat=feline"));
+		httpServletRequest.setCookies(new Cookie("fbs_" + API_KEY, BAD_TEST_COOKIE_VALUE));
 		NativeWebRequest request = new ServletWebRequest(httpServletRequest);
 		Method method = FacebookArgumentResolverTest.class.getDeclaredMethod("annotatedMethod", String.class,
 				String.class, String.class);
@@ -146,7 +151,7 @@ public class FacebookArgumentResolverTest {
 	@Test
 	public void resolveArgument_facebookCookieWithoutEntries_unrequired() throws Exception {
 		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
-		httpServletRequest.setCookies(new Cookie("fbs_" + API_KEY, "foo=bar&cat=feline"));
+		httpServletRequest.setCookies(new Cookie("fbs_" + API_KEY, BAD_TEST_COOKIE_VALUE));
 		NativeWebRequest request = new ServletWebRequest(httpServletRequest);
 		Method method = FacebookArgumentResolverTest.class.getDeclaredMethod("unrequiredAnnotatedMethod", String.class,
 				String.class, String.class);
@@ -164,7 +169,7 @@ public class FacebookArgumentResolverTest {
 	@Test
 	public void resolveArgument() throws Exception {
 		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
-		httpServletRequest.setCookies(new Cookie("fbs_" + API_KEY, "uid=24680&access_token=a1b2c3d4%7Ce5f6"));
+		httpServletRequest.setCookies(new Cookie("fbs_" + API_KEY, GOOD_TEST_COOKIE_VALUE));
 		NativeWebRequest request = new ServletWebRequest(httpServletRequest);
 		Method method = FacebookArgumentResolverTest.class.getDeclaredMethod("annotatedMethod", String.class,
 				String.class, String.class);
@@ -187,4 +192,5 @@ public class FacebookArgumentResolverTest {
 	private void unrequiredAnnotatedMethod(@FacebookCookieValue(value = "uid", required = false) String userId,
 			@FacebookCookieValue(value = "access_token", required = false) String accessToken, String someOtherParameter) {
 	}
+
 }

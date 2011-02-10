@@ -50,9 +50,11 @@ import org.springframework.web.context.request.NativeWebRequest;
 public class FacebookWebArgumentResolver implements WebArgumentResolver {
 
 	private final String apiKey;
+	private final String appSecret;
 
-	public FacebookWebArgumentResolver(String apiKey) {
+	public FacebookWebArgumentResolver(String apiKey, String appSecret) {
 		this.apiKey = apiKey;
+		this.appSecret = appSecret;
 	}
 	
 	public Object resolveArgument(MethodParameter parameter, NativeWebRequest request) throws Exception {
@@ -62,7 +64,7 @@ public class FacebookWebArgumentResolver implements WebArgumentResolver {
 		}
 
 		HttpServletRequest nativeRequest = (HttpServletRequest) request.getNativeRequest();
-		Map<String, String> cookieData = FacebookCookieParser.getFacebookCookieData(nativeRequest.getCookies(), apiKey);
+		Map<String, String> cookieData = FacebookCookieParser.getFacebookCookieData(nativeRequest.getCookies(), apiKey, appSecret);
 		String key = annotation.value();
 		if (!cookieData.containsKey(key) && annotation.required()) {
 			throw new IllegalStateException("Missing Facebook cookie value '" + key + "'");

@@ -17,8 +17,12 @@ package org.springframework.social.facebook.web;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.Cookie;
@@ -32,11 +36,17 @@ class FacebookCookieParser {
 	/**
 	 * Looks for a Facebook cookie for the given API Key and returns its data as key/value pairs in a Map.
 	 */
-	public static Map<String, String> getFacebookCookieData(Cookie[] cookies, String apiKey) {
+	public static Map<String, String> getFacebookCookieData(Cookie[] cookies, String apiKey, String appSecret) {
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
 				if (cookie.getName().equals("fbs_" + apiKey)) {
-					return extractDataFromCookie(cookie.getValue());
+					Map<String, String> cookieData = extractDataFromCookie(cookie.getValue().trim());
+					String signature = calculateSignature(appSecret, cookieData);
+					if (signature.equals(cookieData.get("sig"))) {
+						return cookieData;
+					}
+					System.out.println(signature);
+					break;
 				}
 			}
 		}
@@ -55,6 +65,39 @@ class FacebookCookieParser {
 			}
 		}
 		return data;
+	}
+
+	private static String calculateSignature(String appSecret, Map<String, String> cookieData) {
+		String payload = "";
+		List<String> keys = new ArrayList<String>(cookieData.keySet());
+		Collections.sort(keys);
+		for (String key : keys) {
+			if (!key.equals("sig")) {
+				payload += key + "=" + cookieData.get(key);
+			}
+		}
+		return md5(payload + appSecret);
+	}
+
+	private static String md5(String in) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+
+			byte[] hash = md.digest(in.getBytes("UTF-8"));
+
+			StringBuffer sb = new StringBuffer();
+			for (byte b : hash) {
+				if (b >= 0 && b < 16)
+					sb.append('0');
+				sb.append(Integer.toHexString(b & 0xff));
+			}
+
+			return sb.toString();
+		} catch (NoSuchAlgorithmException wontHappen) {
+			return null;
+		} catch (UnsupportedEncodingException wontHappen) {
+			return null;
+		}
 	}
 
 	private FacebookCookieParser() {

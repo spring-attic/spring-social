@@ -43,6 +43,8 @@ public class FacebookSigninController {
 
 	private final String apiKey;
 
+	private final String appSecret;
+
 	/**
 	 * Constructs the FacebookSigninController.
 	 * @param connectionRepository a connection repository used to lookup the account ID connected to the Facebook profile.
@@ -50,15 +52,13 @@ public class FacebookSigninController {
 	 * @param apiKey the Facebook API key used to retrieve the Facebook cookie containing the access token.
 	 */
 	public FacebookSigninController(ConnectionRepository connectionRepository, SignInControllerGateway signinGateway,
-			String apiKey) {
+			String apiKey, String appSecret) {
 		this.connectionRepository = connectionRepository;
 		this.signinGateway = signinGateway;
-		// TODO: This key is used to lookup the Facebook cookie. But I wonder if it's necessary. Shouldn't there only be
-		// one"fbs_*" cookie in any given application? If so, then just look for any cookie that starts with "fbs_" and
-		// use it.
-		// Alternatively, the Facebook service provider could be looked up here and could expose its API key as a
-		// property. Then this controller could just get the API key from the provider.
+		// TODO: The Facebook service provider could be looked up here and could expose its API key as a
+		// property. Then this controller could just get the API key and app secret from the provider.
 		this.apiKey = apiKey;
+		this.appSecret = appSecret;
 	}
 
 	/**
@@ -89,7 +89,8 @@ public class FacebookSigninController {
 	}
 
 	private String resolveAccessTokenValue(HttpServletRequest request) {
-		Map<String, String> cookieData = FacebookCookieParser.getFacebookCookieData(request.getCookies(), apiKey);
+		Map<String, String> cookieData = FacebookCookieParser.getFacebookCookieData(request.getCookies(), apiKey,
+				appSecret);
 		String accessToken = cookieData.get("access_token");
 		if (accessToken != null) {
 			return accessToken;
