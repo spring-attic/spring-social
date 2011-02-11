@@ -18,11 +18,11 @@ public class OAuth1TemplateTest {
 	
 	private static final String REQUEST_TOKEN_URL = "https://www.someprovider.com/oauth/requestToken";
 	
-	private OAuth1Template oauth1;
+	private OAuth10aTemplate oauth1;
 
 	@Before
 	public void setup() {
-		oauth1 = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
+		oauth1 = new OAuth10aTemplate("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
 				"https://www.someprovider.com/oauth/authorize?oauth_token={request_token}", ACCESS_TOKEN_URL);
 	}
 

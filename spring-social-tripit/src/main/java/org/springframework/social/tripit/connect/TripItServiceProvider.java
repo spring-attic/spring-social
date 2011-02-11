@@ -15,9 +15,9 @@
  */
 package org.springframework.social.tripit.connect;
 
-import org.springframework.social.connect.oauth1.AbstractOAuth1ServiceProvider;
+import org.springframework.social.connect.oauth1.AbstractOAuth10ServiceProvider;
 import org.springframework.social.connect.support.ConnectionRepository;
-import org.springframework.social.oauth1.OAuth1Template;
+import org.springframework.social.oauth1.OAuth10Template;
 import org.springframework.social.tripit.TripItOperations;
 import org.springframework.social.tripit.TripItTemplate;
 
@@ -25,10 +25,11 @@ import org.springframework.social.tripit.TripItTemplate;
  * TripIt ServiceProvider implementation.
  * @author Craig Walls
  */
-public final class TripItServiceProvider extends AbstractOAuth1ServiceProvider<TripItOperations> {
+public final class TripItServiceProvider extends AbstractOAuth10ServiceProvider<TripItOperations> {
 
 	public TripItServiceProvider(String consumerKey, String consumerSecret, ConnectionRepository connectionRepository) {
-		super("tripit", connectionRepository, consumerKey, consumerSecret, new OAuth1Template(consumerKey, consumerSecret, "https://api.tripit.com/oauth/request_token",
+		super("tripit", connectionRepository, consumerKey, consumerSecret, new OAuth10Template(consumerKey,
+				consumerSecret, "https://api.tripit.com/oauth/request_token",
 				"https://www.tripit.com/oauth/authorize?oauth_token={requestToken}&oauth_callback={redirectUri}", "https://api.tripit.com/oauth/access_token"));
 	}
 

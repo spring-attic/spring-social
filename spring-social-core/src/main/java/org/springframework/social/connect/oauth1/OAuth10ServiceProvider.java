@@ -15,26 +15,18 @@
  */
 package org.springframework.social.connect.oauth1;
 
-import java.io.Serializable;
-
-import org.springframework.social.connect.ServiceProvider;
-import org.springframework.social.connect.ServiceProviderConnection;
-import org.springframework.social.oauth1.AuthorizedRequestToken;
-import org.springframework.social.oauth1.OAuth10aOperations;
-import org.springframework.social.oauth1.OAuthToken;
+import org.springframework.social.oauth1.OAuth10Operations;
 
 /**
  * A ServiceProvider that uses the OAuth 1.0 protocol.
  * @author Keith Donald
  * @param <S> The service API
  */
-public interface OAuth1ServiceProvider<S> extends ServiceProvider<S> {
+public interface OAuth10ServiceProvider<S> extends OAuth1ServiceProvider<S> {
 
 	/**
-	 * Establish a connection between a user account and this service provider.
-	 * @param accountId the user account identifier
-	 * @param accessToken the access token returned from {@link OAuth10aOperations#exchangeForAccessToken(AuthorizedRequestToken)}.
+	 * The service interface for invoking OAuth 1.0 operations against this provider.
 	 */
-	ServiceProviderConnection<S> connect(Serializable accountId, OAuthToken accessToken);
-
+	OAuth10Operations getOAuth10Operations();
+	
 }

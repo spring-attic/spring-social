@@ -21,7 +21,6 @@ import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.support.AbstractServiceProvider;
 import org.springframework.social.connect.support.Connection;
 import org.springframework.social.connect.support.ConnectionRepository;
-import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
 
 /**
@@ -30,23 +29,17 @@ import org.springframework.social.oauth1.OAuthToken;
  * @author Keith Donald
  * @param <S> the service API type
  */
-public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServiceProvider<S> implements OAuth1ServiceProvider<S> {
+public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServiceProvider<S> {
 
 	private final String consumerKey;
 	
 	private final String consumerSecret;
 	
-	private final OAuth1Operations oauth1Operations;
-	
-	public AbstractOAuth1ServiceProvider(String id, ConnectionRepository connectionRepository, String consumerKey, String consumerSecret, OAuth1Operations oauth1Operations) {
+	public AbstractOAuth1ServiceProvider(String id, ConnectionRepository connectionRepository, String consumerKey,
+			String consumerSecret) {
 		super(id, connectionRepository);
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
-		this.oauth1Operations = oauth1Operations;
-	}
-
-	public OAuth1Operations getOAuth1Operations() {
-		return oauth1Operations;
 	}
 	
 	public ServiceProviderConnection<S> connect(Serializable accountId, OAuthToken accessToken) {

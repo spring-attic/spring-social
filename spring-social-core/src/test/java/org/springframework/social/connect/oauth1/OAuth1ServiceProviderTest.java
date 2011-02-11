@@ -1,7 +1,6 @@
 package org.springframework.social.connect.oauth1;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -10,14 +9,14 @@ import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.connect.test.StubConnectionRepository;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
-import org.springframework.social.oauth1.OAuth1Operations;
+import org.springframework.social.oauth1.OAuth10aOperations;
 import org.springframework.social.oauth1.OAuthToken;
 
 public class OAuth1ServiceProviderTest {
 
 	private ConnectionRepository connectionRepository = new StubConnectionRepository();
 
-	private OAuth1ServiceProvider<TestApi> serviceProvider = new TestServiceProvider("54321", "65432", connectionRepository);
+	private OAuth10aServiceProvider<TestApi> serviceProvider = new TestServiceProvider("54321", "65432", connectionRepository);
 
 	@Test
 	public void connectFlow() {
@@ -27,7 +26,7 @@ public class OAuth1ServiceProviderTest {
 		assertEquals(0, serviceProvider.getConnections(accountId).size());
 		
 		// oauth 1 dance
-		OAuth1Operations oauthClient = serviceProvider.getOAuth1Operations();
+		OAuth10aOperations oauthClient = serviceProvider.getOAuth10aOperations();
 		OAuthToken requestToken = oauthClient.fetchNewRequestToken("http://localhost:8080/me");
 		String authorizeUrl = oauthClient.buildAuthorizeUrl(requestToken.getValue());
 		assertEquals("http://springsource.org/oauth/authorize?request_token=12345", authorizeUrl);
@@ -102,7 +101,7 @@ public class OAuth1ServiceProviderTest {
 		}		
 	}
 	
-	static class TestServiceProvider extends AbstractOAuth1ServiceProvider<TestApi> {
+	static class TestServiceProvider extends AbstractOAuth10aServiceProvider<TestApi> {
 
 		public TestServiceProvider(String consumerKey, String consumerSecret, ConnectionRepository connectionRepository) {
 			super("test", connectionRepository, consumerKey, consumerSecret, new StubOAuth1Operations());
