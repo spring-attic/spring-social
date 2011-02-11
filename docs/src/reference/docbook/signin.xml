@@ -110,11 +110,12 @@ public class AccountIdAsPrincipalSigninGateway implements SignInControllerGatewa
     <constructor-arg ref="connectionRepository" />
     <constructor-arg ref="signinGateway" />
     <constructor-arg value="]]><emphasis>Facebook API Key</emphasis><![CDATA[" />
+    <constructor-arg value="]]><emphasis>Facebook Application Secret</emphasis><![CDATA[" />
 </bean>]]></programlisting>
 
     <para>As with <classname>TwitterSigninController</classname>, <classname>FacebookSigninController</classname> depends on a connection repository to lookup connections and a sign in gateway to handle the actual application authentication.</para>
     
-    <para>However, since Facebook's sign in process is not based on an OAuth 1 flow, <classname>FacebookSigninController</classname> does not need the base URL to create a callback URL from. Instead, <classname>FacebookSigninController</classname> needs to know the application's Facebook API Key that was issued to the application when it was first registered in Facebook. (The API key is the same value given as the <code>client-key</code> when registering a Facebook service provider with <code><![CDATA[<social:service-provider]]></code>.)</para>
+    <para>However, since Facebook's sign in process is not based on an OAuth 1 flow, <classname>FacebookSigninController</classname> does not need the base URL to create a callback URL from. Instead, <classname>FacebookSigninController</classname> needs to know the application's Facebook API Key and application secret that were issued to the application when it was first registered in Facebook. (The API key is the same value given as the <code>client-key</code> when registering a Facebook service provider with <code><![CDATA[<social:service-provider]]></code>.) It uses the API Key to find the cookie and the application secret to verify the authenticity of the cookie by calculating and comparing signatures.</para>
       
     <para>With <classname>FacebookSigninController</classname>configured, the next thing to do is enable Facebook's JavaScript library and XFBML in your application's sign in page. To import the Facebook JavaScript library:</para>
       

@@ -11,8 +11,6 @@
 
 	<p>Hello, <c:out value="${fbUser.firstName}"/>!  (<a href="<c:url value="/connect/facebook"/>">Disconnect from Facebook</a>)</p>
 	
-	<a href="${fbUser.profileUrl}" target="_blank"><img src="${fbUser.profileImageUrl}" border="0"/></a>
-	
 	<p>Your Facebook profile:</p>
 	<dl>
 		<dt>Facebook ID:</dt>

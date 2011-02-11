@@ -47,8 +47,6 @@
 		<sf:checkbox path="tweetToAll" label="Tweet to all"/>
 	</c:if>
 	<br/>
-	<a href="<c:url value="/connect/twitter"/>">Add a new connection</a>
-	<br/>
 	<sf:textarea path="message" rows="5" cols="80"/><br/>
 	<input type="submit" value="Send Tweet"/>
 </sf:form>
