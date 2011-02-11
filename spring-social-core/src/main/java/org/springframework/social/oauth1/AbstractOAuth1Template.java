@@ -1,5 +1,6 @@
 package org.springframework.social.oauth1;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpEntity;
@@ -42,11 +43,24 @@ public class AbstractOAuth1Template {
 		MultiValueMap<String, String> bodyParameters = new LinkedMultiValueMap<String, String>();
 		bodyParameters.setAll(additionalParameters);
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(bodyParameters, headers);
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<MultiValueMap> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, request, MultiValueMap.class);
-		@SuppressWarnings("unchecked")
-		MultiValueMap<String, String> responseMap = response.getBody();
-		return new OAuthToken(responseMap.getFirst("oauth_token"), responseMap.getFirst("oauth_token_secret"));
+		ResponseEntity<String> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, request, String.class);
+		Map<String, String> responseMap = parseResponse(response.getBody());
+		return new OAuthToken(responseMap.get("oauth_token"), responseMap.get("oauth_token_secret"));
+	}
+
+	// manually parse the response instead of using a message converter.
+	// The response content type could by text/plain, text/html, etc...and may not trigger the form-encoded message
+	// converter
+	private Map<String, String> parseResponse(String response) {
+		Map<String, String> responseMap = new HashMap<String, String>();
+		String[] responseEntries = response.split("&");
+		for (String entry : responseEntries) {
+			String[] keyValuePair = entry.trim().split("=");
+			if (keyValuePair.length > 1) {
+				responseMap.put(keyValuePair[0], keyValuePair[1]);
+			}
+		}
+		return responseMap;
 	}
 
 	protected String getAuthorizationHeaderValue(String tokenUrl, Map<String, String> tokenRequestParameters,

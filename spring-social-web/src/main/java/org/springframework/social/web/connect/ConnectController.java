@@ -30,6 +30,7 @@ import org.springframework.social.connect.ServiceProvider;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.oauth1.OAuth10ServiceProvider;
 import org.springframework.social.connect.oauth1.OAuth10aServiceProvider;
+import org.springframework.social.connect.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.connect.oauth2.OAuth2ServiceProvider;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth10Operations;
@@ -126,21 +127,6 @@ public class ConnectController implements BeanFactoryAware {
 	}
 
 	/**
-	 * Process the authorization callback from an OAuth 1.0 service provider.
-	 * Called after the member authorizes the connection, generally done by having he or she click "Allow" in their web browser at the provider's site.
-	 * On authorization verification, connects the member's local account to the account they hold at the service provider
-	 * Removes the request token from the session since it is no longer valid after the connection is established.
-	 */
-	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="oauth_token")
-	public String oauth10Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, WebRequest request) {
-		OAuth10ServiceProvider<?> provider = (OAuth10ServiceProvider<?>) getServiceProvider(providerId);
-		OAuthToken accessToken = provider.getOAuth10Operations().exchangeForAccessToken(extractCachedRequestToken(request));
-		ServiceProviderConnection<?> connection = provider.connect(accountId(request.getUserPrincipal()), accessToken);
-		postConnect(provider, connection, request);
-		return "redirect:/connect/" + providerId;
-	}
-	
-	/**
 	 * Process the authorization callback from an OAuth 1.0a service provider.
 	 * Called after the member authorizes the connection, generally done by having he or she click "Allow" in their web browser at the provider's site.
 	 * On authorization verification, connects the member's local account to the account they hold at the service provider
@@ -148,11 +134,18 @@ public class ConnectController implements BeanFactoryAware {
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="oauth_token")
 	public String oauth10aCallback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier") String verifier, WebRequest request) {
-		OAuth10aServiceProvider<?> provider = (OAuth10aServiceProvider<?>) getServiceProvider(providerId);
-		AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(extractCachedRequestToken(request), verifier);
-		OAuthToken accessToken = provider.getOAuth10aOperations().exchangeForAccessToken(authorizedRequestToken);
-		ServiceProviderConnection<?> connection = provider.connect(accountId(request.getUserPrincipal()), accessToken);
-		postConnect(provider, connection, request);
+		OAuth1ServiceProvider serviceProvider = (OAuth1ServiceProvider) getServiceProvider(providerId);
+		OAuthToken accessToken = null;
+		if(serviceProvider instanceof OAuth10ServiceProvider) {
+			OAuth10ServiceProvider<?> provider = (OAuth10ServiceProvider<?>) getServiceProvider(providerId);
+			accessToken = provider.getOAuth10Operations().exchangeForAccessToken(extractCachedRequestToken(request));
+		} else {
+			OAuth10aServiceProvider<?> provider = (OAuth10aServiceProvider<?>) serviceProvider;
+			AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(extractCachedRequestToken(request), verifier);
+			accessToken = provider.getOAuth10aOperations().exchangeForAccessToken(authorizedRequestToken);			
+		}
+		ServiceProviderConnection<?> connection = serviceProvider.connect(accountId(request.getUserPrincipal()), accessToken);
+		postConnect(serviceProvider, connection, request);
 		return "redirect:/connect/" + providerId;
 	}
 
