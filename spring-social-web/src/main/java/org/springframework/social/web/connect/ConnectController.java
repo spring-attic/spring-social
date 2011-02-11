@@ -133,7 +133,8 @@ public class ConnectController implements BeanFactoryAware {
 	 * Removes the request token from the session since it is no longer valid after the connection is established.
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="oauth_token")
-	public String oauth10aCallback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier") String verifier, WebRequest request) {
+	public String oauth10aCallback(@PathVariable String providerId, @RequestParam("oauth_token") String token,
+			@RequestParam(value = "oauth_verifier", required = false) String verifier, WebRequest request) {
 		OAuth1ServiceProvider serviceProvider = (OAuth1ServiceProvider) getServiceProvider(providerId);
 		OAuthToken accessToken = null;
 		if(serviceProvider instanceof OAuth10ServiceProvider) {

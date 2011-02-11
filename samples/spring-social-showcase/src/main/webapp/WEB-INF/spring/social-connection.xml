@@ -20,4 +20,8 @@
 							 client-key="0b754d95f9c9899b0d6c4454b6f2dde7" 
 							 client-secret="fa8a9825f555a7a8949ec48fb93bda58" />
 
+	<social:service-provider class="org.springframework.social.tripit.connect.TripItServiceProvider"
+							 client-key="ee68437fbf8f42315a1b1ebe5a2a3009bd3f5cf9" 
+							 client-secret="6b3cf4d183cc02076d068eea91080ca0bf666336" />
+
 </beans>
