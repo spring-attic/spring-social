@@ -89,6 +89,8 @@ public class OAuth1Template implements OAuth1Operations {
 		return new OAuthToken(responseMap.get("oauth_token"), responseMap.get("oauth_token_secret"));
 	}
 
+	// manually parse the response instead of using a message converter.
+	// The response content type could by text/plain, text/html, etc...and may not trigger the form-encoded message converter
 	private Map<String, String> parseResponse(String response) {
 		Map<String, String> responseMap = new HashMap<String, String>();
 		String[] responseEntries = response.split("&");
