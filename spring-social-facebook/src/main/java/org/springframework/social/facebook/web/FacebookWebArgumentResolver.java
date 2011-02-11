@@ -24,27 +24,12 @@ import org.springframework.web.bind.support.WebArgumentResolver;
 import org.springframework.web.context.request.NativeWebRequest;
 
 /**
- * <p>
- * Web argument resolver that resolves arguments annotated with
- * {@link FacebookAccessToken} or {@link FacebookUserId}.
- * </p>
- * 
- * <p>
- * After a user has authenticated with Facebook via the XFBML
- * &lt;fb:login-button&gt; tag, their user ID and an access token are stored in
- * a cookie whose name is "fbs_{application key}". This web argument resolver
- * extracts that information from the cookie (if available) and supplies it to a
- * controller handler method as String values.
- * </p>
- * 
- * <p>
- * Both {@link FacebookAccessToken} and {@link FacebookUserId} are required by
- * default. If the access token or user ID cannot be resolved and if the
- * annotation is set to be required, an exception will be thrown indicating an
- * illegal state. If the annotation is set to not be required, a null will be
- * returned.
- * </p>
- * 
+ * Web argument resolver that resolves arguments annotated with {@link FacebookCookieValue}. 
+ * When using Facebook's JavaScript API, the FB.init() call will set a cookie whose name is "fbs_{api key}" if the user is signed into Facebook and if 
+ * they have granted the application permission to access their profile. 
+ * This web argument resolver extracts that information from the cookie (if available) and supplies it to a controller handler method as String values. 
+ * {@link FacebookCookieValue} is required by default. If the access token or user ID cannot be resolved and if the annotation is set to be 
+ * required, an exception will be thrown indicating an illegal state. If the annotation is set to not be required, a null will be returned.
  * @author Craig Walls
  */
 public class FacebookWebArgumentResolver implements WebArgumentResolver {
