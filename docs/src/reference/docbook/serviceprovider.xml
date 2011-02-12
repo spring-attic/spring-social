@@ -6,9 +6,171 @@
   <section xml:id="section_serviceprovider_introduction">
       <title>Introduction</title>
       
-      <para>In Spring Social, a social service such as Twitter or Facebook is modeled as a service provider. With a service provider, an application may create/sever connections and obtain an API through which the application may interact with the service on a user's behalf.</para>
+      <para>In Spring Social, a service provider represents a service through which an application may act on their user's behalf with some other application. A service provider enables an application to create and sever connections between a user's local account and their account on the service. The service provider also exposes an API that the application may use to access the user's private data on the provider.</para>
+
+      <para>Spring Social comes with several ready-to-use service provider implementations:</para>
+
+        <itemizedlist>
+            <listitem><para><classname>org.springframework.social.facebook.connect.FacebookServiceProvider</classname></para></listitem>
+            <listitem><para><classname>org.springframework.social.github.connect.GitHubServiceProvider</classname></para></listitem>
+            <listitem><para><classname>org.springframework.social.gowalla.connect.GowallaServiceProvider</classname></para></listitem>
+            <listitem><para><classname>org.springframework.social.linkedin.connect.LinkedInServiceProvider</classname></para></listitem>
+            <listitem><para><classname>org.springframework.social.tripit.connect.TripItServiceProvider</classname></para></listitem>
+            <listitem><para><classname>org.springframework.social.twitter.connect.TwitterServiceProvider</classname></para></listitem>
+        </itemizedlist>
+
+        <para>You may also create your own service providers by implementing the <interfacename>ServiceProvider</interfacename> interface or extending either <classname>AbstractServiceProvider</classname>, <classname>AbstractOAuth1ServiceProvider</classname>, or <classname>AbstractOAuth2ServiceProvider</classname>.</para>
+                  
   </section>
 
+    <section xml:id="section_usingserviceproviders">
+        <title>Using Service Providers</title>
+
+        <para>There are a handful of useful things you can do with the service provider, including:</para>
+
+        <itemizedlist>
+            <listitem><para>Manage connections between an application account and a provider profile.</para></listitem>
+            <listitem><para>Access provider API for interacting with the service provider on behalf of the user.</para></listitem>
+            <listitem><para>Perform OAuth authorization with the service provider.</para></listitem>
+        </itemizedlist>
+
+        <section xml:id="section_sp_manageConnections">
+            <title>Managing provider connections</title>
+
+            <para>The <interfacename>ServiceProvider</interfacename> interface affords a few methods for managing connections between an application account and a user's profile at the provider:</para>
+
+            <programlisting><![CDATA[boolean isConnected(Serializable accountId);
+  List<ServiceProviderConnection<S>> getConnections(Serializable accountId);]]></programlisting>
+
+            <para>The <methodname>isConnected()</methodname> method is useful for determining if any connections have been made between the user's application account (specified with the account ID) and the provider.</para>
+
+            <para>To work with the connections themselves, call the <methodname>getConnections()</methodname> method. Notice that this method returns a list of <interfacename>ServiceProviderConnection</interfacename>s and not a single connection. That's because it is possible for a user to connect their account with multiple profiles on the provider. For example, if a user has multiple Twitter profiles, any one or all of them may be connected to their local account.</para>
+
+            <section xml:id="section_sp_checkConnections">
+                <title>Obtaining a provider API from a connection</title>
+
+                <para>Once you have one or more <interfacename>ServiceProviderConnection</interfacename>s, you may access the provider API by calling <methodname>getServiceApi()</methodname>. For example, suppose that you're working with <classname>FacebookServiceProvider</classname>. Here's how you might get an instance of <interfacename>FacebookOperations</interfacename> so that you may interact with Facebook on behalf of a user:</para>
+
+                <programlisting><![CDATA[FacebookOperations facebook = facebookProvider.getConnections(accountId).get(0).getServiceApi();]]></programlisting>
+
+                <para>Here, the <methodname>getServiceApi()</methodname> method is being called for the first of the connections returned from <methodname>getConnections()</methodname>. In the case of <classname>FacebookServiceProvider</classname>, the service API is defined by the <interfacename>FacebookOperations</interfacename> interface, which is covered in detail in <xref linkend="facebook"/>.</para>
+            </section>      
+
+
+            <section xml:id="section_sp_connect">
+                <title>Creating connections through a service provider</title>
+                <para>In addition to the core methods of <interfacename>ServiceProvider</interfacename>, a service provider implementation will give you a <methodname>connect()</methodname> method for creating a connection. The <methodname>connect()</methodname> will vary depending on whether you are working with an OAuth 1-based service provider or an OAuth 2-based service provider. For an OAuth 1 service provider, the <methodname>connect()</methodname> signature is:</para>
+
+                <programlisting><![CDATA[ServiceProviderConnection<S> connect(Serializable accountId, OAuthToken accessToken);]]></programlisting>
+
+                <para>To create a connection with an OAuth 1 provider, call it, passing in a local application account ID and an access token that was granted for the profile to be connected to:</para>
+
+                <programlisting><![CDATA[ServiceProviderConnection<?> connection = provider.connect(accountId, new OAuthToken(token, secret));]]></programlisting>
+
+
+                <para>The <classname>OAuthToken</classname> is created given an access token value and the access token secret.</para>
+
+                <para>For an OAuth 2 service provider, the <methodname>connect()</methodname> signature is slightly different:</para>
+
+                <programlisting><![CDATA[ServiceProviderConnection<S> connect(Serializable accountId, AccessGrant accessToken);]]></programlisting>
+
+                <para>OAuth 2 access tokens are not paired with an access token secret. They may, however, come with a refresh token. Therefore, to create a connection with an OAuth 2 provider profile:</para>
+
+                <programlisting><![CDATA[ServiceProviderConnection<?> connection = provider.connect(accountId, new AccessGrant(accessToken, refreshToken));]]></programlisting>              
+
+                <para>In either case, using these methods assumes that you have already gone through the OAuth dance and have obtained an access token. Since the OAuth authorization flow is non-trivial, it's typically best to take advantage of Spring Social's <classname>ConnectController</classname> (described in <xref linkend="connect-controller"/>) to handle OAuth authorization and the creation of connections.</para>
+            </section>
+        </section>
+
+        <section xml:id="section_sp_oauthOperations">
+            <title>OAuth Operations</title>
+
+            <para>Although the service providers and <classname>ConnectController</classname> handle much of the details of working with OAuth, if you want to work with OAuth directly, you can do so through <classname>OAuth1Template</classname> and <classname>OAuth2Template</classname>.</para>
+
+            <para>To directly create an instance of <classname>OAuth1Template</classname>, you must instantiate it with the details of the OAuth 1 service given as constructor arguments. For example, to ready an <classname>OAuth1Template</classname> for use with Twitter:</para>
+
+            <programlisting><![CDATA[String consumerKey = "...]]><emphasis>Twitter consumer key</emphasis><![CDATA[...";
+  String consumerSecret = "...]]><emphasis>Twitter consumer secret</emphasis><![CDATA[...";
+  String requestTokenUrl = "https://api.twitter.com/oauth/request_token";
+  String authorizeUrl = "https://api.twitter.com/oauth/authorize?oauth_token={request_token}";
+  String accessTokenUrl = "https://api.twitter.com/oauth/access_token";
+  OAuth1Template oauth1Template = new OAuth1Template(consumerKey, consumerSecret, requestTokenUrl, authorizeUrl,
+  		accessTokenUrl);]]></programlisting>
+
+  		  <para>Or, if you have an OAuth 1 service provider (such as <classname>TwitterServiceProvider</classname>), it's even easier to call the service provider's <methodname>getOAuth1Operations()</methodname> method:</para>
+
+            <programlisting><![CDATA[OAuth1Operations oauth1Template = twitterProvider.getOAuth1Operations();]]></programlisting>
+
+  		  <para>Similarly, you can create an <classname>OAuth2Template</classname> by calling it's constructor with the service's OAuth 2 details. For example, here's how you may create a Facebook-ready instance of <classname>OAuth2Template</classname>:</para>
+
+            <programlisting><![CDATA[String clientId = "...]]><emphasis>Facebook API Key</emphasis><![CDATA[...";
+  String clientSecret = "...]]><emphasis>Facebook App Secret</emphasis><![CDATA[...";
+  String authorizeUrl = "https://graph.facebook.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}";
+  String accessTokenUrl = "https://graph.facebook.com/oauth/access_token";
+  OAuth2Template oauth2 = new OAuth2Template(clientId, clientSecret, authorizeUrl, accessTokenUrl);]]></programlisting>
+
+    		  <para>Or you can easily retrieve an <classname>OAuth2Template</classname> from an OAuth 2 service provider by calling its <methodname>getOAuth2Operations()</methodname> method:</para>
+
+    		  <programlisting><![CDATA[OAuth2Operations oauth2Template = facebookProvider.getOAuth2Operations();]]></programlisting>
+
+            <para><classname>OAuth1Template</classname> and <classname>OAuth2Template</classname> implement the <interfacename>OAuth1Operations</interfacename> and <interfacename>OAuth2Operations</interfacename> interfaces, respectively. Through these interfaces, you may participate in the "OAuth Dance".</para>
+
+            <section>
+                <title><interfacename>OAuth1Operations</interfacename></title>
+
+                <para>The <interfacename>OAuth1Operations</interfacename> interface defines three methods, as follows:</para>
+
+                <programlisting><![CDATA[public interface OAuth1Operations {
+
+  	OAuthToken fetchNewRequestToken(String callbackUrl);
+  	String buildAuthorizeUrl(String requestToken);
+  	OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken);
+
+  }]]></programlisting>
+
+                <para>To begin the OAuth 1 process, call <methodname>fetchNewRequestToken()</methodname>, passing in the callback URL. <methodname>fetchNewRequestToken()</methodname> will return an <classname>OAuthToken</classname> containing the request token value and secret.</para>
+
+                <para>At this point in the OAuth 1 dance, you should redirect the user's browser to the service's authorization URL. The <methodname>buildAuthorizeUrl()</methodname> method builds that authorization URL for you, given the request token value (which can be obtained by calling <classname>OAuthToken</classname>'s <methodname>getValue()</methodname> method).</para>
+
+                <para>After the user agrees to grant your application access, the service will redirect the user's browser back to the callback URL you gave to <methodname>fetchNewRequestToken()</methodname> with an <code>oauth_verifier</code> parameter<footnote><para>The <code>oauth_verifier</code> parameter is only applicable for OAuth 1.0a-based services. OAuth 1.0-based services will not give back a verifier. In that case, assume a <code>null</code> value for the verifier.</para></footnote>.</para>
+
+                <para>To complete the OAuth dance, create an instance of <classname>AuthorizedRequestToken</classname> to contain the request token and verifier and pass it as a parameter to <methodname>exchangeForAccessToken()</methodname>:</para>
+
+                <programlisting><![CDATA[AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(requestToken, verifier);
+  OAuthToken accessToken = oauth1Template.exchangeForAccessToken(authorizedRequestToken);]]></programlisting>
+
+                <para>The <methodname>exchangeForAccessToken()</methodname> method will return another <classname>OAuthToken</classname>, this time containing the access token and secret. This access token may be used to interact with the service on behalf of the user and may be stored away for future use.</para>
+
+                <para>Again, the operations afforded by <interfacename>OAuth1Operations</interfacename> are lower-level OAuth operations. <classname>ConnectController</classname> handles these interactions internally so that you shouldn't need to deal directly with the <interfacename>OAuth1Operations</interfacename> interface.</para>
+            </section>
+
+            <section>
+                <title><interfacename>OAuth2Operations</interfacename></title>
+
+                <para>The OAuth 2 dance is simpler than the OAuth 1 dance. Thus, the <interfacename>OAuth2Operations</interfacename> interface is slightly simpler than its OAuth 1 counterpart. <interfacename>OAuth2Operations</interfacename> is defined as follows:</para>
+
+                <programlisting><![CDATA[public interface OAuth2Operations {
+
+      String buildAuthorizeUrl(String redirectUri, String scope);
+      AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri);
+
+  }]]></programlisting>
+
+                <para>OAuth 2 doesn't require (or even support) request tokens. Therefore, the first step in the OAuth 2 dance is to redirect the user to the service's authorization URL. <interfacename>OAuth2Operations</interfacename>' <methodname>buildAuthorizeUrl()</methodname> can provide you with that URL given your application's redirect URI and an optional scope value.</para>
+
+                <para>The redirect URI is significant in that it must match the application's configuration with the service itself. When you register your application with a service provider, you must specify a redirect URI or some base application URI. If the redirect URI given in the authorization URL does not match, the provider may refuse to grant access to your application.</para>
+
+                <para>The scope value is a comma-delimited <classname>String</classname> of values that specifies what level of access the application is asking permission for. The values given will vary by provider. Some providers, such as Facebook, have a rich and fine-grained set of scope permissions, while some other providers don't support scoping at all. Consult the service's document for details on what permissions may be given as the scope parameter. Scope is optional, however, so leaving it blank or passing in <code>null</code> effectively asks for the default scope (which is also defined by the service).</para>
+
+                <para>After the user agrees to grant your application access, the service will redirect them back to the redirect URI with a <code>code</code> parameter. This code may be exchanged for an access token by passing it to <interfacename>OAuth2Operations</interfacename>' <methodname>exchangeForAccess()</methodname> method, along with the redirect URI.</para>
+
+                <para>The <methodname>exchangeForAccess()</methodname> method will complete the OAuth 2 dance, returning an <classname>AccessGrant</classname> which contains an access token useful for interacting with the service API. It may also contain a refresh token, useful for refreshing an expired access token.</para>
+
+                <para>It bears repeating that working directly with a service through <interfacename>OAuth2Operations</interfacename> is a low-level effort. It is simpler to leverage <classname>ConnectController</classname> to perform the OAuth authorization flow than to roll your own implementation.</para>
+            </section>
+        </section>
+    </section>
+    
   <section xml:id="section_serviceproviderconfig">
       <title>Configuring Service Providers</title>
       
@@ -35,18 +197,7 @@
 
       <para>The <code>client-key</code> and <code>client-secret</code> attributes specify the key and secret values assigned to your application when you registered it with the provider.</para>
             
-      <para>The <code>class</code> attribute specifies the fully-qualified name of the provider implementation. Spring Social comes with several ready-to-use service provider implementations:</para>
-      
-      <itemizedlist>
-          <listitem><para><classname>org.springframework.social.facebook.connect.FacebookServiceProvider</classname></para></listitem>
-          <listitem><para><classname>org.springframework.social.github.connect.GitHubServiceProvider</classname></para></listitem>
-          <listitem><para><classname>org.springframework.social.gowalla.connect.GowallaServiceProvider</classname></para></listitem>
-          <listitem><para><classname>org.springframework.social.linkedin.connect.LinkedInServiceProvider</classname></para></listitem>
-          <listitem><para><classname>org.springframework.social.tripit.connect.TripItServiceProvider</classname></para></listitem>
-          <listitem><para><classname>org.springframework.social.twitter.connect.TwitterServiceProvider</classname></para></listitem>
-      </itemizedlist>
-
-      <para>You may also create your own service providers by implementing the <interfacename>ServiceProvider</interfacename> interface or extending either <classname>AbstractServiceProvider</classname>, <classname>AbstractOAuth1ServiceProvider</classname>, or <classname>AbstractOAuth2ServiceProvider</classname>.</para>
+      <para>The <code>class</code> attribute specifies the fully-qualified name of the provider implementation.</para>
 
       <section xml:id="section_config_connectionrepository">
           <title>Connection Repository</title>
@@ -83,150 +234,5 @@
 
 
   </section>
-  <section xml:id="section_usingserviceproviders">
-      <title>Using Service Providers</title>
-      
-      <para>Once you have a server provider configured in Spring, there are a handful of things you can do with the service provider, including:</para>
-      
-      <itemizedlist>
-          <listitem><para>Manage connections between an application account and a provider profile.</para></listitem>
-          <listitem><para>Access provider API for interacting with the service provider on behalf of the user.</para></listitem>
-      </itemizedlist>
-            
-      <section xml:id="section_sp_manageConnections">
-          <title>Managing provider connections</title>
-          
-          <para>The <interfacename>ServiceProvider</interfacename> interface affords a few methods for managing connections between an application account and a user's profile at the provider:</para>
-          
-          <programlisting><![CDATA[boolean isConnected(Serializable accountId);
-List<ServiceProviderConnection<S>> getConnections(Serializable accountId);]]></programlisting>
-          
-          <para>The <methodname>isConnected()</methodname> method is useful for determining if any connections have been made between the user's application account (specified with the account ID) and the provider.</para>
 
-          <para>To work with the connections themselves, call the <methodname>getConnections()</methodname> method. Notice that this method returns a list of <interfacename>ServiceProviderConnection</interfacename>s and not a single connection. That's because it is possible for a user to connect their account with multiple profiles on the provider. For example, if a user has multiple Twitter profiles, any one or all of them may be connected to their local account.</para>
-          
-          <section xml:id="section_sp_checkConnections">
-              <title>Obtaining a provider API from a connection</title>
-              
-              <para>Once you have one or more <interfacename>ServiceProviderConnection</interfacename>s, you may access the provider API by calling <methodname>getServiceApi()</methodname>. For example, suppose that you're working with <classname>FacebookServiceProvider</classname>. Here's how you might get an instance of <interfacename>FacebookOperations</interfacename> so that you may interact with Facebook on behalf of a user:</para>
-              
-              <programlisting><![CDATA[FacebookOperations facebook = facebookProvider.getConnections(accountId).get(0).getServiceApi();]]></programlisting>
-              
-              <para>Here, the <methodname>getServiceApi()</methodname> method is being called for the first of the connections returned from <methodname>getConnections()</methodname>. In the case of <classname>FacebookServiceProvider</classname>, the service API is defined by the <interfacename>FacebookOperations</interfacename> interface, which is covered in detail in <xref linkend="facebook"/>.</para>
-          </section>      
-          
-          
-          <section xml:id="section_sp_connect">
-              <title>Creating connections through a service provider</title>
-              <para>In addition to the core methods of <interfacename>ServiceProvider</interfacename>, a service provider implementation will give you a <methodname>connect()</methodname> method for creating a connection. The <methodname>connect()</methodname> will vary depending on whether you are working with an OAuth 1-based service provider or an OAuth 2-based service provider. For an OAuth 1 service provider, the <methodname>connect()</methodname> signature is:</para>
-
-              <programlisting><![CDATA[ServiceProviderConnection<S> connect(Serializable accountId, OAuthToken accessToken);]]></programlisting>
-              
-              <para>To create a connection with an OAuth 1 provider, call it, passing in a local application account ID and an access token that was granted for the profile to be connected to:</para>
-              
-              <programlisting><![CDATA[ServiceProviderConnection<?> connection = provider.connect(accountId, new OAuthToken(token, secret));]]></programlisting>
-              
-      		
-              <para>The <classname>OAuthToken</classname> is created given an access token value and the access token secret.</para>
-              
-              <para>For an OAuth 2 service provider, the <methodname>connect()</methodname> signature is slightly different:</para>
-
-              <programlisting><![CDATA[ServiceProviderConnection<S> connect(Serializable accountId, AccessGrant accessToken);]]></programlisting>
-              
-              <para>OAuth 2 access tokens are not paired with an access token secret. They may, however, come with a refresh token. Therefore, to create a connection with an OAuth 2 provider profile:</para>
-              
-              <programlisting><![CDATA[ServiceProviderConnection<?> connection = provider.connect(accountId, new AccessGrant(accessToken, refreshToken));]]></programlisting>              
-              
-              <para>In either case, using these methods assumes that you have already gone through the OAuth dance and have obtained an access token. Since the OAuth authorization flow is non-trivial, it's typically best to take advantage of Spring Social's <classname>ConnectController</classname> (described in <xref linkend="connect-controller"/>) to handle OAuth authorization and the creation of connections.</para>
-          </section>
-      </section>
-      
-      <section xml:id="section_sp_oauthOperations">
-          <title>OAuth Operations</title>
-          
-          <para>Although the service providers and <classname>ConnectController</classname> handle much of the details of working with OAuth, if you want to work with OAuth directly, you can do so through <classname>OAuth1Template</classname> and <classname>OAuth2Template</classname>.</para>
-          
-          <para>To directly create an instance of <classname>OAuth1Template</classname>, you must instantiate it with the details of the OAuth 1 service given as constructor arguments. For example, to ready an <classname>OAuth1Template</classname> for use with Twitter:</para>
-          
-          <programlisting><![CDATA[String consumerKey = "...]]><emphasis>Twitter consumer key</emphasis><![CDATA[...";
-String consumerSecret = "...]]><emphasis>Twitter consumer secret</emphasis><![CDATA[...";
-String requestTokenUrl = "https://api.twitter.com/oauth/request_token";
-String authorizeUrl = "https://api.twitter.com/oauth/authorize?oauth_token={request_token}";
-String accessTokenUrl = "https://api.twitter.com/oauth/access_token";
-OAuth1Template oauth1Template = new OAuth1Template(consumerKey, consumerSecret, requestTokenUrl, authorizeUrl,
-		accessTokenUrl);]]></programlisting>
-		
-		  <para>Or, if you have an OAuth 1 service provider (such as <classname>TwitterServiceProvider</classname>), it's even easier to call the service provider's <methodname>getOAuth1Operations()</methodname> method:</para>
-		  
-          <programlisting><![CDATA[OAuth1Operations oauth1Template = twitterProvider.getOAuth1Operations();]]></programlisting>
-		            
-		  <para>Similarly, you can create an <classname>OAuth2Template</classname> by calling it's constructor with the service's OAuth 2 details. For example, here's how you may create a Facebook-ready instance of <classname>OAuth2Template</classname>:</para>
-		  
-          <programlisting><![CDATA[String clientId = "...]]><emphasis>Facebook API Key</emphasis><![CDATA[...";
-String clientSecret = "...]]><emphasis>Facebook App Secret</emphasis><![CDATA[...";
-String authorizeUrl = "https://graph.facebook.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}";
-String accessTokenUrl = "https://graph.facebook.com/oauth/access_token";
-OAuth2Template oauth2 = new OAuth2Template(clientId, clientSecret, authorizeUrl, accessTokenUrl);]]></programlisting>
-  		
-  		  <para>Or you can easily retrieve an <classname>OAuth2Template</classname> from an OAuth 2 service provider by calling its <methodname>getOAuth2Operations()</methodname> method:</para>
-  		  
-  		  <programlisting><![CDATA[OAuth2Operations oauth2Template = facebookProvider.getOAuth2Operations();]]></programlisting>
-          
-          <para><classname>OAuth1Template</classname> and <classname>OAuth2Template</classname> implement the <interfacename>OAuth1Operations</interfacename> and <interfacename>OAuth2Operations</interfacename> interfaces, respectively. Through these interfaces, you may participate in the "OAuth Dance".</para>
-          
-          <section>
-              <title><interfacename>OAuth1Operations</interfacename></title>
-              
-              <para>The <interfacename>OAuth1Operations</interfacename> interface defines three methods, as follows:</para>
-              
-              <programlisting><![CDATA[public interface OAuth1Operations {
-
-	OAuthToken fetchNewRequestToken(String callbackUrl);
-	String buildAuthorizeUrl(String requestToken);
-	OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken);
-	
-}]]></programlisting>
-              
-              <para>To begin the OAuth 1 process, call <methodname>fetchNewRequestToken()</methodname>, passing in the callback URL. <methodname>fetchNewRequestToken()</methodname> will return an <classname>OAuthToken</classname> containing the request token value and secret.</para>
-              
-              <para>At this point in the OAuth 1 dance, you should redirect the user's browser to the service's authorization URL. The <methodname>buildAuthorizeUrl()</methodname> method builds that authorization URL for you, given the request token value (which can be obtained by calling <classname>OAuthToken</classname>'s <methodname>getValue()</methodname> method).</para>
-              
-              <para>After the user agrees to grant your application access, the service will redirect the user's browser back to the callback URL you gave to <methodname>fetchNewRequestToken()</methodname> with an <code>oauth_verifier</code> parameter<footnote><para>The <code>oauth_verifier</code> parameter is only applicable for OAuth 1.0a-based services. OAuth 1.0-based services will not give back a verifier. In that case, assume a <code>null</code> value for the verifier.</para></footnote>.</para>
-              
-              <para>To complete the OAuth dance, create an instance of <classname>AuthorizedRequestToken</classname> to contain the request token and verifier and pass it as a parameter to <methodname>exchangeForAccessToken()</methodname>:</para>
-              
-              <programlisting><![CDATA[AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(requestToken, verifier);
-OAuthToken accessToken = oauth1Template.exchangeForAccessToken(authorizedRequestToken);]]></programlisting>
-
-              <para>The <methodname>exchangeForAccessToken()</methodname> method will return another <classname>OAuthToken</classname>, this time containing the access token and secret. This access token may be used to interact with the service on behalf of the user and may be stored away for future use.</para>
-              
-              <para>Again, the operations afforded by <interfacename>OAuth1Operations</interfacename> are lower-level OAuth operations. <classname>ConnectController</classname> handles these interactions internally so that you shouldn't need to deal directly with the <interfacename>OAuth1Operations</interfacename> interface.</para>
-          </section>
-
-          <section>
-              <title><interfacename>OAuth2Operations</interfacename></title>
-              
-              <para>The OAuth 2 dance is simpler than the OAuth 1 dance. Thus, the <interfacename>OAuth2Operations</interfacename> interface is slightly simpler than its OAuth 1 counterpart. <interfacename>OAuth2Operations</interfacename> is defined as follows:</para>
-              
-              <programlisting><![CDATA[public interface OAuth2Operations {
-
-    String buildAuthorizeUrl(String redirectUri, String scope);
-    AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri);
-
-}]]></programlisting>
-            
-              <para>OAuth 2 doesn't require (or even support) request tokens. Therefore, the first step in the OAuth 2 dance is to redirect the user to the service's authorization URL. <interfacename>OAuth2Operations</interfacename>' <methodname>buildAuthorizeUrl()</methodname> can provide you with that URL given your application's redirect URI and an optional scope value.</para>
-              
-              <para>The redirect URI is significant in that it must match the application's configuration with the service itself. When you register your application with a service provider, you must specify a redirect URI or some base application URI. If the redirect URI given in the authorization URL does not match, the provider may refuse to grant access to your application.</para>
-              
-              <para>The scope value is a comma-delimited <classname>String</classname> of values that specifies what level of access the application is asking permission for. The values given will vary by provider. Some providers, such as Facebook, have a rich and fine-grained set of scope permissions, while some other providers don't support scoping at all. Consult the service's document for details on what permissions may be given as the scope parameter. Scope is optional, however, so leaving it blank or passing in <code>null</code> effectively asks for the default scope (which is also defined by the service).</para>
-              
-              <para>After the user agrees to grant your application access, the service will redirect them back to the redirect URI with a <code>code</code> parameter. This code may be exchanged for an access token by passing it to <interfacename>OAuth2Operations</interfacename>' <methodname>exchangeForAccess()</methodname> method, along with the redirect URI.</para>
-              
-              <para>The <methodname>exchangeForAccess()</methodname> method will complete the OAuth 2 dance, returning an <classname>AccessGrant</classname> which contains an access token useful for interacting with the service API. It may also contain a refresh token, useful for refreshing an expired access token.</para>
-              
-              <para>It bears repeating that working directly with a service through <interfacename>OAuth2Operations</interfacename> is a low-level effort. It is simpler to leverage <classname>ConnectController</classname> to perform the OAuth authorization flow than to roll your own implementation.</para>
-          </section>
-      </section>
-  </section>
 </chapter>

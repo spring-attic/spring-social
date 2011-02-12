@@ -7,6 +7,138 @@
     <title>Introduction</title>
 
     <para>The Spring Social project enables Spring applications to connect with users' profiles on service providers such as Facebook and Twitter and interact with those services on behalf of the user.</para>
-  </section>
 
+  </section>
+  
+  <section id="overview-social">
+      <title>Socializing applications</title>
+      
+      <para>The phrase "social networking" often refers to efforts aimed at bringing people together. In the software world, those efforts take the form of online social networks such as Facebook, Twitter, and LinkedIn. Roughly half a billion of this world's internet users have flocked to these services to keep frequent contact with family, friends, and colleagues.</para>
+      
+      <para>Under the surface, however, these services are just software applications that gather, store, and process information. Just like so many applications written before, these social networks have users who sign in and perform some activity offered by the service.</para>
+      
+      <para>What makes these applications a little different than traditional applications is that the data that they collect represent some facet of their users' lives. What's more, these applications are more than willing to share that data with other applications, as long as the user gives permission to do so. This means that although these social networks are great at bringing people together, as software services they also excel at bringing applications together</para>
+
+      <para>To illustrate, imagine that Paul, is a member of an online movie club. A function of the movie club application is to recommend movies for its members to watch and to let its members maintain a list of movies that they have seen and those that they plan to see. When Paul sees a movie, he signs into the movie club site and checks it off of his viewing list and indicating if he liked the movie or not. Based on his responses, the movie club application can tailor its future suggestions for Paul to see.</para>
+      
+      <para>On its own, the movie club provides great value to Paul, as it helps him choose movies to watch. But Paul is also a Facebook user. And many of Paul's Facebook friends also enjoy a good movie now and then. If Paul were able to connect his movie club account with his Facebook profile, the movie club application could offer him a richer experience. Perhaps when he sees a movie, the application could post a message on his Facebook wall indicating so. Or when offering suggestions, the movie club could factor in the movies that his Facebook friends liked.</para>
+      
+      <para>In a typical social integration scenario, there are three actors: A service provider, a service consumer, and a user. The service provider and consumer are both application with which the user holds an account. In the narrative above, Facebook is the service provider, the book club application is the service consumer, and Paul is the user of them both.</para>
+      
+      <para>From the user's perspective, both applications provide some valuable functionality. But by connecting the user's account on the consumer application with his account on the provider application, the user brings together two applications that can now offer the user more value than they could individually.</para>
+      
+      <para>With Spring Social, an application can play the part of the service consumer, interacting with a service provider on behalf of its users.</para>
+  </section>
+  
+  <section id="overview-howtoget">
+      <title>How to get</title>
+
+      <para>Spring Social is divided into the modules described in <xref linkend="table-spring-social-modules"/>.</para>
+      
+      <table xml:id="table-spring-social-modules">
+        <title>Spring Social Modules</title>
+        <tgroup cols="2">
+          <colspec align="left" />
+          <colspec colnum="1" colname="col1" colwidth="2*"/>
+          <colspec colnum="2" colname="col2" colwidth="2*"/>
+          <thead>
+            <row>
+              <entry align="center">Name</entry>
+              <entry align="center">Description</entry>
+            </row>
+          </thead>
+          <tbody>
+            <row>
+              <entry>spring-social-core</entry>
+              <entry>Spring Social's service provider framework and OAuth support.</entry>
+            </row>
+            <row>
+              <entry>spring-social-config</entry>
+              <entry>Spring Social's XML configuration namespace for configuring service providers in Spring.</entry>
+            </row>
+            <row>
+              <entry>spring-social-web</entry>
+              <entry>Spring Social's <classname>ConnectController</classname>, which handles the OAuth process, establishing connections with social providers.</entry>
+            </row>
+            <row>
+              <entry>spring-social-facebook</entry>
+              <entry>Includes Spring Social's Facebook API as well as support for signing into an application through Facebook.</entry>
+            </row>
+            <row>
+              <entry>spring-social-github</entry>
+              <entry>Includes Spring Social's GitHub API.</entry>
+            </row>
+            <row>
+              <entry>spring-social-gowalla</entry>
+              <entry>Includes Spring Social's Gowalla API.</entry>
+            </row>
+            <row>
+              <entry>spring-social-linkedin</entry>
+              <entry>Includes Spring Social's LinkedIn API.</entry>
+            </row>
+            <row>
+              <entry>spring-social-tripit</entry>
+              <entry>Includes Spring Social's TripIt API.</entry>
+            </row>
+            <row>
+              <entry>spring-social-twitter</entry>
+              <entry>Includes Spring Social's Twitter API as well as support for signing into an application via Twitter.</entry>
+            </row>
+          </tbody>
+        </tgroup>
+      </table>
+      
+      <para>Which of these modules your application needs will largely depend on what facets of Spring Social you intend to use. At very minimum, you'll need the core module in your application's classpath:</para>
+      
+      <programlisting language="xml"><![CDATA[
+<dependency>
+  <groupId>org.springframework.social</groupId>
+  <artifactId>spring-social-core</artifactId>
+  <version>${org.springframework.social-version}</version>
+</dependency>]]>
+	  </programlisting>
+	  
+	  <para>To simplify configuration of service providers as beans in Spring, you'll want to also include the config module:</para>
+	  
+      <programlisting language="xml"><![CDATA[
+<dependency>
+<groupId>org.springframework.social</groupId>
+<artifactId>spring-social-config</artifactId>
+<version>${org.springframework.social-version}</version>
+</dependency>]]>
+	  </programlisting>
+	  
+	  <para>To let Spring Social handle the back-and-forth exchange between your application and a service required for OAuth authorization, you'll need the web module:</para>
+	  
+    <programlisting language="xml"><![CDATA[
+<dependency>
+<groupId>org.springframework.social</groupId>
+<artifactId>spring-social-web</artifactId>
+<version>${org.springframework.social-version}</version>
+</dependency>]]>
+	  </programlisting>
+      	  
+	  <para>The remaining modules are elective, depending on which of the supported service providers you intend for your application to interact with. For example, you'll only need the GitHub module if your application needs to access a user's GitHub profile.</para>
+	  
+		<para>
+			If you are developing against a milestone version, such as 1.0.0.M2, you will need to add the following repository in order to resolve the artifact:
+		</para>
+		<programlisting language="xml"><![CDATA[
+<repository>
+  <id>org.springframework.maven.milestone</id>
+  <name>Spring Maven Milestone Repository</name>
+  <url>http://maven.springframework.org/milestone</url>
+</repository>]]>
+		</programlisting>		
+		<para>
+			If you are testing out the latest nightly build version (e.g. 1.0.0.BUILD-SNAPSHOT), you will need to add the following repository:
+		</para>
+		<programlisting language="xml"><![CDATA[
+<repository>
+  <id>org.springframework.maven.snapshot</id>
+  <name>Spring Maven Snapshot Repository</name>
+  <url>http://maven.springframework.org/snapshot</url>
+</repository>]]>
+		</programlisting>	  
+  </section>
 </chapter>
