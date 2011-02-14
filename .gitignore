@@ -7,10 +7,3 @@ spring-social-core/src/test/java/exploration
 **/.project
 **/.settings
 **/bin
-samples/**/target
-samples/**/.classpath
-samples/**/.project
-samples/**/.settings
-samples/**/.springBeans
-samples/**/bin
-samples/**/src/main/webapp/META-INF
