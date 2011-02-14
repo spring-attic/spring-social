@@ -3,7 +3,11 @@
     xmlns:xlink="http://www.w3.org/1999/xlink">
   <title>Signing in with Social Services</title>
 
-  <para>To make it easier for users to sign in to your application, Spring Social makes it possible for them to authenticate to your application by signing into either Twitter or Facebook.</para>
+  <section xml:id="signin_introduction">
+      <title>Introduction</title>
+      
+      <para>Once a connection has been established between a user's consumer account and their service provider profile, that connection can be used to authenticate them to the consumer application by asking them to sign in to the service provider. Spring Social supports such service provider-based authentication with Twitter and Facebook.</para>
+  </section>
   
   <section xml:id="signin_with_twitter">
       <title>Sign in with Twitter</title>

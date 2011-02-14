@@ -5,6 +5,21 @@
   
   <section xml:id="section_api_introduction">
       <title>Introduction</title>
+      
+      <para>After a user has granted your application access to their service provider profile, you'll be able to interact with that service provider to update or retrieve the user's data. Your application may, for example, post a Tweet on behalf of a user or review a user's list of contacts to see if any of them have also created connections to your application.</para>
+      
+      <para>Each service provider exposes their data and functionality through an API. Spring Social provides Java-based access to those APIs via provider-specific templates, each implementing a provider operations interface.</para>
+      
+      <para>Spring Social comes with six provider API templates/operations for the following service providers:</para>
+      
+      <itemizedlist>
+          <listitem><para>Facebook</para></listitem>
+          <listitem><para>GitHub</para></listitem>
+          <listitem><para>Gowalla</para></listitem>
+          <listitem><para>LinkedIn</para></listitem>
+          <listitem><para>TripIt</para></listitem>
+          <listitem><para>Twitter</para></listitem>
+      </itemizedlist>
   </section>
   
   <section xml:id="section_api_facebook">
@@ -296,7 +311,7 @@
   </section>
   <section xml:id="section_api_twitter">
       <title>Twitter</title>
-        <para>Twitter's social offering is rather simple: Enable users to post random thoughts, 140 characters at a time.</para>
+        <para>Twitter's social offering is rather simple: Enable users to post whatever they're thinking, 140 characters at a time.</para>
 
         <para>Spring Social's <classname>TwitterTemplate</classname> (which implements <interfacename>TwitterOperations</interfacename>) offers several options for applications to integrate with the short-spoken Twitter.</para>
 
@@ -331,7 +346,7 @@
 
           <para>This returns a <classname>TwitterProfile</classname> object containing profile data for the authenticated user. This profile information includes the user's Twitter screen name, their name, location, description, and the date that they created their Twitter account. Also included is a URL to their profile image.</para>
 
-          <para>If you want to retrieve the user profile for a specific user other than the authenticated user, you can so do by passing the user's screen name as a parameter to <methodname>getUserProfile()</methodname></para>:
+          <para>If you want to retrieve the user profile for a specific user other than the authenticated user, you can so do by passing the user's screen name as a parameter to <methodname>getUserProfile()</methodname>:</para>
 
           <programlisting><![CDATA[TwitterProfile profile = twitter.getUserProfile("habuma");]]></programlisting>
 

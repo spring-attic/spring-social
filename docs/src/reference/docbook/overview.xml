@@ -23,11 +23,20 @@
       
       <para>On its own, the movie club provides great value to Paul, as it helps him choose movies to watch. But Paul is also a Facebook user. And many of Paul's Facebook friends also enjoy a good movie now and then. If Paul were able to connect his movie club account with his Facebook profile, the movie club application could offer him a richer experience. Perhaps when he sees a movie, the application could post a message on his Facebook wall indicating so. Or when offering suggestions, the movie club could factor in the movies that his Facebook friends liked.</para>
       
-      <para>In a typical social integration scenario, there are three actors: A service provider, a service consumer, and a user. The service provider and consumer are both application with which the user holds an account. In the narrative above, Facebook is the service provider, the book club application is the service consumer, and Paul is the user of them both.</para>
+      <para>Social integration is a three-way conversation between a service provider, a service consumer, and a user who holds an account on both the provider and consumer. All interactions between the consumer and the service provider are scoped to the context of the user's profile on the service provider.</para>
+          
+      <para>In the narrative above, Facebook is the service provider, the movie club application is the service consumer, and Paul is the user of them both. The movie club application may interact with Facebook on behalf of Paul, accessing whatever Facebook data and functionality that Paul permits, including seeing Paul's list of friends and posting messages to his Facebook wall.</para>
       
       <para>From the user's perspective, both applications provide some valuable functionality. But by connecting the user's account on the consumer application with his account on the provider application, the user brings together two applications that can now offer the user more value than they could individually.</para>
       
-      <para>With Spring Social, an application can play the part of the service consumer, interacting with a service provider on behalf of its users.</para>
+      <para>With Spring Social, an application can play the part of the service consumer, interacting with a service provider on behalf of its users. The key features of Spring Social are:</para>
+      
+      <itemizedlist>
+          <listitem><para>A service provider framework that models the authorization and connection creation process with a service.</para></listitem>
+          <listitem><para>A connection controller that handles the OAuth exchange between a service provider, consumer, and user.</para></listitem>
+          <listitem><para>APIs for several service providers such as Facebook, Twitter, LinkedIn, TripIt, GitHub, and Gowalla.</para></listitem>
+          <listitem><para>A signin controller that enables a user to authenticate to an application by signing into either Facebook or Twitter.</para></listitem>
+      </itemizedlist>
   </section>
   
   <section id="overview-howtoget">
