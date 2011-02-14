@@ -14,11 +14,11 @@
       
       <itemizedlist>
           <listitem><para>Facebook</para></listitem>
+          <listitem><para>Twitter</para></listitem>
           <listitem><para>GitHub</para></listitem>
           <listitem><para>Gowalla</para></listitem>
           <listitem><para>LinkedIn</para></listitem>
           <listitem><para>TripIt</para></listitem>
-          <listitem><para>Twitter</para></listitem>
       </itemizedlist>
   </section>
   
@@ -84,7 +84,7 @@
           <programlisting><![CDATA[FacebookLink link = new FacebookLink("http://www.springsource.org/spring-social", 
               "Spring Social", 
               "The Spring Social Project", 
-              "Spring Social is an extension to Spring to enable integration with social networks.");
+              "Spring Social is an extension to Spring to enable applications to connect with service providers.");
       facebook.updateStatus("I'm trying out Spring Social!", link);]]></programlisting>
 
           <para>When constructing the <classname>FacebookLink</classname> object, the first parameter is the link's URL, the second parameter is the name of the link, the third parameter is a caption, and the fourth is a description of the link.</para>
@@ -154,161 +154,7 @@
 
       </section>
   </section>
-  <section xml:id="section_api_gowalla">
-      <title>Gowalla</title>
-        <para>Gowalla is a location-based social network where users may check in to various locations they visit and earn pins and stamps for having checked in a locations that achieve some goal (for example, a "Lucha Libre" pin may be earned by having checked into 10 different Mexican food restaurants).</para>
 
-        <para>Spring Social supports interaction with Gowalla through the <interfacename>GowallaOperations</interfacename> interface and its implementation, <classname>GowallaTemplate</classname>.</para>
-
-        <para>To obtain an instance of <classname>GowallaTemplate</classname>, you can instantiate it by passing an authorized access token to its constructor:</para>
-
-        <programlisting><![CDATA[String accessToken = "f8FX29g..."; // access token received from Gowalla after OAuth authorization
-      GowallaOperations gowalla = new GowallaTemplate(accessToken);]]></programlisting>
-
-        <para>If you are using the service provider framework described in <xref linkend="serviceprovider"/>, you can get an instance of <classname>GowallaTemplate</classname> by calling the <methodname>getServiceApi()</methodname> method on one of the connections given by <classname>GowallaServiceProvider</classname>'s <methodname>getConnections()</methodname> method:</para>
-
-        <programlisting><![CDATA[GowallaOperations gowalla = gowallaProvider.getConnections(accountId).get(0).getServiceApi();]]></programlisting>
-
-        <para>Here, <classname>GowallaServiceProvider</classname> is being asked for a <interfacename>GowallaOperations</interfacename> that was created using the connection details for the given account ID. The connection should have been created beforehand via the service provider's <methodname>connect()</methodname> method or using <classname>ConnectController</classname>.</para>  
-
-        <para>With a <interfacename>GowallaOperations</interfacename> in hand, there are a handful of operations it provides to interact with Gowalla on behalf of the user. These will be covered in the following sections.</para>
-
-        <section id="gowalla-getProfile">
-          <title>Retrieving a user's profile data</title>
-
-          <para>You can retrieve a user's Gowalla profile using the <methodname>getUserProfile()</methodname> method:</para>
-
-          <programlisting><![CDATA[GowallaProfile profile = gowalla.getUserProfile();]]></programlisting>
-
-          <para>This will return the Gowalla profile data for the authenticated user. If you want to retrieve profile data for another user, you can pass the user's profile ID into <methodname>getUserProfile()</methodname>:</para>
-
-          <programlisting><![CDATA[GowallaProfile profile = gowalla.getUserProfile("habuma");]]></programlisting>
-
-          <para>The <classname>GowallaProfile</classname> object contains basic information about the Gowalla user such as their first and last names, their hometown, and the number of pins and stamps that they have earned.</para>
-
-          <para>If all you want is the authenticated user's profile ID, you can get that by calling the <methodname>getProfileId()</methodname>:</para>
-
-          <programlisting><![CDATA[String profileId = gowalla.getProfileId();]]></programlisting>
-
-          <para>Or if you want the URL to the user's profile page at Gowalla, use the <methodname>getProfileUrl()</methodname> method:</para>
-
-          <programlisting><![CDATA[String profileUrl = gowalla.getProfileUrl();]]></programlisting>
-
-        </section>
-
-        <section id="gowalla-checkins">
-          <title>Getting a user's checkins</title>
-
-          <para><interfacename>GowallaOperations</interfacename> also allows you to learn about the user's favorite checkin spots. The <methodname>getTopCheckins()</methodname> method will provide a list of the top 10 places that the user has visited:</para>
-
-          <programlisting><![CDATA[List<Checkin> topCheckins = gowalla.getTopCheckins();]]></programlisting>
-
-          <para>Each member of the returns list is a <classname>Checkin</classname> object that includes the name of the location as well as the number of times that the user has checked in at that location.</para>
-        </section>
-  </section>
-  <section xml:id="section_api_linkedin">
-      <title>LinkedIn</title>
-        <para>LinkedIn is a social networking site geared toward professionals. It enables its users to maintain and correspond with a network of contacts they have are professionally linked to.</para>
-
-        <para>Spring Social offers integration with LinkedIn via <interfacename>LinkedInOperations</interfacename> and its implementation, <classname>LinkedInTemplate</classname>.</para>
-
-        <para>To create an instance of <classname>LinkedInTemplate</classname>, you may pass in your application's OAuth 1 credentials, along with an access token/secret pair to the constructor:</para>
-
-        <programlisting><![CDATA[String apiKey = "..."; // The application's API/Consumer key
-      String apiSecret = "..."; // The application's API/Consumer secret
-      String accessToken = "..."; // The access token granted after OAuth authorization
-      String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
-      LinkedInOperations linkedin = new LinkedInTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]></programlisting>
-
-        <para>If you're using the service provider framework described in <xref linkend="serviceprovider"/>, you can get an instance of <classname>LinkedInTemplate</classname> by calling the <methodname>getServiceApi()</methodname> method on one of the connections given by <classname>LinkedInServiceProvider</classname>'s <methodname>getConnections()</methodname> method. For example:</para>
-
-        <programlisting><![CDATA[LinkedInOperations linkedin = linkedinProvider.getConnections(accountId).get(0).getServiceApi();]]></programlisting>
-
-        <para>In this case, the <methodname>getServiceOperations()</methodname> is asked to return a <interfacename>LinkedInOperations</interfacename> instance created using connection details established using the service provider's <methodname>connect()</methodname> method or via <classname>ConnectController</classname>.</para>
-
-        <para>Once you have a <interfacename>LinkedInOperations</interfacename> you can use it to interact with LinkedIn on behalf of the user who the access token was granted for.</para>
-
-        <section id="linkedin-getProfile">
-          <title>Retrieving a user's LinkedIn profile data</title>
-
-          <para>To retrieve the authenticated user's profile data, call the <methodname>getUserProfile()</methodname> method:</para>
-
-          <programlisting><![CDATA[LinkedInProfile profile = linkedin.getUserProfile();]]></programlisting>
-
-          <para>The data returned in the <classname>LinkedInProfile</classname> includes the user's LinkedIn ID, first and last names, their "headline", the industry they're in, and URLs for the public and standard profile pages.</para>
-
-          <para>If it's only the user's LinkedIn ID you need, then you can get that by calling the <methodname>getProfileId()</methodname> method:</para>
-
-          <programlisting><![CDATA[String profileId = linkedin.getProfileId();]]></programlisting>
-
-          <para>Or if you only need a URL for the user's public profile page, call <methodname>getProfileUrl()</methodname>:</para>
-
-          <programlisting><![CDATA[String profileUrl = linkedin.getProfileUrl();]]></programlisting>
-
-        </section>
-
-        <section id="linkedin-connections">
-            <title>Getting a user's LinkedIn connections</title>
-
-            <para>To retrieve a list of LinkedIn users to whom the user is connected, call the <methodname>getConnections()</methodname> method:</para>
-
-            <programlisting><![CDATA[List<LinkedInProfile> connections = linkedin.getConnections();]]></programlisting>
-
-            <para>This will return a list of <classname>LinkedInProfile</classname> objects for the user's 1st-degree network (those LinkedIn users to whom the user is directly linked--not their extended network).</para>
-
-        </section>
-  </section>
-  <section xml:id="section_api_tripit">
-      <title>TripIt</title>
-        <para>TripIt is a social network that links together travelers. By connecting with other travelers, you can keep in touch with contacts when your travel plans coincide. Also, aside from its social aspects, TripIt is rather useful for managing a user's travel information.</para>
-
-        <para>Using Spring Social's <interfacename>TripItOperations</interfacename> and its implementation, <classname>TripItTemplate</classname>, you can develop applications that integrate a user's travel information and network.</para>
-
-        <para>To create an instance of <classname>TripItTemplate</classname>, pass in your application's OAuth 1 credentials along with a user's access token/secret pair to the constructor:</para>
-
-        <programlisting><![CDATA[String apiKey = "..."; // The application's API/Consumer key
-      String apiSecret = "..."; // The application's API/Consumer secret
-      String accessToken = "..."; // The access token granted after OAuth authorization
-      String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
-      TripItOperations tripit = new TripItTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]></programlisting>
-
-        <para>If you're using Spring Social's service provider framework (as described in <xref linkend="serviceprovider"/>), you can get a <interfacename>TripItOperations</interfacename> by calling the <methodname>getServiceApi()</methodname> method on one of the connections given by <classname>TripItServiceProvider</classname>'s <methodname>getConnections()</methodname> method::</para>
-
-        <programlisting><![CDATA[TripItOperations tripit = tripitProvider.getConnections(accountId).get(0).getServiceApi();]]></programlisting>
-
-        <para>In this case, <classname>TripItServiceProvider</classname> is being asked to give a <interfacename>TripItOperations</interfacename> constructed using connection data established beforehand using the service provider's <methodname>connect()</methodname> method or via <classname>ConnectController</classname>.</para>
-
-        <para>In either event, once you have a <interfacename>TripItOperations</interfacename>, you can use it to retrieve a user's profile and travel data from TripIt.</para>
-
-        <section id="tripit-getProfile">
-          <title>Retrieving a user's TripIt profile data</title>
-
-          <para><interfacename>TripItOperations</interfacename>' <methodname>getUserProfile()</methodname> method is useful for retrieving the authenticated user's TripIt profile data. For example:</para>
-
-          <programlisting><![CDATA[TripItProfile userProfile = tripit.getUserProfile();]]></programlisting>
-
-          <para><methodname>getUserProfile()</methodname> returns a <classname>TripItProfile</classname> object that carries details about the user from TripIt. This includes the user's screen name, their display name, their home city, and their company.</para>
-
-          <para>If all you need is the user's TripIt screen name, you can get that by calling <methodname>getProfileId()</methodname>:</para>
-
-          <programlisting><![CDATA[String profileId = tripit.getProfileId();]]></programlisting>
-
-          <para>Or if you only need a URL to the user's TripIt profile page, then call <methodname>getProfileUrl()</methodname>:</para>
-
-          <programlisting><![CDATA[String profileUrl = tripit.getProfileUrl();]]></programlisting>
-
-        </section>
-
-        <section id="tripit-trips">
-          <title>Getting a user's upcoming trips</title>
-
-          <para>If the user has any upcoming trips planned, your application can access the trip information by calling <methodname>getUpcomingTrips()</methodname>:</para>
-
-          <programlisting><![CDATA[List<Trip> trips = tripit.getUpcomingTrips();]]></programlisting>
-
-          <para>This returns a list of <classname>Trip</classname> objects containing details about each trip, such as the start and end dates for the trip, the primary location, and the trip's display name.</para>
-        </section>
-  </section>
   <section xml:id="section_api_twitter">
       <title>Twitter</title>
         <para>Twitter's social offering is rather simple: Enable users to post whatever they're thinking, 140 characters at a time.</para>
@@ -463,5 +309,160 @@
         </section>
 
   </section>
-  
+
+  <section xml:id="section_api_gowalla">
+      <title>Gowalla</title>
+        <para>Gowalla is a location-based social network where users may check in to various locations they visit and earn pins and stamps for having checked in a locations that achieve some goal (for example, a "Lucha Libre" pin may be earned by having checked into 10 different Mexican food restaurants).</para>
+
+        <para>Spring Social supports interaction with Gowalla through the <interfacename>GowallaOperations</interfacename> interface and its implementation, <classname>GowallaTemplate</classname>.</para>
+
+        <para>To obtain an instance of <classname>GowallaTemplate</classname>, you can instantiate it by passing an authorized access token to its constructor:</para>
+
+        <programlisting><![CDATA[String accessToken = "f8FX29g..."; // access token received from Gowalla after OAuth authorization
+      GowallaOperations gowalla = new GowallaTemplate(accessToken);]]></programlisting>
+
+        <para>If you are using the service provider framework described in <xref linkend="serviceprovider"/>, you can get an instance of <classname>GowallaTemplate</classname> by calling the <methodname>getServiceApi()</methodname> method on one of the connections given by <classname>GowallaServiceProvider</classname>'s <methodname>getConnections()</methodname> method:</para>
+
+        <programlisting><![CDATA[GowallaOperations gowalla = gowallaProvider.getConnections(accountId).get(0).getServiceApi();]]></programlisting>
+
+        <para>Here, <classname>GowallaServiceProvider</classname> is being asked for a <interfacename>GowallaOperations</interfacename> that was created using the connection details for the given account ID. The connection should have been created beforehand via the service provider's <methodname>connect()</methodname> method or using <classname>ConnectController</classname>.</para>  
+
+        <para>With a <interfacename>GowallaOperations</interfacename> in hand, there are a handful of operations it provides to interact with Gowalla on behalf of the user. These will be covered in the following sections.</para>
+
+        <section id="gowalla-getProfile">
+          <title>Retrieving a user's profile data</title>
+
+          <para>You can retrieve a user's Gowalla profile using the <methodname>getUserProfile()</methodname> method:</para>
+
+          <programlisting><![CDATA[GowallaProfile profile = gowalla.getUserProfile();]]></programlisting>
+
+          <para>This will return the Gowalla profile data for the authenticated user. If you want to retrieve profile data for another user, you can pass the user's profile ID into <methodname>getUserProfile()</methodname>:</para>
+
+          <programlisting><![CDATA[GowallaProfile profile = gowalla.getUserProfile("habuma");]]></programlisting>
+
+          <para>The <classname>GowallaProfile</classname> object contains basic information about the Gowalla user such as their first and last names, their hometown, and the number of pins and stamps that they have earned.</para>
+
+          <para>If all you want is the authenticated user's profile ID, you can get that by calling the <methodname>getProfileId()</methodname>:</para>
+
+          <programlisting><![CDATA[String profileId = gowalla.getProfileId();]]></programlisting>
+
+          <para>Or if you want the URL to the user's profile page at Gowalla, use the <methodname>getProfileUrl()</methodname> method:</para>
+
+          <programlisting><![CDATA[String profileUrl = gowalla.getProfileUrl();]]></programlisting>
+
+        </section>
+
+        <section id="gowalla-checkins">
+          <title>Getting a user's checkins</title>
+
+          <para><interfacename>GowallaOperations</interfacename> also allows you to learn about the user's favorite checkin spots. The <methodname>getTopCheckins()</methodname> method will provide a list of the top 10 places that the user has visited:</para>
+
+          <programlisting><![CDATA[List<Checkin> topCheckins = gowalla.getTopCheckins();]]></programlisting>
+
+          <para>Each member of the returns list is a <classname>Checkin</classname> object that includes the name of the location as well as the number of times that the user has checked in at that location.</para>
+        </section>
+  </section>
+  <section xml:id="section_api_linkedin">
+      <title>LinkedIn</title>
+        <para>LinkedIn is a social networking site geared toward professionals. It enables its users to maintain and correspond with a network of contacts they have are professionally linked to.</para>
+
+        <para>Spring Social offers integration with LinkedIn via <interfacename>LinkedInOperations</interfacename> and its implementation, <classname>LinkedInTemplate</classname>.</para>
+
+        <para>To create an instance of <classname>LinkedInTemplate</classname>, you may pass in your application's OAuth 1 credentials, along with an access token/secret pair to the constructor:</para>
+
+        <programlisting><![CDATA[String apiKey = "..."; // The application's API/Consumer key
+      String apiSecret = "..."; // The application's API/Consumer secret
+      String accessToken = "..."; // The access token granted after OAuth authorization
+      String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
+      LinkedInOperations linkedin = new LinkedInTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]></programlisting>
+
+        <para>If you're using the service provider framework described in <xref linkend="serviceprovider"/>, you can get an instance of <classname>LinkedInTemplate</classname> by calling the <methodname>getServiceApi()</methodname> method on one of the connections given by <classname>LinkedInServiceProvider</classname>'s <methodname>getConnections()</methodname> method. For example:</para>
+
+        <programlisting><![CDATA[LinkedInOperations linkedin = linkedinProvider.getConnections(accountId).get(0).getServiceApi();]]></programlisting>
+
+        <para>In this case, the <methodname>getServiceOperations()</methodname> is asked to return a <interfacename>LinkedInOperations</interfacename> instance created using connection details established using the service provider's <methodname>connect()</methodname> method or via <classname>ConnectController</classname>.</para>
+
+        <para>Once you have a <interfacename>LinkedInOperations</interfacename> you can use it to interact with LinkedIn on behalf of the user who the access token was granted for.</para>
+
+        <section id="linkedin-getProfile">
+          <title>Retrieving a user's LinkedIn profile data</title>
+
+          <para>To retrieve the authenticated user's profile data, call the <methodname>getUserProfile()</methodname> method:</para>
+
+          <programlisting><![CDATA[LinkedInProfile profile = linkedin.getUserProfile();]]></programlisting>
+
+          <para>The data returned in the <classname>LinkedInProfile</classname> includes the user's LinkedIn ID, first and last names, their "headline", the industry they're in, and URLs for the public and standard profile pages.</para>
+
+          <para>If it's only the user's LinkedIn ID you need, then you can get that by calling the <methodname>getProfileId()</methodname> method:</para>
+
+          <programlisting><![CDATA[String profileId = linkedin.getProfileId();]]></programlisting>
+
+          <para>Or if you only need a URL for the user's public profile page, call <methodname>getProfileUrl()</methodname>:</para>
+
+          <programlisting><![CDATA[String profileUrl = linkedin.getProfileUrl();]]></programlisting>
+
+        </section>
+
+        <section id="linkedin-connections">
+            <title>Getting a user's LinkedIn connections</title>
+
+            <para>To retrieve a list of LinkedIn users to whom the user is connected, call the <methodname>getConnections()</methodname> method:</para>
+
+            <programlisting><![CDATA[List<LinkedInProfile> connections = linkedin.getConnections();]]></programlisting>
+
+            <para>This will return a list of <classname>LinkedInProfile</classname> objects for the user's 1st-degree network (those LinkedIn users to whom the user is directly linked--not their extended network).</para>
+
+        </section>
+  </section>
+  <section xml:id="section_api_tripit">
+      <title>TripIt</title>
+        <para>TripIt is a social network that links together travelers. By connecting with other travelers, you can keep in touch with contacts when your travel plans coincide. Also, aside from its social aspects, TripIt is rather useful for managing a user's travel information.</para>
+
+        <para>Using Spring Social's <interfacename>TripItOperations</interfacename> and its implementation, <classname>TripItTemplate</classname>, you can develop applications that integrate a user's travel information and network.</para>
+
+        <para>To create an instance of <classname>TripItTemplate</classname>, pass in your application's OAuth 1 credentials along with a user's access token/secret pair to the constructor:</para>
+
+        <programlisting><![CDATA[String apiKey = "..."; // The application's API/Consumer key
+      String apiSecret = "..."; // The application's API/Consumer secret
+      String accessToken = "..."; // The access token granted after OAuth authorization
+      String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
+      TripItOperations tripit = new TripItTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]></programlisting>
+
+        <para>If you're using Spring Social's service provider framework (as described in <xref linkend="serviceprovider"/>), you can get a <interfacename>TripItOperations</interfacename> by calling the <methodname>getServiceApi()</methodname> method on one of the connections given by <classname>TripItServiceProvider</classname>'s <methodname>getConnections()</methodname> method::</para>
+
+        <programlisting><![CDATA[TripItOperations tripit = tripitProvider.getConnections(accountId).get(0).getServiceApi();]]></programlisting>
+
+        <para>In this case, <classname>TripItServiceProvider</classname> is being asked to give a <interfacename>TripItOperations</interfacename> constructed using connection data established beforehand using the service provider's <methodname>connect()</methodname> method or via <classname>ConnectController</classname>.</para>
+
+        <para>In either event, once you have a <interfacename>TripItOperations</interfacename>, you can use it to retrieve a user's profile and travel data from TripIt.</para>
+
+        <section id="tripit-getProfile">
+          <title>Retrieving a user's TripIt profile data</title>
+
+          <para><interfacename>TripItOperations</interfacename>' <methodname>getUserProfile()</methodname> method is useful for retrieving the authenticated user's TripIt profile data. For example:</para>
+
+          <programlisting><![CDATA[TripItProfile userProfile = tripit.getUserProfile();]]></programlisting>
+
+          <para><methodname>getUserProfile()</methodname> returns a <classname>TripItProfile</classname> object that carries details about the user from TripIt. This includes the user's screen name, their display name, their home city, and their company.</para>
+
+          <para>If all you need is the user's TripIt screen name, you can get that by calling <methodname>getProfileId()</methodname>:</para>
+
+          <programlisting><![CDATA[String profileId = tripit.getProfileId();]]></programlisting>
+
+          <para>Or if you only need a URL to the user's TripIt profile page, then call <methodname>getProfileUrl()</methodname>:</para>
+
+          <programlisting><![CDATA[String profileUrl = tripit.getProfileUrl();]]></programlisting>
+
+        </section>
+
+        <section id="tripit-trips">
+          <title>Getting a user's upcoming trips</title>
+
+          <para>If the user has any upcoming trips planned, your application can access the trip information by calling <methodname>getUpcomingTrips()</methodname>:</para>
+
+          <programlisting><![CDATA[List<Trip> trips = tripit.getUpcomingTrips();]]></programlisting>
+
+          <para>This returns a list of <classname>Trip</classname> objects containing details about each trip, such as the start and end dates for the trip, the primary location, and the trip's display name.</para>
+        </section>
+  </section>  
 </chapter>
