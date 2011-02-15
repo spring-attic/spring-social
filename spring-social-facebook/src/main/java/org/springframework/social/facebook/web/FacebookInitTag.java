@@ -54,7 +54,6 @@ public class FacebookInitTag extends TagSupport {
 	@Override
 	public int doEndTag() throws JspException {
 		try {
-			pageContext.getRequest().setAttribute("apiKey", apiKey);
 			if (pageContext.getRequest().isSecure()) {
 				pageContext.getOut().append("<script src='https://connect.facebook.net/en_US/all.js'></script>");
 			} else {
