@@ -8,15 +8,17 @@
         <tlib-version>1.0</tlib-version>
         <short-name>facebook</short-name>
         <uri>http://www.springframework.org/spring-social/facebook/tags</uri>
-
-		<tag-file>
-			<!-- Unfortunately, Jetty doesn't like the <description> tag under <tag-file>.
-			     See http://jira.codehaus.org/browse/JETTY-1222 for details.
-                <description>
-                	Initializes Facebook's JavaScript API
-                </description>
-              -->
-                <name>init</name>
-				<path>/META-INF/tags/Init.tag</path>							
-		</tag-file>
+		
+		<tag>
+            <description>Initializes Facebook's JavaScript API</description>
+			<name>init</name>
+			<tag-class>org.springframework.social.facebook.web.FacebookInitTag</tag-class>
+			<body-content>empty</body-content>
+			<attribute>
+				<description>The application's Facebook API Key</description>
+				<name>apiKey</name>
+				<required>false</required>
+				<rtexprvalue>true</rtexprvalue>
+			</attribute>
+		</tag>
 </taglib>

@@ -157,6 +157,7 @@ project('spring-social-facebook') {
     dependencies {
         compile "commons-httpclient:commons-httpclient:$commonsHttpClientVersion"
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
+        compile ("javax.servlet.jsp:jsp-api:2.1") { provided = true }
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
         compile project(':spring-social-web') { optional = true }
