@@ -180,22 +180,6 @@ public class FacebookArgumentResolverTest {
 		assertEquals("a1b2c3d4|e5f6", (String) resolver.resolveArgument(tokenParameter, request));
 	}
 
-	@Test
-	public void resolveArgument_noSignatureValidation() throws Exception {
-		FacebookWebArgumentResolver resolver = new FacebookWebArgumentResolver(API_KEY);
-		MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
-		httpServletRequest.setCookies(new Cookie("fbs_" + API_KEY, GOOD_TEST_COOKIE_VALUE));
-		NativeWebRequest request = new ServletWebRequest(httpServletRequest);
-		Method method = FacebookArgumentResolverTest.class.getDeclaredMethod("annotatedMethod", String.class,
-				String.class, String.class);
-
-		MethodParameter idParameter = new MethodParameter(method, 0);
-		assertEquals("24680", (String) resolver.resolveArgument(idParameter, request));
-
-		MethodParameter tokenParameter = new MethodParameter(method, 1);
-		assertEquals("a1b2c3d4|e5f6", (String) resolver.resolveArgument(tokenParameter, request));
-	}
-
 	@SuppressWarnings("unused")
 	private void annotatedMethod(@FacebookCookieValue("uid") String userId,
 			@FacebookCookieValue("access_token") String accessToken,

@@ -41,7 +41,7 @@ class FacebookCookieParser {
 			for (Cookie cookie : cookies) {
 				if (cookie.getName().equals("fbs_" + apiKey)) {
 					Map<String, String> cookieData = extractDataFromCookie(cookie.getValue().trim());
-					if (appSecret == null || calculateSignature(appSecret, cookieData).equals(cookieData.get("sig"))) {
+					if (calculateSignature(appSecret, cookieData).equals(cookieData.get("sig"))) {
 						return cookieData;
 					}
 					break;

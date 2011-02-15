@@ -38,14 +38,6 @@ public class FacebookWebArgumentResolver implements WebArgumentResolver {
 	private final String appSecret;
 
 	/**
-	 * Construct a FacebookWebArgumentResolver given only the Facebook API Key.
-	 * The cookie signature will not be verified using this constructor.
-	 */
-	public FacebookWebArgumentResolver(String apiKey) {
-		this(apiKey, null);
-	}
-
-	/**
 	 * Construct a FacebookWebArgumentResolver given the Facebook API Key and application secret.
 	 * The application secret will be used to verify the cookie signature.
 	 */
