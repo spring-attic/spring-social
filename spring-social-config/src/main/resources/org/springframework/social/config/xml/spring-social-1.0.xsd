@@ -40,14 +40,14 @@
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:attribute>		
-			<xsd:attribute name="client-key" use="required" type="xsd:string">
+			<xsd:attribute name="app-key" use="required" type="xsd:string">
 				<xsd:annotation>
 					<xsd:documentation>
 						Specifies the application's OAuth consumer/API key, as obtained when registering the application with the provider.
 					</xsd:documentation>
 				</xsd:annotation>
 			</xsd:attribute>
-			<xsd:attribute name="client-secret" use="required" type="xsd:string">
+			<xsd:attribute name="app-secret" use="required" type="xsd:string">
 				<xsd:annotation>
 					<xsd:documentation>
 						Specifies the application's OAuth consumer/API secret, as obtained when registering the application with the provider.

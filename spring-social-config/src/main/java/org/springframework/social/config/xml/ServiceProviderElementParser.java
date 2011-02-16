@@ -26,8 +26,8 @@ class ServiceProviderElementParser implements BeanDefinitionParser {
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
 		String beanId = element.getAttribute("id");
 		String providerClassName = element.getAttribute("class");
-		String clientKey = element.getAttribute("client-key");
-		String clientSecret = element.getAttribute("client-secret");
+		String clientKey = element.getAttribute("app-key");
+		String clientSecret = element.getAttribute("app-secret");
 		String connectionRepository = element.getAttribute("connection-repository");
 
 		BeanDefinitionBuilder providerBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(providerClassName);
