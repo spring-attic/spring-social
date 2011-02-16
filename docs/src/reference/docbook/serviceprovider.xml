@@ -57,13 +57,13 @@ public interface ServiceProviderConnection<S> {
 		</para>
 		<para>
 			<methodname>getServiceApi()</methodname> returns a Java binding to the ServiceProvider's API for the external user account associated with the connection.
-			The API can then be used to access and update user data on the provider's system.
+			The API can be used to access and update user data on the provider's system.
 		</para>
 		<para>
 			<methodname>disconnect()</methodname> may be used to remove the connection with the ServiceProvider, if it is no longer desired.
 		</para>
 		<para>
-			To put this API into action, consider Twitter as an example ServiceProvider.
+			To put this framework into action, consider Twitter as an example ServiceProvider.
 			Suppose user 'kdonald' of AcmeApp has three Twitter accounts and has connected with each of them:
 			<orderedlist>
 				<listitem><para>ServiceProvider#getId() would return 'twitter'.</para></listitem>
@@ -75,84 +75,116 @@ public interface ServiceProviderConnection<S> {
 			</orderedlist>
 		</para>
 	</section>
-	<section>
-		<title>Establishing Connections</title>		
-      <para>In <xref linkend="apis"/>, you'll see how Spring Social provides APIs through which your application may interact with various service providers. But before you can work with a service API, your application must be authorized to access the service on the user's behalf.</para>
-      
-      <para>Spring Social's service provider framework handles the details of authorization with a service. Once authorization has been granted, a connection is created between the user's local application account and the authorization credentials. This connection is persisted for future use, so that the user won't need to re-authorize the application as long as the credentials are still valid.</para>
-      
-      <para>The central concept in the service provider framework is the service provider. A service provider represents a service that the application wants to interact with on its users' behalf. The service provider maintains the applications own credentials with the service and is able to negotiate permissions for the application to access the service.</para>
-      
-      <para>Spring Social supports two authorization protocols: OAuth 1 and OAuth 2. Both of these protocols achieve essentially the same thing: They enable a user to grant permission for a consumer to access their data and perform actions on a provider. That permission is manifested as an access token that serves as a sort of valet key that can be used in place of a user's own credentials to access a service.</para>
-          
-      <para>Although conceptually similar, each of these protocols arrive at an access token in a slightly different way. The OAuth 1 flow is illustrated as follows:</para>
-      
-      <mediaobject>
-        <imageobject role="fo">
-            <imagedata fileref="images/oauth1_flow.png"
-              format="PNG" align="center" scale="70"/>
-        </imageobject>
-        <imageobject role="html">
-            <imagedata fileref="images/oauth1_flow.png" format="PNG" align="center" scale="70"/>
-        </imageobject>
-      </mediaobject>
+	<section id="service-providers-establishing-connections">
+		<title>Establishing Connections</title>
+		<para>
+			So far we have discussed how existing connections are managed using the ServiceProvider framework, but we have not yet discussed how new connections are established.
+			The manner in which connections between local user accounts and external provider accounts are established varies based on the authorization protocol used by the ServiceProvider.
+			Some service providers use OAuth, others use Basic Auth, others may require something else.
+			Spring Social currently provides native support for OAuth-based service providers, including support for OAuth 1 and OAuth 2.
+			This covers the leading social networks, such as Facebook and Twitter, all of which use OAuth to secure their APIs.
+			Support for other authorization protocols can be added by extending the framework.
+		</para>
+		<para>
+			Because each authorization protocol is different, protocol-specific details are kept out of the base ServiceProvider interface.
+			Sub-interfaces have been defined for each protocol, reflecting a distinct ServiceProvider type.
+			In the following sections, we will discuss each type of ServiceProvider supported by the framework.
+			Each section will also describe the protocol-specific flow required to establish a new connection.
+		</para>
+		<section id="service-providers-oauth2">
+			<title>OAuth2 Service Providers</title>
+			<programlisting language="java"><![CDATA[
+public interface OAuth2ServiceProvider<S> extends ServiceProvider<S> {
 
-      <para>As you can see, there is a back-and-forth conversation that takes place between the consumer and the service provider to establish authorization for the consumer. This exchange, commonly known as the "OAuth Dance", follows these steps:</para>
-      
-      <orderedlist>
-          <listitem><para>The flow starts with the consumer asking for a request token. A request token's purpose is to obtain user approval and can only be used to obtain an access token. In OAuth 1.0a, the consumer callback URL is passed to the provider when asking for a request token.</para></listitem>
-          <listitem><para>The service provider issues a request token to the consumer.</para></listitem>
-          <listitem><para>The consumer redirects the user's browser to the provider's authorization page, passing the request token as a parameter. In OAuth 1.0, the callback URL is also passed as a parameter in this step.</para></listitem>
-          <listitem><para>The service provider prompts the user to authorize the consumer application and the user agrees. (Note that this is the only step where the user participates in the flow.)</para></listitem>
-          <listitem><para>The service provider redirects the user's browser back to a callback URL on the consumer. In OAuth 1.0a, this redirect includes a verifier code as a parameter. At this point, the request token is authorized.</para></listitem>
-          <listitem><para>The consumer exchanges the request token (and the verifier in OAuth 1.0a) for an access token.</para></listitem>
-          <listitem><para>The service provider issues an access token to the consumer. The "dance" is complete.</para></listitem>
-          <listitem><para>The consumer makes calls against the service API, passing the access token along as evidence of its right to access the provider on behalf of the user.</para></listitem>
-      </orderedlist>
+    OAuth2Operations getOAuthOperations();
 
-      <para>The OAuth 2 authorization flow differs only slightly from the OAuth 1 flow, as illustrated here:</para>
+    ServiceProviderConnection<S> connect(Serializable accountId, AccessGrant accessGrant);
 
-      <mediaobject>
-        <imageobject role="fo">
-            <imagedata fileref="images/oauth2_flow.png"
-              format="PNG" align="center" scale="70"/>
-        </imageobject>
-        <imageobject role="html">
-            <imagedata fileref="images/oauth2_flow.png" format="PNG" align="center" scale="0"/>
-        </imageobject>
-      </mediaobject>
-      
-      <para>The steps in the OAuth 2 dance are as follows:</para>
-      
-      <orderedlist>
-          <listitem><para>The flow starts with the consumer redirecting the user's browser to the provider's authorization page. Unlike OAuth 1, there is no concept of request token in OAuth 2.</para></listitem>
-          <listitem><para>The service provider prompts the user to authorize the consumer application and the user agrees. (As with OAuth 1, this is the only step where the user participates in the flow.)</para></listitem>
-          <listitem><para>The service provider redirects the user's browser to the consumer's redirect URI, with an authorization code as a parameter.</para></listitem>
-          <listitem><para>The consumer exchanges the authorization code for an access token.</para></listitem>
-          <listitem><para>The service provider issues an access token to the consumer. The "dance" is complete.</para></listitem>
-          <listitem><para>The consumer makes calls against the service API, passing the access token along as evidence of its right to access the provider on behalf of the user.</para></listitem>
-      </orderedlist>  
-      
+}]]>
+			</programlisting>
+			<programlisting language="java"><![CDATA[
+public interface OAuth2Operations {
 
+    String buildAuthorizeUrl(String redirectUri, String scope);
 
-      <para>The <interfacename>ServiceProvider</interfacename> is further defined by two sub-interfaces, one for each supported authorization protocol. <interfacename>OAuth1ServiceProvider</interfacename> defines the service provider operations that are specific to OAuth 1:</para>
-      
-<programlisting><![CDATA[public interface OAuth1ServiceProvider<S> extends ServiceProvider<S> {
-	OAuth1Operations getOAuth1Operations();
-	ServiceProviderConnection<S> connect(Serializable accountId, OAuthToken accessToken);
-}]]></programlisting>
+    AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri);
 
-      <para>Likewise, <interfacename>OAuth2ServiceProvider</interfacename> defines service provider operations that pertain to OAuth 2:</para>
-      
-<programlisting><![CDATA[public interface OAuth2ServiceProvider<S> extends ServiceProvider<S> {
-    OAuth2Operations getOAuth2Operations();
-    ServiceProviderConnection<S> connect(Serializable accountId, AccessGrant accessToken);
-}]]></programlisting>
-      
-      <para>As you can see, these two sub-interfaces are quite similar, but differ slightly to accommodate the differences in each authorization protocol. The most significant method in each interface is the <methodname>connect()</methodname> which creates a connection given a user's account ID and the authorization credentials. The other method returns an operations API for working with each authorization protocol at a low level.</para>
-      
-      <para>Generally, application code will not work with these interfaces directly. Instead, you'll leverage Spring Social's <classname>ConnectController</classname> (see <xref linkend="connecting"/>) to handle the authorization flow for you. You may, however, use the <methodname>getConnections()</methodname> to access the service API for a given connection. This will be covered in more detail in <xref linkend="apis"/>.</para>
-  </section>
+}]]>
+			</programlisting>			
+			<para>
+				The OAuth 2 flow is illustrated below:
+			</para>
+			<mediaobject>
+				<imageobject role="fo">
+					<imagedata fileref="images/oauth2_flow.png" format="PNG" align="center" scale="70"/>
+				</imageobject>
+				<imageobject role="html">
+					<imagedata fileref="images/oauth2_flow.png" format="PNG" align="center" scale="0"/>
+				</imageobject>
+			</mediaobject>
+      		<para>
+				As you can see, there is a back-and-forth conversation that takes place between the consumer and the service provider to establish authorization for the consumer.
+				This exchange, commonly known as the "OAuth Dance", follows these steps:
+			</para>
+			<orderedlist>
+				<listitem><para>The flow starts with the consumer redirecting the user's browser to the provider's authorization page. Unlike OAuth 1, there is no concept of request token in OAuth 2.</para></listitem>
+				<listitem><para>The service provider prompts the user to authorize the consumer application and the user agrees. (As with OAuth 1, this is the only step where the user participates in the flow.)</para></listitem>
+				<listitem><para>The service provider redirects the user's browser to the consumer's redirect URI, with an authorization code as a parameter.</para></listitem>
+				<listitem><para>The consumer exchanges the authorization code for an access token.</para></listitem>
+				<listitem><para>The service provider issues an access token to the consumer. The "dance" is complete.</para></listitem>
+				<listitem><para>The consumer makes calls against the service API, passing the access token along as evidence of its right to access the provider on behalf of the user.</para></listitem>
+			</orderedlist>
+		</section>
+		<section id="service-providers-oauth1">
+			<title>OAuth1 Service Providers</title>
+			<programlisting language="java"><![CDATA[
+public interface OAuth1ServiceProvider<S> extends ServiceProvider<S> {
+
+    OAuth1Operations getOAuthOperations();
+
+    ServiceProviderConnection<S> connect(Serializable accountId, OAuthToken accessToken);
+
+}]]>
+			</programlisting>
+			<programlisting language="java"><![CDATA[
+public interface OAuth1Operations {
+
+    OAuthToken fetchNewRequestToken(String callbackUrl);
+
+    String buildAuthorizeUrl(String requestToken);
+
+    OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken);
+
+}]]>
+			</programlisting>			
+			<para>
+				The OAuth 1 flow is illustrated below:
+			</para>
+			<mediaobject>
+				<imageobject role="fo">
+					<imagedata fileref="images/oauth1_flow.png" format="PNG" align="center" scale="70"/>
+				</imageobject>
+				<imageobject role="html">
+					<imagedata fileref="images/oauth1_flow.png" format="PNG" align="center" scale="0"/>
+				</imageobject>
+			</mediaobject>
+			<orderedlist>
+				<listitem><para>The flow starts with the consumer asking for a request token. A request token's purpose is to obtain user approval and can only be used to obtain an access token. In OAuth 1.0a, the consumer callback URL is passed to the provider when asking for a request token.</para></listitem>
+				<listitem><para>The service provider issues a request token to the consumer.</para></listitem>
+				<listitem><para>The consumer redirects the user's browser to the provider's authorization page, passing the request token as a parameter. In OAuth 1.0, the callback URL is also passed as a parameter in this step.</para></listitem>
+				<listitem><para>The service provider prompts the user to authorize the consumer application and the user agrees. (Note that this is the only step where the user participates in the flow.)</para></listitem>
+				<listitem><para>The service provider redirects the user's browser back to a callback URL on the consumer. In OAuth 1.0a, this redirect includes a verifier code as a parameter. At this point, the request token is authorized.</para></listitem>
+				<listitem><para>The consumer exchanges the request token (and the verifier in OAuth 1.0a) for an access token.</para></listitem>
+				<listitem><para>The service provider issues an access token to the consumer. The "dance" is complete.</para></listitem>
+				<listitem><para>The consumer makes calls against the service API, passing the access token along as evidence of its right to access the provider on behalf of the user.</para></listitem>
+			</orderedlist>
+		</section>
+		<para>
+			Generally, application code will not work with these interfaces directly.
+			Instead, you'll leverage Spring Social's <classname>ConnectController</classname> (see <xref linkend="connecting"/>) to handle the authorization flow for you.
+			You may, however, use the <methodname>getConnections()</methodname> to access the service API for a given connection. This will be covered in more detail in <xref linkend="apis"/>.
+		</para>
+	</section>
 
 
   <section xml:id="section_serviceproviderconfig">
