@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,49 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.tripit;
-
-import java.util.List;
+package org.springframework.social.github;
 
 /**
- * Interface specifying a basic set of operations for interacting with TripIt.
- * Implemented by {@link TripItTemplate}. Not often used directly, but a useful
+ * Interface specifying a basic set of operations for interacting with GitHub.
+ * Implemented by {@link GitHubTemplate}. Not often used directly, but a useful
  * option to enhance testability, as it can easily be mocked or stubbed.
  * 
  * Many of the methods contained in this interface require OAuth authentication
- * with TripIt. When a method's description speaks of the "current user", it is
+ * with GitHub. When a method's description speaks of the "current user", it is
  * referring to the user for whom the access token has been issued.
  * 
  * @author Craig Walls
  */
-public interface TripItOperations {
+public interface GitHubApi {
 
 	/**
-	 * Retrieves the user's TripIt profile ID.
+	 * Retrieves the user's GitHub profile ID.
 	 * 
-	 * @return the user's TripIt profile ID.
+	 * @return the user's GitHub profile ID.
 	 */
 	String getProfileId();
 
 	/**
-	 * Retrieves a URL to the user's public profile page.
+	 * Retrieves the user's GitHub profile details.
 	 * 
-	 * @return a URL to the user's public profile page.
+	 * @return the user's GitHub profile
+	 */
+	GitHubUserProfile getUserProfile();
+
+	/**
+	 * Retrieve the URL to the user's GitHub profile.
+	 * 
+	 * @return the URL to the user's GitHub profile.
 	 */
 	String getProfileUrl();
-
-	/**
-	 * Retrieves the current user's TripIt profile details.
-	 * 
-	 * @return the user's profile data.
-	 */
-	TripItProfile getUserProfile();
-
-	/**
-	 * Retrieves a list of upcoming trips for the current user.
-	 * 
-	 * @return the user's upcoming trips.
-	 */
-	List<Trip> getUpcomingTrips();
-
 }

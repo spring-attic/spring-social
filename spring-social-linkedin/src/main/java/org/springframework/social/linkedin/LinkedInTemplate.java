@@ -33,7 +33,7 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class LinkedInTemplate implements LinkedInOperations {
+public class LinkedInTemplate implements LinkedInApi {
 
 	private final RestTemplate restTemplate;
 

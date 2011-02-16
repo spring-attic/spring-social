@@ -39,7 +39,7 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class GowallaTemplate implements GowallaOperations {
+public class GowallaTemplate implements GowallaApi {
 
 	private final RestTemplate restTemplate;
 

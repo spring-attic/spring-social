@@ -37,7 +37,7 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class GitHubTemplate implements GitHubOperations {
+public class GitHubTemplate implements GitHubApi {
 
 	private final RestTemplate restTemplate;
 

@@ -17,7 +17,7 @@ package org.springframework.social.facebook.connect;
 
 import org.springframework.social.connect.oauth2.AbstractOAuth2ServiceProvider;
 import org.springframework.social.connect.support.ConnectionRepository;
-import org.springframework.social.facebook.FacebookOperations;
+import org.springframework.social.facebook.FacebookApi;
 import org.springframework.social.facebook.FacebookTemplate;
 import org.springframework.social.oauth2.OAuth2Template;
 
@@ -25,22 +25,15 @@ import org.springframework.social.oauth2.OAuth2Template;
  * Facebook ServiceProvider implementation.
  * @author Keith Donald
  */
-public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<FacebookOperations> {
-
-	private final String apiKey;
+public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<FacebookApi> {
 
 	public FacebookServiceProvider(String clientId, String clientSecret, ConnectionRepository connectionRepository) {
-		super("facebook",connectionRepository, new OAuth2Template(clientId, clientSecret,
+		super("facebook",clientId, clientSecret, connectionRepository, new OAuth2Template(clientId, clientSecret,
 				"https://graph.facebook.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}", "https://graph.facebook.com/oauth/access_token"));
-		this.apiKey = clientId;
-	}
-
-	public String getApiKey() {
-		return apiKey;
 	}
 
 	@Override
-	protected FacebookOperations getApi(String accessToken) {
+	protected FacebookApi getApi(String accessToken) {
 		return new FacebookTemplate(accessToken);
 	}
 	

@@ -37,7 +37,7 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class TripItTemplate implements TripItOperations {
+public class TripItTemplate implements TripItApi {
 	
 	private final RestTemplate restTemplate;
 

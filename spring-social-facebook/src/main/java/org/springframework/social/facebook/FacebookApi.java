@@ -30,7 +30,7 @@ import org.springframework.util.MultiValueMap;
  * </p>
  * @author Craig Walls
  */
-public interface FacebookOperations {
+public interface FacebookApi {
 	
 	/**
 	 * Retrieves the user's Facebook profile ID.

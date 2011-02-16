@@ -37,7 +37,7 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class FacebookTemplate implements FacebookOperations {
+public class FacebookTemplate implements FacebookApi {
 
 	private final RestTemplate restTemplate;
 

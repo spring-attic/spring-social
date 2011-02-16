@@ -58,6 +58,14 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 		return getApi(consumerKey, consumerSecret, connection.getAccessToken(), connection.getSecret());
 	}
 
+	public String getConsumerKey() {
+		return consumerKey;
+	}
+
+	public String getConsumerSecret() {
+		return consumerSecret;
+	}
+
 	// subclassing hooks
 	
 	/**

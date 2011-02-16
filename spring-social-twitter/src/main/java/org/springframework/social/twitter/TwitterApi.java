@@ -24,7 +24,7 @@ import java.util.List;
  * 
  * @author Craig Walls
  */
-public interface TwitterOperations {
+public interface TwitterApi {
 
 	/**
 	 * Retrieves the user's Twitter screen name.

@@ -56,7 +56,7 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class TwitterTemplate implements TwitterOperations {
+public class TwitterTemplate implements TwitterApi {
 
 	private final RestTemplate restTemplate;
 	

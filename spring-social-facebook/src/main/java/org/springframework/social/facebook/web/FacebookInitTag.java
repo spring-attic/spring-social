@@ -80,6 +80,6 @@ public class FacebookInitTag extends TagSupport {
 		if(serviceProvider == null) {
 			throw new JspException("No Facebook API key was given and no FacebookServiceProvider was found configured in Spring.");
 		}
-		return serviceProvider.getApiKey();
+		return serviceProvider.getClientId();
 	}
 }

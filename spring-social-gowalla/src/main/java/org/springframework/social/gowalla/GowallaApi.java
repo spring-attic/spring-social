@@ -28,7 +28,7 @@ import java.util.List;
  * 
  * @author Craig Walls
  */
-public interface GowallaOperations {
+public interface GowallaApi {
 
 	/**
 	 * Retrieves the user's Gowalla profile ID.

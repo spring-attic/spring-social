@@ -15,8 +15,7 @@
  */
 package org.springframework.social.connect.oauth2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -112,7 +111,7 @@ public class OAuth2ServiceProviderTest {
 	static class TestServiceProvider extends AbstractOAuth2ServiceProvider<TestApi> {
 
 		public TestServiceProvider(ConnectionRepository connectionRepository) {
-			super("test", connectionRepository, new StubOAuth2Operations());
+			super("test", "key", "secret", connectionRepository, new StubOAuth2Operations());
 		}
 
 		protected TestApi getApi(String accessToken) {

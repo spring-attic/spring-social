@@ -13,30 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.linkedin;
+package org.springframework.social.tripit;
 
 import java.util.List;
 
 /**
- * <p>
- * Interface specifying a basic set of operations for interacting with LinkedIn.
- * Implemented by {@link LinkedInTemplate}. Not often used directly, but a
- * useful option to enhance testability, as it can easily be mocked or stubbed.
- * </p>
+ * Interface specifying a basic set of operations for interacting with TripIt.
+ * Implemented by {@link TripItTemplate}. Not often used directly, but a useful
+ * option to enhance testability, as it can easily be mocked or stubbed.
  * 
- * <p>
  * Many of the methods contained in this interface require OAuth authentication
- * with LinkedIn. When a method's description speaks of the "current user", it
- * is referring to the user for whom the access token has been issued.
- * </p>
+ * with TripIt. When a method's description speaks of the "current user", it is
+ * referring to the user for whom the access token has been issued.
  * 
  * @author Craig Walls
  */
-public interface LinkedInOperations {
+public interface TripItApi {
+
 	/**
-	 * Retrieves the user's LinkedIn profile ID.
+	 * Retrieves the user's TripIt profile ID.
 	 * 
-	 * @return the user's LinkedIn profile ID.
+	 * @return the user's TripIt profile ID.
 	 */
 	String getProfileId();
 
@@ -48,16 +45,17 @@ public interface LinkedInOperations {
 	String getProfileUrl();
 
 	/**
-	 * Retrieves the current user's profile details.
+	 * Retrieves the current user's TripIt profile details.
 	 * 
 	 * @return the user's profile data.
 	 */
-	LinkedInProfile getUserProfile();
+	TripItProfile getUserProfile();
 
 	/**
-	 * Retrieves the 1st-degree connections from the current user's network.
+	 * Retrieves a list of upcoming trips for the current user.
 	 * 
-	 * @return the user's connections
+	 * @return the user's upcoming trips.
 	 */
-	List<LinkedInProfile> getConnections();
+	List<Trip> getUpcomingTrips();
+
 }
