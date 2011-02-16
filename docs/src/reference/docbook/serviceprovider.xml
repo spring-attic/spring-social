@@ -1,11 +1,82 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="serviceprovider"
-    xmlns:xlink="http://www.w3.org/1999/xlink">
-  <title>Service Providers</title>
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="serviceprovider" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>Service Providers</title>
+	<section xml:id="section_serviceprovider_introduction">
+		<title>Introduction</title>
+		<para>
+			The <code>spring-social-core</code> module includes a <emphasis>Service Provider 'Connect' Framework</emphasis> for managing connections to Software-as-a-Service (SaaS) providers such as Facebook and Twitter.
+			This framework allows your application to establish connections between local user accounts and accounts those users have with external service providers.  
+			Once a connection is established, it can be be used to obtain a strongly-typed Java binding to the ServiceProvider's API, giving your application the ability to invoke the API on behalf of the user.
+		</para>
+		<para>
+			To illustrate, consider Facebook as an example ServiceProvider.
+			Suppose your application, AcmeApp, allows users to share content with their Facebook friends.
+			To support this, a connection needs to be established between a user's AcmeApp account and her Facebook account.
+			Once established, a FacebookApi instance can be obtained and used to post the content to the user's wall.
+			Spring Social's 'Connect' framework provides a clean API for managing service provider connections such as this.
+		</para>
+		<para>
+			The <interfacename>ServiceProvider&lt;S&gt;</interfacename> interface defines the central API for managing connections to an external service provider such as Facebook:
+			<programlisting language="java"><![CDATA[
+public interface ServiceProvider<S> {
+    
+    String getId();
+    
+    boolean isConnected(Serializable accountId);
+    
+    List<ServiceProviderConnection<S>> getConnections(Serializable accountId);
 
-  <section xml:id="section_serviceprovider_introduction">
-      <title>Introduction</title>
-      
+}]]>
+			</programlisting>
+		</para>
+		<para>
+			The &lt;S&gt; parameterized type represents the Java binding to the ServiceProvider's API.
+			For example, the Facebook ServiceProvider implementation is parameterized as ServiceProvider&lt;FacebookApi&gt;, where FacebookApi is the Java interface that may be used to invoke Facebook's graph API on behalf of a user.
+		</para>
+		<para>
+			Each ServiceProvider is identified by an ID, as returned by the <methodname>getId()</methodname> method.
+			This id should be unique across all ServiceProviders registered with your application.
+		</para>
+		<para>
+			A single local user account can have one-to-many connections established with a ServiceProvider,
+			where each connection represents a link between the local user's account and an external account the user has on the provider's system.
+			<methodname>isConnected()</methodname> checks to see if <emphasis>any</emphasis> connections exist between a user account and the service provider.
+			If there are connections, <methodname>getConnections()</methodname> returns them in rank order.
+		</para>
+		<para>
+			Once you have a reference to a ServiceProviderConnection, you can do the following:
+			<programlisting language="java"><![CDATA[
+public interface ServiceProviderConnection<S> {
+
+    S getServiceApi();
+
+    void disconnect();
+	
+}]]>
+			</programlisting>
+		</para>
+		<para>
+			<methodname>getServiceApi()</methodname> returns a Java binding to the ServiceProvider's API for the external user account associated with the connection.
+			The API can then be used to access and update user data on the provider's system.
+		</para>
+		<para>
+			<methodname>disconnect()</methodname> may be used to remove the connection with the ServiceProvider, if it is no longer desired.
+		</para>
+		<para>
+			To put this API into action, consider Twitter as an example ServiceProvider.
+			Suppose user 'kdonald' of AcmeApp has three Twitter accounts and has connected with each of them:
+			<orderedlist>
+				<listitem><para>ServiceProvider#getId() would return 'twitter'.</para></listitem>
+				<listitem><para>ServiceProvider#isConnected("kdonald") would return 'true'.</para></listitem>
+				<listitem><para>ServiceProvider#getConnections("kdonald") would return a 'connections' List with three elements, one for each Twitter account.</para></listitem>
+				<listitem><para>connections.get(0) would return the 'connection' to the first Twitter account, and connection.getServiceApi() would return a TwitterApi that can access and update information about that Twitter account.</para></listitem>
+				<listitem><para>connections.get(1) and connections.get(2) would allow AcmeApp to access and update information about the second and third Twitter accounts, respectively.</para></listitem>				
+				<listitem><para>connection.disconnect() can be called to remove a connection, at which the linked Twitter account is no longer accessible to the application.</para></listitem>				
+			</orderedlist>
+		</para>
+	</section>
+	<section>
+		<title>Establishing Connections</title>		
       <para>In <xref linkend="apis"/>, you'll see how Spring Social provides APIs through which your application may interact with various service providers. But before you can work with a service API, your application must be authorized to access the service on the user's behalf.</para>
       
       <para>Spring Social's service provider framework handles the details of authorization with a service. Once authorization has been granted, a connection is created between the user's local application account and the authorization credentials. This connection is persisted for future use, so that the user won't need to re-authorize the application as long as the credentials are still valid.</para>
@@ -62,17 +133,7 @@
           <listitem><para>The consumer makes calls against the service API, passing the access token along as evidence of its right to access the provider on behalf of the user.</para></listitem>
       </orderedlist>  
       
-      <para>In Spring Social, service providers are defined by the <interfacename>ServiceProvider</interfacename> interface, which defined the basic operations required to manage connections with a service:</para>
-      
-<programlisting><![CDATA[public interface ServiceProvider<S> {
-	String getId();
-	boolean isConnected(Serializable accountId);
-	List<ServiceProviderConnection<S>> getConnections(Serializable accountId);
-}]]></programlisting>
 
-      <para>Each service provider is identified by an ID, as returned by the <methodname>getId()</methodname> method. This ID is primarily used as a key to lookup a service provider when working through the authorization flow.</para>
-      
-      <para>A user may authorize the application to access multiple service provider profiles, resulting in one or more connections being created between their application account and the service provider. The <methodname>isConnected()</methodname> checks to see if any connections exist between a given account and the provider. If there are any connections, the <methodname>getConnections()</methodname> will return them.</para>
 
       <para>The <interfacename>ServiceProvider</interfacename> is further defined by two sub-interfaces, one for each supported authorization protocol. <interfacename>OAuth1ServiceProvider</interfacename> defines the service provider operations that are specific to OAuth 1:</para>
       
