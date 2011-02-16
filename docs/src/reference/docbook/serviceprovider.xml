@@ -93,6 +93,10 @@ public interface ServiceProviderConnection<S> {
 		</para>
 		<section id="service-providers-oauth2">
 			<title>OAuth2 Service Providers</title>
+			<para>
+				OAuth 2 is rapidly becoming a preferred authorization protocol, and is used by major service providers such as Facebook, Github, Gowalla, and 37signals.
+				In Spring Social, the OAuth2ServiceProvider interface models a service provider based on the OAuth 2 protocol:
+			</para>
 			<programlisting language="java"><![CDATA[
 public interface OAuth2ServiceProvider<S> extends ServiceProvider<S> {
 
@@ -102,6 +106,11 @@ public interface OAuth2ServiceProvider<S> extends ServiceProvider<S> {
 
 }]]>
 			</programlisting>
+			<para>
+				<methodname>getOAuthOperations()</methodname> returns an API to use to conduct the authorization flow, or "OAuth Dance", with a service provider.
+				The result of this flow is an <classname>AccessGrant</classname> that can be used to establish a connection with a local user account by calling <methodname>connect</methodname>.
+				The OAuth2Operations interface is shown below:
+			</para>
 			<programlisting language="java"><![CDATA[
 public interface OAuth2Operations {
 
@@ -112,7 +121,10 @@ public interface OAuth2Operations {
 }]]>
 			</programlisting>			
 			<para>
-				The OAuth 2 flow is illustrated below:
+				Callers are first expected to call buildAuthorizeUrl(String, String) to construct the URL to redirect the user to for connection authorization.
+				Upon user authorization, the authorizationGrant returned by the provider should be exchanged for an AccessGrant.
+				The AccessGrant should then used to create a connection.
+				This flow is illustrated below:
 			</para>
 			<mediaobject>
 				<imageobject role="fo">
@@ -123,16 +135,44 @@ public interface OAuth2Operations {
 				</imageobject>
 			</mediaobject>
       		<para>
-				As you can see, there is a back-and-forth conversation that takes place between the consumer and the service provider to establish authorization for the consumer.
+				As you can see, there is a back-and-forth conversation that takes place between the application and the service provider to grant the application access to the provider account.
 				This exchange, commonly known as the "OAuth Dance", follows these steps:
 			</para>
 			<orderedlist>
-				<listitem><para>The flow starts with the consumer redirecting the user's browser to the provider's authorization page. Unlike OAuth 1, there is no concept of request token in OAuth 2.</para></listitem>
-				<listitem><para>The service provider prompts the user to authorize the consumer application and the user agrees. (As with OAuth 1, this is the only step where the user participates in the flow.)</para></listitem>
-				<listitem><para>The service provider redirects the user's browser to the consumer's redirect URI, with an authorization code as a parameter.</para></listitem>
-				<listitem><para>The consumer exchanges the authorization code for an access token.</para></listitem>
-				<listitem><para>The service provider issues an access token to the consumer. The "dance" is complete.</para></listitem>
-				<listitem><para>The consumer makes calls against the service API, passing the access token along as evidence of its right to access the provider on behalf of the user.</para></listitem>
+				<listitem>
+					<para>
+						The flow starts by the application redirecting the user to the provider's authorization URL.
+						Here the provider displays a web page asking the user if he or she wishes to grant the application access to read and update their data.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The user agrees to grant the application access.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The service provider redirects the user back to the application (via the redirect URI), passing an authorization code as a parameter.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The application exchanges the authorization code for an access token.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The service provider issues an access grant to the application.
+						The grant includes an access token and a refresh token.
+						One receipt of these tokens, the "OAuth dance" is complete.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The application uses the AccessGrant to save a connection between the local user account and the external provider account.
+						With the connection established, the application can get a reference to the Service API to invoke the provider on behalf of the user.
+					</para>
+				</listitem>
 			</orderedlist>
 		</section>
 		<section id="service-providers-oauth1">
