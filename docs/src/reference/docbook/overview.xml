@@ -59,7 +59,7 @@
           <tbody>
             <row>
               <entry>spring-social-core</entry>
-              <entry>Spring Social's service provider framework and OAuth support.</entry>
+              <entry>Spring Social's ServiceProvider connect framework and OAuth support.</entry>
             </row>
             <row>
               <entry>spring-social-config</entry>
@@ -67,11 +67,19 @@
             </row>
             <row>
               <entry>spring-social-web</entry>
-              <entry>Spring Social's <classname>ConnectController</classname>, which handles the OAuth process, establishing connections with social providers.</entry>
+              <entry>Spring Social's <classname>ConnectController</classname> which uses the ServiceProvider framework to manage connections in a web application environment</entry>
             </row>
             <row>
               <entry>spring-social-facebook</entry>
               <entry>Includes Spring Social's Facebook API as well as support for signing into an application through Facebook.</entry>
+            </row>
+            <row>
+              <entry>spring-social-twitter</entry>
+              <entry>Includes Spring Social's Twitter API as well as support for signing into an application via Twitter.</entry>
+            </row>
+            <row>
+              <entry>spring-social-linkedin</entry>
+              <entry>Includes Spring Social's LinkedIn API.</entry>
             </row>
             <row>
               <entry>spring-social-github</entry>
@@ -82,16 +90,8 @@
               <entry>Includes Spring Social's Gowalla API.</entry>
             </row>
             <row>
-              <entry>spring-social-linkedin</entry>
-              <entry>Includes Spring Social's LinkedIn API.</entry>
-            </row>
-            <row>
               <entry>spring-social-tripit</entry>
               <entry>Includes Spring Social's TripIt API.</entry>
-            </row>
-            <row>
-              <entry>spring-social-twitter</entry>
-              <entry>Includes Spring Social's Twitter API as well as support for signing into an application via Twitter.</entry>
             </row>
           </tbody>
         </tgroup>
@@ -117,7 +117,7 @@
 </dependency>]]>
 	  </programlisting>
 	  
-	  <para>To let Spring Social handle the back-and-forth exchange between your application and a service required for OAuth authorization, you'll need the web module:</para>
+	  <para>To let Spring Social handle the back-and-forth authorization handshake between a web application and a service provider, you'll need the web module:</para>
 	  
     <programlisting language="xml"><![CDATA[
 <dependency>
