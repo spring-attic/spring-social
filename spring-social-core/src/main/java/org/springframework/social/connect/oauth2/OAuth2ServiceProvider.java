@@ -32,7 +32,7 @@ public interface OAuth2ServiceProvider<S> extends ServiceProvider<S> {
 	/**
 	 * The service interface for invoking OAuth2 operations against this provider.
 	 */
-	OAuth2Operations getOAuth2Operations();
+	OAuth2Operations getOAuthOperations();
 
 	/**
 	 * Establishes a connection between a user account and this provider.

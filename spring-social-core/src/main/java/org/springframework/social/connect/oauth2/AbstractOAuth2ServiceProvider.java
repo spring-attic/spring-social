@@ -45,7 +45,7 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 		this.oauth2Operations = oauth2Operations;
 	}
 
-	public OAuth2Operations getOAuth2Operations() {
+	public OAuth2Operations getOAuthOperations() {
 		return oauth2Operations;
 	}
 	

@@ -33,27 +33,58 @@ public class OAuth1TemplateTest {
 	
 	private static final String REQUEST_TOKEN_URL = "https://www.someprovider.com/oauth/requestToken";
 	
-	private OAuth10aTemplate oauth1;
+	private OAuth1Template oauth10a;
+	private OAuth1Template oauth10;
 
 	@Before
 	public void setup() {
-		oauth1 = new OAuth10aTemplate("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
+		oauth10a = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
 				"https://www.someprovider.com/oauth/authorize?oauth_token={request_token}", ACCESS_TOKEN_URL);
+		oauth10 = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
+				"https://www.someprovider.com/oauth/authorize?oauth_token={request_token}&callback_url={callback_url}",
+				ACCESS_TOKEN_URL, false);
 	}
 
 	@Test
 	public void buildAuthorizeUrl() {
-		assertEquals("https://www.someprovider.com/oauth/authorize?oauth_token=request_token", oauth1.buildAuthorizeUrl("request_token"));
+		assertEquals("https://www.someprovider.com/oauth/authorize?oauth_token=request_token",
+				oauth10a.buildAuthorizeUrl("request_token", null));
+		assertEquals("https://www.someprovider.com/oauth/authorize?oauth_token=request_token&callback_url=http://www.someclient.com/oauth/callback",
+				oauth10.buildAuthorizeUrl("request_token", "http://www.someclient.com/oauth/callback"));
 	}
 
 	@Test
-	public void fetchNewRequestToken() {
-		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauth1.getRestTemplate());
+	public void fetchNewRequestToken_OAuth10a() {
+		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauth10a.getRestTemplate());
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		mockServer
+				.expect(requestTo("https://www.someprovider.com/oauth/requestToken"))
+				.andExpect(method(POST))
+				.andExpect(
+						headerContains("Authorization",
+								"oauth_callback=\"http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback\""))
+				.andExpect(headerContains("Authorization", "oauth_version=\"1.0\""))
+				.andExpect(headerContains("Authorization", "oauth_signature_method=\"HMAC-SHA1\""))
+				.andExpect(headerContains("Authorization", "oauth_consumer_key=\"consumer_key\""))
+				.andExpect(headerContains("Authorization", "oauth_nonce=\""))
+				.andExpect(headerContains("Authorization", "oauth_signature=\""))
+				.andExpect(headerContains("Authorization", "oauth_timestamp=\""))
+				.andRespond(
+						withResponse(new ClassPathResource("requestToken.formencoded", getClass()), responseHeaders));
+
+		OAuthToken requestToken = oauth10a.fetchNewRequestToken("http://www.someclient.com/oauth/callback");
+		assertEquals("1234567890", requestToken.getValue());
+		assertEquals("abcdefghijklmnop", requestToken.getSecret());
+	}
+
+	@Test
+	public void fetchNewRequestToken_OAuth10() {
+		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauth10.getRestTemplate());
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		mockServer.expect(requestTo("https://www.someprovider.com/oauth/requestToken"))
 				.andExpect(method(POST))
-				.andExpect(headerContains("Authorization", "oauth_callback=\"http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback\""))
 				.andExpect(headerContains("Authorization", "oauth_version=\"1.0\""))
 				.andExpect(headerContains("Authorization", "oauth_signature_method=\"HMAC-SHA1\""))
 				.andExpect(headerContains("Authorization", "oauth_consumer_key=\"consumer_key\""))
@@ -62,14 +93,14 @@ public class OAuth1TemplateTest {
 				.andExpect(headerContains("Authorization", "oauth_timestamp=\""))
 				.andRespond(withResponse(new ClassPathResource("requestToken.formencoded", getClass()), responseHeaders));
 
-		OAuthToken requestToken = oauth1.fetchNewRequestToken("http://www.someclient.com/oauth/callback");
+		OAuthToken requestToken = oauth10.fetchNewRequestToken("http://www.someclient.com/oauth/callback");
 		assertEquals("1234567890", requestToken.getValue());
 		assertEquals("abcdefghijklmnop", requestToken.getSecret());
 	}
 
 	@Test
-	public void exchangeForAccessToken() {
-		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauth1.getRestTemplate());
+	public void exchangeForAccessToken_OAuth10a() {
+		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauth10a.getRestTemplate());
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		mockServer
@@ -86,7 +117,30 @@ public class OAuth1TemplateTest {
 				.andRespond(withResponse(new ClassPathResource("accessToken.formencoded", getClass()), responseHeaders));
 
 		OAuthToken requestToken = new OAuthToken("1234567890", "abcdefghijklmnop");
-		OAuthToken accessToken = oauth1.exchangeForAccessToken(new AuthorizedRequestToken(requestToken, "verifier"));
+		OAuthToken accessToken = oauth10a.exchangeForAccessToken(new AuthorizedRequestToken(requestToken, "verifier"));
+		assertEquals("9876543210", accessToken.getValue());
+		assertEquals("ponmlkjihgfedcba", accessToken.getSecret());
+	}
+
+	@Test
+	public void exchangeForAccessToken_OAuth10() {
+		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauth10.getRestTemplate());
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		mockServer
+				.expect(requestTo("http://www.someprovider.com/oauth/accessToken"))
+				.andExpect(method(POST))
+				.andExpect(headerContains("Authorization", "oauth_version=\"1.0\""))
+				.andExpect(headerContains("Authorization", "oauth_signature_method=\"HMAC-SHA1\""))
+				.andExpect(headerContains("Authorization", "oauth_consumer_key=\"consumer_key\""))
+				.andExpect(headerContains("Authorization", "oauth_token=\"1234567890\""))
+				.andExpect(headerContains("Authorization", "oauth_nonce=\""))
+				.andExpect(headerContains("Authorization", "oauth_signature=\""))
+				.andExpect(headerContains("Authorization", "oauth_timestamp=\""))
+				.andRespond(withResponse(new ClassPathResource("accessToken.formencoded", getClass()), responseHeaders));
+
+		OAuthToken requestToken = new OAuthToken("1234567890", "abcdefghijklmnop");
+		OAuthToken accessToken = oauth10.exchangeForAccessToken(new AuthorizedRequestToken(requestToken, "verifier"));
 		assertEquals("9876543210", accessToken.getValue());
 		assertEquals("ponmlkjihgfedcba", accessToken.getSecret());
 	}

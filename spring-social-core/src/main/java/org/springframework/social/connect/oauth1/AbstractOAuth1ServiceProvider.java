@@ -21,6 +21,7 @@ import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.support.AbstractServiceProvider;
 import org.springframework.social.connect.support.Connection;
 import org.springframework.social.connect.support.ConnectionRepository;
+import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
 
 /**
@@ -29,26 +30,29 @@ import org.springframework.social.oauth1.OAuthToken;
  * @author Keith Donald
  * @param <S> the service API type
  */
-public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServiceProvider<S> {
+public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServiceProvider<S> implements OAuth1ServiceProvider<S> {
+
+	private final OAuth1Operations oauth1Operations;
 
 	private final String consumerKey;
 	
 	private final String consumerSecret;
 	
 	public AbstractOAuth1ServiceProvider(String id, ConnectionRepository connectionRepository, String consumerKey,
-			String consumerSecret) {
+			String consumerSecret, OAuth1Operations oauth1Operations) {
 		super(id, connectionRepository);
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
+		this.oauth1Operations = oauth1Operations;
+
 	}
 	
 	public ServiceProviderConnection<S> connect(Serializable accountId, OAuthToken accessToken) {
 		return connect(accountId, Connection.oauth1(accessToken.getValue(), accessToken.getSecret()));
 	}
 
-	@Override
-	protected final S getApi(Connection connection) {
-		return getApi(consumerKey, consumerSecret, connection.getAccessToken(), connection.getSecret());
+	public OAuth1Operations getOAuthOperations() {
+		return oauth1Operations;
 	}
 
 	public String getConsumerKey() {
@@ -57,6 +61,11 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 
 	public String getConsumerSecret() {
 		return consumerSecret;
+	}
+
+	@Override
+	protected final S getApi(Connection connection) {
+		return getApi(consumerKey, consumerSecret, connection.getAccessToken(), connection.getSecret());
 	}
 
 	// subclassing hooks

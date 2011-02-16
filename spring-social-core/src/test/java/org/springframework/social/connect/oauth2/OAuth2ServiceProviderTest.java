@@ -40,7 +40,7 @@ public class OAuth2ServiceProviderTest {
 		assertEquals(0, serviceProvider.getConnections(accountId).size());
 		
 		// oauth 2 dance
-		OAuth2Operations oauthClient = serviceProvider.getOAuth2Operations();
+		OAuth2Operations oauthClient = serviceProvider.getOAuthOperations();
 		String authorizeUrl = oauthClient.buildAuthorizeUrl("http://localhost:8080/me", "READ_WRITE");
 		assertEquals("http://springsource.org/oauth/authorize?scope=READ_WRITE", authorizeUrl);
 		AccessGrant accessGrant = oauthClient.exchangeForAccess("authorizationGrant", "http://localhost:8080/me");

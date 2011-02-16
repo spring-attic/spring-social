@@ -23,10 +23,10 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.social.connect.ServiceProvider;
-import org.springframework.social.connect.oauth1.OAuth10aServiceProvider;
+import org.springframework.social.connect.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
-import org.springframework.social.oauth1.OAuth10aOperations;
+import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.web.connect.ServiceProviderLocator;
 import org.springframework.social.web.connect.SignInControllerGateway;
@@ -88,7 +88,7 @@ public class TwitterSigninController implements BeanFactoryAware {
 	public String signin(WebRequest request) {
 		// TODO: Address the duplication between this controller and ConnectController
 		ServiceProvider<?> provider = getServiceProvider(TWITTER_PROVIDER_ID);
-		OAuth10aOperations oauth1Ops = ((OAuth10aServiceProvider<?>) provider).getOAuth10aOperations();
+		OAuth1Operations oauth1Ops = ((OAuth1ServiceProvider<?>) provider).getOAuthOperations();
 		OAuthToken requestToken = oauth1Ops.fetchNewRequestToken(callbackUrl(TWITTER_PROVIDER_ID));
 		request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
 		return "redirect:https://api.twitter.com/oauth/authenticate?oauth_token=" + requestToken.getValue();
@@ -103,9 +103,9 @@ public class TwitterSigninController implements BeanFactoryAware {
 	public String oauth1Callback(@RequestParam("oauth_token") String token,
 			@RequestParam(value = "oauth_verifier") String verifier, WebRequest request) {
 		// TODO: Address the duplication between this controller and ConnectController
-		OAuth10aServiceProvider<?> provider = (OAuth10aServiceProvider<?>) getServiceProvider(TWITTER_PROVIDER_ID);
+		OAuth1ServiceProvider<?> provider = (OAuth1ServiceProvider<?>) getServiceProvider(TWITTER_PROVIDER_ID);
 		AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(extractCachedRequestToken(request), verifier);
-		OAuthToken accessToken = provider.getOAuth10aOperations().exchangeForAccessToken(authorizedRequestToken);
+		OAuthToken accessToken = provider.getOAuthOperations().exchangeForAccessToken(authorizedRequestToken);
 		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(TWITTER_PROVIDER_ID, accessToken.getValue());
 
 		if (accountId == null) {
