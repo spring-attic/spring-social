@@ -12,7 +12,7 @@
 			To illustrate, consider Facebook as an example ServiceProvider.
 			Suppose your application, AcmeApp, allows users to share content with their Facebook friends.
 			To support this, a connection needs to be established between a user's AcmeApp account and her Facebook account.
-			Once established, a FacebookApi instance can be obtained and used to post the content to the user's wall.
+			Once established, a FacebookApi instance can be obtained and used to post content to the user's wall.
 			Spring Social's 'Connect' framework provides a clean API for managing service provider connections such as this.
 		</para>
 		<para>
@@ -80,7 +80,7 @@ public interface ServiceProviderConnection<S> {
 		<para>
 			So far we have discussed how existing connections are managed using the ServiceProvider framework, but we have not yet discussed how new connections are established.
 			The manner in which connections between local user accounts and external provider accounts are established varies based on the authorization protocol used by the ServiceProvider.
-			Some service providers use OAuth, others use Basic Auth, others may require something else.
+			Some service providers use OAuth, others use Basic Auth, others may use something else.
 			Spring Social currently provides native support for OAuth-based service providers, including support for OAuth 1 and OAuth 2.
 			This covers the leading social networks, such as Facebook and Twitter, all of which use OAuth to secure their APIs.
 			Support for other authorization protocols can be added by extending the framework.
