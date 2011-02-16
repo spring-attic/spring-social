@@ -24,6 +24,7 @@ import org.w3c.dom.Element;
 class ServiceProviderElementParser implements BeanDefinitionParser {
 	
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
+		String beanId = element.getAttribute("id");
 		String providerClassName = element.getAttribute("class");
 		String clientKey = element.getAttribute("client-key");
 		String clientSecret = element.getAttribute("client-secret");
@@ -35,7 +36,10 @@ class ServiceProviderElementParser implements BeanDefinitionParser {
 		providerBeanBuilder.addConstructorArgReference(connectionRepository);
 
 		BeanDefinition providerBeanDefinition = providerBeanBuilder.getBeanDefinition();
-		parserContext.getReaderContext().registerWithGeneratedName(providerBeanDefinition);
+		if(beanId == null || beanId.isEmpty()) {
+			beanId = parserContext.getReaderContext().generateBeanName(providerBeanDefinition);
+		}
+		parserContext.getRegistry().registerBeanDefinition(beanId, providerBeanDefinition);
 		return providerBeanDefinition;
 	}
 

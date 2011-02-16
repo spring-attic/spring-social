@@ -15,6 +15,8 @@
  */
 package org.springframework.social.config.xml;
 
+import static org.junit.Assert.*;
+
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -28,6 +30,7 @@ public class SocialNamespaceHandlerTest {
 		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("socialNamespaceHandlerTest.xml", getClass());
 		applicationContext.getBean(TwitterServiceProvider.class);
 		applicationContext.getBean(FacebookServiceProvider.class);
+		assertEquals("facebookServiceProvider", applicationContext.getBeanNamesForType(FacebookServiceProvider.class)[0]);
 	} 
 
 }

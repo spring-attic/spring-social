@@ -20,6 +20,13 @@
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
+			<xsd:attribute name="id" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+						The bean ID
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
 			<xsd:attribute name="class" use="required" type="xsd:string">
 				<xsd:annotation>
 					<xsd:documentation>

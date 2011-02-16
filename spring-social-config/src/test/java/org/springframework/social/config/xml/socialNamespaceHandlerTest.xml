@@ -10,6 +10,7 @@
 	
 	<social:service-provider class="org.springframework.social.twitter.connect.TwitterServiceProvider" client-key="twitter_key" client-secret="twitter_secret" />
 
-	<social:service-provider class="org.springframework.social.facebook.connect.FacebookServiceProvider" client-key="facebook_key" client-secret="facebook_secret" />
+	<social:service-provider id="facebookServiceProvider"
+		class="org.springframework.social.facebook.connect.FacebookServiceProvider" client-key="facebook_key" client-secret="facebook_secret" />
 
 </beans>
