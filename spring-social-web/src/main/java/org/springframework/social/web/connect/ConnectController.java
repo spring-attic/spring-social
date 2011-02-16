@@ -15,7 +15,6 @@
  */
 package org.springframework.social.web.connect;
 
-import java.io.Serializable;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
@@ -64,12 +63,15 @@ public class ConnectController implements BeanFactoryAware {
 	
 	private MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors;
 
+	private final AccountIdExtractor accountIdExtractor;
+
 	/**
 	 * Constructs a ConnectController.
 	 * @param connectionRepository a connection repository
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
 	 */
-	public ConnectController(String applicationUrl) {
+	public ConnectController(String applicationUrl, AccountIdExtractor accountIdExtractor) {
+		this.accountIdExtractor = accountIdExtractor;
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 		this.interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
 	}
@@ -92,8 +94,8 @@ public class ConnectController implements BeanFactoryAware {
 	 * Render the connect form for the service provider identified by {name} to the member as HTML in their web browser.
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET)
-	public String connect(@PathVariable String providerId, Principal user) {
-		if (getServiceProvider(providerId).isConnected(accountId(user))) {
+	public String connect(@PathVariable String providerId, WebRequest request) {
+		if (getServiceProvider(providerId).isConnected(accountIdExtractor.extractAccountId(request))) {
 			return baseViewPath(providerId) + "Connected";
 		} else {
 			return baseViewPath(providerId) + "Connect";
@@ -131,7 +133,7 @@ public class ConnectController implements BeanFactoryAware {
 		OAuth1ServiceProvider<?> provider = (OAuth1ServiceProvider<?>) getServiceProvider(providerId);
 		AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(extractCachedRequestToken(request), verifier);
 		accessToken = provider.getOAuthOperations().exchangeForAccessToken(authorizedRequestToken);
-		ServiceProviderConnection<?> connection = provider.connect(accountId(request.getUserPrincipal()), accessToken);
+		ServiceProviderConnection<?> connection = provider.connect(accountIdExtractor.extractAccountId(request), accessToken);
 		postConnect(provider, connection, request);
 		return "redirect:/connect/" + providerId;
 	}
@@ -145,7 +147,7 @@ public class ConnectController implements BeanFactoryAware {
 	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
 		OAuth2ServiceProvider<?> provider = (OAuth2ServiceProvider<?>) getServiceProvider(providerId);
 		AccessGrant accessGrant = provider.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId));
-		ServiceProviderConnection<?> connection = provider.connect(accountId(request.getUserPrincipal()), accessGrant);
+		ServiceProviderConnection<?> connection = provider.connect(accountIdExtractor.extractAccountId(request), accessGrant);
 		postConnect(provider, connection, request);
 		return "redirect:/connect/" + providerId;
 	}
@@ -155,9 +157,9 @@ public class ConnectController implements BeanFactoryAware {
 	 * The member has decided they no longer wish to use the service provider from this application.
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.DELETE)
-	public String disconnect(@PathVariable String providerId, Principal user) {
+	public String disconnect(@PathVariable String providerId, WebRequest request) {
 		ServiceProvider provider = getServiceProvider(providerId);
-		List<ServiceProviderConnection> connections = provider.getConnections(accountId(user));
+		List<ServiceProviderConnection> connections = provider.getConnections(accountIdExtractor.extractAccountId(request));
 		for (ServiceProviderConnection connection : connections) {
 			connection.disconnect();
 		}
@@ -193,10 +195,6 @@ public class ConnectController implements BeanFactoryAware {
 
 	private String baseViewPath(String providerId) {
 		return "connect/" + providerId;		
-	}
-	
-	private Serializable accountId(Principal user) {
-		return user.getName();
 	}
 	
 	private String callbackUrl(String providerId) {
