@@ -15,10 +15,10 @@
  */
 package org.springframework.social.twitter.connect;
 
-import org.springframework.social.connect.oauth1.AbstractOAuth1ServiceProvider;
+import org.springframework.social.connect.oauth1.AbstractOAuth10aServiceProvider;
 import org.springframework.social.connect.support.ConnectionRepository;
-import org.springframework.social.oauth1.OAuth1Template;
 import org.springframework.social.twitter.TwitterApi;
+import org.springframework.social.oauth1.OAuth10aTemplate;
 import org.springframework.social.twitter.TwitterTemplate;
 
 /**
@@ -26,10 +26,10 @@ import org.springframework.social.twitter.TwitterTemplate;
  * @author Keith Donald
  * @author Craig Walls
  */
-public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<TwitterApi> {
+public final class TwitterServiceProvider extends AbstractOAuth10aServiceProvider<TwitterApi> {
 
 	public TwitterServiceProvider(String consumerKey, String consumerSecret, ConnectionRepository connectionRepository) {
-		super("twitter", connectionRepository, consumerKey, consumerSecret, new OAuth1Template(consumerKey,
+		super("twitter", connectionRepository, consumerKey, consumerSecret, new OAuth10aTemplate(consumerKey,
 				consumerSecret, "https://twitter.com/oauth/request_token",
 				"https://twitter.com/oauth/authorize?oauth_token={requestToken}", "https://twitter.com/oauth/access_token"));
 	}

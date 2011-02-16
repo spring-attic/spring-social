@@ -28,10 +28,13 @@ import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.social.connect.ServiceProvider;
 import org.springframework.social.connect.ServiceProviderConnection;
+import org.springframework.social.connect.oauth1.OAuth10ServiceProvider;
+import org.springframework.social.connect.oauth1.OAuth10aServiceProvider;
 import org.springframework.social.connect.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.connect.oauth2.OAuth2ServiceProvider;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
-import org.springframework.social.oauth1.OAuth1Operations;
+import org.springframework.social.oauth1.OAuth10Operations;
+import org.springframework.social.oauth1.OAuth10aOperations;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.stereotype.Controller;
@@ -108,29 +111,42 @@ public class ConnectController implements BeanFactoryAware {
 	public String connect(@PathVariable String providerId, @RequestParam(required=false) String scope,  WebRequest request) {
 		ServiceProvider<?> provider = getServiceProvider(providerId);
 		preConnect(provider, request);
-		if (provider instanceof OAuth1ServiceProvider) {
-			OAuth1Operations oauth1Ops = ((OAuth1ServiceProvider<?>) provider).getOAuth1Operations();
+		if (provider instanceof OAuth10aServiceProvider) {
+			OAuth10aOperations oauth1Ops = ((OAuth10aServiceProvider<?>) provider).getOAuth10aOperations();
 			OAuthToken requestToken = oauth1Ops.fetchNewRequestToken(callbackUrl(providerId));
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
 			return "redirect:" + oauth1Ops.buildAuthorizeUrl(requestToken.getValue());
+		} else if (provider instanceof OAuth10ServiceProvider) {
+			OAuth10Operations oauth1Ops = ((OAuth10ServiceProvider<?>) provider).getOAuth10Operations();
+			OAuthToken requestToken = oauth1Ops.fetchNewRequestToken();
+			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
+			return "redirect:" + oauth1Ops.buildAuthorizeUrl(requestToken.getValue(), callbackUrl(providerId));
 		} else {
 			return "redirect:" + ((OAuth2ServiceProvider<?>) provider).getOAuth2Operations().buildAuthorizeUrl(callbackUrl(providerId), scope);
 		}
 	}
 
 	/**
-	 * Process the authorization callback from an OAuth 1 service provider.
+	 * Process the authorization callback from an OAuth 1.0a service provider.
 	 * Called after the member authorizes the connection, generally done by having he or she click "Allow" in their web browser at the provider's site.
 	 * On authorization verification, connects the member's local account to the account they hold at the service provider
 	 * Removes the request token from the session since it is no longer valid after the connection is established.
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="oauth_token")
-	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier") String verifier, WebRequest request) {
-		OAuth1ServiceProvider<?> provider = (OAuth1ServiceProvider<?>) getServiceProvider(providerId);
-		AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(extractCachedRequestToken(request), verifier);
-		OAuthToken accessToken = provider.getOAuth1Operations().exchangeForAccessToken(authorizedRequestToken);
-		ServiceProviderConnection<?> connection = provider.connect(accountId(request.getUserPrincipal()), accessToken);
-		postConnect(provider, connection, request);
+	public String oauth10aCallback(@PathVariable String providerId, @RequestParam("oauth_token") String token,
+			@RequestParam(value = "oauth_verifier", required = false) String verifier, WebRequest request) {
+		OAuth1ServiceProvider serviceProvider = (OAuth1ServiceProvider) getServiceProvider(providerId);
+		OAuthToken accessToken = null;
+		if(serviceProvider instanceof OAuth10ServiceProvider) {
+			OAuth10ServiceProvider<?> provider = (OAuth10ServiceProvider<?>) getServiceProvider(providerId);
+			accessToken = provider.getOAuth10Operations().exchangeForAccessToken(extractCachedRequestToken(request));
+		} else {
+			OAuth10aServiceProvider<?> provider = (OAuth10aServiceProvider<?>) serviceProvider;
+			AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(extractCachedRequestToken(request), verifier);
+			accessToken = provider.getOAuth10aOperations().exchangeForAccessToken(authorizedRequestToken);			
+		}
+		ServiceProviderConnection<?> connection = serviceProvider.connect(accountId(request.getUserPrincipal()), accessToken);
+		postConnect(serviceProvider, connection, request);
 		return "redirect:/connect/" + providerId;
 	}
 

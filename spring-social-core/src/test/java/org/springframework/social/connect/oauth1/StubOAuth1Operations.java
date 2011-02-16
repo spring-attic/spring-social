@@ -16,10 +16,10 @@
 package org.springframework.social.connect.oauth1;
 
 import org.springframework.social.oauth1.AuthorizedRequestToken;
-import org.springframework.social.oauth1.OAuth1Operations;
+import org.springframework.social.oauth1.OAuth10aOperations;
 import org.springframework.social.oauth1.OAuthToken;
 
-class StubOAuth1Operations implements OAuth1Operations {
+class StubOAuth1Operations implements OAuth10aOperations {
 
 	public OAuthToken fetchNewRequestToken(String callbackUrl) {
 		return new OAuthToken("12345", "23456");
