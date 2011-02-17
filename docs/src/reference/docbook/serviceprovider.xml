@@ -170,7 +170,7 @@ public interface OAuth2Operations {
 				<listitem>
 					<para>
 						The application uses the AccessGrant to establish a connection between the local user account and the external provider account.
-						With the connection established, the application can now obtain reference to the Service API and invoke the provider on behalf of the user.
+						With the connection established, the application can now obtain a reference to the Service API and invoke the provider on behalf of the user.
 					</para>
 				</listitem>
 			</orderedlist>
@@ -264,7 +264,7 @@ public interface OAuth1Operations {
 				<listitem>
 					<para>
 						The application uses the access token to establish a connection between the local user account and the external provider account.
-						With the connection established, the application can now obtain reference to the Service API and invoke the provider on behalf of the user.
+						With the connection established, the application can now obtain a reference to the Service API and invoke the provider on behalf of the user.
 					</para>
 				</listitem>				
 			</orderedlist>
