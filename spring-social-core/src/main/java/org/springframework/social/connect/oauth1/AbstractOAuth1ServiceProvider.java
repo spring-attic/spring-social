@@ -56,14 +56,6 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 		return oauth1Operations;
 	}
 
-	public String getConsumerKey() {
-		return consumerKey;
-	}
-
-	public String getConsumerSecret() {
-		return consumerSecret;
-	}
-
 	@Override
 	protected final S getApi(Connection connection) {
 		return getApi(consumerKey, consumerSecret, connection.getAccessToken(), connection.getSecret());

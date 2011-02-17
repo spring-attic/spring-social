@@ -33,15 +33,9 @@ import org.springframework.social.oauth2.OAuth2Operations;
 public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServiceProvider<S> implements OAuth2ServiceProvider<S> {
 
 	private final OAuth2Operations oauth2Operations;
-
-	private final String clientId;
-
-	private final String clientSecret;
 	
-	public AbstractOAuth2ServiceProvider(String id, String clientId, String clientSecret, ConnectionRepository connectionRepository, OAuth2Operations oauth2Operations) {
+	public AbstractOAuth2ServiceProvider(String id, ConnectionRepository connectionRepository, OAuth2Operations oauth2Operations) {
 		super(id, connectionRepository);
-		this.clientId = clientId;
-		this.clientSecret = clientSecret;
 		this.oauth2Operations = oauth2Operations;
 	}
 
@@ -58,14 +52,6 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 	protected final S getApi(Connection connection) {
 		// TODO transparent refresh token handling should be added here
 		return getApi(connection.getAccessToken());
-	}
-
-	public String getClientId() {
-		return clientId;
-	}
-
-	public String getClientSecret() {
-		return clientSecret;
 	}
 
 	// subclassing hooks

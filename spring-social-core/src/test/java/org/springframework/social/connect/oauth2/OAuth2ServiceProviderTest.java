@@ -111,7 +111,7 @@ public class OAuth2ServiceProviderTest {
 	static class TestServiceProvider extends AbstractOAuth2ServiceProvider<TestApi> {
 
 		public TestServiceProvider(ConnectionRepository connectionRepository) {
-			super("test", "key", "secret", connectionRepository, new StubOAuth2Operations());
+			super("test", connectionRepository, new StubOAuth2Operations());
 		}
 
 		protected TestApi getApi(String accessToken) {
