@@ -38,6 +38,7 @@
   
     <xi:include href="./overview.xml"/>
     <xi:include href="./serviceprovider.xml"/>
+    <xi:include href="./implementing.xml"/>
     <xi:include href="./connecting.xml"/>
     <xi:include href="./signin.xml" />
     <xi:include href="./apis.xml" />

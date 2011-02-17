@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="implementing" xmlns:xlink="http://www.w3.org/1999/xlink">
+	<title>Implementing Service Providers</title>
+	<para>
+		The spring-social-core module provides support for implementing your own ServiceProviders.
+		This support consists of convenient base classes for the various ServiceProvider types, such as OAuth1 and OAuth2-based providers.
+		A common data access interface is also provided for persisting connection information.
+		In this section, you will learn how to implement ServiceProviders.
+	</para>
+	<section id="service-providers-implementing-oauth2">
+		<title>OAuth2 Service Providers</title>
+		<para>
+			To implement an OAuth2-based ServiceProvider, first extend AbstractOAuth2ServiceProvider.
+			Parameterize &lt;S&gt; to be the Java Binding to the ServiceProvider API.
+			Define a single constructor that accepts an clientId, clientSecret, and ConnectionRepository.
+			Finally, implement getApi(String) to return a new API instance.
+		</para>
+		<para>
+			See FacebookServiceProvider as an example of an OAuth2-based ServiceProvider:
+		</para>
+		<programlisting language="java"><![CDATA[
+package org.springframework.social.facebook.connect;
+
+import org.springframework.social.connect.oauth2.AbstractOAuth2ServiceProvider;
+import org.springframework.social.connect.support.ConnectionRepository;
+import org.springframework.social.facebook.FacebookApi;
+import org.springframework.social.facebook.FacebookTemplate;
+import org.springframework.social.oauth2.OAuth2Template;
+
+public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<FacebookApi> {
+
+    public FacebookServiceProvider(String clientId, String clientSecret, ConnectionRepository connectionRepository) {
+        super("facebook", connectionRepository, 
+            new OAuth2Template(appId, appSecret,
+                "https://graph.facebook.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}", 
+                "https://graph.facebook.com/oauth/access_token"));
+    }
+
+    @Override
+    protected FacebookApi getApi(String accessToken) {
+        return new FacebookTemplate(accessToken);
+    }
+
+}]]>
+		</programlisting>
+		<para>
+			In the constructor, you should call super, passing up the ID of the ServiceProvider, the connection repository, and a configured OAuth2Template, which implements OAuth2Operations.
+			The OAuth2Template will handle the "OAuth dance" with the provider, and should be configured with the provided clientId and clientSecret, along with the provider-specific authorizeUrl and accessTokenUrl.
+		</para>
+		<para>
+			In getApi(String), you should construct your Service API implementation, passing it the access token needed to make requests for protected resources.
+			Inside the API implementation, we generally recommend using RestTemplate to make the HTTP calls and add the required Authorization header:
+		</para>
+		<programlisting language="java"><![CDATA[
+public FacebookTemplate(String accessToken) {
+    restTemplate = new RestTemplate();
+    // configures an interceptor that adds the Authorization header to each ClientRequest before it is executed
+    restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft10(accessToken) });
+}]]>
+		</programlisting>
+		<para>
+			An example API call with RestTemplate is shown below:
+		</para>
+		<programlisting language="java"><![CDATA[
+public FacebookProfile getUserProfile(String facebookId) {
+    return new FacebookProfile(restTemplate.getForObject("https://graph.facebook.com/{facebookId}", Map.class, facebookId));
+}]]>
+		</programlisting>
+	</section>
+	<section id="service-providers-implementing-oauth1">
+		<title>OAuth1 Service Providers</title>
+		<para>
+			To implement an OAuth1-based ServiceProvider, first extend AbstractOAuth1ServiceProvider.
+			Parameterize &lt;S&gt; to be the Java Binding to the ServiceProvider API.
+			Define a single constructor that accepts a consumerKey, consumerSecret, and ConnectionRepository.
+			Finally, implement getApi(String, String, String, String) to return a new API instance.
+		</para>
+		<para>
+			See TwitterServiceProvider as an example of an OAuth1-based ServiceProvider:
+		</para>
+		<programlisting language="java"><![CDATA[
+package org.springframework.social.twitter.connect;
+
+import org.springframework.social.connect.oauth1.AbstractOAuth1ServiceProvider;
+import org.springframework.social.connect.support.ConnectionRepository;
+import org.springframework.social.oauth1.OAuth1Template;
+import org.springframework.social.twitter.TwitterOperations;
+import org.springframework.social.twitter.TwitterTemplate;
+
+public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<TwitterApi> {
+
+    public TwitterServiceProvider(String consumerKey, String consumerSecret, ConnectionRepository connectionRepository) {
+        super("twitter", connectionRepository, consumerKey, consumerSecret, 
+            new OAuth1Template(consumerKey, consumerSecret, 
+                "https://twitter.com/oauth/request_token",
+                "https://twitter.com/oauth/authorize?oauth_token={requestToken}",
+                "https://twitter.com/oauth/access_token"));
+    }
+
+    @Override
+    protected TwitterApi getApi(String consumerKey, String consumerSecret, String accessToken, String secret) {
+        return new TwitterTemplate(consumerKey, consumerSecret, accessToken, secret);
+	}
+
+}]]>
+		</programlisting>
+		<para>
+			In the constructor, you should call super, passing up the ID of the ServiceProvider, the connection repository, the consumerKey and secret, and a configured OAuth1Template.
+			The OAuth1Template will handle the "OAuth dance" with the provider.
+			It should be configured with the provided consumerKey and consumerSecret, along with the provider-specific requestTokenUrl, authorizeUrl, and accessTokenUrl.
+		</para>			
+		<para>
+			In getApi(String, String, String, String), you should construct your Service API implementation, passing it the four tokens needed to make requests for protected resources.
+			Inside the API implementation, we generally recommend using RestTemplate to make the HTTP calls and add the required Authorization header:
+		</para>
+		<programlisting language="java"><![CDATA[
+public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+    restTemplate = new RestTemplate();
+    // configures an interceptor that adds the Authorization header to each ClientRequest before it is executed
+    restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] {
+        new OAuth1RequestInterceptor(consumerKey, consumerSecret, new OAuthToken(accessToken, accessTokenSecret))
+    });
+}]]>
+		</programlisting>
+		<para>
+			An example API call with RestTemplate is shown below:
+		</para>
+		<programlisting language="java"><![CDATA[
+public TwitterProfile getUserProfile(String screenName) {
+    return new TwitterProfile(restTemplate.getForObject("https://api.twitter.com/1/users/show.json?screen_name={screenName}", Map.class, screenName));
+}]]>
+		</programlisting>									
+	</section>
+</chapter>
