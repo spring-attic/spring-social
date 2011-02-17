@@ -37,4 +37,8 @@ public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider
 		return new FacebookTemplate(accessToken);
 	}
 	
+	@Override
+	protected String getProviderAccountId(FacebookApi api) {
+		return api.getProfileId();
+	}
 }

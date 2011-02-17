@@ -47,6 +47,8 @@ public interface ConnectionRepository {
 	 */
 	Serializable findAccountIdByConnectionAccessToken(String provider, String accessToken);
 
+	List<Serializable> findAccountIdsForProviderAccountIds(String providerId, List<String> providerAccountIds);
+
 	/**
 	 * Saves a connection.
 	 * @param accountId the user's account identifier

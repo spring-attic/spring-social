@@ -31,4 +31,9 @@ public class GitHubServiceProvider extends AbstractOAuth2ServiceProvider<GitHubA
 	protected GitHubApi getApi(String accessToken) {
 		return new GitHubTemplate(accessToken);
 	}
+
+	@Override
+	protected String getProviderAccountId(GitHubApi api) {
+		return api.getProfileId();
+	}
 }

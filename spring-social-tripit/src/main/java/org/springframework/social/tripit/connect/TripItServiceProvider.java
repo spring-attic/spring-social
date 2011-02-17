@@ -39,4 +39,8 @@ public final class TripItServiceProvider extends AbstractOAuth1ServiceProvider<T
 		return new TripItTemplate(consumerKey, consumerSecret, accessToken, secret);
 	}
 	
+	@Override
+	protected String getProviderAccountId(TripItApi api) {
+		return api.getProfileId();
+	}
 }

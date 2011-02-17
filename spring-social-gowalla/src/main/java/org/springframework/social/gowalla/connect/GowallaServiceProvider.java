@@ -32,4 +32,8 @@ public class GowallaServiceProvider extends AbstractOAuth2ServiceProvider<Gowall
 		return new GowallaTemplate(accessToken);
 	}
 	
+	@Override
+	protected String getProviderAccountId(GowallaApi api) {
+		return api.getProfileId();
+	}
 }

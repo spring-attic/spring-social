@@ -39,4 +39,8 @@ public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<
 		return new TwitterTemplate(consumerKey, consumerSecret, accessToken, secret);
 	}
 
+	@Override
+	protected String getProviderAccountId(TwitterApi api) {
+		return api.getProfileId();
+	}
 }

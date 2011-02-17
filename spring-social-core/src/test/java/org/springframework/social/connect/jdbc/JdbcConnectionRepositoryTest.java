@@ -15,10 +15,10 @@
  */
 package org.springframework.social.connect.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static java.util.Arrays.*;
+import static org.junit.Assert.*;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.junit.After;
@@ -59,7 +59,7 @@ public class JdbcConnectionRepositoryTest {
 	@Test
 	public void saveConnection() {
 		assertEquals(false, repository.isConnected(1L, "facebook"));
-		repository.saveConnection(1L, "facebook", Connection.oauth2("123456789", "987654321"));
+		repository.saveConnection(1L, "facebook", Connection.oauth2("123456789", "987654321", "abcdefg"));
 		assertEquals(true, repository.isConnected(1L, "facebook"));		
 		List<Connection> connections = repository.findConnections(1L, "facebook");
 		assertEquals(1, connections.size());
@@ -67,13 +67,14 @@ public class JdbcConnectionRepositoryTest {
 		assertEquals((Long) 1L, c1.getId());
 		assertEquals("123456789", c1.getAccessToken());
 		assertEquals("987654321", c1.getRefreshToken());
+		assertEquals("abcdefg", c1.getProviderAccountId());
 	}
 
 	@Test
 	public void duplicateConnection() {
-		repository.saveConnection(1L, "facebook", Connection.oauth2("123456789", "987654321"));
+		repository.saveConnection(1L, "facebook", Connection.oauth2("123456789", "987654321", "abcdefg"));
 		try {
-			repository.saveConnection(1L, "facebook", Connection.oauth2("123456789", "987654321"));
+			repository.saveConnection(1L, "facebook", Connection.oauth2("123456789", "987654321", "abcdefg"));
 			fail("Should have failed");
 		} catch (IllegalArgumentException e) {
 			
@@ -82,19 +83,21 @@ public class JdbcConnectionRepositoryTest {
 
 	@Test
 	public void findMultipleConnections() {
-		repository.saveConnection(1L, "facebook", Connection.oauth2("123456789", "987654321"));
-		repository.saveConnection(1L, "facebook", Connection.oauth2("023456789", "987654320"));
+		repository.saveConnection(1L, "facebook", Connection.oauth2("123456789", "987654321", "abcdefg"));
+		repository.saveConnection(1L, "facebook", Connection.oauth2("023456789", "987654320", "gfedcba"));
 		List<Connection> connections = repository.findConnections(1L, "facebook");
 		assertEquals(2, connections.size());
 		Connection c1 = connections.get(0);
 		assertEquals((Long) 1L, c1.getId());
 		assertEquals("123456789", c1.getAccessToken());
 		assertEquals("987654321", c1.getRefreshToken());
+		assertEquals("abcdefg", c1.getProviderAccountId());
 		assertNull(c1.getSecret());
 		Connection c2 = connections.get(1);
 		assertEquals((Long) 2L, c2.getId());
 		assertEquals("023456789", c2.getAccessToken());
 		assertEquals("987654320", c2.getRefreshToken());
+		assertEquals("gfedcba", c2.getProviderAccountId());
 		assertNull(c1.getSecret());
 	}
 	
@@ -107,7 +110,8 @@ public class JdbcConnectionRepositoryTest {
 	@Test
 	public void removeConnection() {
 		assertEquals(false, repository.isConnected(1L, "facebook"));		
-		Connection connection = repository.saveConnection(1L, "facebook", Connection.oauth2("123456789", "987654321"));
+		Connection connection = repository.saveConnection(1L, "facebook",
+				Connection.oauth2("123456789", "987654321", "abcdefg"));
 		assertEquals(true, repository.isConnected(1L, "facebook"));				
 		repository.removeConnection(1L, "facebook", connection.getId());
 		assertEquals(false, repository.isConnected(1L, "facebook"));
@@ -119,9 +123,23 @@ public class JdbcConnectionRepositoryTest {
 	public void findAccountIdByConnectionAccessToken() {
 		assertNull(repository.findAccountIdByConnectionAccessToken("facebook", "access_token"));
 		assertEquals(false, repository.isConnected("rclarkson", "twitter"));
-		repository.saveConnection("rclarkson", "twitter", Connection.oauth1("access_token", "token_secret"));
+		repository.saveConnection("rclarkson", "twitter", Connection.oauth1("access_token", "token_secret", "abcdefg"));
 		assertEquals(true, repository.isConnected("rclarkson", "twitter"));
 		assertEquals("rclarkson", repository.findAccountIdByConnectionAccessToken("twitter", "access_token"));
 	}
 
+	@Test
+	public void findAccountIdsForProviderAccountIds() {
+		repository.saveConnection(1L, "facebook", Connection.oauth2("123456789", "987654321", "abcdefg"));
+		repository.saveConnection(2L, "facebook", Connection.oauth2("023456789", "987654320", "gfedcba"));
+		repository.saveConnection(3L, "facebook", Connection.oauth2("023456789", "987654320", "hijklmn"));
+
+		List<Serializable> accountIds = repository.findAccountIdsForProviderAccountIds("facebook", asList("abcdefg", "gfedcba", "tuvwxyz"));
+		assertEquals(2, accountIds.size());
+		for (Serializable accountId : accountIds) {
+			System.out.println(accountId);
+		}
+		assertTrue(accountIds.contains("1"));
+		assertTrue(accountIds.contains("2"));
+	}
 }

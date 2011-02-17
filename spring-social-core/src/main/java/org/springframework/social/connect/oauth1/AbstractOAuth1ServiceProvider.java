@@ -48,7 +48,8 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 	}
 	
 	public ServiceProviderConnection<S> connect(Serializable accountId, OAuthToken accessToken) {
-		return connect(accountId, Connection.oauth1(accessToken.getValue(), accessToken.getSecret()));
+		String providerAccountId = getProviderAccountId(getApi(consumerKey, consumerSecret, accessToken.getValue(), accessToken.getSecret()));
+		return connect(accountId, Connection.oauth1(accessToken.getValue(), accessToken.getSecret(), providerAccountId));
 	}
 
 	public OAuth1Operations getOAuthOperations() {

@@ -15,7 +15,6 @@
  */
 package org.springframework.social.web.connect;
 
-import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
