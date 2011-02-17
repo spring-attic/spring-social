@@ -18,16 +18,19 @@ package org.springframework.social.facebook.web;
 import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
+
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.servlet.tags.RequestContextAwareTag;
 
 /**
  * JSP Tag for initializing Facebook's JavaScript API.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class FacebookInitTag extends TagSupport {
+public class FacebookInitTag extends RequestContextAwareTag {
 
 	private String apiKey;
+	private String apiKeyProperty = "facebook.apiKey";
 
 	/**
 	 * Sets the application's Facebook API. If not specified, this tag will attempt to resolve the tag through a configured FacebookServiceProvider.
@@ -36,14 +39,22 @@ public class FacebookInitTag extends TagSupport {
 	public void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
 	}
+	
+	/**
+	 * Sets the name of the environment property containing the API key. Ignored if apiKey is set. Defaults to "facebook.apiKey".
+	 * @param apiKeyProperty
+	 */
+	public void setApiKeyProperty(String apiKeyProperty) {
+		this.apiKeyProperty = apiKeyProperty;
+	}
 
 	@Override
-	public int doStartTag() throws JspException {
+	protected int doStartTagInternal() throws Exception {
 		if (apiKey == null) {
 			apiKey = resolveApiKey();
 		}
 
-		return super.doStartTag();
+		return SKIP_BODY;
 	}
 
 	@Override
@@ -65,7 +76,12 @@ public class FacebookInitTag extends TagSupport {
 	}
 
 	private String resolveApiKey() throws JspException {
-		// TODO: Resolve from properties
+		WebApplicationContext context = getRequestContext().getWebApplicationContext();
+		String apiKey = context.getEnvironment().getProperty(apiKeyProperty);
+		if (apiKey != null) {
+			return apiKey;
+		}
 		return "";
 	}
+
 }

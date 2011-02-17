@@ -155,6 +155,7 @@ project('spring-social-core') {
 project('spring-social-facebook') {
     description = 'Facebook API'
     dependencies {
+        compile "org.springframework:spring-webmvc:$springVersion"
         compile "commons-httpclient:commons-httpclient:$commonsHttpClientVersion"
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
         compile ("javax.servlet.jsp:jsp-api:2.1") { provided = true }
