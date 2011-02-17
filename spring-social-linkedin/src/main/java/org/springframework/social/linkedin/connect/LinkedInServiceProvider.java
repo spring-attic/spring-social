@@ -37,4 +37,8 @@ public final class LinkedInServiceProvider extends AbstractOAuth1ServiceProvider
 		return new LinkedInTemplate(consumerKey, consumerSecret, accessToken, secret);
 	}
 	
+	@Override
+	protected String getProviderAccountId(LinkedInApi api) {
+		return api.getProfileId();
+	}
 }

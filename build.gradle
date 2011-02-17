@@ -225,18 +225,6 @@ project('spring-social-web') {
     }
 }
 
-project('spring-social-config') {
-    description = 'Configuration Namespace'
-    dependencies {
-        compile "org.springframework:spring-beans:$springVersion"
-        compile project(':spring-social-core')
-        testCompile project(':spring-social-facebook')
-        testCompile project(':spring-social-twitter')
-        testCompile "com.h2database:h2:1.2.143"
-        testCompile project(':spring-social-core').sourceSets.test.classes
-    }
-}
-
 // -----------------------------------------------------------------------------
 // Configuration for the docs subproject
 // -----------------------------------------------------------------------------

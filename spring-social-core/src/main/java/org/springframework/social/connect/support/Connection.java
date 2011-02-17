@@ -30,15 +30,18 @@ public class Connection {
 	
 	private final String refreshToken;
 	
+	private final String providerAccountId;
+
 	/**
 	 * Creates a new connection with all fields populated.
 	 * Consider the static factory methods for more convenient construction options.
 	 */
-	public Connection(Long id, String accessToken, String secret, String refreshToken) {
+	public Connection(Long id, String accessToken, String secret, String refreshToken, String providerAccountId) {
 		this.id = id;
 		this.accessToken = accessToken;
 		this.secret = secret;
 		this.refreshToken = refreshToken;
+		this.providerAccountId = providerAccountId;
 	}
 
 	/**
@@ -71,21 +74,30 @@ public class Connection {
 	}
 
 	/**
+	 * The user's account ID on the provider
+	 */
+	public String getProviderAccountId() {
+		return providerAccountId;
+	}
+
+	/**
 	 * Create a new, transient Connection instance with the oauth1 fields populated.
 	 * @param accessToken the access token
 	 * @param secret the access token secret
+	 * @param providerAccountId the provider account ID associated with this connection
 	 */
-	public static Connection oauth1(String accessToken, String secret) {
-		return new Connection(null, accessToken, secret, null);
+	public static Connection oauth1(String accessToken, String secret, String providerAccountId) {
+		return new Connection(null, accessToken, secret, null, providerAccountId);
 	}
 
 	/**
 	 * Create a new, transient Connection instance with the oauth2 fields populated.
 	 * @param accessToken the access token
 	 * @param secret the access token secret
+	 * @param providerAccountId the provider account ID associated with this connection
 	 */
-	public static Connection oauth2(String accessToken, String refreshToken) {
-		return new Connection(null, accessToken, null, refreshToken);
+	public static Connection oauth2(String accessToken, String refreshToken, String providerAccountId) {
+		return new Connection(null, accessToken, null, refreshToken, providerAccountId);
 	}
 	
 }

@@ -20,11 +20,6 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import org.springframework.social.facebook.connect.FacebookServiceProvider;
-import org.springframework.social.web.connect.ServiceProviderLocator;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
 /**
  * JSP Tag for initializing Facebook's JavaScript API.
  * @author Craig Walls
@@ -45,7 +40,7 @@ public class FacebookInitTag extends TagSupport {
 	@Override
 	public int doStartTag() throws JspException {
 		if (apiKey == null) {
-			apiKey = resolveApiKeyFromServiceProvider();
+			apiKey = resolveApiKey();
 		}
 
 		return super.doStartTag();
@@ -69,17 +64,8 @@ public class FacebookInitTag extends TagSupport {
 		return EVAL_PAGE;
 	}
 
-	private String resolveApiKeyFromServiceProvider() throws JspException {
-		WebApplicationContext applicationContext = WebApplicationContextUtils.getWebApplicationContext(pageContext
-				.getServletContext());
-		if (applicationContext == null) {
-			throw new JspException("Could not retrieve web application context.");
-		}
-		ServiceProviderLocator providerLocator = new ServiceProviderLocator(applicationContext);
-		FacebookServiceProvider serviceProvider = (FacebookServiceProvider) providerLocator.getServiceProvider("facebook");
-		if(serviceProvider == null) {
-			throw new JspException("No Facebook API key was given and no FacebookServiceProvider was found configured in Spring.");
-		}
-		return serviceProvider.getClientId();
+	private String resolveApiKey() throws JspException {
+		// TODO: Resolve from properties
+		return "";
 	}
 }

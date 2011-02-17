@@ -49,7 +49,7 @@ public class StubConnectionRepository implements ConnectionRepository {
 		List<Connection> connectionList = new ArrayList<Connection>();
 		for (Map<String, Object> connection : connections) {
 			if (connection.get("accountId").equals(accountId) && connection.get("providerId").equals(providerId)) {
-				connectionList.add(new Connection((Long) connection.get("id"), (String) connection.get("accessToken"), (String) connection.get("secret"), (String) connection.get("refreshToken")));
+				connectionList.add(new Connection((Long) connection.get("id"), (String) connection.get("accessToken"), (String) connection.get("secret"), (String) connection.get("refreshToken"), (String) connection.get("providerAccountId")));
 			}
 		}
 		return connectionList;
@@ -70,8 +70,9 @@ public class StubConnectionRepository implements ConnectionRepository {
 		newConn.put("secret", connection.getSecret());
 		newConn.put("refreshToken", connection.getRefreshToken());
 		newConn.put("id", connectionId);
+		newConn.put("providerAccountId", connection.getProviderAccountId());
 		connections.add(newConn);
-		return new Connection(connectionId, connection.getAccessToken(), connection.getSecret(), connection.getRefreshToken());
+		return new Connection(connectionId, connection.getAccessToken(), connection.getSecret(), connection.getRefreshToken(), connection.getProviderAccountId());
 	}
 
 	public void removeConnection(Serializable accountId, String providerId, Long connectionId) {
@@ -85,6 +86,11 @@ public class StubConnectionRepository implements ConnectionRepository {
 	}
 	
 	public Serializable findAccountIdByConnectionAccessToken(String provider, String accessToken) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<Serializable> findAccountIdsForProviderAccountIds(String providerId, List<String> providerAccountIds) {
 		// TODO Auto-generated method stub
 		return null;
 	}

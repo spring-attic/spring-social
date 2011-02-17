@@ -17,7 +17,6 @@ package org.springframework.social.facebook.web;
 
 import static org.junit.Assert.*;
 
-import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.junit.Before;
@@ -26,9 +25,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockPageContext;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.social.facebook.connect.FacebookServiceProvider;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.GenericWebApplicationContext;
 
 public class FacebookInitTagTest {
 	private MockPageContext pageContext;
@@ -56,37 +52,4 @@ public class FacebookInitTagTest {
 			"<script type='text/javascript'>FB.init({appId: 'test-key', status: true, cookie: true, xfbml: true});</script>",
 			response.getContentAsString());
 	}
-	
-	@Test
-	public void initWithApiKeyFromFacebookServiceProvider() throws Exception {
-		GenericWebApplicationContext context = new GenericWebApplicationContext();
-		FacebookServiceProvider facebookProvider = new FacebookServiceProvider("fb-api-key", "secret", null);
-		context.getDefaultListableBeanFactory().registerSingleton("facebookProvider", facebookProvider);
-		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
-		FacebookInitTag tag = new FacebookInitTag();
-		tag.setPageContext(pageContext);
-		assertEquals(TagSupport.SKIP_BODY, tag.doStartTag());
-		assertEquals(TagSupport.EVAL_PAGE, tag.doEndTag());
-		assertEquals(
-			"<script src='http://connect.facebook.net/en_US/all.js'></script><div id='fb-root'></div>" +
-			"<script type='text/javascript'>FB.init({appId: 'fb-api-key', status: true, cookie: true, xfbml: true});</script>",
-			response.getContentAsString());
-	}
-
-	@Test(expected = JspException.class)
-	public void initWithNoApiKeyAndNoApplicationContext() throws Exception {
-		FacebookInitTag tag = new FacebookInitTag();
-		tag.setPageContext(pageContext);
-		assertEquals(TagSupport.SKIP_BODY, tag.doStartTag());
-	}
-	
-	@Test(expected = JspException.class)
-	public void initWithNoApiKeyAndNoFacebookServiceProvider() throws Exception {
-		GenericWebApplicationContext context = new GenericWebApplicationContext();
-		servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, context);
-		FacebookInitTag tag = new FacebookInitTag();
-		tag.setPageContext(pageContext);
-		assertEquals(TagSupport.SKIP_BODY, tag.doStartTag());
-	}
-
 }

@@ -28,6 +28,7 @@ import javax.sql.DataSource;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.social.connect.support.Connection;
@@ -61,9 +62,9 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 	}
 
 	public List<Connection> findConnections(Serializable accountId, String providerId) {
-		return jdbcTemplate.query("select id, accessToken, secret, refreshToken from Connection where accountId = ? and providerId = ? order by id", new RowMapper<Connection>() {
+		return jdbcTemplate.query("select id, accessToken, secret, refreshToken, providerAccountId from Connection where accountId = ? and providerId = ? order by id", new RowMapper<Connection>() {
 			public Connection mapRow(ResultSet rs, int rowNum) throws SQLException {
-				return new Connection(rs.getLong("id"), decrypt(rs.getString("accessToken")), decrypt(rs.getString("secret")), decrypt(rs.getString("refreshToken")));
+				return new Connection(rs.getLong("id"), decrypt(rs.getString("accessToken")), decrypt(rs.getString("secret")), decrypt(rs.getString("refreshToken")), rs.getString("providerAccountId"));
 			}
 		}, accountId, providerId);
 	}
@@ -79,9 +80,10 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 			args.put("providerId", providerId);
 			args.put("accessToken", encrypt(connection.getAccessToken()));
 			args.put("secret", encrypt(connection.getSecret()));
-			args.put("refreshToken", encrypt(connection.getRefreshToken()));			
+			args.put("refreshToken", encrypt(connection.getRefreshToken()));
+			args.put("providerAccountId", connection.getProviderAccountId());
 			Number connectionId = connectionInsert.executeAndReturnKey(args);
-			return new Connection((Long) connectionId, connection.getAccessToken(), connection.getSecret(), connection.getRefreshToken());
+			return new Connection((Long) connectionId, connection.getAccessToken(), connection.getSecret(), connection.getRefreshToken(), connection.getProviderAccountId());
 		} catch (DuplicateKeyException e) {
 			throw new IllegalArgumentException("Access token is not unique: a connection already exists!", e);
 		}
@@ -97,6 +99,18 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 		return !matches.isEmpty() ? matches.get(0) : null;
 	}
 
+	public List<Serializable> findAccountIdsForProviderAccountIds(String providerId, List<String> providerAccountIds) {
+		NamedParameterJdbcTemplate namedTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
+		Map<String, Object> params = new HashMap<String, Object>(2, 1);
+		params.put("providerId", providerId);
+		params.put("providerAccountIds", providerAccountIds);
+		return namedTemplate.query("select accountId from Connection where providerId = :providerId and providerAccountId in ( :providerAccountIds )", params, new RowMapper<Serializable>() {
+			public Serializable mapRow(ResultSet rs, int rowNum) throws SQLException {
+				return (Serializable) rs.getString("accountId");
+			}
+		});
+	}
+
 	// internal helpers
 	
 	private String encrypt(String text) {
@@ -110,7 +124,7 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 	private SimpleJdbcInsert createConnectionInsert() {
 		SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate);
 		insert.setTableName("Connection");
-		insert.setColumnNames(Arrays.asList("accountId", "providerId", "accessToken", "secret", "refreshToken"));
+		insert.setColumnNames(Arrays.asList("accountId", "providerId", "accessToken", "secret", "refreshToken", "providerAccountId"));
 		insert.setGeneratedKeyName("id");
 		return insert;
 	}

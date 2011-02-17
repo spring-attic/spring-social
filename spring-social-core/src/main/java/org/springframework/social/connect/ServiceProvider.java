@@ -49,5 +49,4 @@ public interface ServiceProvider<S> {
 	 * @return the account's connections to this service provider
 	 */
 	List<ServiceProviderConnection<S>> getConnections(Serializable accountId);
-	
 }
