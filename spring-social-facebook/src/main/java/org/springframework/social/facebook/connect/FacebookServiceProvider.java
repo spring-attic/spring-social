@@ -29,7 +29,8 @@ public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider
 
 	public FacebookServiceProvider(String clientId, String clientSecret, ConnectionRepository connectionRepository) {
 		super("facebook", connectionRepository, new OAuth2Template(clientId, clientSecret,
-				"https://graph.facebook.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}", "https://graph.facebook.com/oauth/access_token"));
+				"https://graph.facebook.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}",
+				"https://graph.facebook.com/oauth/access_token"));
 	}
 
 	@Override
