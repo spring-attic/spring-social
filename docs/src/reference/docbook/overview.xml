@@ -62,10 +62,6 @@
               <entry>Spring Social's ServiceProvider connect framework and OAuth support.</entry>
             </row>
             <row>
-              <entry>spring-social-config</entry>
-              <entry>Spring Social's XML configuration namespace for configuring service providers in Spring.</entry>
-            </row>
-            <row>
               <entry>spring-social-web</entry>
               <entry>Spring Social's <classname>ConnectController</classname> which uses the ServiceProvider framework to manage connections in a web application environment</entry>
             </row>
@@ -106,17 +102,7 @@
   <version>${org.springframework.social-version}</version>
 </dependency>]]>
 	  </programlisting>
-	  
-	  <para>To simplify configuration of service providers as beans in Spring, you'll want to also include the config module:</para>
-	  
-      <programlisting language="xml"><![CDATA[
-<dependency>
-<groupId>org.springframework.social</groupId>
-<artifactId>spring-social-config</artifactId>
-<version>${org.springframework.social-version}</version>
-</dependency>]]>
-	  </programlisting>
-	  
+	  	  
 	  <para>To let Spring Social handle the back-and-forth authorization handshake between a web application and a service provider, you'll need the web module:</para>
 	  
     <programlisting language="xml"><![CDATA[
