@@ -170,7 +170,7 @@ public interface OAuth2Operations {
 				<listitem>
 					<para>
 						The application uses the AccessGrant to establish a connection between the local user account and the external provider account.
-						With the connection established, the application can now obtain reference to the Service API and invoke the provider on behalf of the user.
+						With the connection established, the application can now obtain a reference to the Service API and invoke the provider on behalf of the user.
 					</para>
 				</listitem>
 			</orderedlist>
@@ -236,35 +236,35 @@ public interface OAuth1Operations {
 				</listitem>
 				<listitem>
 					<para>
-						The application redirects the user's browser to the provider's authorization page, passing the request token as a parameter.
+						The application redirects the user to the provider's authorization page, passing the request token as a parameter.
 						In OAuth 1.0, the callback URL is also passed as a parameter in this step.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						The service provider prompts the user to authorize the consumer application and the user agrees. (Note that this is the only step where the user participates in the flow.)
+						The service provider prompts the user to authorize the consumer application and the user agrees.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						The service provider redirects the user's browser back to a application (via the callback URL).
+						The service provider redirects the user's browser back to the application (via the callback URL).
 						In OAuth 1.0a, this redirect includes a verifier code as a parameter. At this point, the request token is authorized.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						The application exchanges the request token (and the verifier in OAuth 1.0a) for an access token.
+						The application exchanges the authorized request token (including the verifier in OAuth 1.0a) for an access token.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						The service provider issues an access token to the consumer. The "dance" is complete.
+						The service provider issues an access token to the consumer. The "dance" is now complete.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
 						The application uses the access token to establish a connection between the local user account and the external provider account.
-						With the connection established, the application can now obtain reference to the Service API and invoke the provider on behalf of the user.
+						With the connection established, the application can now obtain a reference to the Service API and invoke the provider on behalf of the user.
 					</para>
 				</listitem>				
 			</orderedlist>
