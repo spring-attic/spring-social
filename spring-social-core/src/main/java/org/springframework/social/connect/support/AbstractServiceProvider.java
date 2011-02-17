@@ -74,6 +74,10 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	 */
 	protected abstract S getApi(Connection connection);
 
+	/**
+	 * Get a user's provider account ID.
+	 * @param api the service API
+	 */
 	protected abstract String getProviderAccountId(S api);
 
 	/**

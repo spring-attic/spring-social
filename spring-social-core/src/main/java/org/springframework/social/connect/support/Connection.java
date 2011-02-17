@@ -74,7 +74,7 @@ public class Connection {
 	}
 
 	/**
-	 * The user's provider account ID
+	 * The user's account ID on the provider
 	 */
 	public String getProviderAccountId() {
 		return providerAccountId;
@@ -84,6 +84,7 @@ public class Connection {
 	 * Create a new, transient Connection instance with the oauth1 fields populated.
 	 * @param accessToken the access token
 	 * @param secret the access token secret
+	 * @param providerAccountId the provider account ID associated with this connection
 	 */
 	public static Connection oauth1(String accessToken, String secret, String providerAccountId) {
 		return new Connection(null, accessToken, secret, null, providerAccountId);
@@ -93,6 +94,7 @@ public class Connection {
 	 * Create a new, transient Connection instance with the oauth2 fields populated.
 	 * @param accessToken the access token
 	 * @param secret the access token secret
+	 * @param providerAccountId the provider account ID associated with this connection
 	 */
 	public static Connection oauth2(String accessToken, String refreshToken, String providerAccountId) {
 		return new Connection(null, accessToken, null, refreshToken, providerAccountId);

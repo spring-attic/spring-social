@@ -47,6 +47,13 @@ public interface ConnectionRepository {
 	 */
 	Serializable findAccountIdByConnectionAccessToken(String provider, String accessToken);
 
+	/**
+	 * Returns a list of application account IDs that are connected to the list of account IDs on the provider. Note that
+	 * the returned list may be smaller than the given list of provider account IDs, because not all of them will have a
+	 * match.
+	 * @param providerId the provider's identifier
+	 * @param providerAccountIds the list of provider account IDs to match connections against
+	 */
 	List<Serializable> findAccountIdsForProviderAccountIds(String providerId, List<String> providerAccountIds);
 
 	/**
