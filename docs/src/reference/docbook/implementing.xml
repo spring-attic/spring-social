@@ -100,7 +100,7 @@ public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<
     @Override
     protected TwitterApi getApi(String consumerKey, String consumerSecret, String accessToken, String secret) {
         return new TwitterTemplate(consumerKey, consumerSecret, accessToken, secret);
-	}
+    }
 
 }]]>
 		</programlisting>
