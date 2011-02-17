@@ -30,7 +30,8 @@ import org.springframework.web.servlet.tags.RequestContextAwareTag;
 public class FacebookInitTag extends RequestContextAwareTag {
 
 	private String apiKey;
-	private String apiKeyProperty = "facebook.apiKey";
+
+	private static final String API_KEY_PROPERTY = "facebook.apiKey";
 
 	/**
 	 * Sets the application's Facebook API. If not specified, this tag will attempt to resolve the tag through a configured FacebookServiceProvider.
@@ -38,14 +39,6 @@ public class FacebookInitTag extends RequestContextAwareTag {
 	 */
 	public void setApiKey(String apiKey) {
 		this.apiKey = apiKey;
-	}
-	
-	/**
-	 * Sets the name of the environment property containing the API key. Ignored if apiKey is set. Defaults to "facebook.apiKey".
-	 * @param apiKeyProperty
-	 */
-	public void setApiKeyProperty(String apiKeyProperty) {
-		this.apiKeyProperty = apiKeyProperty;
 	}
 
 	@Override
@@ -77,7 +70,7 @@ public class FacebookInitTag extends RequestContextAwareTag {
 
 	private String resolveApiKey() throws JspException {
 		WebApplicationContext context = getRequestContext().getWebApplicationContext();
-		String apiKey = context.getEnvironment().getProperty(apiKeyProperty);
+		String apiKey = context.getEnvironment().getProperty(API_KEY_PROPERTY);
 		if (apiKey != null) {
 			return apiKey;
 		}
