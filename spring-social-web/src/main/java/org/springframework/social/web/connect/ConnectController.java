@@ -62,17 +62,17 @@ public class ConnectController implements BeanFactoryAware {
 	
 	private MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors;
 
-	private final AccountIdExtractor accountIdExtractor;
+	private AccountIdExtractor accountIdExtractor;
 
 	/**
 	 * Constructs a ConnectController.
 	 * @param connectionRepository a connection repository
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
 	 */
-	public ConnectController(String applicationUrl, AccountIdExtractor accountIdExtractor) {
-		this.accountIdExtractor = accountIdExtractor;
+	public ConnectController(String applicationUrl) {
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 		this.interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
+		this.accountIdExtractor = new DefaultAccountIdExtractor();
 	}
 
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -87,6 +87,13 @@ public class ConnectController implements BeanFactoryAware {
 			Class<?> providerType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(),  ConnectInterceptor.class);
 			this.interceptors.add(providerType, interceptor);
 		}
+	}
+
+	/**
+	 * Sets the account ID extractor to use when creating connections. Defaults to an extractor that uses Principal.getName() as the account ID.
+	 */
+	public void setAccountIdExtractor(AccountIdExtractor accountIdExtractor) {
+		this.accountIdExtractor = accountIdExtractor;
 	}
 
 	/**
