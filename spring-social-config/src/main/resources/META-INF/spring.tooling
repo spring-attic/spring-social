@@ -1,4 +1,0 @@
-# Tooling related information for the social namespace
-http\://www.springframework.org/schema/social@name=social Namespace
-http\://www.springframework.org/schema/social@prefix=social
-http\://www.springframework.org/schema/social@icon=org/springframework/social/config/xml/spring-social.gif
