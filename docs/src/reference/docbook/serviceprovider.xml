@@ -270,101 +270,87 @@ public interface OAuth1Operations {
 			</orderedlist>
 		</section>
 	</section>
-
-	<section xml:id="section_serviceproviderconfig">
-		<title>Configuring Service Providers</title>
+	<section id="service-providers-implementing">
+		<title>Implementing Service Providers</title>
 		<para>
-			Working with the service provider framework starts with configuring the service provider in Spring.
-			Spring Social's configuration namespace provides a convenient <code> <![CDATA[<social:service-provider>]]></code> element for declaring a service provider:
-      		<programlisting><![CDATA[
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:social="http://www.springframework.org/schema/spring-social"
-    xsi:schemaLocation="http://www.springframework.org/schema/spring-social http://www.springframework.org/schema/social/spring-social-1.0.xsd
-                        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+			The spring-social-core module provides support for implementing your own ServiceProviders.
+			This support consists of convenient base classes for the various ServiceProvider types, such as OAuth1 and OAuth2-based providers.
+			A common data access interface is also provided for persisting connection information.
+			In this section, you will learn how to implement ServiceProviders.
+		</para>
+		<section id="service-providers-implementing-oauth2">
+			<title>OAuth2</title>
+			<para>
+				To implement an OAuth2-based ServiceProvider, first extend AbstractOAuth2ServiceProvider.
+				Parameterize &lt;S&gt; to be the Java Binding to the ServiceProvider API.
+				Define a single constructor that accepts an clientId, clientSecret, and ConnectionRepository.
+				Finally, implement getApi(String) to return a new API instance.
+			</para>
+			<para>
+				See FacebookServiceProvider as an example of an OAuth2-based ServiceProvider:
+			</para>
+			<programlisting language="java"><![CDATA[
+package org.springframework.social.facebook.connect;
 
-    <social:service-provider 
-        class="org.springframework.social.twitter.connect.TwitterServiceProvider" 
-        client-key="..." 
-        client-secret="..." />
+import org.springframework.social.connect.oauth2.AbstractOAuth2ServiceProvider;
+import org.springframework.social.connect.support.ConnectionRepository;
+import org.springframework.social.facebook.FacebookApi;
+import org.springframework.social.facebook.FacebookTemplate;
+import org.springframework.social.oauth2.OAuth2Template;
 
-</beans>]]>
+public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<FacebookApi> {
+
+    public FacebookServiceProvider(String clientId, String clientSecret, ConnectionRepository connectionRepository) {
+        super("facebook", connectionRepository, 
+            new OAuth2Template(appId, appSecret,
+                "https://graph.facebook.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}", 
+                "https://graph.facebook.com/oauth/access_token"));
+    }
+
+    @Override
+    protected FacebookApi getApi(String accessToken) {
+        return new FacebookTemplate(accessToken);
+    }
+
+}]]>
 			</programlisting>
-		</para>
-		<para>
-			The <code>class</code> attribute specifies the fully-qualified name of the provider implementation.
-			This can be any of the service provider implementations that come with Spring Social or a custom implementation.
-			Spring Social comes with the following service provider implementations:
-		</para>
-		<itemizedlist>
-			<listitem><para>org.springframework.social.facebook.connect.FacebookServiceProvider</para></listitem>
-			<listitem><para>org.springframework.social.twitter.connect.TwitterServiceProvider</para></listitem>
-			<listitem><para>org.springframework.social.linkedin.connect.LinkedInServiceProvider</para></listitem>
-			<listitem><para>org.springframework.social.tripit.connect.TripItServiceProvider</para></listitem>
-			<listitem><para>org.springframework.social.github.connect.GitHubServiceProvider</para></listitem>
-			<listitem><para>org.springframework.social.gowalla.connect.GowallaServiceProvider</para></listitem>
-		</itemizedlist>
-		<para>
-			The <code>client-key</code> and <code>client-secret</code> attributes specify the key and secret values assigned to your application when you registered it with the provider.
-		</para>
-      <section xml:id="section_config_connectionrepository">
-          <title>Connection Repository</title>
-          
-          <para>When a service provider creates a connection, the connection details must be persisted somewhere for future use. The service provider relies on a connection repository for persistence of connection Spring Social comes with <classname>JdbcConnectionRepository</classname>, a connection repository that persists connections to a relational database via JDBC. The following XML shows how to configure a <classname>JdbcConnectionRepository</classname> bean:</para>
-          
-          <programlisting><![CDATA[<bean id="connectionRepository" class="org.springframework.social.connect.jdbc.JdbcConnectionRepository">
-    <constructor-arg ref="dataSource" />
-    <constructor-arg ref="textEncryptor" />
-</bean>]]></programlisting>
-
-          <para><classname>JdbcConnectionRepository</classname> is constructed with a reference to a <classname>DataSource</classname> through which it will communicate with the database and a <interfacename>TextEncryptor</interfacename> that it will use to encrypt/decrypt sensitive connection details (such as access tokens and secrets).</para>
-          
-          <para>The <interfacename>TextEncryptor</interfacename> is defined in Spring Security 3.1 in the <code>org.springframework.security.crypto.encrypt</code> package. Spring Security 3.1 also includes an <classname>Encryptors</classname> class which acts as a factory for common encryptor implementations. For example, to configure a no-op text encryptor (one that doesn't perform any encryption at all):</para>
-
-          <programlisting><![CDATA[<bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="noOpText" />]]></programlisting>
-          
-          <para>Or, to configure a text encryptor that uses standard password-based encryption:</para>
-          
-          <programlisting><![CDATA[<bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="text">
-    <constructor-arg value="password"/>
-    <constructor-arg value="salt"/>    
-</bean>]]></programlisting>
-
-          <para>Note that the ID of the connection repository bean is significant. By default, the <code><![CDATA[<social:service-provider>]]></code> element will assume that the connection repository bean's ID is "connectionRepository". If, however, you give the connection repository bean a different ID, then you'll need to explicitly specify the connection repository when configuring a <code><![CDATA[<social:service-provider>]]></code>:</para>
-
-          <programlisting><![CDATA[<social:service-provider 
-              class="org.springframework.social.twitter.connect.TwitterServiceProvider" 
-              client-key="..." 
-              client-secret="..."
-              connection-repository="connectionStorage" />]]></programlisting>
-              
-              
-          <para><code>JdbcConnectionRepository</code> assumes that a <code>Connection</code> table exists and was created as follows:</para>
-          
-<programlisting><![CDATA[create table Connection (id identity,
-			accountId varchar not null,
-			providerId varchar not null,
-			accessToken varchar not null,					
-			secret varchar, 
-			refreshToken varchar,
-			primary key (id));
-create unique index AccessToken on Connection(accountId, providerId, accessToken);]]></programlisting>
-
-          <para>For convenience sake, SQL is available in Spring Social's core module as a resource: /org/springframework/social/connect/jdbc/ConnectionRepositorySchema.sql.</para>
-      </section>
-  </section>
-
-  <section xml:id="section_newserviceprovider">
-      <title>Extending Spring Social with custom service providers</title>
-      
-      <para>Even though Spring Social only comes with a handful of service provider implementations, you can easily extend Spring Social's reach into other services by creating a custom service provider implementation.</para>
-      
-      <para>The first step in creating a new service provider implementation is to determine what kind of authorization the service requires. Spring Social provides abstract service provider classes for both OAuth 1 and OAuth 2-based services in <classname>AbstractOAuth1ServiceProvider</classname> and <classname>AbstractOAuth1ServiceProvider</classname>, respectively. If your service uses some authorization mechanism other than OAuth, you may choose to base your service provider on <classname>AbstractServiceProvider</classname> instead.</para>
-      
-      <para>To understand how this works, have a look at how some of the existing service provider implementations have been created. For example, consider <classname>TwitterServiceProvider</classname> as an example of how to develop an OAuth 1-based service provider:</para>
-      
-      <programlisting><![CDATA[package org.springframework.social.twitter.connect;
+			<para>
+				In the constructor, you should call super, passing up the ID of the ServiceProvider, the connection repository, and a configured OAuth2Template, which implements OAuth2Operations.
+				The OAuth2Template will handle the "OAuth dance" with the provider, and should be configured with the provided clientId and clientSecret, along with the provider-specific authorizeUrl and accessTokenUrl.
+			</para>
+			<para>
+				In getApi(String), you should construct your Service API implementation, passing it the access token needed to make requests for protected resources.
+				Inside the API implementation, we generally recommend using RestTemplate to make the HTTP calls and add the required Authorization header:
+			</para>
+			<programlisting language="java"><![CDATA[
+public FacebookTemplate(String accessToken) {
+    restTemplate = new RestTemplate();
+    // configures an interceptor that adds the Authorization header to each ClientRequest before it is executed
+    restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft10(accessToken) });
+}]]>
+			</programlisting>
+			<para>
+			 	An example API call with RestTemplate is shown below:
+			</para>
+			<programlisting language="java"><![CDATA[
+public FacebookProfile getUserProfile(String facebookId) {
+    return new FacebookProfile(restTemplate.getForObject("https://graph.facebook.com/{facebookId}", Map.class, facebookId));
+}]]>
+			</programlisting>
+		</section>
+		<section id="service-providers-implementing-oauth1">
+			<title>OAuth1</title>
+			<para>
+				To implement an OAuth1-based ServiceProvider, first extend AbstractOAuth1ServiceProvider.
+				Parameterize &lt;S&gt; to be the Java Binding to the ServiceProvider API.
+				Define a single constructor that accepts a consumerKey, consumerSecret, and ConnectionRepository.
+				Finally, implement getApi(String, String, String, String) to return a new API instance.
+			</para>
+			<para>
+				See TwitterServiceProvider as an example of an OAuth1-based ServiceProvider:
+			</para>
+			<programlisting language="java"><![CDATA[
+package org.springframework.social.twitter.connect;
 
 import org.springframework.social.connect.oauth1.AbstractOAuth1ServiceProvider;
 import org.springframework.social.connect.support.ConnectionRepository;
@@ -372,67 +358,50 @@ import org.springframework.social.oauth1.OAuth1Template;
 import org.springframework.social.twitter.TwitterOperations;
 import org.springframework.social.twitter.TwitterTemplate;
 
-public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<TwitterOperations> {
+public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<TwitterApi> {
 
-	public TwitterServiceProvider(String consumerKey, String consumerSecret, ConnectionRepository connectionRepository) {
-		super("twitter", connectionRepository, consumerKey, consumerSecret, 
-		    new OAuth1Template(consumerKey, consumerSecret, 
-		        "https://twitter.com/oauth/request_token",
-				"https://twitter.com/oauth/authorize?oauth_token={requestToken}", 
-				"https://twitter.com/oauth/access_token"));
-	}
+    public TwitterServiceProvider(String consumerKey, String consumerSecret, ConnectionRepository connectionRepository) {
+        super("twitter", connectionRepository, consumerKey, consumerSecret, 
+            new OAuth1Template(consumerKey, consumerSecret, 
+                "https://twitter.com/oauth/request_token",
+                "https://twitter.com/oauth/authorize?oauth_token={requestToken}",
+                "https://twitter.com/oauth/access_token"));
+        }
 
-	@Override
-	protected TwitterOperations getApi(String consumerKey, String consumerSecret, String accessToken, String secret) {
-		return new TwitterTemplate(consumerKey, consumerSecret, accessToken, secret);
-	}
+    @Override
+    protected TwitterApi getApi(String consumerKey, String consumerSecret, String accessToken, String secret) {
+        return new TwitterTemplate(consumerKey, consumerSecret, accessToken, secret);
+    }
 
-}]]></programlisting>
-      
-      <para>The first thing to note is that <classname>TwitterServiceProvider</classname> extends <classname>AbstractOAuth1ServiceProvider</classname>, parameterized with <interfacename>TwitterOperations</interfacename>. This indicates that <classname>TwitterServiceProvider</classname> is an OAuth 1-based provider and that its service API is a <interfacename>TwitterOperations</interfacename>.</para>
-      
-      <para><classname>TwitterServiceProvider</classname>'s constructor is given the provider's consumer key and secret along with a connection repository for persisting connection details. It calls the super constructor, passing the provider's ID, the connection repository, the consumer key and secret, and an instance of <classname>OAuth1Template</classname> that will be used to perform the authorization calls to Twitter.</para>
-      
-      <para>The <classname>OAuth1Template</classname> itself is constructed with the consumer key and secret, along with Twitter's request token URL, authorization URL, and access token URL. Note that the authorization URL is parameterized and must have a "requestToken" placeholder.</para>
-      
-      <para>In addition to the constructor, a subclass of <classname>AbstractOAuth1ServiceProvider</classname> must also override the <methodname>getApi()</methodname>. This method's job is to return an instance of the service API. In this case, it uses the consumer key and secret and the access token and secret to instantiate a <classname>TwitterTemplate</classname>.</para>
-      
-      <para>If you have a look at some of the other OAuth 1-based service providers in Spring Social, you'll see that they aren't much different than this one, aside from their ID, their OAuth 1 URLs, and their service API.</para>
-      
-      <para>Speaking of the service API, that's the one other thing you'll need to write in order to create a new service provider. In the case of <classname>TwitterServiceProvider</classname>, the service API is defined by the <interfacename>TwitterOperations</interfacename> interface and <classname>TwitterTemplate</classname> implementation of that interface.</para>
-      
-      <para>An OAuth 2 service provider implementation is only slightly different than an OAuth 1 service provider, as you can see by looking at <classname>FacebookServiceProvider</classname>:</para>
-      
-      <programlisting><![CDATA[package org.springframework.social.facebook.connect;
+}]]>
+			</programlisting>
+			<para>
+				In the constructor, you should call super, passing up the ID of the ServiceProvider, the connection repository, the consumerKey and secret, and a configured OAuth1Template.
+				The OAuth1Template will handle the "OAuth dance" with the provider.
+				It should also be configured with the provided consumerKey and consumerSecret, along with the provider-specific requestTokenUrl, authorizeUrl, and accessTokenUrl.
+			</para>			
+			<para>
+				In getApi(String, String, String, String), you should construct your Service API implementation, passing it the four tokens needed to make requests for protected resources.
+				Inside the API implementation, we generally recommend using RestTemplate to make the HTTP calls and add the required Authorization header:
+			</para>
+			<programlisting language="java"><![CDATA[
+public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+    restTemplate = new RestTemplate();
+    // configures an interceptor that adds the Authorization header to each ClientRequest before it is executed
+    restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] {
+        new OAuth1RequestInterceptor(consumerKey, consumerSecret, new OAuthToken(accessToken, accessTokenSecret))
+    });
+}]]>
+			</programlisting>
+			<para>
+				An example API call with RestTemplate is shown below:
+			</para>
+			<programlisting language="java"><![CDATA[
+public TwitterProfile getUserProfile(String screenName) {
+    return new TwitterProfile(restTemplate.getForObject("https://api.twitter.com/1/users/show.json?screen_name={screenName}", Map.class, screenName));
+}]]>
+			</programlisting>									
+		</section>
+	</section>
 
-import org.springframework.social.connect.oauth2.AbstractOAuth2ServiceProvider;
-import org.springframework.social.connect.support.ConnectionRepository;
-import org.springframework.social.facebook.FacebookOperations;
-import org.springframework.social.facebook.FacebookTemplate;
-import org.springframework.social.oauth2.OAuth2Template;
-
-public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<FacebookOperations> {
-
-	public FacebookServiceProvider(String clientId, String clientSecret, ConnectionRepository connectionRepository) {
-		super("facebook",connectionRepository, 
-		    new OAuth2Template(clientId, clientSecret,
-			    "https://graph.facebook.com/oauth/authorize?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}", 
-                "https://graph.facebook.com/oauth/access_token"));
-	}
-
-	@Override
-	protected FacebookOperations getApi(String accessToken) {
-		return new FacebookTemplate(accessToken);
-	}
-
-}]]></programlisting>
-      
-      <para>The key difference is that <classname>FacebookServiceProvider</classname> extends <classname>AbstractOAuth2ServiceProvider</classname> instead of <classname>AbstractOAuth1ServiceProvider</classname>. Its constructor is given the client ID and client secret (the OAuth 2 equivalent of consumer key and consumer secret) and the connection repository. It uses them to call the super constructor with the provider ID, the connection repository, and an instance of <classname>OAuth2Template</classname> to conduct the OAuth 2 exchange with Facebook.</para>
-      
-      <para>The <classname>OAuth2Template</classname> is constructed much like <classname>OAuth1Template</classname> except that it doesn't need a request token URL. Also, the authorization URL is parameterized with "client_id", "redirect_uri", and "scope".</para>
-      
-      <para>Finally, the <methodname>getApi()</methodname> is given only the access token needed to construct <classname>FacebookTemplate</classname>.</para>
-      
-      <para>Again, if you compare <classname>FacebookServiceProvider</classname> with some of the other OAuth 2 service provider implementations (e.g., <classname>GitHubServiceProvider</classname> and <classname>GowallaServiceProvider</classname>), you'll see that they're all quite similar with the key difference being their IDs, service APIs, and OAuth 2 URLs.</para>
-  </section>
 </chapter>
