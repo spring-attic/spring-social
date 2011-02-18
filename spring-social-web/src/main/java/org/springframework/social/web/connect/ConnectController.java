@@ -84,8 +84,7 @@ public class ConnectController implements BeanFactoryAware {
 	 */
 	public void setInterceptors(List<ConnectInterceptor<?>> interceptors) {
 		for (ConnectInterceptor<?> interceptor : interceptors) {
-			Class<?> providerType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(),  ConnectInterceptor.class);
-			this.interceptors.add(providerType, interceptor);
+			addInterceptor(interceptor);
 		}
 	}
 
@@ -94,6 +93,15 @@ public class ConnectController implements BeanFactoryAware {
 	 */
 	public void setAccountIdExtractor(AccountIdExtractor accountIdExtractor) {
 		this.accountIdExtractor = accountIdExtractor;
+	}
+
+	/**
+	 * Adds a ConnectInterceptor to receive callbacks during the connection process.
+	 */
+	public void addInterceptor(ConnectInterceptor<?> interceptor) {
+		Class<?> providerType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(),
+				ConnectInterceptor.class);
+		this.interceptors.add(providerType, interceptor);
 	}
 
 	/**
