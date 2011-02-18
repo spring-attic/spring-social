@@ -71,10 +71,11 @@ public class FacebookInitTag extends RequestContextAwareTag {
 	private String resolveApiKey() throws JspException {
 		WebApplicationContext context = getRequestContext().getWebApplicationContext();
 		String apiKey = context.getEnvironment().getProperty(API_KEY_PROPERTY);
-		if (apiKey != null) {
-			return apiKey;
+		if (apiKey == null && context.getParent() != null) {
+			// check parent context
+			apiKey = context.getParent().getEnvironment().getProperty(API_KEY_PROPERTY);
 		}
-		return "";
+		return apiKey != null ? apiKey : "";
 	}
 
 }
