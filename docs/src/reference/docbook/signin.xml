@@ -223,7 +223,7 @@ public class AccountIdAsPrincipalSigninGateway implements SignInControllerGatewa
 		
 		<para>
 			<code><![CDATA[<fb:login-button>]]></code>'s <code>onlogin</code> attribute indicates what action should be taken upon successful Facebook login. 
-			In this case, <code>onlogin</code> is set to use JQuery to submit the form, triggering <classname>FacebookSigninController</classname> to authenticate the user to the application.
+			In this case, <code>onlogin</code> is set to use jQuery to submit the form, triggering <classname>FacebookSigninController</classname> to authenticate the user to the application.
 		</para>
 	</section>
 </chapter>
