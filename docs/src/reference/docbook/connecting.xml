@@ -5,96 +5,96 @@
 
 	<section id="section_connecting_introduction">
 		<title>Introduction</title>
-      
       	<para>
-      		In the previous chapter, you saw how Spring Social's <emphasis>Service Provider 'Connect' Framework</emphasis> supports authorization and manages connections between an application and an external service provider.
-      		But although various implementations of <interfacename>ServiceProvider</interfacename> support the specifics of the authorization protocol for each service provider, they do not handle the overall connection flow. 
+      		In the previous chapter, you learned how Spring Social's <emphasis>Service Provider 'Connect' Framework</emphasis> can be used to manage user connections between your application and external service providers.
+      		In this chapter, you'll learn how to control the connect flow in a web application environment.
       	</para>
-
 		<para>
-			Spring Social's <code>spring-social-web</code> module includes <classname>ConnectController</classname>, a Spring MVC controller that works with <interfacename>ServiceProvider</interfacename>s to coordinate the connection flow.
+			Spring Social's <code>spring-social-web</code> module includes <classname>ConnectController</classname>, a Spring MVC controller that works with ServiceProviders to coordinate the connection flow.
 			<classname>ConnectController</classname> takes care of redirecting the user to the service provider for authorization and responding to the callback after authorization.
-			At each step, <classname>ConnectController</classname> works with a <interfacename>ServiceProvider</interfacename> to handle the finer details such as obtaining a request token and creating connections.
+			At each step, <classname>ConnectController</classname> delegates to a <interfacename>ServiceProvider</interfacename> to handle the finer details such as obtaining a request token and creating connections.
 		</para>
-      
 	</section>
 	
 	<section id="section_connecting_service_providers">
 		<title>Registering service providers</title>
-		
 		<para>
-			Because <classname>ConnectController</classname> collaborates with <interfacename>ServiceProvider</interfacename>s to establish connections, you'll need to register one or more <interfacename>ServiceProvider</interfacename> implementations as beans in the Spring context.
-			<classname>ConnectController</classname> will discover any bean of type <interfacename>ServiceProvider</interfacename> in the Spring context and use it to handle connections for the service provider it represents.
+			Because <classname>ConnectController</classname> collaborates with ServiceProviders to establish connections, you'll first need to register one or more <interfacename>ServiceProvider</interfacename> implementations as beans in the Spring context.
+			<classname>ConnectController</classname> will discover any bean of type <interfacename>ServiceProvider</interfacename> in the Spring context and delegate to it as requested by users of your application.
 		</para>
-		
 		<para>
-			The following configuration class registers <interfacename>ServiceProvider</interfacename>s for Twitter, Facebook, and TripIt using Spring's Java configuration style:
+			The following configuration class registers <interfacename>ServiceProvider</interfacename> implementations for Twitter, Facebook, and TripIt using Spring's Java configuration style:
 		</para>
-		
 		<programlisting language="java"><![CDATA[
-package org.springframework.social.showcase.config;
+package org.springframework.social.showcase.config.connect;
 
-import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.encrypt.TextEncryptor;
-import org.springframework.social.connect.jdbc.JdbcConnectionRepository;
-import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.facebook.connect.FacebookServiceProvider;
 import org.springframework.social.tripit.connect.TripItServiceProvider;
 import org.springframework.social.twitter.connect.TwitterServiceProvider;
-import org.springframework.stereotype.Component;
 
 @Configuration
-public class ServiceProviders {
+public class ServiceProviderConfig {
 
     @Bean
-    public TwitterServiceProvider twitter(@Value("#{environment['twitter.clientKey']}") String clientKey,
-            @Value("#{environment['twitter.clientSecret']}") String clientSecret, ConnectionRepository connectionRepository) {
-        return new TwitterServiceProvider(clientKey, clientSecret, connectionRepository);
+    public TwitterServiceProvider twitter(@Value("#{environment['twitter.consumerKey']}") String consumerKey,
+            @Value("#{environment['twitter.consumerSecret']}") String consumerSecret, ConnectionRepository connectionRepository) {
+        return new TwitterServiceProvider(consumerKey, consumerSecret, connectionRepository);
     }
 
     @Bean
-    public FacebookServiceProvider facebook(@Value("#{environment['facebook.apiKey']}") String clientId,
-            @Value("#{environment['facebook.appSecret']}") String clientSecret, ConnectionRepository connectionRepository) {
-        return new FacebookServiceProvider(clientId, clientSecret, connectionRepository);
+    public FacebookServiceProvider facebook(@Value("#{environment['facebook.appId']}") String appId,
+            @Value("#{environment['facebook.appSecret']}") String appSecret, ConnectionRepository connectionRepository) {
+        return new FacebookServiceProvider(appId, appSecret, connectionRepository);
     }
 
     @Bean
-    public TripItServiceProvider tripit(@Value("#{environment['tripit.clientKey']}") String clientKey,
-            @Value("#{environment['tripit.clientSecret']}") String clientSecret, ConnectionRepository connectionRepository) {
-        return new TripItServiceProvider(clientKey, clientSecret, connectionRepository);
-    }
-
-    @Bean
-    public ConnectionRepository connectionRepository(DataSource dataSource, TextEncryptor textEncryptor) {
-        return new JdbcConnectionRepository(dataSource, textEncryptor);
+    public TripItServiceProvider tripit(@Value("#{environment['tripit.consumerKey']}") String consumerKey,
+            @Value("#{environment['tripit.consumerSecret']}") String consumerSecret, ConnectionRepository connectionRepository) {
+        return new TripItServiceProvider(consumerKey, consumerSecret, connectionRepository);
     }
 
 }]]>
 		</programlisting>
-		
 		<para>
-			Each <interfacename>ServiceProvider</interfacename> is created given the application's client key and secret that were assigned to it when the application was registered with the service provider.
+			Each <interfacename>ServiceProvider</interfacename> is configured with the client key and secret that were assigned to it when the application was registered with the service provider.
 			Because the consumer key and secret may be different across environments (e.g., test, production, etc) it is recommended that these values be externalized. 
-			Here, the consumer key and secret are provided to the <methodname>twitter()</methodname> method as properties retrieved from the context environment.
+			Here, the consumer key and secret are provided to the <methodname>twitter()</methodname> method as properties of the current environment.
 		</para>
-
 		<para>
-			The <interfacename>ServiceProvider</interfacename> are also given a <interfacename>ConnectionRepository</interfacename> at construction.
+			ServiceProviders are also given a <interfacename>ConnectionRepository</interfacename> at construction.
 			When managing connections, a <interfacename>ServiceProvider</interfacename> needs a place to store those connections.
-			Therefore, a <interfacename>ServiceProvider</interfacename> works through a <interfacename>ConnectionRepository</interfacename> for persistence operations on connections.
-			Spring Social supports JDBC-based connection storage with <classname>JdbcConnectionRepository</classname>, which itself is constructed given a <interfacename>DataSource</interfacename> and a <interfacename>TextEncryptor</interfacename>.
+			Therefore, a <interfacename>ServiceProvider</interfacename> delegates to a <interfacename>ConnectionRepository</interfacename> for persisting connections.
+			Spring Social supports JDBC-based connection storage with <classname>JdbcConnectionRepository</classname>, which itself is constructed with a <interfacename>DataSource</interfacename> and a <interfacename>TextEncryptor</interfacename>:.
 		</para>
+		<programlisting language="java"><![CDATA[
+package org.springframework.social.showcase.config.connect;
 
+import javax.sql.DataSource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.social.connect.jdbc.JdbcConnectionRepository;
+import org.springframework.social.connect.support.ConnectionRepository;
+import org.springframework.security.crypto.encrypt.TextEncryptor;
+
+@Configuration
+public class ConnectionRepositoryConfig {
+
+    @Bean
+    public ConnectionRepository connectionRepository(DataSource dataSource, TextEncryptor textEncryptor) {
+        return new JdbcConnectionRepositoy(dataSource, textEncryptor);
+    }
+
+}]]>
+		</programlisting>
 		<para>
 			<classname>JdbcConnectionRepository</classname> uses a <interfacename>TextEncryptor</interfacename> to encrypt the credentials (e.g., access tokens and secrets) obtained during authorization when writing them to the database.
 			Spring Security 3.1 makes a few useful text encryptors available via static factory methods in its <classname>Encryptors</classname> class.
 			For example, a no-op text encryptor is useful at development time and can be configured like this:
 		</para>				
-		
 		<programlisting language="java"><![CDATA[
-package org.springframework.social.showcase.config;
+package org.springframework.social.showcase.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -104,7 +104,7 @@ import org.springframework.security.crypto.encrypt.TextEncryptor;
 
 @Configuration
 @Profile("dev")
-public class NoOpTextEncryptor {
+public class DevEncryptionConfig {
 
     @Bean
     public TextEncryptor textEncryptor() {
@@ -113,14 +113,12 @@ public class NoOpTextEncryptor {
 
 }]]>
 		</programlisting>
-
 		<para>
 			Notice that this configuration class is annotated with <code>@Profile("dev")</code>.
 			Spring 3.1 introduced the <emphasis>profile</emphasis> concept where certain beans will only be created when certain profiles are active.
-			Here, the <code>@Profile</code> annotation ensures that the <interfacename>TextEncryptor</interfacename> will only be created when "dev" is an active profile.
+			Here, the <code>@Profile</code> annotation ensures that this <interfacename>TextEncryptor</interfacename> will only be created when "dev" is an active profile.
 			For production-time purposes, a stronger text encryptor is recommended and can be created when the "production" profile is active:
 		</para>
-		
 		<programlisting language="java"><![CDATA[
 package org.springframework.social.showcase.config;
 
@@ -133,11 +131,11 @@ import org.springframework.security.crypto.encrypt.TextEncryptor;
 
 @Configuration
 @Profile("production")
-public class QueryableTextEncryptor {
+public class ProductionEncryptionConfig {
 
     @Bean
-    public TextEncryptor textEncryptor(@Value("#{environment['encrypt.password']}") String password,
-            @Value("#{environment['encrypt.salt']}") String salt) {
+    public TextEncryptor textEncryptor(@Value("#{environment['security.encryptPassword']}") String password,
+            @Value("#{environment['security.encryptSalt']}") String salt) {
         return Encryptors.queryableText(password, salt);
     }
 
@@ -146,14 +144,11 @@ public class QueryableTextEncryptor {
 		
 		<section id="section_service_provider_xml_config">
 			<title>Configuring service providers in XML</title>
-			
 			<para>
 				Up to this point, the service provider configuration has been done using Spring's Java-based configuration style.
-				You may, however, be more comfortable using Spring's XML configuration style.
 				You can configure Spring Social's service providers in either Java configuration or XML.
 				Here's the XML equivalent of the service provider configuration:
 			</para>
-			
 			<programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" 
@@ -169,7 +164,7 @@ public class QueryableTextEncryptor {
 
     <!-- Configure a Facebook service provider -->
     <bean class="org.springframework.social.facebook.connect.FacebookServiceProvider">
-        <constructor-arg value="#{environment['facebook.apiKey']}" />
+        <constructor-arg value="#{environment['facebook.appId']}" />
         <constructor-arg value="#{environment['facebook.appSecret']}" />
         <constructor-arg ref="connectionRepository" />
     </bean>
@@ -184,15 +179,14 @@ public class QueryableTextEncryptor {
     <!-- Configure a connection repository through which account-to-provider connections will be stored -->	
     <bean id="connectionRepository" class="org.springframework.social.connect.jdbc.JdbcConnectionRepository">
         <constructor-arg ref="dataSource" />
-        <constructor-arg ref="stringEncryptor" />
+        <constructor-arg ref="textEncryptor" />
     </bean>
+    
 </beans>]]>
 			</programlisting>
-		
 			<para>
 				Likewise, here is the equivalent configuration of the <interfacename>TextEncryptor</interfacename> beans:
 			</para>
-		
 			<programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -205,14 +199,13 @@ public class QueryableTextEncryptor {
 	
     <beans profile="production">
         <bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="queryableText">
-            <constructor-arg value="#{environment['encrypt.password']}" />
-            <constructor-arg value="#{environment['encrypt.salt']}" />
+            <constructor-arg value="#{environment['security.encryptPassword']}" />
+            <constructor-arg value="#{environment['security.encryptSalt']}" />
         </bean>
     </beans>
 
 </beans>]]>
 			</programlisting>
-			
 			<para>
 				As with the Java-based configuration, profiles are used to select which of the text encryptors will be created.
 			</para>		
@@ -221,12 +214,10 @@ public class QueryableTextEncryptor {
   
 	<section id="connect-controller">
 		<title>Creating connections with <classname>ConnectController</classname></title>
-
 		<para>
 			With one or more <interfacename>ServiceProvider</interfacename> beans configured, <classname>ConnectController</classname> will be able to coordinate the connection process for those providers.
 			<classname>ConnectController</classname> is a Spring MVC controller and can be configured as a bean in your application's Spring MVC configuration as follows:
 		</para>
-
 		<programlisting language="java"><![CDATA[
 package org.springframework.social.showcase.config;
 
@@ -236,7 +227,7 @@ import org.springframework.social.web.connect.ConnectController;
 import org.springframework.stereotype.Component;
 
 @Configuration
-public class ConnectControllers {
+public class ConnectControllerConfig {
 
     @Bean
     public ConnectController connectController(@Value("#{environment['application.url']}") String applicationUrl) {
@@ -245,106 +236,84 @@ public class ConnectControllers {
 	
 }]]>
 		</programlisting>		
-
 		<para>
 			Again, if you prefer Spring's XML-based configuration, then you can configure <classname>ConnectController</classname> like this:
 		</para>
-
 		<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.web.connect.ConnectController">
     <constructor-arg value="#{environment['application.url']}" />
 </bean>]]>
 		</programlisting>
-
 		<para>
-			In either case, <classname>ConnectController</classname> is constructed given the base URL for the application.
+			In either case, <classname>ConnectController</classname> is constructed with the base URL for the application.
 			<classname>ConnectController</classname> will use this URL to construct callback URLs used in the authorization flow.
 			Since the base URL of an application will be different between environments, it is recommended that you externalize it.
 			Here the URL is retrieved as a context environment property named "application.url".
 		</para>
-
 		<para>
 			<classname>ConnectController</classname> supports authorization flows for either OAuth 1 or OAuth 2, relying on <interfacename>ServiceProvider</interfacename>s to handle the specifics for each protocol.
 			<classname>ConnectController</classname> will discover <interfacename>ServiceProvider</interfacename>s as beans in the Spring context.
 			It will select a specific <interfacename>ServiceProvider</interfacename> to use by matching the provider's ID with the URL path.
-			The path pattern that <classname>ConnectController</classname> handles is "/connect/{provider ID}".
+			The path pattern that <classname>ConnectController</classname> handles is "/connect/{providerId}".
 			Therefore, if <classname>ConnectController</classname> is handling a request for "/connect/twitter", then the <interfacename>ServiceProvider</interfacename> whose <methodname>getId()</methodname> returns "twitter" will be used.
 		</para>
-		
 		<para>
 			The flow that <classname>ConnectController</classname> follows is slightly different, depending on which authorization protocol is supported by the service provider.
 			For OAuth 2-based providers, the flow is as follows:
 		</para>
-    
 		<itemizedlist>
-			<listitem><para><code>GET /connect/{provider}</code> - Displays a web page showing connection status to the provider.</para></listitem>
-			<listitem><para><code>POST /connect/{provider}</code> - Initiates the connection flow with the provider.</para></listitem>
-			<listitem><para><code>GET /connect/{provider}?code={code}</code> - Receives the authorization callback from the provider, accepting an authorization code. Uses the code to request an access token and complete the connection.</para></listitem>
-			<listitem><para><code>DELETE /connect/{provider}</code> - Severs a connection with the provider.</para></listitem>
+			<listitem><para><code>GET /connect/{providerId}</code> - Displays a web page showing connection status to the provider.</para></listitem>
+			<listitem><para><code>POST /connect/{providerId}</code> - Initiates the connection flow with the provider.</para></listitem>
+			<listitem><para><code>GET /connect/{providerId}?code={code}</code> - Receives the authorization callback from the provider, accepting an authorization code. Uses the code to request an access token and complete the connection.</para></listitem>
+			<listitem><para><code>DELETE /connect/{providerId}</code> - Severs a connection with the provider.</para></listitem>
 		</itemizedlist>    
-
 		<para>
 			For an OAuth 1 provider, the flow is very similar, with only a subtle difference in how the callback is handled:
 		</para>
-
 		<itemizedlist>
-			<listitem><para><code>GET /connect/{provider}</code> - Displays a web page showing connection status to the provider.</para></listitem>
-			<listitem><para><code>POST /connect/{provider}</code> - Initiates the connection flow with the provider.</para></listitem>
+			<listitem><para><code>GET /connect/{providerId}</code> - Displays a web page showing connection status to the provider.</para></listitem>
+			<listitem><para><code>POST /connect/{providerId}</code> - Initiates the connection flow with the provider.</para></listitem>
 			<listitem>
 				<para>
-					<code>GET /connect/{provider}?oauth_token={request token}&amp;oauth_verifier={verifier}</code> - 
+					<code>GET /connect/{providerId}?oauth_token={request token}&amp;oauth_verifier={verifier}</code> - 
 					Receives the authorization callback from the provider, accepting a verification code. 
 					Exchanges this verification code along with the request token for an access token and completes the connection.
 					The <code>oauth_verifier</code> parameter is optional and is only used for providers implementing OAuth 1.0a.
 				</para>
 			</listitem>
-			<listitem><para><code>DELETE /connect/{provider}</code> - Severs a connection with the provider.</para></listitem>
+			<listitem><para><code>DELETE /connect/{providerId}</code> - Severs a connection with the provider.</para></listitem>
 		</itemizedlist>
-    
+
 		<section id="connect-controller-flow-1">
 			<title>Displaying a connection page</title>
-
 			<para>
 				Before the connection flow starts in earnest, a web application may choose to show a page that offers the user information on their connection status.
 				This page would offer them the opportunity to create a connection between their account and their social profile. 
 				<classname>ConnectController</classname> can display such a page if the browser navigates to <code>/connect/{provider}</code>.
 			</para>
-      
 			<para>
 				For example, to display a connection status page for Twitter, where the provider name is "twitter", your application should provide a link similar to this:
 			</para>
-    
 			<programlisting language="xml"><![CDATA[
 <a href="<c:url value="/connect/twitter" />">Connect to Twitter</a>]]>
 			</programlisting>
-
 			<para>
 				<classname>ConnectController</classname> will respond to this request by first checking to see if a connection already exists between the user's account and Twitter. 
 				If not, then it will with a view that should offer the user an opportunity to create the connection. 
 				Otherwise, it will respond with a view to inform the user that a connection already exists.
 			</para>
-    
 			<para>
 				The view names that <classname>ConnectController</classname> responds with are based on the provider's name. 
 				In this case, since the provider name is "twitter", the view names are "connect/twitterConnect" and "connect/twitterConnected".
 			</para>
-        
-			<note>
-            	<para>
-            		Although the view names are derived from the provider name, it may be possible to specify these view names in a future version of Spring Social. 
-            		Follow <ulink url="https://jira.springframework.org/browse/SOCIAL-91" /> for more details.
-            	</para>
-        	</note>        
 		</section>
     
 		<section id="connect-controller-flow-2">
 			<title>Initiating the connection flow</title>
-      
 			<para>
-				To kick off the connection flow, the application should <code>POST</code> to <code>/connect/{provider}</code>. 
+				To kick off the connection flow, the application should <code>POST</code> to <code>/connect/{providerId}</code>. 
 				Continuing with the Twitter example, the JSP resolved from "connect/twitterConnect" might include the following form:
 			</para>
-      
 			<programlisting language="xml"><![CDATA[
 <form action="<c:url value="/connect/twitter" />" method="POST">
     <p>You haven't created any connections with Twitter yet. Click the button to create
@@ -353,23 +322,18 @@ public class ConnectControllers {
     <p><button type="submit"><img src="<c:url value="/resources/social/twitter/signin.png" />"/></button></p>
 </form>]]>
 			</programlisting>
-      
       		<para>
       			When <classname>ConnectController</classname> handles the request, it will redirect the browser to the provider's authorization page. 
       			In the case of an OAuth 1 provider, it will first fetch a request token from the provider and pass it along as a parameter to the authorization page. 
       			Request tokens aren't used in OAuth 2, however, so instead it passes the application's client ID and redirect URI as parameters to the authorization page.
       		</para>
-      
       		<para>
       			For example, Twitter's authorization URL has the following pattern:
       		</para>
-      
 			<programlisting><![CDATA[https://twitter.com/oauth/authorize?oauth_token={token}]]></programlisting>
-      
       		<para>
       			If the application's request token were "vPyVSe"<footnote><para>This is just an example. Actual request tokens are typically much longer.</para></footnote>, then the browser would be redirected to https://twitter.com/oauth/authorize?oauth_token=vPyVSe and a page similar to the following would be displayed to the user (from Twitter)<footnote><para>If the user has not yet signed into Twitter, the authorization page will also include a username and password field for authentication into Twitter.</para></footnote>:
       		</para>
-      
 			<mediaobject>
 				<imageobject role="fo">
 					<imagedata fileref="images/twitter-authorize.png" format="PNG" align="center" scale="40"/>
@@ -378,17 +342,13 @@ public class ConnectControllers {
 					<imagedata fileref="images/twitter-authorize.png" format="PNG" align="center" scale="40"/>
 				</imageobject>
 			</mediaobject>
-      
 			<para>
 				In contrast, Facebook is an OAuth 2 provider, so its authorization URL takes a slightly different pattern:
 			</para>
-      
 			<programlisting><![CDATA[https://graph.facebook.com/oauth/authorize?client_id={clientId}&redirect_uri={redirectUri}]]></programlisting>
-      
 			<para>
 				Thus, if the application's Facebook client ID is "0b754" and it's redirect URI is "http://www.mycoolapp.com/connect/facebook", then the browser would be redirected to <![CDATA[https://graph.facebook.com/oauth/authorize?client_id=0b754&redirect_uri=http://www.mycoolapp.com/connect/facebook]]> and Facebook would display the following authorization page to the user:
 			</para>
-      
 			<mediaobject>
 				<imageobject role="fo">
 					<imagedata fileref="images/facebook-authorize-basic.png" format="PNG" align="center" scale="40"/>
@@ -397,11 +357,9 @@ public class ConnectControllers {
 					<imagedata fileref="images/facebook-authorize-basic.png" format="PNG" align="center" scale="40"/>
 				</imageobject>
 			</mediaobject>      
-
 			<para>
 				If the user clicks the "Allow" button to authorize access, the provider will redirect the browser back to the authorization callback URL where <classname>ConnectController</classname> will be waiting to complete the connection.
 			</para>
-      
       		<para>
       			The behavior varies from provider to provider when the user denies the authorization. 
       			For instance, Twitter will simply show a page telling the user that they denied the application access and does not redirect back to the application's callback URL. 
@@ -410,26 +368,21 @@ public class ConnectControllers {
       
 			<section id="connect-controller-flow-3-scope">
         		<title>Authorization scope</title>
-
 				<para>
 					In the previous example of authorizing an application to interact with a user's Facebook profile, you notice that the application is only requesting access to the user's basic profile information. 
 					But there's much more that an application can do on behalf of a user with Facebook than simply harvest their profile data. 
 					For example, how can an application gain authorization to post to a user's Facebook wall?
 				</para>
-        
 				<para>
 					OAuth 2 authorization may optionally include a scope parameter that indicates the type of authorization being requested. 
 					On the provider, the "scope" parameter should be passed along on the authorization URL. 
 					In the case of Facebook, that means that the Facebook authorization URL pattern should be as follows:
 				</para>
-        
 				<programlisting><![CDATA[https://graph.facebook.com/oauth/authorize?client_id={clientId}&redirect_uri={redirectUri}&scope={scope}]]></programlisting>
-
 				<para>
 					<classname>ConnectController</classname> accepts a "scope" parameter at authorization and passes its value along to the provider's authorization URL. 
 					For example, to request permission to post to a user's Facebook wall, the connect form might look like this:
 				</para>
-
 				<programlisting language="xml"><![CDATA[
 <form action="<c:url value="/connect/twitter" />" method="POST">
     <input type="hidden" name="scope" value="publish_stream,offline_access" />
@@ -439,30 +392,25 @@ public class ConnectControllers {
     <p><button type="submit"><img src="<c:url value="/resources/social/twitter/signin.png" />"/></button></p>
 </form>]]>
 				</programlisting>
-              
 				<para>
 					The hidden "scope" field contains the scope values to be passed along to Facebook's authorization URL. 
 					In this case, "publish_stream" requests permission to post to a user's wall. 
 					In addition, "offline_access" requests permission to access Facebook on behalf of a user even when the user isn't using the application.
 				</para>
-        
 				<note>
 					<para>
 						OAuth 2 access tokens typically expire after some period of time. 
 						Per the OAuth 2 specification, an application may continue accessing a provider after a token expires by using a refresh token to either renew an expired access token or receive a new access token (all without troubling the user to re-authorize the application).
 					</para>
-					
 					<para>
 						Facebook does not currently support refresh tokens. 
 						Moreover, Facebook access tokens expire after about 2 hours. 
 						So, to avoid having to ask your users to re-authorize ever 2 hours, the best way to keep a long-lived access token is to request "offline_access".
 					</para>
 				</note>
-
 				<para>
 					When asking for "publish_stream,offline_access" authorization, the user will be prompted with the following authorization page from Facebook:
 				</para>
-
 				<mediaobject>
 					<imageobject role="fo">
 						<imagedata fileref="images/facebook-authorize-scoped.png" format="PNG" align="center" scale="40"/>
@@ -471,24 +419,20 @@ public class ConnectControllers {
 						<imagedata fileref="images/facebook-authorize-scoped.png" format="PNG" align="center" scale="40"/>
 					</imageobject>
 				</mediaobject>
-        
 				<para>
 					Scope values are provider-specific, so check with the service provider's documentation for the available scopes. 
 					Facebook scopes are documented at <ulink url="http://developers.facebook.com/docs/authentication/permissions" />.
 				</para>
-				
 			</section>
 		</section>
     
 		<section id="connect-controller-flow-3">
 			<title>Responding to the authorization callback</title>
-			
 			<para>
 				After the user agrees to allow the application have access to their profile on the provider, the provider will redirect their browser back to the application's authorization URL with a code that can be exchanged for an access token. 
 				For OAuth 1.0a providers, the callback URL is expected to receive the code (known as a verifier in OAuth 1 terms) in an <code>oauth_verifier</code> parameter. 
 				For OAuth 2, the code will be in a <code>code</code> parameter.
 			</para>
-			
 			<para>
 				<classname>ConnectController</classname> will handle the callback request and trade in the verifier/code for an access token. 
 				Once the access token has been received, the OAuth dance is complete and the application may use the access token to interact with the provider on behalf of the user. 
@@ -498,16 +442,13 @@ public class ConnectControllers {
 
 		<section id="connect-controller-flow-disconnect">
 			<title>Disconnecting</title>
-
 			<para>
 				To delete a connection via <classname>ConnectController</classname>, submit a DELETE request to "/connect/{provider}".
 			</para>
-
 			<para>
 				In order to support this through a form in a web browser, you'll need to have Spring's <ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/filter/HiddenHttpMethodFilter.html"><classname>HiddenHttpMethodFilter</classname></ulink> configured in your application's web.xml. 
 				Then you can provide a disconnect button via a form like this:
 			</para>
-
 			<programlisting language="xml"><![CDATA[
 <form action="<c:url value="/connect/twitter" />" method="post">
    <div class="formInfo">
@@ -518,7 +459,6 @@ public class ConnectControllers {
    <input type="hidden" name="_method" value="delete" />
 </form>]]>
 			</programlisting>
-      
 			<para>
 				When this form is submitted, <classname>ConnectController</classname> will disconnect the user's account from the provider.
 				It does this by calling the <methodname>disconnect()</methodname> method on each of the <interfacename>ServiceProviderConnection</interfacename>s returned by the provider's <methodname>getConnections()</methodname> method. 
@@ -528,34 +468,30 @@ public class ConnectControllers {
 
  	<section id="connect-interceptors">
  		<title>Connection interceptors</title>
-
 		<para>
 			In the course of creating a connection with a service provider, you may want to inject additional functionality into the connection flow. 
 			For instance, perhaps you'd like to automatically post a tweet to a user's Twitter timeline immediately upon creating the connection.
 		</para>
-    
 		<para>
 			<classname>ConnectController</classname> may be configured with one or more connection interceptors that it will call at points in the connection flow. 
 			These interceptors are defined by the <interfacename>ConnectInterceptor</interfacename> interface:
 		</para>
-    
 		<programlisting language="java"><![CDATA[
 public interface ConnectInterceptor<S> {
+
     void preConnect(ServiceProvider<S> provider, WebRequest request);
+
     void postConnect(ServiceProvider<S> provider, ServiceProviderConnection<S> connection, WebRequest request);
 }]]>
 		</programlisting>
-
 		<para>
 			The <methodname>preConnect()</methodname> method will be called by <classname>ConnectController</classname> just before redirecting the browser to the provider's authorization page. 
 			<methodname>postConnect()</methodname> will be called immediately after a connection has been established between the member account and the provider profile.
 		</para>
-		
 		<para>
 			For example, suppose that after a connection is made, you want to immediately tweet that connection to the user's Twitter timeline. 
 			To accomplish that, you might write the following connection interceptor:
 		</para>
-    
 		<programlisting language="java"><![CDATA[
 package org.springframework.social.showcase.twitter;
 import org.springframework.social.connect.ServiceProvider;
@@ -578,38 +514,28 @@ public class TweetAfterConnectInterceptor implements ConnectInterceptor<TwitterO
 
 }]]>
 		</programlisting>
-
 		<para>
 			This interceptor can then be injected into <classname>ConnectController</classname> when it is created:
 		</para>
-		
 		<programlisting language="java"><![CDATA[
 @Bean
 public ConnectController connectController(@Value("#{environment['application.url']}") String applicationUrl) {
-    ConnectController connectController = new ConnectController(applicationUrl);
-    List<ConnectInterceptor<?>> interceptors = new ArrayList<ConnectInterceptor<?>>();
-    interceptors.add(new TweetAfterConnectInterceptor());
-    connectController.setInterceptors(interceptors);
-    return connectController;
+    ConnectController controller = new ConnectController(applicationUrl);
+    controller.addInterceptor(new TweetAfterConnectInterceptor());
+    return controller;
 }]]>
 		</programlisting>
-		
 		<para>Or, as configured in XML:</para>
-    
 		<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.web.connect.ConnectController">
-    
     <constructor-arg value="http://localhost:8080/myapplication" />
-    
     <property name="interceptors">
         <list>
             <bean class="org.springframework.social.showcase.twitter.TweetAfterConnectInterceptor" />
         </list>
     </property>
-    
 </bean>]]>
 		</programlisting>
-    
 		<para>
 			Note that the <code>interceptors</code> property is a list and can take as many interceptors as you'd like to wire into it. 
 			When it comes time for <classname>ConnectController</classname> to call into the interceptors, it will only invoke the interceptor methods for those interceptors accept service operations type matching the service provider's operations type. 
