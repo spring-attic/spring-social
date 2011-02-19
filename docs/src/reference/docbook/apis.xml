@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="apis" xmlns:xlink="http://www.w3.org/1999/xlink">
-	<title>Interacting with social APIs</title>
+	<title>Working with Service APIs</title>
   
 	<section xml:id="section_api_introduction">
 		<title>Introduction</title>

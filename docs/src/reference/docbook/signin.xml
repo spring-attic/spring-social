@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="signin" xmlns:xlink="http://www.w3.org/1999/xlink">
-	<title>Signing in with Social Services</title>
+	<title>Signing in with Service Provider Accounts</title>
 
 	<section xml:id="signin_introduction">
 		<title>Introduction</title>
