@@ -65,7 +65,7 @@
 
 		<programlisting language="java"><![CDATA[
 public interface SignInControllerGateway {
-void signIn(Serializable accountId);	
+    void signIn(Serializable accountId);	
 }]]>
 		</programlisting>
 
@@ -95,7 +95,7 @@ public class AccountIdAsPrincipalSigninGateway implements SignInControllerGatewa
           
 		<programlisting language="xml"><![CDATA[
 <form id="tw_signin" action="<c:url value="/signin/twitter"/>" method="POST">
-	<button type="submit"><img src="<c:url value="/resources/social/twitter/sign-in-with-twitter-d.png"/>" /></button>
+    <button type="submit"><img src="<c:url value="/resources/social/twitter/sign-in-with-twitter-d.png"/>" /></button>
 </form>]]>
 		</programlisting>
 
