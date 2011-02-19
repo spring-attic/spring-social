@@ -157,8 +157,8 @@ public class AccountIdAsPrincipalSigninGateway implements SignInControllerGatewa
 <bean class="org.springframework.social.facebook.web.FacebookSigninController">
     <constructor-arg ref="connectionRepository" />
     <constructor-arg ref="signinGateway" />
-    <constructor-arg value="]]><emphasis>Facebook API Key</emphasis><![CDATA[" />
-    <constructor-arg value="]]><emphasis>Facebook Application Secret</emphasis><![CDATA[" />
+    <constructor-arg value="#{environment['facebook.appId']}" />
+    <constructor-arg value="#{environment['facebook.appSecret']}" />
 </bean>]]>
 		</programlisting>
 		
@@ -168,9 +168,8 @@ public class AccountIdAsPrincipalSigninGateway implements SignInControllerGatewa
 		
 		<para>
 			However, since Facebook's sign in process is not based on an OAuth 1 flow, <classname>FacebookSigninController</classname> does not need the base URL to create a callback URL from. 
-			Instead, <classname>FacebookSigninController</classname> needs to know the application's Facebook API Key and application secret that were issued to the application when it was first registered in Facebook. 
-			(The API key is the same value given as the <code>client-key</code> when registering a Facebook service provider with <code><![CDATA[<social:service-provider]]></code>.) 
-			It uses the API Key to find the cookie and the application secret to verify the authenticity of the cookie by calculating and comparing signatures.
+			Instead, <classname>FacebookSigninController</classname> needs to know the application's Facebook app id and secret that were issued to the application when it was first registered in Facebook. 
+			It uses the app id to find the cookie and the application secret to verify the authenticity of the cookie by calculating and comparing signatures.
 		</para>
 		  
 		<para>
@@ -194,14 +193,14 @@ public class AccountIdAsPrincipalSigninGateway implements SignInControllerGatewa
 		<para>Note that the tag prefix cannot be "fb", as that would create a conflict between Spring Social's Facebook JSP tag library and Facebook's XFBML tags (which use "fb" as their prefix).</para>
 		
 		<para>
-			The <code><![CDATA[<facebook:init>]]></code> will initialize the Facebook JavaScript library with your application's API key.
-			This is API key assigned to your application when you registered it with Facebook.
-			It retrieves the API key from a Spring context's environment property whose name is "facebook.apiKey".
-			If that property is not set or if you'd rather specify the API key explicitly, you can do so by setting the <code>apiKey</code> attribute:
+			The <code><![CDATA[<facebook:init>]]></code> will initialize the Facebook JavaScript library with your application's app id.
+			This is the appId assigned to your application when you registered it with Facebook.
+			It retrieves the appId from a Spring context's environment property whose name is "facebook.appId".
+			If that property is not set or if you'd rather specify the appId explicitly, you can do so by setting the <code>appId</code> attribute:
 		</para>
 
 		<programlisting language="xml"><![CDATA[
-<facebook:init apiKey="0c754d95f9d9899b0d7c4454a6f2dde6" />]]>
+<facebook:init appId="0c754d95f9d9899b0d7c4454a6f2dde6" />]]>
 		</programlisting>
 
 		<para>

@@ -58,7 +58,7 @@ public class ServiceProviderConfig {
 }]]>
 		</programlisting>
 		<para>
-			Each <interfacename>ServiceProvider</interfacename> is configured with the client key and secret that were assigned to it when the application was registered with the service provider.
+			Each <interfacename>ServiceProvider</interfacename> should be configured with the client key and secret that were assigned to it when the application was registered with the service provider.
 			Because the consumer key and secret may be different across environments (e.g., test, production, etc) it is recommended that these values be externalized. 
 			Here, the consumer key and secret are provided to the <methodname>twitter()</methodname> method as properties of the current environment.
 		</para>
