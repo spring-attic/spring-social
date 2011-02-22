@@ -158,6 +158,7 @@ public class AccountIdAsPrincipalSigninGateway implements SignInControllerGatewa
 <bean class="org.springframework.social.facebook.web.FacebookSigninController">
     <constructor-arg ref="connectionRepository" />
     <constructor-arg ref="signinGateway" />
+    <constructor-arg ref="#{environment['application.url']}" />
     <constructor-arg value="#{environment['facebook.appId']}" />
     <constructor-arg value="#{environment['facebook.appSecret']}" />
 </bean>]]>
@@ -165,7 +166,10 @@ public class AccountIdAsPrincipalSigninGateway implements SignInControllerGatewa
 		
 		<para>
 			As with <classname>TwitterSigninController</classname>, <classname>FacebookSigninController</classname> depends on a connection repository to lookup connections and a sign in gateway to handle the actual application authentication.
+			It also needs the base application URL that it will use to construct a URL to <classname>ConnectController</classname> to create a connection after signup.
 		</para>
+		
+		<para>[[[TODO: Document the deferred connection-after-signup stuff!!!]]]</para>
 		
 		<para>
 			However, since Facebook's sign in process is not based on an OAuth 1 flow, <classname>FacebookSigninController</classname> does not need the base URL to create a callback URL from. 
