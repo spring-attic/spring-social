@@ -22,7 +22,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.social.oauth.support.ClientHttpRequestInterceptor;
+import org.springframework.social.oauth.support.InterceptingClientHttpRequestFactory;
 import org.springframework.social.oauth2.OAuth2RequestInterceptor;
 import org.springframework.web.client.RestTemplate;
 
@@ -52,7 +53,8 @@ public class GitHubTemplate implements GitHubApi {
 	 */
 	public GitHubTemplate(String accessToken) {
 		restTemplate = new RestTemplate();
-		restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft8(accessToken) });
+		restTemplate.setRequestFactory(new InterceptingClientHttpRequestFactory(restTemplate.getRequestFactory(),
+				new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft8(accessToken) }));
 	}
 
 	public String getProfileId() {

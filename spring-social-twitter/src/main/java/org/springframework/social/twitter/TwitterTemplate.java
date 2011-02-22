@@ -27,10 +27,11 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.social.AccountNotConnectedException;
 import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.SocialException;
+import org.springframework.social.oauth.support.ClientHttpRequestInterceptor;
+import org.springframework.social.oauth.support.InterceptingClientHttpRequestFactory;
 import org.springframework.social.oauth1.OAuth1RequestInterceptor;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.util.LinkedMultiValueMap;
@@ -84,7 +85,8 @@ public class TwitterTemplate implements TwitterApi {
 	 */
 	public TwitterTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
 		restTemplate = new RestTemplate();
-		restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)) });
+		restTemplate.setRequestFactory(new InterceptingClientHttpRequestFactory(restTemplate.getRequestFactory(),
+				new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)) }));
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
 		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
 	}

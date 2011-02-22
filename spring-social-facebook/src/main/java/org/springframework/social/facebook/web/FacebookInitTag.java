@@ -19,7 +19,6 @@ import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.tags.RequestContextAwareTag;
 
 /**
@@ -31,8 +30,6 @@ public class FacebookInitTag extends RequestContextAwareTag {
 
 	private String apiKey;
 
-	private static final String API_KEY_PROPERTY = "facebook.apiKey";
-
 	/**
 	 * Sets the application's Facebook API. If not specified, this tag will attempt to resolve the tag through a configured FacebookServiceProvider.
 	 * @param apiKey
@@ -43,10 +40,6 @@ public class FacebookInitTag extends RequestContextAwareTag {
 
 	@Override
 	protected int doStartTagInternal() throws Exception {
-		if (apiKey == null) {
-			apiKey = resolveApiKey();
-		}
-
 		return SKIP_BODY;
 	}
 
@@ -66,16 +59,6 @@ public class FacebookInitTag extends RequestContextAwareTag {
 			throw new JspException(e);
 		}
 		return EVAL_PAGE;
-	}
-
-	private String resolveApiKey() throws JspException {
-		WebApplicationContext context = getRequestContext().getWebApplicationContext();
-		String apiKey = context.getEnvironment().getProperty(API_KEY_PROPERTY);
-		if (apiKey == null && context.getParent() != null) {
-			// check parent context
-			apiKey = context.getParent().getEnvironment().getProperty(API_KEY_PROPERTY);
-		}
-		return apiKey != null ? apiKey : "";
 	}
 
 }

@@ -16,14 +16,11 @@
 package org.springframework.social.oauth1;
 
 import java.io.IOException;
-import java.net.URI;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.social.oauth.support.ClientHttpRequestExecution;
+import org.springframework.social.oauth.support.ClientHttpRequestInterceptor;
+import org.springframework.social.oauth.support.HttpRequest;
 
 /**
  * ClientHttpRequestInterceptor implementation that performs OAuth1 request signing before a request for a protected resource is executed.
@@ -49,22 +46,8 @@ public class OAuth1RequestInterceptor implements ClientHttpRequestInterceptor {
 	}
 
 	public ClientHttpResponse intercept(final HttpRequest request, final byte[] body, ClientHttpRequestExecution execution) throws IOException {
-		HttpRequest protectedResourceRequest = new HttpRequest() {
-			public HttpHeaders getHeaders() {
-				HttpHeaders headers = new HttpHeaders();
-				headers.putAll(request.getHeaders());
-				headers.set("Authorization", getAuthorizationHeaderValue(request, body));
-				return headers;
-			}
-			
-			public URI getURI() {
-				return request.getURI();
-			}
-			
-			public HttpMethod getMethod() {
-				return request.getMethod();
-			}
-		};
+		HttpRequest protectedResourceRequest = new HttpRequest(request);
+		protectedResourceRequest.getHeaders().add("Authorization", getAuthorizationHeaderValue(request, body));
 		return execution.execute(protectedResourceRequest, body);
 	}
 

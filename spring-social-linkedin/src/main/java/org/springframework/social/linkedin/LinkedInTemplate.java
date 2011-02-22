@@ -17,7 +17,8 @@ package org.springframework.social.linkedin;
 
 import java.util.List;
 
-import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.social.oauth.support.ClientHttpRequestInterceptor;
+import org.springframework.social.oauth.support.InterceptingClientHttpRequestFactory;
 import org.springframework.social.oauth1.OAuth1RequestInterceptor;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.web.client.RestTemplate;
@@ -46,7 +47,8 @@ public class LinkedInTemplate implements LinkedInApi {
 	 */
 	public LinkedInTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
 		restTemplate = new RestTemplate();
-		restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)) });
+		restTemplate.setRequestFactory(new InterceptingClientHttpRequestFactory(restTemplate.getRequestFactory(),
+				new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)) }));
 	}
 
 	public String getProfileId() {

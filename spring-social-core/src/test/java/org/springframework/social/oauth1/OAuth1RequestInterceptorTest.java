@@ -15,8 +15,7 @@
  */
 package org.springframework.social.oauth1;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -26,10 +25,10 @@ import java.util.Map;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.social.oauth.support.ClientHttpRequestExecution;
+import org.springframework.social.oauth.support.HttpRequest;
 
 public class OAuth1RequestInterceptorTest {
 
@@ -38,21 +37,10 @@ public class OAuth1RequestInterceptorTest {
 		OAuth1RequestInterceptor interceptor = new OAuth1RequestInterceptor("consumer_key", "consumer_secret", new OAuthToken("access_token", "token_secret"));
 		final URI uri = new URI("https://api.someprovider.com/status/update");
 		byte[] body = "status=Hello+there".getBytes();
-		HttpRequest request = new HttpRequest() {
-			public HttpHeaders getHeaders() {
-				HttpHeaders headers = new HttpHeaders();
-				headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-				return headers;
-			}
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		HttpRequest request = new HttpRequest(uri, HttpMethod.POST, headers);
 
-			public HttpMethod getMethod() {
-				return HttpMethod.POST;
-			}
-
-			public URI getURI() {
-				return uri;
-			}
-		};
 		ClientHttpRequestExecution execution = new ClientHttpRequestExecution() {
 			public ClientHttpResponse execute(HttpRequest request, byte[] body) throws IOException {
 				String authorizationHeader = request.getHeaders().getFirst("Authorization");

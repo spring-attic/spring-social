@@ -23,6 +23,7 @@ import static org.springframework.web.client.test.ResponseCreators.*;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
@@ -32,6 +33,7 @@ import org.springframework.web.client.test.MockRestServiceServer;
 /**
  * @author Craig Walls
  */
+@Ignore
 public class LinkedInTemplateTest {
 
 	private LinkedInTemplate linkedIn;

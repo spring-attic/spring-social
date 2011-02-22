@@ -22,8 +22,9 @@ import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.social.oauth.support.ClientHttpRequestInterceptor;
+import org.springframework.social.oauth.support.InterceptingClientHttpRequestFactory;
 import org.springframework.social.oauth2.OAuth2RequestInterceptor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -48,7 +49,8 @@ public class FacebookTemplate implements FacebookApi {
 	 */
 	public FacebookTemplate(String accessToken) {
 		restTemplate = new RestTemplate();
-		restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft10(accessToken) });
+		restTemplate.setRequestFactory(new InterceptingClientHttpRequestFactory(restTemplate.getRequestFactory(),
+				new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft10(accessToken) }));
 		// Facebook returns JSON data with text/javascript content type
 		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));

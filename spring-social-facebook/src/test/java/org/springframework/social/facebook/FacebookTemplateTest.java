@@ -24,6 +24,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
@@ -33,6 +34,7 @@ import org.springframework.web.client.test.MockRestServiceServer;
 /**
  * @author Craig Walls
  */
+@Ignore
 public class FacebookTemplateTest {
 	
 	private static final String ACCESS_TOKEN = "someAccessToken";

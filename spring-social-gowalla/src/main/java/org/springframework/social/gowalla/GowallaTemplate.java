@@ -22,7 +22,10 @@ import java.util.Map;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.social.oauth.support.ClientHttpRequestInterceptor;
+import org.springframework.social.oauth.support.InterceptingClientHttpRequestFactory;
 import org.springframework.social.oauth2.OAuth2RequestInterceptor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -49,8 +52,11 @@ public class GowallaTemplate implements GowallaApi {
 	 * @param accessToken An access token granted to the application after OAuth authentication.
 	 */
 	public GowallaTemplate(String accessToken) {
+		ClientHttpRequestFactory requestFactory = new InterceptingClientHttpRequestFactory(
+				new SimpleClientHttpRequestFactory(),
+				new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft8(accessToken) });
+
 		restTemplate = new RestTemplate();
-		restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft8(accessToken) });		
 	}
 
 	public String getProfileId() {

@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.social.oauth.support.ClientHttpRequestInterceptor;
+import org.springframework.social.oauth.support.InterceptingClientHttpRequestFactory;
 import org.springframework.social.oauth1.OAuth1RequestInterceptor;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.web.client.RestTemplate;
@@ -50,7 +51,8 @@ public class TripItTemplate implements TripItApi {
 	 */
 	public TripItTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
 		restTemplate = new RestTemplate();
-		restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)) });
+		restTemplate.setRequestFactory(new InterceptingClientHttpRequestFactory(restTemplate.getRequestFactory(),
+				new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)) }));
 	}
 
 	public String getProfileId() {
