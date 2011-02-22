@@ -22,7 +22,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.social.connect.support.ConnectionRepository;
+import org.springframework.social.oauth2.AccessGrant;
+import org.springframework.social.web.connect.ConnectController;
 import org.springframework.social.web.connect.SignInControllerGateway;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,6 +48,8 @@ public class FacebookSigninController {
 
 	private final String appSecret;
 
+	private String baseConnectControllerUrl;
+
 	/**
 	 * Constructs the FacebookSigninController.
 	 * @param connectionRepository a connection repository used to lookup the account ID connected to the Facebook profile.
@@ -52,13 +57,14 @@ public class FacebookSigninController {
 	 * @param apiKey the Facebook API key used to retrieve the Facebook cookie containing the access token.
 	 */
 	public FacebookSigninController(ConnectionRepository connectionRepository, SignInControllerGateway signinGateway,
-			String apiKey, String appSecret) {
+			String applicationUrl, String apiKey, String appSecret) {
 		this.connectionRepository = connectionRepository;
 		this.signinGateway = signinGateway;
 		// TODO: The Facebook service provider could be looked up here and could expose its API key as a
 		// property. Then this controller could just get the API key and app secret from the provider.
 		this.apiKey = apiKey;
 		this.appSecret = appSecret;
+		this.baseConnectControllerUrl = applicationUrl + AnnotationUtils.findAnnotation(ConnectController.class, RequestMapping.class).value()[0];
 	}
 
 	/**
@@ -81,11 +87,17 @@ public class FacebookSigninController {
 		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(FACEBOOK_PROVIDER_ID, accessToken);
 
 		if (accountId == null) {
+			request.getSession().setAttribute(ConnectController.DEFERRED_CONNECTION_ACCESS_TOKEN_ATTRIBUTE, new AccessGrant(accessToken, null));
+			request.getSession().setAttribute(ConnectController.DEFERRED_CONNECTION_REDIRECT_URI_ATTRIBUTE, deferredConnectionUrl());
 			return noConnectionView;
 		}
 
 		signinGateway.signIn(accountId);
 		return "redirect:/";
+	}
+	
+	private String deferredConnectionUrl() {
+		return baseConnectControllerUrl + FACEBOOK_PROVIDER_ID + "?deferred";
 	}
 
 	private String resolveAccessTokenValue(HttpServletRequest request) {

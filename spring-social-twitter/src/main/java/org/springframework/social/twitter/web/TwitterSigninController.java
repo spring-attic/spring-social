@@ -28,6 +28,7 @@ import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
+import org.springframework.social.web.connect.ConnectController;
 import org.springframework.social.web.connect.ServiceProviderLocator;
 import org.springframework.social.web.connect.SignInControllerGateway;
 import org.springframework.stereotype.Controller;
@@ -49,6 +50,8 @@ public class TwitterSigninController implements BeanFactoryAware {
 	private ServiceProviderLocator serviceProviderLocator;
 
 	private String baseCallbackUrl;
+	
+	private String baseConnectControllerUrl;
 
 	private final ConnectionRepository connectionRepository;
 
@@ -67,6 +70,7 @@ public class TwitterSigninController implements BeanFactoryAware {
 		this.connectionRepository = connectionRepository;
 		this.signinGateway = signinGateway;
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
+		this.baseConnectControllerUrl = applicationUrl + AnnotationUtils.findAnnotation(ConnectController.class, RequestMapping.class).value()[0];
 	}
 
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -89,7 +93,7 @@ public class TwitterSigninController implements BeanFactoryAware {
 		// TODO: Address the duplication between this controller and ConnectController
 		ServiceProvider<?> provider = getServiceProvider(TWITTER_PROVIDER_ID);
 		OAuth1Operations oauth1Ops = ((OAuth1ServiceProvider<?>) provider).getOAuthOperations();
-		OAuthToken requestToken = oauth1Ops.fetchNewRequestToken(callbackUrl(TWITTER_PROVIDER_ID));
+		OAuthToken requestToken = oauth1Ops.fetchNewRequestToken(callbackUrl());
 		request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
 		return "redirect:https://api.twitter.com/oauth/authenticate?oauth_token=" + requestToken.getValue();
 	}
@@ -109,6 +113,8 @@ public class TwitterSigninController implements BeanFactoryAware {
 		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(TWITTER_PROVIDER_ID, accessToken.getValue());
 
 		if (accountId == null) {
+			request.setAttribute(ConnectController.DEFERRED_CONNECTION_ACCESS_TOKEN_ATTRIBUTE, accessToken, WebRequest.SCOPE_SESSION);
+			request.setAttribute(ConnectController.DEFERRED_CONNECTION_REDIRECT_URI_ATTRIBUTE, deferredConnectionUrl(), WebRequest.SCOPE_SESSION);
 			return noConnectionView;
 		}
 
@@ -120,8 +126,12 @@ public class TwitterSigninController implements BeanFactoryAware {
 		return serviceProviderLocator.getServiceProvider(providerId);
 	}
 
-	private String callbackUrl(String providerId) {
-		return baseCallbackUrl + providerId;
+	private String callbackUrl() {
+		return baseCallbackUrl + TWITTER_PROVIDER_ID;
+	}
+	
+	private String deferredConnectionUrl() {
+		return baseConnectControllerUrl + TWITTER_PROVIDER_ID + "?deferred";
 	}
 
 	private OAuthToken extractCachedRequestToken(WebRequest request) {
