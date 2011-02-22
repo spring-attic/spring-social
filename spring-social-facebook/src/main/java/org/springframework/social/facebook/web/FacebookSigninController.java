@@ -88,8 +88,7 @@ public class FacebookSigninController {
 
 		if (accountId == null) {
 			request.getSession().setAttribute(ConnectController.DEFERRED_CONNECTION_ACCESS_TOKEN_ATTRIBUTE, new AccessGrant(accessToken, null));
-			request.getSession().setAttribute(ConnectController.DEFERRED_CONNECTION_REDIRECT_URI_ATTRIBUTE, deferredConnectionUrl());
-			return noConnectionView;
+			return noConnectionView + "?deferredConnectionUrl=" + deferredConnectionUrl();
 		}
 
 		signinGateway.signIn(accountId);

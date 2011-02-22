@@ -181,13 +181,12 @@ public class ConnectController implements BeanFactoryAware {
 	}
 
 	/**
-	 * Create a connection using an access token stored in the session. Useful for callbacks after a signup that follows a failed sign-in-with-provider.
+	 * Processes a deferred connection, using an access token that was previously obtained and stored in the session. 
 	 */
 	@RequestMapping(value = "{providerId}", method = RequestMethod.GET, params = "deferred")
 	public String completeConnection(@PathVariable String providerId, WebRequest request) {
 		Object accessToken = request.getAttribute(DEFERRED_CONNECTION_ACCESS_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		request.removeAttribute(DEFERRED_CONNECTION_ACCESS_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
-		request.removeAttribute(DEFERRED_CONNECTION_REDIRECT_URI_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		ServiceProvider<?> provider = getServiceProvider(providerId);
 		if (provider instanceof OAuth1ServiceProvider) {
 			((OAuth1ServiceProvider<?>) provider).connect(accountIdExtractor.extractAccountId(request), (OAuthToken) accessToken);
@@ -241,7 +240,5 @@ public class ConnectController implements BeanFactoryAware {
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
 	
 	public static final String DEFERRED_CONNECTION_ACCESS_TOKEN_ATTRIBUTE = "deferredConnect.accessToken";
-
-	public static final String DEFERRED_CONNECTION_REDIRECT_URI_ATTRIBUTE = "deferredConnect.redirectUri";
 
 }

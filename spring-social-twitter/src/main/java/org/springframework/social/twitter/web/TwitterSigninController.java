@@ -114,8 +114,7 @@ public class TwitterSigninController implements BeanFactoryAware {
 
 		if (accountId == null) {
 			request.setAttribute(ConnectController.DEFERRED_CONNECTION_ACCESS_TOKEN_ATTRIBUTE, accessToken, WebRequest.SCOPE_SESSION);
-			request.setAttribute(ConnectController.DEFERRED_CONNECTION_REDIRECT_URI_ATTRIBUTE, deferredConnectionUrl(), WebRequest.SCOPE_SESSION);
-			return noConnectionView;
+			return noConnectionView + "?deferredConnectionUrl=" + deferredConnectionUrl();
 		}
 
 		signinGateway.signIn(accountId);
