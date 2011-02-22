@@ -143,10 +143,10 @@ configure(javaprojects) {
 project('spring-social-core') {
     description = 'Foundational module containing the ServiceProvider "Connect" Framework and Service API invocation support.'
     dependencies {
-        compile "org.springframework:spring-jdbc:$springVersion"
-        compile "org.springframework:spring-web:$springVersion"
+        compile ("org.springframework:spring-jdbc:$springVersion") { optional = true }
+        compile ("org.springframework:spring-web:$springVersion") { optional = true }
 		compile ("org.springframework.security:spring-security-crypto:$springSecurityVersion") { provided = true }
-        compile "commons-codec:commons-codec:1.4"
+        compile ("commons-codec:commons-codec:1.4") { optional = true }
         testCompile "com.h2database:h2:1.2.143"
         testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
     }
