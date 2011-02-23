@@ -21,6 +21,7 @@ import java.io.Serializable;
  * OAuth2 access token.
  * @author Keith Donald
  */
+@SuppressWarnings("serial")
 public final class AccessGrant implements Serializable {
 
 	private final String accessToken;

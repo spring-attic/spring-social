@@ -99,29 +99,24 @@ public class OAuth1Template implements OAuth1Operations {
 		if (oauth10a) {
 			accessTokenParameters.put("oauth_verifier", requestToken.getVerifier());
 		}
-		return getTokenFromProvider(accessTokenUrl, accessTokenParameters, Collections.<String, String> emptyMap(),
-				requestToken.getSecret());
+		return getTokenFromProvider(accessTokenUrl, accessTokenParameters, Collections.<String, String> emptyMap(), requestToken.getSecret());
 	}
 
 	// internal helpers
 
-	protected OAuthToken getTokenFromProvider(String tokenUrl, Map<String, String> tokenRequestParameters,
-			Map<String, String> additionalParameters, String tokenSecret) {
+	protected OAuthToken getTokenFromProvider(String tokenUrl, Map<String, String> tokenRequestParameters, Map<String, String> additionalParameters, String tokenSecret) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization",
-				getAuthorizationHeaderValue(tokenUrl, tokenRequestParameters, additionalParameters, tokenSecret));
+		headers.add("Authorization", getAuthorizationHeaderValue(tokenUrl, tokenRequestParameters, additionalParameters, tokenSecret));
 		MultiValueMap<String, String> bodyParameters = new LinkedMultiValueMap<String, String>();
 		bodyParameters.setAll(additionalParameters);
-		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(
-				bodyParameters, headers);
+		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(bodyParameters, headers);
 		ResponseEntity<String> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, request, String.class);
 		Map<String, String> responseMap = parseResponse(response.getBody());
 		return new OAuthToken(responseMap.get("oauth_token"), responseMap.get("oauth_token_secret"));
 	}
 
 	// manually parse the response instead of using a message converter.
-	// The response content type could by text/plain, text/html, etc...and may not trigger the form-encoded message
-	// converter
+	// The response content type could be text/plain, text/html, etc...and may not trigger the form-encoded message converter
 	private Map<String, String> parseResponse(String response) {
 		Map<String, String> responseMap = new HashMap<String, String>();
 		String[] responseEntries = response.split("&");
@@ -134,12 +129,10 @@ public class OAuth1Template implements OAuth1Operations {
 		return responseMap;
 	}
 
-	protected String getAuthorizationHeaderValue(String tokenUrl, Map<String, String> tokenRequestParameters,
-			Map<String, String> additionalParameters, String tokenSecret) {
+	protected String getAuthorizationHeaderValue(String tokenUrl, Map<String, String> tokenRequestParameters, Map<String, String> additionalParameters, String tokenSecret) {
 		Map<String, String> oauthParameters = SigningUtils.commonOAuthParameters(consumerKey);
 		oauthParameters.putAll(tokenRequestParameters);
-		return SigningUtils.buildAuthorizationHeaderValue(tokenUrl, oauthParameters, additionalParameters,
-				HttpMethod.POST, consumerSecret, tokenSecret);
+		return SigningUtils.buildAuthorizationHeaderValue(tokenUrl, oauthParameters, additionalParameters, HttpMethod.POST, consumerSecret, tokenSecret);
 	}
 
 	// testing hooks

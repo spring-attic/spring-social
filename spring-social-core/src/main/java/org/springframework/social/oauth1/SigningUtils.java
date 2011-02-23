@@ -33,19 +33,19 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
-import org.springframework.social.oauth.support.HttpRequest;
 
 class SigningUtils {
 	
-	public static String buildAuthorizationHeaderValue(HttpRequest request, byte[] body, String consumerKey, String consumerSecret, OAuthToken accessToken) {
+	public static String buildAuthorizationHeaderValue(HttpRequest request, byte[] body, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
 		Map<String, String> oauthParameters = commonOAuthParameters(consumerKey);
-		oauthParameters.put("oauth_token", accessToken.getValue());
+		oauthParameters.put("oauth_token", accessToken);
 		Map<String, String> aditionalParameters = extractBodyParameters(request.getHeaders().getContentType(), body);
 		Map<String, String> queryParameters = extractParameters(request.getURI().getQuery());
 		aditionalParameters.putAll(queryParameters);
 		String baseRequestUrl = getBaseUrlWithoutPortOrQueryString(request.getURI());
-		return SigningUtils.buildAuthorizationHeaderValue(baseRequestUrl, oauthParameters, aditionalParameters, request.getMethod(), consumerSecret, accessToken.getSecret());
+		return SigningUtils.buildAuthorizationHeaderValue(baseRequestUrl, oauthParameters, aditionalParameters, request.getMethod(), consumerSecret, accessTokenSecret);
 	}
 
 	public static String buildAuthorizationHeaderValue(String targetUrl, Map<String, String> oauthParameters, Map<String, String> additionalParameters, HttpMethod method, String consumerSecret, String tokenSecret) {

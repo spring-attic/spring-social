@@ -15,31 +15,29 @@
  */
 package org.springframework.social.oauth1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.social.oauth.support.ClientHttpRequestExecution;
-import org.springframework.social.oauth.support.HttpRequest;
+import org.springframework.web.client.test.MockHttpRequest;
 
 public class OAuth1RequestInterceptorTest {
 
 	@Test
 	public void beforeExecution() throws Exception {
-		OAuth1RequestInterceptor interceptor = new OAuth1RequestInterceptor("consumer_key", "consumer_secret", new OAuthToken("access_token", "token_secret"));
-		final URI uri = new URI("https://api.someprovider.com/status/update");
+		OAuth1RequestInterceptor interceptor = new OAuth1RequestInterceptor("consumer_key", "consumer_secret", "access_token", "token_secret");
 		byte[] body = "status=Hello+there".getBytes();
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		HttpRequest request = new HttpRequest(uri, HttpMethod.POST, headers);
+		MockHttpRequest request = new MockHttpRequest(HttpMethod.POST, "https://api.someprovider.com/status/update");
+		request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
 		ClientHttpRequestExecution execution = new ClientHttpRequestExecution() {
 			public ClientHttpResponse execute(HttpRequest request, byte[] body) throws IOException {

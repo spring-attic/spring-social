@@ -17,17 +17,11 @@ package org.springframework.social.linkedin;
 
 import java.util.List;
 
-import org.springframework.social.oauth.support.ClientHttpRequestInterceptor;
-import org.springframework.social.oauth.support.InterceptingClientHttpRequestFactory;
-import org.springframework.social.oauth.support.InterceptingRestTemplate;
-import org.springframework.social.oauth1.OAuth1RequestInterceptor;
-import org.springframework.social.oauth1.OAuthToken;
+import org.springframework.social.oauth1.ProtectedResourceClientFactory;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * <p>
  * This is the central class for interacting with LinkedIn.
- * </p>
  * <p>
  * Greenhouse operations require OAuth authentication with the server.
  * Therefore, LinkedInTemplate must be constructed with the minimal information
@@ -47,10 +41,7 @@ public class LinkedInTemplate implements LinkedInApi {
 	 * @param accessTokenSecret an access token secret acquired through OAuth authentication with LinkedIn
 	 */
 	public LinkedInTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
-		InterceptingRestTemplate interceptingRestTemplate = new InterceptingRestTemplate();
-		interceptingRestTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { 
-				new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)) });
-		this.restTemplate = interceptingRestTemplate;
+		this.restTemplate = ProtectedResourceClientFactory.create(apiKey, apiSecret, accessToken, accessTokenSecret);
 	}
 
 	public String getProfileId() {

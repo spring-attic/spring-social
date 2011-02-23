@@ -17,7 +17,6 @@ package org.springframework.social.web.connect;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -185,18 +184,19 @@ public class ConnectController implements BeanFactoryAware {
 	 * Processes a deferred connection, using an access token that was previously obtained and stored in the session. 
 	 */
 	@RequestMapping(value = "{providerId}", method = RequestMethod.GET, params = "deferred")
-	public String deferredConnection(@PathVariable String providerId, WebRequest request) {
-		Properties deferredConnectionDetails = (Properties) request.getAttribute(DEFERRED_CONNECTION_DETAILS_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+	public String deferredConnection(@PathVariable String providerId, @RequestParam String targetView, WebRequest request) {
+		DeferredConnectionDetails connectionDetails = (DeferredConnectionDetails) request.getAttribute(
+				DEFERRED_CONNECTION_DETAILS_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		request.removeAttribute(DEFERRED_CONNECTION_DETAILS_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		ServiceProvider<?> provider = getServiceProvider(providerId);
-		String accessToken = deferredConnectionDetails.getProperty("accessToken");
+		String accessToken = connectionDetails.getAccessToken();
 		if (provider instanceof OAuth1ServiceProvider) {
-			String accessTokenSecret = deferredConnectionDetails.getProperty("accessTokenSecret");
+			String accessTokenSecret = connectionDetails.getAccessTokenSecret();
 			((OAuth1ServiceProvider<?>) provider).connect(accountIdExtractor.extractAccountId(request), new OAuthToken(accessToken, accessTokenSecret));
 		} else {
 			((OAuth2ServiceProvider<?>) provider).connect(accountIdExtractor.extractAccountId(request), new AccessGrant(accessToken, null));
 		}
-		return deferredConnectionDetails.getProperty("targetView");
+		return targetView;
 	}
 	
 	// internal helpers

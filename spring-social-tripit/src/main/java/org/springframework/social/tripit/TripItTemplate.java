@@ -23,11 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.social.oauth.support.ClientHttpRequestInterceptor;
-import org.springframework.social.oauth.support.InterceptingClientHttpRequestFactory;
-import org.springframework.social.oauth.support.InterceptingRestTemplate;
-import org.springframework.social.oauth1.OAuth1RequestInterceptor;
-import org.springframework.social.oauth1.OAuthToken;
+import org.springframework.social.oauth1.ProtectedResourceClientFactory;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -51,10 +47,7 @@ public class TripItTemplate implements TripItApi {
 	 * @param accessTokenSecret an access token secret acquired through OAuth authentication with LinkedIn
 	 */
 	public TripItTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
-		InterceptingRestTemplate interceptingRestTemplate = new InterceptingRestTemplate();
-		interceptingRestTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { 
-				new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)) });
-		this.restTemplate = interceptingRestTemplate;
+		this.restTemplate = ProtectedResourceClientFactory.create(apiKey, apiSecret, accessToken, accessTokenSecret);
 	}
 
 	public String getProfileId() {

@@ -16,7 +16,6 @@
 package org.springframework.social.twitter.web;
 
 import java.io.Serializable;
-import java.util.Properties;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -30,6 +29,7 @@ import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.web.connect.ConnectController;
+import org.springframework.social.web.connect.DeferredConnectionDetails;
 import org.springframework.social.web.connect.ServiceProviderLocator;
 import org.springframework.social.web.connect.SignInService;
 import org.springframework.stereotype.Controller;
@@ -119,10 +119,8 @@ public class TwitterSigninController implements BeanFactoryAware {
 		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(TWITTER_PROVIDER_ID, accessToken.getValue());
 
 		if (accountId == null) {
-			Properties deferredConnectionDetails = new Properties();
-			deferredConnectionDetails.setProperty("accessToken", accessToken.getValue());
-			deferredConnectionDetails.setProperty("accessTokenSecret", accessToken.getSecret());
-			deferredConnectionDetails.setProperty("providerId", TWITTER_PROVIDER_ID);
+			DeferredConnectionDetails deferredConnectionDetails = new DeferredConnectionDetails(TWITTER_PROVIDER_ID,
+					accessToken.getValue(), accessToken.getSecret());
 			request.setAttribute(ConnectController.DEFERRED_CONNECTION_DETAILS_ATTRIBUTE, deferredConnectionDetails, WebRequest.SCOPE_SESSION);
 			return noConnectionView;
 		}

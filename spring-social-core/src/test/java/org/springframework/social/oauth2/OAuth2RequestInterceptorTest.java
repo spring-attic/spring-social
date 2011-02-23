@@ -15,20 +15,20 @@
  */
 package org.springframework.social.oauth2;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.net.URI;
 
 import org.junit.Test;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.social.oauth.support.ClientHttpRequestExecution;
-import org.springframework.social.oauth.support.HttpRequest;
+import org.springframework.web.client.test.MockHttpRequest;
 
 public class OAuth2RequestInterceptorTest {
+	
 	@Test
 	public void currentOAuth2SpecInterceptor() throws Exception {
 		OAuth2RequestInterceptor interceptor = new OAuth2RequestInterceptor("access_token");
@@ -48,12 +48,9 @@ public class OAuth2RequestInterceptorTest {
 	}
 
 	private void assertThatInterceptorWritesAuthorizationHeader(OAuth2RequestInterceptor interceptor, final String expected) throws Exception {
-		final URI uri = new URI("https://api.someprovider.com/status/update");
 		byte[] body = "status=Hello+there".getBytes();
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		HttpRequest request = new HttpRequest(uri, HttpMethod.POST, headers);
-
+		MockHttpRequest request = new MockHttpRequest(HttpMethod.POST, "https://api.someprovider.com/status/update");
+		request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		ClientHttpRequestExecution execution = new ClientHttpRequestExecution() {
 			public ClientHttpResponse execute(HttpRequest request, byte[] body) throws IOException {
 				String authorizationHeader = request.getHeaders().getFirst("Authorization");

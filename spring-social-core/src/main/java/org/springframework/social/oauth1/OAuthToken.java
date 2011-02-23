@@ -22,6 +22,7 @@ import java.io.Serializable;
  * Used for both the request token and access token.
  * @author Keith Donald
  */
+@SuppressWarnings("serial")
 public final class OAuthToken implements Serializable {
 
 	private final String value;
