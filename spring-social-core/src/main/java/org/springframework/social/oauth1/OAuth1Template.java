@@ -95,8 +95,7 @@ public class OAuth1Template implements OAuth1Operations {
 
 	// internal helpers
 
-	protected OAuthToken getTokenFromProvider(String tokenUrl, Map<String, String> tokenRequestParameters,
-			Map<String, String> additionalParameters, String tokenSecret) {
+	protected OAuthToken getTokenFromProvider(String tokenUrl, Map<String, String> tokenRequestParameters, Map<String, String> additionalParameters, String tokenSecret) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("Authorization", getAuthorizationHeaderValue(tokenUrl, tokenRequestParameters, additionalParameters, tokenSecret));
 		MultiValueMap<String, String> bodyParameters = new LinkedMultiValueMap<String, String>();
@@ -121,8 +120,7 @@ public class OAuth1Template implements OAuth1Operations {
 		return responseMap;
 	}
 
-	protected String getAuthorizationHeaderValue(String tokenUrl, Map<String, String> tokenRequestParameters,
-			Map<String, String> additionalParameters, String tokenSecret) {
+	protected String getAuthorizationHeaderValue(String tokenUrl, Map<String, String> tokenRequestParameters, Map<String, String> additionalParameters, String tokenSecret) {
 		Map<String, String> oauthParameters = SigningUtils.commonOAuthParameters(consumerKey);
 		oauthParameters.putAll(tokenRequestParameters);
 		return SigningUtils.buildAuthorizationHeaderValue(tokenUrl, oauthParameters, additionalParameters, HttpMethod.POST, consumerSecret, tokenSecret);

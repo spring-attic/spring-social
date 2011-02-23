@@ -34,7 +34,7 @@ public class OAuth1RequestInterceptorTest {
 
 	@Test
 	public void beforeExecution() throws Exception {
-		OAuth1RequestInterceptor interceptor = new OAuth1RequestInterceptor("consumer_key", "consumer_secret", new OAuthToken("access_token", "token_secret"));
+		OAuth1RequestInterceptor interceptor = new OAuth1RequestInterceptor("consumer_key", "consumer_secret", "access_token", "token_secret");
 		byte[] body = "status=Hello+there".getBytes();
 		MockHttpRequest request = new MockHttpRequest(HttpMethod.POST, "https://api.someprovider.com/status/update");
 		request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);

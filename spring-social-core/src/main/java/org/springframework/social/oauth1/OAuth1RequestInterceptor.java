@@ -34,16 +34,19 @@ public class OAuth1RequestInterceptor implements ClientHttpRequestInterceptor {
 	
 	private final String consumerSecret;
 
-	private final OAuthToken accessToken;
-
+	private final String accessToken;
+	
+	private final String accessTokenSecret;
+	
 	/**
 	 * Creates an OAuth 1.0 protected resource request interceptor.
 	 * @param accessToken the access token and secret
 	 */
-	public OAuth1RequestInterceptor(String consumerKey, String consumerSecret, OAuthToken accessToken) {
+	public OAuth1RequestInterceptor(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
 		this.accessToken = accessToken;
+		this.accessTokenSecret = accessTokenSecret;
 	}
 
 	public ClientHttpResponse intercept(final HttpRequest request, final byte[] body, ClientHttpRequestExecution execution) throws IOException {
@@ -55,7 +58,7 @@ public class OAuth1RequestInterceptor implements ClientHttpRequestInterceptor {
 	// internal helpers
 	
 	private String getAuthorizationHeaderValue(HttpRequest request, byte[] body) {
-		return SigningUtils.buildAuthorizationHeaderValue(request, body, consumerKey, consumerSecret, accessToken);
+		return SigningUtils.buildAuthorizationHeaderValue(request, body, consumerKey, consumerSecret, accessToken, accessTokenSecret);
 	}
 	
 }

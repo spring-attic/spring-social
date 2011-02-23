@@ -76,13 +76,15 @@ public class OAuth2Template implements OAuth2Operations {
 		return restTemplate;
 	}
 	
-	// private helpers
+	// internal helpers
+	
 	// TODO : Can probably tweak RestTemplate's message converters to deal with this better.
+	// TODO - KD: clarify: what is this for?
 	private String valueOf(Object object) {
 		if (object == null) {
 			return null;
 		} else if (object instanceof List) {
-			List list = (List) object;
+			List<?> list = (List<?>) object;
 			if (list.size() > 0) {
 				return String.valueOf(list.get(0));
 			}
