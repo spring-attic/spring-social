@@ -192,7 +192,7 @@ public class AccountIdAsPrincipalSigninService implements SignInService {
 		</para>
 
 		<programlisting language="xml"><![CDATA[
-<facebook:init />]]>
+<facebook:init appId="0c754d95f9d9899b0d7c4454a6f2dde6" />]]>
 		</programlisting>
 
 		<para>Note that the tag prefix cannot be "fb", as that would create a conflict between Spring Social's Facebook JSP tag library and Facebook's XFBML tags (which use "fb" as their prefix).</para>
@@ -200,13 +200,7 @@ public class AccountIdAsPrincipalSigninService implements SignInService {
 		<para>
 			The <code><![CDATA[<facebook:init>]]></code> will initialize the Facebook JavaScript library with your application's app id.
 			This is the appId assigned to your application when you registered it with Facebook.
-			It retrieves the appId from a Spring context's environment property whose name is "facebook.appId".
-			If that property is not set or if you'd rather specify the appId explicitly, you can do so by setting the <code>appId</code> attribute:
 		</para>
-
-		<programlisting language="xml"><![CDATA[
-<facebook:init appId="0c754d95f9d9899b0d7c4454a6f2dde6" />]]>
-		</programlisting>
 
 		<para>
 			Now that the Facebook JavaScript API is initialized you just need to add the <code><![CDATA[<fb:login-button>]]></code> to the page:

@@ -20,7 +20,6 @@ import static org.junit.Assert.*;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -42,16 +41,15 @@ public class FacebookInitTagTest {
 	}
 
 	@Test
-	@Ignore("for now")
 	public void initWithExplicitApiKey() throws Exception {
 		FacebookInitTag tag = new FacebookInitTag();
 		tag.setPageContext(pageContext);
-		tag.setApiKey("test-key");
+		tag.setAppId("test-id");
 		assertEquals(TagSupport.SKIP_BODY, tag.doStartTag());
 		assertEquals(TagSupport.EVAL_PAGE, tag.doEndTag());
 		assertEquals(
 			"<script src='http://connect.facebook.net/en_US/all.js'></script><div id='fb-root'></div>" +
-			"<script type='text/javascript'>FB.init({appId: 'test-key', status: true, cookie: true, xfbml: true});</script>",
+			"<script type='text/javascript'>FB.init({appId: 'test-id', status: true, cookie: true, xfbml: true});</script>",
 			response.getContentAsString());
 	}
 }

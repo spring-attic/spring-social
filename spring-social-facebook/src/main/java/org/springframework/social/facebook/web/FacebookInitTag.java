@@ -18,28 +18,27 @@ package org.springframework.social.facebook.web;
 import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
-
-import org.springframework.web.servlet.tags.RequestContextAwareTag;
+import javax.servlet.jsp.tagext.TagSupport;
 
 /**
  * JSP Tag for initializing Facebook's JavaScript API.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class FacebookInitTag extends RequestContextAwareTag {
+public class FacebookInitTag extends TagSupport {
 
-	private String apiKey;
+	private String appId;
 
 	/**
-	 * Sets the application's Facebook API. If not specified, this tag will attempt to resolve the tag through a configured FacebookServiceProvider.
-	 * @param apiKey
+	 * Sets the application's Facebook ID.
+	 * @param appId
 	 */
-	public void setApiKey(String apiKey) {
-		this.apiKey = apiKey;
+	public void setAppId(String appId) {
+		this.appId = appId;
 	}
 
 	@Override
-	protected int doStartTagInternal() throws Exception {
+	public int doStartTag() throws JspException {
 		return SKIP_BODY;
 	}
 
@@ -53,7 +52,7 @@ public class FacebookInitTag extends RequestContextAwareTag {
 			}
 			pageContext.getOut().append("<div id='fb-root'></div>");
 			pageContext.getOut().append("<script type='text/javascript'>");
-			pageContext.getOut().append("FB.init({appId: '" + apiKey + "', status: true, cookie: true, xfbml: true});");
+			pageContext.getOut().append("FB.init({appId: '" + appId + "', status: true, cookie: true, xfbml: true});");
 			pageContext.getOut().append("</script>");
 		} catch (IOException e) {
 			throw new JspException(e);

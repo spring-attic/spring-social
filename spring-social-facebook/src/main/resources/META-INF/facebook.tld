@@ -15,8 +15,8 @@
 			<tag-class>org.springframework.social.facebook.web.FacebookInitTag</tag-class>
 			<body-content>empty</body-content>
 			<attribute>
-				<description>The application's Facebook API Key</description>
-				<name>apiKey</name>
+				<description>The application's Facebook ID</description>
+				<name>appId</name>
 				<required>false</required>
 				<rtexprvalue>true</rtexprvalue>
 			</attribute>
