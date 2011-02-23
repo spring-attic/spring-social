@@ -26,7 +26,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.web.connect.ConnectController;
-import org.springframework.social.web.connect.SignInControllerService;
+import org.springframework.social.web.connect.SignInService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -40,7 +40,7 @@ public class FacebookSigninController {
 
 	private final ConnectionRepository connectionRepository;
 
-	private final SignInControllerService signinService;
+	private final SignInService signinService;
 
 	private String noConnectionView = "redirect:/signup";
 
@@ -60,7 +60,7 @@ public class FacebookSigninController {
 	 * @param apiKey
 	 *            the Facebook API key used to retrieve the Facebook cookie containing the access token.
 	 */
-	public FacebookSigninController(ConnectionRepository connectionRepository, SignInControllerService signinService,
+	public FacebookSigninController(ConnectionRepository connectionRepository, SignInService signinService,
 			String applicationUrl, String apiKey, String appSecret) {
 		this.connectionRepository = connectionRepository;
 		this.signinService = signinService;

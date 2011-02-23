@@ -22,7 +22,7 @@ import java.io.Serializable;
  * An application should provide their own implementation of this interface for use by FacebookSigninController and TwitterSigninController.
  * @author Craig Walls
  */
-public interface SignInControllerService {
+public interface SignInService {
 	
 	void signIn(Serializable accountId);
 	

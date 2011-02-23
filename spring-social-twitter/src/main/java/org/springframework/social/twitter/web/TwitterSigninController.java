@@ -30,7 +30,7 @@ import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.web.connect.ConnectController;
 import org.springframework.social.web.connect.ServiceProviderLocator;
-import org.springframework.social.web.connect.SignInControllerService;
+import org.springframework.social.web.connect.SignInService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,7 +55,7 @@ public class TwitterSigninController implements BeanFactoryAware {
 
 	private final ConnectionRepository connectionRepository;
 
-	private final SignInControllerService signinService;
+	private final SignInService signinService;
 
 	private String noConnectionView = "redirect:/signup";
 
@@ -70,7 +70,7 @@ public class TwitterSigninController implements BeanFactoryAware {
 	 *            the base secure URL for this application, used to construct the callback URL passed to the service
 	 *            providers at the beginning of the connection process.
 	 */
-	public TwitterSigninController(ConnectionRepository connectionRepository, SignInControllerService signinService,
+	public TwitterSigninController(ConnectionRepository connectionRepository, SignInService signinService,
 			String applicationUrl) {
 		this.connectionRepository = connectionRepository;
 		this.signinService = signinService;
