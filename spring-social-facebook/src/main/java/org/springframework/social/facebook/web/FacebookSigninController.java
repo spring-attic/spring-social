@@ -22,10 +22,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.social.connect.support.ConnectionRepository;
-import org.springframework.social.web.connect.ConnectController;
-import org.springframework.social.web.connect.DeferredConnectionDetails;
+import org.springframework.social.web.connect.ProviderSignInAccount;
 import org.springframework.social.web.connect.SignInService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -85,8 +83,8 @@ public class FacebookSigninController {
 		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(FACEBOOK_PROVIDER_ID, accessToken);
 
 		if (accountId == null) {
-			DeferredConnectionDetails deferredConnectionDetails = new DeferredConnectionDetails(FACEBOOK_PROVIDER_ID, accessToken, null);
-			request.getSession().setAttribute(ConnectController.DEFERRED_CONNECTION_DETAILS_ATTRIBUTE, deferredConnectionDetails);
+			FacebookSignInAccount signInAccount = new FacebookSignInAccount(FACEBOOK_PROVIDER_ID, accessToken);
+			request.getSession().setAttribute(ProviderSignInAccount.SIGN_IN_ACCOUNT_SESSION_ATTRIBUTE, signInAccount);
 			return noConnectionView;
 		}
 

@@ -28,8 +28,7 @@ import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
-import org.springframework.social.web.connect.ConnectController;
-import org.springframework.social.web.connect.DeferredConnectionDetails;
+import org.springframework.social.web.connect.ProviderSignInAccount;
 import org.springframework.social.web.connect.ServiceProviderLocator;
 import org.springframework.social.web.connect.SignInService;
 import org.springframework.stereotype.Controller;
@@ -52,8 +51,6 @@ public class TwitterSigninController implements BeanFactoryAware {
 
 	private String baseCallbackUrl;
 	
-	private String baseConnectControllerUrl;
-
 	private final ConnectionRepository connectionRepository;
 
 	private final SignInService signinService;
@@ -76,7 +73,6 @@ public class TwitterSigninController implements BeanFactoryAware {
 		this.connectionRepository = connectionRepository;
 		this.signinService = signinService;
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
-		this.baseConnectControllerUrl = applicationUrl + AnnotationUtils.findAnnotation(ConnectController.class, RequestMapping.class).value()[0];
 	}
 
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -119,9 +115,8 @@ public class TwitterSigninController implements BeanFactoryAware {
 		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(TWITTER_PROVIDER_ID, accessToken.getValue());
 
 		if (accountId == null) {
-			DeferredConnectionDetails deferredConnectionDetails = new DeferredConnectionDetails(TWITTER_PROVIDER_ID,
-					accessToken.getValue(), accessToken.getSecret());
-			request.setAttribute(ConnectController.DEFERRED_CONNECTION_DETAILS_ATTRIBUTE, deferredConnectionDetails, WebRequest.SCOPE_SESSION);
+			TwitterSignInAccount signInAccount = new TwitterSignInAccount(TWITTER_PROVIDER_ID, accessToken.getValue(), accessToken.getSecret());
+			request.setAttribute(ProviderSignInAccount.SIGN_IN_ACCOUNT_SESSION_ATTRIBUTE, signInAccount, WebRequest.SCOPE_SESSION);
 			return noConnectionView;
 		}
 
