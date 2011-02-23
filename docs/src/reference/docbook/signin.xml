@@ -31,7 +31,7 @@
 		<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.twitter.web.TwitterSigninController">
     <constructor-arg ref="connectionRepository" />
-    <constructor-arg ref="signinGateway" />
+    <constructor-arg ref="signinService" />
     <constructor-arg value="http://localhost:8080/myapplication" />
 </bean>]]>
 		</programlisting>
@@ -42,7 +42,7 @@
 		
 		<itemizedlist>
 			<listitem><para>A reference to a connection repository bean. After signing into Twitter, <classname>TwitterSigninController</classname> will use the connection repository to find an account ID that is connected to the Twitter profile.</para></listitem>
-			<listitem><para>A reference to an implementation of <interfacename>SignInControllerGateway</interfacename>, used to perform the actual authentication into the application.</para></listitem>
+			<listitem><para>A reference to an implementation of <interfacename>SignInService</interfacename>, used to perform the actual authentication into the application.</para></listitem>
 			<listitem><para>The application's base URL, used to construct a callback URL for the OAuth flow.</para></listitem>
 		</itemizedlist>
 		
@@ -52,7 +52,7 @@
 		
 		<itemizedlist>
 			<listitem><para><code>POST /signin/twitter</code> - Initiates the "Sign in with Twitter" flow, fetching a request token from Twitter and redirecting to Twitter's authentication page.</para></listitem>
-			<listitem><para><code>GET /signin/twitter?oauth_token={request token}&amp;oauth_verifier={verifier}</code> - Receives the authentication callback from Twitter, accepting a verification code. Exchanges this verification code along with the request token for an access token. It uses this access token to lookup a connected account and then authenticates to the application through the sign in gateway. </para>
+			<listitem><para><code>GET /signin/twitter?oauth_token={request token}&amp;oauth_verifier={verifier}</code> - Receives the authentication callback from Twitter, accepting a verification code. Exchanges this verification code along with the request token for an access token. It uses this access token to lookup a connected account and then authenticates to the application through the sign in service. </para>
 				<itemizedlist>
 					<listitem><para>If the received access token doesn't match any existing connection, <classname>TwitterSigninController</classname> will proceed to a no-connection view. The default no-connection view is "redirect:/signup".</para></listitem>
 				</itemizedlist>
@@ -60,19 +60,19 @@
 		</itemizedlist>
 		
 		<para>
-			<classname>TwitterSigninController</classname> handles the authentication flow with Twitter, but relies on an implementation of <interfacename>SignInControllerGateway</interfacename> to perform the actual authentication into the application. <interfacename>SignInControllerGateway</interfacename> is defined as follows:
+			<classname>TwitterSigninController</classname> handles the authentication flow with Twitter, but relies on an implementation of <interfacename>SignInService</interfacename> to perform the actual authentication into the application. <interfacename>SignInService</interfacename> is defined as follows:
 		</para>
 
 		<programlisting language="java"><![CDATA[
-public interface SignInControllerGateway {
+public interface SignInService {
     void signIn(Serializable accountId);	
 }]]>
 		</programlisting>
 
 		<para>
-			Different applications will implement security differently, so each application must implement <interfacename>SignInControllerGateway</interfacename> in a way that fits its unique security scheme.
+			Different applications will implement security differently, so each application must implement <interfacename>SignInService</interfacename> in a way that fits its unique security scheme.
 			As an example, suppose that an application's security is based Spring Security and simply uses a user's account ID as their principal. 
-			In that case, a simple implementation of <interfacename>SignInControllerGateway</interfacename> might look like this:
+			In that case, a simple implementation of <interfacename>SignInService</interfacename> might look like this:
 		</para>
 
 		<programlisting language="java"><![CDATA[
@@ -81,9 +81,9 @@ package org.springframework.social.showcase;
 import java.io.Serializable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.social.web.connect.SignInControllerGateway;
+import org.springframework.social.web.connect.SignInService;
 
-public class AccountIdAsPrincipalSigninGateway implements SignInControllerGateway {
+public class AccountIdAsPrincipalSigninService implements SignInService {
     public void signIn(Serializable accountId) {
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(accountId, null, null));
     }
@@ -157,7 +157,7 @@ public class AccountIdAsPrincipalSigninGateway implements SignInControllerGatewa
 		<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.facebook.web.FacebookSigninController">
     <constructor-arg ref="connectionRepository" />
-    <constructor-arg ref="signinGateway" />
+    <constructor-arg ref="signinService" />
     <constructor-arg ref="#{environment['application.url']}" />
     <constructor-arg value="#{environment['facebook.appId']}" />
     <constructor-arg value="#{environment['facebook.appSecret']}" />
@@ -165,7 +165,7 @@ public class AccountIdAsPrincipalSigninGateway implements SignInControllerGatewa
 		</programlisting>
 		
 		<para>
-			As with <classname>TwitterSigninController</classname>, <classname>FacebookSigninController</classname> depends on a connection repository to lookup connections and a sign in gateway to handle the actual application authentication.
+			As with <classname>TwitterSigninController</classname>, <classname>FacebookSigninController</classname> depends on a connection repository to lookup connections and a sign in service to handle the actual application authentication.
 			It also needs the base application URL that it will use to construct a URL to <classname>ConnectController</classname> to create a connection after signup.
 		</para>
 		
