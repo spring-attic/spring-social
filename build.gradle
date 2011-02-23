@@ -93,10 +93,12 @@ configure(javaprojects) {
     // add tasks for finding and publishing .xsd files
     apply from: "$buildSrcDir/schema-publication.gradle"
 
-    commonsHttpClientVersion = '3.1'
-    jacksonVersion = '1.5.3'
-    jodaVersion = '1.6'
-    junitVersion = '4.7'
+    commonsCodecVersion = '1.4'
+    h2Version = '1.2.143'
+    jacksonVersion = '1.7.3'
+    jodaVersion = '1.6.2'
+	jspApiVersion = '2.1'
+    junitVersion = '4.8.2'
     mockitoVersion = '1.8.5'
     servletApiVersion = '2.5'
     springVersion = '3.1.0.M1'
@@ -146,8 +148,8 @@ project('spring-social-core') {
         compile ("org.springframework:spring-jdbc:$springVersion") { optional = true }
         compile ("org.springframework:spring-web:$springVersion")
 		compile ("org.springframework.security:spring-security-crypto:$springSecurityVersion") { provided = true }
-        compile ("commons-codec:commons-codec:1.4") { optional = true }
-        testCompile "com.h2database:h2:1.2.143"
+        compile ("commons-codec:commons-codec:$commonsCodecVersion") { optional = true }
+        testCompile "com.h2database:h2:$h2Version"
         testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
     }
 }
@@ -156,9 +158,8 @@ project('spring-social-facebook') {
     description = 'Facebook API'
     dependencies {
         compile "org.springframework:spring-webmvc:$springVersion"
-        compile "commons-httpclient:commons-httpclient:$commonsHttpClientVersion"
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
-        compile ("javax.servlet.jsp:jsp-api:2.1") { provided = true }
+        compile ("javax.servlet.jsp:jsp-api:$jspApiVersion") { provided = true }
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
         compile project(':spring-social-web') { optional = true }
@@ -190,7 +191,6 @@ project('spring-social-gowalla') {
 project('spring-social-linkedin') {
     description = 'LinkedIn API'
     dependencies {
-        compile "commons-httpclient:commons-httpclient:$commonsHttpClientVersion"
         compile project(':spring-social-core')
         // to be able to use the mock rest server
         testCompile project(':spring-social-core').sourceSets.test.classes
