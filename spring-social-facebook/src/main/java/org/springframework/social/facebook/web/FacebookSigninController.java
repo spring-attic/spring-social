@@ -95,17 +95,13 @@ public class FacebookSigninController {
 			deferredConnectionDetails.setProperty("accessToken", accessToken);
 			deferredConnectionDetails.setProperty("providerId", FACEBOOK_PROVIDER_ID);
 			request.getSession().setAttribute(ConnectController.DEFERRED_CONNECTION_DETAILS_ATTRIBUTE, deferredConnectionDetails);
-			return noConnectionView + "?deferredConnectionUrl=" + deferredConnectionUrl();
+			return noConnectionView;
 		}
 
 		signinService.signIn(accountId);
 		return "redirect:/";
 	}
 	
-	private String deferredConnectionUrl() {
-		return baseConnectControllerUrl + FACEBOOK_PROVIDER_ID + "?deferred";
-	}
-
 	private String resolveAccessTokenValue(HttpServletRequest request) {
 		Map<String, String> cookieData = FacebookCookieParser.getFacebookCookieData(request.getCookies(), apiKey,
 				appSecret);

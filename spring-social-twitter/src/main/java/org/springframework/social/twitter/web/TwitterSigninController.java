@@ -139,10 +139,6 @@ public class TwitterSigninController implements BeanFactoryAware {
 		return baseCallbackUrl + TWITTER_PROVIDER_ID;
 	}
 	
-	private String deferredConnectionUrl() {
-		return baseConnectControllerUrl + TWITTER_PROVIDER_ID + "?deferred";
-	}
-
 	private OAuthToken extractCachedRequestToken(WebRequest request) {
 		OAuthToken requestToken = (OAuthToken) request.getAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		request.removeAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
