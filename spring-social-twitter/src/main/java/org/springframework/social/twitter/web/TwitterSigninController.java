@@ -16,6 +16,7 @@
 package org.springframework.social.twitter.web;
 
 import java.io.Serializable;
+import java.util.Properties;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -118,8 +119,12 @@ public class TwitterSigninController implements BeanFactoryAware {
 		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(TWITTER_PROVIDER_ID, accessToken.getValue());
 
 		if (accountId == null) {
-			request.setAttribute(ConnectController.DEFERRED_CONNECTION_ACCESS_TOKEN_ATTRIBUTE, accessToken, WebRequest.SCOPE_SESSION);
-			return noConnectionView + "?deferredConnectionUrl=" + deferredConnectionUrl();
+			Properties deferredConnectionDetails = new Properties();
+			deferredConnectionDetails.setProperty("accessToken", accessToken.getValue());
+			deferredConnectionDetails.setProperty("accessTokenSecret", accessToken.getSecret());
+			deferredConnectionDetails.setProperty("providerId", TWITTER_PROVIDER_ID);
+			request.setAttribute(ConnectController.DEFERRED_CONNECTION_DETAILS_ATTRIBUTE, deferredConnectionDetails, WebRequest.SCOPE_SESSION);
+			return noConnectionView;
 		}
 
 		signinService.signIn(accountId);

@@ -17,6 +17,7 @@ package org.springframework.social.web.connect;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -185,15 +186,17 @@ public class ConnectController implements BeanFactoryAware {
 	 */
 	@RequestMapping(value = "{providerId}", method = RequestMethod.GET, params = "deferred")
 	public String completeConnection(@PathVariable String providerId, WebRequest request) {
-		Object accessToken = request.getAttribute(DEFERRED_CONNECTION_ACCESS_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
-		request.removeAttribute(DEFERRED_CONNECTION_ACCESS_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+		Properties deferredConnectionDetails = (Properties) request.getAttribute(DEFERRED_CONNECTION_DETAILS_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+		request.removeAttribute(DEFERRED_CONNECTION_DETAILS_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		ServiceProvider<?> provider = getServiceProvider(providerId);
+		String accessToken = deferredConnectionDetails.getProperty("accessToken");
 		if (provider instanceof OAuth1ServiceProvider) {
-			((OAuth1ServiceProvider<?>) provider).connect(accountIdExtractor.extractAccountId(request), (OAuthToken) accessToken);
+			String accessTokenSecret = deferredConnectionDetails.getProperty("accessTokenSecret");
+			((OAuth1ServiceProvider<?>) provider).connect(accountIdExtractor.extractAccountId(request), new OAuthToken(accessToken, accessTokenSecret));
 		} else {
-			((OAuth2ServiceProvider<?>) provider).connect(accountIdExtractor.extractAccountId(request), (AccessGrant) accessToken);
+			((OAuth2ServiceProvider<?>) provider).connect(accountIdExtractor.extractAccountId(request), new AccessGrant(accessToken, null));
 		}
-		return "redirect:/";
+		return deferredConnectionDetails.getProperty("targetView");
 	}
 	
 	// internal helpers
@@ -239,6 +242,6 @@ public class ConnectController implements BeanFactoryAware {
 
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
 	
-	public static final String DEFERRED_CONNECTION_ACCESS_TOKEN_ATTRIBUTE = "deferredConnect.accessToken";
+	public static final String DEFERRED_CONNECTION_DETAILS_ATTRIBUTE = "_deferredConnectionDetails";
 
 }
