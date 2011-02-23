@@ -31,7 +31,7 @@ import org.springframework.social.AccountNotConnectedException;
 import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.SocialException;
 import org.springframework.social.oauth.support.ClientHttpRequestInterceptor;
-import org.springframework.social.oauth.support.InterceptingClientHttpRequestFactory;
+import org.springframework.social.oauth.support.InterceptingRestTemplate;
 import org.springframework.social.oauth1.OAuth1RequestInterceptor;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.util.LinkedMultiValueMap;
@@ -84,9 +84,10 @@ public class TwitterTemplate implements TwitterApi {
 	 * @param accessTokenSecret an access token secret acquired through OAuth authentication with LinkedIn
 	 */
 	public TwitterTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
-		restTemplate = new RestTemplate();
-		restTemplate.setRequestFactory(new InterceptingClientHttpRequestFactory(restTemplate.getRequestFactory(),
-				new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)) }));
+		InterceptingRestTemplate interceptingRestTemplate = new InterceptingRestTemplate();
+		interceptingRestTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { 
+				new OAuth1RequestInterceptor(apiKey, apiSecret, new OAuthToken(accessToken, accessTokenSecret)) });
+		this.restTemplate = interceptingRestTemplate;
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
 		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
 	}

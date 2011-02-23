@@ -23,7 +23,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.social.oauth.support.ClientHttpRequestInterceptor;
-import org.springframework.social.oauth.support.InterceptingClientHttpRequestFactory;
+import org.springframework.social.oauth.support.InterceptingRestTemplate;
 import org.springframework.social.oauth2.OAuth2RequestInterceptor;
 import org.springframework.web.client.RestTemplate;
 
@@ -40,7 +40,7 @@ import org.springframework.web.client.RestTemplate;
  */
 public class GitHubTemplate implements GitHubApi {
 
-	private final RestTemplate restTemplate;
+	private final InterceptingRestTemplate restTemplate;
 
 	/**
 	 * Constructs a GitHubTemplate with the minimal amount of information
@@ -52,9 +52,9 @@ public class GitHubTemplate implements GitHubApi {
 	 *            authentication.
 	 */
 	public GitHubTemplate(String accessToken) {
-		restTemplate = new RestTemplate();
-		restTemplate.setRequestFactory(new InterceptingClientHttpRequestFactory(restTemplate.getRequestFactory(),
-				new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft8(accessToken) }));
+		InterceptingRestTemplate interceptingRestTemplate = new InterceptingRestTemplate();
+		interceptingRestTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft8(accessToken) });
+		this.restTemplate = interceptingRestTemplate;
 	}
 
 	public String getProfileId() {

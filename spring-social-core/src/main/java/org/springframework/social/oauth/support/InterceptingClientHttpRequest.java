@@ -47,7 +47,6 @@ class InterceptingClientHttpRequest extends AbstractClientHttpRequest {
 	@Override
 	protected final ClientHttpResponse executeInternal(HttpHeaders headers, byte[] bufferedOutput) throws IOException {
 		RequestExecution requestExecution = new RequestExecution();
-
 		return requestExecution.execute(new HttpRequest(this), bufferedOutput);
 	}
 

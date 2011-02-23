@@ -21,7 +21,6 @@ import static org.springframework.web.client.test.RequestMatchers.*;
 import static org.springframework.web.client.test.ResponseCreators.*;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
@@ -31,7 +30,6 @@ import org.springframework.web.client.test.MockRestServiceServer;
 /**
  * @author Craig Walls
  */
-@Ignore
 public class GitHubTemplateTest {
 
 	private GitHubTemplate github;

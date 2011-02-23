@@ -24,7 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.oauth.support.ClientHttpRequestInterceptor;
-import org.springframework.social.oauth.support.InterceptingClientHttpRequestFactory;
+import org.springframework.social.oauth.support.InterceptingRestTemplate;
 import org.springframework.social.oauth2.OAuth2RequestInterceptor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -48,9 +48,9 @@ public class FacebookTemplate implements FacebookApi {
 	 * @param accessToken An access token given by Facebook after a successful OAuth 2 authentication (or through Facebook's JS library).
 	 */
 	public FacebookTemplate(String accessToken) {
-		restTemplate = new RestTemplate();
-		restTemplate.setRequestFactory(new InterceptingClientHttpRequestFactory(restTemplate.getRequestFactory(),
-				new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft10(accessToken) }));
+		InterceptingRestTemplate interceptingRestTemplate = new InterceptingRestTemplate();
+		interceptingRestTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft10(accessToken) });
+		this.restTemplate = interceptingRestTemplate;
 		// Facebook returns JSON data with text/javascript content type
 		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
