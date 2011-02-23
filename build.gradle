@@ -94,10 +94,10 @@ configure(javaprojects) {
     apply from: "$buildSrcDir/schema-publication.gradle"
 
     commonsCodecVersion = '1.4'
-    h2Version = '1.2.143'
+    h2Version = '1.3.151'
     jacksonVersion = '1.7.3'
     jodaVersion = '1.6.2'
-	jspApiVersion = '2.1'
+    jspApiVersion = '2.1'
     junitVersion = '4.8.2'
     mockitoVersion = '1.8.5'
     servletApiVersion = '2.5'
