@@ -42,10 +42,10 @@ public interface ConnectionRepository {
 	/**
 	 * Returns the id of the account connected to the provider by the access token.
 	 * Designed to support sign-in by connection use cases.
-	 * @param accountId the user's account identifier
 	 * @param providerId the provider's identifier
+	 * @param accessToken the access token
 	 */
-	Serializable findAccountIdByConnectionAccessToken(String provider, String accessToken);
+	Serializable findAccountIdByConnectionAccessToken(String providerId, String accessToken);
 
 	/**
 	 * Returns a list of application account IDs that are connected to the list of account IDs on the provider. Note that
@@ -69,7 +69,7 @@ public interface ConnectionRepository {
 	 * Removes a connection.
 	 * @param accountId the user's account identifier
 	 * @param providerId the provider's identifier
-	 * @param connection the internal id of the connection to remove
+	 * @param connectionId the internal id of the connection to remove
 	 */
 	void removeConnection(Serializable accountId, String providerId, Long connectionId);
 

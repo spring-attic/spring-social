@@ -93,7 +93,7 @@ public class Connection {
 	/**
 	 * Create a new, transient Connection instance with the oauth2 fields populated.
 	 * @param accessToken the access token
-	 * @param secret the access token secret
+	 * @param refreshToken the refresh token
 	 * @param providerAccountId the provider account ID associated with this connection
 	 */
 	public static Connection oauth2(String accessToken, String refreshToken, String providerAccountId) {

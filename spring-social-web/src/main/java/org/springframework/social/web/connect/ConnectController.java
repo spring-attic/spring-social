@@ -66,7 +66,6 @@ public class ConnectController implements BeanFactoryAware {
 
 	/**
 	 * Constructs a ConnectController.
-	 * @param connectionRepository a connection repository
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
 	 */
 	public ConnectController(String applicationUrl) {

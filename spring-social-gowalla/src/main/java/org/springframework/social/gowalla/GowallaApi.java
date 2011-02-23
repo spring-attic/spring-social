@@ -64,7 +64,7 @@ public interface GowallaApi {
 	 * Retrieves a list of the spots that the user has checked into most.
 	 * 
 	 * @param userId
-	 * @return
+	 * @return a list of {@link Checkin}s that the user has visited the most.
 	 */
 	List<Checkin> getTopCheckins(String userId);
 }

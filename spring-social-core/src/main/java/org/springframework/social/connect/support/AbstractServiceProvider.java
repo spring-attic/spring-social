@@ -38,7 +38,6 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	/**
 	 * Creates a service provider.
 	 * @param id the id of the provider as it is identified in the connection repository.
-	 * @param displayName a display name for the provider, suitable for display on a user interface.
 	 * @param connectionRepository the store for service provider connections
 	 */
 	public AbstractServiceProvider(String id, ConnectionRepository connectionRepository) {
