@@ -15,14 +15,19 @@
  */
 package org.springframework.social.oauth1;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -34,17 +39,17 @@ import org.springframework.web.util.UriTemplate;
  */
 public class OAuth1Template implements OAuth1Operations {
 
-	protected final String consumerKey;
+	private final String consumerKey;
 
-	protected final String consumerSecret;
+	private final String consumerSecret;
 
-	protected final String requestTokenUrl;
+	private final String requestTokenUrl;
 
-	protected final UriTemplate authorizeUrlTemplate;
+	private final UriTemplate authorizeUrlTemplate;
 
-	protected final String accessTokenUrl;
+	private final String accessTokenUrl;
 
-	protected final RestTemplate restTemplate = new RestTemplate();
+	private final RestTemplate restTemplate;
 
 	private final boolean oauth10a;
 
@@ -66,6 +71,10 @@ public class OAuth1Template implements OAuth1Operations {
 		this.oauth10a = oauth10a;
 		this.authorizeUrlTemplate = new UriTemplate(authorizeUrl);
 		this.accessTokenUrl = accessTokenUrl;
+		this.restTemplate = new RestTemplate();
+		List<HttpMessageConverter<?>> converters = Arrays.<HttpMessageConverter<?>> asList(
+				new StringHttpMessageConverter(), new FormHttpMessageConverter());
+		this.restTemplate.setMessageConverters(converters);
 	}
 
 	public OAuthToken fetchNewRequestToken(String callbackUrl) {
