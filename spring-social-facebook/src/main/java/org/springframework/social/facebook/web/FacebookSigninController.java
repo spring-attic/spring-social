@@ -48,27 +48,21 @@ public class FacebookSigninController {
 
 	private final String appSecret;
 
-	private String baseConnectControllerUrl;
-
 	/**
 	 * Constructs the FacebookSigninController.
 	 * 
-	 * @param connectionRepository
-	 *            a connection repository used to lookup the account ID connected to the Facebook profile.
-	 * @param signinService
-	 *            the signin strategy used to authenticate the user with the application.
-	 * @param apiKey
-	 *            the Facebook API key used to retrieve the Facebook cookie containing the access token.
+	 * @param connectionRepository a connection repository used to lookup the account ID connected to the Facebook profile.
+	 * @param signinService the signin strategy used to authenticate the user with the application.
+	 * @param apiKey the application's Facebook API key. Used to retrieve the Facebook cookie containing the access token.
+	 * @param appSecret the application's Facebook App secret. Used to verify the Facebook cookie signature.
 	 */
-	public FacebookSigninController(ConnectionRepository connectionRepository, SignInService signinService,
-			String applicationUrl, String apiKey, String appSecret) {
+	public FacebookSigninController(ConnectionRepository connectionRepository, SignInService signinService, String apiKey, String appSecret) {
 		this.connectionRepository = connectionRepository;
 		this.signinService = signinService;
 		// TODO: The Facebook service provider could be looked up here and could expose its API key as a
 		// property. Then this controller could just get the API key and app secret from the provider.
 		this.apiKey = apiKey;
 		this.appSecret = appSecret;
-		this.baseConnectControllerUrl = applicationUrl + AnnotationUtils.findAnnotation(ConnectController.class, RequestMapping.class).value()[0];
 	}
 
 	/**
@@ -101,8 +95,7 @@ public class FacebookSigninController {
 	}
 	
 	private String resolveAccessTokenValue(HttpServletRequest request) {
-		Map<String, String> cookieData = FacebookCookieParser.getFacebookCookieData(request.getCookies(), apiKey,
-				appSecret);
+		Map<String, String> cookieData = FacebookCookieParser.getFacebookCookieData(request.getCookies(), apiKey, appSecret);
 		String accessToken = cookieData.get("access_token");
 		if (accessToken != null) {
 			return accessToken;
