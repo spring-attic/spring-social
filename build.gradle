@@ -147,7 +147,7 @@ project('spring-social-core') {
     dependencies {
         compile ("org.springframework:spring-jdbc:$springVersion") { optional = true }
         compile ("org.springframework:spring-web:$springVersion")
-		compile ("org.springframework.security:spring-security-crypto:$springSecurityVersion") { provided = true }
+        compile ("org.springframework.security:spring-security-crypto:$springSecurityVersion") { provided = true }
         compile ("commons-codec:commons-codec:$commonsCodecVersion") { optional = true }
         testCompile "com.h2database:h2:$h2Version"
         testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
