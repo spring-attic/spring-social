@@ -26,7 +26,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.web.connect.ConnectController;
-import org.springframework.social.web.connect.SignInControllerGateway;
+import org.springframework.social.web.connect.SignInControllerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -40,7 +40,7 @@ public class FacebookSigninController {
 
 	private final ConnectionRepository connectionRepository;
 
-	private final SignInControllerGateway signinGateway;
+	private final SignInControllerService signinService;
 
 	private String noConnectionView = "redirect:/signup";
 
@@ -52,14 +52,18 @@ public class FacebookSigninController {
 
 	/**
 	 * Constructs the FacebookSigninController.
-	 * @param connectionRepository a connection repository used to lookup the account ID connected to the Facebook profile.
-	 * @param signinGateway the signin strategy used to authenticate the user with the application.
-	 * @param apiKey the Facebook API key used to retrieve the Facebook cookie containing the access token.
+	 * 
+	 * @param connectionRepository
+	 *            a connection repository used to lookup the account ID connected to the Facebook profile.
+	 * @param signinService
+	 *            the signin strategy used to authenticate the user with the application.
+	 * @param apiKey
+	 *            the Facebook API key used to retrieve the Facebook cookie containing the access token.
 	 */
-	public FacebookSigninController(ConnectionRepository connectionRepository, SignInControllerGateway signinGateway,
+	public FacebookSigninController(ConnectionRepository connectionRepository, SignInControllerService signinService,
 			String applicationUrl, String apiKey, String appSecret) {
 		this.connectionRepository = connectionRepository;
-		this.signinGateway = signinGateway;
+		this.signinService = signinService;
 		// TODO: The Facebook service provider could be looked up here and could expose its API key as a
 		// property. Then this controller could just get the API key and app secret from the provider.
 		this.apiKey = apiKey;
@@ -91,7 +95,7 @@ public class FacebookSigninController {
 			return noConnectionView + "?deferredConnectionUrl=" + deferredConnectionUrl();
 		}
 
-		signinGateway.signIn(accountId);
+		signinService.signIn(accountId);
 		return "redirect:/";
 	}
 	

@@ -30,7 +30,7 @@ import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.web.connect.ConnectController;
 import org.springframework.social.web.connect.ServiceProviderLocator;
-import org.springframework.social.web.connect.SignInControllerGateway;
+import org.springframework.social.web.connect.SignInControllerService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,20 +55,25 @@ public class TwitterSigninController implements BeanFactoryAware {
 
 	private final ConnectionRepository connectionRepository;
 
-	private final SignInControllerGateway signinGateway;
+	private final SignInControllerService signinService;
 
 	private String noConnectionView = "redirect:/signup";
 
 	/**
 	 * Constructs the Twitter sign in controller.
-	 * @param connectionRepository a connection repository used to lookup the account ID connected to the Twitter profile.
-	 * @param signinGateway the signin strategy used to authenticate the user with the application.
-	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
+	 * 
+	 * @param connectionRepository
+	 *            a connection repository used to lookup the account ID connected to the Twitter profile.
+	 * @param signinService
+	 *            the signin strategy used to authenticate the user with the application.
+	 * @param applicationUrl
+	 *            the base secure URL for this application, used to construct the callback URL passed to the service
+	 *            providers at the beginning of the connection process.
 	 */
-	public TwitterSigninController(ConnectionRepository connectionRepository, SignInControllerGateway signinGateway,
+	public TwitterSigninController(ConnectionRepository connectionRepository, SignInControllerService signinService,
 			String applicationUrl) {
 		this.connectionRepository = connectionRepository;
-		this.signinGateway = signinGateway;
+		this.signinService = signinService;
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 		this.baseConnectControllerUrl = applicationUrl + AnnotationUtils.findAnnotation(ConnectController.class, RequestMapping.class).value()[0];
 	}
@@ -117,7 +122,7 @@ public class TwitterSigninController implements BeanFactoryAware {
 			return noConnectionView + "?deferredConnectionUrl=" + deferredConnectionUrl();
 		}
 
-		signinGateway.signIn(accountId);
+		signinService.signIn(accountId);
 		return "redirect:/";
 	}
 
