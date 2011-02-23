@@ -17,10 +17,11 @@ package org.springframework.social.oauth1;
 
 import java.io.IOException;
 
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.social.oauth.support.ClientHttpRequestExecution;
-import org.springframework.social.oauth.support.ClientHttpRequestInterceptor;
-import org.springframework.social.oauth.support.HttpRequest;
+import org.springframework.social.support.HttpRequestDecorator;
 
 /**
  * ClientHttpRequestInterceptor implementation that performs OAuth1 request signing before a request for a protected resource is executed.
@@ -46,7 +47,7 @@ public class OAuth1RequestInterceptor implements ClientHttpRequestInterceptor {
 	}
 
 	public ClientHttpResponse intercept(final HttpRequest request, final byte[] body, ClientHttpRequestExecution execution) throws IOException {
-		HttpRequest protectedResourceRequest = new HttpRequest(request);
+		HttpRequest protectedResourceRequest = new HttpRequestDecorator(request);
 		protectedResourceRequest.getHeaders().add("Authorization", getAuthorizationHeaderValue(request, body));
 		return execution.execute(protectedResourceRequest, body);
 	}

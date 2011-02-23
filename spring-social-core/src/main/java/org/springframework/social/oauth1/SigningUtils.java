@@ -33,8 +33,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
-import org.springframework.social.oauth.support.HttpRequest;
 
 class SigningUtils {
 	

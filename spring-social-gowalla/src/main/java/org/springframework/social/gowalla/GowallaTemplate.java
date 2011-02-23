@@ -22,27 +22,18 @@ import java.util.Map;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.social.oauth.support.ClientHttpRequestInterceptor;
-import org.springframework.social.oauth.support.InterceptingRestTemplate;
-import org.springframework.social.oauth2.OAuth2RequestInterceptor;
+import org.springframework.social.oauth2.ProtectedResourceClientFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * <p>
- * The central class for interacting with TripIt.
- * </p>
- * <p>
- * TripIt operations require OAuth 1 authentication. Therefore TripIt template
- * must be given the minimal amount of information required to sign requests to
- * the TripIt API with an OAuth <code>Authorization</code> header.
- * </p>
+ * The central class for interacting with the Gowalla API.
  * @author Craig Walls
  */
 public class GowallaTemplate implements GowallaApi {
 
-	private final InterceptingRestTemplate restTemplate;
+	private final RestTemplate restTemplate;
 
 	/**
 	 * Constructs a GowallaTemplate with the minimal amount of information
@@ -50,9 +41,7 @@ public class GowallaTemplate implements GowallaApi {
 	 * @param accessToken An access token granted to the application after OAuth authentication.
 	 */
 	public GowallaTemplate(String accessToken) {
-		InterceptingRestTemplate interceptingRestTemplate = new InterceptingRestTemplate();
-		interceptingRestTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft8(accessToken) });
-		this.restTemplate = interceptingRestTemplate;
+		this.restTemplate = ProtectedResourceClientFactory.draft8(accessToken);
 	}
 
 	public String getProfileId() {
