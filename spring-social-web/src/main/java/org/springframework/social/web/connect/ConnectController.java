@@ -185,7 +185,7 @@ public class ConnectController implements BeanFactoryAware {
 	 * Processes a deferred connection, using an access token that was previously obtained and stored in the session. 
 	 */
 	@RequestMapping(value = "{providerId}", method = RequestMethod.GET, params = "deferred")
-	public String completeConnection(@PathVariable String providerId, WebRequest request) {
+	public String deferredConnection(@PathVariable String providerId, WebRequest request) {
 		Properties deferredConnectionDetails = (Properties) request.getAttribute(DEFERRED_CONNECTION_DETAILS_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		request.removeAttribute(DEFERRED_CONNECTION_DETAILS_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		ServiceProvider<?> provider = getServiceProvider(providerId);
