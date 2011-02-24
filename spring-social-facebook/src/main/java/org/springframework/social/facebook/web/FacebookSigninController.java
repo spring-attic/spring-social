@@ -18,8 +18,11 @@ package org.springframework.social.facebook.web;
 import java.io.Serializable;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.social.connect.oauth2.OAuth2ServiceProvider;
 import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.facebook.connect.FacebookServiceProvider;
 import org.springframework.social.web.signin.AbstractProviderSigninController;
@@ -38,15 +41,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping("/signin/facebook")
 public class FacebookSigninController extends AbstractProviderSigninController {
 
+	private final Provider<? extends OAuth2ServiceProvider<?>> serviceProviderLocator;
+	
 	private final FacebookServiceProvider serviceProvider;
 	
 	/**
 	 * Constructs the FacebookSigninController.
 	 * @param connectionRepository a connection repository used to lookup the account ID connected to the Facebook profile.
 	 */
-	public FacebookSigninController(FacebookServiceProvider serviceProvider, ConnectionRepository connectionRepository, SignInService signInService) {
+	@Inject
+	public FacebookSigninController(Provider<FacebookServiceProvider> serviceProviderLocator, ConnectionRepository connectionRepository, SignInService signInService) {
 		super(connectionRepository, signInService);
-		this.serviceProvider = serviceProvider;
+		this.serviceProviderLocator = serviceProviderLocator;
+		this.serviceProvider = serviceProviderLocator.get();
 	}
 
 	/**
@@ -56,18 +63,20 @@ public class FacebookSigninController extends AbstractProviderSigninController {
 	 */
 	@RequestMapping(method=RequestMethod.POST)
 	public String signin(HttpServletRequest request) {
-		String accessToken = resolveAccessTokenValue(request);
+		String accessToken = getAccessTokenCookieValue(request);
 		Serializable accountId = getConnectionRepository().findAccountIdByConnectionAccessToken(serviceProvider.getId(), accessToken);
 		if (accountId == null) {
-			OAuth2ProviderSignInAttempt signInAttempt = new OAuth2ProviderSignInAttempt(serviceProvider, accessToken);
+			OAuth2ProviderSignInAttempt signInAttempt = new OAuth2ProviderSignInAttempt(serviceProviderLocator, accessToken);
 			request.getSession().setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt);
 			return "redirect:" + getSignupUrl();
 		}
 		getSignInService().signIn(accountId);
 		return "redirect:/";
 	}
+
+	// internal helpers
 	
-	private String resolveAccessTokenValue(HttpServletRequest request) {
+	private String getAccessTokenCookieValue(HttpServletRequest request) {
 		Map<String, String> cookieData = FacebookCookieParser.getFacebookCookieData(request.getCookies(), serviceProvider.getAppId(), serviceProvider.getAppSecret());
 		String accessToken = cookieData.get("access_token");
 		if (accessToken != null) {

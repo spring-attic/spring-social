@@ -17,6 +17,8 @@ package org.springframework.social.web.signin;
 
 import java.io.Serializable;
 
+import javax.inject.Provider;
+
 import org.springframework.social.connect.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.oauth1.OAuthToken;
 
@@ -25,20 +27,20 @@ import org.springframework.social.oauth1.OAuthToken;
  */
 public class OAuth1ProviderSignInAttempt implements ProviderSignInAttempt {
 
-	private OAuth1ServiceProvider<?> serviceProvider;
+	private final Provider<? extends OAuth1ServiceProvider<?>> serviceProviderLocator;
 	
-	private String accessToken;
+	private final String accessToken;
 	
-	private String accessTokenSecret;
+	private final String accessTokenSecret;
 	
-	public OAuth1ProviderSignInAttempt(OAuth1ServiceProvider<?> serviceProvider, String accessToken, String accessTokenSecret) {
-		this.serviceProvider = serviceProvider;
+	public OAuth1ProviderSignInAttempt(Provider<? extends OAuth1ServiceProvider<?>> serviceProviderLocator, String accessToken, String accessTokenSecret) {
+		this.serviceProviderLocator = serviceProviderLocator;
 		this.accessToken = accessToken;
 		this.accessTokenSecret = accessTokenSecret;
 	}
 
 	public void connect(Serializable accountId) {
-		serviceProvider.connect(accountId, new OAuthToken(accessToken, accessTokenSecret));		
+		serviceProviderLocator.get().connect(accountId, new OAuthToken(accessToken, accessTokenSecret));		
 	}
 
 }
