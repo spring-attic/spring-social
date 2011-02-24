@@ -15,61 +15,48 @@
  */
 package org.springframework.social.facebook.web;
 
-import static org.springframework.web.bind.annotation.RequestMethod.*;
-
 import java.io.Serializable;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.social.connect.support.ConnectionRepository;
-import org.springframework.social.web.connect.ProviderSignInAccount;
-import org.springframework.social.web.connect.SignInService;
+import org.springframework.social.facebook.connect.FacebookServiceProvider;
+import org.springframework.social.web.signin.OAuth2ProviderSignInAccount;
+import org.springframework.social.web.signin.ProviderSignInAccount;
+import org.springframework.social.web.signin.SignInService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * Controller that enables a user to authenticate to an application by signing into Facebook.
  * @author Craig Walls
  */
 @Controller
-@RequestMapping("/signin/")
+@RequestMapping("/signin/facebook")
 public class FacebookSigninController {
 
+	private final FacebookServiceProvider serviceProvider;
+	
 	private final ConnectionRepository connectionRepository;
 
 	private final SignInService signinService;
 
-	private String noConnectionView = "redirect:/signup";
-
-	private final String apiKey;
-
-	private final String appSecret;
+	private String signupUrl = "/signup";
 
 	/**
 	 * Constructs the FacebookSigninController.
-	 * 
 	 * @param connectionRepository a connection repository used to lookup the account ID connected to the Facebook profile.
-	 * @param signinService the signin strategy used to authenticate the user with the application.
-	 * @param apiKey the application's Facebook API key. Used to retrieve the Facebook cookie containing the access token.
-	 * @param appSecret the application's Facebook App secret. Used to verify the Facebook cookie signature.
 	 */
-	public FacebookSigninController(ConnectionRepository connectionRepository, SignInService signinService, String apiKey, String appSecret) {
+	public FacebookSigninController(FacebookServiceProvider serviceProvider, ConnectionRepository connectionRepository, SignInService signinService) {
+		this.serviceProvider = serviceProvider;
 		this.connectionRepository = connectionRepository;
 		this.signinService = signinService;
-		// TODO: The Facebook service provider could be looked up here and could expose its API key as a
-		// property. Then this controller could just get the API key and app secret from the provider.
-		this.apiKey = apiKey;
-		this.appSecret = appSecret;
 	}
 
-	/**
-	 * Sets the view that will be displayed should no connection be found for the Twitter profile.
-	 * 
-	 * @param noConnectionView the view to display when no connection can be found
-	 */
-	public void setNoConnectionView(String noConnectionView) {
-		this.noConnectionView = noConnectionView;
+	public void setSignupUrl(String signupUrl) {
+		this.signupUrl = signupUrl;
 	}
 
 	/**
@@ -77,31 +64,27 @@ public class FacebookSigninController {
 	 * Uses that access token to lookup the connected account ID and attempts to authenticate to the application for that account.
 	 * If there is no connection for access token, the flow will transition to the no-connection view, "redirect:/signup" by default.
 	 */
-	@RequestMapping(value = FACEBOOK_PROVIDER_ID, method = POST)
+	@RequestMapping(method=RequestMethod.POST)
 	public String signin(HttpServletRequest request) {
 		String accessToken = resolveAccessTokenValue(request);
-		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(FACEBOOK_PROVIDER_ID, accessToken);
-
+		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(serviceProvider.getId(), accessToken);
 		if (accountId == null) {
-			FacebookSignInAccount signInAccount = new FacebookSignInAccount(FACEBOOK_PROVIDER_ID, accessToken);
-			request.getSession().setAttribute(ProviderSignInAccount.SIGN_IN_ACCOUNT_SESSION_ATTRIBUTE, signInAccount);
-			return noConnectionView;
+			OAuth2ProviderSignInAccount signInAccount = new OAuth2ProviderSignInAccount(serviceProvider, accessToken);
+			request.getSession().setAttribute(ProviderSignInAccount.SESSION_ATTRIBUTE, signInAccount);
+			return "redirect:" + signupUrl;
 		}
-
 		signinService.signIn(accountId);
 		return "redirect:/";
 	}
 	
 	private String resolveAccessTokenValue(HttpServletRequest request) {
-		Map<String, String> cookieData = FacebookCookieParser.getFacebookCookieData(request.getCookies(), apiKey, appSecret);
+		Map<String, String> cookieData = FacebookCookieParser.getFacebookCookieData(request.getCookies(), serviceProvider.getAppId(), serviceProvider.getAppSecret());
 		String accessToken = cookieData.get("access_token");
 		if (accessToken != null) {
 			return accessToken;
+		} else {
+			throw new IllegalStateException("FacebookSigninController cannot find an access token in the Facebook cookie.");
 		}
-
-		throw new IllegalStateException("FacebookSigninController cannot find an access token in the Facebook cookie.");
 	}
-
-	private static final String FACEBOOK_PROVIDER_ID = "facebook";
 
 }

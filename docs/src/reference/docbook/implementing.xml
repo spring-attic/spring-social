@@ -53,9 +53,8 @@ public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider
 		</para>
 		<programlisting language="java"><![CDATA[
 public FacebookTemplate(String accessToken) {
-    restTemplate = new RestTemplate();
-    // configures an interceptor that adds the Authorization header to each ClientRequest before it is executed
-    restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft10(accessToken) });
+    // creates a RestTemplate that adds the OAuth2-draft10 Authorization header to each request before it is executed
+    restTemplate = ProtectedResourceClientFactory.draft10(accessToken);
 }]]>
 		</programlisting>
 		<para>
@@ -115,11 +114,8 @@ public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<
 		</para>
 		<programlisting language="java"><![CDATA[
 public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
-    restTemplate = new RestTemplate();
-    // configures an interceptor that adds the Authorization header to each ClientRequest before it is executed
-    restTemplate.setInterceptors(new ClientHttpRequestInterceptor[] {
-        new OAuth1RequestInterceptor(consumerKey, consumerSecret, new OAuthToken(accessToken, accessTokenSecret))
-    });
+    // creates a RestTemplate that adds the OAuth1 Authorization header to each request before it is executed
+    restTemplate = ProtectedResourceClientFactory.create(consumerKey, consumerSecret, accessToken, accessTokenSecret);
 }]]>
 		</programlisting>
 		<para>

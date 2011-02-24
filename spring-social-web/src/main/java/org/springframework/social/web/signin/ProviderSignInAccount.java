@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.web.connect;
+package org.springframework.social.web.signin;
 
 import java.io.Serializable;
 
 public interface ProviderSignInAccount extends Serializable {
 
-	static final String SIGN_IN_ACCOUNT_SESSION_ATTRIBUTE = "providerSignInAccount";
-
-	// TODO: Can we remove the service provider locator from this signature?
-	void connect(ServiceProviderLocator serviceProviderLocator, Serializable accountId);
+	public static final String SESSION_ATTRIBUTE = ProviderSignInAccount.class.getName();
+	
+	void connect(Serializable accountId);
 
 }

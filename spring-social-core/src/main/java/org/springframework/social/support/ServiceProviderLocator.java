@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.web.connect;
+package org.springframework.social.support;
 
 import java.util.HashMap;
 import java.util.Map;

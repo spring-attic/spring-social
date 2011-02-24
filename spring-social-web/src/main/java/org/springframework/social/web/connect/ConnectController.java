@@ -18,10 +18,6 @@ package org.springframework.social.web.connect;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.social.connect.ServiceProvider;
@@ -32,6 +28,7 @@ import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
+import org.springframework.social.support.ServiceProviderLocator;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -54,7 +51,7 @@ import org.springframework.web.context.request.WebRequest;
  */
 @Controller
 @RequestMapping("/connect/")
-public class ConnectController implements BeanFactoryAware {
+public class ConnectController {
 	
 	private ServiceProviderLocator serviceProviderLocator;
 
@@ -68,14 +65,11 @@ public class ConnectController implements BeanFactoryAware {
 	 * Constructs a ConnectController.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
 	 */
-	public ConnectController(String applicationUrl) {
+	public ConnectController(ServiceProviderLocator serviceProviderLocator, String applicationUrl) {
+		this.serviceProviderLocator = serviceProviderLocator;
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 		this.interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
 		this.accountIdExtractor = new DefaultAccountIdExtractor();
-	}
-
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.serviceProviderLocator = new ServiceProviderLocator((ListableBeanFactory) beanFactory);
 	}
 
 	/**
@@ -88,19 +82,18 @@ public class ConnectController implements BeanFactoryAware {
 	}
 
 	/**
+	 * Adds a ConnectInterceptor to receive callbacks during the connection process.
+	 */
+	public void addInterceptor(ConnectInterceptor<?> interceptor) {
+		Class<?> providerType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(), ConnectInterceptor.class);
+		this.interceptors.add(providerType, interceptor);
+	}
+
+	/**
 	 * Sets the account ID extractor to use when creating connections. Defaults to an extractor that uses Principal.getName() as the account ID.
 	 */
 	public void setAccountIdExtractor(AccountIdExtractor accountIdExtractor) {
 		this.accountIdExtractor = accountIdExtractor;
-	}
-
-	/**
-	 * Adds a ConnectInterceptor to receive callbacks during the connection process.
-	 */
-	public void addInterceptor(ConnectInterceptor<?> interceptor) {
-		Class<?> providerType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(),
-				ConnectInterceptor.class);
-		this.interceptors.add(providerType, interceptor);
 	}
 
 	/**
@@ -140,12 +133,9 @@ public class ConnectController implements BeanFactoryAware {
 	 * Removes the request token from the session since it is no longer valid after the connection is established.
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="oauth_token")
-	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token,
-			@RequestParam(value = "oauth_verifier", required = false) String verifier, WebRequest request) {
-		OAuthToken accessToken = null;
+	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value = "oauth_verifier", required = false) String verifier, WebRequest request) {
 		OAuth1ServiceProvider<?> provider = (OAuth1ServiceProvider<?>) getServiceProvider(providerId);
-		AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(extractCachedRequestToken(request), verifier);
-		accessToken = provider.getOAuthOperations().exchangeForAccessToken(authorizedRequestToken);
+		OAuthToken accessToken = provider.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier));
 		ServiceProviderConnection<?> connection = provider.connect(accountIdExtractor.extractAccountId(request), accessToken);
 		postConnect(provider, connection, request);
 		return "redirect:/connect/" + providerId;

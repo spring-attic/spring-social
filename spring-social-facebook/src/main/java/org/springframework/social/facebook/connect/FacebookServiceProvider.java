@@ -42,4 +42,14 @@ public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider
 	protected String getProviderAccountId(FacebookApi api) {
 		return api.getProfileId();
 	}
+
+	public String getAppSecret() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getAppId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
