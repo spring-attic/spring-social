@@ -25,11 +25,11 @@ import org.springframework.web.context.request.NativeWebRequest;
 
 /**
  * Web argument resolver that resolves arguments annotated with {@link FacebookCookieValue}. 
- * When using Facebook's JavaScript API, the FB.init() call will set a cookie whose name is "fbs_{api key}" if the user is signed into Facebook and if 
+ * When using Facebook's JavaScript API, the FB.init() call will set a cookie whose name is "fbs_{appId}" if the user is signed into Facebook and if 
  * they have granted the application permission to access their profile. 
  * This web argument resolver extracts that information from the cookie (if available) and supplies it to a controller handler method as String values. 
- * {@link FacebookCookieValue} is required by default. If the access token or user ID cannot be resolved and if the annotation is set to be 
- * required, an exception will be thrown indicating an illegal state. If the annotation is set to not be required, a null will be returned.
+ * {@link FacebookCookieValue} is required by default. If the cookie value cannot be resolved and if the annotation is set to be 
+ * required, an exception will be thrown indicating an illegal state. If the annotation is set to not be required, null will be returned.
  * @author Craig Walls
  */
 public class FacebookWebArgumentResolver implements WebArgumentResolver {
@@ -39,7 +39,7 @@ public class FacebookWebArgumentResolver implements WebArgumentResolver {
 	private final String appSecret;
 
 	/**
-	 * Construct a FacebookWebArgumentResolver given the Facebook API Key and application secret.
+	 * Construct a FacebookWebArgumentResolver given the Facebook app id and secret.
 	 * The application secret will be used to verify the cookie signature.
 	 */
 	public FacebookWebArgumentResolver(String appId, String appSecret) {
