@@ -44,7 +44,7 @@ public class TwitterSigninController extends AbstractProviderSigninController {
 
 	private final TwitterServiceProvider serviceProvider;
 	
-	private String callbackUrl;
+	private final String callbackUrl;
 	
 	/**
 	 * Constructs the Twitter sign in controller.
