@@ -31,6 +31,7 @@ public class OAuth2ProviderSignInAttempt implements ProviderSignInAttempt {
 	
 	public OAuth2ProviderSignInAttempt(OAuth2ServiceProvider<?> serviceProvider, String accessToken) {
 		this.serviceProvider = serviceProvider;
+		this.accessToken = accessToken;
 	}
 
 	public void connect(Serializable accountId) {
