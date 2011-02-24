@@ -29,9 +29,6 @@ public class AbstractProviderSigninController {
 
 	private String signupUrl = "/signup";
 
-	/**
-	 * Constructs the Twitter sign in controller.
-	 */
 	public AbstractProviderSigninController(ConnectionRepository connectionRepository, SignInService signInService) {
 		this.connectionRepository = connectionRepository;
 		this.signInService = signInService;
