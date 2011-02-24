@@ -22,6 +22,7 @@ import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.twitter.connect.TwitterServiceProvider;
+import org.springframework.social.web.signin.AbstractProviderSigninController;
 import org.springframework.social.web.signin.OAuth1ProviderSignInAttempt;
 import org.springframework.social.web.signin.ProviderSignInAttempt;
 import org.springframework.social.web.signin.SignInService;
@@ -39,30 +40,19 @@ import org.springframework.web.context.request.WebRequest;
  */
 @Controller
 @RequestMapping("/signin/twitter")
-public class TwitterSigninController {
+public class TwitterSigninController extends AbstractProviderSigninController {
 
 	private final TwitterServiceProvider serviceProvider;
 	
-	private final ConnectionRepository connectionRepository;
-
-	private final SignInService signinService;
-
 	private String callbackUrl;
 	
-	private String signupUrl = "/signup";
-
 	/**
 	 * Constructs the Twitter sign in controller.
 	 */
-	public TwitterSigninController(TwitterServiceProvider serviceProvider, ConnectionRepository connectionRepository, SignInService signinService, String applicationUrl) {
+	public TwitterSigninController(TwitterServiceProvider serviceProvider, ConnectionRepository connectionRepository, SignInService signInService, String applicationUrl) {
+		super(connectionRepository, signInService);
 		this.serviceProvider = serviceProvider;
-		this.connectionRepository = connectionRepository;
-		this.signinService = signinService;
 		this.callbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
-	}
-
-	public void setSignupUrl(String signupUrl) {
-		this.signupUrl = signupUrl;
 	}
 
 	/**
@@ -84,13 +74,13 @@ public class TwitterSigninController {
 	public String oauth1Callback(@RequestParam("oauth_token") String token, @RequestParam(value = "oauth_verifier") String verifier, WebRequest request) {
 		AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(extractCachedRequestToken(request), verifier);
 		OAuthToken accessToken = serviceProvider.getOAuthOperations().exchangeForAccessToken(authorizedRequestToken);
-		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(serviceProvider.getId(), accessToken.getValue());
+		Serializable accountId = getConnectionRepository().findAccountIdByConnectionAccessToken(serviceProvider.getId(), accessToken.getValue());
 		if (accountId == null) {
 			OAuth1ProviderSignInAttempt signInAttempt = new OAuth1ProviderSignInAttempt(serviceProvider, accessToken.getValue(), accessToken.getSecret());
 			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, WebRequest.SCOPE_SESSION);
-			return "redirect:" + signupUrl;
+			return "redirect:" + getSignupUrl();
 		}
-		signinService.signIn(accountId);
+		getSignInService().signIn(accountId);
 		return "redirect:/";
 	}
 

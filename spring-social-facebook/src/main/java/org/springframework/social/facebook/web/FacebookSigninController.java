@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.facebook.connect.FacebookServiceProvider;
+import org.springframework.social.web.signin.AbstractProviderSigninController;
 import org.springframework.social.web.signin.OAuth2ProviderSignInAttempt;
 import org.springframework.social.web.signin.ProviderSignInAttempt;
 import org.springframework.social.web.signin.SignInService;
@@ -35,28 +36,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
  */
 @Controller
 @RequestMapping("/signin/facebook")
-public class FacebookSigninController {
+public class FacebookSigninController extends AbstractProviderSigninController {
 
 	private final FacebookServiceProvider serviceProvider;
 	
-	private final ConnectionRepository connectionRepository;
-
-	private final SignInService signinService;
-
-	private String signupUrl = "/signup";
-
 	/**
 	 * Constructs the FacebookSigninController.
 	 * @param connectionRepository a connection repository used to lookup the account ID connected to the Facebook profile.
 	 */
-	public FacebookSigninController(FacebookServiceProvider serviceProvider, ConnectionRepository connectionRepository, SignInService signinService) {
+	public FacebookSigninController(FacebookServiceProvider serviceProvider, ConnectionRepository connectionRepository, SignInService signInService) {
+		super(connectionRepository, signInService);
 		this.serviceProvider = serviceProvider;
-		this.connectionRepository = connectionRepository;
-		this.signinService = signinService;
-	}
-
-	public void setSignupUrl(String signupUrl) {
-		this.signupUrl = signupUrl;
 	}
 
 	/**
@@ -67,13 +57,13 @@ public class FacebookSigninController {
 	@RequestMapping(method=RequestMethod.POST)
 	public String signin(HttpServletRequest request) {
 		String accessToken = resolveAccessTokenValue(request);
-		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(serviceProvider.getId(), accessToken);
+		Serializable accountId = getConnectionRepository().findAccountIdByConnectionAccessToken(serviceProvider.getId(), accessToken);
 		if (accountId == null) {
 			OAuth2ProviderSignInAttempt signInAttempt = new OAuth2ProviderSignInAttempt(serviceProvider, accessToken);
 			request.getSession().setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt);
-			return "redirect:" + signupUrl;
+			return "redirect:" + getSignupUrl();
 		}
-		signinService.signIn(accountId);
+		getSignInService().signIn(accountId);
 		return "redirect:/";
 	}
 	
