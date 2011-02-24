@@ -16,29 +16,42 @@
 package org.springframework.social.oauth2;
 
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.client.RestTemplate;
 
 public class ProtectedResourceClientFactory {
 
 	public static RestTemplate standard(String accessToken) {
-		// TODO add 3.0.x compatibility
 		RestTemplate client = new RestTemplate();
-		client.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth2RequestInterceptor(accessToken) });
+		if (interceptorsSupported) {
+			client.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth2RequestInterceptor(accessToken) });
+		} else {
+			client.setRequestFactory(OAuth2SigningRequestFactory.standard(client.getRequestFactory(), accessToken));
+		}
 		return client;		
 	}
 	
 	public static RestTemplate draft10(String accessToken) {
-		// TODO add 3.0.x compatibility		
 		RestTemplate client = new RestTemplate();
-		client.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft10(accessToken) });
+		if (interceptorsSupported) {
+			client.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft10(accessToken) });
+		} else {
+			client.setRequestFactory(OAuth2SigningRequestFactory.draft10(client.getRequestFactory(), accessToken));
+		}
 		return client;		
 	}
 
 	public static RestTemplate draft8(String accessToken) {
-		// TODO add 3.0.x compatibility		
 		RestTemplate client = new RestTemplate();
-		client.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft8(accessToken) });
+		if (interceptorsSupported) {
+			client.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft8(accessToken) });
+		} else {
+			client.setRequestFactory(OAuth2SigningRequestFactory.draft8(client.getRequestFactory(), accessToken));
+		}
 		return client;		
 	}
+
+	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor",
+			ProtectedResourceClientFactory.class.getClassLoader());
 
 }
