@@ -28,6 +28,10 @@ public final class AccessGrant implements Serializable {
 	
 	private final String refreshToken;
 
+	public AccessGrant(String accessToken) {
+		this(accessToken, null);
+	}
+	
 	public AccessGrant(String accessToken, String refreshToken) {
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;

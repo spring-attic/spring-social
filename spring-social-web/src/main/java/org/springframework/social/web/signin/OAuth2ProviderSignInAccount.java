@@ -16,7 +16,7 @@ public class OAuth2ProviderSignInAccount implements ProviderSignInAccount {
 	}
 
 	public void connect(Serializable accountId) {
-		serviceProvider.connect(accountId, new AccessGrant(accessToken, null));		
+		serviceProvider.connect(accountId, new AccessGrant(accessToken));		
 	}
 
 }
