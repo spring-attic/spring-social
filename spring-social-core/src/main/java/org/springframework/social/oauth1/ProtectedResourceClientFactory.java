@@ -16,6 +16,7 @@
 package org.springframework.social.oauth1;
 
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -25,14 +26,18 @@ import org.springframework.web.client.RestTemplate;
  * @author Keith Donald
  */
 public class ProtectedResourceClientFactory {
-
 	public static RestTemplate create(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
-		// TODO add 3.0.x compatibility
 		RestTemplate client = new RestTemplate();
-		client.setInterceptors(new ClientHttpRequestInterceptor[] {
-			new OAuth1RequestInterceptor(consumerKey, consumerSecret, accessToken, accessTokenSecret)	
-		});
+		if (interceptorsSupported) {
+			client.setInterceptors(new ClientHttpRequestInterceptor[] { 
+					new OAuth1RequestInterceptor(consumerKey, consumerSecret, accessToken, accessTokenSecret)});
+		} else {
+			client.setRequestFactory(
+					new OAuth1SigningRequestFactory(client.getRequestFactory(), consumerKey, consumerSecret, accessToken, accessTokenSecret));
+		}
 		return client;
 	}
 
+	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor",
+			ProtectedResourceClientFactory.class.getClassLoader());
 }
