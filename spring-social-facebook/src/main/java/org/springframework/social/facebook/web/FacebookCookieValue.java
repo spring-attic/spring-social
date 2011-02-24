@@ -24,13 +24,13 @@ import java.lang.annotation.Target;
 /**
  * Annotation that indicates to {@link FacebookWebArgumentResolver} that a controller method parameter should be bound
  * to a value from the Facebook cookie written when the user signed in with Facebook.
- * 
  * @author Craig Walls
  */
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface FacebookCookieValue {
+	
 	/**
 	 * The specific element of the cookie to be bound (e.g., "uid", "access_token", etc)
 	 */

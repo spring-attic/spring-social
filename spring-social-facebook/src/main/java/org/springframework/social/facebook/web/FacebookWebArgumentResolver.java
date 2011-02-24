@@ -34,15 +34,16 @@ import org.springframework.web.context.request.NativeWebRequest;
  */
 public class FacebookWebArgumentResolver implements WebArgumentResolver {
 
-	private final String apiKey;
+	private final String appId;
+	
 	private final String appSecret;
 
 	/**
 	 * Construct a FacebookWebArgumentResolver given the Facebook API Key and application secret.
 	 * The application secret will be used to verify the cookie signature.
 	 */
-	public FacebookWebArgumentResolver(String apiKey, String appSecret) {
-		this.apiKey = apiKey;
+	public FacebookWebArgumentResolver(String appId, String appSecret) {
+		this.appId = appId;
 		this.appSecret = appSecret;
 	}
 	
@@ -51,14 +52,12 @@ public class FacebookWebArgumentResolver implements WebArgumentResolver {
 		if (annotation == null) {
 			return WebArgumentResolver.UNRESOLVED;
 		}
-
 		HttpServletRequest nativeRequest = (HttpServletRequest) request.getNativeRequest();
-		Map<String, String> cookieData = FacebookCookieParser.getFacebookCookieData(nativeRequest.getCookies(), apiKey, appSecret);
+		Map<String, String> cookieData = FacebookCookieParser.getFacebookCookieData(nativeRequest.getCookies(), appId, appSecret);
 		String key = annotation.value();
 		if (!cookieData.containsKey(key) && annotation.required()) {
 			throw new IllegalStateException("Missing Facebook cookie value '" + key + "'");
 		}
-
 		return cookieData.get(key);
 	}
 

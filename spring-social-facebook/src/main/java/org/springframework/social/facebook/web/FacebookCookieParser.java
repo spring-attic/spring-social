@@ -36,10 +36,10 @@ class FacebookCookieParser {
 	/**
 	 * Looks for a Facebook cookie for the given API Key and returns its data as key/value pairs in a Map.
 	 */
-	public static Map<String, String> getFacebookCookieData(Cookie[] cookies, String apiKey, String appSecret) {
+	public static Map<String, String> getFacebookCookieData(Cookie[] cookies, String appId, String appSecret) {
 		if (cookies != null) {
 			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals("fbs_" + apiKey)) {
+				if (cookie.getName().equals("fbs_" + appId)) {
 					Map<String, String> cookieData = extractDataFromCookie(cookie.getValue().trim());
 					if (calculateSignature(appSecret, cookieData).equals(cookieData.get("sig"))) {
 						return cookieData;
@@ -48,7 +48,6 @@ class FacebookCookieParser {
 				}
 			}
 		}
-
 		return Collections.<String, String> emptyMap();
 	}
 
@@ -80,16 +79,14 @@ class FacebookCookieParser {
 	private static String md5(String in) {
 		try {
 			MessageDigest md = MessageDigest.getInstance("MD5");
-
 			byte[] hash = md.digest(in.getBytes("UTF-8"));
-
 			StringBuffer sb = new StringBuffer();
 			for (byte b : hash) {
-				if (b >= 0 && b < 16)
+				if (b >= 0 && b < 16) {
 					sb.append('0');
+				}
 				sb.append(Integer.toHexString(b & 0xff));
 			}
-
 			return sb.toString();
 		} catch (NoSuchAlgorithmException wontHappen) {
 			return null;
