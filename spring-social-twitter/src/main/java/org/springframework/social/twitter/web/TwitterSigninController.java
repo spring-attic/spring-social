@@ -72,8 +72,7 @@ public class TwitterSigninController extends AbstractProviderSigninController {
 	 */
 	@RequestMapping(method=RequestMethod.GET, params="oauth_token")
 	public String oauth1Callback(@RequestParam("oauth_token") String token, @RequestParam(value = "oauth_verifier") String verifier, WebRequest request) {
-		AuthorizedRequestToken authorizedRequestToken = new AuthorizedRequestToken(extractCachedRequestToken(request), verifier);
-		OAuthToken accessToken = serviceProvider.getOAuthOperations().exchangeForAccessToken(authorizedRequestToken);
+		OAuthToken accessToken = serviceProvider.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier));
 		Serializable accountId = getConnectionRepository().findAccountIdByConnectionAccessToken(serviceProvider.getId(), accessToken.getValue());
 		if (accountId == null) {
 			OAuth1ProviderSignInAttempt signInAttempt = new OAuth1ProviderSignInAttempt(serviceProvider, accessToken.getValue(), accessToken.getSecret());
