@@ -72,11 +72,9 @@ class OAuth1SigningRequestFactory implements ClientHttpRequestFactory {
 
 		public ClientHttpResponse execute() throws IOException {
 			byte[] bufferedOutput = bodyOutputStream.toByteArray();
-			HttpHeaders headers = getHeaders();
 			String authorizationHeader = SigningUtils.buildAuthorizationHeaderValueFromClientHttpRequest(this,
 					bufferedOutput, consumerKey, consumerSecret, accessToken, accessTokenSecret);
 			delegate.getBody().write(bufferedOutput);
-			delegate.getHeaders().putAll(headers);
 			delegate.getHeaders().set("Authorization", authorizationHeader);
 			return delegate.execute();
 		}

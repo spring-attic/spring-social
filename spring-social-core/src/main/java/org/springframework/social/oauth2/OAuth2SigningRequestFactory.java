@@ -73,9 +73,7 @@ class OAuth2SigningRequestFactory implements ClientHttpRequestFactory {
 
 		public ClientHttpResponse execute() throws IOException {
 			byte[] bufferedOutput = bodyOutputStream.toByteArray();
-			HttpHeaders headers = getHeaders();
 			delegate.getBody().write(bufferedOutput);
-			delegate.getHeaders().putAll(headers);
 			delegate.getHeaders().set("Authorization", getAuthorizationHeaderValue());
 			return delegate.execute();
 		}
