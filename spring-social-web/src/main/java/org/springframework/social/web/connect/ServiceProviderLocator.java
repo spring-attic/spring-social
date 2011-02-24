@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.support;
+package org.springframework.social.web.connect;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ import org.springframework.social.connect.ServiceProvider;
  * Looks up service providers, by name, from the application context.
  * @author Craig Walls
  */
-public class ServiceProviderLocator {
+class ServiceProviderLocator {
 
 	private final Map<String, ServiceProvider<?>> serviceProviders;
 

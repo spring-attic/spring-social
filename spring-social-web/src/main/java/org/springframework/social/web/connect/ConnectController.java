@@ -18,6 +18,10 @@ package org.springframework.social.web.connect;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.social.connect.ServiceProvider;
@@ -28,7 +32,6 @@ import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.support.ServiceProviderLocator;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -51,7 +54,7 @@ import org.springframework.web.context.request.WebRequest;
  */
 @Controller
 @RequestMapping("/connect/")
-public class ConnectController {
+public class ConnectController implements BeanFactoryAware {
 	
 	private ServiceProviderLocator serviceProviderLocator;
 
@@ -65,8 +68,7 @@ public class ConnectController {
 	 * Constructs a ConnectController.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
 	 */
-	public ConnectController(ServiceProviderLocator serviceProviderLocator, String applicationUrl) {
-		this.serviceProviderLocator = serviceProviderLocator;
+	public ConnectController(String applicationUrl) {
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 		this.interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
 		this.accountIdExtractor = new DefaultAccountIdExtractor();
@@ -94,6 +96,12 @@ public class ConnectController {
 	 */
 	public void setAccountIdExtractor(AccountIdExtractor accountIdExtractor) {
 		this.accountIdExtractor = accountIdExtractor;
+	}
+
+	// implementing BeanFactoryAware
+	
+	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+		this.serviceProviderLocator = new ServiceProviderLocator((ListableBeanFactory) beanFactory);
 	}
 
 	/**
