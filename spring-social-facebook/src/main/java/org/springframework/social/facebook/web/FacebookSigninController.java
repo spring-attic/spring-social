@@ -22,8 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.facebook.connect.FacebookServiceProvider;
-import org.springframework.social.web.signin.OAuth2ProviderSignInAccount;
-import org.springframework.social.web.signin.ProviderSignInAccount;
+import org.springframework.social.web.signin.OAuth2ProviderSignInAttempt;
+import org.springframework.social.web.signin.ProviderSignInAttempt;
 import org.springframework.social.web.signin.SignInService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -69,8 +69,8 @@ public class FacebookSigninController {
 		String accessToken = resolveAccessTokenValue(request);
 		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(serviceProvider.getId(), accessToken);
 		if (accountId == null) {
-			OAuth2ProviderSignInAccount signInAccount = new OAuth2ProviderSignInAccount(serviceProvider, accessToken);
-			request.getSession().setAttribute(ProviderSignInAccount.SESSION_ATTRIBUTE, signInAccount);
+			OAuth2ProviderSignInAttempt signInAttempt = new OAuth2ProviderSignInAttempt(serviceProvider, accessToken);
+			request.getSession().setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt);
 			return "redirect:" + signupUrl;
 		}
 		signinService.signIn(accountId);

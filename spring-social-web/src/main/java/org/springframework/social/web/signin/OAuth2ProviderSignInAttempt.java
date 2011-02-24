@@ -17,10 +17,24 @@ package org.springframework.social.web.signin;
 
 import java.io.Serializable;
 
-public interface ProviderSignInAccount extends Serializable {
+import org.springframework.social.connect.oauth2.OAuth2ServiceProvider;
+import org.springframework.social.oauth2.AccessGrant;
 
-	public static final String SESSION_ATTRIBUTE = ProviderSignInAccount.class.getName();
+/**
+ * Attempt to sign-in using a OAuth2-based provider.
+ */
+public class OAuth2ProviderSignInAttempt implements ProviderSignInAttempt {
+
+	private OAuth2ServiceProvider<?> serviceProvider;
 	
-	void connect(Serializable accountId);
+	private String accessToken;
+	
+	public OAuth2ProviderSignInAttempt(OAuth2ServiceProvider<?> serviceProvider, String accessToken) {
+		this.serviceProvider = serviceProvider;
+	}
+
+	public void connect(Serializable accountId) {
+		serviceProvider.connect(accountId, new AccessGrant(accessToken));		
+	}
 
 }

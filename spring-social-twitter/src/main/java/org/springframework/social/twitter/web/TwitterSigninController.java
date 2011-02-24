@@ -22,8 +22,8 @@ import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.twitter.connect.TwitterServiceProvider;
-import org.springframework.social.web.signin.OAuth1ProviderSignInAccount;
-import org.springframework.social.web.signin.ProviderSignInAccount;
+import org.springframework.social.web.signin.OAuth1ProviderSignInAttempt;
+import org.springframework.social.web.signin.ProviderSignInAttempt;
 import org.springframework.social.web.signin.SignInService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -86,8 +86,8 @@ public class TwitterSigninController {
 		OAuthToken accessToken = serviceProvider.getOAuthOperations().exchangeForAccessToken(authorizedRequestToken);
 		Serializable accountId = connectionRepository.findAccountIdByConnectionAccessToken(serviceProvider.getId(), accessToken.getValue());
 		if (accountId == null) {
-			OAuth1ProviderSignInAccount signInAccount = new OAuth1ProviderSignInAccount(serviceProvider, accessToken.getValue(), accessToken.getSecret());
-			request.setAttribute(ProviderSignInAccount.SESSION_ATTRIBUTE, signInAccount, WebRequest.SCOPE_SESSION);
+			OAuth1ProviderSignInAttempt signInAttempt = new OAuth1ProviderSignInAttempt(serviceProvider, accessToken.getValue(), accessToken.getSecret());
+			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, WebRequest.SCOPE_SESSION);
 			return "redirect:" + signupUrl;
 		}
 		signinService.signIn(accountId);
