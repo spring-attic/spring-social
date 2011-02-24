@@ -56,7 +56,7 @@ public class FacebookWebArgumentResolver implements WebArgumentResolver {
 		Map<String, String> cookieData = FacebookCookieParser.getFacebookCookieData(nativeRequest.getCookies(), appId, appSecret);
 		String key = annotation.value();
 		if (!cookieData.containsKey(key) && annotation.required()) {
-			throw new IllegalStateException("Missing Facebook cookie value '" + key + "'");
+			throw new IllegalStateException("Missing required Facebook cookie value '" + key + "'");
 		}
 		return cookieData.get(key);
 	}
