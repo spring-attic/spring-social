@@ -30,6 +30,7 @@
 		
 		<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.twitter.web.TwitterSigninController">
+    <constructor-arg ref="twitterProvider" />
     <constructor-arg ref="connectionRepository" />
     <constructor-arg ref="signinService" />
     <constructor-arg value="http://localhost:8080/myapplication" />
@@ -37,10 +38,11 @@
 		</programlisting>
 		
 		<para>
-			<classname>TwitterSigninController</classname> is constructed with three arguments:
+			<classname>TwitterSigninController</classname> is constructed with four arguments:
 		</para>
 		
 		<itemizedlist>
+			<listitem><para>A reference to a <classname>TwitterServiceProvider</classname> bean. <classname>TwitterSigninController</classname> will use this to negotiate the connection with Twitter.</para></listitem>
 			<listitem><para>A reference to a connection repository bean. After signing into Twitter, <classname>TwitterSigninController</classname> will use the connection repository to find an account ID that is connected to the Twitter profile.</para></listitem>
 			<listitem><para>A reference to an implementation of <interfacename>SignInService</interfacename>, used to perform the actual authentication into the application.</para></listitem>
 			<listitem><para>The application's base URL, used to construct a callback URL for the OAuth flow.</para></listitem>
@@ -156,17 +158,15 @@ public class AccountIdAsPrincipalSigninService implements SignInService {
 		
 		<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.facebook.web.FacebookSigninController">
+    <constructor-arg ref="facebookProvider" />
     <constructor-arg ref="connectionRepository" />
     <constructor-arg ref="signinService" />
-    <constructor-arg ref="#{environment['application.url']}" />
-    <constructor-arg value="#{environment['facebook.appId']}" />
-    <constructor-arg value="#{environment['facebook.appSecret']}" />
 </bean>]]>
 		</programlisting>
 		
 		<para>
 			As with <classname>TwitterSigninController</classname>, <classname>FacebookSigninController</classname> depends on a connection repository to lookup connections and a sign in service to handle the actual application authentication.
-			It also needs the base application URL that it will use to construct a URL to <classname>ConnectController</classname> to create a connection after signup.
+			It also needs a reference to a <classname>FacebookServiceProvider</classname> bean that it will use to negotiate the connection with Facebook.
 		</para>
 		
 		<para>[[[TODO: Document the deferred connection-after-signup stuff!!!]]]</para>
