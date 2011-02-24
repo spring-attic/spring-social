@@ -17,7 +17,11 @@ package org.springframework.social.twitter.web;
 
 import java.io.Serializable;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.social.connect.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuthToken;
@@ -42,6 +46,8 @@ import org.springframework.web.context.request.WebRequest;
 @RequestMapping("/signin/twitter")
 public class TwitterSigninController extends AbstractProviderSigninController {
 
+	private final Provider<? extends OAuth1ServiceProvider<?>> serviceProviderLocator;
+	
 	private final TwitterServiceProvider serviceProvider;
 	
 	private final String callbackUrl;
@@ -49,9 +55,11 @@ public class TwitterSigninController extends AbstractProviderSigninController {
 	/**
 	 * Constructs the Twitter sign in controller.
 	 */
-	public TwitterSigninController(TwitterServiceProvider serviceProvider, ConnectionRepository connectionRepository, SignInService signInService, String applicationUrl) {
+	@Inject
+	public TwitterSigninController(Provider<TwitterServiceProvider> serviceProviderLocator, ConnectionRepository connectionRepository, SignInService signInService, String applicationUrl) {
 		super(connectionRepository, signInService);
-		this.serviceProvider = serviceProvider;
+		this.serviceProviderLocator = serviceProviderLocator;
+		this.serviceProvider = serviceProviderLocator.get();
 		this.callbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 	}
 
@@ -75,7 +83,7 @@ public class TwitterSigninController extends AbstractProviderSigninController {
 		OAuthToken accessToken = serviceProvider.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier));
 		Serializable accountId = getConnectionRepository().findAccountIdByConnectionAccessToken(serviceProvider.getId(), accessToken.getValue());
 		if (accountId == null) {
-			OAuth1ProviderSignInAttempt signInAttempt = new OAuth1ProviderSignInAttempt(serviceProvider, accessToken.getValue(), accessToken.getSecret());
+			OAuth1ProviderSignInAttempt signInAttempt = new OAuth1ProviderSignInAttempt(serviceProviderLocator, accessToken.getValue(), accessToken.getSecret());
 			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, WebRequest.SCOPE_SESSION);
 			return "redirect:" + getSignupUrl();
 		}
@@ -83,6 +91,8 @@ public class TwitterSigninController extends AbstractProviderSigninController {
 		return "redirect:/";
 	}
 
+	// internal helpers
+	
 	private OAuthToken extractCachedRequestToken(WebRequest request) {
 		OAuthToken requestToken = (OAuthToken) request.getAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		request.removeAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
