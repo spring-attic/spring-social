@@ -15,7 +15,8 @@
  */
 package org.springframework.social.connect.oauth2;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -24,11 +25,11 @@ import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
-import org.springframework.social.test.connect.StubConnectionRepository;
+import org.springframework.social.test.connect.MockConnectionRepository;
 
 public class OAuth2ServiceProviderTest {
 
-	private ConnectionRepository connectionRepository = new StubConnectionRepository();
+	private ConnectionRepository connectionRepository = new MockConnectionRepository();
 
 	private OAuth2ServiceProvider<TestApi> serviceProvider = new TestServiceProvider(connectionRepository);
 

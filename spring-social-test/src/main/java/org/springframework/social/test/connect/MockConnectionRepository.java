@@ -30,7 +30,7 @@ import org.springframework.social.connect.support.ConnectionRepository;
  * Stub in-memory ConnectionRepository implementation useful for ServiceProvider unit testing.
  * @author Keith Donald
  */
-public class StubConnectionRepository implements ConnectionRepository {
+public class MockConnectionRepository implements ConnectionRepository {
 
 	private final SecureRandom secureRandom = new SecureRandom();
 	
@@ -86,12 +86,10 @@ public class StubConnectionRepository implements ConnectionRepository {
 	}
 	
 	public Serializable findAccountIdByConnectionAccessToken(String provider, String accessToken) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
 	public List<Serializable> findAccountIdsForProviderAccountIds(String providerId, List<String> providerAccountIds) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("Not yet implemented");
 	}
 }

@@ -29,7 +29,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.social.test.client.MockRestServiceServer;
-import org.springframework.web.client.RestTemplate;
 
 public class OAuth2TemplateTest {
 	
