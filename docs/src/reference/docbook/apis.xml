@@ -367,7 +367,7 @@ String profileId = facebook.getProfileId();]]>
 			</para>
 			
 			<programlisting langauge="java"><![CDATA[
-				String profileUrl = facebook.getProfileUrl();]]>
+String profileUrl = facebook.getProfileUrl();]]>
 			</programlisting>
 
 		</section>
