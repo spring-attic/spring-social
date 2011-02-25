@@ -268,25 +268,12 @@ public class AccountIdAsPrincipalSigninService implements SignInService {
 		</programlisting>
 		
 		<para>
-			Before the signin controller redirects the user to the signup URL, it places an instance of <interfacename>ProviderSignInAttempt</interfacename> in the session. 
-			After the user has successfully signed up in your application, you can retrieve this object from the session and use it to create a connection between the provider and the newly created account.
-			For example, in your application's sign up controller, you might have the following method that is called after a successful account creation:
+			After the user has successfully signed up in your application, you can complete the connection between the provider and the newly created account by calling <methodname>ProviderSignInUtils.handleConnectPostSignUp()</methodname>:
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-private void handleProviderSignInAttempt(WebRequest request, Serializable accountId) {
-    ProviderSignInAttempt signInAttempt = (ProviderSignInAttempt) request.getAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
-    if (signInAttempt != null) {
-        signInAttempt.connect(accountId);
-        request.removeAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
-    }
-}]]>
+ProviderSignInUtils.handleConnectPostSignUp(accountId, request);
+]]>
 		</programlisting>
-		
-		<para>
-			If there is a <interfacename>ProviderSignInAttempt</interfacename> is retrieved from the session, then you can call the <methodname>connect()</methodname> method, passing in the new account's ID.
-			The <interfacename>ProviderSignInAttempt</interfacename> object takes care of creating the connection for you.
-			Finally, you should remove the <interfacename>ProviderSignInAttempt</interfacename> from the session. 
-		</para>
 	</section>	
 </chapter>
