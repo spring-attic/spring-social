@@ -27,7 +27,10 @@ Bug fixes:
    * SOCIAL-59: Can't send asterisks in tweets
    * SOCIAL-86: IllegalArgumentException: Non-serializable attribute oauthToken
    * SOCIAL-92: getCreatedAt return null due to Unparseable date in TwitterTemplate
-    
+
+Known Issues:
+    * SPR-8002: ProviderSignAttempt session-scoped objects not serializable due to javax.inject.Provider serialization issue.
+
 
 Spring Social 1.0.0 Milestone 1 (Oct 29, 2010)
 ==============================================
