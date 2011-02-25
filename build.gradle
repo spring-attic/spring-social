@@ -118,15 +118,6 @@ configure(javaprojects) {
         }
     }
 
-    // 'provided' dependencies should not be transitive (e.g. servlet-api)
-    configurations {
-        provided { transitive = false }
-    }
-
-    sourceSets.main.compileClasspath += configurations.provided
-    sourceSets.test.compileClasspath += configurations.provided
-    sourceSets.test.runtimeClasspath += configurations.provided
-
     // dependencies that are common across all java projects
     dependencies {
         testCompile "junit:junit:$junitVersion"
@@ -149,7 +140,7 @@ configure(javaprojects) {
 // -----------------------------------------------------------------------------
 
 project('spring-social-core') {
-    description = 'Foundational module containing the ServiceProvider "Connect" Framework and Service API invocation support.'
+    description = 'Foundational module containing the ServiceProvider Connect Framework and Service API invocation support.'
     dependencies {
         compile ("org.springframework:spring-jdbc:$springVersion") { optional = true }
         compile ("org.springframework:spring-web:$springVersion")
