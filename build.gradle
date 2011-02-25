@@ -96,7 +96,7 @@ configure(javaprojects) {
     commonsCodecVersion = '1.4'
     h2Version = '1.3.151'
     jacksonVersion = '1.7.3'
-	javaxInjectVersion = '1'
+    javaxInjectVersion = '1'
     jodaVersion = '1.6.2'
     jspApiVersion = '2.1'
     junitVersion = '4.8.2'
