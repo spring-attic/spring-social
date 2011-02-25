@@ -89,6 +89,10 @@
               <entry>spring-social-tripit</entry>
               <entry>Includes Spring Social's TripIt API.</entry>
             </row>
+            <row>
+              <entry>spring-social-test</entry>
+              <entry>Support for testing ServiceProvider implementations and API bindings</entry>
+            </row>
           </tbody>
         </tgroup>
       </table>
