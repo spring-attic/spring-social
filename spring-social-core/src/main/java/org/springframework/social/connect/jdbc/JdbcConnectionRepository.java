@@ -90,13 +90,12 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 	}
 
 	public Serializable findAccountIdByConnectionAccessToken(String provider, String accessToken) {
-		List<Serializable> matches = jdbcTemplate.query("select accountId from Connection where providerId = ? and accessToken = ?", new RowMapper<Serializable>() {
+		List<Serializable> results = jdbcTemplate.query("select accountId from Connection where providerId = ? and accessToken = ?", new RowMapper<Serializable>() {
 			public Serializable mapRow(ResultSet rs, int rowNum) throws SQLException {
-						return (Serializable) rs.getObject("accountId");
+				return (Serializable) rs.getObject("accountId");
 			}
 		}, provider, encrypt(accessToken));
-
-		return !matches.isEmpty() ? matches.get(0) : null;
+		return !results.isEmpty() ? results.get(0) : null;
 	}
 
 	public List<Serializable> findAccountIdsForProviderAccountIds(String providerId, List<String> providerAccountIds) {
