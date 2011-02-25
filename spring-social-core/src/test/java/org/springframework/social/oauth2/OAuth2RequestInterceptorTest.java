@@ -31,19 +31,19 @@ public class OAuth2RequestInterceptorTest {
 	
 	@Test
 	public void currentOAuth2SpecInterceptor() throws Exception {
-		OAuth2RequestInterceptor interceptor = new OAuth2RequestInterceptor("access_token");
+		OAuth2RequestInterceptor interceptor = new OAuth2RequestInterceptor("access_token", OAuth2Version.STANDARD);
 		assertThatInterceptorWritesAuthorizationHeader(interceptor, "BEARER access_token");
 	}
 	
 	@Test
 	public void draft10Interceptor() throws Exception {
-		OAuth2RequestInterceptor interceptor = OAuth2RequestInterceptor.draft10("access_token");
+		OAuth2RequestInterceptor interceptor = new OAuth2RequestInterceptor("access_token", OAuth2Version.DRAFT_10);
 		assertThatInterceptorWritesAuthorizationHeader(interceptor, "OAuth access_token");
 	}
 
 	@Test
 	public void draft8Interceptor() throws Exception {
-		OAuth2RequestInterceptor interceptor = OAuth2RequestInterceptor.draft8("access_token");
+		OAuth2RequestInterceptor interceptor = new OAuth2RequestInterceptor("access_token", OAuth2Version.DRAFT_8);
 		assertThatInterceptorWritesAuthorizationHeader(interceptor, "Token token=\"access_token\"");
 	}
 
