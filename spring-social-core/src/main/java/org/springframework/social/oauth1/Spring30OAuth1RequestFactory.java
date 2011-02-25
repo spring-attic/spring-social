@@ -28,18 +28,23 @@ import org.springframework.http.client.ClientHttpResponse;
 
 /**
  * Request factory that signs RestTemplate requests with an OAuth 1 Authorization header.
- * Internally used for Spring 3.0 compatibility only. Spring 3.1 uses request interceptors.
+ * Internally used for Spring 3.0 compatibility only.
+ * Planned for removal in Spring Social 1.1.
  * @author Craig Walls
  */
-class OAuth1SigningRequestFactory implements ClientHttpRequestFactory {
+class Spring30OAuth1RequestFactory implements ClientHttpRequestFactory {
+	
 	private final ClientHttpRequestFactory delegate;
+	
 	private final String consumerKey;
+	
 	private final String consumerSecret;
+	
 	private final String accessToken;
+	
 	private final String accessTokenSecret;
 
-	public OAuth1SigningRequestFactory(ClientHttpRequestFactory delegate, String consumerKey, String consumerSecret,
-			String accessToken, String accessTokenSecret) {
+	public Spring30OAuth1RequestFactory(ClientHttpRequestFactory delegate, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
 		this.delegate = delegate;
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
@@ -48,20 +53,24 @@ class OAuth1SigningRequestFactory implements ClientHttpRequestFactory {
 	}
 
 	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
-		return new OAuth1SigningRequest(delegate.createRequest(uri, httpMethod), consumerKey, consumerSecret,
-				accessToken, accessTokenSecret);
+		return new OAuth1SigningRequest(delegate.createRequest(uri, httpMethod), consumerKey, consumerSecret, accessToken, accessTokenSecret);
 	}	
 
 	private static class OAuth1SigningRequest implements ClientHttpRequest {
+		
 		private final ClientHttpRequest delegate;
+		
 		private ByteArrayOutputStream bodyOutputStream;
+		
 		private final String consumerKey;
+		
 		private final String consumerSecret;
+		
 		private final String accessToken;
+		
 		private final String accessTokenSecret;
 
-		public OAuth1SigningRequest(ClientHttpRequest delegate, String consumerKey, String consumerSecret,
-				String accessToken, String accessTokenSecret) {
+		public OAuth1SigningRequest(ClientHttpRequest delegate, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
 			this.delegate = delegate;
 			this.consumerKey = consumerKey;
 			this.consumerSecret = consumerSecret;
@@ -72,8 +81,7 @@ class OAuth1SigningRequestFactory implements ClientHttpRequestFactory {
 
 		public ClientHttpResponse execute() throws IOException {
 			byte[] bufferedOutput = bodyOutputStream.toByteArray();
-			String authorizationHeader = SigningUtils.buildAuthorizationHeaderValueFromClientHttpRequest(this,
-					bufferedOutput, consumerKey, consumerSecret, accessToken, accessTokenSecret);
+			String authorizationHeader = SigningUtils.spring30buildAuthorizationHeaderValueFromClientHttpRequest(this, bufferedOutput, consumerKey, consumerSecret, accessToken, accessTokenSecret);
 			delegate.getBody().write(bufferedOutput);
 			delegate.getHeaders().set("Authorization", authorizationHeader);
 			return delegate.execute();
@@ -94,7 +102,7 @@ class OAuth1SigningRequestFactory implements ClientHttpRequestFactory {
 		public OutputStream getBody() throws IOException {
 			return bodyOutputStream;
 		}
-
+		
 	}
 
 }

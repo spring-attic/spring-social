@@ -19,39 +19,55 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * Factory for RestTemplate instances that execute requests for resources protected by the OAuth 2 protocol.
+ * Encapsulates the configuration of the interceptor that adds the necessary Authorization header to each request before it is executed.
+ * Also hides the differences between Spring 3.0.x and 3.1 implementation.
+ * @author Keith Donald
+ */
 public class ProtectedResourceClientFactory {
 
+	/**
+	 * Constructs a RestTemplate that adds the Authorization header using the bearer token style described in the latest draft (draft 12) of the OAuth2 specification:
+	 * http://tools.ietf.org/html/draft-ietf-oauth-v2-12#section-7.1
+	 * @param accessToken the access token
+	 */
 	public static RestTemplate standard(String accessToken) {
+		return version(accessToken, OAuth2Version.STANDARD);
+	}
+
+	/**
+	 * Constructs a RestTemplate that adds the Authorization header using the style described in the draft 10 of the OAuth2 specification:
+	 * http://tools.ietf.org/html/draft-ietf-oauth-v2-10#section-5.1.1
+	 * @param accessToken the access token
+	 */
+	public static RestTemplate draft10(String accessToken) {
+		return version(accessToken, OAuth2Version.DRAFT_10);
+	}
+
+	/**
+	 * Constructs a RestTemplate that adds the Authorization header using the style described in the draft 8 of the OAuth2 specification:
+	 * http://tools.ietf.org/html/draft-ietf-oauth-v2-08#section-5.1
+	 * @param accessToken the access token 
+	 */
+	public static RestTemplate draft8(String accessToken) {
+		return version(accessToken, OAuth2Version.DRAFT_8);		
+	}
+
+	// internal helpers
+	
+	private static RestTemplate version(String accessToken, OAuth2Version version) {
 		RestTemplate client = new RestTemplate();
 		if (interceptorsSupported) {
-			client.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth2RequestInterceptor(accessToken) });
+			// favored
+			client.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth2RequestInterceptor(accessToken, version) });
 		} else {
-			client.setRequestFactory(OAuth2SigningRequestFactory.standard(client.getRequestFactory(), accessToken));
+			// 3.0.x compatibility
+			client.setRequestFactory(new Spring30OAuth2RequestFactory(client.getRequestFactory(), accessToken, version));
 		}
-		return client;		
+		return client;				
 	}
 	
-	public static RestTemplate draft10(String accessToken) {
-		RestTemplate client = new RestTemplate();
-		if (interceptorsSupported) {
-			client.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft10(accessToken) });
-		} else {
-			client.setRequestFactory(OAuth2SigningRequestFactory.draft10(client.getRequestFactory(), accessToken));
-		}
-		return client;		
-	}
-
-	public static RestTemplate draft8(String accessToken) {
-		RestTemplate client = new RestTemplate();
-		if (interceptorsSupported) {
-			client.setInterceptors(new ClientHttpRequestInterceptor[] { OAuth2RequestInterceptor.draft8(accessToken) });
-		} else {
-			client.setRequestFactory(OAuth2SigningRequestFactory.draft8(client.getRequestFactory(), accessToken));
-		}
-		return client;		
-	}
-
-	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor",
-			ProtectedResourceClientFactory.class.getClassLoader());
+	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor", ProtectedResourceClientFactory.class.getClassLoader());
 
 }

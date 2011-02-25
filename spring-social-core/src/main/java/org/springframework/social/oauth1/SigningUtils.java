@@ -49,18 +49,6 @@ class SigningUtils {
 		return SigningUtils.buildAuthorizationHeaderValue(baseRequestUrl, oauthParameters, aditionalParameters, request.getMethod(), consumerSecret, accessTokenSecret);
 	}
 	
-	// This method exists solely for Spring 3.0 compatibility purposes
-	public static String buildAuthorizationHeaderValueFromClientHttpRequest(ClientHttpRequest request, byte[] body,
-			String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
-		Map<String, String> oauthParameters = commonOAuthParameters(consumerKey);
-		oauthParameters.put("oauth_token", accessToken);
-		Map<String, String> aditionalParameters = extractBodyParameters(request.getHeaders().getContentType(), body);
-		Map<String, String> queryParameters = extractParameters(request.getURI().getQuery());
-		aditionalParameters.putAll(queryParameters);
-		String baseRequestUrl = getBaseUrlWithoutPortOrQueryString(request.getURI());
-		return SigningUtils.buildAuthorizationHeaderValue(baseRequestUrl, oauthParameters, aditionalParameters, request.getMethod(), consumerSecret, accessTokenSecret);
-	}
-
 	public static String buildAuthorizationHeaderValue(String targetUrl, Map<String, String> oauthParameters,
 			Map<String, String> additionalParameters, HttpMethod method, String consumerSecret, String tokenSecret) {
 		String baseString = buildBaseString(targetUrl, oauthParameters, additionalParameters, method);
@@ -81,6 +69,18 @@ class SigningUtils {
 		oauthParameters.put("oauth_nonce", UUID.randomUUID().toString());
 		oauthParameters.put("oauth_version", "1.0");
 		return oauthParameters;
+	}
+
+	// spring 3.0 compatibility only: planned for removal in Spring Social 1.1
+	
+	public static String spring30buildAuthorizationHeaderValueFromClientHttpRequest(ClientHttpRequest request, byte[] body, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+		Map<String, String> oauthParameters = commonOAuthParameters(consumerKey);
+		oauthParameters.put("oauth_token", accessToken);
+		Map<String, String> aditionalParameters = extractBodyParameters(request.getHeaders().getContentType(), body);
+		Map<String, String> queryParameters = extractParameters(request.getURI().getQuery());
+		aditionalParameters.putAll(queryParameters);
+		String baseRequestUrl = getBaseUrlWithoutPortOrQueryString(request.getURI());
+		return SigningUtils.buildAuthorizationHeaderValue(baseRequestUrl, oauthParameters, aditionalParameters, request.getMethod(), consumerSecret, accessTokenSecret);
 	}
 
 	// internal helpers
