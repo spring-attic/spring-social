@@ -82,8 +82,8 @@
 		</para>
 
 		<programlisting language="java"><![CDATA[
-public interface SignInService {
-    void signIn(Serializable accountId);	
+public interface SignInService<T extends Serializable> {
+    void signIn(T accountId);	
 }]]>
 		</programlisting>
 
@@ -101,8 +101,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.social.web.signin.SignInService;
 
-public class AccountIdAsPrincipalSigninService implements SignInService {
-    public void signIn(Serializable accountId) {
+public class AccountIdAsPrincipalSigninService implements SignInService<Long> {
+    public void signIn(Long accountId) {
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(accountId, null, null));
     }
 }]]>

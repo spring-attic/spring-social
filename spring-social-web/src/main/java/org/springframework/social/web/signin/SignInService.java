@@ -22,12 +22,12 @@ import java.io.Serializable;
  * An application should provide their own implementation of this interface for use by ProviderSignInControllers.
  * @author Craig Walls
  */
-public interface SignInService {
+public interface SignInService<T extends Serializable> {
 	
 	/**
 	 * Sign in the user with the specified accountId.
 	 * @param accountId the user's account id
 	 */
-	void signIn(Serializable accountId);
+	void signIn(T accountId);
 	
 }
