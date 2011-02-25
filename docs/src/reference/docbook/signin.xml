@@ -49,6 +49,17 @@
 		</itemizedlist>
 		
 		<para>
+			<classname>TwitterSigninController</classname>'s constructor is annotated with <code>@Inject</code>, so it's not necessary to explicitly wire any of its arguments except for the application URL.
+			Optimizing the configuration for autowiring, the <classname>TwitterSigninController</classname> bean looks like this: 
+		</para>
+		
+		<programlisting language="xml"><![CDATA[
+<bean class="org.springframework.social.twitter.web.TwitterSigninController">
+    <constructor-arg value="http://localhost:8080/myapplication" />
+</bean>]]>
+		</programlisting>
+		
+		<para>
 			<classname>TwitterSigninController</classname> supports the following flow:
 		</para>
 		
@@ -56,7 +67,12 @@
 			<listitem><para><code>POST /signin/twitter</code> - Initiates the "Sign in with Twitter" flow, fetching a request token from Twitter and redirecting to Twitter's authentication page.</para></listitem>
 			<listitem><para><code>GET /signin/twitter?oauth_token={request token}&amp;oauth_verifier={verifier}</code> - Receives the authentication callback from Twitter, accepting a verification code. Exchanges this verification code along with the request token for an access token. It uses this access token to lookup a connected account and then authenticates to the application through the sign in service. </para>
 				<itemizedlist>
-					<listitem><para>If the received access token doesn't match any existing connection, <classname>TwitterSigninController</classname> will proceed to a no-connection view. The default no-connection view is "redirect:/signup".</para></listitem>
+					<listitem>
+						<para>
+							If the received access token doesn't match any existing connection, <classname>TwitterSigninController</classname> will redirect to a signup URL. 
+							The default signup URL is "/signup" (relative to the application root).
+						</para>
+					</listitem>
 				</itemizedlist>
 			</listitem>
 		</itemizedlist>
@@ -168,9 +184,16 @@ public class AccountIdAsPrincipalSigninService implements SignInService {
 			As with <classname>TwitterSigninController</classname>, <classname>FacebookSigninController</classname> depends on a connection repository to lookup connections and a sign in service to handle the actual application authentication.
 			It also needs a reference to a <classname>FacebookServiceProvider</classname> bean that it will use to negotiate the connection with Facebook.
 		</para>
-		
-		<para>[[[TODO: Document the deferred connection-after-signup stuff!!!]]]</para>
-		
+
+		<para>
+			<classname>FacebookSigninController</classname>'s constructor is annotated with <code>@Inject</code>, so it is not necessary to explicitly wire these dependencies.
+			The <classname>FacebookSigninController</classname> configuration optimized for autowiring takes a simpler form:
+		</para>
+
+		<programlisting language="xml"><![CDATA[
+<bean class="org.springframework.social.facebook.web.FacebookSigninController"/>]]>
+		</programlisting>
+				
 		<para>
 			However, since Facebook's sign in process is not based on an OAuth 1 flow, <classname>FacebookSigninController</classname> does not need the base URL to create a callback URL from. 
 			Instead, <classname>FacebookSigninController</classname> needs to know the application's Facebook app id and secret that were issued to the application when it was first registered in Facebook. 
@@ -192,15 +215,17 @@ public class AccountIdAsPrincipalSigninService implements SignInService {
 		</para>
 
 		<programlisting language="xml"><![CDATA[
-<facebook:init appId="0c754d95f9d9899b0d7c4454a6f2dde6" />]]>
+<facebook:init appId="@facebookProvider.appId" />]]>
 		</programlisting>
 
 		<para>Note that the tag prefix cannot be "fb", as that would create a conflict between Spring Social's Facebook JSP tag library and Facebook's XFBML tags (which use "fb" as their prefix).</para>
 		
 		<para>
-			The <code><![CDATA[<facebook:init>]]></code> will initialize the Facebook JavaScript library with your application's app id.
+			The <code><![CDATA[<facebook:init>]]></code> will initialize the Facebook JavaScript library with your application's App ID.
 			This is the appId assigned to your application when you registered it with Facebook.
+			Here the App ID is specified using the Spring Expression Langauge to be the value of the <code>appId</code> property of the bean whose ID is "facebookProvider".
 		</para>
+
 
 		<para>
 			Now that the Facebook JavaScript API is initialized you just need to add the <code><![CDATA[<fb:login-button>]]></code> to the page:
@@ -224,4 +249,44 @@ public class AccountIdAsPrincipalSigninService implements SignInService {
 			In this case, <code>onlogin</code> is set to use jQuery to submit the form, triggering <classname>FacebookSigninController</classname> to authenticate the user to the application.
 		</para>
 	</section>
+	
+	<section xml:id="signin_signup">
+		<title>Signing up after a failed sign in</title>
+		
+		<para>
+			With both <classname>TwitterSigninController</classname> and <classname>FacebookSigninController</classname>, the flow will redirect to a signup page if no connection can be found for the obtained access token.
+			By default, the signup URL is "/signup", relative to the application root.
+			You can override that default by setting the <code>signupUrl</code> property on the controller.
+			For example, the following configuration of <classname>TwitterSigninController</classname> sets the signup URL to "/newUser":
+		</para>
+		
+		<programlisting language="xml"><![CDATA[
+<bean class="org.springframework.social.twitter.web.TwitterSigninController">
+    <constructor-arg value="http://localhost:8080/myapplication" />
+    <property name="signupUrl" value="/newUser" />
+</bean>]]>
+		</programlisting>
+		
+		<para>
+			Before the signin controller redirects the user to the signup URL, it places an instance of <interfacename>ProviderSignInAttempt</interfacename> in the session. 
+			After the user has successfully signed up in your application, you can retrieve this object from the session and use it to create a connection between the provider and the newly created account.
+			For example, in your application's sign up controller, you might have the following method that is called after a successful account creation:
+		</para>
+		
+		<programlisting language="java"><![CDATA[
+private void handleProviderSignInAttempt(WebRequest request, Serializable accountId) {
+    ProviderSignInAttempt signInAttempt = (ProviderSignInAttempt) request.getAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+    if (signInAttempt != null) {
+        signInAttempt.connect(accountId);
+        request.removeAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+    }
+}]]>
+		</programlisting>
+		
+		<para>
+			If there is a <interfacename>ProviderSignInAttempt</interfacename> is retrieved from the session, then you can call the <methodname>connect()</methodname> method, passing in the new account's ID.
+			The <interfacename>ProviderSignInAttempt</interfacename> object takes care of creating the connection for you.
+			Finally, you should remove the <interfacename>ProviderSignInAttempt</interfacename> from the session. 
+		</para>
+	</section>	
 </chapter>

@@ -38,20 +38,20 @@ import org.springframework.social.twitter.connect.TwitterServiceProvider;
 public class ServiceProviderConfig {
 
     @Bean
-    public TwitterServiceProvider twitter(@Value("#{environment['twitter.consumerKey']}") String consumerKey,
-            @Value("#{environment['twitter.consumerSecret']}") String consumerSecret, ConnectionRepository connectionRepository) {
+    public TwitterServiceProvider twitter(@Value("${twitter.consumerKey}") String consumerKey,
+            @Value("${twitter.consumerSecret}") String consumerSecret, ConnectionRepository connectionRepository) {
         return new TwitterServiceProvider(consumerKey, consumerSecret, connectionRepository);
     }
 
     @Bean
-    public FacebookServiceProvider facebook(@Value("#{environment['facebook.appId']}") String appId,
-            @Value("#{environment['facebook.appSecret']}") String appSecret, ConnectionRepository connectionRepository) {
+    public FacebookServiceProvider facebook(@Value("${facebook.appId}") String appId,
+            @Value("${facebook.appSecret}") String appSecret, ConnectionRepository connectionRepository) {
         return new FacebookServiceProvider(appId, appSecret, connectionRepository);
     }
 
     @Bean
-    public TripItServiceProvider tripit(@Value("#{environment['tripit.consumerKey']}") String consumerKey,
-            @Value("#{environment['tripit.consumerSecret']}") String consumerSecret, ConnectionRepository connectionRepository) {
+    public TripItServiceProvider tripit(@Value("${tripit.consumerKey}") String consumerKey,
+            @Value("${tripit.consumerSecret}") String consumerSecret, ConnectionRepository connectionRepository) {
         return new TripItServiceProvider(consumerKey, consumerSecret, connectionRepository);
     }
 
@@ -60,7 +60,7 @@ public class ServiceProviderConfig {
 		<para>
 			Each <interfacename>ServiceProvider</interfacename> should be configured with the client key and secret that were assigned to it when the application was registered with the service provider.
 			Because the consumer key and secret may be different across environments (e.g., test, production, etc) it is recommended that these values be externalized. 
-			Here, the consumer key and secret are provided to the <methodname>twitter()</methodname> method as properties of the current environment.
+			Here, the consumer key and secret are provided to the <methodname>twitter()</methodname> method as placeholder variables to be resolved by Spring's property placeholder support.
 		</para>
 		<para>
 			ServiceProviders are also given a <interfacename>ConnectionRepository</interfacename> at construction.
@@ -134,8 +134,8 @@ import org.springframework.security.crypto.encrypt.TextEncryptor;
 public class ProductionEncryptionConfig {
 
     @Bean
-    public TextEncryptor textEncryptor(@Value("#{environment['security.encryptPassword']}") String password,
-            @Value("#{environment['security.encryptSalt']}") String salt) {
+    public TextEncryptor textEncryptor(@Value("${security.encryptPassword}") String password,
+            @Value("${security.encryptSalt}") String salt) {
         return Encryptors.queryableText(password, salt);
     }
 
@@ -157,22 +157,22 @@ public class ProductionEncryptionConfig {
 	
     <!-- Configure a Twitter service provider -->
     <bean class="org.springframework.social.twitter.connect.TwitterServiceProvider">
-        <constructor-arg value="#{environment['twitter.consumerKey']}" />
-        <constructor-arg value="#{environment['twitter.consumerSecret']}" />
+        <constructor-arg value="${twitter.consumerKey}" />
+        <constructor-arg value="${twitter.consumerSecret}" />
         <constructor-arg ref="connectionRepository" />
     </bean>
 
     <!-- Configure a Facebook service provider -->
     <bean class="org.springframework.social.facebook.connect.FacebookServiceProvider">
-        <constructor-arg value="#{environment['facebook.appId']}" />
-        <constructor-arg value="#{environment['facebook.appSecret']}" />
+        <constructor-arg value="${facebook.appId}" />
+        <constructor-arg value="${facebook.appSecret}" />
         <constructor-arg ref="connectionRepository" />
     </bean>
 	
     <!-- Configure a TripIt service provider -->
     <bean class="org.springframework.social.tripit.connect.TripItServiceProvider">
-        <constructor-arg value="#{environment['tripit.consumerKey']}" />
-        <constructor-arg value="#{environment['tripit.consumerSecret']}" />
+        <constructor-arg value="${tripit.consumerKey}" />
+        <constructor-arg value="${tripit.consumerSecret}" />
         <constructor-arg ref="connectionRepository" />
     </bean>
 
@@ -199,8 +199,8 @@ public class ProductionEncryptionConfig {
 	
     <beans profile="production">
         <bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="queryableText">
-            <constructor-arg value="#{environment['security.encryptPassword']}" />
-            <constructor-arg value="#{environment['security.encryptSalt']}" />
+            <constructor-arg value="${security.encryptPassword}" />
+            <constructor-arg value="${security.encryptSalt}" />
         </bean>
     </beans>
 
@@ -230,7 +230,7 @@ import org.springframework.stereotype.Component;
 public class ConnectControllerConfig {
 
     @Bean
-    public ConnectController connectController(@Value("#{environment['application.url']}") String applicationUrl) {
+    public ConnectController connectController(@Value("${application.url}") String applicationUrl) {
         return new ConnectController(applicationUrl);
     }
 	
@@ -241,14 +241,14 @@ public class ConnectControllerConfig {
 		</para>
 		<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.web.connect.ConnectController">
-    <constructor-arg value="#{environment['application.url']}" />
+    <constructor-arg value="${application.url}" />
 </bean>]]>
 		</programlisting>
 		<para>
 			In either case, <classname>ConnectController</classname> is constructed with the base URL for the application.
 			<classname>ConnectController</classname> will use this URL to construct callback URLs used in the authorization flow.
 			Since the base URL of an application will be different between environments, it is recommended that you externalize it.
-			Here the URL is retrieved as a context environment property named "application.url".
+			Here the URL is specified as a placeholder variable.
 		</para>
 		<para>
 			<classname>ConnectController</classname> supports authorization flows for either OAuth 1 or OAuth 2, relying on <interfacename>ServiceProvider</interfacename>s to handle the specifics for each protocol.
@@ -519,7 +519,7 @@ public class TweetAfterConnectInterceptor implements ConnectInterceptor<TwitterO
 		</para>
 		<programlisting language="java"><![CDATA[
 @Bean
-public ConnectController connectController(@Value("#{environment['application.url']}") String applicationUrl) {
+public ConnectController connectController(@Value("${application.url}") String applicationUrl) {
     ConnectController controller = new ConnectController(applicationUrl);
     controller.addInterceptor(new TweetAfterConnectInterceptor());
     return controller;

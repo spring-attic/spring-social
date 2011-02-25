@@ -1,4 +1,4 @@
-Spring Social 1.0.0 Milestone 2 (Feb 23, 2011)
+Spring Social 1.0.0 Milestone 2 (Feb 25, 2011)
 ==============================================
 For release notes see:
  https://jira.springframework.org/secure/ReleaseNote.jspa?projectId=10481&version=11738
