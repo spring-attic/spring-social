@@ -152,6 +152,7 @@ project('spring-social-core') {
         compile ("commons-codec:commons-codec:$commonsCodecVersion") { optional = true }
         testCompile "com.h2database:h2:$h2Version"
         testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+        testCompile project(':spring-social-test')
     }
 }
 
@@ -166,7 +167,7 @@ project('spring-social-facebook') {
         compile project(':spring-social-core')
         compile project(':spring-social-web') { optional = true }
         // to be able to use the mock rest server
-        testCompile project(':spring-social-core').sourceSets.test.classes
+        testCompile project(':spring-social-test')
     }
 }
 
@@ -176,7 +177,7 @@ project('spring-social-github') {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
         // to be able to use the mock rest server
-        testCompile project(':spring-social-core').sourceSets.test.classes
+        testCompile project(':spring-social-test')
     }
 }
 
@@ -186,7 +187,7 @@ project('spring-social-gowalla') {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
         // to be able to use the mock rest server
-        testCompile project(':spring-social-core').sourceSets.test.classes
+        testCompile project(':spring-social-test')
     }
 }
 
@@ -195,7 +196,7 @@ project('spring-social-linkedin') {
     dependencies {
         compile project(':spring-social-core')
         // to be able to use the mock rest server
-        testCompile project(':spring-social-core').sourceSets.test.classes
+        testCompile project(':spring-social-test')
     }
 }
 
@@ -205,7 +206,7 @@ project('spring-social-tripit') {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
         // to be able to use the mock rest server
-        testCompile project(':spring-social-core').sourceSets.test.classes
+        testCompile project(':spring-social-test')
     }
 }
 
@@ -217,7 +218,7 @@ project('spring-social-twitter') {
         compile project(':spring-social-core')
         compile project(':spring-social-web') { optional = true }
         // to be able to use the mock rest server
-        testCompile project(':spring-social-core').sourceSets.test.classes
+        testCompile project(':spring-social-test')
     }
 }
 
@@ -227,6 +228,13 @@ project('spring-social-web') {
         compile ("javax.inject:javax.inject:$javaxInjectVersion") { optional = true }
         compile "org.springframework:spring-web:$springVersion"
         compile project(':spring-social-core')
+    }
+}
+
+project('spring-social-test') {
+    description = 'Rest Template Test Support'
+    dependencies {
+        compile ("org.springframework:spring-web:$springVersion")
     }
 }
 
