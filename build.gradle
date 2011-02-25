@@ -106,14 +106,19 @@ configure(javaprojects) {
     springSecurityVersion = '3.1.0.RC1'
 
     sourceSets {
+        main {
+            resources {
+                srcDirs = ['src/main/java']
+            }
+        }
         test {
             resources {
-                srcDirs = ['src/test/java', 'src/test/resources']
+                srcDirs = ['src/test/java']
             }
         }
     }
 
-    // 'provided' dependencies should be transitive (e.g. servlet-api)
+    // 'provided' dependencies should not be transitive (e.g. servlet-api)
     configurations {
         provided { transitive = false }
     }
@@ -151,7 +156,6 @@ project('spring-social-core') {
         compile ("org.springframework.security:spring-security-crypto:$springSecurityVersion") { provided = true }
         compile ("commons-codec:commons-codec:$commonsCodecVersion") { optional = true }
         testCompile "com.h2database:h2:$h2Version"
-        testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
     }
 }
 
@@ -229,6 +233,7 @@ project('spring-social-test') {
     dependencies {
         compile project(':spring-social-core')
         compile ("org.springframework:spring-web:$springVersion")
+        testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
     }
 }
 

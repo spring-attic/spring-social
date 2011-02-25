@@ -17,23 +17,22 @@ package org.springframework.social.test.client;
 
 /**
  * Allows for setting up responses and additional expectations. Implementations of this interface are returned by
- * {@link MockWebServiceServer#expect(RequestMatcher)}.
+ * {@link MockRestServiceServer#expect(RequestMatcher)}.
  * 
  * @author Arjen Poutsma
  * @author Lukas Krecan
  * @author Craig Walls
  */
 public interface ResponseActions {
+	
 	/**
 	 * Allows for further expectations to be set on the request.
-	 *
 	 * @return the request expectations
 	 */
 	ResponseActions andExpect(RequestMatcher requestMatcher);
 
 	/**
 	 * Sets the {@link ResponseCreator} for this mock.
-	 *
 	 * @param responseCreator the response creator
 	 */
 	void andRespond(ResponseCreator responseCreator);
