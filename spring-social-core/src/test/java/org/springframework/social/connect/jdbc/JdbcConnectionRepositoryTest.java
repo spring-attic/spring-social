@@ -15,8 +15,11 @@
  */
 package org.springframework.social.connect.jdbc;
 
-import static java.util.Arrays.*;
-import static org.junit.Assert.*;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.Serializable;
 import java.util.List;

@@ -152,7 +152,6 @@ project('spring-social-core') {
         compile ("commons-codec:commons-codec:$commonsCodecVersion") { optional = true }
         testCompile "com.h2database:h2:$h2Version"
         testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
-        testCompile project(':spring-social-test')
     }
 }
 
@@ -228,6 +227,7 @@ project('spring-social-web') {
 project('spring-social-test') {
     description = 'Rest Template Test Support'
     dependencies {
+        compile project(':spring-social-core')
         compile ("org.springframework:spring-web:$springVersion")
     }
 }

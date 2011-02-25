@@ -17,15 +17,15 @@ package org.springframework.social.github;
 
 import static org.junit.Assert.*;
 import static org.springframework.http.HttpMethod.*;
-import static org.springframework.web.client.test.RequestMatchers.*;
-import static org.springframework.web.client.test.ResponseCreators.*;
+import static org.springframework.social.test.client.RequestMatchers.*;
+import static org.springframework.social.test.client.ResponseCreators.*;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.client.test.MockRestServiceServer;
+import org.springframework.social.test.client.MockRestServiceServer;
 
 /**
  * @author Craig Walls
