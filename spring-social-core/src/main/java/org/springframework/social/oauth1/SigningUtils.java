@@ -73,7 +73,7 @@ class SigningUtils {
 
 	// spring 3.0 compatibility only: planned for removal in Spring Social 1.1
 	
-	public static String spring30buildAuthorizationHeaderValueFromClientHttpRequest(ClientHttpRequest request, byte[] body, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+	public static String spring30buildAuthorizationHeaderValue(ClientHttpRequest request, byte[] body, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
 		Map<String, String> oauthParameters = commonOAuthParameters(consumerKey);
 		oauthParameters.put("oauth_token", accessToken);
 		Map<String, String> aditionalParameters = extractBodyParameters(request.getHeaders().getContentType(), body);

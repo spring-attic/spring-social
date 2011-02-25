@@ -81,7 +81,7 @@ class Spring30OAuth1RequestFactory implements ClientHttpRequestFactory {
 
 		public ClientHttpResponse execute() throws IOException {
 			byte[] bufferedOutput = bodyOutputStream.toByteArray();
-			String authorizationHeader = SigningUtils.spring30buildAuthorizationHeaderValueFromClientHttpRequest(this, bufferedOutput, consumerKey, consumerSecret, accessToken, accessTokenSecret);
+			String authorizationHeader = SigningUtils.spring30buildAuthorizationHeaderValue(this, bufferedOutput, consumerKey, consumerSecret, accessToken, accessTokenSecret);
 			delegate.getBody().write(bufferedOutput);
 			delegate.getHeaders().set("Authorization", authorizationHeader);
 			return delegate.execute();
