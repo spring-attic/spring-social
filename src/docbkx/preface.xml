@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE preface PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
-"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
-<preface id="preface">
-  <title>Preface</title>
-
-  <para>The Spring Social project enables development of social-ready Spring applications. We provide support for signing RestTemplate requests with OAuth signatures as well as a selection of templates for interacting with popular social networks such as Twitter, Facebook, LinkedIn, and TripIt.</para>
-
-</preface>
