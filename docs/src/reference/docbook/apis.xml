@@ -273,7 +273,7 @@ SearchResults results = twitter.search("#spring", 2, 10);]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-				SearchResults results = twitter.search("#spring", 2, 10, 145962, 210112);]]>
+SearchResults results = twitter.search("#spring", 2, 10, 145962, 210112);]]>
 			</programlisting>
 			
 			<para>
@@ -630,7 +630,7 @@ String profileUrl = tripit.getProfileUrl();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-	List<Trip> trips = tripit.getUpcomingTrips();]]>
+List<Trip> trips = tripit.getUpcomingTrips();]]>
 			</programlisting>
 			
 			<para>
@@ -768,7 +768,7 @@ GowallaOperations gowalla = gowallaProvider.getConnections(accountId).get(0).get
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-				GowallaProfile profile = gowalla.getUserProfile();]]>
+GowallaProfile profile = gowalla.getUserProfile();]]>
 			</programlisting>
 			
 			<para>
