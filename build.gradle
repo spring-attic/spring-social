@@ -166,7 +166,6 @@ project('spring-social-facebook') {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
         compile project(':spring-social-web') { optional = true }
-        // to be able to use the mock rest server
         testCompile project(':spring-social-test')
     }
 }
@@ -176,7 +175,6 @@ project('spring-social-github') {
     dependencies {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
-        // to be able to use the mock rest server
         testCompile project(':spring-social-test')
     }
 }
@@ -186,7 +184,6 @@ project('spring-social-gowalla') {
     dependencies {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
-        // to be able to use the mock rest server
         testCompile project(':spring-social-test')
     }
 }
@@ -195,7 +192,6 @@ project('spring-social-linkedin') {
     description = 'LinkedIn API'
     dependencies {
         compile project(':spring-social-core')
-        // to be able to use the mock rest server
         testCompile project(':spring-social-test')
     }
 }
@@ -205,7 +201,6 @@ project('spring-social-tripit') {
     dependencies {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
-        // to be able to use the mock rest server
         testCompile project(':spring-social-test')
     }
 }
@@ -217,7 +212,6 @@ project('spring-social-twitter') {
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
         compile project(':spring-social-web') { optional = true }
-        // to be able to use the mock rest server
         testCompile project(':spring-social-test')
     }
 }
