@@ -89,8 +89,7 @@ public class OAuth2TemplateTest {
 	private AccessGrant getAccessGrant(MediaType responseContentType, String responseFile) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(responseContentType);
-		MockRestServiceServer mockServer = MockRestServiceServer.createServer((RestTemplate) oAuth2Template
-				.getRestTemplate());
+		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oAuth2Template.getRestTemplate());
 		mockServer.expect(requestTo(ACCESS_TOKEN_URL))
 				.andExpect(method(POST))
 				.andExpect(body("client_id=client_id&client_secret=client_secret&code=code&"
