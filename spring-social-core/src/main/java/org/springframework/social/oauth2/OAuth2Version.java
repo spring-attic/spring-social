@@ -30,7 +30,7 @@ enum OAuth2Version {
 	
 	DRAFT_10 {
 		public String getAuthorizationHeaderValue(String accessToken) {
-			return "OAuth " + accessToken + "";
+			return "OAuth " + accessToken;
 		}
 	},
 
