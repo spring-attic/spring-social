@@ -41,7 +41,9 @@ public class TwitterResponseStatusCodeTranslator implements ResponseStatusCodeTr
 
 	static final String INVALID_MESSAGE_RECIPIENT_TEXT = "You cannot send messages to users who are not following you.";
 	static final String DUPLICATE_STATUS_TEXT = "Status is a duplicate.";
-
+	static final String COULD_NOT_FOLLOW_USER_TEXT = "Could not follow user";
+	static final String USER_ALREADY_ON_LIST_TEXT = "is already on your list";
+	
 	public SocialException translate(ResponseEntity<?> responseEntity) {
 		// TODO: What happens when the response body isn't a map?
 		if (!(responseEntity.getBody() instanceof Map)) {
@@ -69,6 +71,8 @@ public class TwitterResponseStatusCodeTranslator implements ResponseStatusCodeTr
 				return new DuplicateTweetException(errorText);
 			} else if (errorText.equals(INVALID_MESSAGE_RECIPIENT_TEXT)) {
 				return new InvalidMessageRecipientException(errorText);
+			} else if (errorText.contains(COULD_NOT_FOLLOW_USER_TEXT)  && errorText.contains(USER_ALREADY_ON_LIST_TEXT)){
+			    return new FriendshipFailureException(errorText);
 			} else {
 				return new OperationNotPermittedException(errorText);
 			}
