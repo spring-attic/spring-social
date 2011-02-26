@@ -129,6 +129,28 @@ public class TwitterTemplateTest {
 	    assertTrue(followers.contains("oizik3"));
 	    assertTrue(followers.contains("foo"));
 	}
+	
+	@Test
+	public void follow() {
+	    mockServer.expect(requestTo("https://api.twitter.com/1/friendships/create.json?screen_name=oizik2"))
+	        .andExpect(method(POST))
+	        .andRespond(withResponse(new ClassPathResource("follow.json", getClass()), responseHeaders));
+	    
+	    String followedScreenName = twitter.follow("oizik2");
+	    assertEquals("oizik2", followedScreenName);
+	    
+	    mockServer.verify();
+	}
+	
+	@Test(expected = FriendshipFailureException.class)
+	public void follow_alreadyFollowing() {
+	    mockServer.expect(requestTo("https://api.twitter.com/1/friendships/create.json?screen_name=oizik2"))
+            .andExpect(method(POST))
+            .andRespond(withResponse("{\"error\" : \"Could not follow user: oizik2 is already on your list.\"}",
+                    responseHeaders, FORBIDDEN, ""));
+	    
+	    twitter.follow("oizik2");
+	}
 
 	@Test
 	public void updateStatus() {
