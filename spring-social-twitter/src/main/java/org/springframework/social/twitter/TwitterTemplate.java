@@ -126,6 +126,23 @@ public class TwitterTemplate implements TwitterApi {
 		}
 		return friends;
 	}
+	
+	/**
+	 * Returns the screen names of the followers of the specified users. Limited to 100 results. 
+	 * @param screenName the screen name of the user for whom the followers should be returned
+	 * @return A list of screen names that the specified user is following, limited to 100 results.
+	 * @see http://dev.twitter.com/doc/get/statuses/followers
+	 */
+	public List<String> getFollowers(String screenName) {
+	    List<Map<String, String>> response = restTemplate.getForObject(FOLLOWERS_STATUSES_URL, List.class, Collections.singletonMap("screen_name", screenName));
+	    List<String> followers = new ArrayList<String>(response.size());
+	    for(Map<String, String> item : response) {
+	        followers.add(item.get("screen_name"));
+	    }
+	    
+	    return followers;
+	    
+	}
 
 	public void updateStatus(String message) {
 		updateStatus(message, new StatusDetails());
@@ -146,7 +163,7 @@ public class TwitterTemplate implements TwitterApi {
 
 	public List<Tweet> getMentions() {
 		List response = restTemplate.getForObject(MENTIONS_URL, List.class);
-		List<Map<String, Object>> results = (List<Map<String, Object>>) response;
+		List<Map<String, Object>> results = response;
 		List<Tweet> tweets = new ArrayList<Tweet>();
 		for (Map<String, Object> item : results) {
 			tweets.add(populateTweetFromTimelineItem(item));
@@ -156,7 +173,7 @@ public class TwitterTemplate implements TwitterApi {
 
 	public List<DirectMessage> getDirectMessagesReceived() {
 		ResponseEntity<List> response = restTemplate.getForEntity(DIRECT_MESSAGES_URL, List.class);
-		List<Map<String, Object>> results = (List<Map<String, Object>>) response.getBody();
+		List<Map<String, Object>> results = response.getBody();
 		List<DirectMessage> messages = new ArrayList<DirectMessage>();
 		for (Map<String, Object> item : results) {
 			DirectMessage message = new DirectMessage();
@@ -268,7 +285,7 @@ public class TwitterTemplate implements TwitterApi {
 	}
 
 	private List<Tweet> extractTimelineTweetsFromResponse(List response) {
-		List<Map<String, Object>> results = (List<Map<String, Object>>) response;
+		List<Map<String, Object>> results = response;
 		List<Tweet> tweets = new ArrayList<Tweet>();
 		for (Map<String, Object> item : results) {
 			tweets.add(populateTweetFromTimelineItem(item));
@@ -307,8 +324,8 @@ public class TwitterTemplate implements TwitterApi {
 		return tweet;
 	}
 
-	private DateFormat searchDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
-	private DateFormat timelineDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH);
+	private final DateFormat searchDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+	private final DateFormat timelineDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH);
 
 	private Date toDate(String dateString, DateFormat dateFormat) {
 		try {
@@ -332,6 +349,7 @@ public class TwitterTemplate implements TwitterApi {
 	static final String VERIFY_CREDENTIALS_URL = API_URL_BASE + "account/verify_credentials.json";
 	static final String USER_PROFILE_URL = API_URL_BASE + "users/show.json";
 	static final String FRIENDS_STATUSES_URL = API_URL_BASE + "statuses/friends.json?screen_name={screen_name}";
+	static final String FOLLOWERS_STATUSES_URL = API_URL_BASE + "statuses/followers.json?screen_name={screen_name}";
 	static final String SEARCH_URL = SEARCH_API_URL_BASE + "/search.json?q={query}&rpp={rpp}&page={page}";
 	static final String TWEET_URL = API_URL_BASE + "statuses/update.json";
 	static final String RETWEET_URL = API_URL_BASE + "/statuses/retweet/{tweet_id}.json";
