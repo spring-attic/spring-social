@@ -151,6 +151,28 @@ public class TwitterTemplateTest {
 	    
 	    twitter.follow("oizik2");
 	}
+	
+	@Test
+    public void unfollow() {
+        mockServer.expect(requestTo("https://api.twitter.com/1/friendships/destroy.json?screen_name=oizik2"))
+            .andExpect(method(POST))
+            .andRespond(withResponse(new ClassPathResource("unfollow.json", getClass()), responseHeaders));
+        
+        String unFollowedScreenName = twitter.unfollow("oizik2");
+        assertEquals("oizik2", unFollowedScreenName);
+        
+        mockServer.verify();
+    }
+	
+	@Test(expected = FriendshipFailureException.class)
+    public void unfollow_notFollowing() {
+        mockServer.expect(requestTo("https://api.twitter.com/1/friendships/destroy.json?screen_name=oizik2"))
+            .andExpect(method(POST))
+            .andRespond(withResponse("{\"error\" : \"You are not friends with the specified user.\"}",
+                    responseHeaders, FORBIDDEN, ""));
+        
+        twitter.unfollow("oizik2");
+    }
 
 	@Test
 	public void updateStatus() {
