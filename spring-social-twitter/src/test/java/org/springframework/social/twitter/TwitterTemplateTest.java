@@ -15,11 +15,16 @@
  */
 package org.springframework.social.twitter;
 
-import static org.junit.Assert.*;
-import static org.springframework.http.HttpMethod.*;
-import static org.springframework.http.HttpStatus.*;
-import static org.springframework.social.test.client.RequestMatchers.*;
-import static org.springframework.social.test.client.ResponseCreators.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.social.test.client.RequestMatchers.body;
+import static org.springframework.social.test.client.RequestMatchers.method;
+import static org.springframework.social.test.client.RequestMatchers.requestTo;
+import static org.springframework.social.test.client.ResponseCreators.withResponse;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -36,6 +41,7 @@ import org.springframework.http.MediaType;
 import org.springframework.social.AccountNotConnectedException;
 import org.springframework.social.OperationNotPermittedException;
 import org.springframework.social.test.client.MockRestServiceServer;
+
 
 /**
  * @author Craig Walls
@@ -109,6 +115,19 @@ public class TwitterTemplateTest {
 		assertEquals(2, friends.size());
 		assertTrue(friends.contains("kdonald"));
 		assertTrue(friends.contains("rclarkson"));
+	}
+	
+	@Test 
+	public void getFollowers() {
+	    mockServer.expect(requestTo("https://api.twitter.com/1/statuses/followers.json?screen_name=oizik"))
+	        .andExpect(method(GET))
+	        .andRespond(withResponse(new ClassPathResource("followers.json", getClass()), responseHeaders));
+	    
+	    List<String> followers = twitter.getFollowers("oizik");
+	    assertEquals(3, followers.size());
+	    assertTrue(followers.contains("oizik2"));
+	    assertTrue(followers.contains("oizik3"));
+	    assertTrue(followers.contains("foo"));
 	}
 
 	@Test
@@ -372,7 +391,7 @@ public class TwitterTemplateTest {
 	}
 
 	// TODO : FIGURE OUT A BETTER WAY TO TEST DATES!!!
-	private DateFormat timelineDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy", Locale.ENGLISH);
+	private final DateFormat timelineDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZ yyyy", Locale.ENGLISH);
 
 	private void assertTimelineDateEquals(String expected, Date actual) {
 		timelineDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
