@@ -76,6 +76,13 @@ public interface TwitterApi {
 	String follow(String screenName);
 
 	/**
+	 * Allows the authenticated use to unfollow (destroy a friendship) with another user
+	 * @param screenName the screen name of the use to unfollow 
+	 * @return the name of the unfolloed user if successful 
+	 */
+	String unfollow(String screenName);
+	
+	/**
 	 * Updates the user's status.
 	 * @param status The status message
 	 */

@@ -139,11 +139,18 @@ public class TwitterTemplate implements TwitterApi {
 	}
 	
 	public String follow(String screenName) {
-	    ResponseEntity<Map> response = restTemplate.postForEntity(FOLLOW_URL, "", Map.class, Collections.singletonMap("screen_name", screenName));
-	    handleResponseErrors(response);
-	    Map<String, Object> body = response.getBody();
-	    return (String) body.get("screen_name");
-	    
+	    return this.friendshipAssist(FOLLOW_URL, screenName);	    
+	}
+	
+	public String unfollow(String screenName) {
+	    return this.friendshipAssist(UNFOLLOW_URL, screenName);
+	}
+	
+	private String friendshipAssist(String url, String screenName) {
+	    ResponseEntity<Map> response = restTemplate.postForEntity(url, "", Map.class, Collections.singletonMap("screen_name", screenName));
+        handleResponseErrors(response);
+        Map<String, Object> body = response.getBody();
+        return (String) body.get("screen_name");
 	}
 
 	public void updateStatus(String message) {
