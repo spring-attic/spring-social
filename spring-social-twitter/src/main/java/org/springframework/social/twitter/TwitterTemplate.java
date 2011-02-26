@@ -127,12 +127,6 @@ public class TwitterTemplate implements TwitterApi {
 		return friends;
 	}
 	
-	/**
-	 * Returns the screen names of the followers of the specified users. Limited to 100 results. 
-	 * @param screenName the screen name of the user for whom the followers should be returned
-	 * @return A list of screen names that the specified user is following, limited to 100 results.
-	 * @see http://dev.twitter.com/doc/get/statuses/followers
-	 */
 	public List<String> getFollowers(String screenName) {
 	    List<Map<String, String>> response = restTemplate.getForObject(FOLLOWERS_STATUSES_URL, List.class, Collections.singletonMap("screen_name", screenName));
 	    List<String> followers = new ArrayList<String>(response.size());
@@ -141,6 +135,14 @@ public class TwitterTemplate implements TwitterApi {
 	    }
 	    
 	    return followers;
+	    
+	}
+	
+	public String follow(String screenName) {
+	    ResponseEntity<Map> response = restTemplate.postForEntity(FOLLOW_URL, "", Map.class, Collections.singletonMap("screen_name", screenName));
+	    handleResponseErrors(response);
+	    Map<String, Object> body = response.getBody();
+	    return (String) body.get("screen_name");
 	    
 	}
 
@@ -360,4 +362,7 @@ public class TwitterTemplate implements TwitterApi {
 	static final String HOME_TIMELINE_URL = API_URL_BASE + "statuses/home_timeline.json";
 	static final String FRIENDS_TIMELINE_URL = API_URL_BASE + "statuses/friends_timeline.json";
 	static final String USER_TIMELINE_URL = API_URL_BASE + "statuses/user_timeline.json";
+	
+	static final String FOLLOW_URL = API_URL_BASE + "friendships/create.json?screen_name={screen_name}";
+	static final String UNFOLLOW_URL = API_URL_BASE + "friendships/destroy.json?screen_name={screen_name}";
 }
