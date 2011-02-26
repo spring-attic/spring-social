@@ -60,6 +60,13 @@ public interface TwitterApi {
 	 * @return a list of user screen names
 	 */
 	List<String> getFriends(String screenName);
+	
+	/**
+	 * Retrieves a list of users that the given user is being followed by
+	 * @param screenName The user's Twitter screen name
+	 * @return a list of user screen names
+	 */
+	List<String> getFollowers(String screenName);
 
 	/**
 	 * Updates the user's status.
