@@ -215,7 +215,8 @@ public class AccountIdAsPrincipalSigninService implements SignInService<Long> {
 		</para>
 
 		<programlisting language="xml"><![CDATA[
-<facebook:init appId="@facebookProvider.appId" />]]>
+<s:eval expression="@facebookProvider.appId" var="appId" />
+<facebook:init appId="${appId}" />]]>
 		</programlisting>
 
 		<para>Note that the tag prefix cannot be "fb", as that would create a conflict between Spring Social's Facebook JSP tag library and Facebook's XFBML tags (which use "fb" as their prefix).</para>

@@ -436,7 +436,7 @@ public class ConnectControllerConfig {
 			<para>
 				<classname>ConnectController</classname> will handle the callback request and trade in the verifier/code for an access token. 
 				Once the access token has been received, the OAuth dance is complete and the application may use the access token to interact with the provider on behalf of the user. 
-				The last thing that <classname>ConnectController</classname> does is to hand off the access token to the <interfacename>ServiceProvider</interfacename> implementation to be stored for future user.
+				The last thing that <classname>ConnectController</classname> does is to hand off the access token to the <interfacename>ServiceProvider</interfacename> implementation to be stored for future use.
 			</para>
 		</section>
 
@@ -497,18 +497,18 @@ package org.springframework.social.showcase.twitter;
 import org.springframework.social.connect.ServiceProvider;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.twitter.DuplicateTweetException;
-import org.springframework.social.twitter.TwitterOperations;
+import org.springframework.social.twitter.TwitterApi;
 import org.springframework.social.web.connect.ConnectInterceptor;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.WebRequest;
 
-public class TweetAfterConnectInterceptor implements ConnectInterceptor<TwitterOperations> {
+public class TweetAfterConnectInterceptor implements ConnectInterceptor<TwitterApi> {
 
-    public void preConnect(ServiceProvider<TwitterOperations> provider, WebRequest request) {
+    public void preConnect(ServiceProvider<TwitterApi> provider, WebRequest request) {
         // nothing to do
     }
 
-    public void postConnect(ServiceProvider<TwitterOperations> provider, ServiceProviderConnection<TwitterOperations> connection, WebRequest request) {
+    public void postConnect(ServiceProvider<TwitterApi> provider, ServiceProviderConnection<TwitterApi> connection, WebRequest request) {
         connection.getServiceApi().updateStatus("I've connected with the Spring Social Showcase!");
     }
 
@@ -539,7 +539,7 @@ public ConnectController connectController(@Value("${application.url}") String a
 		<para>
 			Note that the <code>interceptors</code> property is a list and can take as many interceptors as you'd like to wire into it. 
 			When it comes time for <classname>ConnectController</classname> to call into the interceptors, it will only invoke the interceptor methods for those interceptors accept service operations type matching the service provider's operations type. 
-			In the example given here, only connections made through a service provider whose operation type is <interfacename>TwitterOperations</interfacename> will trigger the interceptor's methods.
+			In the example given here, only connections made through a service provider whose operation type is <interfacename>TwitterApi</interfacename> will trigger the interceptor's methods.
 		</para>
 	</section>
 </chapter>

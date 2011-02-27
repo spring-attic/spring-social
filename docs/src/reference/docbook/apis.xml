@@ -37,7 +37,7 @@
 		</para>
 		
 		<para>
-			Spring Social's <classname>TwitterTemplate</classname> (which implements <interfacename>TwitterOperations</interfacename>) offers several options for applications to integrate with Twitter.
+			Spring Social's <classname>TwitterTemplate</classname> (which implements <interfacename>TwitterApi</interfacename>) offers several options for applications to integrate with Twitter.
 		</para>
 		
 		<para>
@@ -50,7 +50,7 @@ String apiKey = "..."; // The application's API/Consumer key
 String apiSecret = "..."; // The application's API/Consumer secret
 String accessToken = "..."; // The access token granted after OAuth authorization
 String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
-TwitterOperations twitter = new TwitterTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]>
+TwitterApi twitter = new TwitterTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]>
 		</programlisting>
 		
 		<para>
@@ -58,7 +58,7 @@ TwitterOperations twitter = new TwitterTemplate(apiKey, apiSecret, accessToken, 
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-TwitterOperations twitter = new TwitterTemplate();]]>
+TwitterApi twitter = new TwitterTemplate();]]>
 		</programlisting>
 		
 		<para>
@@ -67,20 +67,20 @@ TwitterOperations twitter = new TwitterTemplate();]]>
 		</para>
 		
 		<para>
-			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>TwitterOperations</interfacename> by calling the <methodname>getServiceApi()</methodname> method on one of the connections given by <classname>TwitterServiceProvider</classname>'s <methodname>getConnections()</methodname> method. 
+			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>TwitterApi</interfacename> by calling the <methodname>getServiceApi()</methodname> method on one of the connections given by <classname>TwitterServiceProvider</classname>'s <methodname>getConnections()</methodname> method. 
 			For instance:
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-TwitterOperations twitter = twitterProvider.getConnections(accountId).get(0).getServiceApi();]]>
+TwitterApi twitter = twitterProvider.getConnections(accountId).get(0).getServiceApi();]]>
 		</programlisting>
 		
 		<para>
-			Here, <classname>TwitterServiceProvider</classname> is being asked for a <interfacename>TwitterOperations</interfacename> that was created using connection details established previously via the service provider's <methodname>connect()</methodname> method or through <classname>ConnectController</classname>.
+			Here, <classname>TwitterServiceProvider</classname> is being asked for a <interfacename>TwitterApi</interfacename> that was created using connection details established previously via the service provider's <methodname>connect()</methodname> method or through <classname>ConnectController</classname>.
 		</para>
 		
 		<para>
-			Once you have <interfacename>TwitterOperations</interfacename>, you can perform a variety of operations against Twitter.
+			Once you have <interfacename>TwitterApi</interfacename>, you can perform a variety of operations against Twitter.
 		</para>
 
 		<section id="twitter-getProfile">
@@ -312,13 +312,13 @@ List<DirectMessage> twitter.getDirectMessagesReceived();]]>
 		<title>Facebook</title>
 
 		<para>
-			Spring Social's <interfacename>FacebookOperations</interfacename> and its implementation, <classname>FacebookTemplate</classname> provide the operations needed to interact with Facebook on behalf of a user.
+			Spring Social's <interfacename>FacebookApi</interfacename> and its implementation, <classname>FacebookTemplate</classname> provide the operations needed to interact with Facebook on behalf of a user.
 			Creating an instance of <classname>FacebookTemplate</classname> is as simple as constructing it by passing in an authorized access token to the constructor:
 		</para>
 
 		<programlisting language="java"><![CDATA[
 String accessToken = "f8FX29g..."; // access token received from Facebook after OAuth authorization
-FacebookOperations facebook = new FacebookTemplate(accessToken);]]>
+FacebookApi facebook = new FacebookTemplate(accessToken);]]>
       </programlisting>
 
 		<para>
@@ -326,16 +326,16 @@ FacebookOperations facebook = new FacebookTemplate(accessToken);]]>
 		</para>
 
 		<programlisting language="java"><![CDATA[
-FacebookOperations facebook = facebookProvider.getConnections(accountId).get(0).getServiceApi();]]>
+FacebookApi facebook = facebookProvider.getConnections(accountId).get(0).getServiceApi();]]>
 		</programlisting>
 
 		<para>
-			Here, <classname>FacebookServiceProvider</classname> is being asked to give back a <interfacename>FacebookOperations</interfacename> created using the connection details for the given account ID. 
+			Here, <classname>FacebookServiceProvider</classname> is being asked to give back a <interfacename>FacebookApi</interfacename> created using the connection details for the given account ID. 
 			The connection should have been created beforehand via the service provider's <methodname>connect()</methodname> method or using <classname>ConnectController</classname>.
 		</para>  
 
 		<para>
-			With a <interfacename>FacebookOperations</interfacename> in hand, there are several ways you can use it to interact with Facebook on behalf of the user. 
+			With a <interfacename>FacebookApi</interfacename> in hand, there are several ways you can use it to interact with Facebook on behalf of the user. 
 			These will be covered in the following sections.
 		</para>
 
@@ -343,7 +343,7 @@ FacebookOperations facebook = facebookProvider.getConnections(accountId).get(0).
 			<title>Retrieving a user's profile data</title>
 
 			<para>
-				You can retrieve a user's Facebook profile data using <interfacename>FacebookOperations</interfacename>' <methodname>getUserProfile()</methodname> method:
+				You can retrieve a user's Facebook profile data using <interfacename>FacebookApi</interfacename>' <methodname>getUserProfile()</methodname> method:
 			</para>
 
 			<programlisting language="java"><![CDATA[
@@ -428,7 +428,7 @@ facebook.updateStatus("I'm trying out Spring Social!", link);]]>
 			
 			<para>
 				Facebook's Graph API allows authenticated users to publish data to several of its object types. 
-				<interfacename>FacebookOperations</interfacename> enables arbitrary publication via the Graph API with its <methodname>publish()</methodname> method.
+				<interfacename>FacebookApi</interfacename> enables arbitrary publication via the Graph API with its <methodname>publish()</methodname> method.
 			</para>
 			
 			<para>
@@ -464,7 +464,7 @@ publish("me", "feed", data);]]>
 		</para>
 		
 		<para>
-			Spring Social offers integration with LinkedIn via <interfacename>LinkedInOperations</interfacename> and its implementation, <classname>LinkedInTemplate</classname>.
+			Spring Social offers integration with LinkedIn via <interfacename>LinkedInApi</interfacename> and its implementation, <classname>LinkedInTemplate</classname>.
 		</para>
 		
 		<para>
@@ -476,7 +476,7 @@ String apiKey = "..."; // The application's API/Consumer key
 String apiSecret = "..."; // The application's API/Consumer secret
 String accessToken = "..."; // The access token granted after OAuth authorization
 String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
-LinkedInOperations linkedin = new LinkedInTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]>
+LinkedInApi linkedin = new LinkedInTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]>
 		</programlisting>
 		
 		<para>
@@ -485,15 +485,15 @@ LinkedInOperations linkedin = new LinkedInTemplate(apiKey, apiSecret, accessToke
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-LinkedInOperations linkedin = linkedinProvider.getConnections(accountId).get(0).getServiceApi();]]>
+LinkedInApi linkedin = linkedinProvider.getConnections(accountId).get(0).getServiceApi();]]>
 		</programlisting>
 		
 		<para>
-			In this case, the <methodname>getServiceOperations()</methodname> is asked to return a <interfacename>LinkedInOperations</interfacename> instance created using connection details established using the service provider's <methodname>connect()</methodname> method or via <classname>ConnectController</classname>.
+			In this case, the <methodname>getServiceApi()</methodname> is asked to return a <interfacename>LinkedInApi</interfacename> instance created using connection details established using the service provider's <methodname>connect()</methodname> method or via <classname>ConnectController</classname>.
 		</para>
 		
 		<para>
-			Once you have a <interfacename>LinkedInOperations</interfacename> you can use it to interact with LinkedIn on behalf of the user who the access token was granted for.
+			Once you have a <interfacename>LinkedInApi</interfacename> you can use it to interact with LinkedIn on behalf of the user who the access token was granted for.
 		</para>
 
 		<section id="linkedin-getProfile">
@@ -556,7 +556,7 @@ List<LinkedInProfile> connections = linkedin.getConnections();]]>
 		</para>
 		
 		<para>
-			Using Spring Social's <interfacename>TripItOperations</interfacename> and its implementation, <classname>TripItTemplate</classname>, you can develop applications that integrate a user's travel information and network.
+			Using Spring Social's <interfacename>TripItApi</interfacename> and its implementation, <classname>TripItTemplate</classname>, you can develop applications that integrate a user's travel information and network.
 		</para>
 		
 		<para>
@@ -568,30 +568,30 @@ String apiKey = "..."; // The application's API/Consumer key
 String apiSecret = "..."; // The application's API/Consumer secret
 String accessToken = "..."; // The access token granted after OAuth authorization
 String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
-TripItOperations tripit = new TripItTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]>
+TripItApi tripit = new TripItTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]>
 		</programlisting>
 		
 		<para>
-			If you're using Spring Social's service provider framework (as described in <xref linkend="serviceprovider"/>), you can get a <interfacename>TripItOperations</interfacename> by calling the <methodname>getServiceApi()</methodname> method on one of the connections given by <classname>TripItServiceProvider</classname>'s <methodname>getConnections()</methodname> method:
+			If you're using Spring Social's service provider framework (as described in <xref linkend="serviceprovider"/>), you can get a <interfacename>TripItApi</interfacename> by calling the <methodname>getServiceApi()</methodname> method on one of the connections given by <classname>TripItServiceProvider</classname>'s <methodname>getConnections()</methodname> method:
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-TripItOperations tripit = tripitProvider.getConnections(accountId).get(0).getServiceApi();]]>
+TripItApi tripit = tripitProvider.getConnections(accountId).get(0).getServiceApi();]]>
 		</programlisting>
 		
 		<para>
-			In this case, <classname>TripItServiceProvider</classname> is being asked to give a <interfacename>TripItOperations</interfacename> constructed using connection data established beforehand using the service provider's <methodname>connect()</methodname> method or via <classname>ConnectController</classname>.
+			In this case, <classname>TripItServiceProvider</classname> is being asked to give a <interfacename>TripItApi</interfacename> constructed using connection data established beforehand using the service provider's <methodname>connect()</methodname> method or via <classname>ConnectController</classname>.
 		</para>
 		
 		<para>
-			In either event, once you have a <interfacename>TripItOperations</interfacename>, you can use it to retrieve a user's profile and travel data from TripIt.
+			In either event, once you have a <interfacename>TripItApi</interfacename>, you can use it to retrieve a user's profile and travel data from TripIt.
 		</para>
 
 		<section id="tripit-getProfile">
 			<title>Retrieving a user's TripIt profile data</title>
 			
 			<para>
-				<interfacename>TripItOperations</interfacename>' <methodname>getUserProfile()</methodname> method is useful for retrieving the authenticated user's TripIt profile data. 
+				<interfacename>TripItApi</interfacename>' <methodname>getUserProfile()</methodname> method is useful for retrieving the authenticated user's TripIt profile data. 
 				For example:
 			</para>
 			
@@ -648,7 +648,7 @@ List<Trip> trips = tripit.getUpcomingTrips();]]>
 		</para>
 		
 		<para>
-			Spring Social's <interfacename>GitHubOperations</interfacename> and its implementation, <classname>GitHubTemplate</classname>, offer integration with GitHub's social platform.
+			Spring Social's <interfacename>GitHubApi</interfacename> and its implementation, <classname>GitHubTemplate</classname>, offer integration with GitHub's social platform.
 		</para>
 		
 		<para>
@@ -657,7 +657,7 @@ List<Trip> trips = tripit.getUpcomingTrips();]]>
 		
 		<programlisting language="java"><![CDATA[
 String accessToken = "f8FX29g..."; // access token received from GitHub after OAuth authorization
-GitHubOperations github = new GitHubTemplate(accessToken);]]>
+GitHubApi github = new GitHubTemplate(accessToken);]]>
 		</programlisting>
 		
 		<para>
@@ -665,16 +665,16 @@ GitHubOperations github = new GitHubTemplate(accessToken);]]>
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-GitHubOperations github = githubProvider.getConnections(accountId).get(0).getServiceApi();]]>
+GitHubApi github = githubProvider.getConnections(accountId).get(0).getServiceApi();]]>
 		</programlisting>
 		
 		<para>
-			Here, <classname>GitHubServiceProvider</classname> is being asked for a <interfacename>GitHubOperations</interfacename> that was created using the connection details for the given account ID. 
+			Here, <classname>GitHubServiceProvider</classname> is being asked for a <interfacename>GitHubApi</interfacename> that was created using the connection details for the given account ID. 
 			The connection should have been created beforehand via the service provider's <methodname>connect()</methodname> method or using <classname>ConnectController</classname>.
 		</para>  
 		
 		<para>
-			With a <interfacename>GitHubOperations</interfacename> in hand, there are a handful of operations it provides to interact with GitHub on behalf of the user. 
+			With a <interfacename>GitHubApi</interfacename> in hand, there are a handful of operations it provides to interact with GitHub on behalf of the user. 
 			These will be covered in the following sections.
 		</para>
 
@@ -682,7 +682,7 @@ GitHubOperations github = githubProvider.getConnections(accountId).get(0).getSer
 			<title>Retrieving a GitHub user's profile</title>
 
 			<para>
-				To get the currently authenticated user's GitHub profile data, call <interfacename>GitHubOperations</interfacename>'s <methodname>getUserProfile()</methodname> method:
+				To get the currently authenticated user's GitHub profile data, call <interfacename>GitHubApi</interfacename>'s <methodname>getUserProfile()</methodname> method:
 			</para>
 			
 			<programlisting language="java"><![CDATA[
@@ -730,7 +730,7 @@ String profileUrl = github.getProfileUrl();]]>
 		</para>
 		
 		<para>
-			Spring Social supports interaction with Gowalla through the <interfacename>GowallaOperations</interfacename> interface and its implementation, <classname>GowallaTemplate</classname>.
+			Spring Social supports interaction with Gowalla through the <interfacename>GowallaApi</interfacename> interface and its implementation, <classname>GowallaTemplate</classname>.
 		</para>
 		
 		<para>
@@ -739,7 +739,7 @@ String profileUrl = github.getProfileUrl();]]>
 		
 		<programlisting language="java"><![CDATA[
 String accessToken = "f8FX29g..."; // access token received from Gowalla after OAuth authorization
-GowallaOperations gowalla = new GowallaTemplate(accessToken);]]>
+GowallaApi gowalla = new GowallaTemplate(accessToken);]]>
 		</programlisting>
 		
 		<para>
@@ -747,16 +747,16 @@ GowallaOperations gowalla = new GowallaTemplate(accessToken);]]>
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-GowallaOperations gowalla = gowallaProvider.getConnections(accountId).get(0).getServiceApi();]]>
+GowallaApi gowalla = gowallaProvider.getConnections(accountId).get(0).getServiceApi();]]>
 		</programlisting>
 		
 		<para>
-			Here, <classname>GowallaServiceProvider</classname> is being asked for a <interfacename>GowallaOperations</interfacename> that was created using the connection details for the given account ID. 
+			Here, <classname>GowallaServiceProvider</classname> is being asked for a <interfacename>GowallaApi</interfacename> that was created using the connection details for the given account ID. 
 			The connection should have been created beforehand via the service provider's <methodname>connect()</methodname> method or using <classname>ConnectController</classname>.
 		</para>  
 		
 		<para>
-			With a <interfacename>GowallaOperations</interfacename> in hand, there are a handful of operations it provides to interact with Gowalla on behalf of the user. 
+			With a <interfacename>GowallaApi</interfacename> in hand, there are a handful of operations it provides to interact with Gowalla on behalf of the user. 
 			These will be covered in the following sections.
 		</para>
 
@@ -806,7 +806,7 @@ String profileUrl = gowalla.getProfileUrl();]]>
 			<title>Getting a user's checkins</title>
 			
 			<para>
-				<interfacename>GowallaOperations</interfacename> also allows you to learn about the user's favorite checkin spots. 
+				<interfacename>GowallaApi</interfacename> also allows you to learn about the user's favorite checkin spots. 
 				The <methodname>getTopCheckins()</methodname> method will provide a list of the top 10 places that the user has visited:
 			</para>
 			

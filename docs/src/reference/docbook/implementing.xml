@@ -83,7 +83,7 @@ package org.springframework.social.twitter.connect;
 import org.springframework.social.connect.oauth1.AbstractOAuth1ServiceProvider;
 import org.springframework.social.connect.support.ConnectionRepository;
 import org.springframework.social.oauth1.OAuth1Template;
-import org.springframework.social.twitter.TwitterOperations;
+import org.springframework.social.twitter.TwitterApi;
 import org.springframework.social.twitter.TwitterTemplate;
 
 public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<TwitterApi> {
