@@ -1,7 +1,7 @@
 ================================ Spring Social ===============================
 To check out the project and build from source, do the following:
 
- git clone --recursive git://git.springsource.org/spring-social/spring-social.git
+ git clone --recursive git://github.com/SpringSource/spring-social.git
  cd spring-social
  ./gradlew build
 
@@ -9,7 +9,7 @@ Note: the --recursive switch above is important, as spring-social uses
 git submodules, which must themselves be cloned and initialized. If --recursive
 is omitted, doing so becomes a multi-step process of: 
 
-git clone git://git.springsource.org/spring-social/spring-social.git
+git clone git://github.com/SpringSource/spring-social.git
 git submodule init
 git submodule update
 
