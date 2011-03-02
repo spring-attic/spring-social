@@ -126,12 +126,7 @@ public class OAuth1ServiceProviderTest {
 		protected TestApi getApi(String consumerKey, String consumerSecret, String accessToken, String secret) {
 			return new TestApiImpl(consumerKey, consumerSecret, accessToken, secret);
 		}
-
-		@Override
-		protected String getProviderAccountId(TestApi api) {
-			return "providerAccountId";
-		}
-
+		
 	}
 	
 	interface TestApi {

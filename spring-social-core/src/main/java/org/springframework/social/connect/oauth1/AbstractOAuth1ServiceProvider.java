@@ -38,8 +38,7 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 	
 	private final String consumerSecret;
 	
-	public AbstractOAuth1ServiceProvider(String id, ConnectionRepository connectionRepository, String consumerKey,
-			String consumerSecret, OAuth1Operations oauth1Operations) {
+	public AbstractOAuth1ServiceProvider(String id, ConnectionRepository connectionRepository, String consumerKey, String consumerSecret, OAuth1Operations oauth1Operations) {
 		super(id, connectionRepository);
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
@@ -48,8 +47,7 @@ public abstract class AbstractOAuth1ServiceProvider<S> extends AbstractServicePr
 	}
 	
 	public ServiceProviderConnection<S> connect(Serializable accountId, OAuthToken accessToken) {
-		String providerAccountId = getProviderAccountId(getApi(consumerKey, consumerSecret, accessToken.getValue(), accessToken.getSecret()));
-		return connect(accountId, Connection.oauth1(accessToken.getValue(), accessToken.getSecret(), providerAccountId));
+		return connect(accountId, Connection.oauth1(accessToken.getValue(), accessToken.getSecret()));
 	}
 
 	public OAuth1Operations getOAuthOperations() {

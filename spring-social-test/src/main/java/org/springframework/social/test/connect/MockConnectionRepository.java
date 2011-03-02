@@ -49,7 +49,7 @@ public class MockConnectionRepository implements ConnectionRepository {
 		List<Connection> connectionList = new ArrayList<Connection>();
 		for (Map<String, Object> connection : connections) {
 			if (connection.get("accountId").equals(accountId) && connection.get("providerId").equals(providerId)) {
-				connectionList.add(new Connection((Long) connection.get("id"), (String) connection.get("accessToken"), (String) connection.get("secret"), (String) connection.get("refreshToken"), (String) connection.get("providerAccountId")));
+				connectionList.add(new Connection((Long) connection.get("id"), (String) connection.get("accessToken"), (String) connection.get("secret"), (String) connection.get("refreshToken")));
 			}
 		}
 		return connectionList;
@@ -70,9 +70,8 @@ public class MockConnectionRepository implements ConnectionRepository {
 		newConn.put("secret", connection.getSecret());
 		newConn.put("refreshToken", connection.getRefreshToken());
 		newConn.put("id", connectionId);
-		newConn.put("providerAccountId", connection.getProviderAccountId());
 		connections.add(newConn);
-		return new Connection(connectionId, connection.getAccessToken(), connection.getSecret(), connection.getRefreshToken(), connection.getProviderAccountId());
+		return new Connection(connectionId, connection.getAccessToken(), connection.getSecret(), connection.getRefreshToken());
 	}
 
 	public void removeConnection(Serializable accountId, String providerId, Long connectionId) {

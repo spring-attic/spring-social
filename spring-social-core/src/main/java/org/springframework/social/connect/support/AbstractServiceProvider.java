@@ -74,12 +74,6 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 	protected abstract S getApi(Connection connection);
 
 	/**
-	 * Get a user's provider account ID.
-	 * @param api the service API
-	 */
-	protected abstract String getProviderAccountId(S api);
-
-	/**
 	 * Hook method for creating a persisted {@link ServiceProviderConnection} from a Connection record.
 	 * Designed for use by subclasses in their authorization-protocol-specific connection operations.
 	 */
@@ -87,7 +81,6 @@ public abstract class AbstractServiceProvider<S> implements ServiceProvider<S> {
 		return createConnection(accountId, connectionRepository.saveConnection(accountId, id, connection));
 	}
 	
-
 	// internal helpers
 	
 	private ServiceProviderConnection<S> createConnection(Serializable accountId, Connection connection) {

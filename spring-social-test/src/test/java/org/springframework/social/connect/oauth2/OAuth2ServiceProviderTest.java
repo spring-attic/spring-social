@@ -119,10 +119,6 @@ public class OAuth2ServiceProviderTest {
 			return new TestApiImpl(accessToken);
 		}
 
-		@Override
-		protected String getProviderAccountId(TestApi api) {
-			return "providerAccountId";
-		}
 	}
 	
 	interface TestApi {

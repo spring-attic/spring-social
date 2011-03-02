@@ -44,13 +44,12 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 	}
 	
 	public ServiceProviderConnection<S> connect(Serializable accountId, AccessGrant accessToken) {
-		String providerAccountId = getProviderAccountId(getApi(accessToken.getAccessToken()));
-		return connect(accountId, Connection.oauth2(accessToken.getAccessToken(), accessToken.getRefreshToken(), providerAccountId));
+		return connect(accountId, Connection.oauth2(accessToken.getAccessToken(), accessToken.getRefreshToken()));
 	}
 
 	@Override
 	protected final S getApi(Connection connection) {
-		// TODO transparent refresh token handling should be added here
+		// transparent refresh token handling could be added here
 		return getApi(connection.getAccessToken());
 	}
 
