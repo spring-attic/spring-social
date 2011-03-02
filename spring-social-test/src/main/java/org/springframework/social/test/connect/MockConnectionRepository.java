@@ -84,11 +84,13 @@ public class MockConnectionRepository implements ConnectionRepository {
 		}
 	}
 	
-	public Serializable findAccountIdByConnectionAccessToken(String provider, String accessToken) {
-		throw new UnsupportedOperationException("Not yet implemented");
+	public Serializable findAccountIdByConnectionAccessToken(String providerId, String accessToken) {
+		for (Map<String, Object> connection : connections) {
+			if (connection.get("providerId").equals(providerId) && connection.get("accessToken").equals(accessToken)) {
+				return (Serializable) connection.get("accountId");
+			}
+		}
+		return null;
 	}
 
-	public List<Serializable> findAccountIdsForProviderAccountIds(String providerId, List<String> providerAccountIds) {
-		throw new UnsupportedOperationException("Not yet implemented");
-	}
 }

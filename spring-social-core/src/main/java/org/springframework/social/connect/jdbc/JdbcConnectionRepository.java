@@ -87,12 +87,12 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 		}
 	}
 
-	public Serializable findAccountIdByConnectionAccessToken(String provider, String accessToken) {
+	public Serializable findAccountIdByConnectionAccessToken(String providerId, String accessToken) {
 		List<Serializable> results = jdbcTemplate.query("select accountId from Connection where providerId = ? and accessToken = ?", new RowMapper<Serializable>() {
 			public Serializable mapRow(ResultSet rs, int rowNum) throws SQLException {
 				return (Serializable) rs.getObject("accountId");
 			}
-		}, provider, encrypt(accessToken));
+		}, providerId, encrypt(accessToken));
 		return !results.isEmpty() ? results.get(0) : null;
 	}
 
