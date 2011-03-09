@@ -51,24 +51,24 @@ public class OAuth1Template implements OAuth1Operations {
 
 	private final RestTemplate restTemplate;
 
-	private final boolean oauth10a;
+	private final OAuth1Version version;
 
 	/**
 	 * Constructs an OAuth1Template in OAuth 1.0a mode.
 	 */
 	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl) {
-		this(consumerKey, consumerSecret, requestTokenUrl, authorizeUrl, accessTokenUrl, true);
+		this(consumerKey, consumerSecret, requestTokenUrl, authorizeUrl, accessTokenUrl, OAuth1Version.CORE_10_REVISION_A);
 	}
 
 	/**
 	 * Constructs an OAuth1Template.
-	 * @param oauth10a if true this template operates against an OAuth 1.0a provider. If false, it works in OAuth 1.0 mode.
+	 * @param version the version of OAuth 1, either 10 or 10a.
 	 */
-	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl, boolean oauth10a) {
+	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl, OAuth1Version version) {
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
 		this.requestTokenUrl = requestTokenUrl;
-		this.oauth10a = oauth10a;
+		this.version = version;
 		this.authorizeUrlTemplate = new UriTemplate(authorizeUrl);
 		this.accessTokenUrl = accessTokenUrl;
 		this.restTemplate = new RestTemplate();
@@ -79,14 +79,14 @@ public class OAuth1Template implements OAuth1Operations {
 
 	public OAuthToken fetchNewRequestToken(String callbackUrl) {
 		Map<String, String> requestTokenParameters = new HashMap<String, String>();
-		if (oauth10a) {
+		if (version == OAuth1Version.CORE_10_REVISION_A) {
 			requestTokenParameters.put("oauth_callback", callbackUrl);
 		}
 		return getTokenFromProvider(requestTokenUrl, requestTokenParameters, Collections.<String, String> emptyMap(), null);
 	}
 
 	public String buildAuthorizeUrl(String requestToken, String callbackUrl) {
-		if (oauth10a) {
+		if (version == OAuth1Version.CORE_10_REVISION_A) {
 			return authorizeUrlTemplate.expand(requestToken).toString();
 		} else {
 			return authorizeUrlTemplate.expand(requestToken, callbackUrl).toString();
@@ -96,7 +96,7 @@ public class OAuth1Template implements OAuth1Operations {
 	public OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken) {
 		Map<String, String> accessTokenParameters = new HashMap<String, String>();
 		accessTokenParameters.put("oauth_token", requestToken.getValue());
-		if (oauth10a) {
+		if (version == OAuth1Version.CORE_10_REVISION_A) {
 			accessTokenParameters.put("oauth_verifier", requestToken.getVerifier());
 		}
 		return getTokenFromProvider(accessTokenUrl, accessTokenParameters, Collections.<String, String> emptyMap(), requestToken.getSecret());

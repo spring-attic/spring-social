@@ -44,7 +44,7 @@ public class OAuth1TemplateTest {
 				"https://www.someprovider.com/oauth/authorize?oauth_token={request_token}", ACCESS_TOKEN_URL);
 		oauth10 = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
 				"https://www.someprovider.com/oauth/authorize?oauth_token={request_token}&callback_url={callback_url}",
-				ACCESS_TOKEN_URL, false);
+				ACCESS_TOKEN_URL, OAuth1Version.CORE_10);
 	}
 
 	@Test
