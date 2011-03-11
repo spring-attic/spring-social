@@ -334,7 +334,7 @@ public class TwitterTemplate implements TwitterApi {
 	static final String FRIENDS_STATUSES_URL = API_URL_BASE + "statuses/friends.json?screen_name={screen_name}";
 	static final String SEARCH_URL = SEARCH_API_URL_BASE + "/search.json?q={query}&rpp={rpp}&page={page}";
 	static final String TWEET_URL = API_URL_BASE + "statuses/update.json";
-	static final String RETWEET_URL = API_URL_BASE + "/statuses/retweet/{tweet_id}.json";
+	static final String RETWEET_URL = API_URL_BASE + "statuses/retweet/{tweet_id}.json";
 	static final String MENTIONS_URL = API_URL_BASE + "statuses/mentions.json";
 	static final String DIRECT_MESSAGES_URL = API_URL_BASE + "direct_messages.json";
 	static final String SEND_DIRECT_MESSAGE_URL = API_URL_BASE + "direct_messages/new.json";

@@ -169,7 +169,7 @@ public class TwitterTemplateTest {
 
 	@Test
 	public void retweet() {
-		mockServer.expect(requestTo("https://api.twitter.com/1//statuses/retweet/12345.json"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/retweet/12345.json"))
 				.andExpect(method(POST))
 				.andRespond(withResponse("{}", responseHeaders));
 
@@ -180,7 +180,7 @@ public class TwitterTemplateTest {
 
 	@Test(expected=DuplicateTweetException.class)
 	public void retweet_duplicateTweet() {
-		mockServer.expect(requestTo("https://api.twitter.com/1//statuses/retweet/12345.json"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/retweet/12345.json"))
 				.andExpect(method(POST))
 				.andRespond(withResponse("{\"error\":\"You already said that\"}", responseHeaders, FORBIDDEN, ""));
 
@@ -189,7 +189,7 @@ public class TwitterTemplateTest {
 
 	@Test(expected = OperationNotPermittedException.class)
 	public void retweet_forbidden() {
-		mockServer.expect(requestTo("https://api.twitter.com/1//statuses/retweet/12345.json"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/retweet/12345.json"))
 				.andExpect(method(POST))
 				.andRespond(withResponse("{\"error\":\"Forbidden\"}", responseHeaders, FORBIDDEN, ""));
 
@@ -198,7 +198,7 @@ public class TwitterTemplateTest {
 
 	@Test(expected = AccountNotConnectedException.class)
 	public void retweet_unauthorized() {
-		mockServer.expect(requestTo("https://api.twitter.com/1//statuses/retweet/12345.json"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/retweet/12345.json"))
 				.andExpect(method(POST))
 				.andRespond(withResponse("{\"error\":\"Not authenticated\"}", responseHeaders, UNAUTHORIZED, ""));
 
