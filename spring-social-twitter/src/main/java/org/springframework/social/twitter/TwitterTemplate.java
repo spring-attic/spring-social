@@ -57,7 +57,7 @@ import org.springframework.web.client.RestTemplate;
 public class TwitterTemplate implements TwitterApi {
 
 	private final RestTemplate restTemplate;
-	
+
 	private final ResponseStatusCodeTranslator statusCodeTranslator;
 
 	/**
@@ -220,6 +220,11 @@ public class TwitterTemplate implements TwitterApi {
 		return extractTimelineTweetsFromResponse(response);
 	}
 
+	public List<Tweet> getFavoriteTimeline() {
+		List response = restTemplate.getForObject(FAVORITE_TIMELINE_URL, List.class);
+		return extractTimelineTweetsFromResponse(response);
+	}
+
 	public SearchResults search(String query) {
 		return search(query, 1, DEFAULT_RESULTS_PER_PAGE, 0, 0);
 	}
@@ -254,13 +259,13 @@ public class TwitterTemplate implements TwitterApi {
 	}
 
 	// subclassing hooks
-	
+
 	protected RestTemplate getRestTemplate() {
 		return restTemplate;
 	}
-	
+
 	// internal helpers
-	
+
 	private SearchResults buildSearchResults(Map<String, Object> response, List<Tweet> tweets) {
 		Number maxId = response.containsKey("max_id") ? (Number) response.get("max_id") : 0;
 		Number sinceId = response.containsKey("since_id") ? (Number) response.get("since_id") : 0;
@@ -342,4 +347,5 @@ public class TwitterTemplate implements TwitterApi {
 	static final String HOME_TIMELINE_URL = API_URL_BASE + "statuses/home_timeline.json";
 	static final String FRIENDS_TIMELINE_URL = API_URL_BASE + "statuses/friends_timeline.json";
 	static final String USER_TIMELINE_URL = API_URL_BASE + "statuses/user_timeline.json";
+	static final String FAVORITE_TIMELINE_URL = API_URL_BASE + "favorites.json";
 }

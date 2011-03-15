@@ -307,6 +307,15 @@ public class TwitterTemplateTest {
 		List<Tweet> timeline = twitter.getUserTimeline(12345);
 		assertTimelineTweets(timeline);
 	}
+	
+	@Test
+	public void getFavoriteTimeline() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/favorites.json"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("favorite.json", getClass()), responseHeaders));
+		List<Tweet> timeline = twitter.getFavoriteTimeline();
+		assertTimelineTweets(timeline);
+	}
 
 	@Test
 	public void search_queryOnly() {

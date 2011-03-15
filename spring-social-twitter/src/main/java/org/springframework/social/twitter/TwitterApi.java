@@ -21,7 +21,7 @@ import java.util.List;
  * Interface specifying a basic set of operations for interacting with Twitter.
  * Implemented by TwitterTemplate. Not often used directly, but a useful option
  * to enhance testability, as it can easily be mocked or stubbed.
- * 
+ *
  * @author Craig Walls
  */
 public interface TwitterApi {
@@ -168,6 +168,12 @@ public interface TwitterApi {
 	 * @return a collection of {@link Tweet}s from the specified user's timeline.
 	 */
 	List<Tweet> getUserTimeline(long userId);
+
+	/**
+	 * Retrieves the 20 most recent tweets favorited by the given user.
+	 * @return a collection of {@link Tweet}s from the specified user's favorite timeline.
+	 */
+	List<Tweet> getFavoriteTimeline();
 
 	/**
 	 * Searches Twitter, returning the first 50 matching {@link Tweet}s
