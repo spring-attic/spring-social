@@ -173,7 +173,7 @@ public interface TwitterApi {
 	 * Retrieves the 20 most recent tweets favorited by the given user.
 	 * @return a collection of {@link Tweet}s from the specified user's favorite timeline.
 	 */
-	List<Tweet> getFavoriteTimeline();
+	List<Tweet> getFavorites();
 
 	/**
 	 * Searches Twitter, returning the first 50 matching {@link Tweet}s

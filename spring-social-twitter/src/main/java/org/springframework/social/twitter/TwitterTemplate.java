@@ -220,7 +220,7 @@ public class TwitterTemplate implements TwitterApi {
 		return extractTimelineTweetsFromResponse(response);
 	}
 
-	public List<Tweet> getFavoriteTimeline() {
+	public List<Tweet> getFavorites() {
 		List response = restTemplate.getForObject(FAVORITE_TIMELINE_URL, List.class);
 		return extractTimelineTweetsFromResponse(response);
 	}
