@@ -139,7 +139,7 @@ public interface TweetApi {
 	 * Retrieves the IDs of up to 100 users who have retweeted a specific tweet.
 	 * @param id the tweet's ID.
 	 */
-	List<String> getRetweetedByIds(long id);
+	List<Integer> getRetweetedByIds(long id);
 
 	/**
 	 * Retrieves the 20 most recent tweets favorited by the given user.

@@ -30,34 +30,27 @@ class TweetApiTemplate implements TweetApi {
 	}
 
 	public List<Tweet> getPublicTimeline() {
-		List response = restTemplate.getForObject(PUBLIC_TIMELINE_URL, List.class);
-		return extractTimelineTweetsFromResponse(response);
+		return retrieveTimelineTweets(PUBLIC_TIMELINE_URL);
 	}
 
 	public List<Tweet> getHomeTimeline() {
-		List response = restTemplate.getForObject(HOME_TIMELINE_URL, List.class);
-		return extractTimelineTweetsFromResponse(response);
+		return retrieveTimelineTweets(HOME_TIMELINE_URL);
 	}
 
 	public List<Tweet> getFriendsTimeline() {
-		List response = restTemplate.getForObject(FRIENDS_TIMELINE_URL, List.class);
-		return extractTimelineTweetsFromResponse(response);
+		return retrieveTimelineTweets(FRIENDS_TIMELINE_URL);
 	}
 
 	public List<Tweet> getUserTimeline() {
-		List response = restTemplate.getForObject(USER_TIMELINE_URL, List.class);
-		return extractTimelineTweetsFromResponse(response);
+		return retrieveTimelineTweets(USER_TIMELINE_URL);
 	}
 
 	public List<Tweet> getUserTimeline(String screenName) {
-		List response = restTemplate.getForObject(USER_TIMELINE_URL + "?screen_name={screenName}", List.class,
-				screenName);
-		return extractTimelineTweetsFromResponse(response);
+		return retrieveTimelineTweets(USER_TIMELINE_URL + "?screen_name={screenName}", screenName);
 	}
 
 	public List<Tweet> getUserTimeline(long userId) {
-		List response = restTemplate.getForObject(USER_TIMELINE_URL + "?user_id={userId}", List.class, userId);
-		return extractTimelineTweetsFromResponse(response);
+		return retrieveTimelineTweets(USER_TIMELINE_URL + "?user_id={userId}", userId);
 	}
 
 	public List<Tweet> getMentions() {
@@ -71,23 +64,20 @@ class TweetApiTemplate implements TweetApi {
 	}
 
 	public List<Tweet> getRetweetedByMe() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		return retrieveTimelineTweets(RETWEETED_BY_ME_URL);
 	}
 
 	public List<Tweet> getRetweetedToMe() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		return retrieveTimelineTweets(RETWEETED_TO_ME_URL);
 	}
 
 	public List<Tweet> getRetweetsOfMe() {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		return retrieveTimelineTweets(RETWEETS_OF_ME_URL);
 	}
 
 	public Tweet getStatus(long tweetId) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		Map<String, Object> tweetMap = restTemplate.getForObject(SHOW_TWEET_URL, Map.class, tweetId);
+		return populateTweetFromTimelineItem(tweetMap);
 	}
 
 	public void updateStatus(String message) {
@@ -103,8 +93,7 @@ class TweetApiTemplate implements TweetApi {
 	}
 
 	public void deleteStatus(long tweetId) {
-		// TODO Auto-generated method stub
-
+		restTemplate.delete(DESTROY_TWEET_URL, tweetId);
 	}
 
 	public void retweet(long tweetId) {
@@ -114,33 +103,41 @@ class TweetApiTemplate implements TweetApi {
 	}
 
 	public List<Tweet> getRetweets(long tweetId) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+		return retrieveTimelineTweets(RETWEETS_URL, tweetId);
 	}
 
-	public List<TwitterProfile> getRetweetedBy(long id) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+	public List<TwitterProfile> getRetweetedBy(long tweetId) {
+		List<Map<String, Object>> response = restTemplate.getForObject(RETWEETED_BY_URL, List.class, tweetId);
+		List<TwitterProfile> profiles = new ArrayList<TwitterProfile>();
+		for (Map<String, Object> profileEntry : response) {
+			profiles.add(TwitterResponseHelper.getProfileFromResponseMap(profileEntry));
+		}
+		return profiles;
 	}
 
-	public List<String> getRetweetedByIds(long id) {
-		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException();
+	public List<Integer> getRetweetedByIds(long tweetId) {
+		return restTemplate.getForObject(RETWEETED_BY_IDS_URL, List.class, tweetId);
 	}
 
 	public List<Tweet> getFavorites() {
-		List response = restTemplate.getForObject(FAVORITE_TIMELINE_URL, List.class);
+		return retrieveTimelineTweets(FAVORITE_TIMELINE_URL);
+	}
+
+	public void addToFavorites(long tweetId) {
+		ResponseEntity<Map> response = restTemplate.postForEntity(CREATE_FAVORITE_URL, "", Map.class,
+				Collections.singletonMap("tweet_id", Long.toString(tweetId)));
+		handleResponseErrors(response);
+	}
+
+	public void removeFromFavorites(long tweetId) {
+		ResponseEntity<Map> response = restTemplate.postForEntity(DESTROY_FAVORITE_URL, "", Map.class,
+				Collections.singletonMap("tweet_id", Long.toString(tweetId)));
+		handleResponseErrors(response);
+	}
+
+	private List<Tweet> retrieveTimelineTweets(String url, Object... urlArgs) {
+		List response = restTemplate.getForObject(url, List.class, urlArgs);
 		return extractTimelineTweetsFromResponse(response);
-	}
-
-	public void addToFavorites(long id) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void removeFromFavorites(long id) {
-		// TODO Auto-generated method stub
-
 	}
 
 	private static final DateFormat timelineDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy",
@@ -191,6 +188,15 @@ class TweetApiTemplate implements TweetApi {
 	static final String HOME_TIMELINE_URL = TwitterTemplate.API_URL_BASE + "statuses/home_timeline.json";
 	static final String FRIENDS_TIMELINE_URL = TwitterTemplate.API_URL_BASE + "statuses/friends_timeline.json";
 	static final String USER_TIMELINE_URL = TwitterTemplate.API_URL_BASE + "statuses/user_timeline.json";
+	static final String RETWEETED_BY_ME_URL = TwitterTemplate.API_URL_BASE + "statuses/retweeted_by_me.json";
+	static final String RETWEETED_TO_ME_URL = TwitterTemplate.API_URL_BASE + "statuses/retweeted_to_me.json";
+	static final String RETWEETS_OF_ME_URL = TwitterTemplate.API_URL_BASE + "statuses/retweets_of_me.json";
+	static final String SHOW_TWEET_URL = TwitterTemplate.API_URL_BASE + "statuses/show/{tweet_id}.json";
+	static final String DESTROY_TWEET_URL = TwitterTemplate.API_URL_BASE + "statuses/destroy/{tweet_id}.json";
+	static final String RETWEETS_URL = TwitterTemplate.API_URL_BASE + "statuses/retweets/{tweet_id}.json";
+	static final String RETWEETED_BY_URL = TwitterTemplate.API_URL_BASE + "statuses/{tweet_id}/retweeted_by.json";
+	static final String RETWEETED_BY_IDS_URL = TwitterTemplate.API_URL_BASE + "statuses/{tweet_id}/retweeted_by/ids.json";
 	static final String FAVORITE_TIMELINE_URL = TwitterTemplate.API_URL_BASE + "favorites.json";
-
+	static final String CREATE_FAVORITE_URL = TwitterTemplate.API_URL_BASE + "favorites/create/{tweet_id}";
+	static final String DESTROY_FAVORITE_URL = TwitterTemplate.API_URL_BASE + "favorites/destroy/{tweet_id}";
 }
