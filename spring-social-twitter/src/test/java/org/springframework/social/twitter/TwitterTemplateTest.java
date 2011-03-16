@@ -181,7 +181,7 @@ public class TwitterTemplateTest {
 				.andExpect(body("status=Test+Message"))
 				.andRespond(withResponse("{}", responseHeaders));
 
-		twitter.updateStatus("Test Message");
+		twitter.tweetApi().updateStatus("Test Message");
 
 		mockServer.verify();
 	}
@@ -195,7 +195,7 @@ public class TwitterTemplateTest {
 
 		StatusDetails details = new StatusDetails();
 		details.setLocation(123.1f, -111.2f);
-		twitter.updateStatus("Test Message", details);
+		twitter.tweetApi().updateStatus("Test Message", details);
 
 		mockServer.verify();
 	}
@@ -207,7 +207,7 @@ public class TwitterTemplateTest {
 				.andExpect(body("status=Test+Message"))
 				.andRespond(withResponse("{\"error\":\"You already said that\"}", responseHeaders, FORBIDDEN, ""));
 
-		twitter.updateStatus("Test Message");
+		twitter.tweetApi().updateStatus("Test Message");
 	}
 
 	@Test(expected = OperationNotPermittedException.class)
@@ -217,7 +217,7 @@ public class TwitterTemplateTest {
 				.andExpect(body("status=Test+Message"))
 				.andRespond(withResponse("{\"error\":\"Forbidden\"}", responseHeaders, FORBIDDEN, ""));
 
-		twitter.updateStatus("Test Message");
+		twitter.tweetApi().updateStatus("Test Message");
 	}
 
 	@Test(expected = AccountNotConnectedException.class)
@@ -227,7 +227,7 @@ public class TwitterTemplateTest {
 				.andExpect(body("status=Test+Message"))
 				.andRespond(withResponse("{\"error\":\"Not authenticated\"}", responseHeaders, UNAUTHORIZED, ""));
 
-		twitter.updateStatus("Test Message");
+		twitter.tweetApi().updateStatus("Test Message");
 	}
 
 	@Test
@@ -236,7 +236,7 @@ public class TwitterTemplateTest {
 				.andExpect(method(POST))
 				.andRespond(withResponse("{}", responseHeaders));
 
-		twitter.retweet(12345);
+		twitter.tweetApi().retweet(12345);
 
 		mockServer.verify();
 	}
@@ -247,7 +247,7 @@ public class TwitterTemplateTest {
 				.andExpect(method(POST))
 				.andRespond(withResponse("{\"error\":\"You already said that\"}", responseHeaders, FORBIDDEN, ""));
 
-		twitter.retweet(12345);
+		twitter.tweetApi().retweet(12345);
 	}
 
 	@Test(expected = OperationNotPermittedException.class)
@@ -256,7 +256,7 @@ public class TwitterTemplateTest {
 				.andExpect(method(POST))
 				.andRespond(withResponse("{\"error\":\"Forbidden\"}", responseHeaders, FORBIDDEN, ""));
 
-		twitter.retweet(12345);
+		twitter.tweetApi().retweet(12345);
 	}
 
 	@Test(expected = AccountNotConnectedException.class)
@@ -265,7 +265,7 @@ public class TwitterTemplateTest {
 				.andExpect(method(POST))
 				.andRespond(withResponse("{\"error\":\"Not authenticated\"}", responseHeaders, UNAUTHORIZED, ""));
 
-		twitter.retweet(12345);
+		twitter.tweetApi().retweet(12345);
 	}
 
 	@Test
@@ -274,7 +274,7 @@ public class TwitterTemplateTest {
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("messages.json", getClass()), responseHeaders));
 
-		List<DirectMessage> messages = twitter.getDirectMessagesReceived();
+		List<DirectMessage> messages = twitter.directMessageApi().getDirectMessagesReceived();
 		assertEquals(2, messages.size());
 		assertEquals(12345, messages.get(0).getId());
 		assertEquals("Hello there", messages.get(0).getText());
@@ -296,7 +296,7 @@ public class TwitterTemplateTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/direct_messages/new.json")).andExpect(method(POST))
 				.andExpect(body("screen_name=habuma&text=Hello+there%21"))
 				.andRespond(withResponse("{}", responseHeaders));
-		twitter.sendDirectMessage("habuma", "Hello there!");
+		twitter.directMessageApi().sendDirectMessage("habuma", "Hello there!");
 		mockServer.verify();
 	}
 
@@ -304,7 +304,7 @@ public class TwitterTemplateTest {
 	public void sendDirectMessage_toUserId() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/direct_messages/new.json")).andExpect(method(POST))
 				.andExpect(body("user_id=11223&text=Hello+there%21")).andRespond(withResponse("{}", responseHeaders));
-		twitter.sendDirectMessage(11223, "Hello there!");
+		twitter.directMessageApi().sendDirectMessage(11223, "Hello there!");
 		mockServer.verify();
 	}
 
@@ -313,7 +313,7 @@ public class TwitterTemplateTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/mentions.json"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> mentions = twitter.getMentions();
+		List<Tweet> mentions = twitter.tweetApi().getMentions();
 		assertTimelineTweets(mentions);
 	}
 
@@ -322,7 +322,7 @@ public class TwitterTemplateTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/public_timeline.json"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.getPublicTimeline();
+		List<Tweet> timeline = twitter.tweetApi().getPublicTimeline();
 		assertTimelineTweets(timeline);
 	}
 
@@ -331,7 +331,7 @@ public class TwitterTemplateTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/home_timeline.json"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.getHomeTimeline();
+		List<Tweet> timeline = twitter.tweetApi().getHomeTimeline();
 		assertTimelineTweets(timeline);
 	}
 
@@ -340,7 +340,7 @@ public class TwitterTemplateTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/friends_timeline.json"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.getFriendsTimeline();
+		List<Tweet> timeline = twitter.tweetApi().getFriendsTimeline();
 		assertTimelineTweets(timeline);
 	}
 
@@ -349,7 +349,7 @@ public class TwitterTemplateTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/user_timeline.json"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.getUserTimeline();
+		List<Tweet> timeline = twitter.tweetApi().getUserTimeline();
 		assertTimelineTweets(timeline);
 	}
 
@@ -358,7 +358,7 @@ public class TwitterTemplateTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/user_timeline.json?screen_name=habuma"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.getUserTimeline("habuma");
+		List<Tweet> timeline = twitter.tweetApi().getUserTimeline("habuma");
 		assertTimelineTweets(timeline);
 	}
 
@@ -367,7 +367,7 @@ public class TwitterTemplateTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/user_timeline.json?user_id=12345"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.getUserTimeline(12345);
+		List<Tweet> timeline = twitter.tweetApi().getUserTimeline(12345);
 		assertTimelineTweets(timeline);
 	}
 	
@@ -376,7 +376,7 @@ public class TwitterTemplateTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/favorites.json"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("favorite.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.getFavorites();
+		List<Tweet> timeline = twitter.tweetApi().getFavorites();
 		assertTimelineTweets(timeline);
 	}
 
@@ -385,7 +385,7 @@ public class TwitterTemplateTest {
 		mockServer.expect(requestTo("https://search.twitter.com/search.json?q=%23spring&rpp=50&page=1"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("search.json", getClass()), responseHeaders));
-		SearchResults searchResults = twitter.search("#spring");
+		SearchResults searchResults = twitter.searchApi().search("#spring");
 		assertEquals(10, searchResults.getSinceId());
 		assertEquals(999, searchResults.getMaxId());
 		List<Tweet> tweets = searchResults.getTweets();
@@ -397,7 +397,7 @@ public class TwitterTemplateTest {
 		mockServer.expect(requestTo("https://search.twitter.com/search.json?q=%23spring&rpp=10&page=2"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("search.json", getClass()), responseHeaders));
-		SearchResults searchResults = twitter.search("#spring", 2, 10);
+		SearchResults searchResults = twitter.searchApi().search("#spring", 2, 10);
 		assertEquals(10, searchResults.getSinceId());
 		assertEquals(999, searchResults.getMaxId());
 		List<Tweet> tweets = searchResults.getTweets();
@@ -409,7 +409,7 @@ public class TwitterTemplateTest {
 		mockServer.expect(requestTo("https://search.twitter.com/search.json?q=%23spring&rpp=10&page=2&since_id=123&max_id=54321"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("search.json", getClass()), responseHeaders));
-		SearchResults searchResults = twitter.search("#spring", 2, 10, 123, 54321);
+		SearchResults searchResults = twitter.searchApi().search("#spring", 2, 10, 123, 54321);
 		assertEquals(10, searchResults.getSinceId());
 		assertEquals(999, searchResults.getMaxId());
 		List<Tweet> tweets = searchResults.getTweets();
