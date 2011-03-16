@@ -11,14 +11,28 @@ public interface DirectMessageApi {
 	List<DirectMessage> getDirectMessagesReceived();
 
 	/**
-	 * Sends a direct message to another Twitter user.
-	 * The recipient of the message must follow the authenticated user in order
-	 * for the message to be delivered. If the recipient is not following the
-	 * authenticated user, an {@link InvalidMessageRecipientException} will be thrown.
-	 * @param toScreenName the screen name of the recipient of the messages.
-	 * @param text the message text.
-	 * @throws InvalidMessageRecipientException if the recipient is not following the authenticating user.
-	 * @throws DuplicateTweetException if the message duplicates a previously sent message.
+	 * Retrieve the 20 most recently sent direct messages for the authenticating
+	 * user.
+	 * 
+	 * @return a collection of {@link DirectMessage} with the authenticating
+	 *         user as the sender.
+	 */
+	List<DirectMessage> getDirectMessagesSent();
+
+	/**
+	 * Sends a direct message to another Twitter user. The recipient of the
+	 * message must follow the authenticated user in order for the message to be
+	 * delivered. If the recipient is not following the authenticated user, an
+	 * {@link InvalidMessageRecipientException} will be thrown.
+	 * 
+	 * @param toScreenName
+	 *            the screen name of the recipient of the messages.
+	 * @param text
+	 *            the message text.
+	 * @throws InvalidMessageRecipientException
+	 *             if the recipient is not following the authenticating user.
+	 * @throws DuplicateTweetException
+	 *             if the message duplicates a previously sent message.
 	 */
 	void sendDirectMessage(String toScreenName, String text);
 
@@ -34,4 +48,10 @@ public interface DirectMessageApi {
 	 */
 	void sendDirectMessage(long toUserId, String text);
 	
+	/**
+	 * Deletes a direct message for the authenticated user.
+	 * @param messageId the ID of the message to be removed.
+	 * @param messageId
+	 */
+	void deleteDirectMessage(long messageId);
 }

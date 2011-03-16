@@ -31,7 +31,32 @@ public class DirectMessageApiTemplate implements DirectMessageApi {
 	}
 
 	public List<DirectMessage> getDirectMessagesReceived() {
-		ResponseEntity<List> response = restTemplate.getForEntity(DIRECT_MESSAGES_URL, List.class);
+		ResponseEntity<List> response = restTemplate.getForEntity(DIRECT_MESSAGES_RECEIVED_URL, List.class);
+		return extractDirectMessageListFromResponseEntity(response);
+	}
+
+	public List<DirectMessage> getDirectMessagesSent() {
+		ResponseEntity<List> response = restTemplate.getForEntity(DIRECT_MESSAGES_SENT_URL, List.class);
+		return extractDirectMessageListFromResponseEntity(response);
+	}
+
+	public void sendDirectMessage(String toScreenName, String text) {
+		MultiValueMap<String, Object> dmParams = new LinkedMultiValueMap<String, Object>();
+		dmParams.add("screen_name", toScreenName);
+		sendDirectMessage(text, dmParams);
+	}
+
+	public void sendDirectMessage(long toUserId, String text) {
+		MultiValueMap<String, Object> dmParams = new LinkedMultiValueMap<String, Object>();
+		dmParams.add("user_id", String.valueOf(toUserId));
+		sendDirectMessage(text, dmParams);
+	}
+
+	public void deleteDirectMessage(long messageId) {
+		restTemplate.delete(DESTROY_DIRECT_MESSAGE_URL, messageId);
+	}
+
+	private List<DirectMessage> extractDirectMessageListFromResponseEntity(ResponseEntity<List> response) {
 		List<Map<String, Object>> results = (List<Map<String, Object>>) response.getBody();
 		List<DirectMessage> messages = new ArrayList<DirectMessage>();
 		for (Map<String, Object> item : results) {
@@ -46,18 +71,6 @@ public class DirectMessageApiTemplate implements DirectMessageApi {
 			messages.add(message);
 		}
 		return messages;
-	}
-
-	public void sendDirectMessage(String toScreenName, String text) {
-		MultiValueMap<String, Object> dmParams = new LinkedMultiValueMap<String, Object>();
-		dmParams.add("screen_name", toScreenName);
-		sendDirectMessage(text, dmParams);
-	}
-
-	public void sendDirectMessage(long toUserId, String text) {
-		MultiValueMap<String, Object> dmParams = new LinkedMultiValueMap<String, Object>();
-		dmParams.add("user_id", String.valueOf(toUserId));
-		sendDirectMessage(text, dmParams);
 	}
 
 	private void sendDirectMessage(String text, MultiValueMap<String, Object> dmParams) {
@@ -82,7 +95,9 @@ public class DirectMessageApiTemplate implements DirectMessageApi {
 		}
 	}
 
-	static final String DIRECT_MESSAGES_URL = TwitterTemplate.API_URL_BASE + "direct_messages.json";
+	static final String DIRECT_MESSAGES_RECEIVED_URL = TwitterTemplate.API_URL_BASE + "direct_messages.json";
+	static final String DIRECT_MESSAGES_SENT_URL = TwitterTemplate.API_URL_BASE + "direct_messages/sent.json";
 	static final String SEND_DIRECT_MESSAGE_URL = TwitterTemplate.API_URL_BASE + "direct_messages/new.json";
+	static final String DESTROY_DIRECT_MESSAGE_URL = TwitterTemplate.API_URL_BASE + "direct_messages/destroy/{dm_id}.json";
 
 }
