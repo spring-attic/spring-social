@@ -15,7 +15,6 @@
  */
 package org.springframework.social.twitter;
 
-import java.util.List;
 
 /**
  * Interface specifying a basic set of operations for interacting with Twitter.
@@ -26,41 +25,6 @@ import java.util.List;
  */
 public interface TwitterApi {
 
-	/**
-	 * Retrieves the user's Twitter screen name.
-	 * @return the user's screen name at Twitter
-	 */
-	String getProfileId();
-
-	/**
-	 * Retrieves the authenticated user's Twitter profile details.
-	 * @return a {@link TwitterProfile} object representing the user's profile.
-	 */
-	TwitterProfile getUserProfile();
-
-	/**
-	 * Retrieves a specific user's Twitter profile details.
-	 * Note that this method does not require authentication.
-	 * @param screenName the screen name for the user whose details are to be retrieved.
-	 * @return a {@link TwitterProfile} object representing the user's profile.
-	 */
-	TwitterProfile getUserProfile(String screenName);
-
-	/**
-	 * Retrieves a specific user's Twitter profile details.
-	 * Note that this method does not require authentication.
-	 * @param userId the user ID for the user whose details are to be retrieved.
-	 * @return a {@link TwitterProfile} object representing the user's profile.
-	 */
-	TwitterProfile getUserProfile(long userId);
-
-	/**
-	 * Retrieves a list of users that the given user follows.
-	 * @param screenName The user's Twitter screen name
-	 * @return a list of user screen names
-	 */
-	List<String> getFriends(String screenName);
-	
 	/**
 	 * Retrieves a list of users that the given user is being followed by
 	 * @param screenName The user's Twitter screen name

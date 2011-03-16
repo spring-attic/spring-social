@@ -67,7 +67,7 @@ public class TwitterTemplateTest {
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("verify-credentials.json", getClass()), responseHeaders));
 
-		assertEquals("habuma", twitter.getProfileId());
+		assertEquals("habuma", twitter.userApi().getProfileId());
 	}
 
 	@Test
@@ -79,7 +79,7 @@ public class TwitterTemplateTest {
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("twitter-profile.json", getClass()), responseHeaders));
 
-		TwitterProfile profile = twitter.getUserProfile();
+		TwitterProfile profile = twitter.userApi().getUserProfile();
 		assertEquals(12345, profile.getId());
 		assertEquals("habuma", profile.getScreenName());
 		assertEquals("Craig Walls", profile.getName());
@@ -95,7 +95,7 @@ public class TwitterTemplateTest {
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("twitter-profile.json", getClass()), responseHeaders));
 
-		TwitterProfile profile = twitter.getUserProfile(12345);
+		TwitterProfile profile = twitter.userApi().getUserProfile(12345);
 		assertEquals(12345, profile.getId());
 		assertEquals("habuma", profile.getScreenName());
 		assertEquals("Craig Walls", profile.getName());
@@ -111,7 +111,7 @@ public class TwitterTemplateTest {
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("friends.json", getClass()), responseHeaders));
 
-		List<String> friends = twitter.getFriends("habuma");
+		List<String> friends = twitter.friendsApi().getFriends("habuma");
 		assertEquals(2, friends.size());
 		assertTrue(friends.contains("kdonald"));
 		assertTrue(friends.contains("rclarkson"));
