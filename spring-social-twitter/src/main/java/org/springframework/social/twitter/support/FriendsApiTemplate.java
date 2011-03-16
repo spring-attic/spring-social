@@ -1,10 +1,12 @@
-package org.springframework.social.twitter;
+package org.springframework.social.twitter.support;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.social.twitter.FriendsApi;
+import org.springframework.social.twitter.TwitterTemplate;
 import org.springframework.web.client.RestTemplate;
 
 public class FriendsApiTemplate implements FriendsApi {

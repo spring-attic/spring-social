@@ -18,6 +18,12 @@ package org.springframework.social.twitter;
 import org.springframework.social.AccountNotConnectedException;
 import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.oauth1.ProtectedResourceClientFactory;
+import org.springframework.social.twitter.support.DirectMessageApiTemplate;
+import org.springframework.social.twitter.support.FriendsApiTemplate;
+import org.springframework.social.twitter.support.SearchApiTemplate;
+import org.springframework.social.twitter.support.TweetApiTemplate;
+import org.springframework.social.twitter.support.TwitterResponseStatusCodeTranslator;
+import org.springframework.social.twitter.support.UserApiTemplate;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -130,5 +136,5 @@ public class TwitterTemplate implements TwitterApi {
 		return restTemplate;
 	}
 
-	static final String API_URL_BASE = "https://api.twitter.com/1/";
+	public static final String API_URL_BASE = "https://api.twitter.com/1/";
 }

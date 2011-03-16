@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter;
+package org.springframework.social.twitter.support;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.social.twitter.TwitterResponseStatusCodeTranslator.DUPLICATE_STATUS_TEXT;
-import static org.springframework.social.twitter.TwitterResponseStatusCodeTranslator.INVALID_MESSAGE_RECIPIENT_TEXT;
+import static org.springframework.social.twitter.support.TwitterResponseStatusCodeTranslator.*;
 
 import java.util.Collections;
 import java.util.Map;
@@ -30,6 +29,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.social.AccountNotConnectedException;
 import org.springframework.social.OperationNotPermittedException;
 import org.springframework.social.SocialException;
+import org.springframework.social.twitter.DuplicateTweetException;
+import org.springframework.social.twitter.InvalidMessageRecipientException;
+import org.springframework.social.twitter.support.TwitterResponseStatusCodeTranslator;
 
 /**
  * @author Craig Walls

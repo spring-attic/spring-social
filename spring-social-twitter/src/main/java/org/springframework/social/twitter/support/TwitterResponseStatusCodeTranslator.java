@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter;
+package org.springframework.social.twitter.support;
 
 import java.util.Map;
 
@@ -23,6 +23,9 @@ import org.springframework.social.AccountNotConnectedException;
 import org.springframework.social.OperationNotPermittedException;
 import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.SocialException;
+import org.springframework.social.twitter.DuplicateTweetException;
+import org.springframework.social.twitter.InvalidMessageRecipientException;
+import org.springframework.social.twitter.TwitterTemplate;
 
 /**
  * Implementation of {@link ResponseStatusCodeTranslator} that reads a Twitter

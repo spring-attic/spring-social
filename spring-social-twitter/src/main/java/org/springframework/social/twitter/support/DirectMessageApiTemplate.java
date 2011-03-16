@@ -1,4 +1,4 @@
-package org.springframework.social.twitter;
+package org.springframework.social.twitter.support;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -12,6 +12,9 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.SocialException;
+import org.springframework.social.twitter.DirectMessage;
+import org.springframework.social.twitter.DirectMessageApi;
+import org.springframework.social.twitter.TwitterTemplate;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ObjectUtils;

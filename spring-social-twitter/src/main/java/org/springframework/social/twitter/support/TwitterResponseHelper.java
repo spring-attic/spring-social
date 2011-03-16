@@ -1,4 +1,4 @@
-package org.springframework.social.twitter;
+package org.springframework.social.twitter.support;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+
+import org.springframework.social.twitter.TwitterProfile;
 
 class TwitterResponseHelper {
 	

@@ -1,4 +1,4 @@
-package org.springframework.social.twitter;
+package org.springframework.social.twitter.support;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -11,11 +11,14 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.social.twitter.SearchApi;
+import org.springframework.social.twitter.SearchResults;
+import org.springframework.social.twitter.Tweet;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
-class SearchApiTemplate implements SearchApi {
+public class SearchApiTemplate implements SearchApi {
 
 	private final RestTemplate restTemplate;
 

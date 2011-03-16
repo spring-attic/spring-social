@@ -74,7 +74,7 @@ public class StatusDetails {
 	 * @return A {@link Map} of parameters to be passed along in the status
 	 *         update post to Twitter.
 	 */
-	Map<String, Object> toParameterMap() {
+	public Map<String, Object> toParameterMap() {
 		Map<String, Object> parameterMap = new HashMap<String, Object>();
 		if (latitude != null && longitude != null) {
 			parameterMap.put("lat", latitude.toString());

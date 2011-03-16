@@ -1,7 +1,10 @@
-package org.springframework.social.twitter;
+package org.springframework.social.twitter.support;
 
 import java.util.Map;
 
+import org.springframework.social.twitter.TwitterProfile;
+import org.springframework.social.twitter.TwitterTemplate;
+import org.springframework.social.twitter.UserApi;
 import org.springframework.web.client.RestTemplate;
 
 public class UserApiTemplate implements UserApi {
