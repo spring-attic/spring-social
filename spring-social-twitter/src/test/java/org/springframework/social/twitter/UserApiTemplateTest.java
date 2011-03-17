@@ -20,6 +20,8 @@ import static org.springframework.http.HttpMethod.*;
 import static org.springframework.social.test.client.RequestMatchers.*;
 import static org.springframework.social.test.client.ResponseCreators.*;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
@@ -73,5 +75,70 @@ public class UserApiTemplateTest extends AbstractTwitterApiTest {
 		assertEquals("http://www.springsource.org", profile.getUrl());
 		assertEquals("http://a3.twimg.com/profile_images/1205746571/me2_300.jpg", profile.getProfileImageUrl());
 	}
+	
+	@Test
+	public void getUsers_byUserId() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/users/lookup.json?user_id=14846645,14718006"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("list-of-profiles.json", getClass()), responseHeaders));
+		List<TwitterProfile> users = twitter.userApi().getUsers(14846645, 14718006);
+		assertEquals(2, users.size());
+		assertEquals("royclarkson", users.get(0).getScreenName());
+		assertEquals("kdonald", users.get(1).getScreenName());
+	}
+	
+	@Test
+	public void getUsers_byScreenName() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/users/lookup.json?screen_name=royclarkson,kdonald"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("list-of-profiles.json", getClass()), responseHeaders));
+		List<TwitterProfile> users = twitter.userApi().getUsers("royclarkson", "kdonald");
+		assertEquals(2, users.size());
+		assertEquals("royclarkson", users.get(0).getScreenName());
+		assertEquals("kdonald", users.get(1).getScreenName());
+	}
+	
+	@Test
+	public void searchForUsers() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/users/search.json?q=some%20query"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("list-of-profiles.json", getClass()), responseHeaders));
+		List<TwitterProfile> users = twitter.userApi().searchForUsers("some query");
+		assertEquals(2, users.size());
+		assertEquals("royclarkson", users.get(0).getScreenName());
+		assertEquals("kdonald", users.get(1).getScreenName());
+	}
+	
+	@Test
+	public void getSuggestionCategories() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/users/suggestions.json"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("suggestion-categories.json", getClass()), responseHeaders));
+		List<SuggestionCategory> categories = twitter.userApi().getSuggestionCategories();
+		assertEquals(4, categories.size());
+		assertEquals("Art & Design", categories.get(0).getName());
+		assertEquals("art-design", categories.get(0).getSlug());
+		assertEquals(56, categories.get(0).getSize());
+		assertEquals("Books", categories.get(1).getName());
+		assertEquals("books", categories.get(1).getSlug());
+		assertEquals(72, categories.get(1).getSize());
+		assertEquals("Business", categories.get(2).getName());
+		assertEquals("business", categories.get(2).getSlug());
+		assertEquals(65, categories.get(2).getSize());
+		assertEquals("Twitter", categories.get(3).getName());
+		assertEquals("twitter", categories.get(3).getSlug());
+		assertEquals(16, categories.get(3).getSize());
+	}
+	
+	@Test
+	public void getSuggestions() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/users/suggestions/springsource.json"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("suggestions.json", getClass()), responseHeaders));
 
+		List<TwitterProfile> users = twitter.userApi().getSuggestions("springsource");
+		assertEquals(2, users.size());
+		assertEquals("royclarkson", users.get(0).getScreenName());
+		assertEquals("kdonald", users.get(1).getScreenName());
+	}
 }
