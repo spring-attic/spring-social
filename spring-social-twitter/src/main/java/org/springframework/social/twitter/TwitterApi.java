@@ -16,6 +16,7 @@
 package org.springframework.social.twitter;
 
 
+
 /**
  * Interface specifying a basic set of operations for interacting with Twitter.
  * Implemented by TwitterTemplate. Not often used directly, but a useful option
@@ -26,24 +27,28 @@ package org.springframework.social.twitter;
 public interface TwitterApi {
 
 	/**
-	 * Retrieves a list of users that the given user is being followed by
-	 * @param screenName The user's Twitter screen name
-	 * @return a list of user screen names
+	 * Returns the portion of the Twitter API containing the user operations.
 	 */
-	List<String> getFollowers(String screenName);
-	
-	/**
-	 * Allows the authenticated user to follow (create a friendship) with another user.
-	 * @param screenName The screen name of the user to follow
-	 * @return the name of the followed user if successful
-	 */
-	String follow(String screenName);
+	UserApi userApi();
 
 	/**
-	 * Allows the authenticated use to unfollow (destroy a friendship) with another user
-	 * @param screenName the screen name of the use to unfollow 
-	 * @return the name of the unfolloed user if successful 
+	 * Returns the portion of the Twitter API containing the tweet and timeline operations.
 	 */
-	String unfollow(String screenName);
+	TweetApi tweetApi();
+
+	/**
+	 * Returns the portion of the Twitter API containing the friends and followers operations.
+	 */
+	FriendsApi friendsApi();
+
+	/**
+	 * Returns the portion of the Twitter API containing the search operations.
+	 */
+	SearchApi searchApi();
+
+	/**
+	 * Returns the portion of the Twitter API containing the direct message operations.
+	 */
+	DirectMessageApi directMessageApi();
 
 }

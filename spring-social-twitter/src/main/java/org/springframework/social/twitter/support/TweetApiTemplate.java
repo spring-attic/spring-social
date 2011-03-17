@@ -120,7 +120,7 @@ public class TweetApiTemplate implements TweetApi {
 		return profiles;
 	}
 
-	public List<Integer> getRetweetedByIds(long tweetId) {
+	public List<Long> getRetweetedByIds(long tweetId) {
 		return restTemplate.getForObject(RETWEETED_BY_IDS_URL, List.class, tweetId);
 	}
 

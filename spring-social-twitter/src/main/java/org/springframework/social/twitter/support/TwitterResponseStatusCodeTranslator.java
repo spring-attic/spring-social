@@ -24,6 +24,7 @@ import org.springframework.social.OperationNotPermittedException;
 import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.SocialException;
 import org.springframework.social.twitter.DuplicateTweetException;
+import org.springframework.social.twitter.FriendshipFailureException;
 import org.springframework.social.twitter.InvalidMessageRecipientException;
 import org.springframework.social.twitter.TwitterTemplate;
 

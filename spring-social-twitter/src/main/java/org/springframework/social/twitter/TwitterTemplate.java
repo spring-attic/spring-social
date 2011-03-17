@@ -47,7 +47,15 @@ public class TwitterTemplate implements TwitterApi {
 
 	private final RestTemplate restTemplate;
 
-	private final ResponseStatusCodeTranslator statusCodeTranslator;
+	private final TweetApi tweetApi;
+
+	private final UserApi userApi;
+
+	private final FriendsApi friendsApi;
+
+	private final SearchApi searchApi;
+
+	private final DirectMessageApi directMessageApi;
 
 	/**
 	 * Create a new instance of TwitterTemplate.
@@ -57,9 +65,7 @@ public class TwitterTemplate implements TwitterApi {
 	 * Those operations requiring authentication will throw {@link AccountNotConnectedException}.
 	 */
 	public TwitterTemplate() {
-		restTemplate = new RestTemplate();
-		restTemplate.setErrorHandler(new TwitterErrorHandler());
-		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
+		this(new RestTemplate());
 	}
 
 	/**
@@ -70,64 +76,38 @@ public class TwitterTemplate implements TwitterApi {
 	 * @param accessTokenSecret an access token secret acquired through OAuth authentication with LinkedIn
 	 */
 	public TwitterTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
-		restTemplate = ProtectedResourceClientFactory.create(apiKey, apiSecret, accessToken, accessTokenSecret);
+		this(ProtectedResourceClientFactory.create(apiKey, apiSecret, accessToken, accessTokenSecret));
+	}
+	
+	private TwitterTemplate(RestTemplate restTemplate) {
+		this.restTemplate = restTemplate;
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
-		this.statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
+		ResponseStatusCodeTranslator statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
+		this.tweetApi = new TweetApiTemplate(restTemplate, statusCodeTranslator);
+		this.userApi = new UserApiTemplate(restTemplate);
+		this.friendsApi = new FriendsApiTemplate(restTemplate, statusCodeTranslator);
+		this.searchApi = new SearchApiTemplate(restTemplate);
+		this.directMessageApi = new DirectMessageApiTemplate(restTemplate, statusCodeTranslator);
 	}
 
 	public TweetApi tweetApi() {
-		return new TweetApiTemplate(restTemplate, statusCodeTranslator);
+		return tweetApi;
 	}
 
 	public FriendsApi friendsApi() {
-		return new FriendsApiTemplate(restTemplate);
+		return friendsApi;
 	}
 
 	public SearchApi searchApi() {
-		return new SearchApiTemplate(restTemplate);
+		return searchApi;
 	}
 
 	public DirectMessageApi directMessageApi() {
-		return new DirectMessageApiTemplate(restTemplate, statusCodeTranslator);
+		return directMessageApi;
 	}
 
 	public UserApi userApi() {
-		return new UserApiTemplate(restTemplate);
-	}
-
-	public List<String> getFriends(String screenName) {
-		List<Map<String, String>> response = restTemplate.getForObject(FRIENDS_STATUSES_URL, List.class, Collections.singletonMap("screen_name", screenName));
-		List<String> friends = new ArrayList<String>(response.size());
-		for (Map<String, String> item : response) {
-			friends.add(item.get("screen_name"));
-		}
-		return friends;
-	}
-	
-	public List<String> getFollowers(String screenName) {
-	    List<Map<String, String>> response = restTemplate.getForObject(FOLLOWERS_STATUSES_URL, List.class, Collections.singletonMap("screen_name", screenName));
-	    List<String> followers = new ArrayList<String>(response.size());
-	    for(Map<String, String> item : response) {
-	        followers.add(item.get("screen_name"));
-	    }
-	    
-	    return followers;
-	    
-	}
-	
-	public String follow(String screenName) {
-	    return this.friendshipAssist(FOLLOW_URL, screenName);	    
-	}
-	
-	public String unfollow(String screenName) {
-	    return this.friendshipAssist(UNFOLLOW_URL, screenName);
-	}
-	
-	private String friendshipAssist(String url, String screenName) {
-	    ResponseEntity<Map> response = restTemplate.postForEntity(url, "", Map.class, Collections.singletonMap("screen_name", screenName));
-        handleResponseErrors(response);
-        Map<String, Object> body = response.getBody();
-        return (String) body.get("screen_name");
+		return userApi;
 	}
 
 	// subclassing hooks
