@@ -62,6 +62,13 @@ public interface FriendsApi {
 
 	/**
 	 * Allows the authenticated user to follow (create a friendship) with another user.
+	 * @param userId The Twitter ID of the user to follow
+	 * @return the name of the followed user if successful
+	 */
+	String follow(long userId);
+	
+	/**
+	 * Allows the authenticated user to follow (create a friendship) with another user.
 	 * @param screenName The screen name of the user to follow
 	 * @return the name of the followed user if successful
 	 */
@@ -69,9 +76,32 @@ public interface FriendsApi {
 
 	/**
 	 * Allows the authenticated use to unfollow (destroy a friendship) with another user
-	 * @param screenName the screen name of the use to unfollow 
+	 * @param userId the Twitter ID of the user to unfollow 
+	 * @return the name of the unfolloed user if successful 
+	 */
+	String unfollow(long userId);
+	
+	/**
+	 * Allows the authenticated use to unfollow (destroy a friendship) with another user
+	 * @param screenName the screen name of the user to unfollow 
 	 * @return the name of the unfolloed user if successful 
 	 */
 	String unfollow(String screenName);
 	
+	/**
+	 * Checks for a friendship between two users. Returns true if userA follows userB.
+	 * @param userA the screen name of userA
+	 * @param userB the screen name of userB
+	 */
+	boolean friendshipExists(String userA, String userB);
+
+	/**
+	 * Returns an array of numeric IDs for every user who has a pending request to follow the authenticating user.
+	 */
+	List<Long> getIncomingFriendships();
+
+	/**
+	 * Returns an array of numeric IDs for every protected user for whom the authenticating user has a pending follow request.
+	 */
+	List<Long> getOutgoingFriendships();
 }
