@@ -15,6 +15,10 @@
  */
 package org.springframework.social.twitter;
 
+/**
+ * Represents a single trending topic.
+ * @author Craig Walls
+ */
 public class Trend {
 	private final String name;
 

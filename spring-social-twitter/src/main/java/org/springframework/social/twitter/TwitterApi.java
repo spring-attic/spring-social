@@ -15,8 +15,6 @@
  */
 package org.springframework.social.twitter;
 
-
-
 /**
  * Interface specifying a basic set of operations for interacting with Twitter.
  * Implemented by TwitterTemplate. Not often used directly, but a useful option

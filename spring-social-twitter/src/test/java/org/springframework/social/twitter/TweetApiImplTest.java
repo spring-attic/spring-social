@@ -32,7 +32,7 @@ import org.springframework.social.OperationNotPermittedException;
 /**
  * @author Craig Walls
  */
-public class TweetApiTemplateTest extends AbstractTwitterApiTest {
+public class TweetApiImplTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void updateStatus() {

@@ -26,11 +26,10 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 
-
 /**
  * @author Craig Walls
  */
-public class UserApiTemplateTest extends AbstractTwitterApiTest {
+public class UserApiImplTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void getProfileId() {

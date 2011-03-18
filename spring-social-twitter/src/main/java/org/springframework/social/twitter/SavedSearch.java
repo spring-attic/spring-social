@@ -17,6 +17,10 @@ package org.springframework.social.twitter;
 
 import java.util.Date;
 
+/**
+ * Represents a saved search.
+ * @author Craig Walls
+ */
 public class SavedSearch {
 	private final long id;
 

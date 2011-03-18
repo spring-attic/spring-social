@@ -19,7 +19,6 @@ import java.util.Date;
 
 /**
  * Represents a Twitter status update (e.g., a "tweet").
- * 
  * @author Craig Walls
  */
 public class Tweet {

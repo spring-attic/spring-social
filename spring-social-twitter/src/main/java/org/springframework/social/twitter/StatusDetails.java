@@ -20,7 +20,6 @@ import java.util.Map;
 
 /**
  * Carries optional metadata pertaining to a Twitter status update.
- * 
  * @author Craig Walls
  */
 public class StatusDetails {

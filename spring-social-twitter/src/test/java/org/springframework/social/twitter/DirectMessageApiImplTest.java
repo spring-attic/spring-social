@@ -29,7 +29,7 @@ import org.springframework.core.io.ClassPathResource;
 /**
  * @author Craig Walls
  */
-public class DirectMessageApiTemplateTest extends AbstractTwitterApiTest {
+public class DirectMessageApiImplTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void getDirectMessagesReceived() {

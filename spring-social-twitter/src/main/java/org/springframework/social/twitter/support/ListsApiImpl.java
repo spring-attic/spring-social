@@ -13,29 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter;
+package org.springframework.social.twitter.support;
 
-public class SuggestionCategory {
-	private final String name;
-	private final String slug;
-	private final int size;
+import org.springframework.social.twitter.ListsApi;
 
-	public SuggestionCategory(String name, String slug, int size) {
-		this.name = name;
-		this.slug = slug;
-		this.size = size;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public String getSlug() {
-		return slug;
-	}
-
-	public int getSize() {
-		return size;
-	}
+/**
+ * Implementation of {@link ListsApi}, providing a binding to Twitter's list-oriented REST resources.
+ * @author Craig Walls
+ */
+public class ListsApiImpl implements ListsApi {
 
 }

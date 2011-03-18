@@ -29,7 +29,7 @@ import org.springframework.core.io.ClassPathResource;
 /**
  * @author Craig Walls
  */
-public class SearchApiTemplateTest extends AbstractTwitterApiTest {
+public class SearchApiImplTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void search_queryOnly() {

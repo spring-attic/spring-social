@@ -30,7 +30,7 @@ import org.springframework.core.io.ClassPathResource;
 /**
  * @author Craig Walls
  */
-public class FriendsApiTemplateTest extends AbstractTwitterApiTest {
+public class FriendsApiImplTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void getFriends_byUserId() {

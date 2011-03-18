@@ -17,6 +17,10 @@ package org.springframework.social.twitter;
 
 import java.util.List;
 
+/**
+ * Interface defining the operations for searching Twitter and retrieving trending data.
+ * @author Craig Walls
+ */
 public interface SearchApi {
 	
 	/**

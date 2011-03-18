@@ -18,12 +18,12 @@ package org.springframework.social.twitter;
 import org.springframework.social.AccountNotConnectedException;
 import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.oauth1.ProtectedResourceClientFactory;
-import org.springframework.social.twitter.support.DirectMessageApiTemplate;
-import org.springframework.social.twitter.support.FriendsApiTemplate;
-import org.springframework.social.twitter.support.SearchApiTemplate;
-import org.springframework.social.twitter.support.TweetApiTemplate;
+import org.springframework.social.twitter.support.DirectMessageApiImpl;
+import org.springframework.social.twitter.support.FriendsApiImpl;
+import org.springframework.social.twitter.support.SearchApiImpl;
+import org.springframework.social.twitter.support.TweetApiImpl;
 import org.springframework.social.twitter.support.TwitterResponseStatusCodeTranslator;
-import org.springframework.social.twitter.support.UserApiTemplate;
+import org.springframework.social.twitter.support.UserApiImpl;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -83,11 +83,11 @@ public class TwitterTemplate implements TwitterApi {
 		this.restTemplate = restTemplate;
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
 		ResponseStatusCodeTranslator statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
-		this.tweetApi = new TweetApiTemplate(restTemplate, statusCodeTranslator);
-		this.userApi = new UserApiTemplate(restTemplate);
-		this.friendsApi = new FriendsApiTemplate(restTemplate, statusCodeTranslator);
-		this.searchApi = new SearchApiTemplate(restTemplate);
-		this.directMessageApi = new DirectMessageApiTemplate(restTemplate, statusCodeTranslator);
+		this.tweetApi = new TweetApiImpl(restTemplate, statusCodeTranslator);
+		this.userApi = new UserApiImpl(restTemplate);
+		this.friendsApi = new FriendsApiImpl(restTemplate, statusCodeTranslator);
+		this.searchApi = new SearchApiImpl(restTemplate);
+		this.directMessageApi = new DirectMessageApiImpl(restTemplate, statusCodeTranslator);
 	}
 
 	public TweetApi tweetApi() {
