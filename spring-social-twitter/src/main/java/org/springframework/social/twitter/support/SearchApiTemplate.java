@@ -4,6 +4,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.social.twitter.SavedSearch;
 import org.springframework.social.twitter.SearchApi;
 import org.springframework.social.twitter.SearchResults;
+import org.springframework.social.twitter.Trend;
+import org.springframework.social.twitter.Trends;
 import org.springframework.social.twitter.Tweet;
 import org.springframework.social.twitter.TwitterTemplate;
 import org.springframework.util.LinkedMultiValueMap;
@@ -85,6 +89,90 @@ public class SearchApiTemplate implements SearchApi {
 	public void deleteSavedSearch(long searchId) {
 		restTemplate.delete(DELETE_SAVED_SEARCH_URL, searchId);
 	}
+	
+	// Trends
+
+	public Trends getCurrentTrends() {
+		return getCurrentTrends(false);
+	}
+	
+	public Trends getCurrentTrends(boolean excludeHashtags) {
+		String url = makeTrendUrl(CURRENT_TRENDS_URL, excludeHashtags, null);
+		Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+		List<Trends> trendsList = extractTrendsListFromResponse(response, longTrendDateFormat);
+		return trendsList.get(0);
+	}
+
+	public List<Trends> getDailyTrends() {
+		return getDailyTrends(false, null);
+	}
+
+	public List<Trends> getDailyTrends(boolean excludeHashtags) {
+		return getDailyTrends(excludeHashtags, null);
+	}
+
+	public List<Trends> getDailyTrends(boolean excludeHashtags, String startDate) {
+		String url = makeTrendUrl(DAILY_TRENDS_URL, excludeHashtags, startDate);
+		Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+		return extractTrendsListFromResponse(response, longTrendDateFormat);
+	}
+	
+	public List<Trends> getWeeklyTrends() {
+		return getWeeklyTrends(false, null);
+	}
+	
+	public List<Trends> getWeeklyTrends(boolean excludeHashtags) {
+		return getWeeklyTrends(excludeHashtags, null);
+	}
+	
+	public List<Trends> getWeeklyTrends(boolean excludeHashtags, String startDate) {
+		String url = makeTrendUrl(WEEKLY_TRENDS_URL, excludeHashtags, startDate);
+		Map<String, Object> response = restTemplate.getForObject(url, Map.class);
+		return extractTrendsListFromResponse(response, simpleTrendDateFormat);
+	}
+
+	public Trends getLocalTrends(long whereOnEarthId) {
+		return getLocalTrends(whereOnEarthId, false);
+	}
+
+	public Trends getLocalTrends(long whereOnEarthId, boolean excludeHashtags) {
+		String url = makeTrendUrl(LOCAL_TRENDS_URL, excludeHashtags, null);
+		List<Map<String, Object>> response = restTemplate.getForObject(url, List.class, whereOnEarthId);
+		List<Map<String, String>> trendMapList = (List<Map<String, String>>) response.get(0).get("trends");
+		List<Trend> trendList = new ArrayList<Trend>(trendMapList.size());
+		for (Map<String, String> trendMap : trendMapList) {
+			trendList.add(new Trend(trendMap.get("name"), trendMap.get("query")));
+		}
+		String dateString = String.valueOf(response.get(0).get("created_at"));
+		return new Trends(toDate(dateString, localTrendDateFormat), trendList);
+	}
+
+	private String makeTrendUrl(String baseUrl, boolean excludeHashtags, String startDate) {
+		String url = baseUrl + (excludeHashtags || startDate != null ? "?" : "");
+		url += excludeHashtags ? "exclude=hashtags" : "";
+		url += excludeHashtags && startDate != null ? "&" : "";
+		url += startDate != null ? "date=" + startDate : "";
+		return url;
+	}
+
+	private List<Trends> extractTrendsListFromResponse(Map<String, Object> response, DateFormat dateFormat) {
+		Map<String, Object> trendsMap = (Map<String, Object>) response.get("trends");
+		List<Trends> trendsList = new ArrayList<Trends>(trendsMap.keySet().size());
+		for (String trendDate : trendsMap.keySet()) {
+			List<Map<String, String>> trendsMapList = (List<Map<String, String>>) trendsMap.get(trendDate);
+			List<Trend> trendList = new ArrayList<Trend>(trendsMapList.size());
+			for (Map<String, String> trendMap : trendsMapList) {
+				trendList.add(new Trend(trendMap.get("name"), trendMap.get("query")));
+			}
+			trendsList.add(new Trends(toDate(trendDate, dateFormat), trendList));
+		}
+		Collections.sort(trendsList, new Comparator<Trends>() {
+			public int compare(Trends t1, Trends t2) {
+				return t1.getTime().getTime() > t2.getTime().getTime() ? -1 : 1;
+			}
+		});
+		return trendsList;
+	}
 
 	private SearchResults buildSearchResults(Map<String, Object> response, List<Tweet> tweets) {
 		Number maxId = response.containsKey("max_id") ? (Number) response.get("max_id") : 0;
@@ -119,10 +207,13 @@ public class SearchApiTemplate implements SearchApi {
 		return new SavedSearch(id, name, query, position, createdAt);
 	}
 
-	private static final DateFormat searchDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z",
-			Locale.ENGLISH);
-	private static final DateFormat savedSearchDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy",
-			Locale.ENGLISH);
+	private static final DateFormat searchDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+	private static final DateFormat savedSearchDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH);
+	private static final DateFormat simpleTrendDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private static final DateFormat longTrendDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static final DateFormat localTrendDateFormat = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss'Z'");
+
+	// 2011-03-18T16:45:33Z
 
 	private static Date toDate(String dateString, DateFormat dateFormat) {
 		try {
@@ -139,6 +230,9 @@ public class SearchApiTemplate implements SearchApi {
 	static final String SAVED_SEARCHES_URL = TwitterTemplate.API_URL_BASE + "saved_searches.json";
 	static final String SAVED_SEARCH_URL = TwitterTemplate.API_URL_BASE + "saved_searches/show/{searchId}.json";
 	static final String CREATE_SAVED_SEARCH_URL = TwitterTemplate.API_URL_BASE + "saved_searches/create.json";
-	static final String DELETE_SAVED_SEARCH_URL = TwitterTemplate.API_URL_BASE
-			+ "saved_searches/destroy/{searchId}.json";
+	static final String DELETE_SAVED_SEARCH_URL = TwitterTemplate.API_URL_BASE + "saved_searches/destroy/{searchId}.json";
+	static final String CURRENT_TRENDS_URL = TwitterTemplate.API_URL_BASE + "trends/current.json";
+	static final String DAILY_TRENDS_URL = TwitterTemplate.API_URL_BASE + "trends/daily.json";
+	static final String WEEKLY_TRENDS_URL = TwitterTemplate.API_URL_BASE + "trends/weekly.json";
+	static final String LOCAL_TRENDS_URL = TwitterTemplate.API_URL_BASE + "trends/{whereOnEarth_id}.json";
 }

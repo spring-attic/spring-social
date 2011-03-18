@@ -77,4 +77,80 @@ public interface SearchApi {
 	 * @param searchId the ID of the saved search
 	 */
 	void deleteSavedSearch(long searchId);
+
+	/**
+	 * Retrieves the current top 10 trending topics on Twitter, including hashtagged topics.
+	 * @return a Trends object containing a list of trending topics and the date/time that the list was created.
+	 */
+	Trends getCurrentTrends();
+
+	/**
+	 * Retrieves the current top 10 trending topics on Twitter.
+	 * @param excludeHashtags if true, hashtagged topics will be excluded from the trends list.
+	 * @return a Trends object containing a list of trending topics and the date/time that the list was created.
+	 */
+	Trends getCurrentTrends(boolean excludeHashtags);
+
+	/**
+	 * Retrieves the top 20 trending topics, hourly for the past 24 hours.
+	 * This list includes hashtagged topics.
+	 * @return a list of Trends objects, one for each hour in the past 24 hours, ordered with the most recent hour first.
+	 */
+	List<Trends> getDailyTrends();
+
+	/**
+	 * Retrieves the top 20 trending topics, hourly for the past 24 hours.
+	 * @param excludeHashtags if true, hashtagged topics will be excluded from the trends list.
+	 * @return a list of Trends objects, one for each hour in the past 24 hours, ordered with the most recent hour first.
+	 */
+	List<Trends> getDailyTrends(boolean excludeHashtags);
+	
+	/**
+	 * Retrieves the top 20 trending topics, hourly for a 24-hour period starting at the specified date.
+	 * @param excludeHashtags if true, hashtagged topics will be excluded from the trends list.
+	 * @param startDate the date to start retrieving trending data for, in MM-DD-YYYY format.
+	 * @return a list of Trends objects, one for each hour in the given 24 hours, ordered with the most recent hour first.
+	 */
+	List<Trends> getDailyTrends(boolean excludeHashtags, String startDate);
+
+	/**
+	 * Retrieves the top 30 trending topics for each day in the past week.
+	 * This list includes hashtagged topics.
+	 * @return a list of Trends objects, one for each day in the past week, ordered with the most recent day first.
+	 */
+	List<Trends> getWeeklyTrends();
+
+	/**
+	 * Retrieves the top 30 trending topics for each day in the past week.
+	 * @param excludeHashtags if true, hashtagged topics will be excluded from the trends list.
+	 * @return a list of Trends objects, one for each day in the past week, ordered with the most recent day first.
+	 */
+	List<Trends> getWeeklyTrends(boolean excludeHashtags);
+	
+	/**
+	 * Retrieves the top 30 trending topics for each day in a given week.
+	 * @param excludeHashtags if true, hashtagged topics will be excluded from the trends list.
+	 * @param startDate the date to start retrieving trending data for, in MM-DD-YYYY format.
+	 * @return a list of Trends objects, one for each day in the given week, ordered with the most recent day first.
+	 */
+	List<Trends> getWeeklyTrends(boolean excludeHashtags, String startDate);
+
+	/**
+	 * Retrieves the top 10 trending topics for a given location, identified by its "Where on Earth" (WOE) ID.
+	 * This includes hashtagged topics.
+	 * See http://developer.yahoo.com/geo/geoplanet/guide/concepts.html for more information on WOE.
+	 * @param whereOnEarthId the Where on Earth ID for the location to retrieve trend data.
+	 * @return A Trends object with the top 10 trending topics for the location.
+	 */
+	Trends getLocalTrends(long whereOnEarthId);
+
+	/**
+	 * Retrieves the top 10 trending topics for a given location, identified by its "Where on Earth" (WOE) ID.
+	 * See http://developer.yahoo.com/geo/geoplanet/guide/concepts.html for more information on WOE.
+	 * @param whereOnEarthId the Where on Earth ID for the location to retrieve trend data.
+	 * @param excludeHashtags if true, hashtagged topics will be excluded from the trends list.
+	 * @return A Trends object with the top 10 trending topics for the given location.
+	 */
+	Trends getLocalTrends(long whereOnEarthId, boolean excludeHashtags);
+
 }

@@ -116,6 +116,162 @@ public class SearchApiTemplateTest extends AbstractTwitterApiTest {
 		twitter.searchApi().deleteSavedSearch(26897775);
 		mockServer.verify();
 	}
+	
+	@Test
+	public void getCurrentTrends() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/trends/current.json"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("current-trends.json", getClass()), responseHeaders));
+		Trends currentTrends = twitter.searchApi().getCurrentTrends();
+		List<Trend> trends = currentTrends.getTrends();
+		assertEquals(2, trends.size());
+		assertEquals("Cool Stuff", trends.get(0).getName());
+		assertEquals("Cool Stuff", trends.get(0).getQuery());
+		assertEquals("#springsocial", trends.get(1).getName());
+		assertEquals("#springsocial", trends.get(1).getQuery());
+	}
+	
+	@Test
+	public void getCurrentTrends_excludeHashtags() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/trends/current.json?exclude=hashtags"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("current-trends.json", getClass()), responseHeaders));
+		Trends currentTrends = twitter.searchApi().getCurrentTrends(true);
+		List<Trend> trends = currentTrends.getTrends();
+		assertEquals(2, trends.size());
+	}
+	
+	@Test
+	public void getDailyTrends() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/trends/daily.json"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("daily-trends.json", getClass()), responseHeaders));
+
+		List<Trends> dailyTrends = twitter.searchApi().getDailyTrends();
+		assertEquals(24, dailyTrends.size());
+		int i = 0;
+		for (Trends currentTrends : dailyTrends) {
+			List<Trend> trends = currentTrends.getTrends();
+			assertEquals(2, trends.size());
+			assertEquals("Cool Stuff" + i, trends.get(0).getName());
+			assertEquals("Cool Stuff" + i, trends.get(0).getQuery());
+			assertEquals("#springsocial" + i, trends.get(1).getName());
+			assertEquals("#springsocial" + i, trends.get(1).getQuery());
+			i++;
+		}
+	}
+	
+	@Test
+	public void getDailyTrends_excludeHashtags() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/trends/daily.json?exclude=hashtags"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("daily-trends.json", getClass()), responseHeaders));
+
+		List<Trends> dailyTrends = twitter.searchApi().getDailyTrends(true);
+		assertEquals(24, dailyTrends.size());
+		mockServer.verify();
+	}
+
+	@Test
+	public void getDailyTrends_withStartDate() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/trends/daily.json?date=2011-03-17"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("daily-trends.json", getClass()), responseHeaders));
+
+		List<Trends> dailyTrends = twitter.searchApi().getDailyTrends(false, "2011-03-17");
+		assertEquals(24, dailyTrends.size());
+		mockServer.verify();
+	}
+
+	@Test
+	public void getDailyTrends_withStartDateAndExcludeHashtags() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/trends/daily.json?exclude=hashtags&date=2011-03-17"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("daily-trends.json", getClass()), responseHeaders));
+
+		List<Trends> dailyTrends = twitter.searchApi().getDailyTrends(true, "2011-03-17");
+		assertEquals(24, dailyTrends.size());
+		mockServer.verify();
+	}
+	
+	@Test
+	public void getWeeklyTrends() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/trends/weekly.json"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("weekly-trends.json", getClass()), responseHeaders));
+
+		List<Trends> dailyTrends = twitter.searchApi().getWeeklyTrends();
+		assertEquals(7, dailyTrends.size());
+		int i = 0;
+		for (Trends currentTrends : dailyTrends) {
+			List<Trend> trends = currentTrends.getTrends();
+			assertEquals(2, trends.size());
+			assertEquals("Cool Stuff" + i, trends.get(0).getName());
+			assertEquals("Cool Stuff" + i, trends.get(0).getQuery());
+			assertEquals("#springsocial" + i, trends.get(1).getName());
+			assertEquals("#springsocial" + i, trends.get(1).getQuery());
+			i++;
+		}
+	}
+	
+	@Test
+	public void getWeeklyTrends_excludeHashtags() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/trends/weekly.json?exclude=hashtags"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("weekly-trends.json", getClass()), responseHeaders));
+
+		List<Trends> dailyTrends = twitter.searchApi().getWeeklyTrends(true);
+		assertEquals(7, dailyTrends.size());
+		mockServer.verify();
+	}
+	
+	@Test
+	public void getWeeklyTrends_withStartDate() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/trends/weekly.json?date=2011-03-18"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("weekly-trends.json", getClass()), responseHeaders));
+
+		List<Trends> dailyTrends = twitter.searchApi().getWeeklyTrends(false, "2011-03-18");
+		assertEquals(7, dailyTrends.size());
+		mockServer.verify();
+	}
+	
+	@Test
+	public void getWeeklyTrends_withStartDateAndExcludeHashtags() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/trends/weekly.json?exclude=hashtags&date=2011-03-18"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("weekly-trends.json", getClass()), responseHeaders));
+
+		List<Trends> dailyTrends = twitter.searchApi().getWeeklyTrends(true, "2011-03-18");
+		assertEquals(7, dailyTrends.size());
+		mockServer.verify();
+	}
+	
+	@Test
+	public void getLocalTrends() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/trends/2442047.json"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("local-trends.json", getClass()), responseHeaders));
+		Trends localTrends = twitter.searchApi().getLocalTrends(2442047);
+		List<Trend> trends = localTrends.getTrends();
+		assertEquals(2, trends.size());
+		Trend trend1 = trends.get(0);
+		assertEquals("Cool Stuff", trend1.getName());
+		assertEquals("Cool+Stuff", trend1.getQuery());
+		Trend trend2 = trends.get(1);
+		assertEquals("#springsocial", trend2.getName());
+		assertEquals("%23springsocial", trend2.getQuery());
+	}
+	
+	@Test
+	public void getLocalTrends_excludeHashtags() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/trends/2442047.json?exclude=hashtags"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("local-trends.json", getClass()), responseHeaders));
+		Trends localTrends = twitter.searchApi().getLocalTrends(2442047, true);
+		List<Trend> trends = localTrends.getTrends();
+		assertEquals(2, trends.size());
+	}	
 
 	// test helpers
 
