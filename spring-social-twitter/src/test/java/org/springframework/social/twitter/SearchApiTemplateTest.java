@@ -66,6 +66,56 @@ public class SearchApiTemplateTest extends AbstractTwitterApiTest {
 		List<Tweet> tweets = searchResults.getTweets();
 		assertSearchTweets(tweets);
 	}
+	
+	@Test
+	public void getSavedSearches() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/saved_searches.json"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("saved-searches.json", getClass()), responseHeaders));
+		List<SavedSearch> savedSearches = twitter.searchApi().getSavedSearches();
+		assertEquals(2, savedSearches.size());
+		SavedSearch search1 = savedSearches.get(0);
+		assertEquals(26897775, search1.getId());
+		assertEquals("#springsocial", search1.getQuery());
+		assertEquals("#springsocial", search1.getName());
+		assertEquals(0, search1.getPosition());
+		SavedSearch search2 = savedSearches.get(1);
+		assertEquals(56897772, search2.getId());
+		assertEquals("#twitter", search2.getQuery());
+		assertEquals("#twitter", search2.getName());
+		assertEquals(1, search2.getPosition());
+	}
+
+	@Test
+	public void getSavedSearch() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/saved_searches/show/26897775.json"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("saved-search.json", getClass()), responseHeaders));
+		SavedSearch savedSearch = twitter.searchApi().getSavedSearch(26897775);
+		assertEquals(26897775, savedSearch.getId());
+		assertEquals("#springsocial", savedSearch.getQuery());
+		assertEquals("#springsocial", savedSearch.getName());
+		assertEquals(0, savedSearch.getPosition());
+	}
+	
+	@Test
+	public void createSavedSearch() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/saved_searches/create.json"))
+			.andExpect(method(POST))
+			.andExpect(body("query=%23twitter"))
+			.andRespond(withResponse("{}", responseHeaders));
+		twitter.searchApi().createSavedSearch("#twitter");
+		mockServer.verify();
+	}
+
+	@Test
+	public void deleteSavedSearch() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/saved_searches/destroy/26897775.json"))
+			.andExpect(method(DELETE))
+			.andRespond(withResponse("{}", responseHeaders));
+		twitter.searchApi().deleteSavedSearch(26897775);
+		mockServer.verify();
+	}
 
 	// test helpers
 

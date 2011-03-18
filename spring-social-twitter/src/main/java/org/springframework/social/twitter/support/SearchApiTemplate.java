@@ -11,9 +11,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.social.twitter.SavedSearch;
 import org.springframework.social.twitter.SearchApi;
 import org.springframework.social.twitter.SearchResults;
 import org.springframework.social.twitter.Tweet;
+import org.springframework.social.twitter.TwitterTemplate;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.NumberUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
@@ -59,6 +63,29 @@ public class SearchApiTemplate implements SearchApi {
 		return buildSearchResults(resultsMap, tweets);
 	}
 
+	public List<SavedSearch> getSavedSearches() {
+		List<Map<String, Object>> response = restTemplate.getForObject(SAVED_SEARCHES_URL, List.class);
+		List<SavedSearch> savedSearches = new ArrayList<SavedSearch>(response.size());
+		for (Map<String, Object> item : response) {
+			savedSearches.add(populateSavedSearchFromMap(item));
+		}
+		return savedSearches;
+	}
+
+	public SavedSearch getSavedSearch(long searchId) {
+		return populateSavedSearchFromMap(restTemplate.getForObject(SAVED_SEARCH_URL, Map.class, searchId));
+	}
+
+	public void createSavedSearch(String query) {
+		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
+		request.set("query", query);
+		restTemplate.postForObject(CREATE_SAVED_SEARCH_URL, request, String.class);
+	}
+
+	public void deleteSavedSearch(long searchId) {
+		restTemplate.delete(DELETE_SAVED_SEARCH_URL, searchId);
+	}
+
 	private SearchResults buildSearchResults(Map<String, Object> response, List<Tweet> tweets) {
 		Number maxId = response.containsKey("max_id") ? (Number) response.get("max_id") : 0;
 		Number sinceId = response.containsKey("since_id") ? (Number) response.get("since_id") : 0;
@@ -82,9 +109,22 @@ public class SearchApiTemplate implements SearchApi {
 		return tweet;
 	}
 
-	private DateFormat searchDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+	private SavedSearch populateSavedSearchFromMap(Map<String, Object> item) {
+		long id = Long.valueOf(String.valueOf(item.get("id")));
+		String name = String.valueOf(item.get("name"));
+		String query = String.valueOf(item.get("query"));
+		Object positionValue = item.get("position");
+		int position = positionValue == null ? 0 : Integer.valueOf(String.valueOf(positionValue));
+		Date createdAt = toDate(String.valueOf(item.get("created_at")), savedSearchDateFormat);
+		return new SavedSearch(id, name, query, position, createdAt);
+	}
 
-	private Date toDate(String dateString, DateFormat dateFormat) {
+	private static final DateFormat searchDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z",
+			Locale.ENGLISH);
+	private static final DateFormat savedSearchDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy",
+			Locale.ENGLISH);
+
+	private static Date toDate(String dateString, DateFormat dateFormat) {
 		try {
 			return dateFormat.parse(dateString);
 		} catch (ParseException e) {
@@ -96,5 +136,9 @@ public class SearchApiTemplate implements SearchApi {
 
 	static final String SEARCH_API_URL_BASE = "https://search.twitter.com";
 	static final String SEARCH_URL = SEARCH_API_URL_BASE + "/search.json?q={query}&rpp={rpp}&page={page}";
-
+	static final String SAVED_SEARCHES_URL = TwitterTemplate.API_URL_BASE + "saved_searches.json";
+	static final String SAVED_SEARCH_URL = TwitterTemplate.API_URL_BASE + "saved_searches/show/{searchId}.json";
+	static final String CREATE_SAVED_SEARCH_URL = TwitterTemplate.API_URL_BASE + "saved_searches/create.json";
+	static final String DELETE_SAVED_SEARCH_URL = TwitterTemplate.API_URL_BASE
+			+ "saved_searches/destroy/{searchId}.json";
 }
