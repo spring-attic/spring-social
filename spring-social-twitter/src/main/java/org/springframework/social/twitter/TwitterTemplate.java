@@ -20,6 +20,7 @@ import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.oauth1.ProtectedResourceClientFactory;
 import org.springframework.social.twitter.support.DirectMessageApiImpl;
 import org.springframework.social.twitter.support.FriendsApiImpl;
+import org.springframework.social.twitter.support.ListsApiImpl;
 import org.springframework.social.twitter.support.SearchApiImpl;
 import org.springframework.social.twitter.support.TweetApiImpl;
 import org.springframework.social.twitter.support.TwitterResponseStatusCodeTranslator;
@@ -52,6 +53,8 @@ public class TwitterTemplate implements TwitterApi {
 	private final UserApi userApi;
 
 	private final FriendsApi friendsApi;
+
+	private final ListsApi listsApi;
 
 	private final SearchApi searchApi;
 
@@ -86,6 +89,7 @@ public class TwitterTemplate implements TwitterApi {
 		this.tweetApi = new TweetApiImpl(restTemplate, statusCodeTranslator);
 		this.userApi = new UserApiImpl(restTemplate);
 		this.friendsApi = new FriendsApiImpl(restTemplate, statusCodeTranslator);
+		this.listsApi = new ListsApiImpl(restTemplate);
 		this.searchApi = new SearchApiImpl(restTemplate);
 		this.directMessageApi = new DirectMessageApiImpl(restTemplate, statusCodeTranslator);
 	}
@@ -96,6 +100,10 @@ public class TwitterTemplate implements TwitterApi {
 
 	public FriendsApi friendsApi() {
 		return friendsApi;
+	}
+
+	public ListsApi listsApi() {
+		return listsApi;
 	}
 
 	public SearchApi searchApi() {

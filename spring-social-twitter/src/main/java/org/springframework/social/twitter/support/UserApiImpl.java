@@ -58,11 +58,11 @@ public class UserApiImpl implements UserApi {
 	}
 
 	public List<TwitterProfile> getUsers(long... userIds) {
-		return lookupUsers(USER_LOOKUP_URL + "?user_id={user_id}", join(userIds));
+		return lookupUsers(USER_LOOKUP_URL + "?user_id={user_id}", ArrayUtils.join(userIds));
 	}
 
 	public List<TwitterProfile> getUsers(String... screenNames) {
-		return lookupUsers(USER_LOOKUP_URL + "?screen_name={screen_name}", join(screenNames));
+		return lookupUsers(USER_LOOKUP_URL + "?screen_name={screen_name}", ArrayUtils.join(screenNames));
 	}
 
 	public List<TwitterProfile> searchForUsers(String query) {
@@ -97,26 +97,6 @@ public class UserApiImpl implements UserApi {
 			profiles.add(TwitterResponseHelper.getProfileFromResponseMap(userMap));
 		}
 		return profiles;
-	}
-
-	private String join(long[] items) {
-		if(items.length == 0) return "";
-		StringBuffer sb = new StringBuffer();
-		sb.append(items[0]);
-		for(int i=1; i < items.length; i++) {
-			sb.append(',').append(items[i]);
-		}
-		return sb.toString();
-	}
-	
-	private String join(Object[] items) {
-		if(items.length == 0) return "";
-		StringBuffer sb = new StringBuffer();
-		sb.append(items[0]);
-		for(int i=1; i < items.length; i++) {
-			sb.append(',').append(items[i]);
-		}
-		return sb.toString();
 	}
 
 	static final String VERIFY_CREDENTIALS_URL = TwitterTemplate.API_URL_BASE + "account/verify_credentials.json";
