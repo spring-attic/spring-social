@@ -24,6 +24,7 @@ import org.springframework.social.twitter.ListsApi;
 import org.springframework.social.twitter.Tweet;
 import org.springframework.social.twitter.TwitterProfile;
 import org.springframework.social.twitter.TwitterTemplate;
+import org.springframework.social.twitter.UserApi;
 import org.springframework.social.twitter.UserList;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -37,9 +38,11 @@ import org.springframework.web.client.RestTemplate;
 public class ListsApiImpl implements ListsApi {
 
 	private final RestTemplate restTemplate;
+	private final UserApi userApi;
 
-	public ListsApiImpl(RestTemplate restTemplate) {
+	public ListsApiImpl(RestTemplate restTemplate, UserApi userApi) {
 		this.restTemplate = restTemplate;
+		this.userApi = userApi;
 	}
 
 	public List<UserList> getLists(long userId) {
@@ -66,28 +69,16 @@ public class ListsApiImpl implements ListsApi {
 		return TwitterResponseHelper.extractTimelineTweetsFromResponse(restTemplate.getForObject(LIST_STATUSES_URL, List.class, screenName, listSlug));
 	}
 
-	public UserList createList(long userId, String name, String description, boolean isPublic) {
-		return saveList(USER_LISTS_URL, name, description, isPublic, userId);
+	public UserList createList(String name, String description, boolean isPublic) {
+		return saveList(USER_LISTS_URL, name, description, isPublic, userApi.getProfileId());
 	}
 
-	public UserList createList(String screenName, String name, String description, boolean isPublic) {
-		return saveList(USER_LISTS_URL, name, description, isPublic, screenName);
+	public UserList updateList(long listId, String name, String description, boolean isPublic) {
+		return saveList(USER_LIST_URL, name, description, isPublic, userApi.getProfileId(), listId);
 	}
 
-	public UserList updateList(long userId, long listId, String name, String description, boolean isPublic) {
-		return saveList(USER_LIST_URL, name, description, isPublic, userId, listId);
-	}
-
-	public UserList updateList(String screenName, String listSlug, String name, String description, boolean isPublic) {
-		return saveList(USER_LIST_URL, name, description, isPublic, screenName, listSlug);
-	}
-
-	public void deleteList(long userId, long listId) {
-		deleteTwitterList(userId, listId);
-	}
-
-	public void deleteList(String screenName, String listSlug) {
-		deleteTwitterList(screenName, listSlug);
+	public void deleteList(long listId) {
+		deleteTwitterList(userApi.getProfileId(), listId);
 	}
 
 	public List<TwitterProfile> getListMembers(long userId, long listId) {
@@ -98,20 +89,20 @@ public class ListsApiImpl implements ListsApi {
 		return getListConnections(LIST_MEMBERS_URL, screenName, listSlug);
 	}
 
-	public UserList addToList(long userId, long listId, long... newMemberIds) {
-		return addMembersToList("user_id", ArrayUtils.join(newMemberIds), userId, listId);
+	public UserList addToList(long listId, long... newMemberIds) {
+		return addMembersToList("user_id", ArrayUtils.join(newMemberIds), userApi.getProfileId(), listId);
 	}
 
-	public UserList addToList(String screenName, String listSlug, String... newMemberScreenNames) {
-		return addMembersToList("screen_name", ArrayUtils.join(newMemberScreenNames), screenName, listSlug);
+	public UserList addToList(String listSlug, String... newMemberScreenNames) {
+		return addMembersToList("screen_name", ArrayUtils.join(newMemberScreenNames), userApi.getProfileId(), listSlug);
 	}
 
-	public void removeFromList(long userId, long listId, long memberId) {
-		restTemplate.delete(LIST_MEMBERS_URL + "?id={memberId}", userId, listId, memberId);
+	public void removeFromList(long listId, long memberId) {
+		restTemplate.delete(LIST_MEMBERS_URL + "?id={memberId}", userApi.getProfileId(), listId, memberId);
 	}
 
-	public void removeFromList(String screenName, String listSlug, String memberScreenName) {
-		restTemplate.delete(LIST_MEMBERS_URL + "?id={memberId}", screenName, listSlug, memberScreenName);
+	public void removeFromList(String listSlug, String memberScreenName) {
+		restTemplate.delete(LIST_MEMBERS_URL + "?id={memberId}", userApi.getProfileId(), listSlug, memberScreenName);
 	}
 
 	public List<TwitterProfile> getListSubscribers(long userId, long listId) {

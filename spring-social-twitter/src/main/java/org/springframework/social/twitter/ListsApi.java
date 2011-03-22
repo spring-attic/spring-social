@@ -71,59 +71,28 @@ public interface ListsApi {
 
 	/**
 	 * Create a new user list
-	 * @param userId the ID of the Twitter user who will own the list.
 	 * @param name the name of the list.
 	 * @param description the list description.
 	 * @param isPublic if true, the list will be public; if false the list will be private.
 	 * @return the newly created {@link UserList}
 	 */
-	UserList createList(long userId, String name, String description, boolean isPublic);
-
-	/**
-	 * Create a new user list
-	 * @param screenName the screen name of the Twitter user who will own the list
-	 * @param name the name of the list.
-	 * @param description the list description.
-	 * @param isPublic if true, the list will be public; if false the list will be private.
-	 * @return the newly created {@link UserList}
-	 */
-	UserList createList(String screenName, String name, String description, boolean isPublic);
+	UserList createList(String name, String description, boolean isPublic);
 
 	/**
 	 * Updates an existing user list
-	 * @param screenName the screen name of the Twitter user who will own the list
-	 * @param listSlug the list's slug
-	 * @param name the new name of the list.
-	 * @param description the new list description.
-	 * @param isPublic if true, the list will be public; if false the list will be private.
-	 * @return the newly created {@link UserList}
-	 */
-	UserList updateList(long userId, long listId, String name, String description, boolean isPublic);
-
-	/**
-	 * Updates an existing user list
-	 * @param userId the ID of the Twitter user who owns the list.
 	 * @param listId the ID of the list
 	 * @param name the new name of the list.
 	 * @param description the new list description.
 	 * @param isPublic if true, the list will be public; if false the list will be private.
 	 * @return the newly created {@link UserList}
 	 */
-	UserList updateList(String screenName, String listSlug, String name, String description, boolean isPublic);
+	UserList updateList(long listId, String name, String description, boolean isPublic);
 
 	/**
 	 * Removes a user list.
-	 * @param userId the ID of the user who owns the list.
 	 * @param listId the ID of the list to be removed.
 	 */
-	void deleteList(long userId, long listId);
-
-	/**
-	 * Removes a user list.
-	 * @param screenName the screen name of the user who owns the list.
-	 * @param listSlug the slug of the list to be removed.
-	 */
-	void deleteList(String screenName, String listSlug);
+	void deleteList(long listId);
 	
 	/**
 	 * Retrieves a list of Twitter profiles whose users are members of the list.
@@ -143,37 +112,33 @@ public interface ListsApi {
 
 	/**
 	 * Adds one or more new members to a user list.
-	 * @param userId the user ID of the list owner.
 	 * @param listId the ID of the list.
 	 * @param newMemberIds one or more profile IDs of the Twitter profiles to add to the list.
 	 * @return the {@link UserList}
 	 */
-	UserList addToList(long userId, long listId, long... newMemberIds);
+	UserList addToList(long listId, long... newMemberIds);
 
 	/**
 	 * Adds one or more new members to a user list.
-	 * @param screenName the screen name of the list owner.
 	 * @param listSlug the slug of the list.
 	 * @param newMemberIds one or more profile IDs of the Twitter profiles to add to the list.
 	 * @return the {@link UserList}
 	 */
-	UserList addToList(String screenName, String listSlug, String... newMemberScreenNames);
+	UserList addToList(String listSlug, String... newMemberScreenNames);
 
 	/**
 	 * Removes a member from a user list.
-	 * @param userId the user ID of the list owner.
 	 * @param listId the ID of the list.
 	 * @param memberId the ID of the member to be removed.
 	 */
-	void removeFromList(long userId, long listId, long memberId);
+	void removeFromList(long listId, long memberId);
 
 	/**
 	 * Removes a member from a user list.
-	 * @param screenName the screen name of the list owner.
 	 * @param listSlug the slug of the list.
 	 * @param memberId the ID of the member to be removed.
 	 */
-	void removeFromList(String screenName, String listSlug, String memberScreenName);
+	void removeFromList(String listSlug, String memberScreenName);
 
 	/**
 	 * Subscribes the authenticating user to a list.

@@ -31,6 +31,12 @@ import org.springframework.http.HttpStatus;
  */
 public class ListsApiImplTest extends AbstractTwitterApiTest {
 	
+	public void primeProfileId() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/account/verify_credentials.json"))
+			.andExpect(method(GET))
+			.andRespond(withResponse(new ClassPathResource("verify-credentials.json", getClass()), responseHeaders));
+	}
+	
 	@Test
 	public void getLists_byId() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/7078572/lists.json"))
@@ -65,91 +71,51 @@ public class ListsApiImplTest extends AbstractTwitterApiTest {
 	
 	@Test
 	public void createList_publicListForUserId() {
+		primeProfileId();
 		mockServer.expect(requestTo("https://api.twitter.com/1/7078572/lists.json"))
 			.andExpect(method(POST))
 			.andExpect(body("name=forfun&description=Just+for+Fun&mode=public"))
 			.andRespond(withResponse(new ClassPathResource("single-list.json", getClass()), responseHeaders));
-		assertSingleList(twitter.listsApi().createList(7078572, "forfun", "Just for Fun", true));		
+		assertSingleList(twitter.listsApi().createList("forfun", "Just for Fun", true));
 	}
 
 	@Test
 	public void createList_privateListForUserId() {
+		primeProfileId();
 		mockServer.expect(requestTo("https://api.twitter.com/1/7078572/lists.json"))
 			.andExpect(method(POST))
 			.andExpect(body("name=forfun2&description=Just+for+Fun%2C+too&mode=private"))
 			.andRespond(withResponse(new ClassPathResource("single-list.json", getClass()), responseHeaders));
-		assertSingleList(twitter.listsApi().createList(7078572, "forfun2", "Just for Fun, too", false));		
-	}
-	
-	@Test
-	public void createList_publicListForScreenName() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/habuma/lists.json"))
-			.andExpect(method(POST))
-			.andExpect(body("name=forfun&description=Just+for+Fun&mode=public"))
-			.andRespond(withResponse(new ClassPathResource("single-list.json", getClass()), responseHeaders));
-		assertSingleList(twitter.listsApi().createList("habuma", "forfun", "Just for Fun", true));		
-	}
-
-	@Test
-	public void createList_privateListForScreenName() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/habuma/lists.json"))
-			.andExpect(method(POST))
-			.andExpect(body("name=forfun2&description=Just+for+Fun%2C+too&mode=private"))
-			.andRespond(withResponse(new ClassPathResource("single-list.json", getClass()), responseHeaders));
-		assertSingleList(twitter.listsApi().createList("habuma", "forfun2", "Just for Fun, too", false));		
+		assertSingleList(twitter.listsApi().createList("forfun2", "Just for Fun, too", false));
 	}
 	
 	@Test
 	public void updateList_publicListForUserId() {
+		primeProfileId();
 		mockServer.expect(requestTo("https://api.twitter.com/1/7078572/lists/40841803.json"))
 			.andExpect(method(POST))
 			.andExpect(body("name=forfun&description=Just+for+Fun&mode=public"))
 			.andRespond(withResponse(new ClassPathResource("single-list.json", getClass()), responseHeaders));
-		assertSingleList(twitter.listsApi().updateList(7078572, 40841803, "forfun", "Just for Fun", true));		
+		assertSingleList(twitter.listsApi().updateList(40841803, "forfun", "Just for Fun", true));
 	}
 
 	@Test
 	public void updateList_privateListForUserId() {
+		primeProfileId();
 		mockServer.expect(requestTo("https://api.twitter.com/1/7078572/lists/40841803.json"))
 			.andExpect(method(POST))
 			.andExpect(body("name=forfun2&description=Just+for+Fun%2C+too&mode=private"))
 			.andRespond(withResponse(new ClassPathResource("single-list.json", getClass()), responseHeaders));
-		assertSingleList(twitter.listsApi().updateList(7078572, 40841803, "forfun2", "Just for Fun, too", false));		
-	}
-	
-	@Test
-	public void updateList_publicListForScreenName() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/habuma/lists/forfun.json"))
-			.andExpect(method(POST))
-			.andExpect(body("name=forfun&description=Just+for+Fun&mode=public"))
-			.andRespond(withResponse(new ClassPathResource("single-list.json", getClass()), responseHeaders));
-		assertSingleList(twitter.listsApi().updateList("habuma", "forfun", "forfun", "Just for Fun", true));		
-	}
-
-	@Test
-	public void updateList_privateListForScreenName() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/habuma/lists/forfun.json"))
-			.andExpect(method(POST))
-			.andExpect(body("name=forfun2&description=Just+for+Fun%2C+too&mode=private"))
-			.andRespond(withResponse(new ClassPathResource("single-list.json", getClass()), responseHeaders));
-		assertSingleList(twitter.listsApi().updateList("habuma", "forfun", "forfun2", "Just for Fun, too", false));		
+		assertSingleList(twitter.listsApi().updateList(40841803, "forfun2", "Just for Fun, too", false));
 	}
 
 	@Test
 	public void deleteList_forUserIdByListId() {
+		primeProfileId();
 		mockServer.expect(requestTo("https://api.twitter.com/1/7078572/lists/40841803.json"))
 			.andExpect(method(DELETE))
 			.andRespond(withResponse("{}", responseHeaders));
-		twitter.listsApi().deleteList(7078572, 40841803);
-		mockServer.verify();
-	}
-
-	@Test
-	public void deleteList_forScreenNameByListSlug() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/habuma/lists/forfun.json"))
-			.andExpect(method(DELETE))
-			.andRespond(withResponse("{}", responseHeaders));
-		twitter.listsApi().deleteList("habuma", "forfun");
+		twitter.listsApi().deleteList(40841803);
 		mockServer.verify();
 	}
 	
@@ -171,57 +137,33 @@ public class ListsApiImplTest extends AbstractTwitterApiTest {
 	
 	@Test
 	public void addToList_forUserIdListIdSingle() {
+		primeProfileId();
 		mockServer.expect(requestTo("https://api.twitter.com/1/7078572/40841803/members/create_all.json"))
 			.andExpect(method(POST))
 			.andExpect(body("user_id=123456"))
 			.andRespond(withResponse(new ClassPathResource("single-list.json", getClass()), responseHeaders));		
 
-		assertSingleList(twitter.listsApi().addToList(7078572, 40841803, 123456));
+		assertSingleList(twitter.listsApi().addToList(40841803, 123456));
 	}
 
 	@Test
 	public void addToList_forUserIdListIdMultiple() {
+		primeProfileId();
 		mockServer.expect(requestTo("https://api.twitter.com/1/7078572/40841803/members/create_all.json"))
 			.andExpect(method(POST))
 			.andExpect(body("user_id=123456%2C234567%2C345678"))
 			.andRespond(withResponse(new ClassPathResource("single-list.json", getClass()), responseHeaders));		
 
-		assertSingleList(twitter.listsApi().addToList(7078572, 40841803, 123456, 234567, 345678));
-	}
-
-	@Test
-	public void addToList_forScreenNameListSlugSingle_addWithScreenNames() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/habuma/forfun/members/create_all.json"))
-				.andExpect(method(POST)).andExpect(body("screen_name=royclarkson"))
-				.andRespond(withResponse(new ClassPathResource("single-list.json", getClass()), responseHeaders));
-
-		assertSingleList(twitter.listsApi().addToList("habuma", "forfun", "royclarkson"));
-	}
-
-	@Test
-	public void addToList_forScreenNameListSlugMultiple_addWithScreenNames() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/habuma/forfun/members/create_all.json"))
-				.andExpect(method(POST)).andExpect(body("screen_name=royclarkson%2Ckdonald%2Ctinyrod"))
-				.andRespond(withResponse(new ClassPathResource("single-list.json", getClass()), responseHeaders));
-
-		assertSingleList(twitter.listsApi().addToList("habuma", "forfun", "royclarkson", "kdonald", "tinyrod"));
+		assertSingleList(twitter.listsApi().addToList(40841803, 123456, 234567, 345678));
 	}
 
 	@Test
 	public void removeFromList_ownerIdListIdMemberId() {
+		primeProfileId();
 		mockServer.expect(requestTo("https://api.twitter.com/1/7078572/40841803/members.json?id=12345"))
 			.andExpect(method(DELETE))
 			.andRespond(withResponse("{}", responseHeaders));
-		twitter.listsApi().removeFromList(7078572, 40841803, 12345);
-		mockServer.verify();
-	}
-	
-	@Test
-	public void removeFromList_ownerScreenNameListSlugMemberScreenName() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/habuma/forfun/members.json?id=royclarkson"))
-			.andExpect(method(DELETE))
-			.andRespond(withResponse("{}", responseHeaders));
-		twitter.listsApi().removeFromList("habuma", "forfun", "royclarkson");
+		twitter.listsApi().removeFromList(40841803, 12345);
 		mockServer.verify();
 	}
 	

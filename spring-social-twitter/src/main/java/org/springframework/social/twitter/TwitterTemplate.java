@@ -89,7 +89,7 @@ public class TwitterTemplate implements TwitterApi {
 		this.tweetApi = new TweetApiImpl(restTemplate, statusCodeTranslator);
 		this.userApi = new UserApiImpl(restTemplate);
 		this.friendsApi = new FriendsApiImpl(restTemplate, statusCodeTranslator);
-		this.listsApi = new ListsApiImpl(restTemplate);
+		this.listsApi = new ListsApiImpl(restTemplate, userApi);
 		this.searchApi = new SearchApiImpl(restTemplate);
 		this.directMessageApi = new DirectMessageApiImpl(restTemplate, statusCodeTranslator);
 	}
