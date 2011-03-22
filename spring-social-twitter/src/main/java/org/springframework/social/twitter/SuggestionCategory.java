@@ -15,6 +15,10 @@
  */
 package org.springframework.social.twitter;
 
+/**
+ * Represents a suggestion category; a category of users that Twitter may suggest that a user follow.
+ * @author Craig Walls
+ */
 public class SuggestionCategory {
 	private final String name;
 	private final String slug;

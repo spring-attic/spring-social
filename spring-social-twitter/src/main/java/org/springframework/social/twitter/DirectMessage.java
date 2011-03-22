@@ -17,6 +17,10 @@ package org.springframework.social.twitter;
 
 import java.util.Date;
 
+/**
+ * Represents a direct message.
+ * @author Craig Walls
+ */
 public class DirectMessage {
 	private long id;
 	private String text;
