@@ -15,24 +15,18 @@
  */
 package org.springframework.social.twitter.support;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.social.twitter.ListsApi;
 import org.springframework.social.twitter.Tweet;
-import org.springframework.social.twitter.UserList;
 import org.springframework.social.twitter.TwitterProfile;
 import org.springframework.social.twitter.TwitterTemplate;
+import org.springframework.social.twitter.UserList;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -65,12 +59,11 @@ public class ListsApiImpl implements ListsApi {
 	}
 
 	public List<Tweet> getListStatuses(long userId, long listId) {
-		return extractTimelineTweetsFromResponse(restTemplate.getForObject(LIST_STATUSES_URL, List.class, userId, listId));
+		return TwitterResponseHelper.extractTimelineTweetsFromResponse(restTemplate.getForObject(LIST_STATUSES_URL, List.class, userId, listId));
 	}
 
 	public List<Tweet> getListStatuses(String screenName, String listSlug) {
-		return extractTimelineTweetsFromResponse(restTemplate.getForObject(LIST_STATUSES_URL, List.class, screenName,
-				listSlug));
+		return TwitterResponseHelper.extractTimelineTweetsFromResponse(restTemplate.getForObject(LIST_STATUSES_URL, List.class, screenName, listSlug));
 	}
 
 	public UserList createList(long userId, String name, String description, boolean isPublic) {
@@ -251,40 +244,6 @@ public class ListsApiImpl implements ListsApi {
 		String uriPath = String.valueOf(listMap.get("uri"));
 		UserList twitterList = new UserList(id, name, fullName, uriPath, description, slug, isPublic, isFollowing, memberCount, subscriberCount);
 		return twitterList;
-	}
-
-	// TODO: This is duplicated from TweetApiImpl: Extract to a common helper
-	private static final DateFormat timelineDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy",
-			Locale.ENGLISH);
-
-	private Date toDate(String dateString, DateFormat dateFormat) {
-		try {
-			return dateFormat.parse(dateString);
-		} catch (ParseException e) {
-			return null;
-		}
-	}
-
-	private Tweet populateTweetFromTimelineItem(Map<String, Object> item) {
-		Tweet tweet = new Tweet();
-		tweet.setId(Long.valueOf(String.valueOf(item.get("id"))));
-		tweet.setText(String.valueOf(item.get("text")));
-		tweet.setFromUser(String.valueOf(((Map<String, Object>) item.get("user")).get("screen_name")));
-		tweet.setFromUserId(Long.valueOf(String.valueOf(((Map<String, Object>) item.get("user")).get("id"))));
-		tweet.setProfileImageUrl(String.valueOf(((Map<String, Object>) item.get("user")).get("profile_image_url")));
-		tweet.setSource(String.valueOf(item.get("source")));
-		Object toUserId = item.get("in_reply_to_user_id");
-		tweet.setToUserId(toUserId != null ? Long.valueOf(String.valueOf(toUserId)) : null);
-		tweet.setCreatedAt(toDate(ObjectUtils.nullSafeToString(item.get("created_at")), timelineDateFormat));
-		return tweet;
-	}
-	private List<Tweet> extractTimelineTweetsFromResponse(List response) {
-		List<Map<String, Object>> results = (List<Map<String, Object>>) response;
-		List<Tweet> tweets = new ArrayList<Tweet>();
-		for (Map<String, Object> item : results) {
-			tweets.add(populateTweetFromTimelineItem(item));
-		}
-		return tweets;
 	}
 
 	static final String USER_LISTS_URL = TwitterTemplate.API_URL_BASE + "{user_id}/lists.json";

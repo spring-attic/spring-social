@@ -15,14 +15,9 @@
  */
 package org.springframework.social.twitter.support;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
@@ -35,7 +30,6 @@ import org.springframework.social.twitter.TwitterProfile;
 import org.springframework.social.twitter.TwitterTemplate;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -82,7 +76,7 @@ public class TweetApiImpl implements TweetApi {
 		List<Map<String, Object>> results = (List<Map<String, Object>>) response;
 		List<Tweet> tweets = new ArrayList<Tweet>();
 		for (Map<String, Object> item : results) {
-			tweets.add(populateTweetFromTimelineItem(item));
+			tweets.add(TwitterResponseHelper.populateTweetFromTimelineItem(item));
 		}
 		return tweets;
 	}
@@ -101,7 +95,7 @@ public class TweetApiImpl implements TweetApi {
 
 	public Tweet getStatus(long tweetId) {
 		Map<String, Object> tweetMap = restTemplate.getForObject(SHOW_TWEET_URL, Map.class, tweetId);
-		return populateTweetFromTimelineItem(tweetMap);
+		return TwitterResponseHelper.populateTweetFromTimelineItem(tweetMap);
 	}
 
 	public void updateStatus(String message) {
@@ -161,41 +155,7 @@ public class TweetApiImpl implements TweetApi {
 
 	private List<Tweet> retrieveTimelineTweets(String url, Object... urlArgs) {
 		List response = restTemplate.getForObject(url, List.class, urlArgs);
-		return extractTimelineTweetsFromResponse(response);
-	}
-
-	private static final DateFormat timelineDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy",
-			Locale.ENGLISH);
-
-	private Date toDate(String dateString, DateFormat dateFormat) {
-		try {
-			return dateFormat.parse(dateString);
-		} catch (ParseException e) {
-			return null;
-		}
-	}
-
-	private Tweet populateTweetFromTimelineItem(Map<String, Object> item) {
-		Tweet tweet = new Tweet();
-		tweet.setId(Long.valueOf(String.valueOf(item.get("id"))));
-		tweet.setText(String.valueOf(item.get("text")));
-		tweet.setFromUser(String.valueOf(((Map<String, Object>) item.get("user")).get("screen_name")));
-		tweet.setFromUserId(Long.valueOf(String.valueOf(((Map<String, Object>) item.get("user")).get("id"))));
-		tweet.setProfileImageUrl(String.valueOf(((Map<String, Object>) item.get("user")).get("profile_image_url")));
-		tweet.setSource(String.valueOf(item.get("source")));
-		Object toUserId = item.get("in_reply_to_user_id");
-		tweet.setToUserId(toUserId != null ? Long.valueOf(String.valueOf(toUserId)) : null);
-		tweet.setCreatedAt(toDate(ObjectUtils.nullSafeToString(item.get("created_at")), timelineDateFormat));
-		return tweet;
-	}
-
-	private List<Tweet> extractTimelineTweetsFromResponse(List response) {
-		List<Map<String, Object>> results = (List<Map<String, Object>>) response;
-		List<Tweet> tweets = new ArrayList<Tweet>();
-		for (Map<String, Object> item : results) {
-			tweets.add(populateTweetFromTimelineItem(item));
-		}
-		return tweets;
+		return TwitterResponseHelper.extractTimelineTweetsFromResponse(response);
 	}
 
 	private void handleResponseErrors(ResponseEntity<Map> response) {

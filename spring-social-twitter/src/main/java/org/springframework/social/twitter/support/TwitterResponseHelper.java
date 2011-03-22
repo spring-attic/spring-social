@@ -18,14 +18,41 @@ package org.springframework.social.twitter.support;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.springframework.social.twitter.Tweet;
 import org.springframework.social.twitter.TwitterProfile;
+import org.springframework.util.ObjectUtils;
 
 class TwitterResponseHelper {
 	
+	public static Tweet populateTweetFromTimelineItem(Map<String, Object> item) {
+		Tweet tweet = new Tweet();
+		tweet.setId(Long.valueOf(String.valueOf(item.get("id"))));
+		tweet.setText(String.valueOf(item.get("text")));
+		tweet.setFromUser(String.valueOf(((Map<String, Object>) item.get("user")).get("screen_name")));
+		tweet.setFromUserId(Long.valueOf(String.valueOf(((Map<String, Object>) item.get("user")).get("id"))));
+		tweet.setProfileImageUrl(String.valueOf(((Map<String, Object>) item.get("user")).get("profile_image_url")));
+		tweet.setSource(String.valueOf(item.get("source")));
+		Object toUserId = item.get("in_reply_to_user_id");
+		tweet.setToUserId(toUserId != null ? Long.valueOf(String.valueOf(toUserId)) : null);
+		tweet.setCreatedAt(toDate(ObjectUtils.nullSafeToString(item.get("created_at")), timelineDateFormat));
+		return tweet;
+	}
+
+	public static List<Tweet> extractTimelineTweetsFromResponse(List response) {
+		List<Map<String, Object>> results = (List<Map<String, Object>>) response;
+		List<Tweet> tweets = new ArrayList<Tweet>();
+		for (Map<String, Object> item : results) {
+			tweets.add(populateTweetFromTimelineItem(item));
+		}
+		return tweets;
+	}
+
 	public static TwitterProfile getProfileFromResponseMap(Map<?, ?> response) {
 		TwitterProfile profile = new TwitterProfile();
 		profile.setId(Long.valueOf(String.valueOf(response.get("id"))).longValue());
