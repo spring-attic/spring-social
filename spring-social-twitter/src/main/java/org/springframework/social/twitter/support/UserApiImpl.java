@@ -37,7 +37,12 @@ public class UserApiImpl implements UserApi {
 		this.restTemplate = restTemplate;
 	}
 
-	public String getProfileId() {
+	public long getProfileId() {
+		Map<?, ?> response = restTemplate.getForObject(VERIFY_CREDENTIALS_URL, Map.class);
+		return Long.valueOf(String.valueOf(response.get("id")));
+	}
+
+	public String getScreenName() {
 		Map<?, ?> response = restTemplate.getForObject(VERIFY_CREDENTIALS_URL, Map.class);
 		return (String) response.get("screen_name");
 	}

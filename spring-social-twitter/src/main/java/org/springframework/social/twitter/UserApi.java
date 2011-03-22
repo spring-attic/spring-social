@@ -24,10 +24,16 @@ import java.util.List;
 public interface UserApi {
 
 	/**
-	 * Retrieves the user's Twitter screen name.
-	 * @return the user's screen name at Twitter
+	 * Retrieves the authenticated user's Twitter ID.
+	 * @return the user's ID at Twitter
 	 */
-	String getProfileId();
+	long getProfileId();
+	
+	/**
+	 * Retrieves the authenticated user's Twitter screen name
+	 * @return the user's screen name
+	 */
+	String getScreenName();
 
 	/**
 	 * Retrieves the authenticated user's Twitter profile details.

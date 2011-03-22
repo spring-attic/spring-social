@@ -37,7 +37,16 @@ public class UserApiImplTest extends AbstractTwitterApiTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/account/verify_credentials.json"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("verify-credentials.json", getClass()), responseHeaders));
-		assertEquals("habuma", twitter.userApi().getProfileId());
+		assertEquals(7078572, twitter.userApi().getProfileId());
+	}
+
+	@Test
+	public void getScreenName() {
+		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+		mockServer.expect(requestTo("https://api.twitter.com/1/account/verify_credentials.json"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("verify-credentials.json", getClass()), responseHeaders));
+		assertEquals("habuma", twitter.userApi().getScreenName());
 	}
 
 	@Test
@@ -45,7 +54,7 @@ public class UserApiImplTest extends AbstractTwitterApiTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/account/verify_credentials.json"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("verify-credentials.json", getClass()), responseHeaders));
-		mockServer.expect(requestTo("https://api.twitter.com/1/users/show.json?screen_name=habuma"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/users/show.json?user_id=7078572"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("twitter-profile.json", getClass()), responseHeaders));
 
