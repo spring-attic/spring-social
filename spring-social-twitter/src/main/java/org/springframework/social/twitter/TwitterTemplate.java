@@ -23,6 +23,7 @@ import org.springframework.social.twitter.support.FriendsApiImpl;
 import org.springframework.social.twitter.support.ListsApiImpl;
 import org.springframework.social.twitter.support.SearchApiImpl;
 import org.springframework.social.twitter.support.TweetApiImpl;
+import org.springframework.social.twitter.support.TwitterErrorHandler;
 import org.springframework.social.twitter.support.TwitterResponseStatusCodeTranslator;
 import org.springframework.social.twitter.support.UserApiImpl;
 import org.springframework.web.client.RestTemplate;
