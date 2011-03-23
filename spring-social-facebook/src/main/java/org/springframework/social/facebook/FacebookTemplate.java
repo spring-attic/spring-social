@@ -23,6 +23,9 @@ import java.util.Map;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.social.facebook.support.CommentApiImpl;
+import org.springframework.social.facebook.support.FeedApiImpl;
+import org.springframework.social.facebook.support.UserApiImpl;
 import org.springframework.social.oauth2.ProtectedResourceClientFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -40,6 +43,12 @@ public class FacebookTemplate implements FacebookApi {
 
 	private final RestTemplate restTemplate;
 
+	private UserApi userApi;
+
+	private FeedApi feedApi;
+
+	private CommentApi commentApi;
+
 	/**
 	 * Create a new instance of FacebookTemplate.
 	 * This constructor creates the FacebookTemplate using a given access token.
@@ -51,6 +60,25 @@ public class FacebookTemplate implements FacebookApi {
 		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
 		restTemplate.getMessageConverters().add(json);
+
+		restTemplate.setErrorHandler(new FacebookResponseErrorHandler());
+
+		// sub-apis
+		userApi = new UserApiImpl(restTemplate);
+		feedApi = new FeedApiImpl(restTemplate);
+		commentApi = new CommentApiImpl(restTemplate);
+	}
+
+	public UserApi userApi() {
+		return userApi;
+	}
+
+	public FeedApi feedApi() {
+		return feedApi;
+	}
+
+	public CommentApi commentApi() {
+		return commentApi;
 	}
 
 	public String getProfileId() {

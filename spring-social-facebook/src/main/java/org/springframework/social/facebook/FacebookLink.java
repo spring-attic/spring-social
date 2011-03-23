@@ -17,7 +17,6 @@ package org.springframework.social.facebook;
 
 /**
  * Model class representing a link to be posted to a users Facebook wall.
- * 
  * @author Craig Walls
  */
 public class FacebookLink {
@@ -29,14 +28,10 @@ public class FacebookLink {
 	/**
 	 * Creates a FacebookLink.
 	 * 
-	 * @param link
-	 *            The link's URL
-	 * @param name
-	 *            The name of the link
-	 * @param caption
-	 *            A caption to be displayed with the link
-	 * @param description
-	 *            The description of the link
+	 * @param link The link's URL
+	 * @param name The name of the link
+	 * @param caption A caption to be displayed with the link
+	 * @param description The description of the link
 	 */
 	public FacebookLink(String link, String name, String caption, String description) {
 		this.link = link;
