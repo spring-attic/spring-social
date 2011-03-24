@@ -14,11 +14,11 @@ public class Comment {
 	private final Reference from;
 	private final List<Reference> likes;
 
-	public Comment(String id, String message, Date createdDate, Reference from, List<Reference> likes) {
+	public Comment(String id, Reference from, String message, Date createdDate, List<Reference> likes) {
 		this.id = id;
+		this.from = from;
 		this.message = message;
 		this.createdDate = createdDate;
-		this.from = from;
 		this.likes = likes;
 	}
 

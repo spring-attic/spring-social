@@ -22,8 +22,10 @@ import static org.springframework.social.test.client.ResponseCreators.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
@@ -66,33 +68,56 @@ public class FacebookTemplateTest {
 	}
 
 	@Test
-	public void getUserProfile() {
-		mockServer.expect(requestTo("https://graph.facebook.com/me")).andExpect(method(GET))
-				.andExpect(header("Authorization", "OAuth someAccessToken"))
-				.andRespond(withResponse(new ClassPathResource("me.json", getClass()), responseHeaders));
+	@Ignore
+	public void getUserProfile_minimalProfile() {
+		mockServer.expect(requestTo("https://graph.facebook.com/me"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("minimal-profile.json", getClass()), responseHeaders));
 
 		FacebookProfile profile = facebook.getUserProfile();
 		assertEquals(123456789, profile.getId());
 		assertEquals("Craig", profile.getFirstName());
 		assertEquals("Walls", profile.getLastName());
 		assertEquals("Craig Walls", profile.getName());
+		assertEquals(new Locale("en_us"), profile.getLocale());
+		assertEquals("male", profile.getGender());
+	}
+
+	@Test
+	@Ignore
+	public void getUserProfile_fullProfile() {
+		mockServer.expect(requestTo("https://graph.facebook.com/me"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("full-profile.json", getClass()), responseHeaders));
+
+		FacebookProfile profile = facebook.getUserProfile();
+		assertEquals(123456789, profile.getId());
+		assertEquals("Craig", profile.getFirstName());
+		assertEquals("Walls", profile.getLastName());
+		assertEquals("Craig Walls", profile.getName());
+		assertEquals(new Locale("en_us"), profile.getLocale());
+		assertEquals("male", profile.getGender());
 		assertEquals("cwalls@vmware.com", profile.getEmail());
 	}
 
 	@Test
+	@Ignore
 	public void getProfileId() {
 		mockServer.expect(requestTo("https://graph.facebook.com/me")).andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
-				.andRespond(withResponse(new ClassPathResource("me.json", getClass()), responseHeaders));
+				.andRespond(withResponse(new ClassPathResource("minimal-profile.json", getClass()), responseHeaders));
 
 		assertEquals("123456789", facebook.getProfileId());
 	}
 
 	@Test
+	@Ignore
 	public void getProfileUrl() {
 		mockServer.expect(requestTo("https://graph.facebook.com/me")).andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
-				.andRespond(withResponse(new ClassPathResource("me.json", getClass()), responseHeaders));
+				.andRespond(withResponse(new ClassPathResource("minimal-profile.json", getClass()), responseHeaders));
 
 		assertEquals("http://www.facebook.com/profile.php?id=123456789", facebook.getProfileUrl());
 	}

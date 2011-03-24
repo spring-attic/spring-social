@@ -20,6 +20,26 @@ import java.util.List;
 public interface UserApi {
 	
 	/**
+	 * Retrieves the profile for the authenticated user.
+	 * @return the user's profile information.
+	 */
+	FacebookProfile getUserProfile();
+	
+	/**
+	 * Retrieves the profile for the authenticated user.
+	 * @param username the Facebook username to retrieve profile data for.
+	 * @return the user's profile information.
+	 */
+	FacebookProfile getUserProfile(String username);
+
+	/**
+	 * Retrieves the profile for the authenticated user.
+	 * @param userId the Facebook user ID to retrieve profile data for.
+	 * @return the user's profile information.
+	 */
+	FacebookProfile getUserProfile(long userId);
+
+	/**
 	 * Retrieves a list of things that the authenticated user has liked.
 	 * Requires "user_likes" permission.
 	 * Returns an empty list if permission isn't granted.

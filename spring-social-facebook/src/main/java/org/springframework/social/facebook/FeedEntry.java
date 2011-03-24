@@ -15,6 +15,7 @@
  */
 package org.springframework.social.facebook;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -34,18 +35,16 @@ public class FeedEntry {
 
 	private final Date updatedTime;
 
-	private final List<Reference> likes;
+	private List<Reference> likes;
 
-	private final List<Comment> comments;
+	private List<Comment> comments;
 
-	public FeedEntry(String id, Reference from, String message, Date createdTime, Date updatedTime, List<Reference> likes, List<Comment> comments) {
+	private FeedEntry(String id, Reference from, String message, Date createdTime, Date updatedTime) {
 		this.id = id;
 		this.from = from;
 		this.message = message;
 		this.createdTime = createdTime;
 		this.updatedTime = updatedTime;
-		this.likes = likes;
-		this.comments = comments;
 	}
 
 	public String getId() {
@@ -74,5 +73,46 @@ public class FeedEntry {
 
 	public List<Comment> getComments() {
 		return comments;
+	}
+
+	public static class Builder {
+		private String id;
+
+		private Reference from;
+
+		private String message;
+
+		private Date createdTime;
+
+		private Date updatedTime;
+
+		private List<Reference> likes = Collections.emptyList();
+
+		private List<Comment> comments = Collections.emptyList();
+
+		public Builder(String id, Reference from, String message, Date createdTime, Date updatedTime) {
+			this.id = id;
+			this.from = from;
+			this.message = message;
+			this.createdTime = createdTime;
+			this.updatedTime = updatedTime;
+		}
+
+		public Builder likes(List<Reference> likes) {
+			this.likes = likes;
+			return this;
+		}
+
+		public Builder comments(List<Comment> comments) {
+			this.comments = comments;
+			return this;
+		}
+
+		public FeedEntry build() {
+			FeedEntry feedEntry = new FeedEntry(id, from, message, createdTime, updatedTime);
+			feedEntry.likes = likes;
+			feedEntry.comments = comments;
+			return feedEntry;
+		}
 	}
 }

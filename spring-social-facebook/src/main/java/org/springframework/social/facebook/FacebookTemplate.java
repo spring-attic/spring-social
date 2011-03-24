@@ -94,16 +94,21 @@ public class FacebookTemplate implements FacebookApi {
 	}
 
 	public FacebookProfile getUserProfile(String facebookId) {
+		System.out.println(restTemplate.getForObject(OBJECT_URL, String.class, "habuma"));
+
 		@SuppressWarnings("unchecked")
 		Map<String, ?> profileMap = restTemplate.getForObject(OBJECT_URL, Map.class,
 				facebookId);
 
 		long id = Long.valueOf(String.valueOf(profileMap.get("id")));
+		String username = String.valueOf(profileMap.get("username"));
 		String name = String.valueOf(profileMap.get("name"));
 		String firstName = String.valueOf(profileMap.get("first_name"));
 		String lastName = String.valueOf(profileMap.get("last_name"));
-		String email = String.valueOf(profileMap.get("email"));
-		return new FacebookProfile(id, name, firstName, lastName, email);
+		String gender = String.valueOf(profileMap.get("gender"));
+		String locale = String.valueOf(profileMap.get("locale"));
+		String email = (String) profileMap.get("email");
+		return new FacebookProfile.Builder(id, username, name, firstName, lastName, gender, locale).email(email).build();
     }
 
 	public List<String> getFriendIds() {
