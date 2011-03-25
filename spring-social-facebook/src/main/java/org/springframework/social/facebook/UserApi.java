@@ -33,13 +33,6 @@ public interface UserApi {
 	FacebookProfile getUserProfile(String username);
 
 	/**
-	 * Retrieves the profile for the authenticated user.
-	 * @param userId the Facebook user ID to retrieve profile data for.
-	 * @return the user's profile information.
-	 */
-	FacebookProfile getUserProfile(long userId);
-
-	/**
 	 * Retrieves a list of things that the authenticated user has liked.
 	 * Requires "user_likes" permission.
 	 * Returns an empty list if permission isn't granted.
@@ -56,4 +49,117 @@ public interface UserApi {
 	 */
 	List<UserLike> getLikes(String userId);
 	
+	/**
+	 * Retrieves a list of books that the authenticated user likes.
+	 * Requires "user_likes" permission.
+	 * Returns an empty list if permission isn't granted.
+	 * @return a list of {@link UserLike} objects
+	 */
+	List<UserLike> getBooks();
+
+	/**
+	 * Retrieves a list of books that the given user has liked.
+	 * Requires "user_likes" permission for the authenticated user and "friends_likes" for the authenticated user's friends.
+	 * Returns an empty list if permission isn't granted.
+	 * @param userId the ID of the user
+	 * @return a list of {@link UserLike} objects
+	 */
+	List<UserLike> getBooks(String userId);
+
+	/**
+	 * Retrieves a list of movies that the authenticated user likes.
+	 * Requires "user_likes" permission.
+	 * Returns an empty list if permission isn't granted.
+	 * @return a list of {@link UserLike} objects
+	 */
+	List<UserLike> getMovies();
+
+	/**
+	 * Retrieves a list of movies that the given user has liked.
+	 * Requires "user_likes" permission for the authenticated user and "friends_likes" for the authenticated user's friends.
+	 * Returns an empty list if permission isn't granted.
+	 * @param userId the ID of the user
+	 * @return a list of {@link UserLike} objects
+	 */
+	List<UserLike> getMovies(String userId);
+
+	/**
+	 * Retrieves a list of music that the authenticated user likes.
+	 * Requires "user_likes" permission.
+	 * Returns an empty list if permission isn't granted.
+	 * @return a list of {@link UserLike} objects
+	 */
+	List<UserLike> getMusic();
+
+	/**
+	 * Retrieves a list of music that the given user has liked.
+	 * Requires "user_likes" permission for the authenticated user and "friends_likes" for the authenticated user's friends.
+	 * Returns an empty list if permission isn't granted.
+	 * @param userId the ID of the user
+	 * @return a list of {@link UserLike} objects
+	 */
+	List<UserLike> getMusic(String userId);
+
+	/**
+	 * Retrieves a list of television shows that the authenticated user likes.
+	 * Requires "user_likes" permission.
+	 * Returns an empty list if permission isn't granted.
+	 * @return a list of {@link UserLike} objects
+	 */
+	List<UserLike> getTelevision();
+
+	/**
+	 * Retrieves a list of television shows that the given user has liked.
+	 * Requires "user_likes" permission for the authenticated user and "friends_likes" for the authenticated user's friends.
+	 * Returns an empty list if permission isn't granted.
+	 * @param userId the ID of the user
+	 * @return a list of {@link UserLike} objects
+	 */
+	List<UserLike> getTelevision(String userId);
+
+	/**
+	 * Retrieves a list of activities that the authenticated user likes.
+	 * Requires "user_activities" permission.
+	 * Returns an empty list if permission isn't granted.
+	 * @return a list of {@link UserLike} objects
+	 */
+	List<UserLike> getActivities();
+
+	/**
+	 * Retrieves a list of activities that the given user likes.
+	 * Requires "user_activities" permission for the authenticated user and "friends_activities" for the authenticated user's friends.
+	 * Returns an empty list if permission isn't granted.
+	 * @param userId the ID of the user
+	 * @return a list of {@link UserLike} objects
+	 */
+	List<UserLike> getActivities(String userId);
+
+	/**
+	 * Retrieves a list of interests that the authenticated user likes.
+	 * Requires "user_interests" permission.
+	 * Returns an empty list if permission isn't granted.
+	 * @return a list of {@link UserLike} objects
+	 */
+	List<UserLike> getInterests();
+
+	/**
+	 * Retrieves a list of interests that the given user likes.
+	 * Requires "user_interests" permission for the authenticated user and "friends_interests" for the authenticated user's friends.
+	 * Returns an empty list if permission isn't granted.
+	 * @param userId the ID of the user
+	 * @return a list of {@link UserLike} objects
+	 */
+	List<UserLike> getInterests(String userId);
+
+	List<Checkin> getCheckins();
+
+	List<Checkin> getCheckins(String userId);
+
+	List<UserEvent> getEvents();
+
+	List<UserEvent> getEvents(String userId);
+
+	List<Album> getAlbums();
+
+	List<Album> getAlbums(String userId);
 }

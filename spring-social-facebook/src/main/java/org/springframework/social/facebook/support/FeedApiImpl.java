@@ -15,13 +15,12 @@
  */
 package org.springframework.social.facebook.support;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.social.facebook.FacebookLink;
 import org.springframework.social.facebook.FeedApi;
 import org.springframework.social.facebook.FeedEntry;
+import org.springframework.social.facebook.support.extractors.ResponseExtractors;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -37,17 +36,11 @@ public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
 	}
 
 	public List<FeedEntry> getFeed(String ownerId) {
-		Map<String, Object> feed = getConnection(ownerId, "feed");
-		List<Map<String, Object>> feedEntryList = (List<Map<String, Object>>) feed.get("data");
-		List<FeedEntry> feedEntries = new ArrayList<FeedEntry>(feedEntryList.size());
-		for (Map<String, Object> feedEntryMap : feedEntryList) {
-			feedEntries.add(FacebookResponseExtractors.extractFeedEntryFromResponseMap(feedEntryMap));
-		}
-		return feedEntries;
+		return getObjectConnection(ownerId, "feed", ResponseExtractors.FEED_ENTRY_EXTRACTOR);
 	}
 
 	public FeedEntry getFeedEntry(String entryId) {
-		return FacebookResponseExtractors.extractFeedEntryFromResponseMap(getObject(entryId));
+		return getObject(entryId, ResponseExtractors.FEED_ENTRY_EXTRACTOR);
 	}
 
 	public String updateStatus(String message) {

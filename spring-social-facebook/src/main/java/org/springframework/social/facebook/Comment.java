@@ -10,15 +10,15 @@ import java.util.List;
 public class Comment {
 	private final String id;
 	private final String message;
-	private final Date createdDate;
+	private final Date createdTime;
 	private final Reference from;
 	private final List<Reference> likes;
 
-	public Comment(String id, Reference from, String message, Date createdDate, List<Reference> likes) {
+	public Comment(String id, Reference from, String message, Date createdTime, List<Reference> likes) {
 		this.id = id;
 		this.from = from;
 		this.message = message;
-		this.createdDate = createdDate;
+		this.createdTime = createdTime;
 		this.likes = likes;
 	}
 
@@ -30,8 +30,8 @@ public class Comment {
 		return message;
 	}
 
-	public Date getCreatedDate() {
-		return createdDate;
+	public Date getCreatedTime() {
+		return createdTime;
 	}
 
 	public Reference getFrom() {

@@ -20,22 +20,29 @@ import java.util.List;
 import org.springframework.social.facebook.Comment;
 import org.springframework.social.facebook.CommentApi;
 import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.support.extractors.CommentResponseExtractor;
+import org.springframework.social.facebook.support.extractors.ReferenceResponseExtractor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 public class CommentApiImpl extends AbstractFacebookApi implements CommentApi {
+	private final CommentResponseExtractor commentsExtractor;
+
+	private final ReferenceResponseExtractor referenceExtractor;
 
 	public CommentApiImpl(RestTemplate restTemplate) {
 		super(restTemplate);
+		commentsExtractor = new CommentResponseExtractor();
+		referenceExtractor = new ReferenceResponseExtractor();
 	}
 
 	public List<Comment> getComments(String objectId) {
-		return FacebookResponseExtractors.extractCommentsFromResponseList(getConnection(objectId, "comments"));
+		return getObjectConnection(objectId, "comments", commentsExtractor);
 	}
 
 	public Comment getComment(String commentId) {
-		return FacebookResponseExtractors.extractCommentFromResponseMap(getObject(commentId));
+		return getObject(commentId, commentsExtractor);
 	}
 
 	public String addComment(String objectId, String message) {
@@ -49,7 +56,7 @@ public class CommentApiImpl extends AbstractFacebookApi implements CommentApi {
 	}
 
 	public List<Reference> getLikes(String objectId) {
-		return FacebookResponseExtractors.extractLikes(getConnection(objectId, "likes"));
+		return getObjectConnection(objectId, "likes", referenceExtractor);
 	}
 
 	public void like(String objectId) {

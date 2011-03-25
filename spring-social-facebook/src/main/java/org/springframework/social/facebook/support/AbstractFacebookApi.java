@@ -15,8 +15,10 @@
  */
 package org.springframework.social.facebook.support;
 
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.social.facebook.support.extractors.ResponseExtractor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -29,12 +31,13 @@ public abstract class AbstractFacebookApi {
 		this.restTemplate = restTemplate;
 	}
 
-	protected Map<String, Object> getObject(String objectId) {
-		return restTemplate.getForObject(OBJECT_URL, Map.class, objectId);
+	protected <T> T getObject(String objectId, ResponseExtractor<T> extractor) {
+		return extractor.extractObject( (Map<String, Object>) restTemplate.getForObject(OBJECT_URL, Map.class, objectId));
 	}
 
-	protected Map<String, Object> getConnection(String objectId, String connectionType) {
-		return restTemplate.getForObject(CONNECTION_URL, Map.class, objectId, connectionType);
+	protected <T> List<T> getObjectConnection(String objectId, String connectionType, ResponseExtractor<T> extractor) {
+		Map<String, Object> response = restTemplate.getForObject(CONNECTION_URL, Map.class, objectId, connectionType);
+		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
 	}
 
 	protected Map<String, Object> publish(String objectId, String connectionType, MultiValueMap<String, String> data) {

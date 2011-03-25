@@ -94,7 +94,7 @@ public class FacebookTemplate implements FacebookApi {
 	}
 
 	public FacebookProfile getUserProfile(String facebookId) {
-		System.out.println(restTemplate.getForObject(OBJECT_URL, String.class, "habuma"));
+		System.out.println(restTemplate.getForObject(CONNECTION_URL, String.class, "habuma", "albums"));
 
 		@SuppressWarnings("unchecked")
 		Map<String, ?> profileMap = restTemplate.getForObject(OBJECT_URL, Map.class,
