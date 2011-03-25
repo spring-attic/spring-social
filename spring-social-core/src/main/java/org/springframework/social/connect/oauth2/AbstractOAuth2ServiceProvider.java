@@ -43,8 +43,8 @@ public abstract class AbstractOAuth2ServiceProvider<S> extends AbstractServicePr
 		return oauth2Operations;
 	}
 	
-	public ServiceProviderConnection<S> connect(Serializable accountId, AccessGrant accessToken) {
-		return connect(accountId, Connection.oauth2(accessToken.getAccessToken(), accessToken.getRefreshToken()));
+	public ServiceProviderConnection<S> connect(Serializable accountId, AccessGrant accessGrant) {
+		return connect(accountId, Connection.oauth2(accessGrant.getAccessToken(), accessGrant.getRefreshToken()));
 	}
 
 	@Override

@@ -37,8 +37,8 @@ public interface OAuth2ServiceProvider<S> extends ServiceProvider<S> {
 	/**
 	 * Establishes a connection between a user account and this provider.
 	 * @param accountId the user account identifier
-	 * @param accessToken the access token returned from {@link OAuth2Operations#exchangeForAccess(String, String)}
+	 * @param accessGrant the access grant returned from {@link OAuth2Operations#exchangeForAccess(String, String)}
 	 */	
-	ServiceProviderConnection<S> connect(Serializable accountId, AccessGrant accessToken);
+	ServiceProviderConnection<S> connect(Serializable accountId, AccessGrant accessGrant);
 
 }
