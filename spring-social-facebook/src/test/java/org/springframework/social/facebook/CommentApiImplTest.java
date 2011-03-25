@@ -22,32 +22,14 @@ import static org.springframework.social.test.client.ResponseCreators.*;
 
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.social.test.client.MockRestServiceServer;
 
 /**
  * @author Craig Walls
  */
-public class CommentApiImplTest {
+public class CommentApiImplTest extends AbstractFacebookApiTest {
 	
-	private static final String ACCESS_TOKEN = "someAccessToken";
-	
-	private FacebookTemplate facebook;
-	private MockRestServiceServer mockServer;
-	private HttpHeaders responseHeaders;
-
-	@Before
-	public void setup() {
-		facebook = new FacebookTemplate(ACCESS_TOKEN);
-		mockServer = MockRestServiceServer.createServer(facebook.getRestTemplate());
-		responseHeaders = new HttpHeaders();
-		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-	}
-
 	@Test
 	public void getComments() {
 		mockServer.expect(requestTo("https://graph.facebook.com/123456/comments"))

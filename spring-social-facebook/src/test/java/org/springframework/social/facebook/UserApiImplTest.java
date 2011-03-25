@@ -27,31 +27,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.social.test.client.MockRestServiceServer;
 
 /**
  * @author Craig Walls
  */
-public class UserApiImplTest {
-	
-	private static final String ACCESS_TOKEN = "someAccessToken";
-	
-	private FacebookTemplate facebook;
-	private MockRestServiceServer mockServer;
-	private HttpHeaders responseHeaders;
-
-	@Before
-	public void setup() {
-		facebook = new FacebookTemplate(ACCESS_TOKEN);
-		mockServer = MockRestServiceServer.createServer(facebook.getRestTemplate());
-		responseHeaders = new HttpHeaders();
-		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-	}
+public class UserApiImplTest extends AbstractFacebookApiTest {
 	
 	@Test
 	public void getUserProfile_authenticatedUser() {
@@ -97,42 +79,6 @@ public class UserApiImplTest {
 
 		FacebookProfile profile = facebook.userApi().getUserProfile("123456789");
 		assertBasicProfileData(profile);
-	}
-
-	@Test
-	public void getLikes() {
-		mockServer.expect(requestTo("https://graph.facebook.com/me/likes"))
-			.andExpect(method(GET))
-			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("user-likes.json", getClass()), responseHeaders));
-		List<UserLike> likes = facebook.userApi().getLikes();
-		assertLikes(likes);
-	}
-
-	@Test
-	public void getLikes_forSpecificUser() {
-		mockServer.expect(requestTo("https://graph.facebook.com/123456789/likes"))
-				.andExpect(method(GET))
-				.andExpect(header("Authorization", "OAuth someAccessToken"))
-				.andRespond(withResponse(new ClassPathResource("user-likes.json", getClass()), responseHeaders));
-		List<UserLike> likes = facebook.userApi().getLikes("123456789");
-		assertLikes(likes);
-	}
-
-	private void assertLikes(List<UserLike> likes) {
-		assertEquals(3, likes.size());
-		UserLike like1 = likes.get(0);
-		assertEquals("113294925350820", like1.getId());
-		assertEquals("Pirates of the Caribbean", like1.getName());
-		assertEquals("Movie", like1.getCategory());
-		UserLike like2 = likes.get(1);
-		assertEquals("38073733123", like2.getId());
-		assertEquals("Dublin Dr Pepper", like2.getName());
-		assertEquals("Company", like2.getCategory());
-		UserLike like3 = likes.get(2);
-		assertEquals("10264922373", like3.getId());
-		assertEquals("Freebirds World Burrito", like3.getName());
-		assertEquals("Restaurant/cafe", like3.getCategory());
 	}
 	
 	@Test
@@ -230,6 +176,80 @@ public class UserApiImplTest {
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("user-albums.json", getClass()), responseHeaders));
 		List<Album> albums = facebook.userApi().getAlbums();
+		assertAlbums(albums);
+	}
+	
+	@Test
+	public void getAlbums_forSpecificUser() {
+		mockServer.expect(requestTo("https://graph.facebook.com/192837465/albums"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("user-albums.json", getClass()), responseHeaders));
+		List<Album> albums = facebook.userApi().getAlbums("192837465");
+		assertAlbums(albums);
+	}
+	
+	@Test
+	public void getFriendLists() {
+		mockServer.expect(requestTo("https://graph.facebook.com/me/friendlists"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("friend-lists.json", getClass()), responseHeaders));
+		List<Reference> friendLists = facebook.userApi().getFriendLists();
+		assertFriendLists(friendLists);
+	}
+
+	@Test
+	public void getFriendLists_forSpecificUser() {
+		mockServer.expect(requestTo("https://graph.facebook.com/11223344/friendlists"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("friend-lists.json", getClass()), responseHeaders));
+		List<Reference> friendLists = facebook.userApi().getFriendLists("11223344");
+		assertFriendLists(friendLists);
+	}
+	
+	@Test
+	public void getFriends() {
+		mockServer.expect(requestTo("https://graph.facebook.com/me/friends"))
+				.andExpect(method(GET))
+				.andExpect(header("Authorization", "OAuth someAccessToken"))
+				.andRespond(withResponse(new ClassPathResource("friends.json", getClass()), responseHeaders));
+		List<Reference> friends = facebook.userApi().getFriends();
+		assertFriends(friends);
+	}
+	
+	@Test
+	public void getFriends_forSpecificUser() {
+		mockServer.expect(requestTo("https://graph.facebook.com/912873465/friends"))
+				.andExpect(method(GET))
+				.andExpect(header("Authorization", "OAuth someAccessToken"))
+				.andRespond(withResponse(new ClassPathResource("friends.json", getClass()), responseHeaders));
+		List<Reference> friends = facebook.userApi().getFriends("912873465");
+		assertFriends(friends);
+	}
+
+	private void assertFriends(List<Reference> friends) {
+		assertEquals(3, friends.size());
+		assertEquals("12345", friends.get(0).getId());
+		assertEquals("Roy Clarkson", friends.get(0).getName());
+		assertEquals("67890", friends.get(1).getId());
+		assertEquals("Keith Donald", friends.get(1).getName());
+		assertEquals("24680", friends.get(2).getId());
+		assertEquals("Rod Johnson", friends.get(2).getName());
+	}
+
+	private void assertFriendLists(List<Reference> friendLists) {
+		assertEquals(3, friendLists.size());
+		assertEquals("11929590579", friendLists.get(0).getId());
+		assertEquals("High School Friends", friendLists.get(0).getName());
+		assertEquals("7770595579", friendLists.get(1).getId());
+		assertEquals("Family", friendLists.get(1).getName());
+		assertEquals("7716889379", friendLists.get(2).getId());
+		assertEquals("College Friends", friendLists.get(2).getName());
+	}
+
+	private void assertAlbums(List<Album> albums) {
 		assertEquals(3, albums.size());
 		assertEquals("10151447271460580", albums.get(0).getId());
 		assertEquals("738140579", albums.get(0).getFrom().getId());

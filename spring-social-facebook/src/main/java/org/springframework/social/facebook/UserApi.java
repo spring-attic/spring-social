@@ -33,133 +33,79 @@ public interface UserApi {
 	FacebookProfile getUserProfile(String username);
 
 	/**
-	 * Retrieves a list of things that the authenticated user has liked.
-	 * Requires "user_likes" permission.
-	 * Returns an empty list if permission isn't granted.
-	 * @return a list of {@link UserLike} objects
+	 * Retrieves a list of checkins for the authenticated user.
+	 * Requires "user_checkins" or "friends_checkins" permission.
+	 * @return a list {@link Checkin}s for the user, or an empty list if not available.
 	 */
-	List<UserLike> getLikes();
-	
-	/**
-	 * Retrieves a list of things that the given user has liked.
-	 * Requires "user_likes" permission for the authenticated user and "friends_likes" for the authenticated user's friends.
-	 * Returns an empty list if permission isn't granted.
-	 * @param userId the ID of the user
-	 * @return a list of {@link UserLike} objects
-	 */
-	List<UserLike> getLikes(String userId);
-	
-	/**
-	 * Retrieves a list of books that the authenticated user likes.
-	 * Requires "user_likes" permission.
-	 * Returns an empty list if permission isn't granted.
-	 * @return a list of {@link UserLike} objects
-	 */
-	List<UserLike> getBooks();
-
-	/**
-	 * Retrieves a list of books that the given user has liked.
-	 * Requires "user_likes" permission for the authenticated user and "friends_likes" for the authenticated user's friends.
-	 * Returns an empty list if permission isn't granted.
-	 * @param userId the ID of the user
-	 * @return a list of {@link UserLike} objects
-	 */
-	List<UserLike> getBooks(String userId);
-
-	/**
-	 * Retrieves a list of movies that the authenticated user likes.
-	 * Requires "user_likes" permission.
-	 * Returns an empty list if permission isn't granted.
-	 * @return a list of {@link UserLike} objects
-	 */
-	List<UserLike> getMovies();
-
-	/**
-	 * Retrieves a list of movies that the given user has liked.
-	 * Requires "user_likes" permission for the authenticated user and "friends_likes" for the authenticated user's friends.
-	 * Returns an empty list if permission isn't granted.
-	 * @param userId the ID of the user
-	 * @return a list of {@link UserLike} objects
-	 */
-	List<UserLike> getMovies(String userId);
-
-	/**
-	 * Retrieves a list of music that the authenticated user likes.
-	 * Requires "user_likes" permission.
-	 * Returns an empty list if permission isn't granted.
-	 * @return a list of {@link UserLike} objects
-	 */
-	List<UserLike> getMusic();
-
-	/**
-	 * Retrieves a list of music that the given user has liked.
-	 * Requires "user_likes" permission for the authenticated user and "friends_likes" for the authenticated user's friends.
-	 * Returns an empty list if permission isn't granted.
-	 * @param userId the ID of the user
-	 * @return a list of {@link UserLike} objects
-	 */
-	List<UserLike> getMusic(String userId);
-
-	/**
-	 * Retrieves a list of television shows that the authenticated user likes.
-	 * Requires "user_likes" permission.
-	 * Returns an empty list if permission isn't granted.
-	 * @return a list of {@link UserLike} objects
-	 */
-	List<UserLike> getTelevision();
-
-	/**
-	 * Retrieves a list of television shows that the given user has liked.
-	 * Requires "user_likes" permission for the authenticated user and "friends_likes" for the authenticated user's friends.
-	 * Returns an empty list if permission isn't granted.
-	 * @param userId the ID of the user
-	 * @return a list of {@link UserLike} objects
-	 */
-	List<UserLike> getTelevision(String userId);
-
-	/**
-	 * Retrieves a list of activities that the authenticated user likes.
-	 * Requires "user_activities" permission.
-	 * Returns an empty list if permission isn't granted.
-	 * @return a list of {@link UserLike} objects
-	 */
-	List<UserLike> getActivities();
-
-	/**
-	 * Retrieves a list of activities that the given user likes.
-	 * Requires "user_activities" permission for the authenticated user and "friends_activities" for the authenticated user's friends.
-	 * Returns an empty list if permission isn't granted.
-	 * @param userId the ID of the user
-	 * @return a list of {@link UserLike} objects
-	 */
-	List<UserLike> getActivities(String userId);
-
-	/**
-	 * Retrieves a list of interests that the authenticated user likes.
-	 * Requires "user_interests" permission.
-	 * Returns an empty list if permission isn't granted.
-	 * @return a list of {@link UserLike} objects
-	 */
-	List<UserLike> getInterests();
-
-	/**
-	 * Retrieves a list of interests that the given user likes.
-	 * Requires "user_interests" permission for the authenticated user and "friends_interests" for the authenticated user's friends.
-	 * Returns an empty list if permission isn't granted.
-	 * @param userId the ID of the user
-	 * @return a list of {@link UserLike} objects
-	 */
-	List<UserLike> getInterests(String userId);
-
 	List<Checkin> getCheckins();
 
+	/**
+	 * Retrieves a list of checkins for the specified user.
+	 * Requires "user_checkins" or "friends_checkins" permission.
+	 * @param userId the user's ID
+	 * @return a list {@link Checkin}s for the user, or an empty list if not available.
+	 */
 	List<Checkin> getCheckins(String userId);
 
+	// TODO: Consider moving events methods to an EventsApi
+	/**
+	 * Retrieves a list of events that the authenticated user has been invited to.
+	 * Requires "user_events" or "friends_events" permission.
+	 * @return a list {@link UserEvent}s for the user, or an empty list if not available.
+	 */
 	List<UserEvent> getEvents();
 
+	/**
+	 * Retrieves a list of events that the specified user has been invited to.
+	 * Requires "user_events" or "friends_events" permission.
+	 * @param userId the user's ID
+	 * @return a list {@link UserEvent}s for the user, or an empty list if not available.
+	 */
 	List<UserEvent> getEvents(String userId);
 
+	// TODO: Consider moving album methods to a PhotoApi or MediaApi or some such thing
+	/**
+	 * Retrieves a list of albums belonging to the authenticated user.
+	 * Requires "user_photos" or "friends_photos" permission.
+	 * @return a list {@link Album}s for the user, or an empty list if not available.
+	 */
 	List<Album> getAlbums();
 
+	/**
+	 * Retrieves a list of albums belonging to the specified user.
+	 * Requires "user_photos" or "friends_photos" permission.
+	 * @param userId the user's ID
+	 * @return a list {@link Album}s for the user, or an empty list if not available.
+	 */
 	List<Album> getAlbums(String userId);
+
+	// TODO: Consider moving friend methods to a FriendApi
+	/**
+	 * Retrieves a list of custom friend lists belonging to the authenticated user.
+	 * Requires "read_friendlists" permission.
+	 * @return a list {@link Reference}s, each representing a friends list for the user, or an empty list if not available.
+	 */
+	List<Reference> getFriendLists();
+
+	/**
+	 * Retrieves a list of custom friend lists belonging to the specified user.
+	 * Requires "read_friendlists" permission.
+	 * @param userId the user's ID
+	 * @return a list {@link Reference}s, each representing a friends list for the user, or an empty list if not available.
+	 */
+	List<Reference> getFriendLists(String userId);
+
+	/**
+	 * Retrieves a list of user references for the authenticated user's friends.
+	 * @return a list {@link Reference}s, each representing a friend of the user, or an empty list if not available.
+	 */
+	List<Reference> getFriends();
+
+	/**
+	 * Retrieves a list of user references for the authenticated user's friends.
+	 * @param userId the user's ID
+	 * @return a list {@link Reference}s, each representing a friend of the user, or an empty list if not available.
+	 */
+	List<Reference> getFriends(String userId);
+
 }

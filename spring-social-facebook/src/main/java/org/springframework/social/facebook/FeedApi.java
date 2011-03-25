@@ -38,6 +38,10 @@ public interface FeedApi {
 	 */
 	List<FeedEntry> getFeed(String ownerId);
 
+	List<FeedEntry> getHomeFeed();
+
+	List<FeedEntry> getHomeFeed(String userId);
+
 	/**
 	 * Retrieves a single feed entry.
 	 * @param entryId the entry ID

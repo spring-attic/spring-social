@@ -22,31 +22,13 @@ import static org.springframework.social.test.client.ResponseCreators.*;
 
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.social.test.client.MockRestServiceServer;
 
 /**
  * @author Craig Walls
  */
-public class FeedApiImplTest {
-	
-	private static final String ACCESS_TOKEN = "someAccessToken";
-	
-	private FacebookTemplate facebook;
-	private MockRestServiceServer mockServer;
-	private HttpHeaders responseHeaders;
-
-	@Before
-	public void setup() {
-		facebook = new FacebookTemplate(ACCESS_TOKEN);
-		mockServer = MockRestServiceServer.createServer(facebook.getRestTemplate());
-		responseHeaders = new HttpHeaders();
-		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-	}
+public class FeedApiImplTest extends AbstractFacebookApiTest {
 
 	@Test
 	public void getFeed() {
@@ -68,6 +50,28 @@ public class FeedApiImplTest {
 		List<FeedEntry> feed = facebook.feedApi().getFeed("12345678");
 		assertEquals(3, feed.size());
 		assertFeedEntries(feed);
+	}	
+	
+	@Test
+	public void getHomeFeed() {
+		mockServer.expect(requestTo("https://graph.facebook.com/me/home"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("feed.json", getClass()), responseHeaders));
+		List<FeedEntry> homeFeed = facebook.feedApi().getHomeFeed();
+		assertEquals(3, homeFeed.size());
+		assertFeedEntries(homeFeed);
+	}
+	
+	@Test
+	public void getHomeFeed_forSpecificUser() {
+		mockServer.expect(requestTo("https://graph.facebook.com/223311/home"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("feed.json", getClass()), responseHeaders));
+		List<FeedEntry> homeFeed = facebook.feedApi().getHomeFeed("223311");
+		assertEquals(3, homeFeed.size());
+		assertFeedEntries(homeFeed);
 	}
 	
 	@Test 
