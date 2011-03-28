@@ -19,9 +19,13 @@ import java.util.Arrays;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.social.facebook.support.CheckinApiImpl;
 import org.springframework.social.facebook.support.CommentApiImpl;
+import org.springframework.social.facebook.support.EventsApiImpl;
 import org.springframework.social.facebook.support.FeedApiImpl;
+import org.springframework.social.facebook.support.FriendsApiImpl;
 import org.springframework.social.facebook.support.InterestsApiImpl;
+import org.springframework.social.facebook.support.MediaApiImpl;
 import org.springframework.social.facebook.support.UserApiImpl;
 import org.springframework.social.oauth2.ProtectedResourceClientFactory;
 import org.springframework.web.client.RestTemplate;
@@ -39,12 +43,20 @@ public class FacebookTemplate implements FacebookApi {
 	private final RestTemplate restTemplate;
 
 	private UserApi userApi;
+	
+	private CheckinApi checkinApi;
 
+	private FriendsApi friendsApi;
+	
 	private FeedApi feedApi;
 
 	private CommentApi commentApi;
 
-	private InterestsApiImpl interestsApi;
+	private InterestsApi interestsApi;
+	
+	private EventsApi eventsApi;
+	
+	private MediaApi mediaApi;
 
 	/**
 	 * Create a new instance of FacebookTemplate.
@@ -62,25 +74,45 @@ public class FacebookTemplate implements FacebookApi {
 
 		// sub-apis
 		userApi = new UserApiImpl(restTemplate);
+		checkinApi = new CheckinApiImpl(restTemplate);
+		friendsApi = new FriendsApiImpl(restTemplate);
 		feedApi = new FeedApiImpl(restTemplate);
 		commentApi = new CommentApiImpl(restTemplate);
 		interestsApi = new InterestsApiImpl(restTemplate);
+		eventsApi = new EventsApiImpl(restTemplate);
+		mediaApi = new MediaApiImpl(restTemplate);
 	}
 
 	public UserApi userApi() {
 		return userApi;
+	}
+	
+	public CheckinApi checkinApi() {
+		return checkinApi;
 	}
 
 	public InterestsApi interestsApi() {
 		return interestsApi;
 	}
 
+	public FriendsApi friendsApi() {
+		return friendsApi;
+	}
+	
 	public FeedApi feedApi() {
 		return feedApi;
 	}
 
 	public CommentApi commentApi() {
 		return commentApi;
+	}
+	
+	public EventsApi eventsApi() {
+		return eventsApi;
+	}
+	
+	public MediaApi mediaApi() {
+		return mediaApi;
 	}
 
 	// subclassing hooks

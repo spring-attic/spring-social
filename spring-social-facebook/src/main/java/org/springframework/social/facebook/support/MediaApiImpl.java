@@ -15,23 +15,25 @@
  */
 package org.springframework.social.facebook.support;
 
-import org.springframework.social.facebook.FacebookProfile;
-import org.springframework.social.facebook.UserApi;
+import java.util.List;
+
+import org.springframework.social.facebook.Album;
+import org.springframework.social.facebook.MediaApi;
 import org.springframework.social.facebook.support.extractors.ResponseExtractors;
 import org.springframework.web.client.RestTemplate;
 
-public class UserApiImpl extends AbstractFacebookApi implements UserApi {
+public class MediaApiImpl extends AbstractFacebookApi implements MediaApi {
 
-	public UserApiImpl(RestTemplate restTemplate) {
+	public MediaApiImpl(RestTemplate restTemplate) {
 		super(restTemplate);
 	}
 
-	public FacebookProfile getUserProfile() {
-		return getUserProfile("me");
+	public List<Album> getAlbums() {
+		return getAlbums("me");
 	}
 
-	public FacebookProfile getUserProfile(String facebookId) {
-		return getObject(facebookId, ResponseExtractors.PROFILE_EXTRACTOR);
+	public List<Album> getAlbums(String userId) {
+		return getObjectConnection(userId, "albums", ResponseExtractors.ALBUM_EXTRACTOR);
 	}
 
 }

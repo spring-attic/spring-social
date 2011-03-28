@@ -49,6 +49,22 @@ public interface FeedApi {
 	 */
 	FeedEntry getFeedEntry(String entryId);
 	
+	List<FeedEntry> getStatuses();
+	
+	List<FeedEntry> getStatuses(String userId);
+	
+	List<FeedEntry> getLinks();
+	
+	List<FeedEntry> getLinks(String ownerId);
+	
+	List<FeedEntry> getNotes();
+	
+	List<FeedEntry> getNotes(String ownerId);
+	
+	List<FeedEntry> getPosts();
+	
+	List<FeedEntry> getPosts(String ownerId);
+	
 	/**
 	 * Posts a status update to the authenticated user's feed.
 	 * @param message the message to post.

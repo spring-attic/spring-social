@@ -15,20 +15,23 @@
  */
 package org.springframework.social.facebook;
 
+import java.util.List;
 
-public interface UserApi {
-	
+public interface MediaApi {
+
 	/**
-	 * Retrieves the profile for the authenticated user.
-	 * @return the user's profile information.
+	 * Retrieves a list of albums belonging to the authenticated user.
+	 * Requires "user_photos" or "friends_photos" permission.
+	 * @return a list {@link Album}s for the user, or an empty list if not available.
 	 */
-	FacebookProfile getUserProfile();
-	
+	List<Album> getAlbums();
+
 	/**
-	 * Retrieves the profile for the authenticated user.
-	 * @param username the Facebook username to retrieve profile data for.
-	 * @return the user's profile information.
+	 * Retrieves a list of albums belonging to a specific owner (user, page, etc).
+	 * Requires "user_photos" or "friends_photos" permission.
+	 * @param ownerId the album owner's ID
+	 * @return a list {@link Album}s for the user, or an empty list if not available.
 	 */
-	FacebookProfile getUserProfile(String username);
+	List<Album> getAlbums(String ownerId);
 
 }

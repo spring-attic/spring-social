@@ -15,23 +15,25 @@
  */
 package org.springframework.social.facebook.support;
 
-import org.springframework.social.facebook.FacebookProfile;
-import org.springframework.social.facebook.UserApi;
+import java.util.List;
+
+import org.springframework.social.facebook.EventsApi;
+import org.springframework.social.facebook.UserEvent;
 import org.springframework.social.facebook.support.extractors.ResponseExtractors;
 import org.springframework.web.client.RestTemplate;
 
-public class UserApiImpl extends AbstractFacebookApi implements UserApi {
+public class EventsApiImpl extends AbstractFacebookApi implements EventsApi {
 
-	public UserApiImpl(RestTemplate restTemplate) {
+	public EventsApiImpl(RestTemplate restTemplate) {
 		super(restTemplate);
 	}
 
-	public FacebookProfile getUserProfile() {
-		return getUserProfile("me");
+	public List<UserEvent> getEvents() {
+		return getEvents("me");
 	}
 
-	public FacebookProfile getUserProfile(String facebookId) {
-		return getObject(facebookId, ResponseExtractors.PROFILE_EXTRACTOR);
+	public List<UserEvent> getEvents(String userId) {
+		return getObjectConnection(userId, "events", ResponseExtractors.USER_EVENT_EXTRACTOR);
 	}
 
 }

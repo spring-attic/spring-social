@@ -24,11 +24,18 @@ package org.springframework.social.facebook;
 public interface FacebookApi {
 	
 	UserApi userApi();
+	
+	CheckinApi checkinApi();
 
 	InterestsApi interestsApi();
 
 	FeedApi feedApi();
+	
+	FriendsApi friendsApi();
 
 	CommentApi commentApi();
 
+	EventsApi eventsApi();
+	
+	MediaApi mediaApi();
 }

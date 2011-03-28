@@ -24,12 +24,25 @@ import java.util.List;
  * @author Craig Walls
  */
 public class FeedEntry {
-
+	// TODO: This covers several kinds of feed entry items...wondering if it'd be better to somehow extract separate types for each kind, even though they're all quite similar.
+	
 	private final String id;
 
 	private final Reference from;
 
 	private final String message;
+	
+	private String picture;
+	
+	private String link;
+	
+	private String subject;
+	
+	private String name;
+	
+	private String description;
+	
+	private String icon;
 
 	private final Date createdTime;
 
@@ -59,6 +72,30 @@ public class FeedEntry {
 		return message;
 	}
 
+	public String getPicture() {
+		return picture;
+	}
+
+	public String getLink() {
+		return link;
+	}
+
+	public String getSubject() {
+		return subject;
+	}
+	
+	public String getName() {
+		return name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public String getIcon() {
+		return icon;
+	}
+
 	public Date getCreatedTime() {
 		return createdTime;
 	}
@@ -82,6 +119,18 @@ public class FeedEntry {
 
 		private String message;
 
+		private String picture;
+		
+		private String link;
+		
+		private String subject;
+		
+		private String name;
+		
+		private String description;
+		
+		private String icon;
+
 		private Date createdTime;
 
 		private Date updatedTime;
@@ -97,6 +146,36 @@ public class FeedEntry {
 			this.createdTime = createdTime;
 			this.updatedTime = updatedTime;
 		}
+		
+		public Builder picture(String picture) {
+			this.picture = picture;
+			return this;
+		}
+
+		public Builder subject(String subject) {
+			this.subject = subject;
+			return this;
+		}
+		
+		public Builder link(String link) {
+			this.link = link;
+			return this;
+		}
+
+		public Builder name(String name) {
+			this.name = name;
+			return this;
+		}
+
+		public Builder description(String description) {
+			this.description = description;
+			return this;
+		}
+		
+		public Builder icon(String icon) {
+			this.icon = icon;
+			return this;
+		}
 
 		public Builder likes(List<Reference> likes) {
 			this.likes = likes;
@@ -110,6 +189,12 @@ public class FeedEntry {
 
 		public FeedEntry build() {
 			FeedEntry feedEntry = new FeedEntry(id, from, message, createdTime, updatedTime);
+			feedEntry.picture = picture;
+			feedEntry.link = link;
+			feedEntry.subject = subject;
+			feedEntry.name = name;
+			feedEntry.description = description;
+			feedEntry.icon = icon;
 			feedEntry.likes = likes;
 			feedEntry.comments = comments;
 			return feedEntry;

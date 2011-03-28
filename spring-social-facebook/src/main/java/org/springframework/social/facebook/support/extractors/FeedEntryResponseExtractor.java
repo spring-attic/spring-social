@@ -18,7 +18,14 @@ public class FeedEntryResponseExtractor extends AbstractResponseExtractor<FeedEn
 		String message = (String) feedEntryMap.get("message");
 		Date createdTime = toDate((String) feedEntryMap.get("created_time"));
 		Date updatedTime = toDate((String) feedEntryMap.get("updated_time"));
-		FeedEntry.Builder builder = new FeedEntry.Builder(id, from, message, createdTime, updatedTime);
+		FeedEntry.Builder builder = new FeedEntry.Builder(id, from, message, createdTime, updatedTime)
+			.link((String) feedEntryMap.get("link"))
+			.picture((String) feedEntryMap.get("picture"))
+			.subject((String) feedEntryMap.get("subject"))
+			.name((String) feedEntryMap.get("name"))
+			.description((String) feedEntryMap.get("description"))
+			.icon((String) feedEntryMap.get("icon"));
+		
 		List<Reference> likes = extractReferences((Map<String, Object>) feedEntryMap.get("likes"));
 		if (likes != null) {
 			builder.likes(likes);

@@ -15,20 +15,22 @@
  */
 package org.springframework.social.facebook;
 
+import java.util.List;
 
-public interface UserApi {
-	
-	/**
-	 * Retrieves the profile for the authenticated user.
-	 * @return the user's profile information.
-	 */
-	FacebookProfile getUserProfile();
-	
-	/**
-	 * Retrieves the profile for the authenticated user.
-	 * @param username the Facebook username to retrieve profile data for.
-	 * @return the user's profile information.
-	 */
-	FacebookProfile getUserProfile(String username);
+public interface EventsApi {
 
+	/**
+	 * Retrieves a list of events that the authenticated user has been invited to.
+	 * Requires "user_events" or "friends_events" permission.
+	 * @return a list {@link UserEvent}s for the user, or an empty list if not available.
+	 */
+	List<UserEvent> getEvents();
+
+	/**
+	 * Retrieves a list of events that the specified user has been invited to.
+	 * Requires "user_events" or "friends_events" permission.
+	 * @param userId the user's ID
+	 * @return a list {@link UserEvent}s for the user, or an empty list if not available.
+	 */
+	List<UserEvent> getEvents(String userId);
 }

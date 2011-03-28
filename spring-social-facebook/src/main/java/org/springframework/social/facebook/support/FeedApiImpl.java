@@ -46,7 +46,38 @@ public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
 	public List<FeedEntry> getHomeFeed(String userId) {
 		return getObjectConnection(userId, "home", ResponseExtractors.FEED_ENTRY_EXTRACTOR);
 	}
+	
+	public List<FeedEntry> getStatuses() {
+		return getStatuses("me");
+	}
+	
+	public List<FeedEntry> getStatuses(String userId) {
+		return getObjectConnection(userId, "statuses", ResponseExtractors.FEED_ENTRY_EXTRACTOR);
+	}
+	
+	public List<FeedEntry> getLinks() {
+		return getLinks("me");
+	}
+	
+	public List<FeedEntry> getLinks(String ownerId) {
+		return getObjectConnection(ownerId, "links", ResponseExtractors.FEED_ENTRY_EXTRACTOR);
+	}
 
+	public List<FeedEntry> getNotes() {
+		return getNotes("me");
+	}
+	
+	public List<FeedEntry> getNotes(String ownerId) {
+		return getObjectConnection(ownerId, "notes", ResponseExtractors.FEED_ENTRY_EXTRACTOR);
+	}
+	
+	public List<FeedEntry> getPosts() {
+		return getPosts("me");
+	}
+	public List<FeedEntry> getPosts(String ownerId) {
+		return getObjectConnection(ownerId, "posts", ResponseExtractors.FEED_ENTRY_EXTRACTOR);
+	}
+	
 	public FeedEntry getFeedEntry(String entryId) {
 		return getObject(entryId, ResponseExtractors.FEED_ENTRY_EXTRACTOR);
 	}
