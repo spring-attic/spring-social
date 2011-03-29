@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect;
+package org.springframework.social.connect.support;
+
+import org.springframework.social.connect.ServiceProviderConnection;
+import org.springframework.social.connect.ServiceProviderConnectionKey;
 
 public class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
 

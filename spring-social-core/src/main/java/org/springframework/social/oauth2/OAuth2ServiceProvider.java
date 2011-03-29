@@ -22,7 +22,7 @@ import org.springframework.social.ServiceProvider;
  * @author Keith Donald
  * @param <S> The service API type
  */
-public interface OAuth2ServiceProvider<S> extends ServiceProvider {
+public interface OAuth2ServiceProvider<S> extends ServiceProvider<S> {
 
 	/**
 	 * Get the service interface for carrying out the "OAuth dance" with this provider.

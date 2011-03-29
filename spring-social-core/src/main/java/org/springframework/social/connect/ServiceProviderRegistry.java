@@ -21,6 +21,8 @@ public interface ServiceProviderRegistry {
 
 	ServiceProvider<?> getServiceProvider(String providerId);
 	
-	<P extends ServiceProvider<?>> P getServiceProvider(String providerId, Class<P> providerClass);
+	<P extends ServiceProvider<S>, S> P getServiceProvider(String providerId, Class<P> providerClass);
+	
+	<P extends ServiceProvider<S>, S> P getServiceProvider(Class<P> providerClass);
 	
 }
