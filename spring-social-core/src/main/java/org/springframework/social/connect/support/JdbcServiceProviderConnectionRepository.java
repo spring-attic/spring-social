@@ -74,8 +74,15 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where providerId = ? and providerAccountId = ?", connectionMapper, providerId, providerAccountId);
 	}
 
-	public ServiceProviderConnection<?> saveConnection(Serializable accountId, ServiceProviderConnection<?> connection) {
-		// TODO
+	public ServiceProviderConnection<?> saveConnection(ServiceProviderConnection<?> connection) {
+		if (connection.getId() == null) {
+			if (connection.getAccountId() == null) {
+				throw new IllegalArgumentException("Unable to save new connection because it has not been assigned to a local account; call ServiceProviderConnection#assignAccountId(Serializable) before saving");
+			}
+			// TODO
+		} else {
+			// TODO
+		}
 		return null;
 	}
 

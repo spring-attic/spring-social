@@ -147,8 +147,8 @@ public class ConnectController  {
 	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier", required=false) String verifier, WebRequest request) {
 		OAuth1ServiceProvider<?> provider = serviceProviderRegistry.getServiceProvider(providerId, OAuth1ServiceProvider.class);
 		OAuthToken accessToken = provider.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier));
-		ServiceProviderConnection<?> connection = connectionFactory.createOAuth1Connection(provider, accessToken);
-		connection = connectionRepository.saveConnection(accountIdExtractor.extractAccountId(request), connection);		
+		ServiceProviderConnection<?> connection = connectionFactory.createOAuth1Connection(provider, accessToken).assignAccountId(accountIdExtractor.extractAccountId(request));
+		connection = connectionRepository.saveConnection(connection);	
 		postConnect(provider, connection, request);
 		return redirectToProviderConnect(providerId);
 	}
@@ -162,8 +162,8 @@ public class ConnectController  {
 	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
 		OAuth2ServiceProvider<?> provider = serviceProviderRegistry.getServiceProvider(providerId, OAuth2ServiceProvider.class);
 		AccessGrant accessGrant = provider.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId));
-		ServiceProviderConnection<?> connection = connectionFactory.createOAuth2Connection(provider, accessGrant);
-		connection = connectionRepository.saveConnection(accountIdExtractor.extractAccountId(request), connection);
+		ServiceProviderConnection<?> connection = connectionFactory.createOAuth2Connection(provider, accessGrant).assignAccountId(accountIdExtractor.extractAccountId(request));
+		connection = connectionRepository.saveConnection(connection);
 		postConnect(provider, connection, request);
 		return redirectToProviderConnect(providerId);
 	}

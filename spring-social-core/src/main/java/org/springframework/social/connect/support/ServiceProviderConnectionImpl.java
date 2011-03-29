@@ -68,7 +68,6 @@ public class ServiceProviderConnectionImpl<S> implements ServiceProviderConnecti
 
 	public void updateStatus(String message) {
 		// TODO Auto-generated method stub
-		
 	}
 
 	public void sync() {
@@ -77,6 +76,11 @@ public class ServiceProviderConnectionImpl<S> implements ServiceProviderConnecti
 	}
 
 	public S getServiceApi() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ServiceProviderConnection<S> assignAccountId(Serializable accountId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

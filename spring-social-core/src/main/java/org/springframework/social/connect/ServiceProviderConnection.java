@@ -106,4 +106,11 @@ public interface ServiceProviderConnection<S> {
 	 */
 	public S getServiceApi();
 
+	// mutators
+
+	/**
+	 * Creates a copy of this connection with the local accountId property set to the value provided.
+	 */
+	public ServiceProviderConnection<S> assignAccountId(Serializable accountId);
+
 }
