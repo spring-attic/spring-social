@@ -13,24 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.web.connect;
+package org.springframework.social.connect;
 
 import java.io.Serializable;
-import java.security.Principal;
+import java.util.List;
 
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.social.ServiceProvider;
 
-/**
- * Default account ID extractor that uses the principal name as the account ID.
- */
-class DefaultAccountIdExtractor implements AccountIdExtractor {
+public interface ServiceProviderConnectionLocator {
 
-	public Serializable extractAccountId(WebRequest request) {
-		Principal principal = request.getUserPrincipal();
-		if (principal == null) {
-			throw new IllegalStateException("Unable to extract accountId by calling [request.getUserPrincipal#getName()]: No principal set on the current request");
-		}
-		return principal.getName(); 
-	}
+	<S> List<ServiceProviderConnection<S>> all(Serializable accountId, Class<? extends ServiceProvider<S>> serviceProviderClass);
+	
+	<S> ServiceProviderConnection<S> primary(Serializable accountId, Class<? extends ServiceProvider<S>> serviceProviderClass);
+
+	<S> ServiceProviderConnection<S> single(Serializable accountId, Class<? extends ServiceProvider<S>> serviceProviderClass, Integer connectionId);
 
 }

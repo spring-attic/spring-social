@@ -18,21 +18,22 @@ package org.springframework.social.web.connect;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.social.connect.ServiceProvider;
+import org.springframework.social.ServiceProvider;
 import org.springframework.social.connect.ServiceProviderConnection;
-import org.springframework.social.connect.oauth1.OAuth1ServiceProvider;
-import org.springframework.social.connect.oauth2.OAuth2ServiceProvider;
+import org.springframework.social.connect.ServiceProviderConnectionFactory;
+import org.springframework.social.connect.ServiceProviderConnectionKey;
+import org.springframework.social.connect.ServiceProviderConnectionRepository;
+import org.springframework.social.connect.ServiceProviderRegistry;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
+import org.springframework.social.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
+import org.springframework.social.oauth2.OAuth2ServiceProvider;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,24 +55,31 @@ import org.springframework.web.context.request.WebRequest;
  */
 @Controller
 @RequestMapping("/connect/")
-public class ConnectController implements BeanFactoryAware {
+public class ConnectController  {
 	
-	private ServiceProviderLocator serviceProviderLocator;
-
 	private String baseCallbackUrl;
 	
 	private MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors;
 
 	private AccountIdExtractor accountIdExtractor;
 
+	private ServiceProviderRegistry serviceProviderRegistry;
+	
+	private ServiceProviderConnectionRepository connectionRepository;
+	
+	private ServiceProviderConnectionFactory connectionFactory;
+	
 	/**
 	 * Constructs a ConnectController.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
 	 */
-	public ConnectController(String applicationUrl) {
+	public ConnectController(String applicationUrl, ServiceProviderRegistry serviceProviderRegistry, ServiceProviderConnectionRepository connectionRepository, ServiceProviderConnectionFactory connectionFactory) {
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
+		this.serviceProviderRegistry = serviceProviderRegistry;
+		this.connectionRepository = connectionRepository;
+		this.connectionFactory = connectionFactory;
 		this.interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
-		this.accountIdExtractor = new DefaultAccountIdExtractor();
+		this.accountIdExtractor = new DefaultAccountIdExtractor();		
 	}
 
 	/**
@@ -98,21 +106,17 @@ public class ConnectController implements BeanFactoryAware {
 		this.accountIdExtractor = accountIdExtractor;
 	}
 
-	// implementing BeanFactoryAware
-	
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.serviceProviderLocator = new ServiceProviderLocator((ListableBeanFactory) beanFactory);
-	}
-
 	/**
 	 * Render the connect form for the service provider identified by {name} to the member as HTML in their web browser.
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET)
-	public String connect(@PathVariable String providerId, WebRequest request) {
-		if (getServiceProvider(providerId).isConnected(accountIdExtractor.extractAccountId(request))) {
-			return baseViewPath(providerId) + "Connected";
-		} else {
+	public String connect(@PathVariable String providerId, WebRequest request, Model model) {
+		List<ServiceProviderConnection<?>> connections = connectionRepository.findConnectionsToProvider(accountIdExtractor.extractAccountId(request), providerId);
+		if (connections.isEmpty()) {
 			return baseViewPath(providerId) + "Connect";
+		} else {
+			model.addAttribute("connections", connections);
+			return baseViewPath(providerId) + "Connected";			
 		}
 	}
 
@@ -121,8 +125,8 @@ public class ConnectController implements BeanFactoryAware {
 	 * Fetches a new request token from the provider, temporarily stores it in the session, then redirects the member to the provider's site for authorization.
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.POST)
-	public String connect(@PathVariable String providerId, @RequestParam(required=false) String scope,  WebRequest request) {
-		ServiceProvider<?> provider = getServiceProvider(providerId);
+	public String connect(@PathVariable String providerId, @RequestParam(required=false) String scope, WebRequest request) {
+		ServiceProvider<?> provider = serviceProviderRegistry.getServiceProvider(providerId);
 		preConnect(provider, request);
 		if (provider instanceof OAuth1ServiceProvider) {
 			OAuth1Operations oauth1Ops = ((OAuth1ServiceProvider<?>) provider).getOAuthOperations();
@@ -141,12 +145,13 @@ public class ConnectController implements BeanFactoryAware {
 	 * Removes the request token from the session since it is no longer valid after the connection is established.
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="oauth_token")
-	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value = "oauth_verifier", required = false) String verifier, WebRequest request) {
-		OAuth1ServiceProvider<?> provider = (OAuth1ServiceProvider<?>) getServiceProvider(providerId);
+	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier", required=false) String verifier, WebRequest request) {
+		OAuth1ServiceProvider<?> provider = serviceProviderRegistry.getServiceProvider(providerId, OAuth1ServiceProvider.class);
 		OAuthToken accessToken = provider.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier));
-		ServiceProviderConnection<?> connection = provider.connect(accountIdExtractor.extractAccountId(request), accessToken);
+		ServiceProviderConnection<?> connection = connectionFactory.createOAuth1Connection(provider, accessToken);
+		connection = connectionRepository.saveConnection(accountIdExtractor.extractAccountId(request), providerId, connection);		
 		postConnect(provider, connection, request);
-		return "redirect:/connect/" + providerId;
+		return redirectToProviderConnect(providerId);
 	}
 
 	/**
@@ -156,32 +161,35 @@ public class ConnectController implements BeanFactoryAware {
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="code")
 	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
-		OAuth2ServiceProvider<?> provider = (OAuth2ServiceProvider<?>) getServiceProvider(providerId);
+		OAuth2ServiceProvider<?> provider = serviceProviderRegistry.getServiceProvider(providerId, OAuth2ServiceProvider.class);
 		AccessGrant accessGrant = provider.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId));
-		ServiceProviderConnection<?> connection = provider.connect(accountIdExtractor.extractAccountId(request), accessGrant);
+		ServiceProviderConnection<?> connection = connectionFactory.createOAuth2Connection(provider, accessGrant);
+		connection = connectionRepository.saveConnection(accountIdExtractor.extractAccountId(request), providerId, connection);
 		postConnect(provider, connection, request);
-		return "redirect:/connect/" + providerId;
+		return redirectToProviderConnect(providerId);
 	}
 
 	/**
-	 * Disconnect from the provider.
+	 * Remove all provider connections for a user account.
 	 * The member has decided they no longer wish to use the service provider from this application.
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.DELETE)
-	public String disconnect(@PathVariable String providerId, WebRequest request) {
-		ServiceProvider provider = getServiceProvider(providerId);
-		List<ServiceProviderConnection> connections = provider.getConnections(accountIdExtractor.extractAccountId(request));
-		for (ServiceProviderConnection connection : connections) {
-			connection.disconnect();
-		}
-		return "redirect:/connect/" + providerId;
+	public String removeConnections(@PathVariable String providerId, WebRequest request) {
+		connectionRepository.removeConnections(accountIdExtractor.extractAccountId(request), providerId);
+		return redirectToProviderConnect(providerId);
 	}
 
+	/**
+	 * Remove a single provider connection associated with a user account.
+	 * The member has decided they no longer wish to use the service provider account from this application.
+	 */
+	@RequestMapping(value="{providerId}/{connectionId}", method=RequestMethod.DELETE)
+	public String removeConnections(@PathVariable String providerId, @PathVariable Integer connectionId, WebRequest request) {
+		connectionRepository.removeConnection(new ServiceProviderConnectionKey(accountIdExtractor.extractAccountId(request), providerId, connectionId));
+		return redirectToProviderConnect(providerId);
+	}
+	
 	// internal helpers
-
-	private ServiceProvider getServiceProvider(String providerId) {
-		return serviceProviderLocator.getServiceProvider(providerId);
-	}
 
 	private void preConnect(ServiceProvider<?> provider, WebRequest request) {
 		for (ConnectInterceptor interceptor : interceptingConnectionsTo(provider)) {
@@ -216,6 +224,10 @@ public class ConnectController implements BeanFactoryAware {
 		OAuthToken requestToken = (OAuthToken) request.getAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		request.removeAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		return requestToken;
+	}
+
+	private String redirectToProviderConnect(String providerId) {
+		return "redirect:/connect/" + providerId;
 	}
 
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";

@@ -28,7 +28,7 @@ import org.springframework.social.support.HttpRequestDecorator;
  * @author Keith Donald
  * @author Craig Walls
  */
-public class OAuth1RequestInterceptor implements ClientHttpRequestInterceptor {
+class OAuth1RequestInterceptor implements ClientHttpRequestInterceptor {
 
 	private final String consumerKey;
 	
