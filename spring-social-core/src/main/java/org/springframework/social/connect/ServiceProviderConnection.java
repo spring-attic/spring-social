@@ -15,6 +15,8 @@
  */
 package org.springframework.social.connect;
 
+import java.io.Serializable;
+
 /**
  * A connection between a local user account and an external service provider account.
  * @author Keith Donald
@@ -23,10 +25,26 @@ package org.springframework.social.connect;
 public interface ServiceProviderConnection<S> {
 
 	/**
-	 * The persistence identifier of this service provider connection.
-	 * Null if this connection has not yet been persisted.
+	 * The locally assigned id of this connection.
+	 * Unique across all connections.
+	 * This should never change.
+	 * Initially null if the connection has not yet been saved.
 	 */
-	ServiceProviderConnectionKey getKey();
+	public Long getId();
+	
+	/**
+	 * The local account id representing this end of the connection.
+	 * This should never change. 
+	 * Initially null if the connection has not yet been saved.
+	 */
+	public Serializable getAccountId();
+
+	/**
+	 * The id of the provider as it is registered in the system.
+	 * This should never change. 
+	 * Initially null if the connection has not yet been saved.
+	 */
+	public String getProviderId();
 	
 	/**
 	 * The id of the external provider account representing the remote end of the connection.

@@ -15,12 +15,23 @@
  */
 package org.springframework.social.connect.support;
 
+import java.io.Serializable;
+
 import org.springframework.social.connect.ServiceProviderConnection;
-import org.springframework.social.connect.ServiceProviderConnectionKey;
 
 public class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
 
-	public ServiceProviderConnectionKey getKey() {
+	public Long getId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public Serializable getAccountId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getProviderId() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -57,10 +68,12 @@ public class ServiceProviderConnectionImpl<S> implements ServiceProviderConnecti
 
 	public void updateStatus(String message) {
 		// TODO Auto-generated method stub
+		
 	}
 
 	public void sync() {
 		// TODO Auto-generated method stub
+		
 	}
 
 	public S getServiceApi() {

@@ -25,9 +25,9 @@ public interface ServiceProviderConnectionRepository {
 
 	List<ServiceProviderConnection<?>> findConnectionsToProvider(Serializable accountId, String providerId);
 
-	List<ServiceProviderConnection<?>> findConnectionsByKey(List<ServiceProviderConnectionKey> connectionKeys);
+	List<ServiceProviderConnection<?>> findConnectionsById(List<Long> connectionIds);
 	
-	ServiceProviderConnection<?> findConnectionByKey(ServiceProviderConnectionKey connectionKey);
+	ServiceProviderConnection<?> findConnectionById(Long connectionId);
 	
 	List<ServiceProviderConnection<?>> findConnectionsToProviderAccount(String providerId, String providerAccountId);
 
@@ -35,6 +35,6 @@ public interface ServiceProviderConnectionRepository {
 
 	void removeConnections(Serializable accountId, String providerId);
 
-	void removeConnection(ServiceProviderConnectionKey connectionKey);
+	void removeConnection(Long connectionId);
 
 }

@@ -15,6 +15,7 @@
  */
 package org.springframework.social.connect;
 
+import org.springframework.social.connect.support.ServiceProviderConnectionMemento;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
@@ -25,5 +26,7 @@ public interface ServiceProviderConnectionFactory {
 	<S> ServiceProviderConnection<S> createOAuth1Connection(OAuth1ServiceProvider<S> provider, OAuthToken accessToken);
 	
 	<S> ServiceProviderConnection<S> createOAuth2Connection(OAuth2ServiceProvider<S> provider, AccessGrant accessGrant);
+
+	ServiceProviderConnection<?> createConnection(ServiceProviderConnectionMemento memento);
 	
 }

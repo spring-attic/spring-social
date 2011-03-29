@@ -1,6 +1,6 @@
-create table ServiceProviderConnection (accountId varchar not null,
+create table ServiceProviderConnection (id identity,
+					accountId varchar not null,
 					providerId varchar not null,
-					id int not null,
 					providerAccountId varchar,
 					profileName varchar,
 					profileUrl varchar,
@@ -9,5 +9,6 @@ create table ServiceProviderConnection (accountId varchar not null,
 					accessToken varchar not null,					
 					secret varchar, 
 					refreshToken varchar,
-					primary key (accountId, providerId, id));
-create index ProviderAccount on ServiceProviderConnection(providerId, providerAccountId);
+					primary key (identity));
+create index ProviderConnections on ServiceProviderConnection(accountId, providerId);					
+create index ConnectionsToProviderAccount on ServiceProviderConnection(providerId, providerAccountId);
