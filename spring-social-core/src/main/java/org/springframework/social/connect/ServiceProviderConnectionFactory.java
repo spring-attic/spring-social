@@ -27,6 +27,6 @@ public interface ServiceProviderConnectionFactory {
 	
 	<S> ServiceProviderConnection<S> createOAuth2Connection(OAuth2ServiceProvider<S> provider, AccessGrant accessGrant);
 
-	ServiceProviderConnection<?> createConnection(ServiceProviderConnectionMemento memento);
+	ServiceProviderConnection<?> createConnection(ServiceProviderConnectionMemento connectionMemento);
 	
 }

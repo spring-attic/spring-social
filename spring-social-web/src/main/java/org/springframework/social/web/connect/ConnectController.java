@@ -23,7 +23,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.social.ServiceProvider;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionFactory;
-import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
 import org.springframework.social.connect.ServiceProviderRegistry;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
@@ -149,7 +148,7 @@ public class ConnectController  {
 		OAuth1ServiceProvider<?> provider = serviceProviderRegistry.getServiceProvider(providerId, OAuth1ServiceProvider.class);
 		OAuthToken accessToken = provider.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier));
 		ServiceProviderConnection<?> connection = connectionFactory.createOAuth1Connection(provider, accessToken);
-		connection = connectionRepository.saveConnection(accountIdExtractor.extractAccountId(request), providerId, connection);		
+		connection = connectionRepository.saveConnection(accountIdExtractor.extractAccountId(request), connection);		
 		postConnect(provider, connection, request);
 		return redirectToProviderConnect(providerId);
 	}
@@ -164,7 +163,7 @@ public class ConnectController  {
 		OAuth2ServiceProvider<?> provider = serviceProviderRegistry.getServiceProvider(providerId, OAuth2ServiceProvider.class);
 		AccessGrant accessGrant = provider.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId));
 		ServiceProviderConnection<?> connection = connectionFactory.createOAuth2Connection(provider, accessGrant);
-		connection = connectionRepository.saveConnection(accountIdExtractor.extractAccountId(request), providerId, connection);
+		connection = connectionRepository.saveConnection(accountIdExtractor.extractAccountId(request), connection);
 		postConnect(provider, connection, request);
 		return redirectToProviderConnect(providerId);
 	}
@@ -184,8 +183,8 @@ public class ConnectController  {
 	 * The member has decided they no longer wish to use the service provider account from this application.
 	 */
 	@RequestMapping(value="{providerId}/{connectionId}", method=RequestMethod.DELETE)
-	public String removeConnections(@PathVariable String providerId, @PathVariable Integer connectionId, WebRequest request) {
-		connectionRepository.removeConnection(new ServiceProviderConnectionKey(accountIdExtractor.extractAccountId(request), providerId, connectionId));
+	public String removeConnections(@PathVariable String providerId, @PathVariable Long connectionId, WebRequest request) {
+		connectionRepository.removeConnection(connectionId);
 		return redirectToProviderConnect(providerId);
 	}
 	

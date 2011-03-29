@@ -47,7 +47,7 @@ public class MapServiceProviderRegistry implements ServiceProviderRegistry {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <P extends ServiceProvider<S>, S> P getServiceProvider(String providerId, Class<P> providerType) {
+	public <P extends ServiceProvider<?>> P getServiceProvider(String providerId, Class<P> providerType) {
 		ServiceProvider<?> provider = getServiceProvider(providerId, providerType);
 		if (!providerType.isAssignableFrom(provider.getClass())) {
 			throw new IllegalArgumentException("ServiceProvider '" + providerId + "' not instance of [" + providerType.getName() + "]");
@@ -56,7 +56,7 @@ public class MapServiceProviderRegistry implements ServiceProviderRegistry {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <P extends ServiceProvider<S>, S> P getServiceProvider(Class<P> providerClass) {
+	public <P extends ServiceProvider<?>> P getServiceProvider(Class<P> providerClass) {
 		ServiceProvider<?> provider = providerClassIndex.get(providerClass);
 		if (provider == null) {
 			throw new IllegalArgumentException("No ServiceProvider of class [" + providerClass.getName() + "] is registered");
