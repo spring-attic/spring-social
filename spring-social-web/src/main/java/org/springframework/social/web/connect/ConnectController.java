@@ -72,7 +72,8 @@ public class ConnectController  {
 	 * Constructs a ConnectController.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
 	 */
-	public ConnectController(String applicationUrl, ServiceProviderRegistry serviceProviderRegistry, ServiceProviderConnectionRepository connectionRepository, ServiceProviderConnectionFactory connectionFactory) {
+	public ConnectController(String applicationUrl,
+			ServiceProviderRegistry serviceProviderRegistry, ServiceProviderConnectionRepository connectionRepository, ServiceProviderConnectionFactory connectionFactory) {
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 		this.serviceProviderRegistry = serviceProviderRegistry;
 		this.connectionRepository = connectionRepository;
