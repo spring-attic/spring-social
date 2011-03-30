@@ -15,9 +15,10 @@
  */
 package org.springframework.social.connect;
 
-
 public interface ServiceProviderConnectionFactoryLocator {
 
 	ServiceProviderConnectionFactory<?> getConnectionFactory(String providerId);
+
+	<S> ServiceProviderConnectionFactory<S> getConnectionFactory(Class<S> serviceApiType);
 	
 }

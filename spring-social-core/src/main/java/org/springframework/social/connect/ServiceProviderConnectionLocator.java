@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social;
+package org.springframework.social.connect;
 
-public interface ServiceProvider<S> {
+import java.io.Serializable;
 
+public interface ServiceProviderConnectionLocator {
+	
+	<S> ServiceProviderConnection<S> getPrimaryConnection(Serializable accountId, Class<S> serviceApiType);
+
+	<S> ServiceProviderConnection<S> getConnection(Serializable accountId, Long connectionId, Class<S> serviceApiType);
+	
 }

@@ -35,20 +35,16 @@ public abstract class AbstractOAuth1ServiceProvider<S> implements OAuth1ServiceP
 		this.oauth1Operations = oauth1Operations;
 	}
 
-	public final String getConsumerKey() {
+	protected final String getConsumerKey() {
 		return consumerKey;
 	}
 
-	public final String getConsumerSecret() {
+	protected final String getConsumerSecret() {
 		return consumerSecret;
 	}
 
 	public final OAuth1Operations getOAuthOperations() {
 		return oauth1Operations;
-	}
-	
-	public String toString() {
-		return "[" + getClass().getName() + " consumerKey='" + consumerKey + "', consumerSecret='" + consumerSecret + "']";
 	}
 	
 }

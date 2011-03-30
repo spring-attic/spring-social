@@ -23,32 +23,14 @@ package org.springframework.social.oauth2;
  */
 public abstract class AbstractOAuth2ServiceProvider<S> implements OAuth2ServiceProvider<S> {
 
-	private final String clientId;
-	
-	private final String clientSecret;
-	
 	private final OAuth2Operations oauth2Operations;
 	
-	public AbstractOAuth2ServiceProvider(String clientId, String clientSecret, OAuth2Operations oauth2Operations) {
-		this.clientId = clientId;
-		this.clientSecret = clientSecret;
+	public AbstractOAuth2ServiceProvider(OAuth2Operations oauth2Operations) {
 		this.oauth2Operations = oauth2Operations;
-	}
-
-	public final String getClientId() {
-		return clientId;
-	}
-
-	public final String getClientSecret() {
-		return clientSecret;
 	}
 
 	public final OAuth2Operations getOAuthOperations() {
 		return oauth2Operations;
 	}
 	
-	public String toString() {
-		return "[" + getClass().getName() + " clientId='" + clientId + "', clientSecret='" + clientSecret + "']";
-	}
-		
 }

@@ -21,7 +21,7 @@ import org.springframework.social.oauth2.OAuth2Template;
 public class GowallaServiceProvider extends AbstractOAuth2ServiceProvider<GowallaApi> {
 
 	public GowallaServiceProvider(String clientId, String clientSecret) {
-		super(clientId, clientSecret, new OAuth2Template(clientId, clientSecret, 
+		super(new OAuth2Template(clientId, clientSecret, 
 			"https://gowalla.com/api/oauth/new?client_id={client_id}&redirect_uri={redirect_uri}&scope={scope}",
 			"https://gowalla.com/api/oauth/token"));
 	}

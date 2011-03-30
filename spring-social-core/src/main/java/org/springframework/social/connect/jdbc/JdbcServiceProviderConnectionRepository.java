@@ -29,11 +29,13 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.social.connect.ServiceProviderConnection;
+import org.springframework.social.connect.ServiceProviderConnectionFactory;
 import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
+import org.springframework.social.connect.ServiceProviderConnectionLocator;
 import org.springframework.social.connect.ServiceProviderConnectionMemento;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
 
-public class JdbcServiceProviderConnectionRepository implements ServiceProviderConnectionRepository {
+public class JdbcServiceProviderConnectionRepository implements ServiceProviderConnectionRepository, ServiceProviderConnectionLocator {
 
 	private final JdbcTemplate jdbcTemplate;
 	
@@ -48,6 +50,8 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		this.connectionInsert = createConnectionInsertStatement();
 	}
 
+	// implementing ServiceProviderConnectionRepository
+	
 	public Map<String, List<ServiceProviderConnection<?>>> findConnections(Serializable accountId) {
 		List<ServiceProviderConnection<?>> connections = jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where accountId = ? by providerId, id", connectionMapper, accountId);
 		Map<String, List<ServiceProviderConnection<?>>> providerConnectionMap = new HashMap<String, List<ServiceProviderConnection<?>>>();
@@ -99,8 +103,24 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		jdbcTemplate.update("delete from ServiceProviderConnection where id = ? and accountId = ?", connectionId, accountId);
 	}
 
-	// internal helpers
+	// implementing ServiceProviderConnectionLocator
+
+	@SuppressWarnings("unchecked")
+	public <S> ServiceProviderConnection<S> getPrimaryConnection(Serializable accountId, Class<S> serviceApiType) {
+		ServiceProviderConnectionFactory<S> connectionFactory = connectionFactoryLocator.getConnectionFactory(serviceApiType);
+		List<ServiceProviderConnection<?>> connections = findConnectionsToProvider(accountId, connectionFactory.getProviderId());
+		if (connections.size() > 0) {
+			return (ServiceProviderConnection<S>) connections.get(0);
+		} else {
+			throw new IllegalStateException("No connection between account " + accountId + " and ServiceProvider API [" + serviceApiType.getName() +  "] exists");			
+		}
+	}
 	
+	@SuppressWarnings("unchecked")
+	public <S> ServiceProviderConnection<S> getConnection(Serializable accountId, Long connectionId, Class<S> serviceApiType) {
+		return (ServiceProviderConnection<S>) findConnectionById(accountId, connectionId);
+	}
+
 	private final static String SELECT_FROM_SERVICE_PROVIDER_CONNECTION = "select accountId, providerId, id, providerAccountId, profileName, profileUrl, profilePictureUrl, allowSignIn, accessToken, secret, refreshToken from ServiceProviderConnection";
 		
 	private final ServiceProviderConnectionRowMapper connectionMapper = new ServiceProviderConnectionRowMapper();
