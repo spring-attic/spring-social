@@ -184,7 +184,7 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="{providerId}/{connectionId}", method=RequestMethod.DELETE)
 	public String removeConnections(@PathVariable String providerId, @PathVariable Long connectionId, WebRequest request) {
-		connectionRepository.removeConnection(connectionId);
+		connectionRepository.removeConnection(accountIdExtractor.extractAccountId(request), connectionId);
 		return redirectToProviderConnect(providerId);
 	}
 	

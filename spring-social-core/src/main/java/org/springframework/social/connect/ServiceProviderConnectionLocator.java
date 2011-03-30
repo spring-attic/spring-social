@@ -16,16 +16,13 @@
 package org.springframework.social.connect;
 
 import java.io.Serializable;
-import java.util.List;
 
 import org.springframework.social.ServiceProvider;
 
 public interface ServiceProviderConnectionLocator {
 
-	<S> List<ServiceProviderConnection<S>> all(Serializable accountId, Class<? extends ServiceProvider<S>> serviceProviderClass);
-	
 	<S> ServiceProviderConnection<S> primary(Serializable accountId, Class<? extends ServiceProvider<S>> serviceProviderClass);
 
-	<S> ServiceProviderConnection<S> single(Serializable accountId, Class<? extends ServiceProvider<S>> serviceProviderClass, Integer connectionId);
+	<S> ServiceProviderConnection<S> single(Integer connectionId, Class<? extends ServiceProvider<S>> serviceProviderClass);
 
 }

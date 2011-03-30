@@ -66,12 +66,12 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where accountId = ? and providerId = ? order by providerId, id", connectionMapper, accountId, providerId);
 	}
 
-	public List<ServiceProviderConnection<?>> findConnectionsById(List<Long> connectionIds) {
-		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where id in (?) order by providerId, id", connectionMapper, connectionIds);
+	public List<ServiceProviderConnection<?>> findConnectionsById(Serializable accountId, List<Long> connectionIds) {
+		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where id in (?) and accountId = ? order by providerId, id", connectionMapper, connectionIds, accountId);
 	}
 
-	public ServiceProviderConnection<?> findConnectionById(Long connectionId) {
-		return jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where id = ?", connectionMapper, connectionId);
+	public ServiceProviderConnection<?> findConnectionById(Serializable accountId, Long connectionId) {
+		return jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where id = ? and accountId", connectionMapper, connectionId, accountId);
 	}
 
 	public List<ServiceProviderConnection<?>> findConnectionsToProviderAccount(String providerId, String providerAccountId) {
@@ -92,11 +92,11 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 	}
 
 	public void removeConnections(Serializable accountId, String providerId) {
-		jdbcTemplate.update("delete from ServiceProviderConnection where accountId = ? and providerId = ?");
+		jdbcTemplate.update("delete from ServiceProviderConnection where accountId = ? and providerId = ?", accountId, providerId);
 	}
 
-	public void removeConnection(Long connectionId) {
-		jdbcTemplate.update("delete from ServiceProviderConnection where id = ?");
+	public void removeConnection(Serializable accountId, Long connectionId) {
+		jdbcTemplate.update("delete from ServiceProviderConnection where id = ? and accountId = ?", connectionId, accountId);
 	}
 
 	// internal helpers
