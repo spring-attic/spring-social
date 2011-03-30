@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect.support;
+package org.springframework.social.connect;
 
 import java.io.Serializable;
 
@@ -37,14 +37,14 @@ public class ServiceProviderConnectionMemento implements Serializable {
 	
 	private String accessToken;
 	
-	private String accessSecret;
+	private String secret;
 	
 	private String refreshToken;
 
 	public ServiceProviderConnectionMemento(Long id, Serializable accountId, String providerId,
 			String providerAccountId, String profileName, String profileUrl, String profilePictureUrl,
 			boolean allowSignIn,
-			String accessToken, String accessSecret, String refreshToken) {
+			String accessToken, String secret, String refreshToken) {
 		this.id = id;
 		this.accountId = accountId;
 		this.providerId = providerId;
@@ -54,7 +54,7 @@ public class ServiceProviderConnectionMemento implements Serializable {
 		this.profilePictureUrl = profilePictureUrl;
 		this.allowSignIn = allowSignIn;
 		this.accessToken = accessToken;
-		this.accessSecret = accessSecret;
+		this.secret = secret;
 		this.refreshToken = refreshToken;
 	}
 
@@ -94,8 +94,8 @@ public class ServiceProviderConnectionMemento implements Serializable {
 		return accessToken;
 	}
 
-	public String getAccessSecret() {
-		return accessSecret;
+	public String getSecret() {
+		return secret;
 	}
 
 	public String getRefreshToken() {

@@ -15,7 +15,6 @@
  */
 package org.springframework.social.connect;
 
-import org.springframework.social.connect.support.ServiceProviderConnectionMemento;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;

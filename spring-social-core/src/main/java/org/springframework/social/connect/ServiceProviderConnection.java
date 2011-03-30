@@ -112,5 +112,14 @@ public interface ServiceProviderConnection<S> {
 	 * Creates a copy of this connection with the local accountId property set to the value provided.
 	 */
 	public ServiceProviderConnection<S> assignAccountId(Serializable accountId);
+	
+	/**
+	 * Creates a memento can be used to persist the state of this connection for restoration later.
+	 */
+	public ServiceProviderConnectionMemento createMemento();
 
+	/**
+	 * Creates a copy of this connection with the id property set to the value provided.
+	 */
+	public ServiceProviderConnection<S> assignId(Long id);
 }

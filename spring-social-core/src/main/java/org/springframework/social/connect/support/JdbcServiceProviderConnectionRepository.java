@@ -19,15 +19,18 @@ import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionFactory;
+import org.springframework.social.connect.ServiceProviderConnectionMemento;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
 
 public class JdbcServiceProviderConnectionRepository implements ServiceProviderConnectionRepository {
@@ -42,6 +45,7 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		this.jdbcTemplate = jdbcTemplate;
 		this.textEncryptor = textEncryptor;
 		this.connectionFactory = connectionFactory;
+		this.connectionInsert = createConnectionInsertStatement();
 	}
 
 	public Map<String, List<ServiceProviderConnection<?>>> findConnections(Serializable accountId) {
@@ -79,11 +83,12 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 			if (connection.getAccountId() == null) {
 				throw new IllegalArgumentException("Unable to save new connection because it has not been assigned to a local account; call ServiceProviderConnection#assignAccountId(Serializable) before saving");
 			}
-			// TODO
+			Long connectionId = insertConnection(connection.createMemento());
+			return connection.assignId(connectionId);
 		} else {
-			// TODO
+			updateConnection(connection.createMemento());
+			return connection;
 		}
-		return null;
 	}
 
 	public void removeConnections(Serializable accountId, String providerId) {
@@ -94,6 +99,8 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		jdbcTemplate.update("delete from ServiceProviderConnection where id = ?");
 	}
 
+	// internal helpers
+	
 	private final static String SELECT_FROM_SERVICE_PROVIDER_CONNECTION = "select accountId, providerId, id, providerAccountId, profileName, profileUrl, profilePictureUrl, allowSignIn, accessToken, secret, refreshToken from ServiceProviderConnection";
 		
 	private final ServiceProviderConnectionRowMapper connectionMapper = new ServiceProviderConnectionRowMapper();
@@ -112,8 +119,44 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		}
 		
 		private String decrypt(String encryptedText) {
-			return textEncryptor.decrypt(encryptedText);
+			return encryptedText != null ? textEncryptor.decrypt(encryptedText) : encryptedText;
 		}
 		
 	}
+
+	private final SimpleJdbcInsert connectionInsert;
+	
+	private SimpleJdbcInsert createConnectionInsertStatement() {
+		SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate);
+		insert.setTableName("ServiceProviderConnection");
+		insert.setColumnNames(Arrays.asList("accountId", "providerId", "providerAccountId", "profileName", "profileUrl", "profilePictureUrl", "allowSignIn", "accessToken", "secret", "refreshToken"));
+		insert.setGeneratedKeyName("id");
+		return insert;
+	}
+
+	private Long insertConnection(ServiceProviderConnectionMemento memento) {
+		Map<String, Object> args = new HashMap<String, Object>();
+		args.put("accountId", memento.getAccountId());
+		args.put("providerId", memento.getProviderId());
+		args.put("providerAccountId", memento.getProviderAccountId());
+		args.put("profileName", memento.getProfileName());
+		args.put("profileUrl", memento.getProfileUrl());
+		args.put("profilePictureUrl", memento.getProfilePictureUrl());
+		args.put("allowSignIn", memento.isAllowSignIn());
+		args.put("accessToken", encrypt(memento.getAccessToken()));
+		args.put("secret", encrypt(memento.getSecret()));
+		args.put("refreshToken", encrypt(memento.getRefreshToken()));
+		return (Long) connectionInsert.executeAndReturnKey(args);
+	}
+
+	private void updateConnection(ServiceProviderConnectionMemento memento) {
+		jdbcTemplate.update("update ServiceProviderConnection set accountId = ?, providerId = ?, providerAccountId = ?, profileName = ?, profileUrl = ?, profilePictureUrl = ?, allowSignIn = ?, accessToken = ?, secret = ?, refreshToken = ? where id = ?", 
+				memento.getAccountId(), memento.getProviderId(), memento.getProviderAccountId(), memento.getProfileName(), memento.getProfileUrl(), memento.getProfilePictureUrl(), memento.isAllowSignIn(),
+				encrypt(memento.getAccessToken()), encrypt(memento.getSecret()), encrypt(memento.getRefreshToken()), memento.getId());
+	}
+
+	private String encrypt(String text) {
+		return text != null ? textEncryptor.encrypt(text) : text;
+	}	
+	
 }
