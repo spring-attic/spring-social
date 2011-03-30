@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect.support;
+package org.springframework.social.connect;
 
 import java.io.Serializable;
 
-import org.springframework.social.connect.ServiceProviderConnection;
-import org.springframework.social.connect.ServiceProviderConnectionMemento;
 import org.springframework.social.connect.spi.ProviderProfile;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 
-public class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
+class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
 
 	private Long id;
 	

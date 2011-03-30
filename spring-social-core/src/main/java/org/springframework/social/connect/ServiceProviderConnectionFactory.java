@@ -1,31 +1,51 @@
-/*
- * Copyright 2011 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.springframework.social.connect;
 
-import org.springframework.social.oauth1.OAuth1ServiceProvider;
-import org.springframework.social.oauth1.OAuthToken;
-import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.OAuth2ServiceProvider;
+import org.springframework.social.ServiceProvider;
+import org.springframework.social.connect.spi.ServiceApiAdapter;
 
-public interface ServiceProviderConnectionFactory {
+public abstract class ServiceProviderConnectionFactory<S> {
 
-	<S> ServiceProviderConnection<S> createOAuth1Connection(OAuth1ServiceProvider<S> provider, OAuthToken accessToken);
+	private String providerId;
 	
-	<S> ServiceProviderConnection<S> createOAuth2Connection(OAuth2ServiceProvider<S> provider, AccessGrant accessGrant);
+	private ServiceProvider<S> serviceProvider;
 
-	ServiceProviderConnection<?> createConnection(ServiceProviderConnectionMemento connectionMemento);
+	private ServiceApiAdapter<S> serviceApiAdapter;
+	
+	private boolean allowSignIn = true;
+	
+	public ServiceProviderConnectionFactory(String providerId, ServiceProvider<S> serviceProvider) {
+		this(providerId, serviceProvider, null);
+	}
+	
+	public ServiceProviderConnectionFactory(String providerId, ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
+		this.providerId = providerId;
+		this.serviceProvider = serviceProvider;
+		this.serviceApiAdapter = serviceApiAdapter != null ? serviceApiAdapter : serviceApiAdapter(serviceProvider);
+	}
+
+	protected String getProviderId() {
+		return providerId;
+	}
+
+	protected ServiceProvider<S> getServiceProvider() {
+		return serviceProvider;
+	}
+
+	protected ServiceApiAdapter<S> getServiceApiAdapter() {
+		return serviceApiAdapter;
+	}
+
+	protected boolean isAllowSignIn() {
+		return allowSignIn;
+	}
+
+	public abstract ServiceProviderConnection<S> createConnection(ServiceProviderConnectionMemento connectionMemento);
+
+	// internal helpers
+	
+	@SuppressWarnings("unchecked")
+	private ServiceApiAdapter<S> serviceApiAdapter(ServiceProvider<S> serviceProvider) {
+		return (ServiceApiAdapter<S>) (serviceProvider instanceof ServiceApiAdapter ? serviceProvider : NullServiceApiAdapter.INSTANCE);
+	}
 	
 }

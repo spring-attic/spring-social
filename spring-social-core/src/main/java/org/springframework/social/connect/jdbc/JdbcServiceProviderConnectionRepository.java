@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect.support;
+package org.springframework.social.connect.jdbc;
 
 import java.io.Serializable;
 import java.sql.ResultSet;
@@ -29,7 +29,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.social.connect.ServiceProviderConnection;
-import org.springframework.social.connect.ServiceProviderConnectionFactory;
+import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
 import org.springframework.social.connect.ServiceProviderConnectionMemento;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
 
@@ -39,12 +39,12 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 	
 	private final TextEncryptor textEncryptor;
 
-	private final ServiceProviderConnectionFactory connectionFactory;
+	private final ServiceProviderConnectionFactoryLocator connectionFactoryLocator;
 	
-	public JdbcServiceProviderConnectionRepository(JdbcTemplate jdbcTemplate, TextEncryptor textEncryptor, ServiceProviderConnectionFactory connectionFactory) {
+	public JdbcServiceProviderConnectionRepository(JdbcTemplate jdbcTemplate, TextEncryptor textEncryptor, ServiceProviderConnectionFactoryLocator connectionFactoryLocator) {
 		this.jdbcTemplate = jdbcTemplate;
 		this.textEncryptor = textEncryptor;
-		this.connectionFactory = connectionFactory;
+		this.connectionFactoryLocator = connectionFactoryLocator;
 		this.connectionInsert = createConnectionInsertStatement();
 	}
 
@@ -108,10 +108,11 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 	private class ServiceProviderConnectionRowMapper implements RowMapper<ServiceProviderConnection<?>> {
 		
 		public ServiceProviderConnection<?> mapRow(ResultSet rs, int rowNum) throws SQLException {
-			return connectionFactory.createConnection(connectionMemento(rs));
+			ServiceProviderConnectionMemento connectionMemento = mapConnectionMemento(rs);
+			return connectionFactoryLocator.getConnectionFactory(connectionMemento.getProviderId()).createConnection(connectionMemento);
 		}
 		
-		private ServiceProviderConnectionMemento connectionMemento(ResultSet rs) throws SQLException {
+		private ServiceProviderConnectionMemento mapConnectionMemento(ResultSet rs) throws SQLException {
 			return new ServiceProviderConnectionMemento(rs.getLong("id"), (Serializable) rs.getObject("accountId"), rs.getString("providerId"), rs.getString("providerAccountId"),
 					rs.getString("profileName"), rs.getString("profileUrl"), rs.getString("profilePictureUrl"),
 					rs.getBoolean("allowSignin"),

@@ -15,22 +15,20 @@
  */
 package org.springframework.social.web.connect;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.social.ServiceProvider;
+import org.springframework.social.connect.OAuth1ServiceProviderConnectionFactory;
+import org.springframework.social.connect.OAuth2ServiceProviderConnectionFactory;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionFactory;
+import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
-import org.springframework.social.connect.ServiceProviderRegistry;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
-import org.springframework.social.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.OAuth2ServiceProvider;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
@@ -62,22 +60,19 @@ public class ConnectController  {
 
 	private AccountIdExtractor accountIdExtractor;
 
-	private ServiceProviderRegistry serviceProviderRegistry;
+	private ServiceProviderConnectionFactoryLocator connectionFactoryLocator;
 	
 	private ServiceProviderConnectionRepository connectionRepository;
-	
-	private ServiceProviderConnectionFactory connectionFactory;
 	
 	/**
 	 * Constructs a ConnectController.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
 	 */
 	public ConnectController(String applicationUrl,
-			ServiceProviderRegistry serviceProviderRegistry, ServiceProviderConnectionRepository connectionRepository, ServiceProviderConnectionFactory connectionFactory) {
+			ServiceProviderConnectionFactoryLocator connectionFactoryRegistry, ServiceProviderConnectionRepository connectionRepository) {
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
-		this.serviceProviderRegistry = serviceProviderRegistry;
+		this.connectionFactoryLocator = connectionFactoryRegistry;
 		this.connectionRepository = connectionRepository;
-		this.connectionFactory = connectionFactory;
 		this.interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
 		this.accountIdExtractor = new DefaultAccountIdExtractor();		
 	}
@@ -126,15 +121,17 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.POST)
 	public String connect(@PathVariable String providerId, @RequestParam(required=false) String scope, WebRequest request) {
-		ServiceProvider<?> provider = serviceProviderRegistry.getServiceProviderById(providerId);
-		preConnect(provider, request);
-		if (provider instanceof OAuth1ServiceProvider) {
-			OAuth1Operations oauth1Ops = ((OAuth1ServiceProvider<?>) provider).getOAuthOperations();
+		ServiceProviderConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
+		preConnect(connectionFactory, request);
+		if (connectionFactory instanceof OAuth1ServiceProviderConnectionFactory) {
+			OAuth1Operations oauth1Ops = ((OAuth1ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations();
 			OAuthToken requestToken = oauth1Ops.fetchNewRequestToken(callbackUrl(providerId));
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
 			return "redirect:" + oauth1Ops.buildAuthorizeUrl(requestToken.getValue(), callbackUrl(providerId));
+		} else if (connectionFactory instanceof OAuth2ServiceProviderConnectionFactory) {
+			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(callbackUrl(providerId), scope);
 		} else {
-			return "redirect:" + ((OAuth2ServiceProvider<?>) provider).getOAuthOperations().buildAuthorizeUrl(callbackUrl(providerId), scope);
+			throw new IllegalStateException("Connections to provider '" + providerId + "' not supported");
 		}
 	}
 
@@ -146,11 +143,11 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="oauth_token")
 	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier", required=false) String verifier, WebRequest request) {
-		OAuth1ServiceProvider<?> provider = serviceProviderRegistry.getServiceProviderById(providerId, OAuth1ServiceProvider.class);
-		OAuthToken accessToken = provider.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier));
-		ServiceProviderConnection<?> connection = connectionFactory.createOAuth1Connection(provider, accessToken).assignAccountId(accountIdExtractor.extractAccountId(request));
+		OAuth1ServiceProviderConnectionFactory<?> connectionFactory = (OAuth1ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
+		OAuthToken accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier));
+		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessToken).assignAccountId(accountIdExtractor.extractAccountId(request));
 		connection = connectionRepository.saveConnection(connection);	
-		postConnect(provider, connection, request);
+		postConnect(connectionFactory, connection, request);
 		return redirectToProviderConnect(providerId);
 	}
 
@@ -161,11 +158,11 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="code")
 	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
-		OAuth2ServiceProvider<?> provider = serviceProviderRegistry.getServiceProviderById(providerId, OAuth2ServiceProvider.class);
-		AccessGrant accessGrant = provider.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId));
-		ServiceProviderConnection<?> connection = connectionFactory.createOAuth2Connection(provider, accessGrant).assignAccountId(accountIdExtractor.extractAccountId(request));
+		OAuth2ServiceProviderConnectionFactory<?> connectionFactory = (OAuth2ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
+		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId));
+		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessGrant).assignAccountId(accountIdExtractor.extractAccountId(request));
 		connection = connectionRepository.saveConnection(connection);
-		postConnect(provider, connection, request);
+		postConnect(connectionFactory, connection, request);
 		return redirectToProviderConnect(providerId);
 	}
 
@@ -191,25 +188,11 @@ public class ConnectController  {
 	
 	// internal helpers
 
-	private void preConnect(ServiceProvider<?> provider, WebRequest request) {
-		for (ConnectInterceptor interceptor : interceptingConnectionsTo(provider)) {
-			interceptor.preConnect(provider, request);
-		}
+	private void preConnect(ServiceProviderConnectionFactory<?> connectionFactory, WebRequest request) {
 	}
 
-	private void postConnect(ServiceProvider<?> provider, ServiceProviderConnection<?> connection, WebRequest request) {
-		for (ConnectInterceptor interceptor : interceptingConnectionsTo(provider)) {
-			interceptor.postConnect(provider, connection, request);
-		}
-	}
-
-	private List<ConnectInterceptor<?>> interceptingConnectionsTo(ServiceProvider<?> provider) {
-		Class<?> serviceType = GenericTypeResolver.resolveTypeArgument(provider.getClass(), ServiceProvider.class);
-		List<ConnectInterceptor<?>> typedInterceptors = interceptors.get(serviceType);
-		if (typedInterceptors == null) {
-			typedInterceptors = Collections.emptyList();
-		}
-		return typedInterceptors;
+	private void postConnect(ServiceProviderConnectionFactory<?> connectionFactory, ServiceProviderConnection<?> connection, WebRequest request) {
+		
 	}
 
 	private String baseViewPath(String providerId) {

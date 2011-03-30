@@ -15,14 +15,9 @@
  */
 package org.springframework.social.connect;
 
-import java.io.Serializable;
 
-import org.springframework.social.ServiceProvider;
+public interface ServiceProviderConnectionFactoryLocator {
 
-public interface ServiceProviderConnectionLocator {
-
-	<S> ServiceProviderConnection<S> primary(Serializable accountId, Class<? extends ServiceProvider<S>> serviceProviderClass);
-
-	<S> ServiceProviderConnection<S> single(Integer connectionId, Class<? extends ServiceProvider<S>> serviceProviderClass);
-
+	ServiceProviderConnectionFactory<?> getConnectionFactory(String providerId);
+	
 }
