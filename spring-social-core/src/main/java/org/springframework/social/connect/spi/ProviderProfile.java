@@ -13,20 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect;
+package org.springframework.social.connect.spi;
 
-import org.springframework.social.ServiceProvider;
+public class ProviderProfile {
 
-public interface ServiceProviderRegistry {
-
-	ServiceProvider<?> getServiceProviderById(String providerId);
+	private String id;
 	
-	<P extends ServiceProvider<?>> P getServiceProviderById(String providerId, Class<P> providerClass);
-	
-	<P extends ServiceProvider<?>> P getServiceProviderByClass(Class<P> providerClass);
+	private String name;
 
-	<S> ServiceProvider<S> getServiceProviderByApi(Class<S> serviceApiType);
+	private String url;
 	
-	String providerId(ServiceProvider<?> provider);
+	private String pictureUrl;
+
+	public ProviderProfile(String id, String name, String url, String pictureUrl) {
+		this.id = id;
+		this.name = name;
+		this.url = url;
+		this.pictureUrl = pictureUrl;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public String getPictureUrl() {
+		return pictureUrl;
+	}
 	
 }

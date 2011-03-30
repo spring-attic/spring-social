@@ -13,20 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect;
+package org.springframework.social.connect.support;
 
-import org.springframework.social.ServiceProvider;
-
-public interface ServiceProviderRegistry {
-
-	ServiceProvider<?> getServiceProviderById(String providerId);
+class ApiTokens {
 	
-	<P extends ServiceProvider<?>> P getServiceProviderById(String providerId, Class<P> providerClass);
+	private String accessToken;
 	
-	<P extends ServiceProvider<?>> P getServiceProviderByClass(Class<P> providerClass);
+	private String secret;
+	
+	private String refreshToken;
 
-	<S> ServiceProvider<S> getServiceProviderByApi(Class<S> serviceApiType);
-	
-	String providerId(ServiceProvider<?> provider);
+	public ApiTokens(String accessToken, String secret, String refreshToken) {
+		this.accessToken = accessToken;
+		this.secret = secret;
+		this.refreshToken = refreshToken;
+	}
+
+	public String getAccessToken() {
+		return accessToken;
+	}
+
+	public String getSecret() {
+		return secret;
+	}
+
+	public String getRefreshToken() {
+		return refreshToken;
+	}
 	
 }

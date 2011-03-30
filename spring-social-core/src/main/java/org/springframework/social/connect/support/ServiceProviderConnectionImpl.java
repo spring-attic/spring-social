@@ -19,66 +19,126 @@ import java.io.Serializable;
 
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionMemento;
+import org.springframework.social.connect.spi.ProviderProfile;
+import org.springframework.social.connect.spi.ServiceApiAdapter;
 
 public class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
 
+	private Long id;
+	
+	private Serializable accountId;
+	
+	private String providerId;
+	
+	private ProviderProfile profile;
+	
+	private boolean allowSignIn;
+	
+	private ApiTokens apiTokens;
+	
+	private S serviceApi;
+	
+	private ServiceApiAdapter<S> serviceApiAdapter;
+	
+ 	public ServiceProviderConnectionImpl(String providerId, boolean allowSignIn, ApiTokens apiTokens, S serviceApi, ServiceApiAdapter<S> serviceApiAdapter) {
+ 		this(null, null, providerId, null, allowSignIn, apiTokens, serviceApi, serviceApiAdapter);
+ 	}
+ 	
+	public ServiceProviderConnectionImpl(ServiceProviderConnectionMemento connectionMemento, S serviceApi, ServiceApiAdapter<S> serviceApiAdapter) {
+		this.id = connectionMemento.getId();
+		this.accountId = connectionMemento.getAccountId();
+		this.providerId = connectionMemento.getProviderId();
+		this.profile = new ProviderProfile(connectionMemento.getProviderAccountId(), connectionMemento.getProfileName(), connectionMemento.getProfileUrl(), connectionMemento.getProfilePictureUrl());
+		this.allowSignIn = connectionMemento.isAllowSignIn();
+		this.apiTokens = new ApiTokens(connectionMemento.getAccessToken(), connectionMemento.getSecret(), connectionMemento.getRefreshToken());
+		this.serviceApi = serviceApi;
+		this.serviceApiAdapter = serviceApiAdapter;
+	}
+ 	
 	public Long getId() {
-		return null;
+		return id;
 	}
 
 	public Serializable getAccountId() {
-		return null;
+		return accountId;
 	}
 
 	public String getProviderId() {
-		return null;
+		return providerId;
 	}
 
 	public String getProviderAccountId() {
-		return null;
+		return getProviderProfile().getId();
 	}
 
 	public String getProfileName() {
-		return null;
+		return getProviderProfile().getName();
 	}
 
 	public String getProfileUrl() {
-		return null;
+		return getProviderProfile().getUrl();
 	}
 
 	public String getProfilePictureUrl() {
-		return null;
+		return getProviderProfile().getPictureUrl();
 	}
 
-	public boolean supportsSignIn() {
-		return false;
+	public boolean allowSignIn() {
+		return allowSignIn;
 	}
 
 	public boolean test() {
-		return false;
+		return serviceApiAdapter.test(serviceApi);
 	}
 
 	public void updateStatus(String message) {
+		serviceApiAdapter.updateStatus(serviceApi, message);
 	}
 
 	public void sync() {
+		this.profile = fetchProfile();
 	}
 
 	public S getServiceApi() {
-		return null;
+		return serviceApi;
 	}
 
 	public ServiceProviderConnection<S> assignAccountId(Serializable accountId) {
-		return null;
+		return new ServiceProviderConnectionImpl<S>(id, accountId, providerId, profile, allowSignIn, apiTokens, serviceApi, serviceApiAdapter);
 	}
 	
 	public ServiceProviderConnectionMemento createMemento() {
-		return null;
+		ProviderProfile profile = getProviderProfile();
+		return new ServiceProviderConnectionMemento(id, accountId, providerId, profile.getId(), profile.getName(), profile.getUrl(), profile.getPictureUrl(),
+				allowSignIn, apiTokens.getAccessToken(), apiTokens.getSecret(), apiTokens.getRefreshToken());
 	}
 
 	public ServiceProviderConnection<S> assignId(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return new ServiceProviderConnectionImpl<S>(id, accountId, providerId, profile, allowSignIn, apiTokens, serviceApi, serviceApiAdapter);
+	}
+	
+	// internal helpers
+
+ 	private ServiceProviderConnectionImpl(Long id, Serializable accountId, String providerId, ProviderProfile profile,
+ 			boolean allowSignIn, ApiTokens apiTokens, S serviceApi, ServiceApiAdapter<S> serviceApiAdapter) {
+		this.id = id;
+		this.accountId = accountId;
+		this.providerId = providerId;
+		this.profile = profile;
+		this.allowSignIn = allowSignIn;
+		this.serviceApi = serviceApi;
+		this.serviceApiAdapter = serviceApiAdapter;
+	}
+ 	
+	private ProviderProfile getProviderProfile() {
+		if (profile == null) {
+			profile = fetchProfile();
+		}
+		return profile;
+	}
+	
+	private ProviderProfile fetchProfile() {
+		return serviceApiAdapter.getProfile(serviceApi);
 	}
 
 }

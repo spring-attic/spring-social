@@ -79,7 +79,7 @@ public interface ServiceProviderConnection<S> {
 	 * If this connection can be used to sign the local user in.
 	 * True if sign-in support was specified when the connection was established and nobody else is connected to the {@link #getProviderAccountId() providerAccount}.
 	 */
-	boolean supportsSignIn();
+	boolean allowSignIn();
 
 	/**
 	 * Test this connection.

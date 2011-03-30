@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect;
+package org.springframework.social.connect.spi;
 
-import org.springframework.social.ServiceProvider;
-
-public interface ServiceProviderRegistry {
-
-	ServiceProvider<?> getServiceProviderById(String providerId);
+public interface ServiceApiAdapter<S> {
 	
-	<P extends ServiceProvider<?>> P getServiceProviderById(String providerId, Class<P> providerClass);
+	boolean test(S serviceApi);
 	
-	<P extends ServiceProvider<?>> P getServiceProviderByClass(Class<P> providerClass);
-
-	<S> ServiceProvider<S> getServiceProviderByApi(Class<S> serviceApiType);
+	ProviderProfile getProfile(S serviceApi);
 	
-	String providerId(ServiceProvider<?> provider);
+	void updateStatus(S serviceApi, String message);
 	
 }

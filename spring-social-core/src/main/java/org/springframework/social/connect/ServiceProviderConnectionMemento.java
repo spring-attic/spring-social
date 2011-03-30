@@ -17,6 +17,7 @@ package org.springframework.social.connect;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class ServiceProviderConnectionMemento implements Serializable {
 
 	private Long id;

@@ -125,7 +125,7 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.POST)
 	public String connect(@PathVariable String providerId, @RequestParam(required=false) String scope, WebRequest request) {
-		ServiceProvider<?> provider = serviceProviderRegistry.getServiceProvider(providerId);
+		ServiceProvider<?> provider = serviceProviderRegistry.getServiceProviderById(providerId);
 		preConnect(provider, request);
 		if (provider instanceof OAuth1ServiceProvider) {
 			OAuth1Operations oauth1Ops = ((OAuth1ServiceProvider<?>) provider).getOAuthOperations();
@@ -145,7 +145,7 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="oauth_token")
 	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier", required=false) String verifier, WebRequest request) {
-		OAuth1ServiceProvider<?> provider = serviceProviderRegistry.getServiceProvider(providerId, OAuth1ServiceProvider.class);
+		OAuth1ServiceProvider<?> provider = serviceProviderRegistry.getServiceProviderById(providerId, OAuth1ServiceProvider.class);
 		OAuthToken accessToken = provider.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier));
 		ServiceProviderConnection<?> connection = connectionFactory.createOAuth1Connection(provider, accessToken).assignAccountId(accountIdExtractor.extractAccountId(request));
 		connection = connectionRepository.saveConnection(connection);	
@@ -160,7 +160,7 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="code")
 	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
-		OAuth2ServiceProvider<?> provider = serviceProviderRegistry.getServiceProvider(providerId, OAuth2ServiceProvider.class);
+		OAuth2ServiceProvider<?> provider = serviceProviderRegistry.getServiceProviderById(providerId, OAuth2ServiceProvider.class);
 		AccessGrant accessGrant = provider.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId));
 		ServiceProviderConnection<?> connection = connectionFactory.createOAuth2Connection(provider, accessGrant).assignAccountId(accountIdExtractor.extractAccountId(request));
 		connection = connectionRepository.saveConnection(connection);

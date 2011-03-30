@@ -1,5 +1,6 @@
 package org.springframework.social.connect.support;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 import org.junit.Before;
@@ -29,16 +30,28 @@ public class MapServiceProviderRegistryTest {
 	
 	@Test
 	public void getServiceProviderById() {
-		assertSame(twitter, registry.getServiceProvider("twitter"));
-		assertSame(facebook, registry.getServiceProvider("facebook"));
-		assertSame(pivotal, registry.getServiceProvider("pivotal"));		
+		assertSame(twitter, registry.getServiceProviderById("twitter"));
+		assertSame(facebook, registry.getServiceProviderById("facebook"));
+		assertSame(pivotal, registry.getServiceProviderById("pivotal"));		
 	}
 	
 	@Test
 	public void getServiceProviderByClass() {
-		assertSame(twitter, registry.getServiceProvider(TwitterServiceProvider.class));
-		assertSame(facebook, registry.getServiceProvider(FacebookServiceProvider.class));
-		assertSame(pivotal, registry.getServiceProvider(PivotalTrackerServiceProvider.class));		
+		assertSame(twitter, registry.getServiceProviderByClass(TwitterServiceProvider.class));
+		assertSame(facebook, registry.getServiceProviderByClass(FacebookServiceProvider.class));
+		assertSame(pivotal, registry.getServiceProviderByClass(PivotalTrackerServiceProvider.class));		
+	}
+	
+	@Test
+	public void getServiceProviderByApi() {
+		assertSame(twitter, registry.getServiceProviderByApi(TwitterApi.class));
+		assertSame(facebook, registry.getServiceProviderByApi(FacebookApi.class));
+		assertSame(pivotal, registry.getServiceProviderByApi(PivotalTrackerApi.class));		
+	}
+	
+	@Test
+	public void providerId() {
+		assertEquals("twitter", registry.providerId(twitter));
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
@@ -51,7 +64,24 @@ public class MapServiceProviderRegistryTest {
 		registry.addServiceProvider("twitter2", twitter);
 	}
 	
+	@Test(expected=IllegalArgumentException.class)
+	public void registerDuplicateApi() {
+		registry.addServiceProvider("twitter2", new TwitterServiceProvider2());
+	}
+	
 	static class TwitterServiceProvider implements OAuth1ServiceProvider<TwitterApi> {
+
+		public OAuth1Operations getOAuthOperations() {
+			return null;
+		}
+
+		public TwitterApi getServiceApi(String accessToken, String secret) {
+			return null;
+		}
+		
+	}
+	
+	static class TwitterServiceProvider2 implements OAuth1ServiceProvider<TwitterApi> {
 
 		public OAuth1Operations getOAuthOperations() {
 			return null;
