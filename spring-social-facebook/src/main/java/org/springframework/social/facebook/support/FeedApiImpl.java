@@ -93,7 +93,7 @@ public class FeedApiImpl implements FeedApi {
 	public String updateStatus(String message) {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.set("message", message);
-		return (String) graphApi.publish("me", "feed", map).get("id");
+		return graphApi.publish("me", "feed", map);
 	}
 
 	public String postLink(String message, FacebookLink link) {
@@ -103,7 +103,7 @@ public class FeedApiImpl implements FeedApi {
 		map.set("caption", link.getCaption());
 		map.set("description", link.getDescription());
 		map.set("message", message);
-		return (String) graphApi.publish("me", "feed", map).get("id");
+		return graphApi.publish("me", "feed", map);
 	}
 
 	public void deleteFeedEntry(String id) {

@@ -16,7 +16,6 @@
 package org.springframework.social.facebook.support;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.social.facebook.GraphApi;
 import org.springframework.social.facebook.MediaApi;
@@ -69,7 +68,7 @@ public class MediaApiImpl implements MediaApi {
 		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
 		data.set("name", name);
 		data.set("message", description);
-		return (String) ((Map<String, Object>) graphApi.publish(ownerId, "albums", data)).get("id");
+		return graphApi.publish(ownerId, "albums", data);
 	}
 	
 	public List<Photo> getPhotos(String albumId) {

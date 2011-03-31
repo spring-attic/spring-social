@@ -24,6 +24,7 @@ import org.springframework.http.converter.json.MappingJacksonHttpMessageConverte
 import org.springframework.social.facebook.support.CheckinApiImpl;
 import org.springframework.social.facebook.support.CommentApiImpl;
 import org.springframework.social.facebook.support.EventsApiImpl;
+import org.springframework.social.facebook.support.FacebookResponseErrorHandler;
 import org.springframework.social.facebook.support.FeedApiImpl;
 import org.springframework.social.facebook.support.FriendsApiImpl;
 import org.springframework.social.facebook.support.GroupApiImpl;
@@ -77,7 +78,7 @@ public class FacebookTemplate implements FacebookApi {
 		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
 		restTemplate.getMessageConverters().add(json);
-
+		restTemplate.setErrorHandler(new FacebookResponseErrorHandler());
 		// sub-apis
 		userApi = new UserApiImpl(this);
 		checkinApi = new CheckinApiImpl(this);
@@ -139,14 +140,15 @@ public class FacebookTemplate implements FacebookApi {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public Map<String, Object> publish(String objectId, String connectionType, MultiValueMap<String, String> data) {
+	public String publish(String objectId, String connectionType, MultiValueMap<String, String> data) {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
-		return restTemplate.postForObject(CONNECTION_URL, requestData, Map.class, objectId, connectionType);
+		Map<String, String> response = restTemplate.postForObject(CONNECTION_URL, requestData, Map.class, objectId, connectionType);
+		return response.get("id");
 	}
 	
 	public void post(String objectId, String connectionType, MultiValueMap<String, String> data) {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
-		restTemplate.postForObject(CONNECTION_URL, requestData, String.class, objectId, connectionType);
+		System.out.println(restTemplate.postForObject(CONNECTION_URL, requestData, String.class, objectId, connectionType));
 	}
 	
 	public void delete(String objectId) {

@@ -16,7 +16,6 @@
 package org.springframework.social.facebook.support;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.social.facebook.EventsApi;
 import org.springframework.social.facebook.GraphApi;
@@ -60,7 +59,7 @@ public class EventsApiImpl implements EventsApi {
 		data.set("name", name);
 		data.set("start_time", startTime);
 		data.set("end_time", endTime);
-		return (String) ((Map<String, Object>) graphApi.publish("me", "events", data)).get("id");
+		return graphApi.publish("me", "events", data);
 	}
 	
 	public void deleteEvent(String eventId) {

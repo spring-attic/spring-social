@@ -64,6 +64,6 @@ public class CheckinApiImpl implements CheckinApi {
 			}
 			data.set("tags", tagsValue);
 		}
-		return (String) graphApi.publish("me", "checkins", data).get("id");
+		return graphApi.publish("me", "checkins", data);
 	}
 }

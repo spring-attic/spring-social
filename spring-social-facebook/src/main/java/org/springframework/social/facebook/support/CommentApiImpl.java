@@ -50,7 +50,7 @@ public class CommentApiImpl implements CommentApi {
 	public String addComment(String objectId, String message) {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.set("message", message);
-		return (String) graphApi.publish(objectId, "comments", map).get("id");
+		return graphApi.publish(objectId, "comments", map);
 	}
 
 	public void deleteComment(String objectId) {
