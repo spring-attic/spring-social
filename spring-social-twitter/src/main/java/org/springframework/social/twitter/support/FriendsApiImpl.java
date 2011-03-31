@@ -106,8 +106,7 @@ public class FriendsApiImpl implements FriendsApi {
 	}
 
 	private List<TwitterProfile> getFriendsOrFollowers(String url, Object... urlArgs) {
-		List<Map<String, Object>> response = restTemplate.getForObject(url, List.class, urlArgs);
-		return profileExtractor.extractObjects(response);
+		return profileExtractor.extractObjects((List<Map<String, Object>>) restTemplate.getForObject(url, List.class, urlArgs));
 	}
 
 	private String friendshipAssist(String url, Object urlArgs) {

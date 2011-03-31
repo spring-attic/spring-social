@@ -15,7 +15,6 @@
  */
 package org.springframework.social.twitter.support;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +24,7 @@ import org.springframework.social.twitter.TwitterTemplate;
 import org.springframework.social.twitter.UserApi;
 import org.springframework.social.twitter.support.extractors.TweetResponseExtractor;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
+import org.springframework.social.twitter.support.extractors.UserListResponseExtractor;
 import org.springframework.social.twitter.types.Tweet;
 import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.social.twitter.types.UserList;
@@ -43,12 +43,14 @@ public class ListsApiImpl implements ListsApi {
 	private final UserApi userApi;
 	private TwitterProfileResponseExtractor profileExtractor;
 	private TweetResponseExtractor tweetExtractor;
-
+	private UserListResponseExtractor userListExtractor;
+	
 	public ListsApiImpl(RestTemplate restTemplate, UserApi userApi) {
 		this.restTemplate = restTemplate;
 		this.userApi = userApi;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
 		this.tweetExtractor = new TweetResponseExtractor();
+		this.userListExtractor = new UserListResponseExtractor();
 	}
 
 	public List<UserList> getLists(long userId) {
@@ -121,12 +123,12 @@ public class ListsApiImpl implements ListsApi {
 
 	public UserList subscribe(long ownerId, long listId) {
 		Map<String, Object> response  = restTemplate.postForObject(LIST_SUBSCRIBERS_URL, "", Map.class, ownerId, listId);
-		return extractedTwitterListFromResponseMap(response);
+		return userListExtractor.extractObject(response);
 	}
 
 	public UserList subscribe(String ownerScreenName, String listSlug) {
 		Map<String, Object> response  = restTemplate.postForObject(LIST_SUBSCRIBERS_URL, "", Map.class, ownerScreenName, listSlug);
-		return extractedTwitterListFromResponseMap(response);
+		return userListExtractor.extractObject(response);
 	}
 
 	public void unsubscribe(long ownerId, long listId) {
@@ -186,16 +188,12 @@ public class ListsApiImpl implements ListsApi {
 	private List<UserList> getTwitterLists(String url, Object... urlArgs) {
 		Map<String, Object> response = restTemplate.getForObject(url, Map.class, urlArgs);
 		List<Map<String, Object>> listsList = (List<Map<String, Object>>) response.get("lists");
-		List<UserList> lists = new ArrayList<UserList>(listsList.size());
-		for (Map<String, Object> listMap : listsList) {
-			lists.add(extractedTwitterListFromResponseMap(listMap));
-		}
-		return lists;
+		return userListExtractor.extractObjects(listsList);
 	}
 
 	private UserList getTwitterList(Object... urlArgs) {
 		Map<String, Object> response = restTemplate.getForObject(USER_LIST_URL, Map.class, urlArgs);
-		return extractedTwitterListFromResponseMap(response);
+		return userListExtractor.extractObject(response);
 	}
 
 	private UserList saveList(String url, String name, String description, boolean isPublic, Object... urlArgs) {
@@ -204,7 +202,7 @@ public class ListsApiImpl implements ListsApi {
 		request.set("description", description);
 		request.set("mode", isPublic ? "public" : "private");
 		Map<String, Object> response = restTemplate.postForObject(url, request, Map.class, urlArgs);
-		return extractedTwitterListFromResponseMap(response);
+		return userListExtractor.extractObject(response);
 	}
 
 	private void deleteTwitterList(Object... urlArgs) {
@@ -221,22 +219,7 @@ public class ListsApiImpl implements ListsApi {
 		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
 		request.set(fieldName, joinedIds);
 		Map<String, Object> response = restTemplate.postForObject(CREATE_ALL_URL, request, Map.class, urlArgs);
-		return extractedTwitterListFromResponseMap(response);
-	}
-
-	private UserList extractedTwitterListFromResponseMap(Map<String, Object> listMap) {
-		long id = Long.valueOf(String.valueOf(listMap.get("id")));
-		String fullName = String.valueOf(listMap.get("full_name"));
-		String name = String.valueOf(listMap.get("name"));
-		String description = String.valueOf(listMap.get("description"));
-		String slug = String.valueOf(listMap.get("slug"));
-		boolean isPublic = String.valueOf(listMap.get("mode")).equals("public");
-		boolean isFollowing = Boolean.valueOf(String.valueOf(listMap.get("following")));
-		int memberCount = Integer.valueOf(String.valueOf(listMap.get("member_count")));
-		int subscriberCount = Integer.valueOf(String.valueOf(listMap.get("subscriber_count")));
-		String uriPath = String.valueOf(listMap.get("uri"));
-		UserList twitterList = new UserList(id, name, fullName, uriPath, description, slug, isPublic, isFollowing, memberCount, subscriberCount);
-		return twitterList;
+		return userListExtractor.extractObject(response);
 	}
 
 	static final String USER_LISTS_URL = TwitterTemplate.API_URL_BASE + "{user_id}/lists.json";

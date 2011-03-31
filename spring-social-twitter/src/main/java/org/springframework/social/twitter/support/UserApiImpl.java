@@ -15,12 +15,12 @@
  */
 package org.springframework.social.twitter.support;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.social.twitter.TwitterTemplate;
 import org.springframework.social.twitter.UserApi;
+import org.springframework.social.twitter.support.extractors.SuggestionCategoryResponseExtractor;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
 import org.springframework.social.twitter.types.SuggestionCategory;
 import org.springframework.social.twitter.types.TwitterProfile;
@@ -36,9 +36,12 @@ public class UserApiImpl implements UserApi {
 	
 	private TwitterProfileResponseExtractor profileExtractor;
 
+	private SuggestionCategoryResponseExtractor suggestionCategoryExtractor;
+
 	public UserApiImpl(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
+		this.suggestionCategoryExtractor = new SuggestionCategoryResponseExtractor();
 	}
 
 	public long getProfileId() {
@@ -56,8 +59,7 @@ public class UserApiImpl implements UserApi {
 	}
 
 	public TwitterProfile getUserProfile(String screenName) {
-		Map<String, Object> response = restTemplate.getForObject(USER_PROFILE_URL + "?screen_name={screenName}", Map.class,
-				screenName);
+		Map<String, Object> response = restTemplate.getForObject(USER_PROFILE_URL + "?screen_name={screenName}", Map.class, screenName);
 		return profileExtractor.extractObject(response);
 	}
 
@@ -79,25 +81,16 @@ public class UserApiImpl implements UserApi {
 	}
 	
 	public List<SuggestionCategory> getSuggestionCategories() {
-		List<Map<String, String>> categoryList = restTemplate.getForObject(SUGGESTION_CATEGORIES_URL, List.class);
-		List<SuggestionCategory> categories = new ArrayList<SuggestionCategory>();
-		for (Map<String, String> categoryMap : categoryList) {
-			categories.add(new SuggestionCategory(String.valueOf(categoryMap.get("name")), 
-					String.valueOf(categoryMap.get("slug")), 
-					Integer.valueOf(String.valueOf(categoryMap.get("size")))));
-		}
-		return categories;
+		return suggestionCategoryExtractor.extractObjects((List<Map<String, Object>>) restTemplate.getForObject(SUGGESTION_CATEGORIES_URL, List.class));
 	}
 
 	public List<TwitterProfile> getSuggestions(String slug) {
 		Map<String, List<Map<String, Object>>> suggestionsMap = restTemplate.getForObject(SUGGESTIONS_URL, Map.class, slug);
-		List<Map<String, Object>> userList = suggestionsMap.get("users");
-		return profileExtractor.extractObjects(userList);
+		return profileExtractor.extractObjects(suggestionsMap.get("users"));
 	}
 
 	private List<TwitterProfile> lookupUsers(String url, String... urlArgs) {
-		List<Map<String, Object>> userList = restTemplate.getForObject(url, List.class, urlArgs);
-		return profileExtractor.extractObjects(userList);
+		return profileExtractor.extractObjects((List<Map<String, Object>>) restTemplate.getForObject(url, List.class, urlArgs));
 	}
 
 	static final String VERIFY_CREDENTIALS_URL = TwitterTemplate.API_URL_BASE + "account/verify_credentials.json";
