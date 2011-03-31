@@ -13,6 +13,7 @@ public class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProvid
 	private static class TwitterServiceApiAdapter implements ServiceApiAdapter<TwitterApi> {
 
 		public boolean test(TwitterApi serviceApi) {
+			// TODO call whatever api method should be used for testing
 			return true;
 		}
 
