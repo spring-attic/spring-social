@@ -23,7 +23,7 @@ public class AbstractFacebookApiTest {
 		facebook = new FacebookTemplate(ACCESS_TOKEN);
 		mockServer = MockRestServiceServer.createServer(facebook.getRestTemplate());
 		responseHeaders = new HttpHeaders();
-		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+		responseHeaders.setContentType(new MediaType("text", "javascript"));
 	}
 
 
