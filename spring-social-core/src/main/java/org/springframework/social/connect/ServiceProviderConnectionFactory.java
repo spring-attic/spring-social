@@ -31,7 +31,7 @@ public abstract class ServiceProviderConnectionFactory<S> {
 	public ServiceProviderConnectionFactory(String providerId, ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter, boolean allowSignIn) {
 		this.providerId = providerId;
 		this.serviceProvider = serviceProvider;
-		this.serviceApiAdapter = serviceApiAdapter != null ? serviceApiAdapter : serviceApiAdapter(serviceProvider);
+		this.serviceApiAdapter = nullSafeServiceApiAdapter(serviceApiAdapter);
 		this.allowSignIn = allowSignIn;
 	}
 
@@ -58,8 +58,11 @@ public abstract class ServiceProviderConnectionFactory<S> {
 	// internal helpers
 	
 	@SuppressWarnings("unchecked")
-	private ServiceApiAdapter<S> serviceApiAdapter(ServiceProvider<S> serviceProvider) {
-		return (ServiceApiAdapter<S>) (serviceProvider instanceof ServiceApiAdapter ? serviceProvider : NullServiceApiAdapter.INSTANCE);
+	private ServiceApiAdapter<S> nullSafeServiceApiAdapter(ServiceApiAdapter<S> serviceApiAdapter) {
+		if (serviceApiAdapter != null) {
+			return serviceApiAdapter;
+		}
+		return (ServiceApiAdapter<S>) NullServiceApiAdapter.INSTANCE;
 	}
 	
 }

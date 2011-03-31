@@ -94,7 +94,7 @@ final class ServiceProviderConnectionImpl<S> implements ServiceProviderConnectio
 	}
 
 	public void sync() {
-		this.profile = fetchProfile();
+		profile = fetchProfile();
 	}
 
 	public S getServiceApi() {
@@ -105,16 +105,16 @@ final class ServiceProviderConnectionImpl<S> implements ServiceProviderConnectio
 		return new ServiceProviderConnectionImpl<S>(id, accountId, providerId, profile, allowSignIn, apiTokens, serviceApi, serviceApiAdapter);
 	}
 	
+	public ServiceProviderConnection<S> assignId(Long id) {
+		return new ServiceProviderConnectionImpl<S>(id, accountId, providerId, profile, allowSignIn, apiTokens, serviceApi, serviceApiAdapter);
+	}
+
 	public ServiceProviderConnectionMemento createMemento() {
 		ProviderProfile profile = getProviderProfile();
 		return new ServiceProviderConnectionMemento(id, accountId, providerId, profile.getId(), profile.getName(), profile.getUrl(), profile.getPictureUrl(),
 				allowSignIn, apiTokens.getAccessToken(), apiTokens.getSecret(), apiTokens.getRefreshToken());
 	}
 
-	public ServiceProviderConnection<S> assignId(Long id) {
-		return new ServiceProviderConnectionImpl<S>(id, accountId, providerId, profile, allowSignIn, apiTokens, serviceApi, serviceApiAdapter);
-	}
-	
 	// internal helpers
 
  	private ServiceProviderConnectionImpl(Long id, Serializable accountId, String providerId, ProviderProfile profile,
@@ -124,6 +124,7 @@ final class ServiceProviderConnectionImpl<S> implements ServiceProviderConnectio
 		this.providerId = providerId;
 		this.profile = profile;
 		this.allowSignIn = allowSignIn;
+		this.apiTokens = apiTokens;
 		this.serviceApi = serviceApi;
 		this.serviceApiAdapter = serviceApiAdapter;
 	}

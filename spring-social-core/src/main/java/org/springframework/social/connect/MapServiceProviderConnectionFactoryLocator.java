@@ -27,8 +27,14 @@ public class MapServiceProviderConnectionFactoryLocator implements ServiceProvid
 	private final Map<Class<?>, String> serviceApiTypeIndex = new HashMap<Class<?>, String>();
 
 	public void addConnectionFactory(ServiceProviderConnectionFactory<?> connectionFactory) {
-		connectionFactories.put(connectionFactory.getProviderId(), connectionFactory);
+		if (connectionFactories.containsKey(connectionFactory.getProviderId())) {
+			throw new IllegalArgumentException("A ConnectionFactory for provider '" + connectionFactory.getProviderId() + "' has already been registered");
+		}
 		Class<?> serviceApiType = GenericTypeResolver.resolveTypeArgument(connectionFactory.getClass(), ServiceProviderConnectionFactory.class);
+		if (serviceApiTypeIndex.containsKey(serviceApiType)) {
+			throw new IllegalArgumentException("A ConnectionFactory for service API [" + serviceApiType.getName() + "] has already been registered");
+		}
+		connectionFactories.put(connectionFactory.getProviderId(), connectionFactory);
 		serviceApiTypeIndex.put(serviceApiType, connectionFactory.getProviderId());
 	}
 	
