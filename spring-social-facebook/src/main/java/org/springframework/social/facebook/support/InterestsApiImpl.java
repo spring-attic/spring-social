@@ -19,13 +19,16 @@ import java.util.List;
 
 import org.springframework.social.facebook.InterestsApi;
 import org.springframework.social.facebook.UserLike;
-import org.springframework.social.facebook.support.extractors.ResponseExtractors;
+import org.springframework.social.facebook.support.extractors.UserLikeResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 
 public class InterestsApiImpl extends AbstractFacebookApi implements InterestsApi {
 
+	private UserLikeResponseExtractor likeExtractor;
+
 	public InterestsApiImpl(RestTemplate restTemplate) {
 		super(restTemplate);
+		likeExtractor = new UserLikeResponseExtractor();
 	}
 
 	public List<UserLike> getLikes() {
@@ -33,7 +36,7 @@ public class InterestsApiImpl extends AbstractFacebookApi implements InterestsAp
 	}
 
 	public List<UserLike> getLikes(String userId) {
-		return getObjectConnection(userId, "likes", ResponseExtractors.USER_LIKE_EXTRACTOR);
+		return getObjectConnection(userId, "likes", likeExtractor);
 	}
 
 	public List<UserLike> getBooks() {
@@ -41,7 +44,7 @@ public class InterestsApiImpl extends AbstractFacebookApi implements InterestsAp
 	}
 
 	public List<UserLike> getBooks(String userId) {
-		return getObjectConnection(userId, "books", ResponseExtractors.USER_LIKE_EXTRACTOR);
+		return getObjectConnection(userId, "books", likeExtractor);
 	}
 
 	public List<UserLike> getMovies() {
@@ -49,7 +52,7 @@ public class InterestsApiImpl extends AbstractFacebookApi implements InterestsAp
 	}
 
 	public List<UserLike> getMovies(String userId) {
-		return getObjectConnection(userId, "movies", ResponseExtractors.USER_LIKE_EXTRACTOR);
+		return getObjectConnection(userId, "movies", likeExtractor);
 	}
 
 	public List<UserLike> getMusic() {
@@ -57,7 +60,7 @@ public class InterestsApiImpl extends AbstractFacebookApi implements InterestsAp
 	}
 
 	public List<UserLike> getMusic(String userId) {
-		return getObjectConnection(userId, "music", ResponseExtractors.USER_LIKE_EXTRACTOR);
+		return getObjectConnection(userId, "music", likeExtractor);
 	}
 
 	public List<UserLike> getTelevision() {
@@ -65,7 +68,7 @@ public class InterestsApiImpl extends AbstractFacebookApi implements InterestsAp
 	}
 
 	public List<UserLike> getTelevision(String userId) {
-		return getObjectConnection(userId, "television", ResponseExtractors.USER_LIKE_EXTRACTOR);
+		return getObjectConnection(userId, "television", likeExtractor);
 	}
 
 	public List<UserLike> getActivities() {
@@ -73,7 +76,7 @@ public class InterestsApiImpl extends AbstractFacebookApi implements InterestsAp
 	}
 
 	public List<UserLike> getActivities(String userId) {
-		return getObjectConnection(userId, "activities", ResponseExtractors.USER_LIKE_EXTRACTOR);
+		return getObjectConnection(userId, "activities", likeExtractor);
 	}
 
 	public List<UserLike> getInterests() {
@@ -81,6 +84,6 @@ public class InterestsApiImpl extends AbstractFacebookApi implements InterestsAp
 	}
 
 	public List<UserLike> getInterests(String userId) {
-		return getObjectConnection(userId, "interests", ResponseExtractors.USER_LIKE_EXTRACTOR);
+		return getObjectConnection(userId, "interests", likeExtractor);
 	}
 }

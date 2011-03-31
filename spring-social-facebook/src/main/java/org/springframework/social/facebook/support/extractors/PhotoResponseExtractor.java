@@ -1,3 +1,18 @@
+/*
+ * Copyright 2011 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.social.facebook.support.extractors;
 
 import java.util.ArrayList;
@@ -12,9 +27,16 @@ import org.springframework.social.facebook.Reference;
 import org.springframework.social.facebook.Tag;
 
 public class PhotoResponseExtractor extends AbstractResponseExtractor<Photo> {
+	
+	private TagResponseExtractor tagExtractor;
+
+	public PhotoResponseExtractor() {
+		tagExtractor = new TagResponseExtractor();
+	}
+	
 	public Photo extractObject(Map<String, Object> photoMap) {
 		String id = (String) photoMap.get("id");
-		Reference from = ResponseExtractors.REFERENCE_EXTRACTOR.extractObject((Map<String, Object>)photoMap.get("from"));
+		Reference from = extractReferenceFromMap((Map<String, Object>)photoMap.get("from"));
 		String link = (String) photoMap.get("link");
 		String icon = (String) photoMap.get("icon");
 		Date createdTime = toDate((String) photoMap.get("created_time"));		
@@ -34,7 +56,7 @@ public class PhotoResponseExtractor extends AbstractResponseExtractor<Photo> {
 		}
 		
 		List<Map<String, Object>> tagsList = (List<Map<String, Object>>) tagsMap.get("data");
-		return ResponseExtractors.TAG_EXTRACTOR.extractObjects(tagsList);
+		return tagExtractor.extractObjects(tagsList);
 	}
 
 	private List<Image> extractImages(Map<String, Object> responseMap) {

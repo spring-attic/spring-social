@@ -19,14 +19,17 @@ import java.util.List;
 
 import org.springframework.social.facebook.Checkin;
 import org.springframework.social.facebook.CheckinApi;
-import org.springframework.social.facebook.support.extractors.ResponseExtractors;
+import org.springframework.social.facebook.support.extractors.CheckinResponseExtractor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 public class CheckinApiImpl extends AbstractFacebookApi implements CheckinApi {
+	private CheckinResponseExtractor checkinExtractor;
+
 	public CheckinApiImpl(RestTemplate restTemplate) {
 		super(restTemplate);
+		checkinExtractor = new CheckinResponseExtractor();
 	}
 	
 	public List<Checkin> getCheckins() {
@@ -34,11 +37,11 @@ public class CheckinApiImpl extends AbstractFacebookApi implements CheckinApi {
 	}
 
 	public List<Checkin> getCheckins(String objectId) {
-		return getObjectConnection(objectId, "checkins", ResponseExtractors.CHECKIN_EXTRACTOR);
+		return getObjectConnection(objectId, "checkins", checkinExtractor);
 	}
 
 	public Checkin getCheckin(String checkinId) {
-		return getObject(checkinId, ResponseExtractors.CHECKIN_EXTRACTOR);
+		return getObject(checkinId, checkinExtractor);
 	}
 	
 	public String checkin(String placeId, double latitude, double longitude) {

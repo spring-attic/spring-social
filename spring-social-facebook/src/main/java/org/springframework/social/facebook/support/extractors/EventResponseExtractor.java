@@ -26,7 +26,7 @@ public class EventResponseExtractor extends AbstractResponseExtractor<Event> {
 
 	public Event extractObject(Map<String, Object> eventMap) {
 		String id = (String) eventMap.get("id");
-		Reference owner = ResponseExtractors.REFERENCE_EXTRACTOR.extractObject((Map<String, Object>) eventMap.get("owner"));
+		Reference owner = extractReferenceFromMap((Map<String, Object>) eventMap.get("owner"));
 		String name = (String) eventMap.get("name");
 		Date startTime = toDate((String) eventMap.get("start_time"));
 		Date endTime = toDate((String) eventMap.get("end_time"));

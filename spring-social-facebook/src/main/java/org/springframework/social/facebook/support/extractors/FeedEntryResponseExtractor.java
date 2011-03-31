@@ -1,3 +1,18 @@
+/*
+ * Copyright 2011 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.social.facebook.support.extractors;
 
 import java.util.Collections;
@@ -11,6 +26,12 @@ import org.springframework.social.facebook.Reference;
 
 public class FeedEntryResponseExtractor extends AbstractResponseExtractor<FeedEntry> {
 
+	private CommentResponseExtractor commentExtractor;
+
+	public FeedEntryResponseExtractor() {
+		commentExtractor = new CommentResponseExtractor();
+	}
+	
 	public FeedEntry extractObject(Map<String, Object> feedEntryMap) {
 		String id = (String) feedEntryMap.get("id");
 		Map<String, String> fromMap = (Map<String, String>) feedEntryMap.get("from");
@@ -33,7 +54,7 @@ public class FeedEntryResponseExtractor extends AbstractResponseExtractor<FeedEn
 		Map<String, Object> commentsMap = (Map<String, Object>) feedEntryMap.get("comments");
 		List<Map<String, Object>> commentsList = (List<Map<String, Object>>) (commentsMap != null ? commentsMap
 				.get("data") : Collections.emptyList());
-		List<Comment> comments = ResponseExtractors.COMMENT_EXTRACTOR.extractObjects(commentsList);
+		List<Comment> comments = commentExtractor.extractObjects(commentsList);
 		if (comments != null) {
 			builder.comments(comments);
 		}

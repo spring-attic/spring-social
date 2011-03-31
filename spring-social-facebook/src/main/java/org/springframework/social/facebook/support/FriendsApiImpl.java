@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.springframework.social.facebook.FriendsApi;
 import org.springframework.social.facebook.Reference;
-import org.springframework.social.facebook.support.extractors.ResponseExtractors;
 import org.springframework.web.client.RestTemplate;
 
 public class FriendsApiImpl extends AbstractFacebookApi implements FriendsApi {
@@ -37,20 +36,20 @@ public class FriendsApiImpl extends AbstractFacebookApi implements FriendsApi {
 	}
 
 	public List<Reference> getFriendLists(String userId) {
-		return getObjectConnection(userId, "friendlists", ResponseExtractors.REFERENCE_EXTRACTOR);
+		return getObjectConnection(userId, "friendlists", referenceExtractor);
 	}
 	
 	public Reference getFriendList(String friendListId) {
-		return getObject(friendListId, ResponseExtractors.REFERENCE_EXTRACTOR);
+		return getObject(friendListId, referenceExtractor);
 	}
 	
 	public List<Reference> getFriendListMembers(String friendListId) {
-		return getObjectConnection(friendListId, "members", ResponseExtractors.REFERENCE_EXTRACTOR);
+		return getObjectConnection(friendListId, "members", referenceExtractor);
 	}
 	
 	public Reference createFriendList(String userId, String name) {
 		Map<String, Object> friendListMap = restTemplate.postForObject(CONNECTION_URL + "?name={name}", "", Map.class, userId, "friendlists", name);
-		return ResponseExtractors.REFERENCE_EXTRACTOR.extractObject(friendListMap);
+		return referenceExtractor.extractObject(friendListMap);
 	}
 	
 	public void deleteFriendList(String friendListId) {
@@ -70,7 +69,7 @@ public class FriendsApiImpl extends AbstractFacebookApi implements FriendsApi {
 	}
 
 	public List<Reference> getFriends(String userId) {
-		return getObjectConnection(userId, "friends", ResponseExtractors.REFERENCE_EXTRACTOR);
+		return getObjectConnection(userId, "friends", referenceExtractor);
 	}
 
 }

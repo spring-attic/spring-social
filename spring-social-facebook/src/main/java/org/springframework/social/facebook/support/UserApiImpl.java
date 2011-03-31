@@ -17,13 +17,16 @@ package org.springframework.social.facebook.support;
 
 import org.springframework.social.facebook.FacebookProfile;
 import org.springframework.social.facebook.UserApi;
-import org.springframework.social.facebook.support.extractors.ResponseExtractors;
+import org.springframework.social.facebook.support.extractors.ProfileResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 
 public class UserApiImpl extends AbstractFacebookApi implements UserApi {
 
+	private ProfileResponseExtractor profileExtractor;
+
 	public UserApiImpl(RestTemplate restTemplate) {
 		super(restTemplate);
+		profileExtractor = new ProfileResponseExtractor();
 	}
 
 	public FacebookProfile getUserProfile() {
@@ -31,7 +34,7 @@ public class UserApiImpl extends AbstractFacebookApi implements UserApi {
 	}
 
 	public FacebookProfile getUserProfile(String facebookId) {
-		return getObject(facebookId, ResponseExtractors.PROFILE_EXTRACTOR);
+		return getObject(facebookId, profileExtractor);
 	}
 
 }

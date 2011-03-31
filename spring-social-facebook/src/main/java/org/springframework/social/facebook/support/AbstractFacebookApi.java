@@ -18,6 +18,7 @@ package org.springframework.social.facebook.support;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.social.facebook.support.extractors.ReferenceResponseExtractor;
 import org.springframework.social.facebook.support.extractors.ResponseExtractor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -26,9 +27,12 @@ import org.springframework.web.client.RestTemplate;
 public abstract class AbstractFacebookApi {
 
 	private final RestTemplate restTemplate;
+	
+	protected final ReferenceResponseExtractor referenceExtractor;
 
 	AbstractFacebookApi(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
+		this.referenceExtractor = new ReferenceResponseExtractor();
 	}
 
 	protected <T> T getObject(String objectId, ResponseExtractor<T> extractor) {

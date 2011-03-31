@@ -26,7 +26,7 @@ public class GroupResponseExtractor extends AbstractResponseExtractor<Group> {
 
 	public Group extractObject(Map<String, Object> groupMap) {
 		String id = (String) groupMap.get("id");
-		Reference owner = ResponseExtractors.REFERENCE_EXTRACTOR.extractObject((Map<String, Object>) groupMap.get("owner"));
+		Reference owner = extractReferenceFromMap((Map<String, Object>) groupMap.get("owner"));
 		String name = (String) groupMap.get("name");
 		Privacy privacy = Privacy.valueOf(((String) groupMap.get("privacy")).toUpperCase());
 		String icon = (String) groupMap.get("icon");

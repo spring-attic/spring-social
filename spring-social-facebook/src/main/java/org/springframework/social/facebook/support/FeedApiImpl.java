@@ -20,15 +20,18 @@ import java.util.List;
 import org.springframework.social.facebook.FacebookLink;
 import org.springframework.social.facebook.FeedApi;
 import org.springframework.social.facebook.FeedEntry;
-import org.springframework.social.facebook.support.extractors.ResponseExtractors;
+import org.springframework.social.facebook.support.extractors.FeedEntryResponseExtractor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
 
+	private FeedEntryResponseExtractor feedEntryExtractor;
+
 	public FeedApiImpl(RestTemplate restTemplate) {
 		super(restTemplate);
+		feedEntryExtractor = new FeedEntryResponseExtractor();
 	}
 
 	public List<FeedEntry> getFeed() {
@@ -36,7 +39,7 @@ public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
 	}
 
 	public List<FeedEntry> getFeed(String ownerId) {
-		return getObjectConnection(ownerId, "feed", ResponseExtractors.FEED_ENTRY_EXTRACTOR);
+		return getObjectConnection(ownerId, "feed", feedEntryExtractor);
 	}
 
 	public List<FeedEntry> getHomeFeed() {
@@ -44,7 +47,7 @@ public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
 	}
 
 	public List<FeedEntry> getHomeFeed(String userId) {
-		return getObjectConnection(userId, "home", ResponseExtractors.FEED_ENTRY_EXTRACTOR);
+		return getObjectConnection(userId, "home", feedEntryExtractor);
 	}
 	
 	public List<FeedEntry> getStatuses() {
@@ -52,7 +55,7 @@ public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
 	}
 	
 	public List<FeedEntry> getStatuses(String userId) {
-		return getObjectConnection(userId, "statuses", ResponseExtractors.FEED_ENTRY_EXTRACTOR);
+		return getObjectConnection(userId, "statuses", feedEntryExtractor);
 	}
 	
 	public List<FeedEntry> getLinks() {
@@ -60,11 +63,11 @@ public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
 	}
 	
 	public List<FeedEntry> getLinks(String ownerId) {
-		return getObjectConnection(ownerId, "links", ResponseExtractors.FEED_ENTRY_EXTRACTOR);
+		return getObjectConnection(ownerId, "links", feedEntryExtractor);
 	}
 
 	public FeedEntry getNote(String noteId) {
-		return getObject(noteId, ResponseExtractors.FEED_ENTRY_EXTRACTOR);
+		return getObject(noteId, feedEntryExtractor);
 	}
 	
 	public List<FeedEntry> getNotes() {
@@ -72,18 +75,18 @@ public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
 	}
 	
 	public List<FeedEntry> getNotes(String ownerId) {
-		return getObjectConnection(ownerId, "notes", ResponseExtractors.FEED_ENTRY_EXTRACTOR);
+		return getObjectConnection(ownerId, "notes", feedEntryExtractor);
 	}
 	
 	public List<FeedEntry> getPosts() {
 		return getPosts("me");
 	}
 	public List<FeedEntry> getPosts(String ownerId) {
-		return getObjectConnection(ownerId, "posts", ResponseExtractors.FEED_ENTRY_EXTRACTOR);
+		return getObjectConnection(ownerId, "posts", feedEntryExtractor);
 	}
 	
 	public FeedEntry getFeedEntry(String entryId) {
-		return getObject(entryId, ResponseExtractors.FEED_ENTRY_EXTRACTOR);
+		return getObject(entryId, feedEntryExtractor);
 	}
 
 	public String updateStatus(String message) {

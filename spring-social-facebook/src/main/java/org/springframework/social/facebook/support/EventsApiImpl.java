@@ -22,15 +22,24 @@ import org.springframework.social.facebook.Event;
 import org.springframework.social.facebook.EventInvitee;
 import org.springframework.social.facebook.EventsApi;
 import org.springframework.social.facebook.UserEvent;
-import org.springframework.social.facebook.support.extractors.ResponseExtractors;
+import org.springframework.social.facebook.support.extractors.EventResponseExtractor;
+import org.springframework.social.facebook.support.extractors.InviteeResponseExtractor;
+import org.springframework.social.facebook.support.extractors.UserEventResponseExtractor;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 public class EventsApiImpl extends AbstractFacebookApi implements EventsApi {
 
+	private EventResponseExtractor eventExtractor;
+	private UserEventResponseExtractor userEventExtractor;
+	private InviteeResponseExtractor inviteeExtractor;
+
 	public EventsApiImpl(RestTemplate restTemplate) {
 		super(restTemplate);
+		eventExtractor = new EventResponseExtractor();
+		userEventExtractor = new UserEventResponseExtractor();
+		inviteeExtractor = new InviteeResponseExtractor();
 	}
 
 	public List<UserEvent> getEvents() {
@@ -38,11 +47,11 @@ public class EventsApiImpl extends AbstractFacebookApi implements EventsApi {
 	}
 
 	public List<UserEvent> getEvents(String userId) {
-		return getObjectConnection(userId, "events", ResponseExtractors.USER_EVENT_EXTRACTOR);
+		return getObjectConnection(userId, "events", userEventExtractor);
 	}
 	
 	public Event getEvent(String eventId) {
-		return getObject(eventId, ResponseExtractors.EVENT_EXTRACTOR);
+		return getObject(eventId, eventExtractor);
 	}
 	
 	public String createEvent(String name, String startTime, String endTime) {
@@ -58,23 +67,23 @@ public class EventsApiImpl extends AbstractFacebookApi implements EventsApi {
 	}
 
 	public List<EventInvitee> getInvited(String eventId) {
-		return getObjectConnection(eventId, "invited", ResponseExtractors.INVITEE_EXTRACTOR);
+		return getObjectConnection(eventId, "invited", inviteeExtractor);
 	}
 
 	public List<EventInvitee> getAttending(String eventId) {
-		return getObjectConnection(eventId, "attending", ResponseExtractors.INVITEE_EXTRACTOR);
+		return getObjectConnection(eventId, "attending", inviteeExtractor);
 	}
 	
 	public List<EventInvitee> getMaybeAttending(String eventId) {
-		return getObjectConnection(eventId, "maybe", ResponseExtractors.INVITEE_EXTRACTOR);
+		return getObjectConnection(eventId, "maybe", inviteeExtractor);
 	}
 	
 	public List<EventInvitee> getNoReplies(String eventId) {
-		return getObjectConnection(eventId, "noreply", ResponseExtractors.INVITEE_EXTRACTOR);
+		return getObjectConnection(eventId, "noreply", inviteeExtractor);
 	}
 
 	public List<EventInvitee> getDeclined(String eventId) {
-		return getObjectConnection(eventId, "declined", ResponseExtractors.INVITEE_EXTRACTOR);
+		return getObjectConnection(eventId, "declined", inviteeExtractor);
 	}
 	
 	public void acceptInvitation(String eventId) {

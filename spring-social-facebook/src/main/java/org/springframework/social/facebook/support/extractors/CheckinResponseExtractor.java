@@ -26,6 +26,12 @@ import org.springframework.social.facebook.Reference;
 
 public class CheckinResponseExtractor extends AbstractResponseExtractor<Checkin> {
 
+	private CommentResponseExtractor commentExtractor;
+
+	public CheckinResponseExtractor() {
+		commentExtractor = new CommentResponseExtractor();
+	}
+	
 	public Checkin extractObject(Map<String, Object> checkinMap) {
 		String id = (String) checkinMap.get("id");
 		Location place = extractLocationFromMap((Map<String, Object>) checkinMap.get("place"));
@@ -37,7 +43,7 @@ public class CheckinResponseExtractor extends AbstractResponseExtractor<Checkin>
 				commentsMap.get("data") : Collections.emptyList());
 		return new Checkin.Builder(id, place, from, application, createdTime)
 			.message((String) checkinMap.get("message"))
-			.comments(ResponseExtractors.COMMENT_EXTRACTOR.extractObjects(commentsList))
+			.comments(commentExtractor.extractObjects(commentsList))
 			.likes(extractReferences((Map<String, Object>) checkinMap.get("likes")))
 			.tags(extractReferences((Map<String, Object>) checkinMap.get("tags"))).build();
 	}
