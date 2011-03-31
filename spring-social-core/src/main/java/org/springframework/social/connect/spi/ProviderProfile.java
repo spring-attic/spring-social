@@ -17,13 +17,13 @@ package org.springframework.social.connect.spi;
 
 public class ProviderProfile {
 
-	private String id;
+	private final String id;
 	
-	private String name;
+	private final String name;
 
-	private String url;
+	private final String url;
 	
-	private String pictureUrl;
+	private final String pictureUrl;
 
 	public ProviderProfile(String id, String name, String url, String pictureUrl) {
 		this.id = id;

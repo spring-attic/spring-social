@@ -22,23 +22,23 @@ import org.springframework.social.connect.spi.ServiceApiAdapter;
 
 final class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
 
-	private Long id;
+	private final Long id;
 	
-	private Serializable accountId;
+	private final Serializable accountId;
 	
-	private String providerId;
+	private final String providerId;
 	
 	private ProviderProfile profile;
 
 	private final Object profileMonitor = new Object();
 	
-	private boolean allowSignIn;
+	private final boolean allowSignIn;
 	
-	private ApiTokens apiTokens;
+	private final ApiTokens apiTokens;
 	
-	private S serviceApi;
+	private final S serviceApi;
 	
-	private ServiceApiAdapter<S> serviceApiAdapter;
+	private final ServiceApiAdapter<S> serviceApiAdapter;
 	
  	public ServiceProviderConnectionImpl(String providerId, boolean allowSignIn, ApiTokens apiTokens, S serviceApi, ServiceApiAdapter<S> serviceApiAdapter) {
  		this(null, null, providerId, null, allowSignIn, apiTokens, serviceApi, serviceApiAdapter);
