@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.support;
+package org.springframework.social.facebook;
 
 import java.io.BufferedReader;
 import java.io.IOException;

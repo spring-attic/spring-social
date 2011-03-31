@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.support;
+package org.springframework.social.facebook;
 
 import java.util.List;
 
-import org.springframework.social.facebook.FeedApi;
-import org.springframework.social.facebook.GraphApi;
 import org.springframework.social.facebook.support.extractors.FeedEntryResponseExtractor;
 import org.springframework.social.facebook.types.FacebookLink;
 import org.springframework.social.facebook.types.FeedEntry;

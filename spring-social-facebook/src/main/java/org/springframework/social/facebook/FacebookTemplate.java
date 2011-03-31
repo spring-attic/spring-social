@@ -23,16 +23,6 @@ import java.util.Set;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
-import org.springframework.social.facebook.support.CheckinApiImpl;
-import org.springframework.social.facebook.support.CommentApiImpl;
-import org.springframework.social.facebook.support.EventsApiImpl;
-import org.springframework.social.facebook.support.FacebookResponseErrorHandler;
-import org.springframework.social.facebook.support.FeedApiImpl;
-import org.springframework.social.facebook.support.FriendsApiImpl;
-import org.springframework.social.facebook.support.GroupApiImpl;
-import org.springframework.social.facebook.support.LikeApiImpl;
-import org.springframework.social.facebook.support.MediaApiImpl;
-import org.springframework.social.facebook.support.UserApiImpl;
 import org.springframework.social.facebook.support.extractors.ResponseExtractor;
 import org.springframework.social.oauth2.ProtectedResourceClientFactory;
 import org.springframework.util.LinkedMultiValueMap;

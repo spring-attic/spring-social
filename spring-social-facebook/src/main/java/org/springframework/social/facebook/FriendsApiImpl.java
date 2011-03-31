@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.support;
+package org.springframework.social.facebook;
 
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.social.facebook.FriendsApi;
-import org.springframework.social.facebook.GraphApi;
 import org.springframework.social.facebook.support.extractors.ProfileResponseExtractor;
 import org.springframework.social.facebook.support.extractors.ReferenceResponseExtractor;
 import org.springframework.social.facebook.types.FacebookProfile;
