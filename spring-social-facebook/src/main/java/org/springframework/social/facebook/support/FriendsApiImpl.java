@@ -20,7 +20,9 @@ import java.util.Map;
 
 import org.springframework.social.facebook.FriendsApi;
 import org.springframework.social.facebook.GraphApi;
+import org.springframework.social.facebook.support.extractors.ProfileResponseExtractor;
 import org.springframework.social.facebook.support.extractors.ReferenceResponseExtractor;
+import org.springframework.social.facebook.types.FacebookProfile;
 import org.springframework.social.facebook.types.Reference;
 import org.springframework.web.client.RestTemplate;
 
@@ -34,6 +36,7 @@ public class FriendsApiImpl implements FriendsApi {
 		this.graphApi = graphApi;
 		this.restTemplate = restTemplate;
 		referenceExtractor = new ReferenceResponseExtractor();
+		profileExtractor = new ProfileResponseExtractor();
 	}
 	
 	public List<Reference> getFriendLists() {
@@ -51,7 +54,11 @@ public class FriendsApiImpl implements FriendsApi {
 	public List<Reference> getFriendListMembers(String friendListId) {
 		return graphApi.fetchConnections(friendListId, "members", referenceExtractor);
 	}
-	
+
+	public List<FacebookProfile> getFriendListMemberProfiles(String friendListId) {
+		return graphApi.fetchConnections(friendListId, "members", profileExtractor, FULL_PROFILE_FIELDS);
+	}
+
 	public Reference createFriendList(String name) {
 		return createFriendList("me", name);
 	}
@@ -77,9 +84,20 @@ public class FriendsApiImpl implements FriendsApi {
 	public List<Reference> getFriends() {
 		return getFriends("me");
 	}
+	
+	public List<FacebookProfile> getFriendProfiles() {
+		return getFriendProfiles("me");
+	}
 
 	public List<Reference> getFriends(String userId) {
 		return graphApi.fetchConnections(userId, "friends", referenceExtractor);
 	}
+	
+	public List<FacebookProfile> getFriendProfiles(String userId) {
+		return graphApi.fetchConnections(userId, "friends", profileExtractor, FULL_PROFILE_FIELDS);
+	}
 
+	private static final String[] FULL_PROFILE_FIELDS = {"id", "username", "name", "first_name", "last_name", "gender", "locale", "education", "work", "email", "third_party_id", "link", "timezone", "updated_time", "verified", "about", "bio", "birthday", "location", "hometown", "interested_in", "religion", "political", "quotes", "relationship_status", "significant_other", "website"};
+	private ProfileResponseExtractor profileExtractor;
+	
 }

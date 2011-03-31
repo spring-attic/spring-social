@@ -17,6 +17,7 @@ package org.springframework.social.facebook;
 
 import java.util.List;
 
+import org.springframework.social.facebook.types.FacebookProfile;
 import org.springframework.social.facebook.types.Reference;
 
 /**
@@ -54,6 +55,13 @@ public interface FriendsApi {
 	 */
 	List<Reference> getFriendListMembers(String friendListId);
 
+	/**
+	 * Retrieves profile data for all users who are members of the specified friend list.
+	 * @param friendListId the friend list ID.
+	 * @return a list of {@link FacebookProfile}, each representing a member of the friend list.
+	 */
+	List<FacebookProfile> getFriendListMemberProfiles(String friendListId);
+	
 	/**
 	 * Creates a new friend list for the authenticated user.
 	 * @param name the name of the friend list.
@@ -94,12 +102,24 @@ public interface FriendsApi {
 	 * @return a list {@link Reference}s, each representing a friend of the user, or an empty list if not available.
 	 */
 	List<Reference> getFriends();
+	
+	/**
+	 * Retrieves profile data for the authenticated user's friends.
+	 * @return a list {@link FacebookProfile}s, each representing a friend of the user, or an empty list if not available.
+	 */
+	List<FacebookProfile> getFriendProfiles();
 
 	/**
-	 * Retrieves a list of user references for the authenticated user's friends.
+	 * Retrieves a list of user references for the specified user's friends.
 	 * @param userId the user's ID
 	 * @return a list {@link Reference}s, each representing a friend of the user, or an empty list if not available.
 	 */
 	List<Reference> getFriends(String userId);
 
+	/**
+	 * Retrieves profile data for the specified user's friends.
+	 * @param userId the user's ID
+	 * @return a list {@link FacebookProfile}s, each representing a friend of the user, or an empty list if not available.
+	 */
+	List<FacebookProfile> getFriendProfiles(String userId);
 }

@@ -34,7 +34,26 @@ public interface GraphApi {
 	 * @return an Java object representing the requested Facebook object.
 	 */
 	<T> T fetchObject(String objectId, ResponseExtractor<T> extractor);
-	
+
+	/**
+	 * Fetches an object, extracting it into the type via the given {@link ResponseExtractor}.
+	 * Requires appropriate permission to fetch the object.
+	 * @param objectId the Facebook object's ID
+	 * @param extractor a {@link ResponseExtractor} to extract the object into a specific type.
+	 * @param fields the fields to include in the response.
+	 * @return an Java object representing the requested Facebook object.
+	 */
+	<T> T fetchObject(String objectId, ResponseExtractor<T> extractor, String... fields);
+
+	/**
+	 * Fetches multiple objects, extracting them into a Java type via the given {@link ResponseExtractor}.
+	 * Requires appropriate permission to fetch the object.
+	 * @param extractor a {@link ResponseExtractor} to extract the object into a specific type.
+	 * @param objectIds the Facebook object IDs
+	 * @return an Java object representing the requested Facebook object.
+	 */
+	<T> List<T> fetchObject(ResponseExtractor<T> extractor, String... objectIds);
+
 	/**
 	 * Fetches connections, extracting them into a Java type via the given {@link ResponseExtractor}.
 	 * Requires appropriate permission to fetch the object connection.
@@ -44,6 +63,17 @@ public interface GraphApi {
 	 * @return a list of Java objects representing the Facebook objects in the connections.
 	 */
 	<T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor);
+
+	/**
+	 * Fetches connections, extracting them into a Java type via the given {@link ResponseExtractor}.
+	 * Requires appropriate permission to fetch the object connection.
+	 * @param objectId the ID of the object to retrieve the connections for.
+	 * @param connectionType the connection type.
+	 * @param extractor a {@link ResponseExtractor} to extract the connections into a specific type.
+	 * @param fields the fields to include in the response.
+	 * @return a list of Java objects representing the Facebook objects in the connections.
+	 */
+	<T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor, String... fields);
 
 	/**
 	 * Publishes data to an object's connection.
@@ -81,7 +111,9 @@ public interface GraphApi {
 	 */
 	void delete(String objectId, String connectionType);
 	
-	static final String OBJECT_URL = "https://graph.facebook.com/{objectId}";
+	static final String GRAPH_API_URL = "https://graph.facebook.com";
+	
+	static final String OBJECT_URL = GRAPH_API_URL + "/{objectId}";
 
 	static final String CONNECTION_URL = OBJECT_URL + "/{connection}";	
 

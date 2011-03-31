@@ -15,9 +15,11 @@
  */
 package org.springframework.social.facebook;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
@@ -133,9 +135,32 @@ public class FacebookTemplate implements FacebookApi {
 		return extractor.extractObject( (Map<String, Object>) restTemplate.getForObject(OBJECT_URL, Map.class, objectId));
 	}
 	
+	public <T> T fetchObject(String objectId, ResponseExtractor<T> extractor, String... fields) {
+		String joinedFields = join(fields);
+		return extractor.extractObject( (Map<String, Object>) restTemplate.getForObject(OBJECT_URL + "?fields={fields}", Map.class, objectId, joinedFields));
+	}
+	
+	public <T> List<T> fetchObject(ResponseExtractor<T> extractor, String... objectIds) {
+		String joinedIds = join(objectIds);
+		Map<String, Map<String, Object>> response = restTemplate.getForObject(GRAPH_API_URL + "?ids={ids}", Map.class, joinedIds);
+		Set<String> keys = response.keySet();
+		List<T> objects = new ArrayList<T>(keys.size());
+		for (String key : keys) {
+			Map<String, Object> objectMap = response.get(key);
+			objects.add(extractor.extractObject(objectMap));
+		}
+		return objects;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor) {
 		Map<String, Object> response = restTemplate.getForObject(CONNECTION_URL, Map.class, objectId, connectionType);
+		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
+	}
+	
+	public <T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor, String... fields) {
+		String joinedFields = join(fields);
+		Map<String, Object> response = restTemplate.getForObject(CONNECTION_URL + "?fields={fields}", Map.class, objectId, connectionType, joinedFields);
 		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
 	}
 	
@@ -170,4 +195,15 @@ public class FacebookTemplate implements FacebookApi {
 		return restTemplate;
 	}
 
+	private String join(String[] strings) {
+		StringBuilder builder = new StringBuilder();
+		if(strings.length > 0) {
+			builder.append(strings[0]);
+			for (String string : strings) {
+				builder.append("," + string);
+			}
+		}
+		return builder.toString();
+	}
+	
 }
