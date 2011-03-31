@@ -17,8 +17,8 @@ package org.springframework.social.facebook.support.extractors;
 
 import java.util.Map;
 
-import org.springframework.social.facebook.EventInvitee;
-import org.springframework.social.facebook.RsvpStatus;
+import org.springframework.social.facebook.types.EventInvitee;
+import org.springframework.social.facebook.types.RsvpStatus;
 
 public class InviteeResponseExtractor extends AbstractResponseExtractor<EventInvitee> {
 	

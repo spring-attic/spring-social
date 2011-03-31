@@ -17,7 +17,7 @@ package org.springframework.social.facebook.support.extractors;
 
 import java.util.Map;
 
-import org.springframework.social.facebook.EducationEntry;
+import org.springframework.social.facebook.types.EducationEntry;
 
 public class EducationResponseExtractor extends AbstractResponseExtractor<EducationEntry> {
 

@@ -19,9 +19,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.social.facebook.Reference;
-import org.springframework.social.facebook.Tag;
-import org.springframework.social.facebook.Video;
+import org.springframework.social.facebook.types.Reference;
+import org.springframework.social.facebook.types.Tag;
+import org.springframework.social.facebook.types.Video;
 
 public class VideoResponseExtractor extends AbstractResponseExtractor<Video> {
 

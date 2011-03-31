@@ -17,7 +17,7 @@ package org.springframework.social.facebook.support.extractors;
 
 import java.util.Map;
 
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.types.Reference;
 
 public class ReferenceResponseExtractor extends AbstractResponseExtractor<Reference> {
 

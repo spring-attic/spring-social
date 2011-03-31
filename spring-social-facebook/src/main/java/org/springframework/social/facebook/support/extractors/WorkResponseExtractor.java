@@ -17,7 +17,7 @@ package org.springframework.social.facebook.support.extractors;
 
 import java.util.Map;
 
-import org.springframework.social.facebook.WorkEntry;
+import org.springframework.social.facebook.types.WorkEntry;
 
 public class WorkResponseExtractor extends AbstractResponseExtractor<WorkEntry> {
 

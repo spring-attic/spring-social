@@ -73,8 +73,6 @@ public class FacebookTemplate implements FacebookApi {
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
 		restTemplate.getMessageConverters().add(json);
 
-		restTemplate.setErrorHandler(new FacebookResponseErrorHandler());
-
 		// sub-apis
 		userApi = new UserApiImpl(restTemplate);
 		checkinApi = new CheckinApiImpl(restTemplate);

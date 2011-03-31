@@ -18,8 +18,8 @@ package org.springframework.social.facebook.support.extractors;
 import java.util.Date;
 import java.util.Map;
 
-import org.springframework.social.facebook.RsvpStatus;
-import org.springframework.social.facebook.UserEvent;
+import org.springframework.social.facebook.types.RsvpStatus;
+import org.springframework.social.facebook.types.UserEvent;
 
 public class UserEventResponseExtractor extends AbstractResponseExtractor<UserEvent> {
 

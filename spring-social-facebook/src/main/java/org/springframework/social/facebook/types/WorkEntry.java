@@ -13,35 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook;
+package org.springframework.social.facebook.types;
 
 /**
- * Represents an entry in the user's education history.
+ * Represents an entry in the user's work history.
  * @author Craig Walls
  */
-public class EducationEntry {
+public class WorkEntry {
 
-	private final Reference school;
+	private final Reference employer;
 
-	private final Reference year;
+	private final String startDate;
 
-	private final String type;
+	private final String endDate;
 
-	public EducationEntry(Reference school, Reference year, String type) {
-		this.school = school;
-		this.year = year;
-		this.type = type;
+	public WorkEntry(Reference employer, String startDate, String endDate) {
+		this.employer = employer;
+		this.startDate = startDate;
+		this.endDate = endDate;
 	}
 
-	public Reference getSchool() {
-		return school;
+	public Reference getEmployer() {
+		return employer;
 	}
 
-	public Reference getYear() {
-		return year;
+	public String getStartDate() {
+		return startDate;
 	}
 
-	public String getType() {
-		return type;
+	public String getEndDate() {
+		return endDate;
 	}
 }

@@ -9,6 +9,10 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.social.facebook.types.Event;
+import org.springframework.social.facebook.types.EventInvitee;
+import org.springframework.social.facebook.types.RsvpStatus;
+import org.springframework.social.facebook.types.UserEvent;
 
 public class EventsApiImplTest extends AbstractFacebookApiTest {
 

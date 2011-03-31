@@ -17,6 +17,10 @@ package org.springframework.social.facebook;
 
 import java.util.List;
 
+import org.springframework.social.facebook.types.Album;
+import org.springframework.social.facebook.types.Photo;
+import org.springframework.social.facebook.types.Video;
+
 public interface MediaApi {
 
 	/**

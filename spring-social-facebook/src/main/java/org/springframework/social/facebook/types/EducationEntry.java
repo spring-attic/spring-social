@@ -13,8 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook;
+package org.springframework.social.facebook.types;
 
-public enum RsvpStatus {
-	ATTENDING, DECLINED, UNSURE, NOT_REPLIED;
+/**
+ * Represents an entry in the user's education history.
+ * @author Craig Walls
+ */
+public class EducationEntry {
+
+	private final Reference school;
+
+	private final Reference year;
+
+	private final String type;
+
+	public EducationEntry(Reference school, Reference year, String type) {
+		this.school = school;
+		this.year = year;
+		this.type = type;
+	}
+
+	public Reference getSchool() {
+		return school;
+	}
+
+	public Reference getYear() {
+		return year;
+	}
+
+	public String getType() {
+		return type;
+	}
 }

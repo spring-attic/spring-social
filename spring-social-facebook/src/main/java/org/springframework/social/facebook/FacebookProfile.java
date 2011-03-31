@@ -20,6 +20,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.social.facebook.types.EducationEntry;
+import org.springframework.social.facebook.types.Reference;
+import org.springframework.social.facebook.types.WorkEntry;
+
 /**
  * Model class containing a Facebook user's profile information.
  * 

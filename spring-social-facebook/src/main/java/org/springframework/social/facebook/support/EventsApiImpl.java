@@ -18,13 +18,13 @@ package org.springframework.social.facebook.support;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.social.facebook.Event;
-import org.springframework.social.facebook.EventInvitee;
 import org.springframework.social.facebook.EventsApi;
-import org.springframework.social.facebook.UserEvent;
 import org.springframework.social.facebook.support.extractors.EventResponseExtractor;
 import org.springframework.social.facebook.support.extractors.InviteeResponseExtractor;
 import org.springframework.social.facebook.support.extractors.UserEventResponseExtractor;
+import org.springframework.social.facebook.types.Event;
+import org.springframework.social.facebook.types.EventInvitee;
+import org.springframework.social.facebook.types.UserEvent;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;

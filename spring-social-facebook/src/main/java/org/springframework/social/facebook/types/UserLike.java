@@ -13,48 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook;
+package org.springframework.social.facebook.types;
 
 import java.util.Date;
-import java.util.List;
 
 /**
- * Represents a comment.
+ * Represents an item that a user likes.
  * @author Craig Walls
  */
-public class Comment {
+public class UserLike {
 	private final String id;
-	private final String message;
+	private final String name;
+	private final String category;
 	private final Date createdTime;
-	private final Reference from;
-	private final List<Reference> likes;
 
-	public Comment(String id, Reference from, String message, Date createdTime, List<Reference> likes) {
+	public UserLike(String id, String name, String category, Date createdTime) {
 		this.id = id;
-		this.from = from;
-		this.message = message;
+		this.name = name;
+		this.category = category;
 		this.createdTime = createdTime;
-		this.likes = likes;
 	}
 
 	public String getId() {
 		return id;
 	}
 
-	public String getMessage() {
-		return message;
+	public String getName() {
+		return name;
+	}
+
+	public String getCategory() {
+		return category;
 	}
 
 	public Date getCreatedTime() {
 		return createdTime;
-	}
-
-	public Reference getFrom() {
-		return from;
-	}
-
-	public List<Reference> getLikes() {
-		return likes;
 	}
 
 }

@@ -20,11 +20,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.social.facebook.Photo;
-import org.springframework.social.facebook.Photo.Builder;
-import org.springframework.social.facebook.Photo.Image;
-import org.springframework.social.facebook.Reference;
-import org.springframework.social.facebook.Tag;
+import org.springframework.social.facebook.types.Photo;
+import org.springframework.social.facebook.types.Reference;
+import org.springframework.social.facebook.types.Tag;
+import org.springframework.social.facebook.types.Photo.Builder;
+import org.springframework.social.facebook.types.Photo.Image;
 
 public class PhotoResponseExtractor extends AbstractResponseExtractor<Photo> {
 	

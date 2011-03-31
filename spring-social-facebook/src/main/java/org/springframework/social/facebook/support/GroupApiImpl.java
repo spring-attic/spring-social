@@ -17,10 +17,10 @@ package org.springframework.social.facebook.support;
 
 import java.util.List;
 
-import org.springframework.social.facebook.Group;
 import org.springframework.social.facebook.GroupApi;
-import org.springframework.social.facebook.Reference;
 import org.springframework.social.facebook.support.extractors.GroupResponseExtractor;
+import org.springframework.social.facebook.types.Group;
+import org.springframework.social.facebook.types.Reference;
 import org.springframework.web.client.RestTemplate;
 
 public class GroupApiImpl extends AbstractFacebookApi implements GroupApi {

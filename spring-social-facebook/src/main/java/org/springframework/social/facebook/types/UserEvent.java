@@ -13,25 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook;
+package org.springframework.social.facebook.types;
 
 import java.util.Date;
 
-/**
- * Represents an item that a user likes.
- * @author Craig Walls
- */
-public class UserLike {
-	private final String id;
-	private final String name;
-	private final String category;
-	private final Date createdTime;
+public class UserEvent {
 
-	public UserLike(String id, String name, String category, Date createdTime) {
+	private final String id;
+
+	private final String name;
+
+	private final Date startTime;
+
+	private final Date endTime;
+
+	private final String location;
+
+	private final RsvpStatus rsvpStatus;
+
+	public UserEvent(String id, String name, Date startTime, Date endTime, RsvpStatus rsvpStatus) {
+		this(id, name, startTime, endTime, rsvpStatus, null);
+	}
+
+	public UserEvent(String id, String name, Date startTime, Date endTime, RsvpStatus rsvpStatus, String location) {
 		this.id = id;
 		this.name = name;
-		this.category = category;
-		this.createdTime = createdTime;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.location = location;
+		this.rsvpStatus = rsvpStatus;
 	}
 
 	public String getId() {
@@ -42,12 +52,19 @@ public class UserLike {
 		return name;
 	}
 
-	public String getCategory() {
-		return category;
+	public Date getStartTime() {
+		return startTime;
 	}
 
-	public Date getCreatedTime() {
-		return createdTime;
+	public Date getEndTime() {
+		return endTime;
 	}
 
+	public String getLocation() {
+		return location;
+	}
+
+	public RsvpStatus getRsvpStatus() {
+		return rsvpStatus;
+	};
 }

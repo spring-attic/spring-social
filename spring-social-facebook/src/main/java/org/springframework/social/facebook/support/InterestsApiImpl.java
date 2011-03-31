@@ -18,8 +18,8 @@ package org.springframework.social.facebook.support;
 import java.util.List;
 
 import org.springframework.social.facebook.InterestsApi;
-import org.springframework.social.facebook.UserLike;
 import org.springframework.social.facebook.support.extractors.UserLikeResponseExtractor;
+import org.springframework.social.facebook.types.UserLike;
 import org.springframework.web.client.RestTemplate;
 
 public class InterestsApiImpl extends AbstractFacebookApi implements InterestsApi {

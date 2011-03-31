@@ -20,9 +20,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.social.facebook.Checkin;
-import org.springframework.social.facebook.Location;
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.types.Checkin;
+import org.springframework.social.facebook.types.Location;
+import org.springframework.social.facebook.types.Reference;
 
 public class CheckinResponseExtractor extends AbstractResponseExtractor<Checkin> {
 

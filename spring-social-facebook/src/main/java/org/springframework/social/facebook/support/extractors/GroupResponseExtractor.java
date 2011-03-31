@@ -18,9 +18,9 @@ package org.springframework.social.facebook.support.extractors;
 import java.util.Date;
 import java.util.Map;
 
-import org.springframework.social.facebook.Group;
-import org.springframework.social.facebook.Group.Privacy;
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.types.Group;
+import org.springframework.social.facebook.types.Reference;
+import org.springframework.social.facebook.types.Group.Privacy;
 
 public class GroupResponseExtractor extends AbstractResponseExtractor<Group> {
 

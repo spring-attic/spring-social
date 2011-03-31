@@ -17,6 +17,9 @@ package org.springframework.social.facebook;
 
 import java.util.List;
 
+import org.springframework.social.facebook.types.Comment;
+import org.springframework.social.facebook.types.Reference;
+
 public interface CommentApi {
 	
 	/**

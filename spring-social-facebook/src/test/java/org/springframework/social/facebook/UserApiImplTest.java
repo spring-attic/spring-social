@@ -25,6 +25,8 @@ import java.util.Locale;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.social.facebook.types.EducationEntry;
+import org.springframework.social.facebook.types.WorkEntry;
 
 /**
  * @author Craig Walls

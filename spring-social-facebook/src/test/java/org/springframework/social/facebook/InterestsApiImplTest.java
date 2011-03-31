@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.social.facebook.types.UserLike;
 
 public class InterestsApiImplTest extends AbstractFacebookApiTest {
 

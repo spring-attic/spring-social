@@ -18,8 +18,8 @@ package org.springframework.social.facebook.support.extractors;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.social.facebook.Comment;
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.types.Comment;
+import org.springframework.social.facebook.types.Reference;
 
 public class CommentResponseExtractor extends AbstractResponseExtractor<Comment> {
 

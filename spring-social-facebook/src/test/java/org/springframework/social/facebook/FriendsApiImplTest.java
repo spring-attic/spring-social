@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.social.facebook.types.Reference;
 
 public class FriendsApiImplTest extends AbstractFacebookApiTest {
 

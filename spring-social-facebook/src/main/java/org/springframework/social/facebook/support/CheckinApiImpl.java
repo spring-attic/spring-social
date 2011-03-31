@@ -17,9 +17,9 @@ package org.springframework.social.facebook.support;
 
 import java.util.List;
 
-import org.springframework.social.facebook.Checkin;
 import org.springframework.social.facebook.CheckinApi;
 import org.springframework.social.facebook.support.extractors.CheckinResponseExtractor;
+import org.springframework.social.facebook.types.Checkin;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;

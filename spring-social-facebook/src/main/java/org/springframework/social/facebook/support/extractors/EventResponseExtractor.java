@@ -18,9 +18,9 @@ package org.springframework.social.facebook.support.extractors;
 import java.util.Date;
 import java.util.Map;
 
-import org.springframework.social.facebook.Event;
-import org.springframework.social.facebook.Event.Privacy;
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.types.Event;
+import org.springframework.social.facebook.types.Reference;
+import org.springframework.social.facebook.types.Event.Privacy;
 
 public class EventResponseExtractor extends AbstractResponseExtractor<Event> {
 

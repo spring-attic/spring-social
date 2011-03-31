@@ -17,11 +17,11 @@ package org.springframework.social.facebook.support;
 
 import java.util.List;
 
-import org.springframework.social.facebook.Comment;
 import org.springframework.social.facebook.CommentApi;
-import org.springframework.social.facebook.Reference;
 import org.springframework.social.facebook.support.extractors.CommentResponseExtractor;
 import org.springframework.social.facebook.support.extractors.ReferenceResponseExtractor;
+import org.springframework.social.facebook.types.Comment;
+import org.springframework.social.facebook.types.Reference;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;

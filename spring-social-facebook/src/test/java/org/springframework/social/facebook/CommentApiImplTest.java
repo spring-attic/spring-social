@@ -24,6 +24,8 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.social.facebook.types.Comment;
+import org.springframework.social.facebook.types.Reference;
 
 /**
  * @author Craig Walls

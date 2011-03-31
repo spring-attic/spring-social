@@ -13,31 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook;
+package org.springframework.social.facebook.types;
 
-public class EventInvitee {
-	private String id;
-	
-	private String name;
-	
-	private RsvpStatus rsvpStatus;
-	
-	public EventInvitee(String id, String name, RsvpStatus rsvpStatus) {
-		this.id = id;
-		this.name = name;
-		this.rsvpStatus = rsvpStatus;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public RsvpStatus getRsvpStatus() {
-		return rsvpStatus;
-	}
-
+public enum RsvpStatus {
+	ATTENDING, DECLINED, UNSURE, NOT_REPLIED;
 }

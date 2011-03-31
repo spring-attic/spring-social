@@ -18,13 +18,13 @@ package org.springframework.social.facebook.support;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.social.facebook.Album;
 import org.springframework.social.facebook.MediaApi;
-import org.springframework.social.facebook.Photo;
-import org.springframework.social.facebook.Video;
 import org.springframework.social.facebook.support.extractors.AlbumResponseExtractor;
 import org.springframework.social.facebook.support.extractors.PhotoResponseExtractor;
 import org.springframework.social.facebook.support.extractors.VideoResponseExtractor;
+import org.springframework.social.facebook.types.Album;
+import org.springframework.social.facebook.types.Photo;
+import org.springframework.social.facebook.types.Video;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;

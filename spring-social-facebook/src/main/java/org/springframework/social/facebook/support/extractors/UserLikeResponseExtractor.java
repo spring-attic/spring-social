@@ -18,7 +18,7 @@ package org.springframework.social.facebook.support.extractors;
 import java.util.Date;
 import java.util.Map;
 
-import org.springframework.social.facebook.UserLike;
+import org.springframework.social.facebook.types.UserLike;
 
 public class UserLikeResponseExtractor extends AbstractResponseExtractor<UserLike> {
 

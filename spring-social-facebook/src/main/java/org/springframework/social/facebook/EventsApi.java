@@ -17,6 +17,10 @@ package org.springframework.social.facebook;
 
 import java.util.List;
 
+import org.springframework.social.facebook.types.Event;
+import org.springframework.social.facebook.types.EventInvitee;
+import org.springframework.social.facebook.types.UserEvent;
+
 public interface EventsApi {
 
 	/**

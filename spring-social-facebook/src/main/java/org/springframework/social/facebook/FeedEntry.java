@@ -19,6 +19,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.social.facebook.types.Comment;
+import org.springframework.social.facebook.types.Reference;
+
 /**
  * Represents a single entry in a feed.
  * @author Craig Walls

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.types.Reference;
 
 public abstract class AbstractResponseExtractor<T> implements ResponseExtractor<T> {
 	

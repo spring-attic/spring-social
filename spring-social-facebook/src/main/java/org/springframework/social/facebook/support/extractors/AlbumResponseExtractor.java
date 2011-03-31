@@ -18,10 +18,10 @@ package org.springframework.social.facebook.support.extractors;
 import java.util.Date;
 import java.util.Map;
 
-import org.springframework.social.facebook.Album;
-import org.springframework.social.facebook.Album.Privacy;
-import org.springframework.social.facebook.Album.Type;
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.types.Album;
+import org.springframework.social.facebook.types.Reference;
+import org.springframework.social.facebook.types.Album.Privacy;
+import org.springframework.social.facebook.types.Album.Type;
 
 public class AlbumResponseExtractor extends AbstractResponseExtractor<Album> {
 

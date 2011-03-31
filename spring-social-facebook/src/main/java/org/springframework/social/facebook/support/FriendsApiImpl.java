@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.social.facebook.FriendsApi;
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.types.Reference;
 import org.springframework.web.client.RestTemplate;
 
 public class FriendsApiImpl extends AbstractFacebookApi implements FriendsApi {

@@ -13,34 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook;
+package org.springframework.social.facebook.types;
 
-import java.util.Date;
-
-public class UserEvent {
-
-	private final String id;
-
-	private final String name;
-
-	private final Date startTime;
-
-	private final Date endTime;
-
-	private final String location;
-
-	private final RsvpStatus rsvpStatus;
-
-	public UserEvent(String id, String name, Date startTime, Date endTime, RsvpStatus rsvpStatus) {
-		this(id, name, startTime, endTime, rsvpStatus, null);
-	}
-
-	public UserEvent(String id, String name, Date startTime, Date endTime, RsvpStatus rsvpStatus, String location) {
+public class EventInvitee {
+	private String id;
+	
+	private String name;
+	
+	private RsvpStatus rsvpStatus;
+	
+	public EventInvitee(String id, String name, RsvpStatus rsvpStatus) {
 		this.id = id;
 		this.name = name;
-		this.startTime = startTime;
-		this.endTime = endTime;
-		this.location = location;
 		this.rsvpStatus = rsvpStatus;
 	}
 
@@ -52,19 +36,8 @@ public class UserEvent {
 		return name;
 	}
 
-	public Date getStartTime() {
-		return startTime;
-	}
-
-	public Date getEndTime() {
-		return endTime;
-	}
-
-	public String getLocation() {
-		return location;
-	}
-
 	public RsvpStatus getRsvpStatus() {
 		return rsvpStatus;
-	};
+	}
+
 }
