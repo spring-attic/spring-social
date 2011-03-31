@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.support;
+package org.springframework.social.twitter;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -28,8 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.social.twitter.SearchApi;
-import org.springframework.social.twitter.TwitterTemplate;
+import org.springframework.social.twitter.support.extractors.SavedSearchResponseExtractor;
 import org.springframework.social.twitter.types.SavedSearch;
 import org.springframework.social.twitter.types.SearchResults;
 import org.springframework.social.twitter.types.Trend;
@@ -45,12 +44,14 @@ import org.springframework.web.client.RestTemplate;
  * Implementation of {@link SearchApi}, providing a binding to Twitter's search and trend-oriented REST resources.
  * @author Craig Walls
  */
-public class SearchApiImpl implements SearchApi {
+public class SearchApiTemplate implements SearchApi {
 
 	private final RestTemplate restTemplate;
+	private SavedSearchResponseExtractor savedSearchExtractor;
 
-	public SearchApiImpl(RestTemplate restTemplate) {
+	public SearchApiTemplate(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
+		this.savedSearchExtractor = new SavedSearchResponseExtractor();
 	}
 
 	public SearchResults search(String query) {
@@ -61,6 +62,7 @@ public class SearchApiImpl implements SearchApi {
 		return search(query, page, resultsPerPage, 0, 0);
 	}
 
+	@SuppressWarnings("unchecked")
 	public SearchResults search(String query, int page, int resultsPerPage, int sinceId, int maxId) {
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("query", query);
@@ -75,6 +77,7 @@ public class SearchApiImpl implements SearchApi {
 			searchUrl += "&max_id={max}";
 			parameters.put("max", String.valueOf(maxId));
 		}
+		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restTemplate.getForEntity(searchUrl, Map.class, parameters);
 		// handleResponseErrors(response);
 		Map<String, Object> resultsMap = response.getBody();
@@ -86,17 +89,15 @@ public class SearchApiImpl implements SearchApi {
 		return buildSearchResults(resultsMap, tweets);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<SavedSearch> getSavedSearches() {
 		List<Map<String, Object>> response = restTemplate.getForObject(SAVED_SEARCHES_URL, List.class);
-		List<SavedSearch> savedSearches = new ArrayList<SavedSearch>(response.size());
-		for (Map<String, Object> item : response) {
-			savedSearches.add(populateSavedSearchFromMap(item));
-		}
-		return savedSearches;
+		return savedSearchExtractor.extractObjects(response);
 	}
 
+	@SuppressWarnings("unchecked")
 	public SavedSearch getSavedSearch(long searchId) {
-		return populateSavedSearchFromMap(restTemplate.getForObject(SAVED_SEARCH_URL, Map.class, searchId));
+		return savedSearchExtractor.extractObject(restTemplate.getForObject(SAVED_SEARCH_URL, Map.class, searchId));
 	}
 
 	public void createSavedSearch(String query) {
@@ -115,6 +116,7 @@ public class SearchApiImpl implements SearchApi {
 		return getCurrentTrends(false);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Trends getCurrentTrends(boolean excludeHashtags) {
 		String url = makeTrendUrl(CURRENT_TRENDS_URL, excludeHashtags, null);
 		Map<String, Object> response = restTemplate.getForObject(url, Map.class);
@@ -130,6 +132,7 @@ public class SearchApiImpl implements SearchApi {
 		return getDailyTrends(excludeHashtags, null);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Trends> getDailyTrends(boolean excludeHashtags, String startDate) {
 		String url = makeTrendUrl(DAILY_TRENDS_URL, excludeHashtags, startDate);
 		Map<String, Object> response = restTemplate.getForObject(url, Map.class);
@@ -144,6 +147,7 @@ public class SearchApiImpl implements SearchApi {
 		return getWeeklyTrends(excludeHashtags, null);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<Trends> getWeeklyTrends(boolean excludeHashtags, String startDate) {
 		String url = makeTrendUrl(WEEKLY_TRENDS_URL, excludeHashtags, startDate);
 		Map<String, Object> response = restTemplate.getForObject(url, Map.class);
@@ -154,6 +158,7 @@ public class SearchApiImpl implements SearchApi {
 		return getLocalTrends(whereOnEarthId, false);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Trends getLocalTrends(long whereOnEarthId, boolean excludeHashtags) {
 		String url = makeTrendUrl(LOCAL_TRENDS_URL, excludeHashtags, null);
 		List<Map<String, Object>> response = restTemplate.getForObject(url, List.class, whereOnEarthId);
@@ -174,6 +179,7 @@ public class SearchApiImpl implements SearchApi {
 		return url;
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<Trends> extractTrendsListFromResponse(Map<String, Object> response, DateFormat dateFormat) {
 		Map<String, Object> trendsMap = (Map<String, Object>) response.get("trends");
 		List<Trends> trendsList = new ArrayList<Trends>(trendsMap.keySet().size());
@@ -216,18 +222,7 @@ public class SearchApiImpl implements SearchApi {
 		return tweet;
 	}
 
-	private SavedSearch populateSavedSearchFromMap(Map<String, Object> item) {
-		long id = Long.valueOf(String.valueOf(item.get("id")));
-		String name = String.valueOf(item.get("name"));
-		String query = String.valueOf(item.get("query"));
-		Object positionValue = item.get("position");
-		int position = positionValue == null ? 0 : Integer.valueOf(String.valueOf(positionValue));
-		Date createdAt = toDate(String.valueOf(item.get("created_at")), savedSearchDateFormat);
-		return new SavedSearch(id, name, query, position, createdAt);
-	}
-
 	private static final DateFormat searchDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
-	private static final DateFormat savedSearchDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH);
 	private static final DateFormat simpleTrendDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	private static final DateFormat longTrendDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static final DateFormat localTrendDateFormat = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss'Z'");

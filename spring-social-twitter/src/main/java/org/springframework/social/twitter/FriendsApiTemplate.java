@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.support;
+package org.springframework.social.twitter;
 
 import java.util.List;
 import java.util.Map;
@@ -21,23 +21,21 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.SocialException;
-import org.springframework.social.twitter.FriendsApi;
-import org.springframework.social.twitter.TwitterTemplate;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
 import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Implementation of {@link FriendsApiImpl}, providing a binding to Twitter's friends and followers-oriented REST resources.
+ * Implementation of {@link FriendsApiTemplate}, providing a binding to Twitter's friends and followers-oriented REST resources.
  * @author Craig Walls
  */
-public class FriendsApiImpl implements FriendsApi {
+public class FriendsApiTemplate implements FriendsApi {
 	
 	private final RestTemplate restTemplate;
 	private final ResponseStatusCodeTranslator statusCodeTranslator;
 	private TwitterProfileResponseExtractor profileExtractor;
 
-	public FriendsApiImpl(RestTemplate restTemplate, ResponseStatusCodeTranslator statusCodeTranslator) {
+	public FriendsApiTemplate(RestTemplate restTemplate, ResponseStatusCodeTranslator statusCodeTranslator) {
 		this.restTemplate = restTemplate;
 		this.statusCodeTranslator = statusCodeTranslator;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
@@ -51,10 +49,12 @@ public class FriendsApiImpl implements FriendsApi {
 		return getFriendsOrFollowers(FRIENDS_STATUSES_URL + "?screen_name={screen_name}", screenName);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<Long> getFriendIds(long userId) {
 		return restTemplate.getForObject(FRIEND_IDS_URL + "?user_id={userId}", List.class, userId);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Long> getFriendIds(String screenName) {
 		return restTemplate.getForObject(FRIEND_IDS_URL + "?screen_name={screenName}", List.class, screenName);
 	}
@@ -67,10 +67,12 @@ public class FriendsApiImpl implements FriendsApi {
 		return getFriendsOrFollowers(FOLLOWERS_STATUSES_URL + "?screen_name={screen_name}", screenName);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Long> getFollowerIds(long userId) {
 		return restTemplate.getForObject(FOLLOWER_IDS_URL + "?user_id={userId}", List.class, userId);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Long> getFollowerIds(String screenName) {
 		return restTemplate.getForObject(FOLLOWER_IDS_URL + "?screen_name={screenName}", List.class, screenName);
 	}
@@ -95,27 +97,33 @@ public class FriendsApiImpl implements FriendsApi {
 		return restTemplate.getForObject(EXISTS_URL, boolean.class, userA, userB);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Long> getIncomingFriendships() {
 		Map<String, Object> incomingMap = restTemplate.getForObject(FRIENDSHIPS_INCOMING_URL, Map.class);
 		return (List<Long>) incomingMap.get("ids");
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Long> getOutgoingFriendships() {
 		Map<String, Object> outgoingMap = restTemplate.getForObject(FRIENDSHIPS_OUTGOING_URL, Map.class);
 		return (List<Long>) outgoingMap.get("ids");
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<TwitterProfile> getFriendsOrFollowers(String url, Object... urlArgs) {
 		return profileExtractor.extractObjects((List<Map<String, Object>>) restTemplate.getForObject(url, List.class, urlArgs));
 	}
 
+	@SuppressWarnings("unchecked")
 	private String friendshipAssist(String url, Object urlArgs) {
+		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restTemplate.postForEntity(url, "", Map.class, urlArgs);
 		handleResponseErrors(response);
         Map<String, Object> body = response.getBody();
         return (String) body.get("screen_name");
 	}	
 	
+	@SuppressWarnings("rawtypes")
 	private void handleResponseErrors(ResponseEntity<Map> response) {
 		SocialException exception = statusCodeTranslator.translate(response);
 		if (exception != null) {

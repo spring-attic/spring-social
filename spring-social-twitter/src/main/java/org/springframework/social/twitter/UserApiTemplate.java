@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.support;
+package org.springframework.social.twitter;
 
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.social.twitter.TwitterTemplate;
-import org.springframework.social.twitter.UserApi;
 import org.springframework.social.twitter.support.extractors.SuggestionCategoryResponseExtractor;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
 import org.springframework.social.twitter.types.SuggestionCategory;
@@ -30,7 +28,7 @@ import org.springframework.web.client.RestTemplate;
  * Implementation of the {@link UserApi} interface providing binding to Twitters' user-oriented REST resources.
  * @author Craig Walls
  */
-public class UserApiImpl implements UserApi {
+public class UserApiTemplate implements UserApi {
 
 	private final RestTemplate restTemplate;
 	
@@ -38,7 +36,7 @@ public class UserApiImpl implements UserApi {
 
 	private SuggestionCategoryResponseExtractor suggestionCategoryExtractor;
 
-	public UserApiImpl(RestTemplate restTemplate) {
+	public UserApiTemplate(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
 		this.suggestionCategoryExtractor = new SuggestionCategoryResponseExtractor();
@@ -58,11 +56,13 @@ public class UserApiImpl implements UserApi {
 		return getUserProfile(getProfileId());
 	}
 
+	@SuppressWarnings("unchecked")
 	public TwitterProfile getUserProfile(String screenName) {
 		Map<String, Object> response = restTemplate.getForObject(USER_PROFILE_URL + "?screen_name={screenName}", Map.class, screenName);
 		return profileExtractor.extractObject(response);
 	}
 
+	@SuppressWarnings("unchecked")
 	public TwitterProfile getUserProfile(long userId) {
 		Map<String, Object> response = restTemplate.getForObject(USER_PROFILE_URL + "?user_id={userId}", Map.class, userId);
 		return profileExtractor.extractObject(response);
@@ -80,17 +80,20 @@ public class UserApiImpl implements UserApi {
 		return lookupUsers(USER_SEARCH_URL + "?q={query}", query);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public List<SuggestionCategory> getSuggestionCategories() {
 		return suggestionCategoryExtractor.extractObjects((List<Map<String, Object>>) restTemplate.getForObject(SUGGESTION_CATEGORIES_URL, List.class));
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<TwitterProfile> getSuggestions(String slug) {
 		Map<String, List<Map<String, Object>>> suggestionsMap = restTemplate.getForObject(SUGGESTIONS_URL, Map.class, slug);
 		return profileExtractor.extractObjects(suggestionsMap.get("users"));
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<TwitterProfile> lookupUsers(String url, String... urlArgs) {
-		return profileExtractor.extractObjects((List<Map<String, Object>>) restTemplate.getForObject(url, List.class, urlArgs));
+		return profileExtractor.extractObjects((List<Map<String, Object>>) restTemplate.getForObject(url, List.class, (Object[]) urlArgs));
 	}
 
 	static final String VERIFY_CREDENTIALS_URL = TwitterTemplate.API_URL_BASE + "account/verify_credentials.json";

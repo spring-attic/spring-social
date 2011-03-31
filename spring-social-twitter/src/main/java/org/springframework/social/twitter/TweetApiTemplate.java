@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.support;
+package org.springframework.social.twitter;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,8 +22,6 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.SocialException;
-import org.springframework.social.twitter.TweetApi;
-import org.springframework.social.twitter.TwitterTemplate;
 import org.springframework.social.twitter.support.extractors.TweetResponseExtractor;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
 import org.springframework.social.twitter.types.StatusDetails;
@@ -37,7 +35,7 @@ import org.springframework.web.client.RestTemplate;
  * Implementation of {@link TweetApi}, providing a binding to Twitter's tweet and timeline-oriented REST resources.
  * @author Craig Walls
  */
-public class TweetApiImpl implements TweetApi {
+public class TweetApiTemplate implements TweetApi {
 
 	private final RestTemplate restTemplate;
 
@@ -47,7 +45,7 @@ public class TweetApiImpl implements TweetApi {
 	
 	private TweetResponseExtractor tweetExtractor;
 
-	public TweetApiImpl(RestTemplate restTemplate, ResponseStatusCodeTranslator statusCodeTranslator) {
+	public TweetApiTemplate(RestTemplate restTemplate, ResponseStatusCodeTranslator statusCodeTranslator) {
 		this.restTemplate = restTemplate;
 		this.statusCodeTranslator = statusCodeTranslator;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
@@ -78,6 +76,7 @@ public class TweetApiImpl implements TweetApi {
 		return retrieveTimelineTweets(USER_TIMELINE_URL + "?user_id={userId}", userId);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Tweet> getMentions() {
 		List<Map<String, Object>> response = restTemplate.getForObject(MENTIONS_URL, List.class);
 		return tweetExtractor.extractObjects(response);
@@ -95,6 +94,7 @@ public class TweetApiImpl implements TweetApi {
 		return retrieveTimelineTweets(RETWEETS_OF_ME_URL);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Tweet getStatus(long tweetId) {
 		Map<String, Object> tweetMap = restTemplate.getForObject(SHOW_TWEET_URL, Map.class, tweetId);
 		return tweetExtractor.extractObject(tweetMap);
@@ -108,6 +108,7 @@ public class TweetApiImpl implements TweetApi {
 		MultiValueMap<String, Object> tweetParams = new LinkedMultiValueMap<String, Object>();
 		tweetParams.add("status", message);
 		tweetParams.setAll(details.toParameterMap());
+		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restTemplate.postForEntity(TWEET_URL, tweetParams, Map.class);
 		handleResponseErrors(response);
 	}
@@ -117,6 +118,7 @@ public class TweetApiImpl implements TweetApi {
 	}
 
 	public void retweet(long tweetId) {
+		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restTemplate.postForEntity(RETWEET_URL, "", Map.class,
 				Collections.singletonMap("tweet_id", Long.toString(tweetId)));
 		handleResponseErrors(response);
@@ -126,11 +128,13 @@ public class TweetApiImpl implements TweetApi {
 		return retrieveTimelineTweets(RETWEETS_URL, tweetId);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<TwitterProfile> getRetweetedBy(long tweetId) {
 		List<Map<String, Object>> response = restTemplate.getForObject(RETWEETED_BY_URL, List.class, tweetId);
 		return profileExtractor.extractObjects(response);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Long> getRetweetedByIds(long tweetId) {
 		return restTemplate.getForObject(RETWEETED_BY_IDS_URL, List.class, tweetId);
 	}
@@ -140,22 +144,26 @@ public class TweetApiImpl implements TweetApi {
 	}
 
 	public void addToFavorites(long tweetId) {
+		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restTemplate.postForEntity(CREATE_FAVORITE_URL, "", Map.class,
 				Collections.singletonMap("tweet_id", Long.toString(tweetId)));
 		handleResponseErrors(response);
 	}
 
 	public void removeFromFavorites(long tweetId) {
+		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restTemplate.postForEntity(DESTROY_FAVORITE_URL, "", Map.class,
 				Collections.singletonMap("tweet_id", Long.toString(tweetId)));
 		handleResponseErrors(response);
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<Tweet> retrieveTimelineTweets(String url, Object... urlArgs) {
 		List<Map<String, Object>> response = restTemplate.getForObject(url, List.class, urlArgs);
 		return tweetExtractor.extractObjects(response);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void handleResponseErrors(ResponseEntity<Map> response) {
 		SocialException exception = statusCodeTranslator.translate(response);
 		if (exception != null) {

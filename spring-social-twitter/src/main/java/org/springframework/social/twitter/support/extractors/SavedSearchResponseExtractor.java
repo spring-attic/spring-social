@@ -15,17 +15,21 @@
  */
 package org.springframework.social.twitter.support.extractors;
 
+import java.util.Date;
 import java.util.Map;
 
-import org.springframework.social.twitter.types.SuggestionCategory;
+import org.springframework.social.twitter.types.SavedSearch;
 
-public class SuggestionCategoryResponseExtractor extends AbstractResponseExtractor<SuggestionCategory> {
+public class SavedSearchResponseExtractor extends AbstractResponseExtractor<SavedSearch> {
 
-	public SuggestionCategory extractObject(Map<String, Object> categoryMap) {
-		return new SuggestionCategory(
-				String.valueOf(categoryMap.get("name")), 
-				String.valueOf(categoryMap.get("slug")), 
-				Integer.valueOf(String.valueOf(categoryMap.get("size"))));
+	public SavedSearch extractObject(Map<String, Object> item) {
+		long id = Long.valueOf(String.valueOf(item.get("id")));
+		String name = String.valueOf(item.get("name"));
+		String query = String.valueOf(item.get("query"));
+		Object positionValue = item.get("position");
+		int position = positionValue == null ? 0 : Integer.valueOf(String.valueOf(positionValue));
+		Date createdAt = toSavedSearchDate(String.valueOf(item.get("created_at")));
+		return new SavedSearch(id, name, query, position, createdAt);
 	}
 	
 }

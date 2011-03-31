@@ -40,12 +40,20 @@ public abstract class AbstractResponseExtractor<T> implements ResponseExtractor<
     }
 
     protected Date toTimelineDate(String dateString) {
+    	return toDate(dateString, TIMELINE_DATE_FORMAT);
+    }
+    
+    protected Date toSavedSearchDate(String dateString) {
+    	return toDate(dateString, SAVED_SEARCH_DATE_FORMAT);
+    }
+    
+    protected Date toDate(String dateString, DateFormat dateFormat) {
         if (dateString == null) {
             return null;
         }
 
         try {
-            return TIMELINE_DATE_FORMAT.parse(dateString);
+            return dateFormat.parse(dateString);
         } catch (ParseException e) {
             return null;
         }
@@ -53,5 +61,7 @@ public abstract class AbstractResponseExtractor<T> implements ResponseExtractor<
 
 
 	private static final DateFormat TIMELINE_DATE_FORMAT = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH);
+
+	private static final DateFormat SAVED_SEARCH_DATE_FORMAT = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH);
 
 }

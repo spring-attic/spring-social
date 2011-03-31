@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.support;
+package org.springframework.social.twitter;
 
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.social.twitter.ListsApi;
-import org.springframework.social.twitter.TwitterTemplate;
-import org.springframework.social.twitter.UserApi;
 import org.springframework.social.twitter.support.extractors.TweetResponseExtractor;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
 import org.springframework.social.twitter.support.extractors.UserListResponseExtractor;
@@ -37,7 +34,7 @@ import org.springframework.web.client.RestTemplate;
  * Implementation of {@link ListsApi}, providing a binding to Twitter's list-oriented REST resources.
  * @author Craig Walls
  */
-public class ListsApiImpl implements ListsApi {
+public class ListsApiTemplate implements ListsApi {
 
 	private final RestTemplate restTemplate;
 	private final UserApi userApi;
@@ -45,7 +42,7 @@ public class ListsApiImpl implements ListsApi {
 	private TweetResponseExtractor tweetExtractor;
 	private UserListResponseExtractor userListExtractor;
 	
-	public ListsApiImpl(RestTemplate restTemplate, UserApi userApi) {
+	public ListsApiTemplate(RestTemplate restTemplate, UserApi userApi) {
 		this.restTemplate = restTemplate;
 		this.userApi = userApi;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
@@ -69,10 +66,12 @@ public class ListsApiImpl implements ListsApi {
 		return getTwitterList(screenName, listSlug);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Tweet> getListStatuses(long userId, long listId) {
 		return tweetExtractor.extractObjects(restTemplate.getForObject(LIST_STATUSES_URL, List.class, userId, listId));
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Tweet> getListStatuses(String screenName, String listSlug) {
 		return tweetExtractor.extractObjects(restTemplate.getForObject(LIST_STATUSES_URL, List.class, screenName, listSlug));
 	}
@@ -121,11 +120,13 @@ public class ListsApiImpl implements ListsApi {
 		return getListConnections(LIST_SUBSCRIBERS_URL, screenName, listSlug);
 	}
 
+	@SuppressWarnings("unchecked")
 	public UserList subscribe(long ownerId, long listId) {
 		Map<String, Object> response  = restTemplate.postForObject(LIST_SUBSCRIBERS_URL, "", Map.class, ownerId, listId);
 		return userListExtractor.extractObject(response);
 	}
 
+	@SuppressWarnings("unchecked")
 	public UserList subscribe(String ownerScreenName, String listSlug) {
 		Map<String, Object> response  = restTemplate.postForObject(LIST_SUBSCRIBERS_URL, "", Map.class, ownerScreenName, listSlug);
 		return userListExtractor.extractObject(response);
@@ -185,17 +186,20 @@ public class ListsApiImpl implements ListsApi {
 
 	// private helpers
 
+	@SuppressWarnings("unchecked")
 	private List<UserList> getTwitterLists(String url, Object... urlArgs) {
 		Map<String, Object> response = restTemplate.getForObject(url, Map.class, urlArgs);
 		List<Map<String, Object>> listsList = (List<Map<String, Object>>) response.get("lists");
 		return userListExtractor.extractObjects(listsList);
 	}
 
+	@SuppressWarnings("unchecked")
 	private UserList getTwitterList(Object... urlArgs) {
 		Map<String, Object> response = restTemplate.getForObject(USER_LIST_URL, Map.class, urlArgs);
 		return userListExtractor.extractObject(response);
 	}
 
+	@SuppressWarnings("unchecked")
 	private UserList saveList(String url, String name, String description, boolean isPublic, Object... urlArgs) {
 		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
 		request.set("name", name);
@@ -209,12 +213,14 @@ public class ListsApiImpl implements ListsApi {
 		restTemplate.delete(USER_LIST_URL, urlArgs);
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<TwitterProfile> getListConnections(String relationshipUrl, Object... urlArgs) {
 		Map<String, Object> response = restTemplate.getForObject(relationshipUrl, Map.class, urlArgs);
 		List<Map<String, Object>> profileMapList = (List<Map<String, Object>>) response.get("users");
 		return profileExtractor.extractObjects(profileMapList);
 	}
 
+	@SuppressWarnings("unchecked")
 	private UserList addMembersToList(String fieldName, String joinedIds, Object... urlArgs) {
 		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
 		request.set(fieldName, joinedIds);

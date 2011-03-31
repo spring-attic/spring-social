@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.support;
+package org.springframework.social.twitter;
 
 import java.util.List;
 import java.util.Map;
@@ -21,8 +21,6 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.SocialException;
-import org.springframework.social.twitter.DirectMessageApi;
-import org.springframework.social.twitter.TwitterTemplate;
 import org.springframework.social.twitter.support.extractors.DirectMessageResponseExtractor;
 import org.springframework.social.twitter.types.DirectMessage;
 import org.springframework.util.LinkedMultiValueMap;
@@ -33,23 +31,25 @@ import org.springframework.web.client.RestTemplate;
  * Implementation of {@link DirectMessageApi}, providing a binding to Twitter's direct message-oriented REST resources.
  * @author Craig Walls
  */
-public class DirectMessageApiImpl implements DirectMessageApi {
+public class DirectMessageApiTemplate implements DirectMessageApi {
 
 	private final RestTemplate restTemplate;
 	private final ResponseStatusCodeTranslator statusCodeTranslator;
 	private DirectMessageResponseExtractor directMessageExtractor;
 
-	public DirectMessageApiImpl(RestTemplate restTemplate, ResponseStatusCodeTranslator statusCodeTranslator) {
+	public DirectMessageApiTemplate(RestTemplate restTemplate, ResponseStatusCodeTranslator statusCodeTranslator) {
 		this.restTemplate = restTemplate;
 		this.statusCodeTranslator = statusCodeTranslator;
 		this.directMessageExtractor = new DirectMessageResponseExtractor();
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<DirectMessage> getDirectMessagesReceived() {
 		List<Map<String, Object>> response = restTemplate.getForObject(DIRECT_MESSAGES_RECEIVED_URL, List.class);
 		return directMessageExtractor.extractObjects((List<Map<String, Object>>) response);
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<DirectMessage> getDirectMessagesSent() {
 		List<Map<String, Object>> response = restTemplate.getForObject(DIRECT_MESSAGES_SENT_URL, List.class);
 		return directMessageExtractor.extractObjects((List<Map<String, Object>>) response);
@@ -71,12 +71,14 @@ public class DirectMessageApiImpl implements DirectMessageApi {
 		restTemplate.delete(DESTROY_DIRECT_MESSAGE_URL, messageId);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void sendDirectMessage(String text, MultiValueMap<String, Object> dmParams) {
 		dmParams.add("text", text);
 		ResponseEntity<Map> response = restTemplate.postForEntity(SEND_DIRECT_MESSAGE_URL, dmParams, Map.class);
 		handleResponseErrors(response);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void handleResponseErrors(ResponseEntity<Map> response) {
 		SocialException exception = statusCodeTranslator.translate(response);
 		if (exception != null) {
