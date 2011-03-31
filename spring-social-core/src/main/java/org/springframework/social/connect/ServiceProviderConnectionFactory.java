@@ -20,22 +20,19 @@ import org.springframework.social.connect.spi.ServiceApiAdapter;
 
 public abstract class ServiceProviderConnectionFactory<S> {
 
-	private String providerId;
+	private final String providerId;
 	
-	private ServiceProvider<S> serviceProvider;
+	private final ServiceProvider<S> serviceProvider;
 
-	private ServiceApiAdapter<S> serviceApiAdapter;
+	private final ServiceApiAdapter<S> serviceApiAdapter;
 	
-	private boolean allowSignIn = true;
+	private final boolean allowSignIn;
 	
-	public ServiceProviderConnectionFactory(String providerId, ServiceProvider<S> serviceProvider) {
-		this(providerId, serviceProvider, null);
-	}
-	
-	public ServiceProviderConnectionFactory(String providerId, ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
+	public ServiceProviderConnectionFactory(String providerId, ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter, boolean allowSignIn) {
 		this.providerId = providerId;
 		this.serviceProvider = serviceProvider;
 		this.serviceApiAdapter = serviceApiAdapter != null ? serviceApiAdapter : serviceApiAdapter(serviceProvider);
+		this.allowSignIn = allowSignIn;
 	}
 
 	// sublassing hooks

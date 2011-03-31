@@ -15,13 +15,13 @@
  */
 package org.springframework.social.connect;
 
-class ApiTokens {
+final class ApiTokens {
 	
-	private String accessToken;
+	private final String accessToken;
 	
-	private String secret;
+	private final String secret;
 	
-	private String refreshToken;
+	private final String refreshToken;
 
 	public ApiTokens(String accessToken, String secret, String refreshToken) {
 		this.accessToken = accessToken;
@@ -40,5 +40,13 @@ class ApiTokens {
 	public String getRefreshToken() {
 		return refreshToken;
 	}
+
+	public static ApiTokens oauth1(String accessToken, String secret) {
+		return new ApiTokens(accessToken, secret, null);
+	}
 	
+	public static ApiTokens oauth2(String accessToken, String refreshToken) {
+		return new ApiTokens(accessToken, null, refreshToken);
+	}
+
 }

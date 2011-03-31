@@ -22,12 +22,8 @@ import org.springframework.social.oauth1.OAuthToken;
 
 public class OAuth1ServiceProviderConnectionFactory<S> extends ServiceProviderConnectionFactory<S> {
 	
-	public OAuth1ServiceProviderConnectionFactory(String providerId, OAuth1ServiceProvider<S> serviceProvider) {
-		this(providerId, serviceProvider, null);
-	}
-	
-	public OAuth1ServiceProviderConnectionFactory(String providerId, OAuth1ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
-		super(providerId, serviceProvider, serviceApiAdapter);
+	public OAuth1ServiceProviderConnectionFactory(String providerId, OAuth1ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter, boolean allowSignIn) {
+		super(providerId, serviceProvider, serviceApiAdapter, allowSignIn);
 	}
 
 	public OAuth1Operations getOAuthOperations() {
@@ -36,15 +32,13 @@ public class OAuth1ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 	
 	public ServiceProviderConnection<S> createConnection(OAuthToken accessToken) {
 		return new ServiceProviderConnectionImpl<S>(getProviderId(), isAllowSignIn(),
-				new ApiTokens(accessToken.getValue(), accessToken.getSecret(), null),
-				getOAuth1ServiceProvider().getServiceApi(accessToken.getValue(), accessToken.getSecret()),
-				getServiceApiAdapter());		
+				ApiTokens.oauth1(accessToken.getValue(), accessToken.getSecret()),
+				getOAuth1ServiceProvider().getServiceApi(accessToken.getValue(), accessToken.getSecret()), getServiceApiAdapter());		
 	}
 	
 	public ServiceProviderConnection<S> createConnection(ServiceProviderConnectionMemento connectionMemento) {
 		return new ServiceProviderConnectionImpl<S>(connectionMemento,
-				getOAuth1ServiceProvider().getServiceApi(connectionMemento.getAccessToken(), connectionMemento.getSecret()),
-				getServiceApiAdapter());
+				getOAuth1ServiceProvider().getServiceApi(connectionMemento.getAccessToken(), connectionMemento.getSecret()), getServiceApiAdapter());
 	}
 	
 	// internal helpers

@@ -20,7 +20,7 @@ import java.io.Serializable;
 import org.springframework.social.connect.spi.ProviderProfile;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 
-class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
+final class ServiceProviderConnectionImpl<S> implements ServiceProviderConnection<S> {
 
 	private Long id;
 	
