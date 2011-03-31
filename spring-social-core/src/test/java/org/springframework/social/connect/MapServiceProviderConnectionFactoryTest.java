@@ -10,7 +10,7 @@ import org.springframework.social.oauth1.OAuth1ServiceProvider;
 
 public class MapServiceProviderConnectionFactoryTest {
 
-	private MapServiceProviderConnectionFactoryLocator connectionFactoryLocator = new MapServiceProviderConnectionFactoryLocator();
+	private MapServiceProviderConnectionFactoryRegistry connectionFactoryLocator = new MapServiceProviderConnectionFactoryRegistry();
 
 	private TwitterServiceProviderConnectionFactory twitterConnectionFactory = new TwitterServiceProviderConnectionFactory();
 	

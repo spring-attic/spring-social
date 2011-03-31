@@ -59,7 +59,7 @@ public class OAuth1ServiceProviderConnectionFactoryTest {
 		assertEquals("987654321", connection.createMemento().getSecret());
 	}
 		
-	static class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
+	private static class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
 
 		public TwitterServiceProviderConnectionFactory() {
 			super("twitter", new TwitterServiceProvider(), new TwitterServiceApiAdapter(), true);
@@ -67,7 +67,7 @@ public class OAuth1ServiceProviderConnectionFactoryTest {
 		
 	}
 
-	static class TwitterServiceProvider implements OAuth1ServiceProvider<TwitterApi> {
+	private static class TwitterServiceProvider implements OAuth1ServiceProvider<TwitterApi> {
 
 		public OAuth1Operations getOAuthOperations() {
 			return null;
@@ -86,7 +86,7 @@ public class OAuth1ServiceProviderConnectionFactoryTest {
 		
 	}
 		
-	interface TwitterApi {
+	private interface TwitterApi {
 		
 		String getAccessToken();
 		
@@ -94,7 +94,7 @@ public class OAuth1ServiceProviderConnectionFactoryTest {
 		
 	}
 	
-	static class TwitterServiceApiAdapter implements ServiceApiAdapter<TwitterApi> {
+	private static class TwitterServiceApiAdapter implements ServiceApiAdapter<TwitterApi> {
 
 		public boolean test(TwitterApi serviceApi) {
 			return true;

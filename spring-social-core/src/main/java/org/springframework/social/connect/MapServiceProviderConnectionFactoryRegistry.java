@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.springframework.core.GenericTypeResolver;
 
-public class MapServiceProviderConnectionFactoryLocator implements ServiceProviderConnectionFactoryLocator {
+public class MapServiceProviderConnectionFactoryRegistry implements ServiceProviderConnectionFactoryLocator {
 
 	private final Map<String, ServiceProviderConnectionFactory<?>> connectionFactories = new HashMap<String, ServiceProviderConnectionFactory<?>>();
 

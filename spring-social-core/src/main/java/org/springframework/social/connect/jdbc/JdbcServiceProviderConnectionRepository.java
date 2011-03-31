@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -43,8 +45,8 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 
 	private final ServiceProviderConnectionFactoryLocator connectionFactoryLocator;
 	
-	public JdbcServiceProviderConnectionRepository(JdbcTemplate jdbcTemplate, TextEncryptor textEncryptor, ServiceProviderConnectionFactoryLocator connectionFactoryLocator) {
-		this.jdbcTemplate = jdbcTemplate;
+	public JdbcServiceProviderConnectionRepository(DataSource dataSource, TextEncryptor textEncryptor, ServiceProviderConnectionFactoryLocator connectionFactoryLocator) {
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.textEncryptor = textEncryptor;
 		this.connectionFactoryLocator = connectionFactoryLocator;
 		this.connectionInsert = createConnectionInsertStatement();

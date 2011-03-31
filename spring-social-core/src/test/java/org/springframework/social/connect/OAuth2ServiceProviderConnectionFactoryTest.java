@@ -58,7 +58,7 @@ public class OAuth2ServiceProviderConnectionFactoryTest {
 		assertEquals("987654321", connection.createMemento().getRefreshToken());
 	}
 		
-	static class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
+	private static class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
 
 		public FacebookServiceProviderConnectionFactory() {
 			super("facebook", new FacebookServiceProvider(), new FacebookServiceApiAdapter(), true);
@@ -66,7 +66,7 @@ public class OAuth2ServiceProviderConnectionFactoryTest {
 		
 	}
 
-	static class FacebookServiceProvider implements OAuth2ServiceProvider<FacebookApi> {
+	private static class FacebookServiceProvider implements OAuth2ServiceProvider<FacebookApi> {
 
 		public OAuth2Operations getOAuthOperations() {
 			return null;
@@ -82,13 +82,13 @@ public class OAuth2ServiceProviderConnectionFactoryTest {
 		
 	}
 		
-	interface FacebookApi {
+	private interface FacebookApi {
 		
 		String getAccessToken();
 		
 	}
 	
-	static class FacebookServiceApiAdapter implements ServiceApiAdapter<FacebookApi> {
+	private static class FacebookServiceApiAdapter implements ServiceApiAdapter<FacebookApi> {
 
 		public boolean test(FacebookApi serviceApi) {
 			return true;
