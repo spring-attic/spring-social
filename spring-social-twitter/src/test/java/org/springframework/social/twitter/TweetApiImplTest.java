@@ -27,6 +27,9 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.social.AccountNotConnectedException;
 import org.springframework.social.OperationNotPermittedException;
+import org.springframework.social.twitter.types.StatusDetails;
+import org.springframework.social.twitter.types.Tweet;
+import org.springframework.social.twitter.types.TwitterProfile;
 
 
 /**

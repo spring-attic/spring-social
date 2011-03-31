@@ -17,6 +17,8 @@ package org.springframework.social.twitter;
 
 import java.util.List;
 
+import org.springframework.social.twitter.types.TwitterProfile;
+
 /**
  * Interface defining the operations for working with a user's friends and followers.
  * @author Craig Walls

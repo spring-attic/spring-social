@@ -17,6 +17,9 @@ package org.springframework.social.twitter;
 
 import java.util.List;
 
+import org.springframework.social.twitter.types.SuggestionCategory;
+import org.springframework.social.twitter.types.TwitterProfile;
+
 /**
  * Interface defining the operations for retrieving information about Twitter users.
  * @author Craig Walls

@@ -17,6 +17,10 @@ package org.springframework.social.twitter;
 
 import java.util.List;
 
+import org.springframework.social.twitter.types.Tweet;
+import org.springframework.social.twitter.types.TwitterProfile;
+import org.springframework.social.twitter.types.UserList;
+
 /**
  * Interface defining the operations for working with a user's lists.
  * @author Craig Walls

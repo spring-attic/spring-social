@@ -19,10 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.social.twitter.SuggestionCategory;
-import org.springframework.social.twitter.TwitterProfile;
 import org.springframework.social.twitter.TwitterTemplate;
 import org.springframework.social.twitter.UserApi;
+import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
+import org.springframework.social.twitter.types.SuggestionCategory;
+import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -32,9 +33,12 @@ import org.springframework.web.client.RestTemplate;
 public class UserApiImpl implements UserApi {
 
 	private final RestTemplate restTemplate;
+	
+	private TwitterProfileResponseExtractor profileExtractor;
 
 	public UserApiImpl(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
+		this.profileExtractor = new TwitterProfileResponseExtractor();
 	}
 
 	public long getProfileId() {
@@ -52,14 +56,14 @@ public class UserApiImpl implements UserApi {
 	}
 
 	public TwitterProfile getUserProfile(String screenName) {
-		Map<?, ?> response = restTemplate.getForObject(USER_PROFILE_URL + "?screen_name={screenName}", Map.class,
+		Map<String, Object> response = restTemplate.getForObject(USER_PROFILE_URL + "?screen_name={screenName}", Map.class,
 				screenName);
-		return TwitterResponseHelper.getProfileFromResponseMap(response);
+		return profileExtractor.extractObject(response);
 	}
 
 	public TwitterProfile getUserProfile(long userId) {
-		Map<?, ?> response = restTemplate.getForObject(USER_PROFILE_URL + "?user_id={userId}", Map.class, userId);
-		return TwitterResponseHelper.getProfileFromResponseMap(response);
+		Map<String, Object> response = restTemplate.getForObject(USER_PROFILE_URL + "?user_id={userId}", Map.class, userId);
+		return profileExtractor.extractObject(response);
 	}
 
 	public List<TwitterProfile> getUsers(long... userIds) {
@@ -88,20 +92,12 @@ public class UserApiImpl implements UserApi {
 	public List<TwitterProfile> getSuggestions(String slug) {
 		Map<String, List<Map<String, Object>>> suggestionsMap = restTemplate.getForObject(SUGGESTIONS_URL, Map.class, slug);
 		List<Map<String, Object>> userList = suggestionsMap.get("users");
-		List<TwitterProfile> profiles = new ArrayList<TwitterProfile>(userList.size());
-		for (Map<String, Object> userMap : userList) {
-			profiles.add(TwitterResponseHelper.getProfileFromResponseMap(userMap));
-		}
-		return profiles;		
+		return profileExtractor.extractObjects(userList);
 	}
 
 	private List<TwitterProfile> lookupUsers(String url, String... urlArgs) {
 		List<Map<String, Object>> userList = restTemplate.getForObject(url, List.class, urlArgs);
-		List<TwitterProfile> profiles = new ArrayList<TwitterProfile>(userList.size());
-		for (Map<String, Object> userMap : userList) {
-			profiles.add(TwitterResponseHelper.getProfileFromResponseMap(userMap));
-		}
-		return profiles;
+		return profileExtractor.extractObjects(userList);
 	}
 
 	static final String VERIFY_CREDENTIALS_URL = TwitterTemplate.API_URL_BASE + "account/verify_credentials.json";

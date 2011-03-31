@@ -21,11 +21,13 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.social.twitter.ListsApi;
-import org.springframework.social.twitter.Tweet;
-import org.springframework.social.twitter.TwitterProfile;
 import org.springframework.social.twitter.TwitterTemplate;
 import org.springframework.social.twitter.UserApi;
-import org.springframework.social.twitter.UserList;
+import org.springframework.social.twitter.support.extractors.TweetResponseExtractor;
+import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
+import org.springframework.social.twitter.types.Tweet;
+import org.springframework.social.twitter.types.TwitterProfile;
+import org.springframework.social.twitter.types.UserList;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
@@ -39,10 +41,14 @@ public class ListsApiImpl implements ListsApi {
 
 	private final RestTemplate restTemplate;
 	private final UserApi userApi;
+	private TwitterProfileResponseExtractor profileExtractor;
+	private TweetResponseExtractor tweetExtractor;
 
 	public ListsApiImpl(RestTemplate restTemplate, UserApi userApi) {
 		this.restTemplate = restTemplate;
 		this.userApi = userApi;
+		this.profileExtractor = new TwitterProfileResponseExtractor();
+		this.tweetExtractor = new TweetResponseExtractor();
 	}
 
 	public List<UserList> getLists(long userId) {
@@ -62,11 +68,11 @@ public class ListsApiImpl implements ListsApi {
 	}
 
 	public List<Tweet> getListStatuses(long userId, long listId) {
-		return TwitterResponseHelper.extractTimelineTweetsFromResponse(restTemplate.getForObject(LIST_STATUSES_URL, List.class, userId, listId));
+		return tweetExtractor.extractObjects(restTemplate.getForObject(LIST_STATUSES_URL, List.class, userId, listId));
 	}
 
 	public List<Tweet> getListStatuses(String screenName, String listSlug) {
-		return TwitterResponseHelper.extractTimelineTweetsFromResponse(restTemplate.getForObject(LIST_STATUSES_URL, List.class, screenName, listSlug));
+		return tweetExtractor.extractObjects(restTemplate.getForObject(LIST_STATUSES_URL, List.class, screenName, listSlug));
 	}
 
 	public UserList createList(String name, String description, boolean isPublic) {
@@ -208,11 +214,7 @@ public class ListsApiImpl implements ListsApi {
 	private List<TwitterProfile> getListConnections(String relationshipUrl, Object... urlArgs) {
 		Map<String, Object> response = restTemplate.getForObject(relationshipUrl, Map.class, urlArgs);
 		List<Map<String, Object>> profileMapList = (List<Map<String, Object>>) response.get("users");
-		List<TwitterProfile> members = new ArrayList<TwitterProfile>();
-		for (Map<String, Object> profileMap : profileMapList) {
-			members.add(TwitterResponseHelper.getProfileFromResponseMap(profileMap));
-		}
-		return members;
+		return profileExtractor.extractObjects(profileMapList);
 	}
 
 	private UserList addMembersToList(String fieldName, String joinedIds, Object... urlArgs) {

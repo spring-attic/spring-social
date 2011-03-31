@@ -25,6 +25,8 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
+import org.springframework.social.twitter.types.SuggestionCategory;
+import org.springframework.social.twitter.types.TwitterProfile;
 
 /**
  * @author Craig Walls

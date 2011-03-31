@@ -17,6 +17,11 @@ package org.springframework.social.twitter;
 
 import java.util.List;
 
+import org.springframework.social.twitter.types.SavedSearch;
+import org.springframework.social.twitter.types.SearchResults;
+import org.springframework.social.twitter.types.Trends;
+import org.springframework.social.twitter.types.Tweet;
+
 /**
  * Interface defining the operations for searching Twitter and retrieving trending data.
  * @author Craig Walls

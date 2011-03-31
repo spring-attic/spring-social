@@ -17,6 +17,8 @@ package org.springframework.social.twitter;
 
 import java.util.List;
 
+import org.springframework.social.twitter.types.DirectMessage;
+
 /**
  * Interface defining the Twitter operations for working with direct messages.
  * @author Craig Walls

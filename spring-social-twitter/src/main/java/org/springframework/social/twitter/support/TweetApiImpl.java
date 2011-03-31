@@ -15,7 +15,6 @@
  */
 package org.springframework.social.twitter.support;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +22,13 @@ import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.SocialException;
-import org.springframework.social.twitter.StatusDetails;
-import org.springframework.social.twitter.Tweet;
 import org.springframework.social.twitter.TweetApi;
-import org.springframework.social.twitter.TwitterProfile;
 import org.springframework.social.twitter.TwitterTemplate;
+import org.springframework.social.twitter.support.extractors.TweetResponseExtractor;
+import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
+import org.springframework.social.twitter.types.StatusDetails;
+import org.springframework.social.twitter.types.Tweet;
+import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -42,9 +43,15 @@ public class TweetApiImpl implements TweetApi {
 
 	private final ResponseStatusCodeTranslator statusCodeTranslator;
 
+	private TwitterProfileResponseExtractor profileExtractor;
+	
+	private TweetResponseExtractor tweetExtractor;
+
 	public TweetApiImpl(RestTemplate restTemplate, ResponseStatusCodeTranslator statusCodeTranslator) {
 		this.restTemplate = restTemplate;
 		this.statusCodeTranslator = statusCodeTranslator;
+		this.profileExtractor = new TwitterProfileResponseExtractor();
+		this.tweetExtractor = new TweetResponseExtractor();
 	}
 
 	public List<Tweet> getPublicTimeline() {
@@ -72,13 +79,8 @@ public class TweetApiImpl implements TweetApi {
 	}
 
 	public List<Tweet> getMentions() {
-		List response = restTemplate.getForObject(MENTIONS_URL, List.class);
-		List<Map<String, Object>> results = (List<Map<String, Object>>) response;
-		List<Tweet> tweets = new ArrayList<Tweet>();
-		for (Map<String, Object> item : results) {
-			tweets.add(TwitterResponseHelper.populateTweetFromTimelineItem(item));
-		}
-		return tweets;
+		List<Map<String, Object>> response = restTemplate.getForObject(MENTIONS_URL, List.class);
+		return tweetExtractor.extractObjects(response);
 	}
 
 	public List<Tweet> getRetweetedByMe() {
@@ -95,7 +97,7 @@ public class TweetApiImpl implements TweetApi {
 
 	public Tweet getStatus(long tweetId) {
 		Map<String, Object> tweetMap = restTemplate.getForObject(SHOW_TWEET_URL, Map.class, tweetId);
-		return TwitterResponseHelper.populateTweetFromTimelineItem(tweetMap);
+		return tweetExtractor.extractObject(tweetMap);
 	}
 
 	public void updateStatus(String message) {
@@ -126,11 +128,7 @@ public class TweetApiImpl implements TweetApi {
 
 	public List<TwitterProfile> getRetweetedBy(long tweetId) {
 		List<Map<String, Object>> response = restTemplate.getForObject(RETWEETED_BY_URL, List.class, tweetId);
-		List<TwitterProfile> profiles = new ArrayList<TwitterProfile>();
-		for (Map<String, Object> profileEntry : response) {
-			profiles.add(TwitterResponseHelper.getProfileFromResponseMap(profileEntry));
-		}
-		return profiles;
+		return profileExtractor.extractObjects(response);
 	}
 
 	public List<Long> getRetweetedByIds(long tweetId) {
@@ -154,8 +152,8 @@ public class TweetApiImpl implements TweetApi {
 	}
 
 	private List<Tweet> retrieveTimelineTweets(String url, Object... urlArgs) {
-		List response = restTemplate.getForObject(url, List.class, urlArgs);
-		return TwitterResponseHelper.extractTimelineTweetsFromResponse(response);
+		List<Map<String, Object>> response = restTemplate.getForObject(url, List.class, urlArgs);
+		return tweetExtractor.extractObjects(response);
 	}
 
 	private void handleResponseErrors(ResponseEntity<Map> response) {

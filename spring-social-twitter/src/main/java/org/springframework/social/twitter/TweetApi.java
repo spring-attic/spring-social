@@ -17,6 +17,10 @@ package org.springframework.social.twitter;
 
 import java.util.List;
 
+import org.springframework.social.twitter.types.StatusDetails;
+import org.springframework.social.twitter.types.Tweet;
+import org.springframework.social.twitter.types.TwitterProfile;
+
 /**
  * Interface defining the operations for sending and retrieving tweets. 
  * @author Craig Walls

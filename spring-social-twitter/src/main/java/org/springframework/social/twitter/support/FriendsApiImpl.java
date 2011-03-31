@@ -15,7 +15,6 @@
  */
 package org.springframework.social.twitter.support;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,8 +22,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.social.ResponseStatusCodeTranslator;
 import org.springframework.social.SocialException;
 import org.springframework.social.twitter.FriendsApi;
-import org.springframework.social.twitter.TwitterProfile;
 import org.springframework.social.twitter.TwitterTemplate;
+import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
+import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -35,10 +35,12 @@ public class FriendsApiImpl implements FriendsApi {
 	
 	private final RestTemplate restTemplate;
 	private final ResponseStatusCodeTranslator statusCodeTranslator;
+	private TwitterProfileResponseExtractor profileExtractor;
 
 	public FriendsApiImpl(RestTemplate restTemplate, ResponseStatusCodeTranslator statusCodeTranslator) {
 		this.restTemplate = restTemplate;
 		this.statusCodeTranslator = statusCodeTranslator;
+		this.profileExtractor = new TwitterProfileResponseExtractor();
 	}
 
 	public List<TwitterProfile> getFriends(long userId) {
@@ -105,11 +107,7 @@ public class FriendsApiImpl implements FriendsApi {
 
 	private List<TwitterProfile> getFriendsOrFollowers(String url, Object... urlArgs) {
 		List<Map<String, Object>> response = restTemplate.getForObject(url, List.class, urlArgs);
-		List<TwitterProfile> followers = new ArrayList<TwitterProfile>(response.size());
-		for (Map<String, Object> item : response) {
-			followers.add(TwitterResponseHelper.getProfileFromResponseMap(item));
-		}
-		return followers;
+		return profileExtractor.extractObjects(response);
 	}
 
 	private String friendshipAssist(String url, Object urlArgs) {

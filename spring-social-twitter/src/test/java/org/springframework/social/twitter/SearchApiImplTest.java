@@ -24,6 +24,11 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.social.twitter.types.SavedSearch;
+import org.springframework.social.twitter.types.SearchResults;
+import org.springframework.social.twitter.types.Trend;
+import org.springframework.social.twitter.types.Trends;
+import org.springframework.social.twitter.types.Tweet;
 
 
 /**

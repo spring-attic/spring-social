@@ -28,13 +28,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.social.twitter.SavedSearch;
 import org.springframework.social.twitter.SearchApi;
-import org.springframework.social.twitter.SearchResults;
-import org.springframework.social.twitter.Trend;
-import org.springframework.social.twitter.Trends;
-import org.springframework.social.twitter.Tweet;
 import org.springframework.social.twitter.TwitterTemplate;
+import org.springframework.social.twitter.types.SavedSearch;
+import org.springframework.social.twitter.types.SearchResults;
+import org.springframework.social.twitter.types.Trend;
+import org.springframework.social.twitter.types.Trends;
+import org.springframework.social.twitter.types.Tweet;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.NumberUtils;

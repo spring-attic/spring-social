@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.social.test.client.MockRestServiceServer;
+import org.springframework.social.twitter.types.Tweet;
 
 public abstract class AbstractTwitterApiTest {
 
