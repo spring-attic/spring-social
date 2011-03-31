@@ -29,6 +29,8 @@ final class ServiceProviderConnectionImpl<S> implements ServiceProviderConnectio
 	private String providerId;
 	
 	private ProviderProfile profile;
+
+	private final Object profileMonitor = new Object();
 	
 	private boolean allowSignIn;
 	
@@ -94,7 +96,9 @@ final class ServiceProviderConnectionImpl<S> implements ServiceProviderConnectio
 	}
 
 	public void sync() {
-		profile = fetchProfile();
+		synchronized (profileMonitor) {
+			profile = fetchProfile();
+		}
 	}
 
 	public S getServiceApi() {
@@ -130,10 +134,12 @@ final class ServiceProviderConnectionImpl<S> implements ServiceProviderConnectio
 	}
  	
 	private ProviderProfile getProviderProfile() {
-		if (profile == null) {
-			profile = fetchProfile();
+		synchronized (profileMonitor) {
+			if (profile == null) {
+				profile = fetchProfile();
+			}
+			return profile;
 		}
-		return profile;
 	}
 	
 	private ProviderProfile fetchProfile() {
