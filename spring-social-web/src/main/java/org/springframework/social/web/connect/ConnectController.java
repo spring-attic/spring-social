@@ -90,8 +90,8 @@ public class ConnectController  {
 	 * Adds a ConnectInterceptor to receive callbacks during the connection process.
 	 */
 	public void addInterceptor(ConnectInterceptor<?> interceptor) {
-		Class<?> providerType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(), ConnectInterceptor.class);
-		this.interceptors.add(providerType, interceptor);
+		Class<?> serviceApiType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(), ConnectInterceptor.class);
+		this.interceptors.add(serviceApiType, interceptor);
 	}
 
 	/**

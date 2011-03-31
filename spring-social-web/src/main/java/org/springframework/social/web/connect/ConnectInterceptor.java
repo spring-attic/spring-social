@@ -15,7 +15,6 @@
  */
 package org.springframework.social.web.connect;
 
-import org.springframework.social.ServiceProvider;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.web.context.request.WebRequest;
 
@@ -32,12 +31,12 @@ public interface ConnectInterceptor<S> {
 	 * Called during connection initiation, immediately before user authorization.
 	 * Used to store custom connection attributes in the session before redirecting the user to the provider's site.
 	 */
-	void preConnect(ServiceProvider<S> provider, WebRequest request);
+	void preConnect(String providerId, WebRequest request);
 
 	/**
 	 * Called immediately after the connection is established.
 	 * Used to invoke the service API on behalf of the user upon connecting.
 	 */
-	void postConnect(ServiceProvider<S> provider, ServiceProviderConnection<S> connection, WebRequest request);
+	void postConnect(ServiceProviderConnection<S> connection, WebRequest request);
 	
 }
