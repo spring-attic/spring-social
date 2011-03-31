@@ -21,6 +21,7 @@ import org.springframework.social.facebook.types.EducationEntry;
 
 public class EducationResponseExtractor extends AbstractResponseExtractor<EducationEntry> {
 
+	@SuppressWarnings("unchecked")
 	public EducationEntry extractObject(Map<String, Object> educationEntryMap) {
 		return new EducationEntry(
 				extractReferenceFromMap((Map<String, Object>) educationEntryMap.get("school")), 

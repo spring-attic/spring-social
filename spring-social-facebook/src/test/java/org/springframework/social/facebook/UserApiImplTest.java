@@ -39,7 +39,7 @@ public class UserApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/me"))
 				.andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
-				.andRespond(withResponse(new ClassPathResource("full-profile.json", getClass()), responseHeaders));
+				.andRespond(withResponse(new ClassPathResource("testdata/full-profile.json", getClass()), responseHeaders));
 
 		FacebookProfile profile = facebook.userApi().getUserProfile();
 		assertBasicProfileData(profile);
@@ -74,7 +74,7 @@ public class UserApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/123456789"))
 				.andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
-				.andRespond(withResponse(new ClassPathResource("minimal-profile.json", getClass()), responseHeaders));
+				.andRespond(withResponse(new ClassPathResource("testdata/minimal-profile.json", getClass()), responseHeaders));
 
 		FacebookProfile profile = facebook.userApi().getUserProfile("123456789");
 		assertBasicProfileData(profile);

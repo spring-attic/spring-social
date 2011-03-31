@@ -57,6 +57,7 @@ public abstract class AbstractResponseExtractor<T> implements ResponseExtractor<
 		return REFERENCE_EXTRACTOR.extractObject(referenceMap);
 	}
 
+	@SuppressWarnings("unchecked")
 	protected List<Reference> extractReferences(Map<String, Object> referencesMap) {
 		if (referencesMap == null) {
 			return null;

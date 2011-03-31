@@ -18,7 +18,7 @@ public class FriendsApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/me/friendlists"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("friend-lists.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/friend-lists.json", getClass()), responseHeaders));
 		List<Reference> friendLists = facebook.friendsApi().getFriendLists();
 		assertFriendLists(friendLists);
 	}
@@ -28,7 +28,7 @@ public class FriendsApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/11223344/friendlists"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("friend-lists.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/friend-lists.json", getClass()), responseHeaders));
 		List<Reference> friendLists = facebook.friendsApi().getFriendLists("11223344");
 		assertFriendLists(friendLists);
 	}
@@ -38,7 +38,7 @@ public class FriendsApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/11929590579"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("friend-list.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/friend-list.json", getClass()), responseHeaders));
 		Reference friendList = facebook.friendsApi().getFriendList("11929590579");
 		assertEquals("11929590579", friendList.getId());
 		assertEquals("High School Friends", friendList.getName());
@@ -49,7 +49,7 @@ public class FriendsApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/192837465/members"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("friends.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/friends.json", getClass()), responseHeaders));
 		List<Reference> members = facebook.friendsApi().getFriendListMembers("192837465");
 		assertFriends(members);
 	}
@@ -89,7 +89,7 @@ public class FriendsApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/me/friends"))
 				.andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
-				.andRespond(withResponse(new ClassPathResource("friends.json", getClass()), responseHeaders));
+				.andRespond(withResponse(new ClassPathResource("testdata/friends.json", getClass()), responseHeaders));
 		List<Reference> friends = facebook.friendsApi().getFriends();
 		assertFriends(friends);
 	}
@@ -99,7 +99,7 @@ public class FriendsApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/912873465/friends"))
 				.andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
-				.andRespond(withResponse(new ClassPathResource("friends.json", getClass()), responseHeaders));
+				.andRespond(withResponse(new ClassPathResource("testdata/friends.json", getClass()), responseHeaders));
 		List<Reference> friends = facebook.friendsApi().getFriends("912873465");
 		assertFriends(friends);
 	}

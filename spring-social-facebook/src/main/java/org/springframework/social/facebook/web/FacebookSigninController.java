@@ -50,7 +50,7 @@ public class FacebookSigninController extends AbstractProviderSigninController {
 	 * @param connectionRepository a connection repository used to lookup the account ID connected to the Facebook profile.
 	 */
 	@Inject
-	public FacebookSigninController(Provider<FacebookServiceProvider> serviceProviderLocator, ConnectionRepository connectionRepository, SignInService signInService) {
+	public FacebookSigninController(Provider<FacebookServiceProvider> serviceProviderLocator, ConnectionRepository connectionRepository, @SuppressWarnings("rawtypes") SignInService signInService) {
 		super(connectionRepository, signInService);
 		this.serviceProviderLocator = serviceProviderLocator;
 		this.serviceProvider = serviceProviderLocator.get();
@@ -61,6 +61,7 @@ public class FacebookSigninController extends AbstractProviderSigninController {
 	 * Uses that access token to lookup the connected account ID and attempts to authenticate to the application for that account.
 	 * If there is no connection for access token, the flow will transition to the no-connection view, "redirect:/signup" by default.
 	 */
+	@SuppressWarnings("unchecked")
 	@RequestMapping(method=RequestMethod.POST)
 	public String signin(HttpServletRequest request) {
 		String accessToken = getAccessTokenCookieValue(request);

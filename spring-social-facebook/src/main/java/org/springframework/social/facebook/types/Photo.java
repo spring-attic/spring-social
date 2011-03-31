@@ -156,7 +156,6 @@ public class Photo {
 			this.from = from;
 			this.link = link;
 			this.icon = icon;
-			this.position = position;
 			this.createdTime = createdTime;
 			this.images = images;					
 		}

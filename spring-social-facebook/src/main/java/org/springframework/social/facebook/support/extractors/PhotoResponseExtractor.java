@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.social.facebook.types.Photo;
-import org.springframework.social.facebook.types.Reference;
-import org.springframework.social.facebook.types.Tag;
 import org.springframework.social.facebook.types.Photo.Builder;
 import org.springframework.social.facebook.types.Photo.Image;
+import org.springframework.social.facebook.types.Reference;
+import org.springframework.social.facebook.types.Tag;
 
 public class PhotoResponseExtractor extends AbstractResponseExtractor<Photo> {
 	
@@ -34,6 +34,7 @@ public class PhotoResponseExtractor extends AbstractResponseExtractor<Photo> {
 		tagExtractor = new TagResponseExtractor();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Photo extractObject(Map<String, Object> photoMap) {
 		String id = (String) photoMap.get("id");
 		Reference from = extractReferenceFromMap((Map<String, Object>)photoMap.get("from"));
@@ -49,6 +50,7 @@ public class PhotoResponseExtractor extends AbstractResponseExtractor<Photo> {
 		return builder.build();
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<Tag> extractTags(Map<String, Object> photoMap) {				
 		Map<String, Object> tagsMap = (Map<String, Object>) photoMap.get("tags");
 		if(tagsMap == null) {
@@ -59,6 +61,7 @@ public class PhotoResponseExtractor extends AbstractResponseExtractor<Photo> {
 		return tagExtractor.extractObjects(tagsList);
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<Image> extractImages(Map<String, Object> responseMap) {
 		List<Map<String,Object>> imagesList = (List<Map<String,Object>>) responseMap.get("images");
 		List<Image> images = new ArrayList<Image>(imagesList.size());

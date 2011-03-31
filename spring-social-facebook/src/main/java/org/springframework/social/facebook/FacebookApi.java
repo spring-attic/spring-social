@@ -40,4 +40,5 @@ public interface FacebookApi {
 	EventsApi eventsApi();
 	
 	MediaApi mediaApi();
+	
 }

@@ -19,7 +19,7 @@ public class CheckinApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/me/checkins"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("checkins.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/checkins.json", getClass()), responseHeaders));
 		List<Checkin> checkins = facebook.checkinApi().getCheckins();
 		assertCheckins(checkins);
 	}
@@ -29,7 +29,7 @@ public class CheckinApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/987654321/checkins"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("checkins.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/checkins.json", getClass()), responseHeaders));
 		List<Checkin> checkins = facebook.checkinApi().getCheckins("987654321");
 		assertCheckins(checkins);
 	}
@@ -39,7 +39,7 @@ public class CheckinApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/10150431253050580"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("checkin.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/checkin.json", getClass()), responseHeaders));
 		Checkin checkin = facebook.checkinApi().getCheckin("10150431253050580");
 		assertSingleCheckin(checkin);		
 	}

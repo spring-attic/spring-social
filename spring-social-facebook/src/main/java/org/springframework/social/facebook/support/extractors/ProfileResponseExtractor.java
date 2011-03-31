@@ -31,6 +31,7 @@ public class ProfileResponseExtractor extends AbstractResponseExtractor<Facebook
 		educationExtractor = new EducationResponseExtractor();
 	}
 
+	@SuppressWarnings("unchecked")
 	public FacebookProfile extractObject(Map<String, Object> profileMap) {
 		long id = Long.valueOf(String.valueOf(profileMap.get("id")));
 		String username = String.valueOf(profileMap.get("username"));

@@ -52,6 +52,7 @@ public class FriendsApiImpl extends AbstractFacebookApi implements FriendsApi {
 	}
 	
 	public Reference createFriendList(String userId, String name) {
+		@SuppressWarnings("unchecked")
 		Map<String, Object> friendListMap = restTemplate.postForObject(CONNECTION_URL + "?name={name}", "", Map.class, userId, "friendlists", name);
 		return referenceExtractor.extractObject(friendListMap);
 	}

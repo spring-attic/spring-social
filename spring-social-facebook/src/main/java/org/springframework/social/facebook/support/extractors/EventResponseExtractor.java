@@ -19,11 +19,12 @@ import java.util.Date;
 import java.util.Map;
 
 import org.springframework.social.facebook.types.Event;
-import org.springframework.social.facebook.types.Reference;
 import org.springframework.social.facebook.types.Event.Privacy;
+import org.springframework.social.facebook.types.Reference;
 
 public class EventResponseExtractor extends AbstractResponseExtractor<Event> {
 
+	@SuppressWarnings("unchecked")
 	public Event extractObject(Map<String, Object> eventMap) {
 		String id = (String) eventMap.get("id");
 		Reference owner = extractReferenceFromMap((Map<String, Object>) eventMap.get("owner"));

@@ -23,6 +23,7 @@ import org.springframework.social.facebook.types.Reference;
 
 public class CommentResponseExtractor extends AbstractResponseExtractor<Comment> {
 
+	@SuppressWarnings("unchecked")
 	public Comment extractObject(Map<String, Object> commentMap) {
 		String id = (String) commentMap.get("id");
 		String message = (String) commentMap.get("message");

@@ -31,6 +31,7 @@ public class VideoResponseExtractor extends AbstractResponseExtractor<Video> {
 		tagExtractor = new TagResponseExtractor();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Video extractObject(Map<String, Object> videoMap) {
 		String id = (String) videoMap.get("id");
 		Reference from = extractReferenceFromMap((Map<String, Object>)videoMap.get("from"));
@@ -47,6 +48,7 @@ public class VideoResponseExtractor extends AbstractResponseExtractor<Video> {
 		return builder.build();
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<Tag> extractTags(Map<String, Object> videoMap) {				
 		Map<String, Object> tagsMap = (Map<String, Object>) videoMap.get("tags");
 		if(tagsMap == null) {

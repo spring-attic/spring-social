@@ -32,7 +32,7 @@ public class LikeApiImplTest extends AbstractFacebookApiTest {
 	public void getLikes() {
 		mockServer.expect(requestTo("https://graph.facebook.com/me/likes")).andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
-				.andRespond(withResponse(new ClassPathResource("user-likes.json", getClass()), responseHeaders));
+				.andRespond(withResponse(new ClassPathResource("testdata/user-likes.json", getClass()), responseHeaders));
 		List<UserLike> likes = facebook.likeApi().getLikes();
 		assertLikes(likes);
 	}
@@ -41,7 +41,7 @@ public class LikeApiImplTest extends AbstractFacebookApiTest {
 	public void getLikes_forSpecificUser() {
 		mockServer.expect(requestTo("https://graph.facebook.com/123456789/likes")).andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
-				.andRespond(withResponse(new ClassPathResource("user-likes.json", getClass()), responseHeaders));
+				.andRespond(withResponse(new ClassPathResource("testdata/user-likes.json", getClass()), responseHeaders));
 		List<UserLike> likes = facebook.likeApi().getLikes("123456789");
 		assertLikes(likes);
 	}

@@ -35,15 +35,18 @@ public abstract class AbstractFacebookApi {
 		this.referenceExtractor = new ReferenceResponseExtractor();
 	}
 
+	@SuppressWarnings("unchecked")
 	protected <T> T getObject(String objectId, ResponseExtractor<T> extractor) {
 		return extractor.extractObject( (Map<String, Object>) restTemplate.getForObject(OBJECT_URL, Map.class, objectId));
 	}
 
+	@SuppressWarnings("unchecked")
 	protected <T> List<T> getObjectConnection(String objectId, String connectionType, ResponseExtractor<T> extractor) {
 		Map<String, Object> response = restTemplate.getForObject(CONNECTION_URL, Map.class, objectId, connectionType);
 		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Map<String, Object> publish(String objectId, String connectionType, MultiValueMap<String, String> data) {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
 		return restTemplate.postForObject(CONNECTION_URL, requestData, Map.class, objectId, connectionType);

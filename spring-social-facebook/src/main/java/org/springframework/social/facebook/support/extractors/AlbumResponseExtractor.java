@@ -19,12 +19,13 @@ import java.util.Date;
 import java.util.Map;
 
 import org.springframework.social.facebook.types.Album;
-import org.springframework.social.facebook.types.Reference;
 import org.springframework.social.facebook.types.Album.Privacy;
 import org.springframework.social.facebook.types.Album.Type;
+import org.springframework.social.facebook.types.Reference;
 
 public class AlbumResponseExtractor extends AbstractResponseExtractor<Album> {
 
+	@SuppressWarnings("unchecked")
 	public Album extractObject(Map<String, Object> albumMap) {
 		String id = (String) albumMap.get("id");
 		Reference from = extractReferenceFromMap((Map<String, Object>) albumMap.get("from"));

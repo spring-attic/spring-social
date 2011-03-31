@@ -34,7 +34,7 @@ public class MediaApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/me/albums"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("albums.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/albums.json", getClass()), responseHeaders));
 		List<Album> albums = facebook.mediaApi().getAlbums();
 		assertAlbums(albums);
 	}
@@ -44,7 +44,7 @@ public class MediaApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/192837465/albums"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("albums.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/albums.json", getClass()), responseHeaders));
 		List<Album> albums = facebook.mediaApi().getAlbums("192837465");
 		assertAlbums(albums);
 	}
@@ -54,7 +54,7 @@ public class MediaApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/10151447271460580"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("album.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/album.json", getClass()), responseHeaders));
 		Album album = facebook.mediaApi().getAlbum("10151447271460580");
 		assertSingleAlbum(album);
 	}
@@ -64,7 +64,7 @@ public class MediaApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/10151447271460580/photos"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("photos.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/photos.json", getClass()), responseHeaders));
 	
 		List<Photo> photos = facebook.mediaApi().getPhotos("10151447271460580");
 		assertEquals(2, photos.size());
@@ -98,7 +98,7 @@ public class MediaApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/10150447271355581"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("photo.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/photo.json", getClass()), responseHeaders));
 		assertSinglePhoto(facebook.mediaApi().getPhoto("10150447271355581"));
 	}
 
@@ -107,7 +107,7 @@ public class MediaApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/me/videos"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("videos.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/videos.json", getClass()), responseHeaders));
 		List<Video> videos = facebook.mediaApi().getVideos();
 		assertVideos(videos);
 	}
@@ -117,7 +117,7 @@ public class MediaApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/100001387295207/videos"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("videos.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/videos.json", getClass()), responseHeaders));
 		List<Video> videos = facebook.mediaApi().getVideos("100001387295207");
 		assertVideos(videos);
 	}
@@ -142,7 +142,7 @@ public class MediaApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/161500020572907"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("video.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/video.json", getClass()), responseHeaders));
 		Video video = facebook.mediaApi().getVideo("161500020572907");
 		assertSingleVideo(video);
 	}

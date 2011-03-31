@@ -32,6 +32,7 @@ public class CheckinResponseExtractor extends AbstractResponseExtractor<Checkin>
 		commentExtractor = new CommentResponseExtractor();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public Checkin extractObject(Map<String, Object> checkinMap) {
 		String id = (String) checkinMap.get("id");
 		Location place = extractLocationFromMap((Map<String, Object>) checkinMap.get("place"));
@@ -48,6 +49,7 @@ public class CheckinResponseExtractor extends AbstractResponseExtractor<Checkin>
 			.tags(extractReferences((Map<String, Object>) checkinMap.get("tags"))).build();
 	}
 
+	@SuppressWarnings("unchecked")
 	private Location extractLocationFromMap(Map<String, Object> map) {
 		String id = (String) map.get("id");
 		String name = (String) map.get("name");

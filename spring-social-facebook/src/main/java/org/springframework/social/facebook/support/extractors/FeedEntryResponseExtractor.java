@@ -32,6 +32,7 @@ public class FeedEntryResponseExtractor extends AbstractResponseExtractor<FeedEn
 		commentExtractor = new CommentResponseExtractor();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public FeedEntry extractObject(Map<String, Object> feedEntryMap) {
 		String id = (String) feedEntryMap.get("id");
 		Map<String, String> fromMap = (Map<String, String>) feedEntryMap.get("from");

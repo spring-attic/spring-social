@@ -21,6 +21,7 @@ import org.springframework.social.facebook.types.WorkEntry;
 
 public class WorkResponseExtractor extends AbstractResponseExtractor<WorkEntry> {
 
+	@SuppressWarnings("unchecked")
 	public WorkEntry extractObject(Map<String, Object> workEntryMap) {
 		return new WorkEntry(extractReferenceFromMap((Map<String, Object>) workEntryMap.get("employer")),
 				(String) workEntryMap.get("start_date"), (String) workEntryMap.get("end_date"));

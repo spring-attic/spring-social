@@ -19,11 +19,12 @@ import java.util.Date;
 import java.util.Map;
 
 import org.springframework.social.facebook.types.Group;
-import org.springframework.social.facebook.types.Reference;
 import org.springframework.social.facebook.types.Group.Privacy;
+import org.springframework.social.facebook.types.Reference;
 
 public class GroupResponseExtractor extends AbstractResponseExtractor<Group> {
 
+	@SuppressWarnings("unchecked")
 	public Group extractObject(Map<String, Object> groupMap) {
 		String id = (String) groupMap.get("id");
 		Reference owner = extractReferenceFromMap((Map<String, Object>) groupMap.get("owner"));
