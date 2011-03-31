@@ -17,27 +17,31 @@ package org.springframework.social.facebook.support;
 
 import java.util.List;
 
+import org.springframework.social.facebook.GraphApi;
 import org.springframework.social.facebook.GroupApi;
 import org.springframework.social.facebook.support.extractors.GroupResponseExtractor;
+import org.springframework.social.facebook.support.extractors.ReferenceResponseExtractor;
 import org.springframework.social.facebook.types.Group;
 import org.springframework.social.facebook.types.Reference;
-import org.springframework.web.client.RestTemplate;
 
-public class GroupApiImpl extends AbstractFacebookApi implements GroupApi {
+public class GroupApiImpl implements GroupApi {
 
 	private GroupResponseExtractor groupExtractor;
+	private final GraphApi graphApi;
+	private ReferenceResponseExtractor referenceExtractor;
 
-	public GroupApiImpl(RestTemplate restTemplate) {
-		super(restTemplate);
+	public GroupApiImpl(GraphApi graphApi) {
+		this.graphApi = graphApi;
 		groupExtractor = new GroupResponseExtractor();
+		referenceExtractor = new ReferenceResponseExtractor();
 	}
 	
 	public Group getGroup(String groupId) {
-		return getObject(groupId, groupExtractor);
+		return graphApi.fetchObject(groupId, groupExtractor);
 	}
 	
 	public List<Reference> getMembers(String groupId) {
-		return getObjectConnection(groupId, "members", referenceExtractor);
+		return graphApi.fetchConnections(groupId, "members", referenceExtractor);
 	}
 	
 }

@@ -18,18 +18,19 @@ package org.springframework.social.facebook.support;
 import java.util.List;
 
 import org.springframework.social.facebook.CheckinApi;
+import org.springframework.social.facebook.GraphApi;
 import org.springframework.social.facebook.support.extractors.CheckinResponseExtractor;
 import org.springframework.social.facebook.types.Checkin;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
-public class CheckinApiImpl extends AbstractFacebookApi implements CheckinApi {
+public class CheckinApiImpl implements CheckinApi {
 	private CheckinResponseExtractor checkinExtractor;
+	private final GraphApi graphApi;
 
-	public CheckinApiImpl(RestTemplate restTemplate) {
-		super(restTemplate);
-		checkinExtractor = new CheckinResponseExtractor();
+	public CheckinApiImpl(GraphApi graphApi) {
+		this.graphApi = graphApi;
+		this.checkinExtractor = new CheckinResponseExtractor();
 	}
 	
 	public List<Checkin> getCheckins() {
@@ -37,11 +38,11 @@ public class CheckinApiImpl extends AbstractFacebookApi implements CheckinApi {
 	}
 
 	public List<Checkin> getCheckins(String objectId) {
-		return getObjectConnection(objectId, "checkins", checkinExtractor);
+		return graphApi.fetchConnections(objectId, "checkins", checkinExtractor);
 	}
 
 	public Checkin getCheckin(String checkinId) {
-		return getObject(checkinId, checkinExtractor);
+		return graphApi.fetchObject(checkinId, checkinExtractor);
 	}
 	
 	public String checkin(String placeId, double latitude, double longitude) {
@@ -63,6 +64,6 @@ public class CheckinApiImpl extends AbstractFacebookApi implements CheckinApi {
 			}
 			data.set("tags", tagsValue);
 		}
-		return (String) publish("me", "checkins", data).get("id");
+		return (String) graphApi.publish("me", "checkins", data).get("id");
 	}
 }

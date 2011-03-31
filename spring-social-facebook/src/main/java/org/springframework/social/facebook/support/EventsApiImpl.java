@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.social.facebook.EventsApi;
+import org.springframework.social.facebook.GraphApi;
 import org.springframework.social.facebook.support.extractors.EventResponseExtractor;
 import org.springframework.social.facebook.support.extractors.InviteeResponseExtractor;
 import org.springframework.social.facebook.support.extractors.UserEventResponseExtractor;
@@ -27,16 +28,16 @@ import org.springframework.social.facebook.types.EventInvitee;
 import org.springframework.social.facebook.types.UserEvent;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
-public class EventsApiImpl extends AbstractFacebookApi implements EventsApi {
+public class EventsApiImpl implements EventsApi {
 
 	private EventResponseExtractor eventExtractor;
 	private UserEventResponseExtractor userEventExtractor;
 	private InviteeResponseExtractor inviteeExtractor;
+	private final GraphApi graphApi;
 
-	public EventsApiImpl(RestTemplate restTemplate) {
-		super(restTemplate);
+	public EventsApiImpl(GraphApi graphApi) {
+		this.graphApi = graphApi;
 		eventExtractor = new EventResponseExtractor();
 		userEventExtractor = new UserEventResponseExtractor();
 		inviteeExtractor = new InviteeResponseExtractor();
@@ -47,11 +48,11 @@ public class EventsApiImpl extends AbstractFacebookApi implements EventsApi {
 	}
 
 	public List<UserEvent> getEvents(String userId) {
-		return getObjectConnection(userId, "events", userEventExtractor);
+		return graphApi.fetchConnections(userId, "events", userEventExtractor);
 	}
 	
 	public Event getEvent(String eventId) {
-		return getObject(eventId, eventExtractor);
+		return graphApi.fetchObject(eventId, eventExtractor);
 	}
 	
 	public String createEvent(String name, String startTime, String endTime) {
@@ -59,42 +60,42 @@ public class EventsApiImpl extends AbstractFacebookApi implements EventsApi {
 		data.set("name", name);
 		data.set("start_time", startTime);
 		data.set("end_time", endTime);
-		return (String) ((Map<String, Object>) publish("me", "events", data)).get("id");
+		return (String) ((Map<String, Object>) graphApi.publish("me", "events", data)).get("id");
 	}
 	
 	public void deleteEvent(String eventId) {
-		delete(eventId);
+		graphApi.delete(eventId);
 	}
 
 	public List<EventInvitee> getInvited(String eventId) {
-		return getObjectConnection(eventId, "invited", inviteeExtractor);
+		return graphApi.fetchConnections(eventId, "invited", inviteeExtractor);
 	}
 
 	public List<EventInvitee> getAttending(String eventId) {
-		return getObjectConnection(eventId, "attending", inviteeExtractor);
+		return graphApi.fetchConnections(eventId, "attending", inviteeExtractor);
 	}
 	
 	public List<EventInvitee> getMaybeAttending(String eventId) {
-		return getObjectConnection(eventId, "maybe", inviteeExtractor);
+		return graphApi.fetchConnections(eventId, "maybe", inviteeExtractor);
 	}
 	
 	public List<EventInvitee> getNoReplies(String eventId) {
-		return getObjectConnection(eventId, "noreply", inviteeExtractor);
+		return graphApi.fetchConnections(eventId, "noreply", inviteeExtractor);
 	}
 
 	public List<EventInvitee> getDeclined(String eventId) {
-		return getObjectConnection(eventId, "declined", inviteeExtractor);
+		return graphApi.fetchConnections(eventId, "declined", inviteeExtractor);
 	}
 	
 	public void acceptInvitation(String eventId) {
-		post(eventId, "attending", new LinkedMultiValueMap<String, String>());
+		graphApi.post(eventId, "attending", new LinkedMultiValueMap<String, String>());
 	}
 
 	public void maybeInvitation(String eventId) {
-		post(eventId, "maybe", new LinkedMultiValueMap<String, String>());
+		graphApi.post(eventId, "maybe", new LinkedMultiValueMap<String, String>());
 	}
 
 	public void declineInvitation(String eventId) {
-		post(eventId, "declined", new LinkedMultiValueMap<String, String>());
+		graphApi.post(eventId, "declined", new LinkedMultiValueMap<String, String>());
 	}
 }

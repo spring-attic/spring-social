@@ -15,18 +15,19 @@
  */
 package org.springframework.social.facebook.support;
 
+import org.springframework.social.facebook.GraphApi;
 import org.springframework.social.facebook.UserApi;
 import org.springframework.social.facebook.support.extractors.ProfileResponseExtractor;
 import org.springframework.social.facebook.types.FacebookProfile;
-import org.springframework.web.client.RestTemplate;
 
-public class UserApiImpl extends AbstractFacebookApi implements UserApi {
+public class UserApiImpl implements UserApi {
 
 	private ProfileResponseExtractor profileExtractor;
+	private final GraphApi graphApi;
 
-	public UserApiImpl(RestTemplate restTemplate) {
-		super(restTemplate);
-		profileExtractor = new ProfileResponseExtractor();
+	public UserApiImpl(GraphApi graphApi) {
+		this.graphApi = graphApi;
+		this.profileExtractor = new ProfileResponseExtractor();
 	}
 
 	public FacebookProfile getUserProfile() {
@@ -34,7 +35,7 @@ public class UserApiImpl extends AbstractFacebookApi implements UserApi {
 	}
 
 	public FacebookProfile getUserProfile(String facebookId) {
-		return getObject(facebookId, profileExtractor);
+		return graphApi.fetchObject(facebookId, profileExtractor);
 	}
 
 }

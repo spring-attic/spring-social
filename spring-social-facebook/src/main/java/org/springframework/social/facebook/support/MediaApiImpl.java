@@ -18,6 +18,7 @@ package org.springframework.social.facebook.support;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.social.facebook.GraphApi;
 import org.springframework.social.facebook.MediaApi;
 import org.springframework.social.facebook.support.extractors.AlbumResponseExtractor;
 import org.springframework.social.facebook.support.extractors.PhotoResponseExtractor;
@@ -27,16 +28,16 @@ import org.springframework.social.facebook.types.Photo;
 import org.springframework.social.facebook.types.Video;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
-public class MediaApiImpl extends AbstractFacebookApi implements MediaApi {
+public class MediaApiImpl implements MediaApi {
 
 	private final AlbumResponseExtractor albumExtractor;
 	private final PhotoResponseExtractor photoExtractor;
 	private final VideoResponseExtractor videoExtractor;
+	private final GraphApi graphApi;
 
-	public MediaApiImpl(RestTemplate restTemplate) {
-		super(restTemplate);
+	public MediaApiImpl(GraphApi graphApi) {
+		this.graphApi = graphApi;
 		albumExtractor = new AlbumResponseExtractor();
 		photoExtractor = new PhotoResponseExtractor();
 		videoExtractor = new VideoResponseExtractor();
@@ -47,11 +48,11 @@ public class MediaApiImpl extends AbstractFacebookApi implements MediaApi {
 	}
 
 	public List<Album> getAlbums(String userId) {
-		return getObjectConnection(userId, "albums", albumExtractor);
+		return graphApi.fetchConnections(userId, "albums", albumExtractor);
 	}
 
 	public Album getAlbum(String albumId) {
-		return getObject(albumId, albumExtractor);
+		return graphApi.fetchObject(albumId, albumExtractor);
 	}
 	
 	public String createAlbum(String name, String description) {
@@ -68,15 +69,15 @@ public class MediaApiImpl extends AbstractFacebookApi implements MediaApi {
 		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
 		data.set("name", name);
 		data.set("message", description);
-		return (String) ((Map<String, Object>) publish(ownerId, "albums", data)).get("id");
+		return (String) ((Map<String, Object>) graphApi.publish(ownerId, "albums", data)).get("id");
 	}
 	
 	public List<Photo> getPhotos(String albumId) {
-		return getObjectConnection(albumId, "photos", photoExtractor);
+		return graphApi.fetchConnections(albumId, "photos", photoExtractor);
 	}
 	
 	public Photo getPhoto(String photoId) {
-		return getObject(photoId, photoExtractor);
+		return graphApi.fetchObject(photoId, photoExtractor);
 	}
 
 	public List<Video> getVideos() {
@@ -84,10 +85,10 @@ public class MediaApiImpl extends AbstractFacebookApi implements MediaApi {
 	}
 	
 	public List<Video> getVideos(String ownerId) {
-		return getObjectConnection(ownerId, "videos", videoExtractor);
+		return graphApi.fetchConnections(ownerId, "videos", videoExtractor);
 	}
 	
 	public Video getVideo(String videoId) {
-		return getObject(videoId, videoExtractor);
+		return graphApi.fetchObject(videoId, videoExtractor);
 	}
 }

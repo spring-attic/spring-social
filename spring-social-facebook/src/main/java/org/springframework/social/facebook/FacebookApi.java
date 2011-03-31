@@ -15,13 +15,14 @@
  */
 package org.springframework.social.facebook;
 
+
 /**
  * Interface specifying a basic set of operations for interacting with Facebook.
  * Implemented by {@link FacebookTemplate}. Not often used directly, but a
  * useful option to enhance testability, as it can easily be mocked or stubbed.
  * @author Craig Walls
  */
-public interface FacebookApi {
+public interface FacebookApi extends GraphApi {
 	
 	UserApi userApi();
 	

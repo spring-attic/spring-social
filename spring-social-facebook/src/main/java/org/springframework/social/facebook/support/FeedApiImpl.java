@@ -18,19 +18,20 @@ package org.springframework.social.facebook.support;
 import java.util.List;
 
 import org.springframework.social.facebook.FeedApi;
+import org.springframework.social.facebook.GraphApi;
 import org.springframework.social.facebook.support.extractors.FeedEntryResponseExtractor;
 import org.springframework.social.facebook.types.FacebookLink;
 import org.springframework.social.facebook.types.FeedEntry;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
-public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
+public class FeedApiImpl implements FeedApi {
 
 	private FeedEntryResponseExtractor feedEntryExtractor;
+	private final GraphApi graphApi;
 
-	public FeedApiImpl(RestTemplate restTemplate) {
-		super(restTemplate);
+	public FeedApiImpl(GraphApi graphApi) {
+		this.graphApi = graphApi;
 		feedEntryExtractor = new FeedEntryResponseExtractor();
 	}
 
@@ -39,7 +40,7 @@ public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
 	}
 
 	public List<FeedEntry> getFeed(String ownerId) {
-		return getObjectConnection(ownerId, "feed", feedEntryExtractor);
+		return graphApi.fetchConnections(ownerId, "feed", feedEntryExtractor);
 	}
 
 	public List<FeedEntry> getHomeFeed() {
@@ -47,7 +48,7 @@ public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
 	}
 
 	public List<FeedEntry> getHomeFeed(String userId) {
-		return getObjectConnection(userId, "home", feedEntryExtractor);
+		return graphApi.fetchConnections(userId, "home", feedEntryExtractor);
 	}
 	
 	public List<FeedEntry> getStatuses() {
@@ -55,7 +56,7 @@ public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
 	}
 	
 	public List<FeedEntry> getStatuses(String userId) {
-		return getObjectConnection(userId, "statuses", feedEntryExtractor);
+		return graphApi.fetchConnections(userId, "statuses", feedEntryExtractor);
 	}
 	
 	public List<FeedEntry> getLinks() {
@@ -63,11 +64,11 @@ public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
 	}
 	
 	public List<FeedEntry> getLinks(String ownerId) {
-		return getObjectConnection(ownerId, "links", feedEntryExtractor);
+		return graphApi.fetchConnections(ownerId, "links", feedEntryExtractor);
 	}
 
 	public FeedEntry getNote(String noteId) {
-		return getObject(noteId, feedEntryExtractor);
+		return graphApi.fetchObject(noteId, feedEntryExtractor);
 	}
 	
 	public List<FeedEntry> getNotes() {
@@ -75,24 +76,24 @@ public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
 	}
 	
 	public List<FeedEntry> getNotes(String ownerId) {
-		return getObjectConnection(ownerId, "notes", feedEntryExtractor);
+		return graphApi.fetchConnections(ownerId, "notes", feedEntryExtractor);
 	}
 	
 	public List<FeedEntry> getPosts() {
 		return getPosts("me");
 	}
 	public List<FeedEntry> getPosts(String ownerId) {
-		return getObjectConnection(ownerId, "posts", feedEntryExtractor);
+		return graphApi.fetchConnections(ownerId, "posts", feedEntryExtractor);
 	}
 	
 	public FeedEntry getFeedEntry(String entryId) {
-		return getObject(entryId, feedEntryExtractor);
+		return graphApi.fetchObject(entryId, feedEntryExtractor);
 	}
 
 	public String updateStatus(String message) {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.set("message", message);
-		return (String) publish("me", "feed", map).get("id");
+		return (String) graphApi.publish("me", "feed", map).get("id");
 	}
 
 	public String postLink(String message, FacebookLink link) {
@@ -102,11 +103,11 @@ public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
 		map.set("caption", link.getCaption());
 		map.set("description", link.getDescription());
 		map.set("message", message);
-		return (String) publish("me", "feed", map).get("id");
+		return (String) graphApi.publish("me", "feed", map).get("id");
 	}
 
 	public void deleteFeedEntry(String id) {
-		delete(id);
+		graphApi.delete(id);
 	}
 
 }

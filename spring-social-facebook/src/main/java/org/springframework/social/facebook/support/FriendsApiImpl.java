@@ -19,16 +19,21 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.social.facebook.FriendsApi;
+import org.springframework.social.facebook.GraphApi;
+import org.springframework.social.facebook.support.extractors.ReferenceResponseExtractor;
 import org.springframework.social.facebook.types.Reference;
 import org.springframework.web.client.RestTemplate;
 
-public class FriendsApiImpl extends AbstractFacebookApi implements FriendsApi {
+public class FriendsApiImpl implements FriendsApi {
 	
+	private final GraphApi graphApi;
+	private ReferenceResponseExtractor referenceExtractor;
 	private final RestTemplate restTemplate;
 
-	public FriendsApiImpl(RestTemplate restTemplate) {
-		super(restTemplate);
+	public FriendsApiImpl(GraphApi graphApi, RestTemplate restTemplate) {
+		this.graphApi = graphApi;
 		this.restTemplate = restTemplate;
+		referenceExtractor = new ReferenceResponseExtractor();
 	}
 	
 	public List<Reference> getFriendLists() {
@@ -36,15 +41,15 @@ public class FriendsApiImpl extends AbstractFacebookApi implements FriendsApi {
 	}
 
 	public List<Reference> getFriendLists(String userId) {
-		return getObjectConnection(userId, "friendlists", referenceExtractor);
+		return graphApi.fetchConnections(userId, "friendlists", referenceExtractor);
 	}
 	
 	public Reference getFriendList(String friendListId) {
-		return getObject(friendListId, referenceExtractor);
+		return graphApi.fetchObject(friendListId, referenceExtractor);
 	}
 	
 	public List<Reference> getFriendListMembers(String friendListId) {
-		return getObjectConnection(friendListId, "members", referenceExtractor);
+		return graphApi.fetchConnections(friendListId, "members", referenceExtractor);
 	}
 	
 	public Reference createFriendList(String name) {
@@ -53,20 +58,20 @@ public class FriendsApiImpl extends AbstractFacebookApi implements FriendsApi {
 	
 	public Reference createFriendList(String userId, String name) {
 		@SuppressWarnings("unchecked")
-		Map<String, Object> friendListMap = restTemplate.postForObject(CONNECTION_URL + "?name={name}", "", Map.class, userId, "friendlists", name);
+		Map<String, Object> friendListMap = restTemplate.postForObject(GraphApi.CONNECTION_URL + "?name={name}", "", Map.class, userId, "friendlists", name);
 		return referenceExtractor.extractObject(friendListMap);
 	}
 	
 	public void deleteFriendList(String friendListId) {
-		delete(friendListId);
+		graphApi.delete(friendListId);
 	}
 
 	public void addToFriendList(String friendListId, String friendId) {
-		restTemplate.postForObject(CONNECTION_URL + "/{friendId}", "", String.class, friendListId, "members", friendId);
+		restTemplate.postForObject(GraphApi.CONNECTION_URL + "/{friendId}", "", String.class, friendListId, "members", friendId);
 	}
 	
 	public void removeFromFriendList(String friendListId, String friendId) {
-		restTemplate.delete(CONNECTION_URL + "/{friendId}", friendListId, "members", friendId);
+		restTemplate.delete(GraphApi.CONNECTION_URL + "/{friendId}", friendListId, "members", friendId);
 	}
 	
 	public List<Reference> getFriends() {
@@ -74,7 +79,7 @@ public class FriendsApiImpl extends AbstractFacebookApi implements FriendsApi {
 	}
 
 	public List<Reference> getFriends(String userId) {
-		return getObjectConnection(userId, "friends", referenceExtractor);
+		return graphApi.fetchConnections(userId, "friends", referenceExtractor);
 	}
 
 }

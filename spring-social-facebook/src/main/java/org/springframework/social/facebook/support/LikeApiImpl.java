@@ -17,19 +17,20 @@ package org.springframework.social.facebook.support;
 
 import java.util.List;
 
+import org.springframework.social.facebook.GraphApi;
 import org.springframework.social.facebook.LikeApi;
 import org.springframework.social.facebook.support.extractors.UserLikeResponseExtractor;
 import org.springframework.social.facebook.types.UserLike;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
-public class LikeApiImpl extends AbstractFacebookApi implements LikeApi {
+public class LikeApiImpl implements LikeApi {
 
 	private UserLikeResponseExtractor likeExtractor;
+	private final GraphApi graphApi;
 
-	public LikeApiImpl(RestTemplate restTemplate) {
-		super(restTemplate);
+	public LikeApiImpl(GraphApi graphApi) {
+		this.graphApi = graphApi;
 		likeExtractor = new UserLikeResponseExtractor();
 	}
 
@@ -38,16 +39,16 @@ public class LikeApiImpl extends AbstractFacebookApi implements LikeApi {
 	}
 
 	public List<UserLike> getLikes(String userId) {
-		return getObjectConnection(userId, "likes", likeExtractor);
+		return graphApi.fetchConnections(userId, "likes", likeExtractor);
 	}
 	
 	public void like(String objectId) {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		post(objectId, "likes", map);
+		graphApi.post(objectId, "likes", map);
 	}
 
 	public void unlike(String objectId) {
-		delete(objectId, "likes");
+		graphApi.delete(objectId, "likes");
 	}
 
 	public List<UserLike> getBooks() {
@@ -55,7 +56,7 @@ public class LikeApiImpl extends AbstractFacebookApi implements LikeApi {
 	}
 
 	public List<UserLike> getBooks(String userId) {
-		return getObjectConnection(userId, "books", likeExtractor);
+		return graphApi.fetchConnections(userId, "books", likeExtractor);
 	}
 
 	public List<UserLike> getMovies() {
@@ -63,7 +64,7 @@ public class LikeApiImpl extends AbstractFacebookApi implements LikeApi {
 	}
 
 	public List<UserLike> getMovies(String userId) {
-		return getObjectConnection(userId, "movies", likeExtractor);
+		return graphApi.fetchConnections(userId, "movies", likeExtractor);
 	}
 
 	public List<UserLike> getMusic() {
@@ -71,7 +72,7 @@ public class LikeApiImpl extends AbstractFacebookApi implements LikeApi {
 	}
 
 	public List<UserLike> getMusic(String userId) {
-		return getObjectConnection(userId, "music", likeExtractor);
+		return graphApi.fetchConnections(userId, "music", likeExtractor);
 	}
 
 	public List<UserLike> getTelevision() {
@@ -79,7 +80,7 @@ public class LikeApiImpl extends AbstractFacebookApi implements LikeApi {
 	}
 
 	public List<UserLike> getTelevision(String userId) {
-		return getObjectConnection(userId, "television", likeExtractor);
+		return graphApi.fetchConnections(userId, "television", likeExtractor);
 	}
 
 	public List<UserLike> getActivities() {
@@ -87,7 +88,7 @@ public class LikeApiImpl extends AbstractFacebookApi implements LikeApi {
 	}
 
 	public List<UserLike> getActivities(String userId) {
-		return getObjectConnection(userId, "activities", likeExtractor);
+		return graphApi.fetchConnections(userId, "activities", likeExtractor);
 	}
 
 	public List<UserLike> getInterests() {
@@ -95,6 +96,6 @@ public class LikeApiImpl extends AbstractFacebookApi implements LikeApi {
 	}
 
 	public List<UserLike> getInterests(String userId) {
-		return getObjectConnection(userId, "interests", likeExtractor);
+		return graphApi.fetchConnections(userId, "interests", likeExtractor);
 	}
 }

@@ -18,45 +18,47 @@ package org.springframework.social.facebook.support;
 import java.util.List;
 
 import org.springframework.social.facebook.CommentApi;
+import org.springframework.social.facebook.GraphApi;
 import org.springframework.social.facebook.support.extractors.CommentResponseExtractor;
 import org.springframework.social.facebook.support.extractors.ReferenceResponseExtractor;
 import org.springframework.social.facebook.types.Comment;
 import org.springframework.social.facebook.types.Reference;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
-public class CommentApiImpl extends AbstractFacebookApi implements CommentApi {
+public class CommentApiImpl implements CommentApi {
 	private final CommentResponseExtractor commentsExtractor;
 
 	private final ReferenceResponseExtractor referenceExtractor;
 
-	public CommentApiImpl(RestTemplate restTemplate) {
-		super(restTemplate);
+	private final GraphApi graphApi;
+
+	public CommentApiImpl(GraphApi graphApi) {
+		this.graphApi = graphApi;
 		commentsExtractor = new CommentResponseExtractor();
 		referenceExtractor = new ReferenceResponseExtractor();
 	}
 
 	public List<Comment> getComments(String objectId) {
-		return getObjectConnection(objectId, "comments", commentsExtractor);
+		return graphApi.fetchConnections(objectId, "comments", commentsExtractor);
 	}
 
 	public Comment getComment(String commentId) {
-		return getObject(commentId, commentsExtractor);
+		return graphApi.fetchObject(commentId, commentsExtractor);
 	}
 
 	public String addComment(String objectId, String message) {
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.set("message", message);
-		return (String) publish(objectId, "comments", map).get("id");
+		return (String) graphApi.publish(objectId, "comments", map).get("id");
 	}
 
 	public void deleteComment(String objectId) {
-		delete(objectId);
+		graphApi.delete(objectId);
 	}
 
 	public List<Reference> getLikes(String objectId) {
-		return getObjectConnection(objectId, "likes", referenceExtractor);
+		return graphApi.fetchConnections(objectId, "likes", referenceExtractor);
 	}
 
 }

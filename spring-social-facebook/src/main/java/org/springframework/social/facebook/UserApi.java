@@ -27,10 +27,10 @@ public interface UserApi {
 	FacebookProfile getUserProfile();
 	
 	/**
-	 * Retrieves the profile for the authenticated user.
-	 * @param username the Facebook username to retrieve profile data for.
+	 * Retrieves the profile for the specified user.
+	 * @param userId the Facebook user ID to retrieve profile data for.
 	 * @return the user's profile information.
 	 */
-	FacebookProfile getUserProfile(String username);
+	FacebookProfile getUserProfile(String userId);
 
 }
