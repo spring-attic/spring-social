@@ -63,6 +63,10 @@ public class FeedApiImpl extends AbstractFacebookApi implements FeedApi {
 		return getObjectConnection(ownerId, "links", ResponseExtractors.FEED_ENTRY_EXTRACTOR);
 	}
 
+	public FeedEntry getNote(String noteId) {
+		return getObject(noteId, ResponseExtractors.FEED_ENTRY_EXTRACTOR);
+	}
+	
 	public List<FeedEntry> getNotes() {
 		return getNotes("me");
 	}

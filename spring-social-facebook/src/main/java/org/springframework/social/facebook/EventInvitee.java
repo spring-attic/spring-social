@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,29 +15,29 @@
  */
 package org.springframework.social.facebook;
 
-/**
- * Interface specifying a basic set of operations for interacting with Facebook.
- * Implemented by {@link FacebookTemplate}. Not often used directly, but a
- * useful option to enhance testability, as it can easily be mocked or stubbed.
- * @author Craig Walls
- */
-public interface FacebookApi {
+public class EventInvitee {
+	private String id;
 	
-	UserApi userApi();
+	private String name;
 	
-	CheckinApi checkinApi();
+	private RsvpStatus rsvpStatus;
+	
+	public EventInvitee(String id, String name, RsvpStatus rsvpStatus) {
+		this.id = id;
+		this.name = name;
+		this.rsvpStatus = rsvpStatus;
+	}
 
-	InterestsApi interestsApi();
+	public String getId() {
+		return id;
+	}
 
-	FeedApi feedApi();
-	
-	FriendsApi friendsApi();
-	
-	GroupApi groupApi();
+	public String getName() {
+		return name;
+	}
 
-	CommentApi commentApi();
+	public RsvpStatus getRsvpStatus() {
+		return rsvpStatus;
+	}
 
-	EventsApi eventsApi();
-	
-	MediaApi mediaApi();
 }

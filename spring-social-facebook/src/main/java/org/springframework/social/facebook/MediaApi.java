@@ -34,4 +34,38 @@ public interface MediaApi {
 	 */
 	List<Album> getAlbums(String ownerId);
 
+	/**
+	 * Retrieves data for a specific album.
+	 * @param albumId the album ID
+	 * @return the requested {@link Album} object.
+	 */
+	Album getAlbum(String albumId);
+	
+	/**
+	 * Creates a new photo album.
+	 * @param name the name of the album.
+	 * @param description the album's description.
+	 * @return the ID of the newly created album.
+	 */
+	String createAlbum(String name, String description);
+
+	/**
+	 * Retrieves photo data from a specific album.
+	 * @param albumId the album's ID
+	 * @return a list of {@link Photo}s in the specified album.
+	 */
+	List<Photo> getPhotos(String albumId);
+	
+	/**
+	 * Retrieve data for a specified photo.
+	 * @param photoId the photo's ID
+	 * @return the requested {@link Photo}
+	 */
+	Photo getPhoto(String photoId);
+	
+	List<Video> getVideos();
+
+	List<Video> getVideos(String ownerId);
+	
+	Video getVideo(String videoId);
 }

@@ -27,15 +27,27 @@ public class ResponseExtractors {
 	
 	public static final EducationResponseExtractor EDUCATION_EXTRACTOR = new EducationResponseExtractor();
 	
+	public static final EventResponseExtractor EVENT_EXTRACTOR = new EventResponseExtractor();
+	
 	public static final FeedEntryResponseExtractor FEED_ENTRY_EXTRACTOR = new FeedEntryResponseExtractor();
+	
+	public static final GroupResponseExtractor GROUP_EXTRACTOR = new GroupResponseExtractor();
+	
+	public static final InviteeResponseExtractor INVITEE_EXTRACTOR = new InviteeResponseExtractor();
+	
+	public static final PhotoResponseExtractor PHOTO_EXTRACTOR = new PhotoResponseExtractor();
 	
 	public static final ProfileResponseExtractor PROFILE_EXTRACTOR = new ProfileResponseExtractor();
 	
 	public static final ReferenceResponseExtractor REFERENCE_EXTRACTOR = new ReferenceResponseExtractor();
 	
+	public static final TagResponseExtractor TAG_EXTRACTOR = new TagResponseExtractor();
+	
 	public static final UserEventResponseExtractor USER_EVENT_EXTRACTOR = new UserEventResponseExtractor();
 	
 	public static final UserLikeResponseExtractor USER_LIKE_EXTRACTOR = new UserLikeResponseExtractor();
+	
+	public static final VideoResponseExtractor VIDEO_EXTRACTOR = new VideoResponseExtractor();
 	
 	public static final WorkResponseExtractor WORK_EXTRACTOR = new WorkResponseExtractor();
 

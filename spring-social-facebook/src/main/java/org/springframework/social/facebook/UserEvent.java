@@ -66,9 +66,5 @@ public class UserEvent {
 
 	public RsvpStatus getRsvpStatus() {
 		return rsvpStatus;
-	}
-
-	public static enum RsvpStatus {
-		ATTENDING, DECLINED, UNSURE, NOT_REPLIED;
 	};
 }

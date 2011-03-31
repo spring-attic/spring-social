@@ -16,10 +16,15 @@
 package org.springframework.social.facebook.support;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.social.facebook.Event;
+import org.springframework.social.facebook.EventInvitee;
 import org.springframework.social.facebook.EventsApi;
 import org.springframework.social.facebook.UserEvent;
 import org.springframework.social.facebook.support.extractors.ResponseExtractors;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 public class EventsApiImpl extends AbstractFacebookApi implements EventsApi {
@@ -35,5 +40,52 @@ public class EventsApiImpl extends AbstractFacebookApi implements EventsApi {
 	public List<UserEvent> getEvents(String userId) {
 		return getObjectConnection(userId, "events", ResponseExtractors.USER_EVENT_EXTRACTOR);
 	}
+	
+	public Event getEvent(String eventId) {
+		return getObject(eventId, ResponseExtractors.EVENT_EXTRACTOR);
+	}
+	
+	public String createEvent(String name, String startTime, String endTime) {
+		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
+		data.set("name", name);
+		data.set("start_time", startTime);
+		data.set("end_time", endTime);
+		return (String) ((Map<String, Object>) publish("me", "events", data)).get("id");
+	}
+	
+	public void deleteEvent(String eventId) {
+		delete(eventId);
+	}
 
+	public List<EventInvitee> getInvited(String eventId) {
+		return getObjectConnection(eventId, "invited", ResponseExtractors.INVITEE_EXTRACTOR);
+	}
+
+	public List<EventInvitee> getAttending(String eventId) {
+		return getObjectConnection(eventId, "attending", ResponseExtractors.INVITEE_EXTRACTOR);
+	}
+	
+	public List<EventInvitee> getMaybeAttending(String eventId) {
+		return getObjectConnection(eventId, "maybe", ResponseExtractors.INVITEE_EXTRACTOR);
+	}
+	
+	public List<EventInvitee> getNoReplies(String eventId) {
+		return getObjectConnection(eventId, "noreply", ResponseExtractors.INVITEE_EXTRACTOR);
+	}
+
+	public List<EventInvitee> getDeclined(String eventId) {
+		return getObjectConnection(eventId, "declined", ResponseExtractors.INVITEE_EXTRACTOR);
+	}
+	
+	public void acceptInvitation(String eventId) {
+		post(eventId, "attending", new LinkedMultiValueMap<String, String>());
+	}
+
+	public void maybeInvitation(String eventId) {
+		post(eventId, "maybe", new LinkedMultiValueMap<String, String>());
+	}
+
+	public void declineInvitation(String eventId) {
+		post(eventId, "declined", new LinkedMultiValueMap<String, String>());
+	}
 }

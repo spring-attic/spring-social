@@ -16,10 +16,15 @@
 package org.springframework.social.facebook.support;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.social.facebook.Album;
 import org.springframework.social.facebook.MediaApi;
+import org.springframework.social.facebook.Photo;
+import org.springframework.social.facebook.Video;
 import org.springframework.social.facebook.support.extractors.ResponseExtractors;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 public class MediaApiImpl extends AbstractFacebookApi implements MediaApi {
@@ -36,4 +41,44 @@ public class MediaApiImpl extends AbstractFacebookApi implements MediaApi {
 		return getObjectConnection(userId, "albums", ResponseExtractors.ALBUM_EXTRACTOR);
 	}
 
+	public Album getAlbum(String albumId) {
+		return getObject(albumId, ResponseExtractors.ALBUM_EXTRACTOR);
+	}
+	
+	public String createAlbum(String name, String description) {
+		return createAlbum("me", name, description);
+	}
+	
+	// TODO: Expose this method once we figure out how to use alternate access tokens.
+	//       That is, this method only makes sense when creating albums for something
+	//       other than the authenticated user (a group, for example). To do that, you'd
+	//       need to use an access token for that group...not the access token for the user.
+	//       You can get those tokens via the /{user}/accounts...but the question is
+	//       how to best design the API to use these.
+	public String createAlbum(String ownerId, String name, String description) {
+		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
+		data.set("name", name);
+		data.set("message", description);
+		return (String) ((Map<String, Object>) publish(ownerId, "albums", data)).get("id");
+	}
+	
+	public List<Photo> getPhotos(String albumId) {
+		return getObjectConnection(albumId, "photos", ResponseExtractors.PHOTO_EXTRACTOR);
+	}
+	
+	public Photo getPhoto(String photoId) {
+		return getObject(photoId, ResponseExtractors.PHOTO_EXTRACTOR);
+	}
+
+	public List<Video> getVideos() {
+		return getVideos("me");
+	}
+	
+	public List<Video> getVideos(String ownerId) {
+		return getObjectConnection(ownerId, "videos", ResponseExtractors.VIDEO_EXTRACTOR);
+	}
+	
+	public Video getVideo(String videoId) {
+		return getObject(videoId, ResponseExtractors.VIDEO_EXTRACTOR);
+	}
 }

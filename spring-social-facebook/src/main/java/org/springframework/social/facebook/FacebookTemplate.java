@@ -24,6 +24,7 @@ import org.springframework.social.facebook.support.CommentApiImpl;
 import org.springframework.social.facebook.support.EventsApiImpl;
 import org.springframework.social.facebook.support.FeedApiImpl;
 import org.springframework.social.facebook.support.FriendsApiImpl;
+import org.springframework.social.facebook.support.GroupApiImpl;
 import org.springframework.social.facebook.support.InterestsApiImpl;
 import org.springframework.social.facebook.support.MediaApiImpl;
 import org.springframework.social.facebook.support.UserApiImpl;
@@ -49,6 +50,8 @@ public class FacebookTemplate implements FacebookApi {
 	private FriendsApi friendsApi;
 	
 	private FeedApi feedApi;
+	
+	private GroupApi groupApi;
 
 	private CommentApi commentApi;
 
@@ -81,6 +84,7 @@ public class FacebookTemplate implements FacebookApi {
 		interestsApi = new InterestsApiImpl(restTemplate);
 		eventsApi = new EventsApiImpl(restTemplate);
 		mediaApi = new MediaApiImpl(restTemplate);
+		groupApi = new GroupApiImpl(restTemplate);
 	}
 
 	public UserApi userApi() {
@@ -101,6 +105,10 @@ public class FacebookTemplate implements FacebookApi {
 	
 	public FeedApi feedApi() {
 		return feedApi;
+	}
+	
+	public GroupApi groupApi() {
+		return groupApi;
 	}
 
 	public CommentApi commentApi() {

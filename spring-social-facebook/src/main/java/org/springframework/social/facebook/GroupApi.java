@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,29 +15,12 @@
  */
 package org.springframework.social.facebook;
 
-/**
- * Interface specifying a basic set of operations for interacting with Facebook.
- * Implemented by {@link FacebookTemplate}. Not often used directly, but a
- * useful option to enhance testability, as it can easily be mocked or stubbed.
- * @author Craig Walls
- */
-public interface FacebookApi {
-	
-	UserApi userApi();
-	
-	CheckinApi checkinApi();
+import java.util.List;
 
-	InterestsApi interestsApi();
-
-	FeedApi feedApi();
+public interface GroupApi {	
 	
-	FriendsApi friendsApi();
+	Group getGroup(String groupId);
 	
-	GroupApi groupApi();
-
-	CommentApi commentApi();
-
-	EventsApi eventsApi();
-	
-	MediaApi mediaApi();
+	List<Reference> getMembers(String groupId);
+		
 }

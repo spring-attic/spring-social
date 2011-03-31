@@ -61,18 +61,8 @@ public abstract class AbstractFacebookApi {
 		deleteRequest.set("method", "delete");
 		restTemplate.postForObject(CONNECTION_URL, deleteRequest, String.class, objectId, connectionType);
 	}
-
-	// TODO: THESE ARE TEMPORARILY HERE FOR EXPLORATION PURPOSES...REMOVE THEM ONCE THE API IS COMPLETE!!!
-	protected String getObjectAsJSON(String objectId) {
-		return restTemplate.getForObject(OBJECT_URL, String.class, objectId);
-	}
-
-	protected String getConnectionAsJSON(String objectId, String connectionType) {
-		return restTemplate.getForObject(CONNECTION_URL, String.class, objectId, connectionType);
-	}
-
 	
-	static final String OBJECT_URL = "https://graph.facebook.com/{objectId}";
-	static final String CONNECTION_URL = OBJECT_URL + "/{connection}";
+	protected static final String OBJECT_URL = "https://graph.facebook.com/{objectId}";
+	protected static final String CONNECTION_URL = OBJECT_URL + "/{connection}";
 
 }

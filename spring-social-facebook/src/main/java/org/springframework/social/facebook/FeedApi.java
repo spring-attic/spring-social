@@ -57,6 +57,9 @@ public interface FeedApi {
 	
 	List<FeedEntry> getLinks(String ownerId);
 	
+	// TODO: Consider breaking out Note and other feed entry types
+	FeedEntry getNote(String noteId);
+	
 	List<FeedEntry> getNotes();
 	
 	List<FeedEntry> getNotes(String ownerId);
