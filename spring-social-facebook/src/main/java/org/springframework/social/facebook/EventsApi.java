@@ -21,6 +21,10 @@ import org.springframework.social.facebook.types.Event;
 import org.springframework.social.facebook.types.EventInvitee;
 import org.springframework.social.facebook.types.UserEvent;
 
+/**
+ * Defines operations for creating and reading event data as well as RSVP'ing to events on behalf of a user.
+ * @author Craig Walls
+ */
 public interface EventsApi {
 
 	/**
@@ -65,6 +69,10 @@ public interface EventsApi {
 	 */
 	String createEvent(String name, String startTime, String endTime);
 	
+	/**
+	 * Deletes an event.
+	 * @param eventId the ID of the event
+	 */
 	void deleteEvent(String eventId);
 	
 	/**

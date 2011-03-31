@@ -59,13 +59,4 @@ public class CommentApiImpl extends AbstractFacebookApi implements CommentApi {
 		return getObjectConnection(objectId, "likes", referenceExtractor);
 	}
 
-	public void like(String objectId) {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		post(objectId, "likes", map);
-	}
-
-	public void unlike(String objectId) {
-		delete(objectId, "likes");
-	}
-
 }

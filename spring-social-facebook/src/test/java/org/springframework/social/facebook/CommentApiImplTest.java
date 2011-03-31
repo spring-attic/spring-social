@@ -102,24 +102,4 @@ public class CommentApiImplTest extends AbstractFacebookApiTest {
 		assertEquals("Edmund Blackadder", like3.getName());
 	}
 
-	@Test
-	public void like() {
-		mockServer.expect(requestTo("https://graph.facebook.com/123456/likes"))
-			.andExpect(method(POST))
-			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse("{}", responseHeaders));
-		facebook.commentApi().like("123456");
-		mockServer.verify();
-	}
-	
-	@Test
-	public void unlike() {
-		mockServer.expect(requestTo("https://graph.facebook.com/123456/likes"))
-			.andExpect(method(POST))
-			.andExpect(body("method=delete"))
-			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse("{}", responseHeaders));
-		facebook.commentApi().unlike("123456");
-		mockServer.verify();
-	}
 }

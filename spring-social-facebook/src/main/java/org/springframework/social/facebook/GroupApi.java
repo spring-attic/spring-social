@@ -20,10 +20,24 @@ import java.util.List;
 import org.springframework.social.facebook.types.Group;
 import org.springframework.social.facebook.types.Reference;
 
+/**
+ * Defines operations for retrieving data about groups and group members.
+ * @author Craig Walls
+ */
 public interface GroupApi {	
 	
+	/**
+	 * Retrieve data for a specified group.
+	 * @param groupId the ID of the group
+	 * @return a {@link Group} object
+	 */
 	Group getGroup(String groupId);
 	
+	/**
+	 * Retrieves the members of the specified group.
+	 * @param groupId the ID of the group
+	 * @return a list of {@link Reference}s, one for each member of the group.
+	 */
 	List<Reference> getMembers(String groupId);
 		
 }

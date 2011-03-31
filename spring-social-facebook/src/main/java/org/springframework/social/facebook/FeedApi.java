@@ -17,6 +17,9 @@ package org.springframework.social.facebook;
 
 import java.util.List;
 
+import org.springframework.social.facebook.types.FacebookLink;
+import org.springframework.social.facebook.types.FeedEntry;
+
 /**
  * Interface defining operations that can be performed on a Facebook feed.
  * @author Craig Walls
@@ -38,8 +41,17 @@ public interface FeedApi {
 	 */
 	List<FeedEntry> getFeed(String ownerId);
 
+	/**
+	 * Retrieves the user's home feed. This includes entries from the user's friends.
+	 * @return a list of {@link FeedEntry}s from the authenticated user's home feed.
+	 */
 	List<FeedEntry> getHomeFeed();
 
+	/**
+	 * Retrieves the user's home feed. This includes entries from the user's friends.
+	 * @param userId the user ID.
+	 * @return a list of {@link FeedEntry}s from the specified user's home feed.
+	 */
 	List<FeedEntry> getHomeFeed(String userId);
 
 	/**
@@ -49,23 +61,56 @@ public interface FeedApi {
 	 */
 	FeedEntry getFeedEntry(String entryId);
 	
+	/**
+	 * Retrieves the status entries from the authenticated user's feed.
+	 * @return a list of status {@link FeedEntry}s. 
+	 */
 	List<FeedEntry> getStatuses();
 	
+	/**
+	 * Retrieves the status entries from the specified user's feed.
+	 * @param userId the user's ID
+	 * @return a list of status {@link FeedEntry}s. 
+	 */
 	List<FeedEntry> getStatuses(String userId);
 	
+	/**
+	 * Retrieves the link entries from the authenticated user's feed.
+	 * @return a list of link {@link FeedEntry}s. 
+	 */
 	List<FeedEntry> getLinks();
 	
+	/**
+	 * Retrieves the link entries from the specified owner's feed.
+	 * @param ownerId the owner of the feed (could be a user, page, event, etc)
+	 * @return a list of link {@link FeedEntry}s. 
+	 */
 	List<FeedEntry> getLinks(String ownerId);
 	
-	// TODO: Consider breaking out Note and other feed entry types
-	FeedEntry getNote(String noteId);
-	
+	/**
+	 * Retrieves the note entries from the authenticated user's feed.
+	 * @return a list of note {@link FeedEntry}s. 
+	 */
 	List<FeedEntry> getNotes();
 	
+	/**
+	 * Retrieves the note entries from the specified owner's feed.
+	 * @param ownerId the owner of the feed (could be a user, page, event, etc)
+	 * @return a list of note {@link FeedEntry}s. 
+	 */
 	List<FeedEntry> getNotes(String ownerId);
 	
+	/**
+	 * Retrieves the post entries from the authenticated user's feed.
+	 * @return a list of post {@link FeedEntry}s. 
+	 */
 	List<FeedEntry> getPosts();
 	
+	/**
+	 * Retrieves the post entries from the specified owner's feed.
+	 * @param ownerId the owner of the feed (could be a user, page, event, etc)
+	 * @return a list of post {@link FeedEntry}s. 
+	 */
 	List<FeedEntry> getPosts(String ownerId);
 	
 	/**

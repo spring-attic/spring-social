@@ -27,7 +27,7 @@ public interface FacebookApi {
 	
 	CheckinApi checkinApi();
 
-	InterestsApi interestsApi();
+	LikeApi likeApi();
 
 	FeedApi feedApi();
 	

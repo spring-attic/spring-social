@@ -15,9 +15,9 @@
  */
 package org.springframework.social.facebook.support;
 
-import org.springframework.social.facebook.FacebookProfile;
 import org.springframework.social.facebook.UserApi;
 import org.springframework.social.facebook.support.extractors.ProfileResponseExtractor;
+import org.springframework.social.facebook.types.FacebookProfile;
 import org.springframework.web.client.RestTemplate;
 
 public class UserApiImpl extends AbstractFacebookApi implements UserApi {

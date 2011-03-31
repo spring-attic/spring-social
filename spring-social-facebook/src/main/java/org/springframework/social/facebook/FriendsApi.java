@@ -19,6 +19,10 @@ import java.util.List;
 
 import org.springframework.social.facebook.types.Reference;
 
+/**
+ * Defines operations for interacting with a user's friends and friend lists.
+ * @author Craig Walls
+ */
 public interface FriendsApi {
 
 	/**
@@ -36,16 +40,53 @@ public interface FriendsApi {
 	 */
 	List<Reference> getFriendLists(String userId);
 
+	/**
+	 * Retrieves a reference to the specified friend list.
+	 * @param friendListId the friend list ID.
+	 * @return a {@link Reference} to the requested friend list.
+	 */
 	Reference getFriendList(String friendListId);
 	
+	/**
+	 * Retrieves references for all users who are members of the specified friend list.
+	 * @param friendListId the friend list ID.
+	 * @return a list of {@link Reference}, each representing a member of the friend list.
+	 */
 	List<Reference> getFriendListMembers(String friendListId);
-	
+
+	/**
+	 * Creates a new friend list for the authenticated user.
+	 * @param name the name of the friend list.
+	 * @return a {@link Reference} to the newly created friend list.
+	 */
+	Reference createFriendList(String name);
+
+	/**
+	 * Creates a new friend list.
+	 * @param userId the user ID to create the friend list for.
+	 * @param name the name of the friend list.
+	 * @return a {@link Reference} to the newly created friend list.
+	 */
 	Reference createFriendList(String userId, String name);
 	
+	/**
+	 * Deletes a friend list.
+	 * @param friendListId the ID of the friend list to remove.
+	 */
 	void deleteFriendList(String friendListId);
 
+	/**
+	 * Adds a friend to a friend list.
+	 * @param friendListId the friend list ID
+	 * @param friendId The ID of the user to add to the list. The user must be a friend of the list's owner.
+	 */
 	void addToFriendList(String friendListId, String friendId);
 	
+	/**
+	 * Removes a friend from a friend list.
+	 * @param friendListId the friend list ID
+	 * @param friendId The ID of the user to add to the list.
+	 */
 	void removeFromFriendList(String friendListId, String friendId);
 	
 	/**

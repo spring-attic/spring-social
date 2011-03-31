@@ -17,10 +17,10 @@ package org.springframework.social.facebook.support;
 
 import java.util.List;
 
-import org.springframework.social.facebook.FacebookLink;
 import org.springframework.social.facebook.FeedApi;
-import org.springframework.social.facebook.FeedEntry;
 import org.springframework.social.facebook.support.extractors.FeedEntryResponseExtractor;
+import org.springframework.social.facebook.types.FacebookLink;
+import org.springframework.social.facebook.types.FeedEntry;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;

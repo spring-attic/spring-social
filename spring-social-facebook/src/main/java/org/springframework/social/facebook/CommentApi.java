@@ -20,6 +20,10 @@ import java.util.List;
 import org.springframework.social.facebook.types.Comment;
 import org.springframework.social.facebook.types.Reference;
 
+/**
+ * Defines operations for reading and posting comments to Facebook.
+ * @author Craig Walls
+ */
 public interface CommentApi {
 	
 	/**
@@ -57,15 +61,4 @@ public interface CommentApi {
 	 */
 	List<Reference> getLikes(String objectId);
 
-	/**
-	 * Like an object on behalf of the authenticated user.
-	 * @param objectId the object ID
-	 */
-	void like(String objectId);
-
-	/**
-	 * Unlike an object on behalf of the authenticated user.
-	 * @param objectId the object ID
-	 */
-	void unlike(String objectId);
 }

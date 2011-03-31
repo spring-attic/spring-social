@@ -15,6 +15,8 @@
  */
 package org.springframework.social.facebook;
 
+import org.springframework.social.facebook.types.FacebookProfile;
+
 
 public interface UserApi {
 	

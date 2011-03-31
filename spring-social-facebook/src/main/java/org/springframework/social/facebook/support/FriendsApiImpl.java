@@ -47,6 +47,10 @@ public class FriendsApiImpl extends AbstractFacebookApi implements FriendsApi {
 		return getObjectConnection(friendListId, "members", referenceExtractor);
 	}
 	
+	public Reference createFriendList(String name) {
+		return createFriendList("me", name);
+	}
+	
 	public Reference createFriendList(String userId, String name) {
 		Map<String, Object> friendListMap = restTemplate.postForObject(CONNECTION_URL + "?name={name}", "", Map.class, userId, "friendlists", name);
 		return referenceExtractor.extractObject(friendListMap);

@@ -20,8 +20,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.social.facebook.FeedEntry;
 import org.springframework.social.facebook.types.Comment;
+import org.springframework.social.facebook.types.FeedEntry;
 import org.springframework.social.facebook.types.Reference;
 
 public class FeedEntryResponseExtractor extends AbstractResponseExtractor<FeedEntry> {

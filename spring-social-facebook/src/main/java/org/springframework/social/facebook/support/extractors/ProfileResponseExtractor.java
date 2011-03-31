@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.social.facebook.FacebookProfile;
+import org.springframework.social.facebook.types.FacebookProfile;
 
 public class ProfileResponseExtractor extends AbstractResponseExtractor<FacebookProfile> {
 

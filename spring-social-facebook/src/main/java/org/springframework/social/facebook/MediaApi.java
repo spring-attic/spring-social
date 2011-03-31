@@ -21,6 +21,10 @@ import org.springframework.social.facebook.types.Album;
 import org.springframework.social.facebook.types.Photo;
 import org.springframework.social.facebook.types.Video;
 
+/**
+ * Defines operations for working with albums, photos, and videos.
+ * @author Craig Walls
+ */
 public interface MediaApi {
 
 	/**
@@ -67,9 +71,23 @@ public interface MediaApi {
 	 */
 	Photo getPhoto(String photoId);
 	
+	/**
+	 * Retrieves a list of videos for the authenticated user.
+	 * @return a list of {@link Video} belonging to the authenticated user.
+	 */
 	List<Video> getVideos();
 
+	/**
+	 * Retrieves a list of videos for a specified owner.
+	 * @param ownerId the owner of the videos (could be a user, group, etc)
+	 * @return a list of {@link Video} belonging to the specified owner.
+	 */
 	List<Video> getVideos(String ownerId);
 	
+	/**
+	 * Retrieves data for a specific video.
+	 * @param videoId the ID of the video.
+	 * @return the requested {@link Video} data.
+	 */
 	Video getVideo(String videoId);
 }
