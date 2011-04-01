@@ -99,7 +99,7 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 		ServiceProviderConnection<FacebookApi> newConnection = connectionFactory.createConnection(new AccessGrant("123456789", "987654321")).assignAccountId(1L);
 		ServiceProviderConnection<FacebookApi> connection = connectionRepository.saveConnection(newConnection);
 		assertTrue(!newConnection.equals(connection));
-		assertEquals(newConnection.hashCode(), connection.hashCode());
+		assertTrue(newConnection.hashCode() != connection.hashCode());
 		assertEquals(connection, connection.assignAccountId(1L));
 	}
 	

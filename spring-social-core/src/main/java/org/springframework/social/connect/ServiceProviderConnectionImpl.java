@@ -130,16 +130,26 @@ final class ServiceProviderConnectionImpl<S> implements ServiceProviderConnectio
 		if (id != null && other.id != null) {
 			return accountId.equals(other.accountId) && providerId.equals(other.providerId) && id.equals(other.id);
 		} else {
-			return this == other;
+			String providerAccountId = getProviderAccountId();
+			String otherProviderAccountId = other.getProviderAccountId();
+			if (id == null && other.id == null && providerAccountId != null && otherProviderAccountId != null) {
+				return providerId.equals(other.providerId) && providerAccountId.equals(otherProviderAccountId);
+			} else {
+				return this == other;
+			}
 		}
 	}
 	
 	public int hashCode() {
-		String providerAccountId = getProviderAccountId();
-		if (providerAccountId != null) {
-			return providerId.hashCode() + providerAccountId.hashCode() * 29;
+		if (id != null) {
+			return accountId.hashCode() + providerId.hashCode() + id.hashCode();
 		} else {
-			return providerId.hashCode();
+			String providerAccountId = getProviderAccountId();
+			if (providerAccountId != null) {
+				return providerId.hashCode() + providerAccountId.hashCode();
+			} else {
+				return providerId.hashCode();
+			}			
 		}
 	}
 	
