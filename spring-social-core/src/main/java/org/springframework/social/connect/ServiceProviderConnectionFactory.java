@@ -41,19 +41,17 @@ public abstract class ServiceProviderConnectionFactory<S> {
 		return providerId;
 	}
 
-	protected ServiceProvider<S> getServiceProvider() {
+	public ServiceProvider<S> getServiceProvider() {
 		return serviceProvider;
 	}
 
-	protected ServiceApiAdapter<S> getServiceApiAdapter() {
+	public ServiceApiAdapter<S> getServiceApiAdapter() {
 		return serviceApiAdapter;
 	}
 
-	protected boolean isAllowSignIn() {
+	public boolean isAllowSignIn() {
 		return allowSignIn;
 	}
-
-	public abstract ServiceProviderConnection<S> createConnection(ServiceProviderConnectionMemento connectionMemento);
 
 	// internal helpers
 	

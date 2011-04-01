@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect;
+package org.springframework.social.connect.support;
 
+import org.springframework.social.connect.ServiceProviderConnection;
+import org.springframework.social.connect.ServiceProviderConnectionFactory;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
@@ -31,16 +33,14 @@ public class OAuth1ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 	}
 	
 	public ServiceProviderConnection<S> createConnection(OAuthToken accessToken) {
-		return new ServiceProviderConnectionImpl<S>(getProviderId(), isAllowSignIn(),
-				ApiTokens.oauth1(accessToken.getValue(), accessToken.getSecret()),
-				getOAuth1ServiceProvider().getServiceApi(accessToken.getValue(), accessToken.getSecret()), getServiceApiAdapter());		
+		String providerUserId = extractProviderUserId(accessToken);
+		return new OAuth1ServiceProviderConnection<S>(getProviderId(), providerUserId, getOAuth1ServiceProvider(), accessToken.getValue(), accessToken.getSecret(), getServiceApiAdapter(), isAllowSignIn());		
 	}
 	
-	public ServiceProviderConnection<S> createConnection(ServiceProviderConnectionMemento connectionMemento) {
-		return new ServiceProviderConnectionImpl<S>(connectionMemento,
-				getOAuth1ServiceProvider().getServiceApi(connectionMemento.getAccessToken(), connectionMemento.getSecret()), getServiceApiAdapter());
+	protected String extractProviderUserId(OAuthToken accessToken) {
+		return null;
 	}
-	
+
 	// internal helpers
 	
 	private OAuth1ServiceProvider<S> getOAuth1ServiceProvider() {

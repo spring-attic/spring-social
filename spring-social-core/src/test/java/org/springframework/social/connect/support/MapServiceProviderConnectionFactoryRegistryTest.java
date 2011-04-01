@@ -1,14 +1,17 @@
-package org.springframework.social.connect;
+package org.springframework.social.connect.support;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.social.connect.ServiceProviderConnectionFactory;
+import org.springframework.social.connect.support.MapServiceProviderConnectionFactoryRegistry;
+import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
 
-public class MapServiceProviderConnectionFactoryTest {
+public class MapServiceProviderConnectionFactoryRegistryTest {
 
 	private MapServiceProviderConnectionFactoryRegistry connectionFactoryLocator = new MapServiceProviderConnectionFactoryRegistry();
 

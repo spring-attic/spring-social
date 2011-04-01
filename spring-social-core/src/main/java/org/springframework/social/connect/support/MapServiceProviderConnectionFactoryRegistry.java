@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect;
+package org.springframework.social.connect.support;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.social.connect.ServiceProviderConnectionFactory;
+import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
 
 public class MapServiceProviderConnectionFactoryRegistry implements ServiceProviderConnectionFactoryLocator {
 

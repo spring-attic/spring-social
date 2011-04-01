@@ -19,12 +19,13 @@ import java.util.List;
 
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.social.connect.OAuth1ServiceProviderConnectionFactory;
-import org.springframework.social.connect.OAuth2ServiceProviderConnectionFactory;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionFactory;
 import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
+import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
+import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
+import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
@@ -58,8 +59,6 @@ public class ConnectController  {
 	
 	private MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors;
 
-	private AccountIdExtractor accountIdExtractor;
-
 	private ServiceProviderConnectionFactoryLocator connectionFactoryLocator;
 	
 	private ServiceProviderConnectionRepository connectionRepository;
@@ -74,7 +73,6 @@ public class ConnectController  {
 		this.connectionFactoryLocator = connectionFactoryRegistry;
 		this.connectionRepository = connectionRepository;
 		this.interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
-		this.accountIdExtractor = new DefaultAccountIdExtractor();		
 	}
 
 	/**
@@ -95,18 +93,11 @@ public class ConnectController  {
 	}
 
 	/**
-	 * Sets the account ID extractor to use when creating connections. Defaults to an extractor that uses Principal.getName() as the account ID.
-	 */
-	public void setAccountIdExtractor(AccountIdExtractor accountIdExtractor) {
-		this.accountIdExtractor = accountIdExtractor;
-	}
-
-	/**
 	 * Render the connect form for the service provider identified by {name} to the member as HTML in their web browser.
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET)
-	public String connect(@PathVariable String providerId, WebRequest request, Model model) {
-		List<ServiceProviderConnection<?>> connections = connectionRepository.findConnectionsToProvider(accountIdExtractor.extractAccountId(request), providerId);
+	public String connect(@PathVariable String providerId, Model model) {
+		List<ServiceProviderConnection<?>> connections = connectionRepository.findConnectionsToProvider(providerId);
 		if (connections.isEmpty()) {
 			return baseViewPath(providerId) + "Connect";
 		} else {
@@ -145,7 +136,7 @@ public class ConnectController  {
 	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier", required=false) String verifier, WebRequest request) {
 		OAuth1ServiceProviderConnectionFactory<?> connectionFactory = (OAuth1ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		OAuthToken accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier));
-		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessToken).assignAccountId(accountIdExtractor.extractAccountId(request));
+		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessToken);
 		connection = connectionRepository.saveConnection(connection);	
 		postConnect(connectionFactory, connection, request);
 		return redirectToProviderConnect(providerId);
@@ -160,7 +151,7 @@ public class ConnectController  {
 	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
 		OAuth2ServiceProviderConnectionFactory<?> connectionFactory = (OAuth2ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId));
-		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessGrant).assignAccountId(accountIdExtractor.extractAccountId(request));
+		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessGrant);
 		connection = connectionRepository.saveConnection(connection);
 		postConnect(connectionFactory, connection, request);
 		return redirectToProviderConnect(providerId);
@@ -171,8 +162,8 @@ public class ConnectController  {
 	 * The member has decided they no longer wish to use the service provider from this application.
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.DELETE)
-	public String removeConnections(@PathVariable String providerId, WebRequest request) {
-		connectionRepository.removeConnectionsToProvider(accountIdExtractor.extractAccountId(request), providerId);
+	public String removeConnections(@PathVariable String providerId) {
+		connectionRepository.removeConnectionsToProvider(providerId);
 		return redirectToProviderConnect(providerId);
 	}
 
@@ -180,9 +171,9 @@ public class ConnectController  {
 	 * Remove a single provider connection associated with a user account.
 	 * The member has decided they no longer wish to use the service provider account from this application.
 	 */
-	@RequestMapping(value="{providerId}/{connectionId}", method=RequestMethod.DELETE)
-	public String removeConnections(@PathVariable String providerId, @PathVariable Long connectionId, WebRequest request) {
-		connectionRepository.removeConnection(accountIdExtractor.extractAccountId(request), connectionId);
+	@RequestMapping(value="{providerId}/{providerUserId}", method=RequestMethod.DELETE)
+	public String removeConnections(@PathVariable String providerId, @PathVariable String providerUserId) {
+		connectionRepository.removeConnection(new ServiceProviderConnectionKey(providerId, providerUserId));
 		return redirectToProviderConnect(providerId);
 	}
 	

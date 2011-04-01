@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect;
+package org.springframework.social.connect.support;
 
+import org.springframework.social.connect.ServiceProviderConnection;
+import org.springframework.social.connect.ServiceProviderConnectionFactory;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
@@ -31,16 +33,14 @@ public class OAuth2ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 	}
 	
 	public ServiceProviderConnection<S> createConnection(AccessGrant accessGrant) {
-		return new ServiceProviderConnectionImpl<S>(getProviderId(), isAllowSignIn(),
-				ApiTokens.oauth2(accessGrant.getAccessToken(), accessGrant.getRefreshToken()),
-				getOAuth2ServiceProvider().getServiceApi(accessGrant.getAccessToken()), getServiceApiAdapter());		
+		return new OAuth2ServiceProviderConnection<S>(getProviderId(), extractProviderUserId(accessGrant), getOAuth2ServiceProvider(), accessGrant.getAccessToken(),
+				accessGrant.getRefreshToken(), null, getServiceApiAdapter(), isAllowSignIn());		
 	}
 	
-	public ServiceProviderConnection<S> createConnection(ServiceProviderConnectionMemento connectionMemento) {
-		return new ServiceProviderConnectionImpl<S>(connectionMemento,
-				getOAuth2ServiceProvider().getServiceApi(connectionMemento.getAccessToken()), getServiceApiAdapter());
+	protected String extractProviderUserId(AccessGrant accessGrant) {
+		return null;
 	}
-	
+
 	// internal helpers
 	
 	private OAuth2ServiceProvider<S> getOAuth2ServiceProvider() {

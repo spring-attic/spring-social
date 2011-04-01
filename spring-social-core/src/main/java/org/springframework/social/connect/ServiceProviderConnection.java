@@ -15,44 +15,17 @@
  */
 package org.springframework.social.connect;
 
-import java.io.Serializable;
-
 /**
- * A connection between a local user account and an external service provider account.
+ * A connection between a local user and an external service provider user.
  * @author Keith Donald
  * @param <S> the service API
  */
 public interface ServiceProviderConnection<S> {
 
 	/**
-	 * The locally assigned id of this connection.
-	 * Unique across all connections.
-	 * This should never change.
-	 * Initially null if the connection has not yet been saved.
+	 * The key identifying this ServiceProviderConnection.
 	 */
-	public Long getId();
-	
-	/**
-	 * The local account id representing this end of the connection.
-	 * This should never change. 
-	 * Initially null if the connection has not yet been saved.
-	 */
-	public Serializable getAccountId();
-
-	/**
-	 * The id of the provider as it is registered in the system.
-	 * This should never change. 
-	 * Initially null if the connection has not yet been saved.
-	 */
-	public String getProviderId();
-	
-	/**
-	 * The id of the external provider account representing the remote end of the connection.
-	 * May be null if this information is not exposed by the provider.
-	 * If present, this value should never change.
-	 * Must be present to support sign-in with the provider account.
-	 */
-	String getProviderAccountId();
+	ServiceProviderConnectionKey getKey();
 	
 	/**
 	 * The display name for the user's profile on the provider's system.
@@ -77,7 +50,7 @@ public interface ServiceProviderConnection<S> {
 	
 	/**
 	 * If this connection can be used to sign the local user in.
-	 * True if sign-in support was specified when the connection was established and nobody else is connected to the {@link #getProviderAccountId() providerAccount}.
+	 * True if sign-in support was specified when the connection was established and nobody else is connected to the {@link #getProviderUserId() providerAccount}.
 	 */
 	boolean allowSignIn();
 
@@ -88,6 +61,17 @@ public interface ServiceProviderConnection<S> {
 	boolean test();
 	
 	/**
+	 * Returns true if this connection has expired.
+	 * Call {@link #refresh()} to renew the connection.
+	 */
+	boolean hasExpired();
+
+	/**
+	 * Refresh this connection.
+	 */
+	void refresh();
+	
+	/**
 	 * Update the user's status on the provider's system.
 	 * Allows a message to be broadcast from the local account to the remote account.
 	 * This method will be a no-op if a status concept is not supported by the service provider.
@@ -96,7 +80,7 @@ public interface ServiceProviderConnection<S> {
 	void updateStatus(String message);
 	
 	/**
-	 * Sync's this connection object with the current state of the linked provider account.
+	 * Sync's this connection object with the current state of the linked provider user.
 	 * Will cause locally cached profile fields to update if they have changed on the provider's system. 
 	 */
 	void sync();
@@ -106,20 +90,4 @@ public interface ServiceProviderConnection<S> {
 	 */
 	public S getServiceApi();
 
-	// mutators
-
-	/**
-	 * Creates a copy of this connection with the local accountId property set to the value provided.
-	 */
-	public ServiceProviderConnection<S> assignAccountId(Serializable accountId);
-	
-	/**
-	 * Creates a memento can be used to persist the state of this connection for restoration later.
-	 */
-	public ServiceProviderConnectionMemento createMemento();
-
-	/**
-	 * Creates a copy of this connection with the id property set to the value provided.
-	 */
-	public ServiceProviderConnection<S> assignId(Long id);
 }

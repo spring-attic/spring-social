@@ -15,26 +15,22 @@
  */
 package org.springframework.social.connect;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 public interface ServiceProviderConnectionRepository {
 
-	Map<String, List<ServiceProviderConnection<?>>> findConnections(Serializable accountId);
+	List<ServiceProviderConnection<?>> findConnections();
 
-	List<ServiceProviderConnection<?>> findConnectionsToProvider(Serializable accountId, String providerId);
+	List<ServiceProviderConnection<?>> findConnectionsToProvider(String providerId);
 
-	List<ServiceProviderConnection<?>> findConnectionsById(Serializable accountId, List<Long> connectionIds);
+	List<ServiceProviderConnection<?>> findConnectionsByKey(List<ServiceProviderConnectionKey> connectionKeys);
 	
-	ServiceProviderConnection<?> findConnectionById(Serializable accountId, Long connectionId);
+	ServiceProviderConnection<?> findConnectionByKey(ServiceProviderConnectionKey connectionKey);
 	
-	List<ServiceProviderConnection<?>> findConnectionsToProviderAccount(String providerId, String providerAccountId);
-
 	<S> ServiceProviderConnection<S> saveConnection(ServiceProviderConnection<S> connection);
 
-	void removeConnectionsToProvider(Serializable accountId, String providerId);
+	void removeConnectionsToProvider(String providerId);
 
-	void removeConnection(Serializable accountId, Long connectionId);
+	void removeConnection(ServiceProviderConnectionKey connectionKey);
 	
 }

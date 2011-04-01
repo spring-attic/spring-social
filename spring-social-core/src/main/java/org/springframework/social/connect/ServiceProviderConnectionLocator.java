@@ -15,12 +15,10 @@
  */
 package org.springframework.social.connect;
 
-import java.io.Serializable;
-
 public interface ServiceProviderConnectionLocator {
 	
-	<S> ServiceProviderConnection<S> getPrimaryConnection(Serializable accountId, Class<S> serviceApiType);
+	<S> ServiceProviderConnection<S> getPrimaryConnection(Class<S> serviceApiType);
 
-	<S> ServiceProviderConnection<S> getConnection(Serializable accountId, Long connectionId, Class<S> serviceApiType);
+	<S> ServiceProviderConnection<S> getConnection(String providerUserId, Class<S> serviceApiType);
 	
 }
