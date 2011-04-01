@@ -55,7 +55,7 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 	// implementing ServiceProviderConnectionRepository
 	
 	public Map<String, List<ServiceProviderConnection<?>>> findConnections(Serializable accountId) {
-		List<ServiceProviderConnection<?>> connections = jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where accountId = ? by providerId, id", connectionMapper, accountId);
+		List<ServiceProviderConnection<?>> connections = jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where accountId = ? order by providerId, id", connectionMapper, accountId);
 		Map<String, List<ServiceProviderConnection<?>>> providerConnectionMap = new HashMap<String, List<ServiceProviderConnection<?>>>();
 		for (ServiceProviderConnection<?> connection : connections) {
 			List<ServiceProviderConnection<?>> providerConnections = providerConnectionMap.get(connection.getProviderId());
@@ -73,6 +73,9 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 	}
 
 	public List<ServiceProviderConnection<?>> findConnectionsById(Serializable accountId, List<Long> connectionIds) {
+		if (connectionIds.isEmpty()) {
+			throw new IllegalArgumentException("Unable to execute find: no connectionIds provided");
+		}
 		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where id in (?) and accountId = ? order by providerId, id", connectionMapper, connectionIds, accountId);
 	}
 
@@ -84,7 +87,7 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where providerId = ? and providerAccountId = ?", connectionMapper, providerId, providerAccountId);
 	}
 
-	public ServiceProviderConnection<?> saveConnection(ServiceProviderConnection<?> connection) {
+	public <S> ServiceProviderConnection<S> saveConnection(ServiceProviderConnection<S> connection) {
 		if (connection.getId() == null) {
 			if (connection.getAccountId() == null) {
 				throw new IllegalArgumentException("Unable to save new connection because it has not been assigned to a local account; call ServiceProviderConnection#assignAccountId(Serializable) before saving");
@@ -97,7 +100,7 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		}
 	}
 
-	public void removeConnections(Serializable accountId, String providerId) {
+	public void removeConnectionsToProvider(Serializable accountId, String providerId) {
 		jdbcTemplate.update("delete from ServiceProviderConnection where accountId = ? and providerId = ?", accountId, providerId);
 	}
 

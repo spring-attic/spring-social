@@ -172,7 +172,7 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.DELETE)
 	public String removeConnections(@PathVariable String providerId, WebRequest request) {
-		connectionRepository.removeConnections(accountIdExtractor.extractAccountId(request), providerId);
+		connectionRepository.removeConnectionsToProvider(accountIdExtractor.extractAccountId(request), providerId);
 		return redirectToProviderConnect(providerId);
 	}
 

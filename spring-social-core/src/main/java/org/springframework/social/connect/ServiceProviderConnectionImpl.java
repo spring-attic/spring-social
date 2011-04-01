@@ -119,6 +119,30 @@ final class ServiceProviderConnectionImpl<S> implements ServiceProviderConnectio
 				allowSignIn, apiTokens.getAccessToken(), apiTokens.getSecret(), apiTokens.getRefreshToken());
 	}
 
+	// identity
+
+	@SuppressWarnings("rawtypes")
+	public boolean equals(Object o) {
+		if (!(o instanceof ServiceProviderConnectionImpl)) {
+			return false;
+		}
+		ServiceProviderConnectionImpl other = (ServiceProviderConnectionImpl) o;
+		if (id != null && other.id != null) {
+			return accountId.equals(other.accountId) && providerId.equals(other.providerId) && id.equals(other.id);
+		} else {
+			return this == other;
+		}
+	}
+	
+	public int hashCode() {
+		String providerAccountId = getProviderAccountId();
+		if (providerAccountId != null) {
+			return providerId.hashCode() + providerAccountId.hashCode() * 29;
+		} else {
+			return providerId.hashCode();
+		}
+	}
+	
 	// internal helpers
 
  	private ServiceProviderConnectionImpl(Long id, Serializable accountId, String providerId, ProviderProfile profile,

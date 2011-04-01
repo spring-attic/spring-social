@@ -31,9 +31,9 @@ public interface ServiceProviderConnectionRepository {
 	
 	List<ServiceProviderConnection<?>> findConnectionsToProviderAccount(String providerId, String providerAccountId);
 
-	ServiceProviderConnection<?> saveConnection(ServiceProviderConnection<?> connection);
+	<S> ServiceProviderConnection<S> saveConnection(ServiceProviderConnection<S> connection);
 
-	void removeConnections(Serializable accountId, String providerId);
+	void removeConnectionsToProvider(Serializable accountId, String providerId);
 
 	void removeConnection(Serializable accountId, Long connectionId);
 	
