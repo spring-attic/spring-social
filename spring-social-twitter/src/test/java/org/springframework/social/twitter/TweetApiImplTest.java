@@ -214,7 +214,7 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void addToFavorites() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/favorites/create/42"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/favorites/create/42.json"))
 			.andExpect(method(POST))
 			.andRespond(withResponse("{}", responseHeaders));
 		twitter.tweetApi().addToFavorites(42L);
@@ -284,7 +284,7 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 	
 	@Test
 	public void removeFromFavorites() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/favorites/destroy/71"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/favorites/destroy/71.json"))
 			.andExpect(method(POST))
 			.andRespond(withResponse("{}", responseHeaders));
 		twitter.tweetApi().removeFromFavorites(71L);

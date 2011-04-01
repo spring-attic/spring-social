@@ -34,19 +34,21 @@ public class FriendsApiTemplate implements FriendsApi {
 	private final RestTemplate restTemplate;
 	private final ResponseStatusCodeTranslator statusCodeTranslator;
 	private TwitterProfileResponseExtractor profileExtractor;
+	private final TwitterRequestApi requestApi;
 
-	public FriendsApiTemplate(RestTemplate restTemplate, ResponseStatusCodeTranslator statusCodeTranslator) {
+	public FriendsApiTemplate(TwitterRequestApi requestApi, RestTemplate restTemplate, ResponseStatusCodeTranslator statusCodeTranslator) {
+		this.requestApi = requestApi;
 		this.restTemplate = restTemplate;
 		this.statusCodeTranslator = statusCodeTranslator;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
 	}
 
 	public List<TwitterProfile> getFriends(long userId) {
-		return getFriendsOrFollowers(FRIENDS_STATUSES_URL + "?user_id={user_id}", userId);
+		return requestApi.fetchObjects("statuses/friends.json?user_id={user_id}", profileExtractor, userId);
 	}
 
 	public List<TwitterProfile> getFriends(String screenName) {
-		return getFriendsOrFollowers(FRIENDS_STATUSES_URL + "?screen_name={screen_name}", screenName);
+		return requestApi.fetchObjects("statuses/friends.json?screen_name={screenName}", profileExtractor, screenName);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -60,11 +62,11 @@ public class FriendsApiTemplate implements FriendsApi {
 	}
 
 	public List<TwitterProfile> getFollowers(long userId) {
-		return getFriendsOrFollowers(FOLLOWERS_STATUSES_URL + "?user_id={user_id}", userId);
+		return requestApi.fetchObjects("statuses/followers.json?user_id={user_id}", profileExtractor, userId);
 	}
 
 	public List<TwitterProfile> getFollowers(String screenName) {
-		return getFriendsOrFollowers(FOLLOWERS_STATUSES_URL + "?screen_name={screen_name}", screenName);
+		return requestApi.fetchObjects("statuses/followers.json?screen_name={screenName}", profileExtractor, screenName);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -107,11 +109,6 @@ public class FriendsApiTemplate implements FriendsApi {
 	public List<Long> getOutgoingFriendships() {
 		Map<String, Object> outgoingMap = restTemplate.getForObject(FRIENDSHIPS_OUTGOING_URL, Map.class);
 		return (List<Long>) outgoingMap.get("ids");
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<TwitterProfile> getFriendsOrFollowers(String url, Object... urlArgs) {
-		return profileExtractor.extractObjects((List<Map<String, Object>>) restTemplate.getForObject(url, List.class, urlArgs));
 	}
 
 	@SuppressWarnings("unchecked")

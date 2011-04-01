@@ -16,16 +16,11 @@
 package org.springframework.social.twitter;
 
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.social.ResponseStatusCodeTranslator;
-import org.springframework.social.SocialException;
 import org.springframework.social.twitter.support.extractors.DirectMessageResponseExtractor;
 import org.springframework.social.twitter.types.DirectMessage;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * Implementation of {@link DirectMessageApi}, providing a binding to Twitter's direct message-oriented REST resources.
@@ -33,62 +28,38 @@ import org.springframework.web.client.RestTemplate;
  */
 public class DirectMessageApiTemplate implements DirectMessageApi {
 
-	private final RestTemplate restTemplate;
-	private final ResponseStatusCodeTranslator statusCodeTranslator;
 	private DirectMessageResponseExtractor directMessageExtractor;
+	private final TwitterRequestApi requestApi;
 
-	public DirectMessageApiTemplate(RestTemplate restTemplate, ResponseStatusCodeTranslator statusCodeTranslator) {
-		this.restTemplate = restTemplate;
-		this.statusCodeTranslator = statusCodeTranslator;
+	public DirectMessageApiTemplate(TwitterRequestApi requestApi) {
+		this.requestApi = requestApi;
 		this.directMessageExtractor = new DirectMessageResponseExtractor();
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<DirectMessage> getDirectMessagesReceived() {
-		List<Map<String, Object>> response = restTemplate.getForObject(DIRECT_MESSAGES_RECEIVED_URL, List.class);
-		return directMessageExtractor.extractObjects((List<Map<String, Object>>) response);
+		return requestApi.fetchObjects("direct_messages.json", directMessageExtractor);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<DirectMessage> getDirectMessagesSent() {
-		List<Map<String, Object>> response = restTemplate.getForObject(DIRECT_MESSAGES_SENT_URL, List.class);
-		return directMessageExtractor.extractObjects((List<Map<String, Object>>) response);
+		return requestApi.fetchObjects("direct_messages/sent.json", directMessageExtractor);
 	}
 
 	public void sendDirectMessage(String toScreenName, String text) {
-		MultiValueMap<String, Object> dmParams = new LinkedMultiValueMap<String, Object>();
-		dmParams.add("screen_name", toScreenName);
-		sendDirectMessage(text, dmParams);
+		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
+		data.add("screen_name", String.valueOf(toScreenName));
+		data.add("text", text);
+	    requestApi.publish("direct_messages/new.json", data);
 	}
 
 	public void sendDirectMessage(long toUserId, String text) {
-		MultiValueMap<String, Object> dmParams = new LinkedMultiValueMap<String, Object>();
-		dmParams.add("user_id", String.valueOf(toUserId));
-		sendDirectMessage(text, dmParams);
+		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
+		data.add("user_id", String.valueOf(toUserId));
+		data.add("text", text);
+	    requestApi.publish("direct_messages/new.json", data);
 	}
 
 	public void deleteDirectMessage(long messageId) {
-		restTemplate.delete(DESTROY_DIRECT_MESSAGE_URL, messageId);
+		requestApi.delete("direct_messages/destroy/{dmId}.json", messageId);
 	}
-
-	@SuppressWarnings("rawtypes")
-	private void sendDirectMessage(String text, MultiValueMap<String, Object> dmParams) {
-		dmParams.add("text", text);
-		ResponseEntity<Map> response = restTemplate.postForEntity(SEND_DIRECT_MESSAGE_URL, dmParams, Map.class);
-		handleResponseErrors(response);
-	}
-
-	@SuppressWarnings("rawtypes")
-	private void handleResponseErrors(ResponseEntity<Map> response) {
-		SocialException exception = statusCodeTranslator.translate(response);
-		if (exception != null) {
-			throw exception;
-		}
-	}
-
-	static final String DIRECT_MESSAGES_RECEIVED_URL = TwitterTemplate.API_URL_BASE + "direct_messages.json";
-	static final String DIRECT_MESSAGES_SENT_URL = TwitterTemplate.API_URL_BASE + "direct_messages/sent.json";
-	static final String SEND_DIRECT_MESSAGE_URL = TwitterTemplate.API_URL_BASE + "direct_messages/new.json";
-	static final String DESTROY_DIRECT_MESSAGE_URL = TwitterTemplate.API_URL_BASE + "direct_messages/destroy/{dm_id}.json";
 
 }

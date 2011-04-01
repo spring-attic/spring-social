@@ -15,13 +15,8 @@
  */
 package org.springframework.social.twitter;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.social.ResponseStatusCodeTranslator;
-import org.springframework.social.SocialException;
 import org.springframework.social.twitter.support.extractors.TweetResponseExtractor;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
 import org.springframework.social.twitter.types.StatusDetails;
@@ -39,65 +34,61 @@ public class TweetApiTemplate implements TweetApi {
 
 	private final RestTemplate restTemplate;
 
-	private final ResponseStatusCodeTranslator statusCodeTranslator;
-
 	private TwitterProfileResponseExtractor profileExtractor;
 	
 	private TweetResponseExtractor tweetExtractor;
 
-	public TweetApiTemplate(RestTemplate restTemplate, ResponseStatusCodeTranslator statusCodeTranslator) {
+	private final TwitterRequestApi requestApi;
+
+	public TweetApiTemplate(TwitterRequestApi requestApi, RestTemplate restTemplate) {
+		this.requestApi = requestApi;
 		this.restTemplate = restTemplate;
-		this.statusCodeTranslator = statusCodeTranslator;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
 		this.tweetExtractor = new TweetResponseExtractor();
 	}
 
 	public List<Tweet> getPublicTimeline() {
-		return retrieveTimelineTweets(PUBLIC_TIMELINE_URL);
+		return requestApi.fetchObjects("statuses/public_timeline.json", tweetExtractor);
 	}
 
 	public List<Tweet> getHomeTimeline() {
-		return retrieveTimelineTweets(HOME_TIMELINE_URL);
+		return requestApi.fetchObjects("statuses/home_timeline.json", tweetExtractor);
 	}
 
 	public List<Tweet> getFriendsTimeline() {
-		return retrieveTimelineTweets(FRIENDS_TIMELINE_URL);
+		return requestApi.fetchObjects("statuses/friends_timeline.json", tweetExtractor);
 	}
 
 	public List<Tweet> getUserTimeline() {
-		return retrieveTimelineTweets(USER_TIMELINE_URL);
+		return requestApi.fetchObjects("statuses/user_timeline.json", tweetExtractor);
 	}
 
 	public List<Tweet> getUserTimeline(String screenName) {
-		return retrieveTimelineTweets(USER_TIMELINE_URL + "?screen_name={screenName}", screenName);
+		return requestApi.fetchObjects("statuses/user_timeline.json?screen_name={screenName}", tweetExtractor, screenName);
 	}
 
 	public List<Tweet> getUserTimeline(long userId) {
-		return retrieveTimelineTweets(USER_TIMELINE_URL + "?user_id={userId}", userId);
+		return requestApi.fetchObjects("statuses/user_timeline.json?user_id={userId}", tweetExtractor, userId);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Tweet> getMentions() {
-		List<Map<String, Object>> response = restTemplate.getForObject(MENTIONS_URL, List.class);
-		return tweetExtractor.extractObjects(response);
+		return requestApi.fetchObjects("statuses/mentions.json", tweetExtractor);
 	}
 
 	public List<Tweet> getRetweetedByMe() {
-		return retrieveTimelineTweets(RETWEETED_BY_ME_URL);
+		return requestApi.fetchObjects("statuses/retweeted_by_me.json", tweetExtractor);
 	}
 
 	public List<Tweet> getRetweetedToMe() {
-		return retrieveTimelineTweets(RETWEETED_TO_ME_URL);
+		return requestApi.fetchObjects("statuses/retweeted_to_me.json", tweetExtractor);
 	}
 
 	public List<Tweet> getRetweetsOfMe() {
-		return retrieveTimelineTweets(RETWEETS_OF_ME_URL);
+		return requestApi.fetchObjects("statuses/retweets_of_me.json", tweetExtractor);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Tweet getStatus(long tweetId) {
-		Map<String, Object> tweetMap = restTemplate.getForObject(SHOW_TWEET_URL, Map.class, tweetId);
-		return tweetExtractor.extractObject(tweetMap);
+		return requestApi.fetchObject("statuses/show/{tweet_id}.json", tweetExtractor, tweetId);
 	}
 
 	public void updateStatus(String message) {
@@ -108,30 +99,24 @@ public class TweetApiTemplate implements TweetApi {
 		MultiValueMap<String, Object> tweetParams = new LinkedMultiValueMap<String, Object>();
 		tweetParams.add("status", message);
 		tweetParams.setAll(details.toParameterMap());
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restTemplate.postForEntity(TWEET_URL, tweetParams, Map.class);
-		handleResponseErrors(response);
+		requestApi.publish("statuses/update.json", tweetParams);
 	}
 
 	public void deleteStatus(long tweetId) {
-		restTemplate.delete(DESTROY_TWEET_URL, tweetId);
+		requestApi.delete("statuses/destroy/{tweetId}.json", tweetId);
 	}
 
 	public void retweet(long tweetId) {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restTemplate.postForEntity(RETWEET_URL, "", Map.class,
-				Collections.singletonMap("tweet_id", Long.toString(tweetId)));
-		handleResponseErrors(response);
+		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
+		requestApi.publish("statuses/retweet/{tweetId}.json", data, tweetId);
 	}
 
 	public List<Tweet> getRetweets(long tweetId) {
-		return retrieveTimelineTweets(RETWEETS_URL, tweetId);
+		return requestApi.fetchObjects("statuses/retweets/{tweetId}.json", tweetExtractor, tweetId);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<TwitterProfile> getRetweetedBy(long tweetId) {
-		List<Map<String, Object>> response = restTemplate.getForObject(RETWEETED_BY_URL, List.class, tweetId);
-		return profileExtractor.extractObjects(response);
+		return requestApi.fetchObjects("statuses/{tweet_id}/retweeted_by.json", profileExtractor, tweetId);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -140,53 +125,18 @@ public class TweetApiTemplate implements TweetApi {
 	}
 
 	public List<Tweet> getFavorites() {
-		return retrieveTimelineTweets(FAVORITE_TIMELINE_URL);
+		return requestApi.fetchObjects("favorites.json", tweetExtractor);
 	}
 
 	public void addToFavorites(long tweetId) {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restTemplate.postForEntity(CREATE_FAVORITE_URL, "", Map.class,
-				Collections.singletonMap("tweet_id", Long.toString(tweetId)));
-		handleResponseErrors(response);
+		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
+		requestApi.publish("favorites/create/{tweetId}.json", data, tweetId);
 	}
 
 	public void removeFromFavorites(long tweetId) {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restTemplate.postForEntity(DESTROY_FAVORITE_URL, "", Map.class,
-				Collections.singletonMap("tweet_id", Long.toString(tweetId)));
-		handleResponseErrors(response);
+		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
+		requestApi.publish("favorites/destroy/{tweetId}.json", data, tweetId);
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<Tweet> retrieveTimelineTweets(String url, Object... urlArgs) {
-		List<Map<String, Object>> response = restTemplate.getForObject(url, List.class, urlArgs);
-		return tweetExtractor.extractObjects(response);
-	}
-
-	@SuppressWarnings("rawtypes")
-	private void handleResponseErrors(ResponseEntity<Map> response) {
-		SocialException exception = statusCodeTranslator.translate(response);
-		if (exception != null) {
-			throw exception;
-		}
-	}
-
-	static final String TWEET_URL = TwitterTemplate.API_URL_BASE + "statuses/update.json";
-	static final String RETWEET_URL = TwitterTemplate.API_URL_BASE + "statuses/retweet/{tweet_id}.json";
-	static final String MENTIONS_URL = TwitterTemplate.API_URL_BASE + "statuses/mentions.json";
-	static final String PUBLIC_TIMELINE_URL = TwitterTemplate.API_URL_BASE + "statuses/public_timeline.json";
-	static final String HOME_TIMELINE_URL = TwitterTemplate.API_URL_BASE + "statuses/home_timeline.json";
-	static final String FRIENDS_TIMELINE_URL = TwitterTemplate.API_URL_BASE + "statuses/friends_timeline.json";
-	static final String USER_TIMELINE_URL = TwitterTemplate.API_URL_BASE + "statuses/user_timeline.json";
-	static final String RETWEETED_BY_ME_URL = TwitterTemplate.API_URL_BASE + "statuses/retweeted_by_me.json";
-	static final String RETWEETED_TO_ME_URL = TwitterTemplate.API_URL_BASE + "statuses/retweeted_to_me.json";
-	static final String RETWEETS_OF_ME_URL = TwitterTemplate.API_URL_BASE + "statuses/retweets_of_me.json";
-	static final String SHOW_TWEET_URL = TwitterTemplate.API_URL_BASE + "statuses/show/{tweet_id}.json";
-	static final String DESTROY_TWEET_URL = TwitterTemplate.API_URL_BASE + "statuses/destroy/{tweet_id}.json";
-	static final String RETWEETS_URL = TwitterTemplate.API_URL_BASE + "statuses/retweets/{tweet_id}.json";
-	static final String RETWEETED_BY_URL = TwitterTemplate.API_URL_BASE + "statuses/{tweet_id}/retweeted_by.json";
-	static final String RETWEETED_BY_IDS_URL = TwitterTemplate.API_URL_BASE + "statuses/{tweet_id}/retweeted_by/ids.json";
-	static final String FAVORITE_TIMELINE_URL = TwitterTemplate.API_URL_BASE + "favorites.json";
-	static final String CREATE_FAVORITE_URL = TwitterTemplate.API_URL_BASE + "favorites/create/{tweet_id}";
-	static final String DESTROY_FAVORITE_URL = TwitterTemplate.API_URL_BASE + "favorites/destroy/{tweet_id}";
+	private static final String RETWEETED_BY_IDS_URL = TwitterTemplate.API_URL_BASE + "statuses/{tweet_id}/retweeted_by/ids.json";
 }

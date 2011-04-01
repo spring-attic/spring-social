@@ -16,7 +16,6 @@
 package org.springframework.social.twitter;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.social.twitter.support.extractors.TweetResponseExtractor;
@@ -41,8 +40,10 @@ public class ListsApiTemplate implements ListsApi {
 	private TwitterProfileResponseExtractor profileExtractor;
 	private TweetResponseExtractor tweetExtractor;
 	private UserListResponseExtractor userListExtractor;
+	private final TwitterRequestApi requestApi;
 	
-	public ListsApiTemplate(RestTemplate restTemplate, UserApi userApi) {
+	public ListsApiTemplate(TwitterRequestApi requestApi, RestTemplate restTemplate, UserApi userApi) {
+		this.requestApi = requestApi;
 		this.restTemplate = restTemplate;
 		this.userApi = userApi;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
@@ -51,109 +52,111 @@ public class ListsApiTemplate implements ListsApi {
 	}
 
 	public List<UserList> getLists(long userId) {
-		return getTwitterLists(USER_LISTS_URL, userId);
+		return requestApi.fetchObjects("{userId}/lists.json", "lists", userListExtractor, userId);
 	}
 
 	public List<UserList> getLists(String screenName) {
-		return getTwitterLists(USER_LISTS_URL, screenName);
+		return requestApi.fetchObjects("{screenName}/lists.json", "lists", userListExtractor, screenName);
 	}
 
 	public UserList getList(long userId, long listId) {
-		return getTwitterList(userId, listId);
+		return requestApi.fetchObject("{userId}/lists/{listId}.json", userListExtractor, userId, listId);
 	}
 
 	public UserList getList(String screenName, String listSlug) {
-		return getTwitterList(screenName, listSlug);
+		return requestApi.fetchObject("{screenName}/lists/{listSlug}.json", userListExtractor, screenName, listSlug);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Tweet> getListStatuses(long userId, long listId) {
-		return tweetExtractor.extractObjects(restTemplate.getForObject(LIST_STATUSES_URL, List.class, userId, listId));
+		return requestApi.fetchObjects("{userId}/lists/{listId}/statuses.json", tweetExtractor, userId, listId);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Tweet> getListStatuses(String screenName, String listSlug) {
-		return tweetExtractor.extractObjects(restTemplate.getForObject(LIST_STATUSES_URL, List.class, screenName, listSlug));
+		return requestApi.fetchObjects("{screenName}/lists/{screenName}/statuses.json", tweetExtractor, screenName, screenName);
 	}
 
-	public UserList createList(String name, String description, boolean isPublic) {
-		return saveList(USER_LISTS_URL, name, description, isPublic, userApi.getProfileId());
+	public UserList createList(String name, String description, boolean isPublic) {	
+		MultiValueMap<String, Object> request = buildListDataMap(name, description, isPublic);
+		return requestApi.publish("{userId}/lists.json", request, userListExtractor, userApi.getProfileId());
 	}
 
 	public UserList updateList(long listId, String name, String description, boolean isPublic) {
-		return saveList(USER_LIST_URL, name, description, isPublic, userApi.getProfileId(), listId);
+		MultiValueMap<String, Object> request = buildListDataMap(name, description, isPublic);
+		return requestApi.publish("{userId}/lists/{listId}.json", request, userListExtractor, (Long) userApi.getProfileId(), listId);
 	}
 
 	public void deleteList(long listId) {
-		deleteTwitterList(userApi.getProfileId(), listId);
+		requestApi.delete("{userId}/lists/{listId}.json", userApi.getProfileId(), listId);
 	}
 
 	public List<TwitterProfile> getListMembers(long userId, long listId) {
-		return getListConnections(LIST_MEMBERS_URL, userId, listId);
+		return requestApi.fetchObjects("{userId}/{listId}/members.json", "users", profileExtractor, userId, listId);
 	}
 	
 	public List<TwitterProfile> getListMembers(String screenName, String listSlug) {
-		return getListConnections(LIST_MEMBERS_URL, screenName, listSlug);
+		return requestApi.fetchObjects("{screenName}/{listSlug}/members.json", "users", profileExtractor, screenName, listSlug);
 	}
 
 	public UserList addToList(long listId, long... newMemberIds) {
-		return addMembersToList("user_id", ArrayUtils.join(newMemberIds), userApi.getProfileId(), listId);
+		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
+		request.set("user_id", ArrayUtils.join(newMemberIds));		
+		return requestApi.publish("{userId}/{listId}/members/create_all.json", request, userListExtractor, userApi.getProfileId(), listId);
 	}
 
 	public UserList addToList(String listSlug, String... newMemberScreenNames) {
-		return addMembersToList("screen_name", ArrayUtils.join(newMemberScreenNames), userApi.getProfileId(), listSlug);
+		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
+		request.set("screen_name", ArrayUtils.join(newMemberScreenNames));		
+		return requestApi.publish("{userId}/{listSlug}/members/create_all.json", request, userListExtractor, userApi.getProfileId(), listSlug);
 	}
 
 	public void removeFromList(long listId, long memberId) {
-		restTemplate.delete(LIST_MEMBERS_URL + "?id={memberId}", userApi.getProfileId(), listId, memberId);
+		requestApi.delete("{userId}/{listId}/members.json?id={memberId}", userApi.getProfileId(), listId, memberId);
 	}
 
 	public void removeFromList(String listSlug, String memberScreenName) {
-		restTemplate.delete(LIST_MEMBERS_URL + "?id={memberId}", userApi.getProfileId(), listSlug, memberScreenName);
+		requestApi.delete("{userId}/{listSlug}/members.json?id={memberScreenName}", userApi.getProfileId(), listSlug, memberScreenName);
 	}
 
 	public List<TwitterProfile> getListSubscribers(long userId, long listId) {
-		return getListConnections(LIST_SUBSCRIBERS_URL, userId, listId);
+		return requestApi.fetchObjects("{userId}/{listId}/subscribers.json", "users", profileExtractor, userId, listId);
 	}
 
 	public List<TwitterProfile> getListSubscribers(String screenName, String listSlug) {
-		return getListConnections(LIST_SUBSCRIBERS_URL, screenName, listSlug);
+		return requestApi.fetchObjects("{screenName}/{listSlug}/subscribers.json", "users", profileExtractor, screenName, listSlug);
 	}
 
-	@SuppressWarnings("unchecked")
 	public UserList subscribe(long ownerId, long listId) {
-		Map<String, Object> response  = restTemplate.postForObject(LIST_SUBSCRIBERS_URL, "", Map.class, ownerId, listId);
-		return userListExtractor.extractObject(response);
+		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
+		return requestApi.publish("{userId}/{listId}/subscribers.json", data, userListExtractor, ownerId, listId);
 	}
 
-	@SuppressWarnings("unchecked")
 	public UserList subscribe(String ownerScreenName, String listSlug) {
-		Map<String, Object> response  = restTemplate.postForObject(LIST_SUBSCRIBERS_URL, "", Map.class, ownerScreenName, listSlug);
-		return userListExtractor.extractObject(response);
+		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
+		return requestApi.publish("{screenName}/{listSlug}/subscribers.json", data, userListExtractor, ownerScreenName, listSlug);
 	}
 
 	public void unsubscribe(long ownerId, long listId) {
-		restTemplate.delete(LIST_SUBSCRIBERS_URL, ownerId, listId);
+		requestApi.delete("{userId}/{listId}/subscribers.json", ownerId, listId);
 	}
 
 	public void unsubscribe(String ownerScreenName, String listSlug) {
-		restTemplate.delete(LIST_SUBSCRIBERS_URL, ownerScreenName, listSlug);
+		requestApi.delete("{screenName}/{listSlug}/subscribers.json", ownerScreenName, listSlug);
 	}
 
 	public List<UserList> getMemberships(long userId) {
-		return getTwitterLists(MEMBERSHIPS_URL, userId);
+		return requestApi.fetchObjects("{screenName}/lists/memberships.json", "lists", userListExtractor, userId);
 	}
 
 	public List<UserList> getMemberships(String screenName) {
-		return getTwitterLists(MEMBERSHIPS_URL, screenName);
+		return requestApi.fetchObjects("{screenName}/lists/memberships.json", "lists", userListExtractor, screenName);
 	}
 
 	public List<UserList> getSubscriptions(long userId) {
-		return getTwitterLists(SUBSCRIPTIONS_URL, userId);
+		return requestApi.fetchObjects("{screenName}/lists/subscriptions.json", "lists", userListExtractor, userId);
 	}
 
 	public List<UserList> getSubscriptions(String screenName) {
-		return getTwitterLists(SUBSCRIPTIONS_URL, screenName);
+		return requestApi.fetchObjects("{screenName}/lists/subscriptions.json", "lists", userListExtractor, screenName);
 	}
 
 	public boolean isMember(long userId, long listId, long memberId) {
@@ -172,6 +175,8 @@ public class ListsApiTemplate implements ListsApi {
 		return checkListConnection(CHECK_SUBSCRIBER_URL, screenName, listSlug, subscriberScreenName);
 	}
 
+	// private helpers
+
 	private boolean checkListConnection(String url, Object... urlArgs) {
 		try {
 			restTemplate.getForObject(url, String.class, urlArgs);
@@ -184,59 +189,17 @@ public class ListsApiTemplate implements ListsApi {
 		}
 	}
 
-	// private helpers
 
-	@SuppressWarnings("unchecked")
-	private List<UserList> getTwitterLists(String url, Object... urlArgs) {
-		Map<String, Object> response = restTemplate.getForObject(url, Map.class, urlArgs);
-		List<Map<String, Object>> listsList = (List<Map<String, Object>>) response.get("lists");
-		return userListExtractor.extractObjects(listsList);
-	}
-
-	@SuppressWarnings("unchecked")
-	private UserList getTwitterList(Object... urlArgs) {
-		Map<String, Object> response = restTemplate.getForObject(USER_LIST_URL, Map.class, urlArgs);
-		return userListExtractor.extractObject(response);
-	}
-
-	@SuppressWarnings("unchecked")
-	private UserList saveList(String url, String name, String description, boolean isPublic, Object... urlArgs) {
-		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
+	private MultiValueMap<String, Object> buildListDataMap(String name,
+			String description, boolean isPublic) {
+		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
 		request.set("name", name);
 		request.set("description", description);
 		request.set("mode", isPublic ? "public" : "private");
-		Map<String, Object> response = restTemplate.postForObject(url, request, Map.class, urlArgs);
-		return userListExtractor.extractObject(response);
+		return request;
 	}
 
-	private void deleteTwitterList(Object... urlArgs) {
-		restTemplate.delete(USER_LIST_URL, urlArgs);
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<TwitterProfile> getListConnections(String relationshipUrl, Object... urlArgs) {
-		Map<String, Object> response = restTemplate.getForObject(relationshipUrl, Map.class, urlArgs);
-		List<Map<String, Object>> profileMapList = (List<Map<String, Object>>) response.get("users");
-		return profileExtractor.extractObjects(profileMapList);
-	}
-
-	@SuppressWarnings("unchecked")
-	private UserList addMembersToList(String fieldName, String joinedIds, Object... urlArgs) {
-		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
-		request.set(fieldName, joinedIds);
-		Map<String, Object> response = restTemplate.postForObject(CREATE_ALL_URL, request, Map.class, urlArgs);
-		return userListExtractor.extractObject(response);
-	}
-
-	static final String USER_LISTS_URL = TwitterTemplate.API_URL_BASE + "{user_id}/lists.json";
-	static final String USER_LIST_URL = TwitterTemplate.API_URL_BASE + "{user_id}/lists/{list_id}.json";
-	static final String LIST_STATUSES_URL = TwitterTemplate.API_URL_BASE + "{user_id}/lists/{list_id}/statuses.json";
-	static final String LIST_MEMBERS_URL = TwitterTemplate.API_URL_BASE + "{user_id}/{list_id}/members.json";
-	static final String LIST_SUBSCRIBERS_URL = TwitterTemplate.API_URL_BASE + "{user_id}/{list_id}/subscribers.json";
-	static final String CREATE_ALL_URL = TwitterTemplate.API_URL_BASE + "{user_id}/{list_id}/members/create_all.json";
 	static final String CHECK_MEMBER_URL = TwitterTemplate.API_URL_BASE + "{user_id}/{list_id}/members/{member_id}.json";
 	static final String CHECK_SUBSCRIBER_URL = TwitterTemplate.API_URL_BASE + "{user_id}/{list_id}/subscribers/{subscriber_id}.json";
-	static final String MEMBERSHIPS_URL = TwitterTemplate.API_URL_BASE + "{user_id}/lists/memberships.json";
-	static final String SUBSCRIPTIONS_URL = TwitterTemplate.API_URL_BASE + "{user_id}/lists/subscriptions.json";
 
 }

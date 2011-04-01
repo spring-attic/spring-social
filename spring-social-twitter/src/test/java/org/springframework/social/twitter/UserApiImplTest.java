@@ -39,7 +39,7 @@ public class UserApiImplTest extends AbstractTwitterApiTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/account/verify_credentials.json"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("verify-credentials.json", getClass()), responseHeaders));
-		assertEquals(7078572, twitter.userApi().getProfileId());
+		assertEquals(161064614, twitter.userApi().getProfileId());
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class UserApiImplTest extends AbstractTwitterApiTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/account/verify_credentials.json"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("verify-credentials.json", getClass()), responseHeaders));
-		assertEquals("habuma", twitter.userApi().getScreenName());
+		assertEquals("artnames", twitter.userApi().getScreenName());
 	}
 
 	@Test
@@ -56,18 +56,15 @@ public class UserApiImplTest extends AbstractTwitterApiTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/account/verify_credentials.json"))
 				.andExpect(method(GET))
 				.andRespond(withResponse(new ClassPathResource("verify-credentials.json", getClass()), responseHeaders));
-		mockServer.expect(requestTo("https://api.twitter.com/1/users/show.json?user_id=7078572"))
-				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("twitter-profile.json", getClass()), responseHeaders));
 
 		TwitterProfile profile = twitter.userApi().getUserProfile();
-		assertEquals(12345, profile.getId());
-		assertEquals("habuma", profile.getScreenName());
-		assertEquals("Craig Walls", profile.getName());
-		assertEquals("Spring Guy", profile.getDescription());
-		assertEquals("Plano, TX", profile.getLocation());
+		assertEquals(161064614, profile.getId());
+		assertEquals("artnames", profile.getScreenName());
+		assertEquals("Art Names", profile.getName());
+		assertEquals("I'm just a normal kinda guy", profile.getDescription());
+		assertEquals("Denton, TX", profile.getLocation());
 		assertEquals("http://www.springsource.org", profile.getUrl());
-		assertEquals("http://a3.twimg.com/profile_images/1205746571/me2_300.jpg", profile.getProfileImageUrl());
+		assertEquals("http://a1.twimg.com/sticky/default_profile_images/default_profile_4_normal.png", profile.getProfileImageUrl());
 	}
 	
 	@Test

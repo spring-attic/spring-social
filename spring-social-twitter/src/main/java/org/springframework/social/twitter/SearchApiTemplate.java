@@ -29,6 +29,8 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.social.twitter.support.extractors.SavedSearchResponseExtractor;
+import org.springframework.social.twitter.support.extractors.TrendResponseExtractor;
+import org.springframework.social.twitter.support.extractors.TrendsListResponseExtractor;
 import org.springframework.social.twitter.types.SavedSearch;
 import org.springframework.social.twitter.types.SearchResults;
 import org.springframework.social.twitter.types.Trend;
@@ -48,10 +50,18 @@ public class SearchApiTemplate implements SearchApi {
 
 	private final RestTemplate restTemplate;
 	private SavedSearchResponseExtractor savedSearchExtractor;
+	private TrendResponseExtractor trendExtractor;
+	private TrendsListResponseExtractor trendsListExtractor;
+	private TrendsListResponseExtractor weeklyTrendsListExtractor;
+	private final TwitterRequestApi requestApi;
 
-	public SearchApiTemplate(RestTemplate restTemplate) {
+	public SearchApiTemplate(TwitterRequestApi requestApi, RestTemplate restTemplate) {
+		this.requestApi = requestApi;
 		this.restTemplate = restTemplate;
 		this.savedSearchExtractor = new SavedSearchResponseExtractor();
+		this.trendExtractor = new TrendResponseExtractor();
+		this.trendsListExtractor = new TrendsListResponseExtractor(TrendsListResponseExtractor.LONG_TREND_DATE_FORMAT);
+		this.weeklyTrendsListExtractor = new TrendsListResponseExtractor(TrendsListResponseExtractor.SIMPLE_TREND_DATE_FORMAT);
 	}
 
 	public SearchResults search(String query) {
@@ -89,25 +99,22 @@ public class SearchApiTemplate implements SearchApi {
 		return buildSearchResults(resultsMap, tweets);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<SavedSearch> getSavedSearches() {
-		List<Map<String, Object>> response = restTemplate.getForObject(SAVED_SEARCHES_URL, List.class);
-		return savedSearchExtractor.extractObjects(response);
+		return requestApi.fetchObjects("saved_searches.json", savedSearchExtractor);
 	}
 
-	@SuppressWarnings("unchecked")
 	public SavedSearch getSavedSearch(long searchId) {
-		return savedSearchExtractor.extractObject(restTemplate.getForObject(SAVED_SEARCH_URL, Map.class, searchId));
+		return requestApi.fetchObject("saved_searches/show/{searchId}.json", savedSearchExtractor, searchId);
 	}
 
-	public void createSavedSearch(String query) {
-		MultiValueMap<String, String> request = new LinkedMultiValueMap<String, String>();
-		request.set("query", query);
-		restTemplate.postForObject(CREATE_SAVED_SEARCH_URL, request, String.class);
+	public void createSavedSearch(String query) {		
+		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
+		data.set("query", query);
+		requestApi.publish("saved_searches/create.json", data);
 	}
 
 	public void deleteSavedSearch(long searchId) {
-		restTemplate.delete(DELETE_SAVED_SEARCH_URL, searchId);
+		requestApi.delete("saved_searches/destroy/{searchId}.json", searchId);
 	}
 	
 	// Trends
@@ -116,12 +123,9 @@ public class SearchApiTemplate implements SearchApi {
 		return getCurrentTrends(false);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public Trends getCurrentTrends(boolean excludeHashtags) {
-		String url = makeTrendUrl(CURRENT_TRENDS_URL, excludeHashtags, null);
-		Map<String, Object> response = restTemplate.getForObject(url, Map.class);
-		List<Trends> trendsList = extractTrendsListFromResponse(response, longTrendDateFormat);
-		return trendsList.get(0);
+		String path = makeTrendPath("trends/current.json", excludeHashtags, null);
+		return requestApi.fetchObject(path, trendsListExtractor).get(0);
 	}
 
 	public List<Trends> getDailyTrends() {
@@ -132,11 +136,9 @@ public class SearchApiTemplate implements SearchApi {
 		return getDailyTrends(excludeHashtags, null);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Trends> getDailyTrends(boolean excludeHashtags, String startDate) {
-		String url = makeTrendUrl(DAILY_TRENDS_URL, excludeHashtags, startDate);
-		Map<String, Object> response = restTemplate.getForObject(url, Map.class);
-		return extractTrendsListFromResponse(response, longTrendDateFormat);
+		String path = makeTrendPath("trends/daily.json", excludeHashtags, startDate);
+		return requestApi.fetchObject(path, trendsListExtractor);
 	}
 	
 	public List<Trends> getWeeklyTrends() {
@@ -147,11 +149,9 @@ public class SearchApiTemplate implements SearchApi {
 		return getWeeklyTrends(excludeHashtags, null);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<Trends> getWeeklyTrends(boolean excludeHashtags, String startDate) {
-		String url = makeTrendUrl(WEEKLY_TRENDS_URL, excludeHashtags, startDate);
-		Map<String, Object> response = restTemplate.getForObject(url, Map.class);
-		return extractTrendsListFromResponse(response, simpleTrendDateFormat);
+		String path = makeTrendPath("trends/weekly.json", excludeHashtags, startDate);
+		return requestApi.fetchObject(path, weeklyTrendsListExtractor);
 	}
 
 	public Trends getLocalTrends(long whereOnEarthId) {
@@ -160,8 +160,9 @@ public class SearchApiTemplate implements SearchApi {
 
 	@SuppressWarnings("unchecked")
 	public Trends getLocalTrends(long whereOnEarthId, boolean excludeHashtags) {
-		String url = makeTrendUrl(LOCAL_TRENDS_URL, excludeHashtags, null);
+		String url = makeTrendPath(LOCAL_TRENDS_URL, excludeHashtags, null);
 		List<Map<String, Object>> response = restTemplate.getForObject(url, List.class, whereOnEarthId);
+		
 		List<Map<String, String>> trendMapList = (List<Map<String, String>>) response.get(0).get("trends");
 		List<Trend> trendList = new ArrayList<Trend>(trendMapList.size());
 		for (Map<String, String> trendMap : trendMapList) {
@@ -171,8 +172,8 @@ public class SearchApiTemplate implements SearchApi {
 		return new Trends(toDate(dateString, localTrendDateFormat), trendList);
 	}
 
-	private String makeTrendUrl(String baseUrl, boolean excludeHashtags, String startDate) {
-		String url = baseUrl + (excludeHashtags || startDate != null ? "?" : "");
+	private String makeTrendPath(String basePath, boolean excludeHashtags, String startDate) {
+		String url = basePath + (excludeHashtags || startDate != null ? "?" : "");
 		url += excludeHashtags ? "exclude=hashtags" : "";
 		url += excludeHashtags && startDate != null ? "&" : "";
 		url += startDate != null ? "date=" + startDate : "";
@@ -180,15 +181,12 @@ public class SearchApiTemplate implements SearchApi {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Trends> extractTrendsListFromResponse(Map<String, Object> response, DateFormat dateFormat) {
+	private List<Trends> extractTrendsListFromResponse(Map<String, Object> response, DateFormat dateFormat) {		
 		Map<String, Object> trendsMap = (Map<String, Object>) response.get("trends");
 		List<Trends> trendsList = new ArrayList<Trends>(trendsMap.keySet().size());
 		for (String trendDate : trendsMap.keySet()) {
-			List<Map<String, String>> trendsMapList = (List<Map<String, String>>) trendsMap.get(trendDate);
-			List<Trend> trendList = new ArrayList<Trend>(trendsMapList.size());
-			for (Map<String, String> trendMap : trendsMapList) {
-				trendList.add(new Trend(trendMap.get("name"), trendMap.get("query")));
-			}
+			List<Map<String, Object>> trendsMapList = (List<Map<String, Object>>) trendsMap.get(trendDate);
+			List<Trend> trendList = trendExtractor.extractObjects(trendsMapList);
 			trendsList.add(new Trends(toDate(trendDate, dateFormat), trendList));
 		}
 		Collections.sort(trendsList, new Comparator<Trends>() {
