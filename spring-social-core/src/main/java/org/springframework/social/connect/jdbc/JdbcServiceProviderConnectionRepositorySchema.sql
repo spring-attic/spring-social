@@ -1,5 +1,5 @@
 create table ServiceProviderConnection (id identity,
-					accountId varchar not null,
+					accountId bigint not null,
 					providerId varchar not null,
 					providerAccountId varchar,
 					profileName varchar,

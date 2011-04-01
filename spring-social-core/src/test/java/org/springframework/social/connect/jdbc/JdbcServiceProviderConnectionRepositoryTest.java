@@ -1,6 +1,7 @@
 package org.springframework.social.connect.jdbc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
@@ -95,12 +96,35 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 	}
 	
 	@Test
-	public void saveNewConnectionAccount() {
+	public void saveNewConnection() {
 		ServiceProviderConnection<FacebookApi> newConnection = connectionFactory.createConnection(new AccessGrant("123456789", "987654321")).assignAccountId(1L);
 		ServiceProviderConnection<FacebookApi> connection = connectionRepository.saveConnection(newConnection);
 		assertTrue(!newConnection.equals(connection));
 		assertTrue(newConnection.hashCode() != connection.hashCode());
 		assertEquals(connection, connection.assignAccountId(1L));
+		ServiceProviderConnection<FacebookApi> restoredConnection = connectionRepository.getConnection(connection.getAccountId(), connection.getId(), FacebookApi.class);
+		assertEquals(connection, restoredConnection);
+		assertConnection(restoredConnection);
+	}
+	
+	@Test
+	public void updateConnection() {
+		// TODO
+	}
+
+	private void assertConnection(ServiceProviderConnection<FacebookApi> connection) {
+		assertEquals("facebook", connection.getProviderId());
+		assertEquals("1", connection.getProviderAccountId());
+		assertEquals("Keith Donald", connection.getProfileName());
+		assertEquals("http://facebook.com/keith.donald", connection.getProfileUrl());
+		assertEquals("http://facebook.com/keith.donald/picture", connection.getProfilePictureUrl());
+		assertTrue(connection.allowSignIn());
+		assertTrue(connection.test());
+		FacebookApi api = connection.getServiceApi();
+		assertNotNull(api);
+		assertEquals("123456789", api.getAccessToken());
+		assertEquals("123456789", connection.createMemento().getAccessToken());
+		assertEquals("987654321", connection.createMemento().getRefreshToken());
 	}
 	
 	private static class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {

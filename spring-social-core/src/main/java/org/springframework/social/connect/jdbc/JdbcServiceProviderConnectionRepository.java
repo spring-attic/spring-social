@@ -80,7 +80,7 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 	}
 
 	public ServiceProviderConnection<?> findConnectionById(Serializable accountId, Long connectionId) {
-		return jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where id = ? and accountId", connectionMapper, connectionId, accountId);
+		return jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where id = ? and accountId = ?", connectionMapper, connectionId, accountId);
 	}
 
 	public List<ServiceProviderConnection<?>> findConnectionsToProviderAccount(String providerId, String providerAccountId) {
