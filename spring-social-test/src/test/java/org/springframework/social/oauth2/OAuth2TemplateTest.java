@@ -15,13 +15,10 @@
  */
 package org.springframework.social.oauth2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.social.test.client.RequestMatchers.body;
-import static org.springframework.social.test.client.RequestMatchers.method;
-import static org.springframework.social.test.client.RequestMatchers.requestTo;
-import static org.springframework.social.test.client.ResponseCreators.withResponse;
+import static org.junit.Assert.*;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.social.test.client.RequestMatchers.*;
+import static org.springframework.social.test.client.ResponseCreators.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -84,6 +81,15 @@ public class OAuth2TemplateTest {
 		assertEquals("8d0a88a5c4f1ae4937ad864cafa8e857", accessGrant.getAccessToken());
 		assertEquals("6b0411401bf8751e34f57feb29fb8e32", accessGrant.getRefreshToken());
 	}
+	
+	@Test
+	public void refreshAccessToken_jsonResponse() {
+		MediaType responseContentType = MediaType.APPLICATION_JSON;
+		String responseFile = "refreshToken.json";
+		AccessGrant accessGrant = refreshToken(responseContentType, responseFile);
+		assertEquals("8d0a88a5c4f1ae4937ad864cafa8e857", accessGrant.getAccessToken());
+		assertEquals("6b0411401bf8751e34f57feb29fb8e32", accessGrant.getRefreshToken());
+	}
 
 	private AccessGrant getAccessGrant(MediaType responseContentType, String responseFile) {
 		HttpHeaders responseHeaders = new HttpHeaders();
@@ -95,6 +101,19 @@ public class OAuth2TemplateTest {
 								+ "redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fcallback&grant_type=authorization_code"))
 				.andRespond(withResponse(new ClassPathResource(responseFile, getClass()), responseHeaders));
 		AccessGrant accessGrant = oAuth2Template.exchangeForAccess("code", "http://www.someclient.com/callback");
+		return accessGrant;
+	}
+
+	private AccessGrant refreshToken(MediaType responseContentType, String responseFile) {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(responseContentType);
+		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oAuth2Template.getRestTemplate());
+		mockServer.expect(requestTo(ACCESS_TOKEN_URL))
+				.andExpect(method(POST))
+				.andExpect(body("client_id=client_id&client_secret=client_secret&refresh_token=r3fr35h_t0k3n&"
+								+ "grant_type=refresh_token"))
+				.andRespond(withResponse(new ClassPathResource(responseFile, getClass()), responseHeaders));
+		AccessGrant accessGrant = oAuth2Template.refreshAccessToken("r3fr35h_t0k3n");
 		return accessGrant;
 	}
 

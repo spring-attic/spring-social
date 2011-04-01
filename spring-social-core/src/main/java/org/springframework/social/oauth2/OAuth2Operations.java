@@ -35,4 +35,8 @@ public interface OAuth2Operations {
 	 */
 	AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri);
 
+	/**
+	 * Refreshes the access token.
+	 */
+	AccessGrant refreshAccessToken(String refreshToken);
 }

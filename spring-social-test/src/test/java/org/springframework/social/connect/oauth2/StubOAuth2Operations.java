@@ -28,4 +28,7 @@ class StubOAuth2Operations implements OAuth2Operations {
 		return new AccessGrant("12345", "23456");
 	}
 	
+	public AccessGrant refreshAccessToken(String refreshToken) {
+		return new AccessGrant("12345", "23456");
+	}
 }
