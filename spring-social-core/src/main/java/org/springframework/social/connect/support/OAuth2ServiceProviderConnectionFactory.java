@@ -24,7 +24,8 @@ import org.springframework.social.oauth2.OAuth2ServiceProvider;
 
 public class OAuth2ServiceProviderConnectionFactory<S> extends ServiceProviderConnectionFactory<S> {
 	
-	public OAuth2ServiceProviderConnectionFactory(String providerId, OAuth2ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter, boolean allowSignIn) {
+	public OAuth2ServiceProviderConnectionFactory(String providerId, OAuth2ServiceProvider<S> serviceProvider,
+			ServiceApiAdapter<S> serviceApiAdapter, boolean allowSignIn) {
 		super(providerId, serviceProvider, serviceApiAdapter, allowSignIn);
 	}
 
@@ -33,8 +34,8 @@ public class OAuth2ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 	}
 	
 	public ServiceProviderConnection<S> createConnection(AccessGrant accessGrant) {
-		return new OAuth2ServiceProviderConnection<S>(getProviderId(), extractProviderUserId(accessGrant), getOAuth2ServiceProvider(), accessGrant.getAccessToken(),
-				accessGrant.getRefreshToken(), null, getServiceApiAdapter(), isAllowSignIn());		
+		return new OAuth2ServiceProviderConnection<S>(getProviderId(), extractProviderUserId(accessGrant), getOAuth2ServiceProvider(),
+				accessGrant.getAccessToken(), accessGrant.getRefreshToken(), null, getServiceApiAdapter(), isAllowSignIn());		
 	}
 	
 	protected String extractProviderUserId(AccessGrant accessGrant) {
