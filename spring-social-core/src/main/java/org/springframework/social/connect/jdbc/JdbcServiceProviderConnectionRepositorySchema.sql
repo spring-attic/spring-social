@@ -1,5 +1,4 @@
-create table ServiceProviderConnection (id identity,
-					localUserId bigint not null,
+create table ServiceProviderConnection (localUserId bigint not null,
 					providerId varchar not null,
 					providerUserId varchar,
 					profileName varchar,
@@ -7,9 +6,8 @@ create table ServiceProviderConnection (id identity,
 					profilePictureUrl varchar,
 					allowSignIn boolean,
 					accessToken varchar not null,					
-					secret varchar, 
+					secret varchar,
 					refreshToken varchar,
-					primary key (id));
-create unique index ConnectionKey on ServiceProviderConnection(localUserId, providerId, providerUserId);
-create index LocalUserProviderConnections on ServiceProviderConnection(localUserId, providerId);					
+					expireTime timestamp,
+					primary key (localUserId, providerId, providerUserId));
 create index ConnectionsToProviderUser on ServiceProviderConnection(providerId, providerUserId);
