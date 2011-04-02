@@ -53,6 +53,10 @@ public abstract class ServiceProviderConnectionFactory<S> {
 		return allowSignIn;
 	}
 
+	// subclassing hooks
+	
+	public abstract ServiceProviderConnection<S> createConnection(ServiceProviderConnectionRecord connectionRecord);
+	
 	// internal helpers
 	
 	@SuppressWarnings("unchecked")
@@ -62,5 +66,5 @@ public abstract class ServiceProviderConnectionFactory<S> {
 		}
 		return (ServiceApiAdapter<S>) NullServiceApiAdapter.INSTANCE;
 	}
-	
+
 }

@@ -17,6 +17,7 @@ package org.springframework.social.connect.support;
 
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionFactory;
+import org.springframework.social.connect.ServiceProviderConnectionRecord;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
@@ -38,6 +39,12 @@ public class OAuth1ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 		return new OAuth1ServiceProviderConnection<S>(getProviderId(), providerUserId, getOAuth1ServiceProvider(),
 				accessToken.getValue(), accessToken.getSecret(), getServiceApiAdapter(), isAllowSignIn());		
 	}
+	
+	public ServiceProviderConnection<S> createConnection(ServiceProviderConnectionRecord connectionRecord) {
+		return null;
+	}
+
+	// subclassing hooks
 	
 	protected String extractProviderUserId(OAuthToken accessToken) {
 		return null;
