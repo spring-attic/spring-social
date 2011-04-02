@@ -23,14 +23,18 @@ public interface ServiceProviderConnectionRepository {
 
 	List<ServiceProviderConnection<?>> findConnectionsToProvider(String providerId);
 
-	List<ServiceProviderConnection<?>> findConnectionsByKey(List<ServiceProviderConnectionKey> connectionKeys);
+	List<ServiceProviderConnection<?>> findConnectionsByKeys(List<ServiceProviderConnectionKey> connectionKeys);
 	
 	ServiceProviderConnection<?> findConnectionByKey(ServiceProviderConnectionKey connectionKey);
-	
+
+	<S> ServiceProviderConnection<S> findConnectionByServiceApi(Class<S> serviceApiType);
+
+	<S> ServiceProviderConnection<S> findConnectionByServiceApiForUser(Class<S> serviceApiType, String providerUserId);
+
 	<S> ServiceProviderConnection<S> saveConnection(ServiceProviderConnection<S> connection);
 
 	void removeConnectionsToProvider(String providerId);
 
-	void removeConnection(ServiceProviderConnectionKey connectionKey);
+	void removeConnectionWithKey(ServiceProviderConnectionKey connectionKey);
 	
 }
