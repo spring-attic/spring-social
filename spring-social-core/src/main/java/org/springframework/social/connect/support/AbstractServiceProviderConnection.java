@@ -59,7 +59,7 @@ abstract class AbstractServiceProviderConnection<S> implements ServiceProviderCo
 		return getProviderProfile().getPictureUrl();
 	}
 
-	public boolean allowSignIn() {
+	public boolean supportsSignIn() {
 		return key.getProviderUserId() != null && allowSignIn;
 	}
 
