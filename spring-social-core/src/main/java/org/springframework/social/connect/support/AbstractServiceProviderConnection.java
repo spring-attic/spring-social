@@ -17,6 +17,7 @@ package org.springframework.social.connect.support;
 
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
+import org.springframework.social.connect.ServiceProviderConnectionRecord;
 import org.springframework.social.connect.spi.ProviderProfile;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 
@@ -114,6 +115,10 @@ abstract class AbstractServiceProviderConnection<S> implements ServiceProviderCo
 		return serviceApi;
 	}
 
+	public ServiceProviderConnectionRecord createConnectionRecord() {
+		return null;
+	}
+	
 	// internal helpers
 
 	private ServiceProviderConnectionKey createKey(String providerId, String providerUserId, S serviceApi, ServiceApiAdapter<S> serviceApiAdapter) {

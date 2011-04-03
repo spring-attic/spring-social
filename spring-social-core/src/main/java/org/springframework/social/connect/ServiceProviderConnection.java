@@ -90,4 +90,6 @@ public interface ServiceProviderConnection<S> {
 	 */
 	public S getServiceApi();
 
+	ServiceProviderConnectionRecord createConnectionRecord();
+
 }

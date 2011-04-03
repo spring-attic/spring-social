@@ -26,6 +26,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.social.connect.ServiceProviderConnection;
+import org.springframework.social.connect.ServiceProviderConnectionFactory;
 import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.ServiceProviderConnectionRecord;
@@ -50,11 +51,11 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 	}
 	
 	public List<ServiceProviderConnection<?>> findConnections() {
-		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? order by providerId, id", connectionMapper, getLocalUserId());
+		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? order by providerId, rank", connectionMapper, getLocalUserId());
 	}
 
 	public List<ServiceProviderConnection<?>> findConnectionsToProvider(String providerId) {
-		return null;
+		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? order by rank", connectionMapper, getLocalUserId(), providerId);
 	}
 
 	public List<ServiceProviderConnection<?>> findConnectionsByKeys(List<ServiceProviderConnectionKey> connectionKeys) {
@@ -65,24 +66,34 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public <S> ServiceProviderConnection<S> findConnectionByServiceApi(Class<S> serviceApiType) {
-		return null;
+		return (ServiceProviderConnection<S>) jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and rank isnull or rank = 1", connectionMapper,
+				getLocalUserId(), getProviderId(serviceApiType));
 	}
 
+	@SuppressWarnings("unchecked")
 	public <S> ServiceProviderConnection<S> findConnectionByServiceApiForUser(Class<S> serviceApiType, String providerUserId) {
-		return null;
+		return (ServiceProviderConnection<S>) jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and providerUserId = ?", connectionMapper,
+				getLocalUserId(), getProviderId(serviceApiType), providerUserId);
 	}
 
 	public <S> ServiceProviderConnection<S> saveConnection(ServiceProviderConnection<S> connection) {
-		return null;
+		ServiceProviderConnectionRecord connectionRecord = connection.createConnectionRecord();
+		Serializable localUserId = getLocalUserId();
+		jdbcTemplate.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, allowSignIn, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, (select ifnull(max(rank) + 1, 1) from ServiceProviderConnection where localUserId = ? and providerId = ?), ?, ?, ?, ?, ?, ?, ?)",
+				localUserId, connectionRecord.getProviderId(), connectionRecord.getProviderUserId(), localUserId, connectionRecord.getProviderId(),
+				connectionRecord.getProfileName(), connectionRecord.getProfileUrl(), connectionRecord.getProfilePictureUrl(), connectionRecord.isAllowSignIn(),
+				connectionRecord.getAccessToken(), connectionRecord.getSecret(), connectionRecord.getRefreshToken(), connectionRecord.getExpireTime());
+		return connection;
 	}
 
 	public void removeConnectionsToProvider(String providerId) {
-		
+		jdbcTemplate.update("delete from ServiceProviderConnection where localUserId = ? and providerId = ?", getLocalUserId(), providerId);
 	}
 
 	public void removeConnectionWithKey(ServiceProviderConnectionKey connectionKey) {
-		
+		jdbcTemplate.update("delete from ServiceProviderConnection where localUserId = ? and providerId = ? and providerUserId = ?", getLocalUserId(), connectionKey.getProviderId(), connectionKey.getProviderUserId());		
 	}
 
 	// internal helpers
@@ -99,7 +110,8 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		
 		public ServiceProviderConnection<?> mapRow(ResultSet rs, int rowNum) throws SQLException {
 			ServiceProviderConnectionRecord connectionRecord = mapConnectionRecord(rs);
-			return connectionFactoryLocator.getConnectionFactory(connectionRecord.getProviderId()).createConnection(connectionRecord);
+			ServiceProviderConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(connectionRecord.getProviderId());
+			return connectionFactory.createConnection(connectionRecord);
 		}
 		
 		private ServiceProviderConnectionRecord mapConnectionRecord(ResultSet rs) throws SQLException {
@@ -113,5 +125,9 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		}
 		
 	}
-	
+
+	private <S> String getProviderId(Class<S> serviceApiType) {
+		return connectionFactoryLocator.getConnectionFactory(serviceApiType).getProviderId();
+	}
+
 }

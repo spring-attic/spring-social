@@ -1,6 +1,7 @@
 create table ServiceProviderConnection (localUserId bigint not null,
 					providerId varchar not null,
 					providerUserId varchar,
+					rank int not null,
 					profileName varchar,
 					profileUrl varchar,
 					profilePictureUrl varchar,
