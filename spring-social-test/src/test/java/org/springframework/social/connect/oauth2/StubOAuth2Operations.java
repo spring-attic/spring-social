@@ -25,10 +25,10 @@ class StubOAuth2Operations implements OAuth2Operations {
 	}
 
 	public AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri) {
-		return new AccessGrant("12345", 1209600, "23456", null, null);
+		return new AccessGrant("12345", "23456", 1303148118770L, null, null);
 	}
 	
 	public AccessGrant refreshAccess(String refreshToken) {
-		return new AccessGrant("12345", 1209600, "23456", null, null);
+		return new AccessGrant("12345", "23456", 1303148118770L, null, null);
 	}
 }

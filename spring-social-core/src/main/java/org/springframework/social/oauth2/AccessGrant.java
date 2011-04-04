@@ -32,20 +32,20 @@ public final class AccessGrant implements Serializable {
 	
 	private final Long expireTime;
 
-	private final Map<String, Object> additionalParameters;
-
 	private final String scope;
+
+	private final Map<String, Object> additionalParameters;
 
 	public AccessGrant(String accessToken) {
 		this(accessToken, null, null, null, Collections.<String, Object>emptyMap());
 	}
 	
-	public AccessGrant(String accessToken, Integer expiresIn, String refreshToken, String scope, Map<String, Object> additionalParameters) {
+	public AccessGrant(String accessToken, String refreshToken, Long expireTime, String scope, Map<String, Object> additionalParameters) {
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
+		this.expireTime = expireTime;
 		this.scope = scope;
 		this.additionalParameters = additionalParameters;
-		this.expireTime = expiresIn != null ? System.currentTimeMillis() + expiresIn * 1000 : null;
 	}
 
 	/**
@@ -56,6 +56,13 @@ public final class AccessGrant implements Serializable {
 	}
 
 	/**
+	 * The refresh token that can be used to renew the access token.
+	 */
+	public String getRefreshToken() {
+		return refreshToken;
+	}
+
+	/**
 	 * The time (in milliseconds since Jan 1, 1970 UTC) when this access grant will expire.
 	 * May be null if the token is non-expiring.
 	 */
@@ -63,13 +70,6 @@ public final class AccessGrant implements Serializable {
 		return expireTime;
 	}
 	
-	/**
-	 * The refresh token that can be used to renew the access token.
-	 */
-	public String getRefreshToken() {
-		return refreshToken;
-	}
-
 	/**
 	 * The scope of the access grant.
 	 * May be null if the provider doesn't return the granted scope in the response.
