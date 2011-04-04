@@ -67,10 +67,12 @@ public class OAuth2Template implements OAuth2Operations {
 		requestParameters.set("grant_type", "authorization_code");
 		@SuppressWarnings("unchecked")
 		Map<String, ?> result = restTemplate.postForObject(accessTokenUrl, requestParameters, Map.class);
-		return new AccessGrant(valueOf(result.get("access_token")), valueOf(result.get("refresh_token")));
+		return new AccessGrant(valueOf(result.get("access_token")),
+				(Integer) result.get("expires_in"),
+				valueOf(result.get("refresh_token")));
 	}
 	
-	public AccessGrant refreshAccessToken(String refreshToken) {
+	public AccessGrant refreshAccess(String refreshToken) {
 		MultiValueMap<String, String> requestParameters = new LinkedMultiValueMap<String, String>();
 		requestParameters.set("client_id", clientId);
 		requestParameters.set("client_secret", clientSecret);
@@ -78,7 +80,9 @@ public class OAuth2Template implements OAuth2Operations {
 		requestParameters.set("grant_type", "refresh_token");
 		@SuppressWarnings("unchecked")
 		Map<String, ?> result = restTemplate.postForObject(accessTokenUrl, requestParameters, Map.class);
-		return new AccessGrant(valueOf(result.get("access_token")), valueOf(result.get("refresh_token")));
+		return new AccessGrant(valueOf(result.get("access_token")), 
+				(Integer) result.get("expires_in"),
+				valueOf(result.get("refresh_token")));
 	}
 
 	// testing hooks

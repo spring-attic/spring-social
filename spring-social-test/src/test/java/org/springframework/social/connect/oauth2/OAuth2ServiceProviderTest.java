@@ -15,8 +15,7 @@
  */
 package org.springframework.social.connect.oauth2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -65,7 +64,7 @@ public class OAuth2ServiceProviderTest {
 	@Test
 	public void equals() {
 		Long accountId = 1L;
-		AccessGrant accessGrant = new AccessGrant("12345", "23456");
+		AccessGrant accessGrant = new AccessGrant("12345", 1209600, "23456");
 		ServiceProviderConnection<TestApi> connection = serviceProvider.connect(accountId, accessGrant);
 		List<ServiceProviderConnection<TestApi>> connections = serviceProvider.getConnections(accountId);		
 		ServiceProviderConnection<TestApi> sameConnection = connections.get(0);
@@ -75,7 +74,7 @@ public class OAuth2ServiceProviderTest {
 	@Test
 	public void disconnect() {
 		Long accountId = 1L;
-		AccessGrant accessGrant = new AccessGrant("12345", "23456");
+		AccessGrant accessGrant = new AccessGrant("12345", 1209600, "23456");
 		ServiceProviderConnection<TestApi> connection = serviceProvider.connect(accountId, accessGrant);	
 		connection.disconnect();
 		assertEquals(false, serviceProvider.isConnected(accountId));
@@ -99,7 +98,7 @@ public class OAuth2ServiceProviderTest {
 	@Test
 	public void duplicateConnection() {
 		Long accountId = 1L;
-		AccessGrant accessGrant = new AccessGrant("12345", "23456");
+		AccessGrant accessGrant = new AccessGrant("12345", 1209600, "23456");
 		serviceProvider.connect(accountId, accessGrant);
 		try {
 			serviceProvider.connect(accountId, accessGrant);

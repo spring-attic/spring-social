@@ -80,6 +80,21 @@ public class OAuth2TemplateTest {
 		AccessGrant accessGrant = getAccessGrant(responseContentType, responseFile);
 		assertEquals("8d0a88a5c4f1ae4937ad864cafa8e857", accessGrant.getAccessToken());
 		assertEquals("6b0411401bf8751e34f57feb29fb8e32", accessGrant.getRefreshToken());
+		long approximateExpirationTime = System.currentTimeMillis() + 40735000;
+		long actualExpirationTime = (long) accessGrant.getExpireTime();
+		//allow for 1 second of wiggle room on expiration time.
+		assertTrue(approximateExpirationTime - actualExpirationTime < 1000);
+	}
+
+	@Test
+	public void exchangeForAccess_jsonResponse_noExpiresIn() {
+		// The OAuth 2 spec draft specifies JSON as the response content type. Gowalla and Github return the access token this way.
+		MediaType responseContentType = MediaType.APPLICATION_JSON;
+		String responseFile = "accessToken_noExpiresIn.json";
+		AccessGrant accessGrant = getAccessGrant(responseContentType, responseFile);
+		assertEquals("8d0a88a5c4f1ae4937ad864cafa8e857", accessGrant.getAccessToken());
+		assertEquals("6b0411401bf8751e34f57feb29fb8e32", accessGrant.getRefreshToken());
+		assertNull(accessGrant.getExpireTime());
 	}
 	
 	@Test
@@ -89,8 +104,22 @@ public class OAuth2TemplateTest {
 		AccessGrant accessGrant = refreshToken(responseContentType, responseFile);
 		assertEquals("8d0a88a5c4f1ae4937ad864cafa8e857", accessGrant.getAccessToken());
 		assertEquals("6b0411401bf8751e34f57feb29fb8e32", accessGrant.getRefreshToken());
+		long approximateExpirationTime = System.currentTimeMillis() + 40735000;
+		long actualExpirationTime = (long) accessGrant.getExpireTime();
+		//allow for 1 second of wiggle room on expiration time.
+		assertTrue(approximateExpirationTime - actualExpirationTime < 1000);
 	}
 
+	@Test
+	public void refreshAccessToken_jsonResponse_noExpiresIn() {
+		MediaType responseContentType = MediaType.APPLICATION_JSON;
+		String responseFile = "refreshToken_noExpiresIn.json";
+		AccessGrant accessGrant = refreshToken(responseContentType, responseFile);
+		assertEquals("8d0a88a5c4f1ae4937ad864cafa8e857", accessGrant.getAccessToken());
+		assertEquals("6b0411401bf8751e34f57feb29fb8e32", accessGrant.getRefreshToken());
+		assertNull(accessGrant.getExpireTime());
+	}
+	
 	private AccessGrant getAccessGrant(MediaType responseContentType, String responseFile) {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(responseContentType);
@@ -113,7 +142,7 @@ public class OAuth2TemplateTest {
 				.andExpect(body("client_id=client_id&client_secret=client_secret&refresh_token=r3fr35h_t0k3n&"
 								+ "grant_type=refresh_token"))
 				.andRespond(withResponse(new ClassPathResource(responseFile, getClass()), responseHeaders));
-		AccessGrant accessGrant = oAuth2Template.refreshAccessToken("r3fr35h_t0k3n");
+		AccessGrant accessGrant = oAuth2Template.refreshAccess("r3fr35h_t0k3n");
 		return accessGrant;
 	}
 

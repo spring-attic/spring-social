@@ -27,14 +27,17 @@ public final class AccessGrant implements Serializable {
 	private final String accessToken;
 	
 	private final String refreshToken;
+	
+	private final Long expireTime;
 
 	public AccessGrant(String accessToken) {
-		this(accessToken, null);
+		this(accessToken, null, null);
 	}
 	
-	public AccessGrant(String accessToken, String refreshToken) {
+	public AccessGrant(String accessToken, Integer expiresIn, String refreshToken) {
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
+		this.expireTime = expiresIn != null ? System.currentTimeMillis() + expiresIn * 1000 : null;
 	}
 
 	/**
@@ -44,6 +47,14 @@ public final class AccessGrant implements Serializable {
 		return accessToken;
 	}
 
+	/**
+	 * The time (in milliseconds since Jan 1, 1970 UTC) when this access grant will expire.
+	 * May be null if the token is non-expiring.
+	 */
+	public Long getExpireTime() {
+		return expireTime;
+	}
+	
 	/**
 	 * The refresh token that can be used to renew the access token.
 	 */
