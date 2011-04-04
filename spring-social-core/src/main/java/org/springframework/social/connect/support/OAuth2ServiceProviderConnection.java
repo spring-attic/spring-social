@@ -17,10 +17,13 @@ package org.springframework.social.connect.support;
 
 import org.springframework.social.connect.ServiceProviderConnectionMemento;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
+import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
 
 public class OAuth2ServiceProviderConnection<S> extends AbstractServiceProviderConnection<S> {
 
+	private OAuth2ServiceProvider<S> serviceProvider;
+	
 	private String accessToken;
 	
 	private String refreshToken;
@@ -30,25 +33,37 @@ public class OAuth2ServiceProviderConnection<S> extends AbstractServiceProviderC
 	public OAuth2ServiceProviderConnection(String providerId, String providerUserId, OAuth2ServiceProvider<S> serviceProvider,
 			String accessToken, String refreshToken, Long expiresTime, ServiceApiAdapter<S> serviceApiAdapter) {
 		super(providerId, providerUserId, serviceProvider.getServiceApi(accessToken), serviceApiAdapter);
-		init(accessToken, refreshToken, expireTime);
+		init(serviceProvider, accessToken, refreshToken, expireTime);
 	}
 
 	public OAuth2ServiceProviderConnection(ServiceProviderConnectionMemento memento, OAuth2ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
 		super(memento, serviceProvider.getServiceApi(memento.getAccessToken()), serviceApiAdapter);
-		init(memento.getAccessToken(), memento.getRefreshToken(), memento.getExpireTime());		
+		init(serviceProvider, memento.getAccessToken(), memento.getRefreshToken(), memento.getExpireTime());		
 	}
 	
 	// subclassing hooks
+
+	@Override
+	protected S doRefresh() {
+		AccessGrant accessGrant = serviceProvider.getOAuthOperations().refreshAccessToken(refreshToken);
+		setAccessFields(accessGrant.getAccessToken(), accessGrant.getRefreshToken(), /* accessGrant.getExpireTime() */ null);
+		return serviceProvider.getServiceApi(accessToken);
+	}
 	
 	@Override
 	public ServiceProviderConnectionMemento createMemento() {
 		return new ServiceProviderConnectionMemento(getKey().getProviderId(), getKey().getProviderUserId(),
-				getProfileName(), getProfileUrl(), getProfilePictureUrl(), accessToken, null, refreshToken, expireTime);
+				getProfileName(), getProfileUrl(), getProfilePictureUrl(), accessToken, /* accessGrant.getExpireTime() */ null, refreshToken, expireTime);
 	}
 
 	// internal helpers
+
+	private void init(OAuth2ServiceProvider<S> serviceProvider, String accessToken, String refreshToken, Long expireTime) {
+		this.serviceProvider = serviceProvider;
+		setAccessFields(accessToken, refreshToken, expireTime);
+	}
 	
-	private void init(String accessToken, String refreshToken, Long expireTime) {
+	private void setAccessFields(String accessToken, String refreshToken, Long expireTime) {
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
 		this.expireTime = expireTime;
