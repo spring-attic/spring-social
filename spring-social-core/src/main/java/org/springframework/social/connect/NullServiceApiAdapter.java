@@ -15,7 +15,6 @@
  */
 package org.springframework.social.connect;
 
-import org.springframework.social.connect.spi.ProviderProfile;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 
 final class NullServiceApiAdapter implements ServiceApiAdapter<Object> {
@@ -26,7 +25,7 @@ final class NullServiceApiAdapter implements ServiceApiAdapter<Object> {
 		return true;
 	}
 
-	public ProviderProfile getProfile(Object serviceApi) {
+	public ServiceProviderUser getUser(Object serviceApi) {
 		return EMPTY_PROFILE;
 	}
 
@@ -35,5 +34,5 @@ final class NullServiceApiAdapter implements ServiceApiAdapter<Object> {
 
 	private NullServiceApiAdapter() {}
 	
-	private static final ProviderProfile EMPTY_PROFILE = new ProviderProfile(null, null, null, null);
+	private static final ServiceProviderUser EMPTY_PROFILE = new ServiceProviderUser(null, null, null, null);
 }

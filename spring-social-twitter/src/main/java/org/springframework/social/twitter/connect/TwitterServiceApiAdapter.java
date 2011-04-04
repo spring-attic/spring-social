@@ -15,7 +15,7 @@
  */
 package org.springframework.social.twitter.connect;
 
-import org.springframework.social.connect.spi.ProviderProfile;
+import org.springframework.social.connect.ServiceProviderUser;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.twitter.TwitterApi;
 import org.springframework.social.twitter.TwitterProfile;
@@ -27,9 +27,9 @@ public class TwitterServiceApiAdapter implements ServiceApiAdapter<TwitterApi> {
 		return true;
 	}
 
-	public ProviderProfile getProfile(TwitterApi serviceApi) {
+	public ServiceProviderUser getUser(TwitterApi serviceApi) {
 		TwitterProfile profile = serviceApi.getUserProfile();
-		return new ProviderProfile(Long.toString(profile.getId()), profile.getScreenName(), profile.getProfileUrl(), profile.getProfileImageUrl());
+		return new ServiceProviderUser(Long.toString(profile.getId()), profile.getScreenName(), profile.getProfileUrl(), profile.getProfileImageUrl());
 	}
 
 	public void updateStatus(TwitterApi serviceApi, String message) {

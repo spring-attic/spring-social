@@ -15,11 +15,13 @@
  */
 package org.springframework.social.connect.spi;
 
+import org.springframework.social.connect.ServiceProviderUser;
+
 public interface ServiceApiAdapter<S> {
 	
 	boolean test(S serviceApi);
 	
-	ProviderProfile getProfile(S serviceApi);
+	ServiceProviderUser getUser(S serviceApi);
 	
 	void updateStatus(S serviceApi, String message);
 	

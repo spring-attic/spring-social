@@ -21,7 +21,7 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
-import org.springframework.social.connect.spi.ProviderProfile;
+import org.springframework.social.connect.ServiceProviderUser;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.connect.support.LocalUserIdLocator;
 import org.springframework.social.connect.support.MapServiceProviderConnectionFactoryRegistry;
@@ -102,7 +102,7 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 
 	@Test
 	public void addConnection() {
-		ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", "987654321"));
+		ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", 300, "987654321", null, null));
 		connectionRepository.addConnection(connection);
 		ServiceProviderConnection<FacebookApi> restoredConnection = connectionRepository.findConnectionByServiceApi(FacebookApi.class);
 		assertEquals(connection, restoredConnection);	
@@ -112,9 +112,10 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 	private void assertConnection(ServiceProviderConnection<FacebookApi> connection) {
 		assertEquals("facebook", connection.getKey().getProviderId());
 		assertEquals("1", connection.getKey().getProviderUserId());
-		assertEquals("Keith Donald", connection.getProfileName());
-		assertEquals("http://facebook.com/keith.donald", connection.getProfileUrl());
-		assertEquals("http://facebook.com/keith.donald/picture", connection.getProfilePictureUrl());
+		ServiceProviderUser user = connection.getUser();
+		assertEquals("Keith Donald", user.getProfileName());
+		assertEquals("http://facebook.com/keith.donald", user.getProfileUrl());
+		assertEquals("http://facebook.com/keith.donald/picture", user.getProfilePictureUrl());
 		assertTrue(connection.test());
 		FacebookApi api = connection.getServiceApi();
 		assertNotNull(api);
@@ -167,8 +168,8 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 			return true;
 		}
 
-		public ProviderProfile getProfile(FacebookApi serviceApi) {
-			return new ProviderProfile(accountId, name, profileUrl, profilePicture);
+		public ServiceProviderUser getUser(FacebookApi serviceApi) {
+			return new ServiceProviderUser(accountId, name, profileUrl, profilePicture);
 		}
 
 		public void updateStatus(FacebookApi serviceApi, String message) {

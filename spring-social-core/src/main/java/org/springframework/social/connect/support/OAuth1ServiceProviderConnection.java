@@ -16,6 +16,7 @@
 package org.springframework.social.connect.support;
 
 import org.springframework.social.connect.ServiceProviderConnectionMemento;
+import org.springframework.social.connect.ServiceProviderUser;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
 
@@ -39,9 +40,10 @@ public class OAuth1ServiceProviderConnection<S> extends AbstractServiceProviderC
 	// subclassing hooks
 	
 	@Override
-	public ServiceProviderConnectionMemento createMemento() {
+	protected ServiceProviderConnectionMemento doCreateMemento() {
+		ServiceProviderUser user = getUser();
 		return new ServiceProviderConnectionMemento(getKey().getProviderId(), getKey().getProviderUserId(),
-				getProfileName(), getProfileUrl(), getProfilePictureUrl(), accessToken, secret, null, null);
+				user.getProfileName(), user.getProfileName(), user.getProfilePictureUrl(), accessToken, secret, null, null);
 	}
 
 	// internal helpers

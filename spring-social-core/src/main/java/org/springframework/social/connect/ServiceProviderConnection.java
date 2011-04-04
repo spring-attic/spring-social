@@ -28,25 +28,9 @@ public interface ServiceProviderConnection<S> {
 	ServiceProviderConnectionKey getKey();
 	
 	/**
-	 * The display name for the user's profile on the provider's system.
-	 * May be null if this information is not public or not provided.
-	 * This information may change if the user updates his or her profile.
+	 * Information about the user on the provider's system.
 	 */
-	String getProfileName();
-
-	/**
-	 * The public URL of the user's profile at the provider's site.
-	 * May be null if this information is not public or not provided.
-	 * This information may change if the user updates his or her profile.
-	 */
-	String getProfileUrl();
-
-	/**
-	 * A link to the user's profile picture at the provider's site.
-	 * May be null if this information is not public or not provided.
-	 * This information may change if the user updates his or her profile.
-	 */
-	String getProfilePictureUrl();
+	ServiceProviderUser getUser();
 	
 	/**
 	 * Test this connection.

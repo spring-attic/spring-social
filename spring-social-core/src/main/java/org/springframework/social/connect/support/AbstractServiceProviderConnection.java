@@ -18,20 +18,16 @@ package org.springframework.social.connect.support;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.ServiceProviderConnectionMemento;
-import org.springframework.social.connect.spi.ProviderProfile;
+import org.springframework.social.connect.ServiceProviderUser;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 
 abstract class AbstractServiceProviderConnection<S> implements ServiceProviderConnection<S> {
 
 	private final ServiceProviderConnectionKey key;
 	
-	private ProviderProfile profile;
+	private ServiceProviderUser user;
 
-	private final Object profileMonitor = new Object();
-	
 	private S serviceApi;
-	
-	private final Object serviceApiMonitor = new Object();
 	
 	private final ServiceApiAdapter<S> serviceApiAdapter;
 	
@@ -43,57 +39,60 @@ abstract class AbstractServiceProviderConnection<S> implements ServiceProviderCo
  	 	
 	public AbstractServiceProviderConnection(ServiceProviderConnectionMemento memento, S serviceApi, ServiceApiAdapter<S> serviceApiAdapter) {
 		this.key = new ServiceProviderConnectionKey(memento.getProviderId(), memento.getProviderUserId());
-		this.profile = new ProviderProfile(memento.getProviderUserId(), memento.getProfileName(), memento.getProfileUrl(), memento.getProfilePictureUrl());
+		this.user = new ServiceProviderUser(memento.getProviderUserId(), memento.getProfileName(), memento.getProfileUrl(), memento.getProfilePictureUrl());
 		this.serviceApi = serviceApi;
 		this.serviceApiAdapter = serviceApiAdapter;
 	}
 
-	public ServiceProviderConnectionKey getKey() {
+	public final ServiceProviderConnectionKey getKey() {
 		return key;
 	}
 
-	public String getProfileName() {
-		return getProviderProfile().getName();
+	public ServiceProviderUser getUser() {
+		synchronized (monitor) {
+			if (user == null) {
+				user = fetchUser();
+			}			
+			return user;
+		}
 	}
 
-	public String getProfileUrl() {
-		return getProviderProfile().getUrl();
-	}
-
-	public String getProfilePictureUrl() {
-		return getProviderProfile().getPictureUrl();
-	}
-
-	public boolean test() {
+	public final boolean test() {
 		return serviceApiAdapter.test(serviceApi);
 	}
 	
-	public boolean hasExpired() {
+	public final boolean hasExpired() {
 		return false;
 	}
 
-	public void refresh() {
-		synchronized (serviceApiMonitor) {
+	public final void refresh() {
+		synchronized (monitor) {
 			this.serviceApi = doRefresh();
 		}
 	}
 
-	public void updateStatus(String message) {
+	public final void updateStatus(String message) {
 		serviceApiAdapter.updateStatus(serviceApi, message);
 	}
 
-	public void sync() {
-		synchronized (profileMonitor) {
-			profile = fetchProfile();
+	public final void sync() {
+		synchronized (monitor) {
+			user = fetchUser();
 		}
 	}
 
-	public S getServiceApi() {
-		synchronized (serviceApiMonitor) {
+	public final S getServiceApi() {
+		synchronized (monitor) {
 			return serviceApi;
 		}
 	}
 
+	public final ServiceProviderConnectionMemento createMemento() {
+		synchronized (monitor) {
+			return doCreateMemento();
+		}
+	}
+	
 	// identity
 
 	@SuppressWarnings("rawtypes")
@@ -114,30 +113,23 @@ abstract class AbstractServiceProviderConnection<S> implements ServiceProviderCo
 	protected S doRefresh() {
 		return serviceApi;
 	}
-
-	public abstract ServiceProviderConnectionMemento createMemento();
 	
+	protected abstract ServiceProviderConnectionMemento doCreateMemento();
+
 	// internal helpers
 
 	private ServiceProviderConnectionKey createKey(String providerId, String providerUserId, S serviceApi, ServiceApiAdapter<S> serviceApiAdapter) {
 		if (providerUserId == null) {
-			profile = serviceApiAdapter.getProfile(serviceApi);
-			providerUserId = profile.getId();
+			user = serviceApiAdapter.getUser(serviceApi);
+			providerUserId = user.getId();
 		}			
 		return new ServiceProviderConnectionKey(providerId, providerUserId);
 	}
 
-	private ProviderProfile getProviderProfile() {
-		synchronized (profileMonitor) {
-			if (profile == null) {
-				profile = fetchProfile();
-			}
-			return profile;
-		}
-	}
-	
-	private ProviderProfile fetchProfile() {
-		return serviceApiAdapter.getProfile(serviceApi);
+	private final Object monitor = new Object();
+		
+	private ServiceProviderUser fetchUser() {
+		return serviceApiAdapter.getUser(serviceApi);
 	}
 
 }
