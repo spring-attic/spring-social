@@ -101,9 +101,9 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 	}
 
 	@Test
-	public void saveNewConnection() {
+	public void addConnection() {
 		ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", "987654321"));
-		connectionRepository.insertConnection(connection);
+		connectionRepository.addConnection(connection);
 		ServiceProviderConnection<FacebookApi> restoredConnection = connectionRepository.findConnectionByServiceApi(FacebookApi.class);
 		assertEquals(connection, restoredConnection);	
 		assertConnection(restoredConnection);
@@ -127,10 +127,6 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 
 		public FacebookServiceProviderConnectionFactory() {
 			super("facebook", new FacebookServiceProvider(), new FacebookServiceApiAdapter());
-		}
-		
-		public FacebookServiceApiAdapter getFacebookServiceApiAdapter() {
-			return (FacebookServiceApiAdapter) getServiceApiAdapter();
 		}
 		
 	}

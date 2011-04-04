@@ -32,7 +32,7 @@ public interface ServiceProviderConnectionRepository {
 
 	<S> ServiceProviderConnection<S> findConnectionByServiceApiForUser(Class<S> serviceApiType, String providerUserId);
 
-	void insertConnection(ServiceProviderConnection<?> connection);
+	void addConnection(ServiceProviderConnection<?> connection);
 
 	void removeConnectionsToProvider(String providerId);
 

@@ -97,7 +97,7 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 				getLocalUserId(), getProviderId(serviceApiType), providerUserId);
 	}
 
-	public void insertConnection(ServiceProviderConnection<?> connection) {
+	public void addConnection(ServiceProviderConnection<?> connection) {
 		ServiceProviderConnectionMemento memento = connection.createMemento();
 		Serializable localUserId = getLocalUserId();
 		jdbcTemplate.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, (select ifnull(max(rank) + 1, 1) from ServiceProviderConnection where localUserId = ? and providerId = ?), ?, ?, ?, ?, ?, ?, ?)",
