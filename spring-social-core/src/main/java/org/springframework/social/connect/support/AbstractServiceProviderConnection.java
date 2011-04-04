@@ -29,17 +29,14 @@ abstract class AbstractServiceProviderConnection<S> implements ServiceProviderCo
 
 	private final Object profileMonitor = new Object();
 	
-	private final boolean allowSignIn;
-
 	private S serviceApi;
 	
 	private final Object serviceApiMonitor = new Object();
 	
 	private final ServiceApiAdapter<S> serviceApiAdapter;
 	
- 	public AbstractServiceProviderConnection(String providerId, String providerUserId, S serviceApi, ServiceApiAdapter<S> serviceApiAdapter, boolean allowSignIn) {
+ 	public AbstractServiceProviderConnection(String providerId, String providerUserId, S serviceApi, ServiceApiAdapter<S> serviceApiAdapter) {
  		this.key = createKey(providerId, providerUserId, serviceApi, serviceApiAdapter);
- 		this.allowSignIn = allowSignIn;
  		this.serviceApi = serviceApi;
  		this.serviceApiAdapter = serviceApiAdapter;
  	}
@@ -58,10 +55,6 @@ abstract class AbstractServiceProviderConnection<S> implements ServiceProviderCo
 
 	public String getProfilePictureUrl() {
 		return getProviderProfile().getPictureUrl();
-	}
-
-	public boolean supportsSignIn() {
-		return key.getProviderUserId() != null && allowSignIn;
 	}
 
 	public boolean test() {

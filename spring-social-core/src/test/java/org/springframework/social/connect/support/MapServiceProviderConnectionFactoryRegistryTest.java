@@ -49,7 +49,7 @@ public class MapServiceProviderConnectionFactoryRegistryTest {
 	static class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
 
 		public TwitterServiceProviderConnectionFactory() {
-			super("twitter", new TwitterServiceProvider(), null, true);
+			super("twitter", new TwitterServiceProvider(), null);
 		}
 		
 	}
@@ -57,7 +57,7 @@ public class MapServiceProviderConnectionFactoryRegistryTest {
 	static class Twitter2ServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
 
 		public Twitter2ServiceProviderConnectionFactory() {
-			super("twitter2", new TwitterServiceProvider(), null, true);
+			super("twitter2", new TwitterServiceProvider(), null);
 		}
 		
 	}

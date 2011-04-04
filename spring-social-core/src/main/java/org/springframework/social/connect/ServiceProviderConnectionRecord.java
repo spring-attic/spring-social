@@ -27,8 +27,6 @@ public class ServiceProviderConnectionRecord {
 	
 	private String profilePictureUrl;
 	
-	private boolean allowSignIn;
-	
 	private String accessToken;
 	
 	private String secret;
@@ -37,14 +35,12 @@ public class ServiceProviderConnectionRecord {
 	
 	private Long expireTime;
 
-	public ServiceProviderConnectionRecord(String providerId, String providerUserId, String profileName, String profileUrl, String profilePictureUrl,
-			boolean allowSignIn, String accessToken, String secret, String refreshToken, Long expireTime) {
+	public ServiceProviderConnectionRecord(String providerId, String providerUserId, String profileName, String profileUrl, String profilePictureUrl, String accessToken, String secret, String refreshToken, Long expireTime) {
 		this.providerId = providerId;
 		this.providerUserId = providerUserId;
 		this.profileName = profileName;
 		this.profileUrl = profileUrl;
 		this.profilePictureUrl = profilePictureUrl;
-		this.allowSignIn = allowSignIn;
 		this.accessToken = accessToken;
 		this.secret = secret;
 		this.refreshToken = refreshToken;
@@ -69,10 +65,6 @@ public class ServiceProviderConnectionRecord {
 
 	public String getProfilePictureUrl() {
 		return profilePictureUrl;
-	}
-
-	public boolean isAllowSignIn() {
-		return allowSignIn;
 	}
 
 	public String getAccessToken() {

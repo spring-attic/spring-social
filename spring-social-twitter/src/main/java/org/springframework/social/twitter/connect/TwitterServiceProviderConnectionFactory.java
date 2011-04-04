@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect.support;
+package org.springframework.social.twitter.connect;
 
-import org.springframework.social.connect.spi.ServiceApiAdapter;
-import org.springframework.social.oauth2.OAuth2ServiceProvider;
+import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
+import org.springframework.social.twitter.TwitterApi;
+import org.springframework.social.twitter.TwitterServiceProvider;
 
-public class OAuth2ServiceProviderConnection<S> extends AbstractServiceProviderConnection<S> {
+public class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
 
-	public OAuth2ServiceProviderConnection(String providerId, String providerUserId, OAuth2ServiceProvider<S> serviceProvider,
-			String accessToken, String refreshToken, Long expiresTime, ServiceApiAdapter<S> serviceApiAdapter) {
-		super(providerId, providerUserId, serviceProvider.getServiceApi(accessToken), serviceApiAdapter);
+	public TwitterServiceProviderConnectionFactory(String consumerKey, String consumerSecret) {
+		super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterServiceApiAdapter());
 	}
-
+	
 }

@@ -21,8 +21,8 @@ import org.springframework.social.oauth1.OAuth1ServiceProvider;
 public class OAuth1ServiceProviderConnection<S> extends AbstractServiceProviderConnection<S> {
 
 	public OAuth1ServiceProviderConnection(String providerId, String providerUserId, OAuth1ServiceProvider<S> serviceProvider,
-			String accessToken, String secret, ServiceApiAdapter<S> serviceApiAdapter, boolean allowSignIn) {
-		super(providerId, providerUserId, serviceProvider.getServiceApi(accessToken, secret), serviceApiAdapter, allowSignIn);
+			String accessToken, String secret, ServiceApiAdapter<S> serviceApiAdapter) {
+		super(providerId, providerUserId, serviceProvider.getServiceApi(accessToken, secret), serviceApiAdapter);
 	}
 
 }

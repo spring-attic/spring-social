@@ -26,13 +26,10 @@ public abstract class ServiceProviderConnectionFactory<S> {
 
 	private final ServiceApiAdapter<S> serviceApiAdapter;
 	
-	private final boolean allowSignIn;
-	
-	public ServiceProviderConnectionFactory(String providerId, ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter, boolean allowSignIn) {
+	public ServiceProviderConnectionFactory(String providerId, ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
 		this.providerId = providerId;
 		this.serviceProvider = serviceProvider;
 		this.serviceApiAdapter = nullSafeServiceApiAdapter(serviceApiAdapter);
-		this.allowSignIn = allowSignIn;
 	}
 
 	// sublassing hooks
@@ -47,10 +44,6 @@ public abstract class ServiceProviderConnectionFactory<S> {
 
 	public ServiceApiAdapter<S> getServiceApiAdapter() {
 		return serviceApiAdapter;
-	}
-
-	public boolean isAllowSignIn() {
-		return allowSignIn;
 	}
 
 	// subclassing hooks

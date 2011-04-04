@@ -101,7 +101,7 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		Serializable localUserId = getLocalUserId();
 		jdbcTemplate.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, allowSignIn, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, (select ifnull(max(rank) + 1, 1) from ServiceProviderConnection where localUserId = ? and providerId = ?), ?, ?, ?, ?, ?, ?, ?)",
 				localUserId, connectionRecord.getProviderId(), connectionRecord.getProviderUserId(), localUserId, connectionRecord.getProviderId(),
-				connectionRecord.getProfileName(), connectionRecord.getProfileUrl(), connectionRecord.getProfilePictureUrl(), connectionRecord.isAllowSignIn(),
+				connectionRecord.getProfileName(), connectionRecord.getProfileUrl(), connectionRecord.getProfilePictureUrl(),
 				encrypt(connectionRecord.getAccessToken()), encrypt(connectionRecord.getSecret()), encrypt(connectionRecord.getRefreshToken()), connectionRecord.getExpireTime());
 		return connection;
 	}
@@ -134,7 +134,7 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		
 		private ServiceProviderConnectionRecord mapConnectionRecord(ResultSet rs) throws SQLException {
 			return new ServiceProviderConnectionRecord(rs.getString("providerId"), rs.getString("providerUserId"),
-					rs.getString("profileName"), rs.getString("profileUrl"), rs.getString("profilePictureUrl"), rs.getBoolean("allowSignin"),
+					rs.getString("profileName"), rs.getString("profileUrl"), rs.getString("profilePictureUrl"),
 					decrypt(rs.getString("accessToken")), decrypt(rs.getString("secret")), decrypt(rs.getString("refreshToken")), rs.getLong("expireTime"));
 		}
 		

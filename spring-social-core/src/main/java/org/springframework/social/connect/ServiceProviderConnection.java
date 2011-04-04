@@ -49,12 +49,6 @@ public interface ServiceProviderConnection<S> {
 	String getProfilePictureUrl();
 	
 	/**
-	 * If this connection can be used to sign the local user in.
-	 * True if sign-in support was specified when the connection was established and nobody else is connected to the {@link #getProviderUserId() providerAccount}.
-	 */
-	boolean supportsSignIn();
-
-	/**
 	 * Test this connection.
 	 * If false, indicates that service API calls will fail.
 	 */

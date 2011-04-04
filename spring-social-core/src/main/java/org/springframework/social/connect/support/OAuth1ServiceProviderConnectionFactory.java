@@ -26,8 +26,8 @@ import org.springframework.social.oauth1.OAuthToken;
 public class OAuth1ServiceProviderConnectionFactory<S> extends ServiceProviderConnectionFactory<S> {
 	
 	public OAuth1ServiceProviderConnectionFactory(String providerId, OAuth1ServiceProvider<S> serviceProvider,
-			ServiceApiAdapter<S> serviceApiAdapter, boolean allowSignIn) {
-		super(providerId, serviceProvider, serviceApiAdapter, allowSignIn);
+			ServiceApiAdapter<S> serviceApiAdapter) {
+		super(providerId, serviceProvider, serviceApiAdapter);
 	}
 
 	public OAuth1Operations getOAuthOperations() {
@@ -37,7 +37,7 @@ public class OAuth1ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 	public ServiceProviderConnection<S> createConnection(OAuthToken accessToken) {
 		String providerUserId = extractProviderUserId(accessToken);
 		return new OAuth1ServiceProviderConnection<S>(getProviderId(), providerUserId, getOAuth1ServiceProvider(),
-				accessToken.getValue(), accessToken.getSecret(), getServiceApiAdapter(), isAllowSignIn());		
+				accessToken.getValue(), accessToken.getSecret(), getServiceApiAdapter());		
 	}
 	
 	public ServiceProviderConnection<S> createConnection(ServiceProviderConnectionRecord connectionRecord) {
