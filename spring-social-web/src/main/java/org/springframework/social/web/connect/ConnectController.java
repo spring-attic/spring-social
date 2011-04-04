@@ -137,7 +137,7 @@ public class ConnectController  {
 		OAuth1ServiceProviderConnectionFactory<?> connectionFactory = (OAuth1ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		OAuthToken accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier));
 		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessToken);
-		connection = connectionRepository.saveConnection(connection);	
+		connectionRepository.insertConnection(connection);	
 		postConnect(connectionFactory, connection, request);
 		return redirectToProviderConnect(providerId);
 	}
@@ -152,7 +152,7 @@ public class ConnectController  {
 		OAuth2ServiceProviderConnectionFactory<?> connectionFactory = (OAuth2ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId));
 		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessGrant);
-		connection = connectionRepository.saveConnection(connection);
+		connectionRepository.insertConnection(connection);
 		postConnect(connectionFactory, connection, request);
 		return redirectToProviderConnect(providerId);
 	}

@@ -33,7 +33,7 @@ import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionFactory;
 import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
-import org.springframework.social.connect.ServiceProviderConnectionRecord;
+import org.springframework.social.connect.ServiceProviderConnectionMemento;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
 import org.springframework.social.connect.support.LocalUserIdLocator;
 
@@ -97,14 +97,13 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 				getLocalUserId(), getProviderId(serviceApiType), providerUserId);
 	}
 
-	public <S> ServiceProviderConnection<S> saveConnection(ServiceProviderConnection<S> connection) {
-		ServiceProviderConnectionRecord connectionRecord = connection.createConnectionRecord();
+	public void insertConnection(ServiceProviderConnection<?> connection) {
+		ServiceProviderConnectionMemento memento = connection.createMemento();
 		Serializable localUserId = getLocalUserId();
-		jdbcTemplate.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, allowSignIn, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, (select ifnull(max(rank) + 1, 1) from ServiceProviderConnection where localUserId = ? and providerId = ?), ?, ?, ?, ?, ?, ?, ?)",
-				localUserId, connectionRecord.getProviderId(), connectionRecord.getProviderUserId(), localUserId, connectionRecord.getProviderId(),
-				connectionRecord.getProfileName(), connectionRecord.getProfileUrl(), connectionRecord.getProfilePictureUrl(),
-				encrypt(connectionRecord.getAccessToken()), encrypt(connectionRecord.getSecret()), encrypt(connectionRecord.getRefreshToken()), connectionRecord.getExpireTime());
-		return connection;
+		jdbcTemplate.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, (select ifnull(max(rank) + 1, 1) from ServiceProviderConnection where localUserId = ? and providerId = ?), ?, ?, ?, ?, ?, ?, ?)",
+				localUserId, memento.getProviderId(), memento.getProviderUserId(), localUserId, memento.getProviderId(),
+				memento.getProfileName(), memento.getProfileUrl(), memento.getProfilePictureUrl(),
+				encrypt(memento.getAccessToken()), encrypt(memento.getSecret()), encrypt(memento.getRefreshToken()), memento.getExpireTime());
 	}
 
 	public void removeConnectionsToProvider(String providerId) {
@@ -128,13 +127,13 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 	private final class ServiceProviderConnectionMapper implements RowMapper<ServiceProviderConnection<?>> {
 		
 		public ServiceProviderConnection<?> mapRow(ResultSet rs, int rowNum) throws SQLException {
-			ServiceProviderConnectionRecord connectionRecord = mapConnectionRecord(rs);
-			ServiceProviderConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(connectionRecord.getProviderId());
-			return connectionFactory.createConnection(connectionRecord);
+			ServiceProviderConnectionMemento connectionMemento = mapConnectionMemento(rs);
+			ServiceProviderConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(connectionMemento.getProviderId());
+			return connectionFactory.createConnection(connectionMemento);
 		}
 		
-		private ServiceProviderConnectionRecord mapConnectionRecord(ResultSet rs) throws SQLException {
-			return new ServiceProviderConnectionRecord(rs.getString("providerId"), rs.getString("providerUserId"),
+		private ServiceProviderConnectionMemento mapConnectionMemento(ResultSet rs) throws SQLException {
+			return new ServiceProviderConnectionMemento(rs.getString("providerId"), rs.getString("providerUserId"),
 					rs.getString("profileName"), rs.getString("profileUrl"), rs.getString("profilePictureUrl"),
 					decrypt(rs.getString("accessToken")), decrypt(rs.getString("secret")), decrypt(rs.getString("refreshToken")), rs.getLong("expireTime"));
 		}

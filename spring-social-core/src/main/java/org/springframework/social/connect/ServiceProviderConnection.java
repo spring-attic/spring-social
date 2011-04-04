@@ -84,6 +84,9 @@ public interface ServiceProviderConnection<S> {
 	 */
 	public S getServiceApi();
 
-	ServiceProviderConnectionRecord createConnectionRecord();
+	/**
+	 * Creates a memento that can be used to persist the state of this connection.
+	 */
+	ServiceProviderConnectionMemento createMemento();
 
 }

@@ -1,5 +1,7 @@
 package org.springframework.social.connect.jdbc;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
@@ -17,12 +19,14 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.spi.ProviderProfile;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.connect.support.LocalUserIdLocator;
 import org.springframework.social.connect.support.MapServiceProviderConnectionFactoryRegistry;
 import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
+import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
 
@@ -95,11 +99,38 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 	public void removeConnectionNoOp() {
 		connectionRepository.removeConnectionWithKey(new ServiceProviderConnectionKey("facebook", "1"));
 	}
+
+	@Test
+	public void saveNewConnection() {
+		ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", "987654321"));
+		connectionRepository.insertConnection(connection);
+		ServiceProviderConnection<FacebookApi> restoredConnection = connectionRepository.findConnectionByServiceApi(FacebookApi.class);
+		assertEquals(connection, restoredConnection);	
+		assertConnection(restoredConnection);
+	}
+		
+	private void assertConnection(ServiceProviderConnection<FacebookApi> connection) {
+		assertEquals("facebook", connection.getKey().getProviderId());
+		assertEquals("1", connection.getKey().getProviderUserId());
+		assertEquals("Keith Donald", connection.getProfileName());
+		assertEquals("http://facebook.com/keith.donald", connection.getProfileUrl());
+		assertEquals("http://facebook.com/keith.donald/picture", connection.getProfilePictureUrl());
+		assertTrue(connection.test());
+		FacebookApi api = connection.getServiceApi();
+		assertNotNull(api);
+		assertEquals("123456789", api.getAccessToken());
+		assertEquals("123456789", connection.createMemento().getAccessToken());
+		assertEquals("987654321", connection.createMemento().getRefreshToken());
+	}
 	
 	private static class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
 
 		public FacebookServiceProviderConnectionFactory() {
 			super("facebook", new FacebookServiceProvider(), new FacebookServiceApiAdapter());
+		}
+		
+		public FacebookServiceApiAdapter getFacebookServiceApiAdapter() {
+			return (FacebookServiceApiAdapter) getServiceApiAdapter();
 		}
 		
 	}

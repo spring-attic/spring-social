@@ -15,7 +15,7 @@
  */
 package org.springframework.social.connect;
 
-public class ServiceProviderConnectionRecord {
+public class ServiceProviderConnectionMemento {
 	
 	private String providerId;
 	
@@ -35,7 +35,7 @@ public class ServiceProviderConnectionRecord {
 	
 	private Long expireTime;
 
-	public ServiceProviderConnectionRecord(String providerId, String providerUserId, String profileName, String profileUrl, String profilePictureUrl, String accessToken, String secret, String refreshToken, Long expireTime) {
+	public ServiceProviderConnectionMemento(String providerId, String providerUserId, String profileName, String profileUrl, String profilePictureUrl, String accessToken, String secret, String refreshToken, Long expireTime) {
 		this.providerId = providerId;
 		this.providerUserId = providerUserId;
 		this.profileName = profileName;

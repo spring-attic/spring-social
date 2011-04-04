@@ -17,7 +17,7 @@ package org.springframework.social.connect.support;
 
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
-import org.springframework.social.connect.ServiceProviderConnectionRecord;
+import org.springframework.social.connect.ServiceProviderConnectionMemento;
 import org.springframework.social.connect.spi.ProviderProfile;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 
@@ -41,6 +41,13 @@ abstract class AbstractServiceProviderConnection<S> implements ServiceProviderCo
  		this.serviceApiAdapter = serviceApiAdapter;
  	}
  	 	
+	public AbstractServiceProviderConnection(ServiceProviderConnectionMemento memento, S serviceApi, ServiceApiAdapter<S> serviceApiAdapter) {
+		this.key = new ServiceProviderConnectionKey(memento.getProviderId(), memento.getProviderUserId());
+		this.profile = new ProviderProfile(memento.getProviderUserId(), memento.getProfileName(), memento.getProfileUrl(), memento.getProfilePictureUrl());
+		this.serviceApi = serviceApi;
+		this.serviceApiAdapter = serviceApiAdapter;
+	}
+
 	public ServiceProviderConnectionKey getKey() {
 		return key;
 	}
@@ -108,9 +115,7 @@ abstract class AbstractServiceProviderConnection<S> implements ServiceProviderCo
 		return serviceApi;
 	}
 
-	public ServiceProviderConnectionRecord createConnectionRecord() {
-		return null;
-	}
+	public abstract ServiceProviderConnectionMemento createMemento();
 	
 	// internal helpers
 

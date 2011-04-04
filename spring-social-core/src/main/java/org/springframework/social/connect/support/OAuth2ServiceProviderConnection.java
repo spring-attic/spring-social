@@ -15,14 +15,43 @@
  */
 package org.springframework.social.connect.support;
 
+import org.springframework.social.connect.ServiceProviderConnectionMemento;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
 
 public class OAuth2ServiceProviderConnection<S> extends AbstractServiceProviderConnection<S> {
 
+	private String accessToken;
+	
+	private String refreshToken;
+	
+	private Long expireTime;
+	
 	public OAuth2ServiceProviderConnection(String providerId, String providerUserId, OAuth2ServiceProvider<S> serviceProvider,
 			String accessToken, String refreshToken, Long expiresTime, ServiceApiAdapter<S> serviceApiAdapter) {
 		super(providerId, providerUserId, serviceProvider.getServiceApi(accessToken), serviceApiAdapter);
+		init(accessToken, refreshToken, expireTime);
+	}
+
+	public OAuth2ServiceProviderConnection(ServiceProviderConnectionMemento memento, OAuth2ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
+		super(memento, serviceProvider.getServiceApi(memento.getAccessToken()), serviceApiAdapter);
+		init(memento.getAccessToken(), memento.getRefreshToken(), memento.getExpireTime());		
+	}
+	
+	// subclassing hooks
+	
+	@Override
+	public ServiceProviderConnectionMemento createMemento() {
+		return new ServiceProviderConnectionMemento(getKey().getProviderId(), getKey().getProviderUserId(),
+				getProfileName(), getProfileUrl(), getProfilePictureUrl(), accessToken, null, refreshToken, expireTime);
+	}
+
+	// internal helpers
+	
+	private void init(String accessToken, String refreshToken, Long expireTime) {
+		this.accessToken = accessToken;
+		this.refreshToken = refreshToken;
+		this.expireTime = expireTime;
 	}
 
 }

@@ -15,14 +15,40 @@
  */
 package org.springframework.social.connect.support;
 
+import org.springframework.social.connect.ServiceProviderConnectionMemento;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
 
 public class OAuth1ServiceProviderConnection<S> extends AbstractServiceProviderConnection<S> {
 
+	private String accessToken;
+	
+	private String secret;
+	
 	public OAuth1ServiceProviderConnection(String providerId, String providerUserId, OAuth1ServiceProvider<S> serviceProvider,
 			String accessToken, String secret, ServiceApiAdapter<S> serviceApiAdapter) {
 		super(providerId, providerUserId, serviceProvider.getServiceApi(accessToken, secret), serviceApiAdapter);
+		init(accessToken, secret);
+	}
+
+	public OAuth1ServiceProviderConnection(ServiceProviderConnectionMemento memento, OAuth1ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
+		super(memento, serviceProvider.getServiceApi(memento.getAccessToken(), memento.getSecret()), serviceApiAdapter);
+		init(memento.getAccessToken(), memento.getSecret());
+	}
+
+	// subclassing hooks
+	
+	@Override
+	public ServiceProviderConnectionMemento createMemento() {
+		return new ServiceProviderConnectionMemento(getKey().getProviderId(), getKey().getProviderUserId(),
+				getProfileName(), getProfileUrl(), getProfilePictureUrl(), accessToken, secret, null, null);
+	}
+
+	// internal helpers
+	
+	private void init(String accessToken, String secret) {
+		this.accessToken = accessToken;
+		this.secret = secret;
 	}
 
 }
