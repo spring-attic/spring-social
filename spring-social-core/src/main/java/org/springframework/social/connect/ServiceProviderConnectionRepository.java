@@ -16,6 +16,7 @@
 package org.springframework.social.connect;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ServiceProviderConnectionRepository {
 
@@ -23,7 +24,7 @@ public interface ServiceProviderConnectionRepository {
 
 	List<ServiceProviderConnection<?>> findConnectionsToProvider(String providerId);
 
-	List<ServiceProviderConnection<?>> findConnectionsByKeys(List<ServiceProviderConnectionKey> connectionKeys);
+	List<ServiceProviderConnection<?>> findConnectionsForUsers(Map<String, List<String>> providerUsers);
 	
 	ServiceProviderConnection<?> findConnectionByKey(ServiceProviderConnectionKey connectionKey);
 

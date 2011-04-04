@@ -18,7 +18,11 @@ package org.springframework.social.connect.jdbc;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.sql.DataSource;
 
@@ -58,17 +62,31 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? order by rank", connectionMapper, getLocalUserId(), providerId);
 	}
 
-	public List<ServiceProviderConnection<?>> findConnectionsByKeys(List<ServiceProviderConnectionKey> connectionKeys) {
-		return null;
+	public List<ServiceProviderConnection<?>> findConnectionsForUsers(Map<String, List<String>> providerUsers) {
+		if (providerUsers.isEmpty()) {
+			throw new IllegalArgumentException("Unable to execute find: no providerUsers provided");
+		}
+		StringBuilder providerUsersCriteriaSql = new StringBuilder();
+		List<Object> args = new ArrayList<Object>(providerUsers.size() * 2);
+		for (Iterator<Entry<String, List<String>>> it = providerUsers.entrySet().iterator(); it.hasNext();) {
+			Entry<String, List<String>> entry = it.next();
+			providerUsersCriteriaSql.append("providerId = ? and providerUserId in (?)");
+			args.add(entry.getKey());
+			args.add(entry.getValue());
+			if (it.hasNext()) {
+				providerUsersCriteriaSql.append(" or " );
+			}
+		}
+		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and " + providerUsersCriteriaSql, args.toArray(), connectionMapper);
 	}
 
 	public ServiceProviderConnection<?> findConnectionByKey(ServiceProviderConnectionKey connectionKey) {
-		return null;
+		return jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and providerUserId = ? order by rank", connectionMapper, getLocalUserId(), connectionKey.getProviderId(), connectionKey.getProviderUserId());
 	}
 
 	@SuppressWarnings("unchecked")
 	public <S> ServiceProviderConnection<S> findConnectionByServiceApi(Class<S> serviceApiType) {
-		return (ServiceProviderConnection<S>) jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and rank isnull or rank = 1", connectionMapper,
+		return (ServiceProviderConnection<S>) jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and rank = 1", connectionMapper,
 				getLocalUserId(), getProviderId(serviceApiType));
 	}
 
@@ -84,7 +102,7 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		jdbcTemplate.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, allowSignIn, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, (select ifnull(max(rank) + 1, 1) from ServiceProviderConnection where localUserId = ? and providerId = ?), ?, ?, ?, ?, ?, ?, ?)",
 				localUserId, connectionRecord.getProviderId(), connectionRecord.getProviderUserId(), localUserId, connectionRecord.getProviderId(),
 				connectionRecord.getProfileName(), connectionRecord.getProfileUrl(), connectionRecord.getProfilePictureUrl(), connectionRecord.isAllowSignIn(),
-				connectionRecord.getAccessToken(), connectionRecord.getSecret(), connectionRecord.getRefreshToken(), connectionRecord.getExpireTime());
+				encrypt(connectionRecord.getAccessToken()), encrypt(connectionRecord.getSecret()), encrypt(connectionRecord.getRefreshToken()), connectionRecord.getExpireTime());
 		return connection;
 	}
 
@@ -128,6 +146,10 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 
 	private <S> String getProviderId(Class<S> serviceApiType) {
 		return connectionFactoryLocator.getConnectionFactory(serviceApiType).getProviderId();
+	}
+	
+	private String encrypt(String text) {
+		return text != null ? textEncryptor.encrypt(text) : text;
 	}
 
 }
