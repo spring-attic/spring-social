@@ -67,7 +67,8 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 			throw new IllegalArgumentException("Unable to execute find: no providerUsers provided");
 		}
 		StringBuilder providerUsersCriteriaSql = new StringBuilder();
-		List<Object> args = new ArrayList<Object>(providerUsers.size() * 2);
+		List<Object> args = new ArrayList<Object>(1 + providerUsers.size() * 2);
+		args.add(getLocalUserId());
 		for (Iterator<Entry<String, List<String>>> it = providerUsers.entrySet().iterator(); it.hasNext();) {
 			Entry<String, List<String>> entry = it.next();
 			providerUsersCriteriaSql.append("providerId = ? and providerUserId in (?)");
@@ -116,7 +117,7 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 
 	// internal helpers
 	
-	private final static String SELECT_FROM_SERVICE_PROVIDER_CONNECTION = "select localUserId, providerId, id, providerUserId, profileName, profileUrl, profilePictureUrl, allowSignIn, accessToken, secret, refreshToken from ServiceProviderConnection";
+	private final static String SELECT_FROM_SERVICE_PROVIDER_CONNECTION = "select localUserId, providerId, providerUserId, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime from ServiceProviderConnection";
 	
 	private Serializable getLocalUserId() {
 		return localUserIdLocator.getLocalUserId();

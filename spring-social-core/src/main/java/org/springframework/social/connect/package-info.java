@@ -1,5 +1,5 @@
 /**
- * Framework for establishing connections between local user Accounts and accounts hosted on ServiceProviders such as Twitter and Facebook.
+ * Framework for establishing connections between local users and users of ServiceProviders such as Twitter and Facebook.
  */
 package org.springframework.social.connect;
 
