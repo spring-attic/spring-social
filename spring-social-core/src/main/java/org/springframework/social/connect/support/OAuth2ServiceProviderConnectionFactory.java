@@ -36,15 +36,14 @@ public class OAuth2ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 	}
 	
 	public ServiceProviderConnection<S> createConnection(AccessGrant accessGrant) {
-		OAuth2ServiceApiFactory<S> serviceApiFactory = new OAuth2ServiceApiFactory<S>(getOAuth2ServiceProvider(), accessGrant.getAccessToken(), accessGrant.getRefreshToken(), accessGrant.getExpireTime());
-		return new OAuth2ServiceProviderConnection<S>(getProviderId(), extractProviderUserId(accessGrant), serviceApiFactory, getServiceApiAdapter());		
+		return new OAuth2ServiceProviderConnection<S>(getProviderId(), extractProviderUserId(accessGrant),
+				accessGrant.getAccessToken(), accessGrant.getRefreshToken(), accessGrant.getExpireTime(), getOAuth2ServiceProvider(), getServiceApiAdapter());		
 	}
 	
 	public ServiceProviderConnection<S> createConnection(ServiceProviderConnectionData data) {
 		ServiceProviderConnectionKey key = new ServiceProviderConnectionKey(data.getProviderId(), data.getProviderUserId());
 		ServiceProviderUser user = new ServiceProviderUser(data.getProviderUserId(), data.getProfileName(), data.getProfileUrl(), data.getProfilePictureUrl());
-		OAuth2ServiceApiFactory<S> serviceApiFactory = new OAuth2ServiceApiFactory<S>(getOAuth2ServiceProvider(), data.getAccessToken(), data.getRefreshToken(), data.getExpireTime());
-		return new OAuth2ServiceProviderConnection<S>(key, user, serviceApiFactory, getServiceApiAdapter());
+		return new OAuth2ServiceProviderConnection<S>(key, user, data.getAccessToken(), data.getRefreshToken(), data.getExpireTime(), getOAuth2ServiceProvider(), getServiceApiAdapter());
 	}
 	
 	// subclassing hooks

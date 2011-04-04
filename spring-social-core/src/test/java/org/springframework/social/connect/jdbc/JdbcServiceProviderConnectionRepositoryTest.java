@@ -38,7 +38,7 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 
 	private MapServiceProviderConnectionFactoryRegistry connectionFactoryRegistry;
 	
-	private FacebookServiceProviderConnectionFactory connectionFactory;
+	private TestFacebookServiceProviderConnectionFactory connectionFactory;
 	
 	private Long localUserId = 1L;
 	
@@ -51,7 +51,7 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 		factory.setDatabasePopulator(populator);
 		database = factory.getDatabase();
 		connectionFactoryRegistry = new MapServiceProviderConnectionFactoryRegistry();
-		connectionFactory = new FacebookServiceProviderConnectionFactory();
+		connectionFactory = new TestFacebookServiceProviderConnectionFactory();
 		connectionFactoryRegistry.addConnectionFactory(connectionFactory);
 		connectionRepository = new JdbcServiceProviderConnectionRepository(database, connectionFactoryRegistry, new LocalUserIdLocator() {
 			public Serializable getLocalUserId() {
@@ -102,14 +102,14 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 
 	@Test
 	public void addConnection() {
-		ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", 3600, "987654321", null, null));
+		ServiceProviderConnection<TestFacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", 3600, "987654321", null, null));
 		connectionRepository.addConnection(connection);
-		ServiceProviderConnection<FacebookApi> restoredConnection = connectionRepository.findConnectionByServiceApi(FacebookApi.class);
+		ServiceProviderConnection<TestFacebookApi> restoredConnection = connectionRepository.findConnectionByServiceApi(TestFacebookApi.class);
 		assertEquals(connection, restoredConnection);	
 		assertConnection(restoredConnection);
 	}
 		
-	private void assertConnection(ServiceProviderConnection<FacebookApi> connection) {
+	private void assertConnection(ServiceProviderConnection<TestFacebookApi> connection) {
 		assertEquals("facebook", connection.getKey().getProviderId());
 		assertEquals("1", connection.getKey().getProviderUserId());
 		ServiceProviderUser user = connection.getUser();
@@ -117,29 +117,29 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 		assertEquals("http://facebook.com/keith.donald", user.getProfileUrl());
 		assertEquals("http://facebook.com/keith.donald/picture", user.getProfilePictureUrl());
 		assertTrue(connection.test());
-		FacebookApi api = connection.getServiceApi();
+		TestFacebookApi api = connection.getServiceApi();
 		assertNotNull(api);
 		assertEquals("123456789", api.getAccessToken());
 		assertEquals("123456789", connection.createData().getAccessToken());
 		assertEquals("987654321", connection.createData().getRefreshToken());
 	}
 	
-	private static class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
+	private static class TestFacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<TestFacebookApi> {
 
-		public FacebookServiceProviderConnectionFactory() {
-			super("facebook", new FacebookServiceProvider(), new FacebookServiceApiAdapter());
+		public TestFacebookServiceProviderConnectionFactory() {
+			super("facebook", new TestFacebookServiceProvider(), new TestFacebookServiceApiAdapter());
 		}
 		
 	}
 
-	private static class FacebookServiceProvider implements OAuth2ServiceProvider<FacebookApi> {
+	private static class TestFacebookServiceProvider implements OAuth2ServiceProvider<TestFacebookApi> {
 
 		public OAuth2Operations getOAuthOperations() {
 			return null;
 		}
 
-		public FacebookApi getServiceApi(final String accessToken) {
-			return new FacebookApi() {
+		public TestFacebookApi getServiceApi(final String accessToken) {
+			return new TestFacebookApi() {
 				public String getAccessToken() {
 					return accessToken;
 				}
@@ -148,13 +148,13 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 		
 	}
 		
-	public interface FacebookApi {
+	public interface TestFacebookApi {
 		
 		String getAccessToken();
 		
 	}
 	
-	private static class FacebookServiceApiAdapter implements ServiceApiAdapter<FacebookApi> {
+	private static class TestFacebookServiceApiAdapter implements ServiceApiAdapter<TestFacebookApi> {
 
 		private String accountId = "1";
 		
@@ -164,15 +164,15 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 		
 		private String profilePicture = "http://facebook.com/keith.donald/picture";
 		
-		public boolean test(FacebookApi serviceApi) {
+		public boolean test(TestFacebookApi serviceApi) {
 			return true;
 		}
 
-		public ServiceProviderUser getUser(FacebookApi serviceApi) {
+		public ServiceProviderUser getUser(TestFacebookApi serviceApi) {
 			return new ServiceProviderUser(accountId, name, profileUrl, profilePicture);
 		}
 
-		public void updateStatus(FacebookApi serviceApi, String message) {
+		public void updateStatus(TestFacebookApi serviceApi, String message) {
 			
 		}
 		
