@@ -17,7 +17,7 @@ package org.springframework.social.connect.support;
 
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
-import org.springframework.social.connect.ServiceProviderConnectionMemento;
+import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderUser;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 
@@ -37,9 +37,9 @@ abstract class AbstractServiceProviderConnection<S> implements ServiceProviderCo
  		this.serviceApiAdapter = serviceApiAdapter;
  	}
  	 	
-	public AbstractServiceProviderConnection(ServiceProviderConnectionMemento memento, S serviceApi, ServiceApiAdapter<S> serviceApiAdapter) {
-		this.key = new ServiceProviderConnectionKey(memento.getProviderId(), memento.getProviderUserId());
-		this.user = new ServiceProviderUser(memento.getProviderUserId(), memento.getProfileName(), memento.getProfileUrl(), memento.getProfilePictureUrl());
+	public AbstractServiceProviderConnection(ServiceProviderConnectionKey key, ServiceProviderUser user, S serviceApi, ServiceApiAdapter<S> serviceApiAdapter) {
+		this.key = key;
+		this.user = user;
 		this.serviceApi = serviceApi;
 		this.serviceApiAdapter = serviceApiAdapter;
 	}
@@ -48,7 +48,7 @@ abstract class AbstractServiceProviderConnection<S> implements ServiceProviderCo
 		return key;
 	}
 
-	public ServiceProviderUser getUser() {
+	public final ServiceProviderUser getUser() {
 		synchronized (monitor) {
 			if (user == null) {
 				user = fetchUser();
@@ -59,10 +59,6 @@ abstract class AbstractServiceProviderConnection<S> implements ServiceProviderCo
 
 	public final boolean test() {
 		return serviceApiAdapter.test(serviceApi);
-	}
-	
-	public final boolean hasExpired() {
-		return false;
 	}
 
 	public final void refresh() {
@@ -87,9 +83,9 @@ abstract class AbstractServiceProviderConnection<S> implements ServiceProviderCo
 		}
 	}
 
-	public final ServiceProviderConnectionMemento createMemento() {
+	public final ServiceProviderConnectionData createData() {
 		synchronized (monitor) {
-			return doCreateMemento();
+			return doCreateData();
 		}
 	}
 	
@@ -109,12 +105,16 @@ abstract class AbstractServiceProviderConnection<S> implements ServiceProviderCo
 	}
 
 	// subclassing hooks
+
+	public boolean hasExpired() {
+		return false;
+	}
 	
 	protected S doRefresh() {
 		return serviceApi;
 	}
 	
-	protected abstract ServiceProviderConnectionMemento doCreateMemento();
+	protected abstract ServiceProviderConnectionData doCreateData();
 
 	// internal helpers
 

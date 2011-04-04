@@ -102,7 +102,7 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 
 	@Test
 	public void addConnection() {
-		ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", 300, "987654321", null, null));
+		ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", 3600, "987654321", null, null));
 		connectionRepository.addConnection(connection);
 		ServiceProviderConnection<FacebookApi> restoredConnection = connectionRepository.findConnectionByServiceApi(FacebookApi.class);
 		assertEquals(connection, restoredConnection);	
@@ -120,8 +120,8 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 		FacebookApi api = connection.getServiceApi();
 		assertNotNull(api);
 		assertEquals("123456789", api.getAccessToken());
-		assertEquals("123456789", connection.createMemento().getAccessToken());
-		assertEquals("987654321", connection.createMemento().getRefreshToken());
+		assertEquals("123456789", connection.createData().getAccessToken());
+		assertEquals("987654321", connection.createData().getRefreshToken());
 	}
 	
 	private static class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
@@ -148,7 +148,7 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 		
 	}
 		
-	private interface FacebookApi {
+	public interface FacebookApi {
 		
 		String getAccessToken();
 		

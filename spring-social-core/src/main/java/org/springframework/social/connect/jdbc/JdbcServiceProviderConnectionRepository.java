@@ -33,7 +33,7 @@ import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionFactory;
 import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
-import org.springframework.social.connect.ServiceProviderConnectionMemento;
+import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
 import org.springframework.social.connect.support.LocalUserIdLocator;
 
@@ -98,12 +98,11 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 	}
 
 	public void addConnection(ServiceProviderConnection<?> connection) {
-		ServiceProviderConnectionMemento memento = connection.createMemento();
+		ServiceProviderConnectionData data = connection.createData();
 		Serializable localUserId = getLocalUserId();
 		jdbcTemplate.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, (select ifnull(max(rank) + 1, 1) from ServiceProviderConnection where localUserId = ? and providerId = ?), ?, ?, ?, ?, ?, ?, ?)",
-				localUserId, memento.getProviderId(), memento.getProviderUserId(), localUserId, memento.getProviderId(),
-				memento.getProfileName(), memento.getProfileUrl(), memento.getProfilePictureUrl(),
-				encrypt(memento.getAccessToken()), encrypt(memento.getSecret()), encrypt(memento.getRefreshToken()), memento.getExpireTime());
+				localUserId, data.getProviderId(), data.getProviderUserId(), localUserId, data.getProviderId(), data.getProfileName(), data.getProfileUrl(), data.getProfilePictureUrl(),
+				encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime());
 	}
 
 	public void removeConnectionsToProvider(String providerId) {
@@ -127,13 +126,13 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 	private final class ServiceProviderConnectionMapper implements RowMapper<ServiceProviderConnection<?>> {
 		
 		public ServiceProviderConnection<?> mapRow(ResultSet rs, int rowNum) throws SQLException {
-			ServiceProviderConnectionMemento connectionMemento = mapConnectionMemento(rs);
-			ServiceProviderConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(connectionMemento.getProviderId());
-			return connectionFactory.createConnection(connectionMemento);
+			ServiceProviderConnectionData connectionData = mapConnectionData(rs);
+			ServiceProviderConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(connectionData.getProviderId());
+			return connectionFactory.createConnection(connectionData);
 		}
 		
-		private ServiceProviderConnectionMemento mapConnectionMemento(ResultSet rs) throws SQLException {
-			return new ServiceProviderConnectionMemento(rs.getString("providerId"), rs.getString("providerUserId"),
+		private ServiceProviderConnectionData mapConnectionData(ResultSet rs) throws SQLException {
+			return new ServiceProviderConnectionData(rs.getString("providerId"), rs.getString("providerUserId"),
 					rs.getString("profileName"), rs.getString("profileUrl"), rs.getString("profilePictureUrl"),
 					decrypt(rs.getString("accessToken")), decrypt(rs.getString("secret")), decrypt(rs.getString("refreshToken")), rs.getLong("expireTime"));
 		}

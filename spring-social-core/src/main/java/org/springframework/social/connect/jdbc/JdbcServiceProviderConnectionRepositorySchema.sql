@@ -8,6 +8,6 @@ create table ServiceProviderConnection (localUserId bigint not null,
 					accessToken varchar not null,					
 					secret varchar,
 					refreshToken varchar,
-					expireTime timestamp,
+					expireTime bigint,
 					primary key (localUserId, providerId, providerUserId));
 create index ConnectionsToProviderUser on ServiceProviderConnection(providerId, providerUserId);

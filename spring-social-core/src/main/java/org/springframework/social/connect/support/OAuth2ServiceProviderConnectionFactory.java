@@ -17,7 +17,9 @@ package org.springframework.social.connect.support;
 
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionFactory;
-import org.springframework.social.connect.ServiceProviderConnectionMemento;
+import org.springframework.social.connect.ServiceProviderConnectionKey;
+import org.springframework.social.connect.ServiceProviderConnectionData;
+import org.springframework.social.connect.ServiceProviderUser;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
@@ -25,8 +27,7 @@ import org.springframework.social.oauth2.OAuth2ServiceProvider;
 
 public class OAuth2ServiceProviderConnectionFactory<S> extends ServiceProviderConnectionFactory<S> {
 	
-	public OAuth2ServiceProviderConnectionFactory(String providerId, OAuth2ServiceProvider<S> serviceProvider,
-			ServiceApiAdapter<S> serviceApiAdapter) {
+	public OAuth2ServiceProviderConnectionFactory(String providerId, OAuth2ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
 		super(providerId, serviceProvider, serviceApiAdapter);
 	}
 
@@ -35,12 +36,15 @@ public class OAuth2ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 	}
 	
 	public ServiceProviderConnection<S> createConnection(AccessGrant accessGrant) {
-		return new OAuth2ServiceProviderConnection<S>(getProviderId(), extractProviderUserId(accessGrant), getOAuth2ServiceProvider(),
-				accessGrant.getAccessToken(), accessGrant.getRefreshToken(), null, getServiceApiAdapter());		
+		OAuth2ServiceApiFactory<S> serviceApiFactory = new OAuth2ServiceApiFactory<S>(getOAuth2ServiceProvider(), accessGrant.getAccessToken(), accessGrant.getRefreshToken(), accessGrant.getExpireTime());
+		return new OAuth2ServiceProviderConnection<S>(getProviderId(), extractProviderUserId(accessGrant), serviceApiFactory, getServiceApiAdapter());		
 	}
 	
-	public ServiceProviderConnection<S> createConnection(ServiceProviderConnectionMemento memento) {
-		return new OAuth2ServiceProviderConnection<S>(memento, getOAuth2ServiceProvider(), getServiceApiAdapter());
+	public ServiceProviderConnection<S> createConnection(ServiceProviderConnectionData data) {
+		ServiceProviderConnectionKey key = new ServiceProviderConnectionKey(data.getProviderId(), data.getProviderUserId());
+		ServiceProviderUser user = new ServiceProviderUser(data.getProviderUserId(), data.getProfileName(), data.getProfileUrl(), data.getProfilePictureUrl());
+		OAuth2ServiceApiFactory<S> serviceApiFactory = new OAuth2ServiceApiFactory<S>(getOAuth2ServiceProvider(), data.getAccessToken(), data.getRefreshToken(), data.getExpireTime());
+		return new OAuth2ServiceProviderConnection<S>(key, user, serviceApiFactory, getServiceApiAdapter());
 	}
 	
 	// subclassing hooks

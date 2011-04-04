@@ -48,7 +48,7 @@ public abstract class ServiceProviderConnectionFactory<S> {
 
 	// subclassing hooks
 	
-	public abstract ServiceProviderConnection<S> createConnection(ServiceProviderConnectionMemento memento);
+	public abstract ServiceProviderConnection<S> createConnection(ServiceProviderConnectionData data);
 	
 	// internal helpers
 	

@@ -15,57 +15,42 @@
  */
 package org.springframework.social.connect.support;
 
-import org.springframework.social.connect.ServiceProviderConnectionMemento;
+import org.springframework.social.connect.ServiceProviderConnectionKey;
+import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderUser;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
-import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.OAuth2ServiceProvider;
 
 public class OAuth2ServiceProviderConnection<S> extends AbstractServiceProviderConnection<S> {
 
-	private final OAuth2ServiceProvider<S> serviceProvider;
+	private final OAuth2ServiceApiFactory<S> serviceApiFactory;
 	
-	private String accessToken;
-	
-	private String refreshToken;
-	
-	private Long expireTime;
-	
-	public OAuth2ServiceProviderConnection(String providerId, String providerUserId, OAuth2ServiceProvider<S> serviceProvider,
-			String accessToken, String refreshToken, Long expiresTime, ServiceApiAdapter<S> serviceApiAdapter) {
-		super(providerId, providerUserId, serviceProvider.getServiceApi(accessToken), serviceApiAdapter);
-		this.serviceProvider = serviceProvider;
-		setAccessFields(accessToken, refreshToken, expireTime);
+	public OAuth2ServiceProviderConnection(String providerId, String providerUserId, OAuth2ServiceApiFactory<S> serviceApiFactory, ServiceApiAdapter<S> serviceApiAdapter) {
+		super(providerId, providerUserId, serviceApiFactory.createServiceApi(), serviceApiAdapter);
+		this.serviceApiFactory = serviceApiFactory;
 	}
 
-	public OAuth2ServiceProviderConnection(ServiceProviderConnectionMemento memento, OAuth2ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
-		super(memento, serviceProvider.getServiceApi(memento.getAccessToken()), serviceApiAdapter);
-		this.serviceProvider = serviceProvider;		
-		setAccessFields(memento.getAccessToken(), memento.getRefreshToken(), memento.getExpireTime());		
+	public OAuth2ServiceProviderConnection(ServiceProviderConnectionKey key, ServiceProviderUser user, OAuth2ServiceApiFactory<S> serviceApiFactory, ServiceApiAdapter<S> serviceApiAdapter) {
+		super(key, user, serviceApiFactory.createServiceApi(), serviceApiAdapter);
+		this.serviceApiFactory = serviceApiFactory;		
 	}
 	
 	// subclassing hooks
 
 	@Override
 	protected S doRefresh() {
-		AccessGrant accessGrant = serviceProvider.getOAuthOperations().refreshAccess(refreshToken);
-		setAccessFields(accessGrant.getAccessToken(), accessGrant.getRefreshToken(), accessGrant.getExpireTime());
-		return serviceProvider.getServiceApi(accessToken);
+		return serviceApiFactory.refresh();
 	}
 	
 	@Override
-	protected ServiceProviderConnectionMemento doCreateMemento() {
+	public boolean hasExpired() {
+		return serviceApiFactory.hasExpired();
+	}
+
+	@Override
+	protected ServiceProviderConnectionData doCreateData() {
 		ServiceProviderUser user = getUser();		
-		return new ServiceProviderConnectionMemento(getKey().getProviderId(), getKey().getProviderUserId(),
-				user.getProfileName(), user.getProfileUrl(), user.getProfilePictureUrl(), accessToken, null, refreshToken, expireTime);
+		return new ServiceProviderConnectionData(getKey().getProviderId(), getKey().getProviderUserId(), user.getProfileName(), user.getProfileUrl(), user.getProfilePictureUrl(),
+				serviceApiFactory.getAccessToken(), null, serviceApiFactory.getRefreshToken(), serviceApiFactory.getExpireTime());
 	}
 
-	// internal helpers
-
-	private void setAccessFields(String accessToken, String refreshToken, Long expireTime) {
-		this.accessToken = accessToken;
-		this.refreshToken = refreshToken;
-		this.expireTime = expireTime;
-	}
-	
 }

@@ -51,7 +51,7 @@ public interface ServiceProviderConnection<S> {
 	
 	/**
 	 * Update the user's status on the provider's system.
-	 * Allows a message to be broadcast from the local account to the remote account.
+	 * Allows a message to be broadcast from the local user to the provider user.
 	 * This method will be a no-op if a status concept is not supported by the service provider.
 	 * @param message the status message
 	 */
@@ -69,8 +69,8 @@ public interface ServiceProviderConnection<S> {
 	public S getServiceApi();
 
 	/**
-	 * Creates a memento that can be used to persist the state of this connection.
+	 * Creates a data transfer object that can be used to persist the state of this connection.
 	 */
-	ServiceProviderConnectionMemento createMemento();
+	ServiceProviderConnectionData createData();
 
 }
