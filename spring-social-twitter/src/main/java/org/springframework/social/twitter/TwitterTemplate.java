@@ -20,11 +20,8 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.social.AccountNotConnectedException;
-import org.springframework.social.ResponseStatusCodeTranslator;
-import org.springframework.social.SocialException;
 import org.springframework.social.oauth1.ProtectedResourceClientFactory;
 import org.springframework.social.twitter.support.TwitterErrorHandler;
-import org.springframework.social.twitter.support.TwitterResponseStatusCodeTranslator;
 import org.springframework.social.twitter.support.extractors.ResponseExtractor;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -87,10 +84,9 @@ public class TwitterTemplate implements TwitterApi, TwitterRequestApi {
 	private TwitterTemplate(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
-		statusCodeTranslator = new TwitterResponseStatusCodeTranslator();
 		this.tweetApi = new TweetApiTemplate(this, restTemplate);
 		this.userApi = new UserApiTemplate(this, restTemplate);
-		this.friendsApi = new FriendsApiTemplate(this, restTemplate, statusCodeTranslator);
+		this.friendsApi = new FriendsApiTemplate(this, restTemplate);
 		this.listsApi = new ListsApiTemplate(this, restTemplate, userApi);
 		this.searchApi = new SearchApiTemplate(this, restTemplate);
 		this.directMessageApi = new DirectMessageApiTemplate(this);
@@ -139,13 +135,11 @@ public class TwitterTemplate implements TwitterApi, TwitterRequestApi {
 	
 	public void publish(String path, MultiValueMap<String, Object> data, Object... params) {
 		ResponseEntity<Map> response = restTemplate.postForEntity(API_URL_BASE + path, data, Map.class, params);
-		handleResponseErrors(response);
 	}
 	
 	public <T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor, Object... params) {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restTemplate.postForEntity(API_URL_BASE + path, data, Map.class, params);
-		handleResponseErrors(response);
 		return extractor.extractObject(response.getBody());
 	}
 
@@ -159,15 +153,6 @@ public class TwitterTemplate implements TwitterApi, TwitterRequestApi {
 		return restTemplate;
 	}
 
-	@SuppressWarnings("rawtypes")
-	private void handleResponseErrors(ResponseEntity<Map> response) {
-		SocialException exception = statusCodeTranslator.translate(response);
-		if (exception != null) {
-			throw exception;
-		}
-	}
-	
 	public static final String API_URL_BASE = "https://api.twitter.com/1/";
 
-	private ResponseStatusCodeTranslator statusCodeTranslator;
 }

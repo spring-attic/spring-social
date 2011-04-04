@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.social.ResponseStatusCodeTranslator;
-import org.springframework.social.SocialException;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
 import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.web.client.RestTemplate;
@@ -32,14 +30,12 @@ import org.springframework.web.client.RestTemplate;
 public class FriendsApiTemplate implements FriendsApi {
 	
 	private final RestTemplate restTemplate;
-	private final ResponseStatusCodeTranslator statusCodeTranslator;
 	private TwitterProfileResponseExtractor profileExtractor;
 	private final TwitterRequestApi requestApi;
 
-	public FriendsApiTemplate(TwitterRequestApi requestApi, RestTemplate restTemplate, ResponseStatusCodeTranslator statusCodeTranslator) {
+	public FriendsApiTemplate(TwitterRequestApi requestApi, RestTemplate restTemplate) {
 		this.requestApi = requestApi;
 		this.restTemplate = restTemplate;
-		this.statusCodeTranslator = statusCodeTranslator;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
 	}
 
@@ -115,18 +111,9 @@ public class FriendsApiTemplate implements FriendsApi {
 	private String friendshipAssist(String url, Object urlArgs) {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restTemplate.postForEntity(url, "", Map.class, urlArgs);
-		handleResponseErrors(response);
         Map<String, Object> body = response.getBody();
         return (String) body.get("screen_name");
 	}	
-	
-	@SuppressWarnings("rawtypes")
-	private void handleResponseErrors(ResponseEntity<Map> response) {
-		SocialException exception = statusCodeTranslator.translate(response);
-		if (exception != null) {
-			throw exception;
-		}
-	}
 
 	static final String FRIEND_IDS_URL = TwitterTemplate.API_URL_BASE + "friends/ids.json";
 	static final String FOLLOWER_IDS_URL = TwitterTemplate.API_URL_BASE + "followers/ids.json";
