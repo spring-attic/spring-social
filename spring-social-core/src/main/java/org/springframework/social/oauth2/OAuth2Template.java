@@ -67,10 +67,10 @@ public class OAuth2Template implements OAuth2Operations {
 		requestParameters.set("grant_type", "authorization_code");
 		@SuppressWarnings("unchecked")
 		Map<String, ?> result = restTemplate.postForObject(accessTokenUrl, requestParameters, Map.class);
-		return new AccessGrant(valueOf(result.get("access_token")), valueOf(result.get("refresh_token")));
+		return extractAccessGrantFromResponse(result);
 	}
-	
-	public AccessGrant refreshAccessToken(String refreshToken) {
+
+	public AccessGrant refreshAccess(String refreshToken) {
 		MultiValueMap<String, String> requestParameters = new LinkedMultiValueMap<String, String>();
 		requestParameters.set("client_id", clientId);
 		requestParameters.set("client_secret", clientSecret);
@@ -78,7 +78,7 @@ public class OAuth2Template implements OAuth2Operations {
 		requestParameters.set("grant_type", "refresh_token");
 		@SuppressWarnings("unchecked")
 		Map<String, ?> result = restTemplate.postForObject(accessTokenUrl, requestParameters, Map.class);
-		return new AccessGrant(valueOf(result.get("access_token")), valueOf(result.get("refresh_token")));
+		return extractAccessGrantFromResponse(result);
 	}
 
 	// testing hooks
@@ -88,6 +88,19 @@ public class OAuth2Template implements OAuth2Operations {
 	}
 	
 	// internal helpers
+	private AccessGrant extractAccessGrantFromResponse(Map<String, ?> result) {
+		HashMap<String, Object> additionalParameters = new HashMap<String, Object>(result);
+		additionalParameters.remove("access_token");
+		additionalParameters.remove("expires_in");
+		additionalParameters.remove("refresh_token");
+		additionalParameters.remove("scope");
+		
+		return new AccessGrant(valueOf(result.get("access_token")),
+				(Integer) result.get("expires_in"),
+				valueOf(result.get("refresh_token")),
+				(String) result.get("scope"),
+				additionalParameters);
+	}
 	
 	// TODO : Can probably tweak RestTemplate's message converters to deal with this better.
 	// TODO - KD: clarify: what is this for?

@@ -16,6 +16,8 @@
 package org.springframework.social.oauth2;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * OAuth2 access token.
@@ -27,14 +29,23 @@ public final class AccessGrant implements Serializable {
 	private final String accessToken;
 	
 	private final String refreshToken;
+	
+	private final Long expireTime;
+
+	private final Map<String, Object> additionalParameters;
+
+	private final String scope;
 
 	public AccessGrant(String accessToken) {
-		this(accessToken, null);
+		this(accessToken, null, null, null, Collections.<String, Object>emptyMap());
 	}
 	
-	public AccessGrant(String accessToken, String refreshToken) {
+	public AccessGrant(String accessToken, Integer expiresIn, String refreshToken, String scope, Map<String, Object> additionalParameters) {
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;
+		this.scope = scope;
+		this.additionalParameters = additionalParameters;
+		this.expireTime = expiresIn != null ? System.currentTimeMillis() + expiresIn * 1000 : null;
 	}
 
 	/**
@@ -45,10 +56,33 @@ public final class AccessGrant implements Serializable {
 	}
 
 	/**
+	 * The time (in milliseconds since Jan 1, 1970 UTC) when this access grant will expire.
+	 * May be null if the token is non-expiring.
+	 */
+	public Long getExpireTime() {
+		return expireTime;
+	}
+	
+	/**
 	 * The refresh token that can be used to renew the access token.
 	 */
 	public String getRefreshToken() {
 		return refreshToken;
+	}
+
+	/**
+	 * The scope of the access grant.
+	 * May be null if the provider doesn't return the granted scope in the response.
+	 */
+	public String getScope() {
+		return scope;
+	}
+	
+	/**
+	 * Additional parameters returned along with the access grant.
+	 */
+	public Map<String, Object> getAdditionalParameters() {
+		return additionalParameters;
 	}
 
 }
