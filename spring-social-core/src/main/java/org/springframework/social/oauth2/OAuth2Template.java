@@ -95,9 +95,11 @@ public class OAuth2Template implements OAuth2Operations {
 		additionalParameters.remove("refresh_token");
 		additionalParameters.remove("scope");
 		
+		Integer expiresIn = (Integer) result.get("expires_in");
+		
 		return new AccessGrant(valueOf(result.get("access_token")),
-				(Integer) result.get("expires_in"),
 				valueOf(result.get("refresh_token")),
+				expiresIn != null ? System.currentTimeMillis() + expiresIn * 1000 : null,
 				(String) result.get("scope"),
 				additionalParameters);
 	}
