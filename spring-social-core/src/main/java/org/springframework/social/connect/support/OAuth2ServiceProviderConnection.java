@@ -90,13 +90,17 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 	}
 
 	public boolean hasExpired() {
-		return System.currentTimeMillis() >= expireTime;
+		synchronized (monitor) {
+			return System.currentTimeMillis() >= expireTime;
+		}
 	}
 
 	public void refresh() {
-		AccessGrant accessGrant = serviceProvider.getOAuthOperations().refreshAccess(refreshToken);
-		initAccessTokens(accessGrant.getAccessToken(), accessGrant.getRefreshToken(), accessGrant.getExpireTime());
-		initServiceApi();
+		synchronized (monitor) {
+			AccessGrant accessGrant = serviceProvider.getOAuthOperations().refreshAccess(refreshToken);
+			initAccessTokens(accessGrant.getAccessToken(), accessGrant.getRefreshToken(), accessGrant.getExpireTime());
+			initServiceApi();
+		}
 	}
 
 	public void updateStatus(String message) {
@@ -120,7 +124,9 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 	}
 
 	public ServiceProviderConnectionData createData() {
-		return new ServiceProviderConnectionData(key.getProviderId(), key.getProviderUserId(), user.getProfileName(), user.getProfileUrl(), user.getProfilePictureUrl(), accessToken, null, refreshToken, expireTime);
+		synchronized (monitor) {
+			return new ServiceProviderConnectionData(key.getProviderId(), key.getProviderUserId(), user.getProfileName(), user.getProfileUrl(), user.getProfilePictureUrl(), accessToken, null, refreshToken, expireTime);
+		}
 	}
 
 	// identity
@@ -163,7 +169,7 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			synchronized (monitor) {
 				if (OAuth2ServiceProviderConnection.this.hasExpired()) {
-					throw new IllegalStateException("This OAuth2-based ServiceProviderConnection has expired: not possible to invoke service API");
+					throw new IllegalStateException("This OAuth2-based ServiceProviderConnection has expired: it is not possible to invoke the service API");
 				}
 				return method.invoke(OAuth2ServiceProviderConnection.this.serviceApi, args);				
 			}
