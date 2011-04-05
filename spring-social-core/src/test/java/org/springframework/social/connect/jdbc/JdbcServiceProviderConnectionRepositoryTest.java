@@ -68,8 +68,8 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 	}
 
 	@Test
-	public void findConnectionsEmptyResult() {
-		assertTrue(connectionRepository.findConnections().isEmpty());
+	public void findAllConnectionsEmptyResult() {
+		assertTrue(connectionRepository.findAllConnections().isEmpty());
 	}
 	
 	@Test
@@ -78,26 +78,26 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 	}
 	
 	@Test
-	public void findConnectionsByProviderUserEmptyResult() {
+	public void findConnectionsForUsersEmptyResult() {
 		Map<String, List<String>> providerUsers = new HashMap<String, List<String>>();
 		providerUsers.put("facebook", Collections.singletonList("1"));
 		assertTrue(connectionRepository.findConnectionsForUsers(providerUsers).isEmpty());
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
-	public void findConnectionsByIdEmptyInput() {
+	public void findConnectionsForUsersEmptyInput() {
 		Map<String, List<String>> providerUsers = new HashMap<String, List<String>>();
 		connectionRepository.findConnectionsForUsers(providerUsers);
 	}
 	
 	@Test
-	public void removeConnectionsNoOp() {
+	public void removeConnectionsToProviderNoOp() {
 		connectionRepository.removeConnectionsToProvider("twitter");
 	}
 
 	@Test
 	public void removeConnectionNoOp() {
-		connectionRepository.removeConnectionWithKey(new ServiceProviderConnectionKey("facebook", "1"));
+		connectionRepository.removeConnection(new ServiceProviderConnectionKey("facebook", "1"));
 	}
 
 	@Test

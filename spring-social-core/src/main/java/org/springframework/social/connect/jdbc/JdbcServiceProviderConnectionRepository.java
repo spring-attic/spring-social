@@ -54,7 +54,7 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		this.textEncryptor = textEncryptor;
 	}
 	
-	public List<ServiceProviderConnection<?>> findConnections() {
+	public List<ServiceProviderConnection<?>> findAllConnections() {
 		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? order by providerId, rank", connectionMapper, getLocalUserId());
 	}
 
@@ -81,7 +81,7 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and " + providerUsersCriteriaSql, args.toArray(), connectionMapper);
 	}
 
-	public ServiceProviderConnection<?> findConnectionByKey(ServiceProviderConnectionKey connectionKey) {
+	public ServiceProviderConnection<?> findConnection(ServiceProviderConnectionKey connectionKey) {
 		return jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and providerUserId = ? order by rank", connectionMapper, getLocalUserId(), connectionKey.getProviderId(), connectionKey.getProviderUserId());
 	}
 
@@ -109,7 +109,7 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		jdbcTemplate.update("delete from ServiceProviderConnection where localUserId = ? and providerId = ?", getLocalUserId(), providerId);
 	}
 
-	public void removeConnectionWithKey(ServiceProviderConnectionKey connectionKey) {
+	public void removeConnection(ServiceProviderConnectionKey connectionKey) {
 		jdbcTemplate.update("delete from ServiceProviderConnection where localUserId = ? and providerId = ? and providerUserId = ?", getLocalUserId(), connectionKey.getProviderId(), connectionKey.getProviderUserId());		
 	}
 

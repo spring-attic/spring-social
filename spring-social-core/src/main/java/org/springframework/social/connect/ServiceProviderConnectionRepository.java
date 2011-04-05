@@ -20,13 +20,13 @@ import java.util.Map;
 
 public interface ServiceProviderConnectionRepository {
 
-	List<ServiceProviderConnection<?>> findConnections();
+	List<ServiceProviderConnection<?>> findAllConnections();
 
 	List<ServiceProviderConnection<?>> findConnectionsToProvider(String providerId);
 
 	List<ServiceProviderConnection<?>> findConnectionsForUsers(Map<String, List<String>> providerUsers);
 	
-	ServiceProviderConnection<?> findConnectionByKey(ServiceProviderConnectionKey connectionKey);
+	ServiceProviderConnection<?> findConnection(ServiceProviderConnectionKey connectionKey);
 
 	<S> ServiceProviderConnection<S> findConnectionByServiceApi(Class<S> serviceApiType);
 
@@ -36,6 +36,6 @@ public interface ServiceProviderConnectionRepository {
 
 	void removeConnectionsToProvider(String providerId);
 
-	void removeConnectionWithKey(ServiceProviderConnectionKey connectionKey);
+	void removeConnection(ServiceProviderConnectionKey connectionKey);
 	
 }
