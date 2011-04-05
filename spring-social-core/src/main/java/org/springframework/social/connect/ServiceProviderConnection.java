@@ -28,13 +28,13 @@ public interface ServiceProviderConnection<S> {
 	ServiceProviderConnectionKey getKey();
 	
 	/**
-	 * Information about the user on the provider's system.
+	 * Information about the connected user on the provider's system.
 	 */
 	ServiceProviderUser getUser();
 	
 	/**
 	 * Test this connection.
-	 * If false, indicates that service API calls will fail.
+	 * If false, indicates that calls to the {@link #getServiceApi() serviceApi} will fail.
 	 */
 	boolean test();
 	
@@ -51,15 +51,14 @@ public interface ServiceProviderConnection<S> {
 	
 	/**
 	 * Update the user's status on the provider's system.
-	 * Allows a message to be broadcast from the local user to the provider user.
 	 * This method will be a no-op if a status concept is not supported by the service provider.
 	 * @param message the status message
 	 */
 	void updateStatus(String message);
 	
 	/**
-	 * Sync's this connection object with the current state of the linked provider user.
-	 * Will cause locally cached profile fields to update if they have changed on the provider's system. 
+	 * Sync's this connection object with the current state of the connected provider user.
+	 * Triggers locally cached profile fields to update if they have changed on the provider's system. 
 	 */
 	void sync();
 	

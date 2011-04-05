@@ -38,11 +38,11 @@ public abstract class ServiceProviderConnectionFactory<S> {
 		return providerId;
 	}
 
-	public ServiceProvider<S> getServiceProvider() {
+	protected ServiceProvider<S> getServiceProvider() {
 		return serviceProvider;
 	}
 
-	public ServiceApiAdapter<S> getServiceApiAdapter() {
+	protected ServiceApiAdapter<S> getServiceApiAdapter() {
 		return serviceApiAdapter;
 	}
 

@@ -27,8 +27,7 @@ import org.springframework.social.oauth1.OAuthToken;
 
 public class OAuth1ServiceProviderConnectionFactory<S> extends ServiceProviderConnectionFactory<S> {
 	
-	public OAuth1ServiceProviderConnectionFactory(String providerId, OAuth1ServiceProvider<S> serviceProvider,
-			ServiceApiAdapter<S> serviceApiAdapter) {
+	public OAuth1ServiceProviderConnectionFactory(String providerId, OAuth1ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
 		super(providerId, serviceProvider, serviceApiAdapter);
 	}
 
