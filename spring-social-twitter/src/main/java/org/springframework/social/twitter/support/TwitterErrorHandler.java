@@ -16,8 +16,6 @@
 package org.springframework.social.twitter.support;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonFactory;
@@ -25,11 +23,16 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.social.AccountNotConnectedException;
+import org.springframework.social.BadCredentialsException;
 import org.springframework.social.OperationNotPermittedException;
 import org.springframework.social.twitter.DuplicateTweetException;
-import org.springframework.social.twitter.FriendshipFailureException;
+import org.springframework.social.twitter.EnhanceYourCalmException;
+import org.springframework.social.twitter.InternalProviderErrorException;
 import org.springframework.social.twitter.InvalidMessageRecipientException;
+import org.springframework.social.twitter.NotFoundException;
+import org.springframework.social.twitter.StatusLengthException;
+import org.springframework.social.twitter.ProviderDownException;
+import org.springframework.social.twitter.ProviderOverloadedException;
 import org.springframework.social.twitter.TwitterTemplate;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpClientErrorException;
@@ -54,51 +57,70 @@ import org.springframework.web.client.RestTemplate;
  * @author Craig Walls
  */
 public class TwitterErrorHandler extends DefaultResponseErrorHandler {
-	private static List<HttpStatus> NOT_ERRORS = Arrays.asList();
-	
-	public boolean hasError(ClientHttpResponse response) throws IOException {
-		if (NOT_ERRORS.contains(response.getStatusCode())) {
-			return false;
-		}
-
-		return super.hasError(response);
+		
+	@Override
+	public void handleError(ClientHttpResponse response) throws IOException {
+		handleServerErrors(response);
+		handleClientErrors(response);
+		super.handleError(response);
 	}
 	
 	@Override
-	public void handleError(ClientHttpResponse response) throws IOException {
-	    String errorText = extractErrorTextFromResponse(response);	    
+	protected boolean hasError(HttpStatus statusCode) {
+//		if(statusCode == HttpStatus.UNAUTHORIZED) {
+//			throw new BadCredentialsException("");
+//			return true;
+//		}
+		
+		return super.hasError(statusCode);
+	}
+
+	private void handleClientErrors(ClientHttpResponse response) throws IOException {
 		HttpStatus statusCode = response.getStatusCode();
+
+		if (statusCode == HttpStatus.UNAUTHORIZED) {
+			throw new BadCredentialsException("Bad or missing access token.");
+		}
+		
+		Map<String, String> errorMap = extractErrorDetailsFromResponse(response);
+	    String errorText = errorMap.get("error");
 		
 		if(statusCode == HttpStatus.FORBIDDEN) {
 			if (errorText.equals(DUPLICATE_STATUS_TEXT) || errorText.contains("You already said that")) {
 				throw new DuplicateTweetException(errorText);
+			} else if (errorText.equals(STATUS_TOO_LONG_TEXT)) {
+				throw new StatusLengthException(errorText);
 			} else if (errorText.equals(INVALID_MESSAGE_RECIPIENT_TEXT)) {
 				throw new InvalidMessageRecipientException(errorText);
-			} else if (errorText.contains(COULD_NOT_FOLLOW_USER_TEXT)  && errorText.contains(USER_ALREADY_ON_LIST_TEXT)){
-				throw new FriendshipFailureException(errorText);
-			} else if (errorText.equals(USER_IS_NOT_FRIENDS_TEXT)) {
-				throw new FriendshipFailureException(errorText);
 			} else {
 				throw new OperationNotPermittedException(errorText);
 			}			
-		} else if (statusCode.equals(HttpStatus.UNAUTHORIZED)) {
-			throw new AccountNotConnectedException(errorText);
+		} else if (statusCode == HttpStatus.NOT_FOUND) {
+			throw new NotFoundException(errorText + "; Path: " + errorMap.get("request"));
+		} else if (statusCode == HttpStatus.valueOf(ENHANCE_YOUR_CALM)) {
+			throw new EnhanceYourCalmException(errorText);
 		}
-		super.handleError(response);
 	}
 
-	private String extractErrorTextFromResponse(ClientHttpResponse response) throws IOException {
-		ObjectMapper mapper = new ObjectMapper(new JsonFactory()); 
-	    Map<String, String> body = mapper.readValue(response.getBody(), new TypeReference<Map<String, String>>() {}); 
-		return body.get("error");
+	private void handleServerErrors(ClientHttpResponse response) throws IOException {
+		HttpStatus statusCode = response.getStatusCode();
+		if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR) {
+			throw new InternalProviderErrorException("Something is broken at Twitter. Please see http://dev.twitter.com/pages/support to report the issue.");
+		} else if (statusCode == HttpStatus.BAD_GATEWAY) {
+			throw new ProviderDownException("Twitter is down or is being upgraded.");
+		} else if (statusCode == HttpStatus.SERVICE_UNAVAILABLE) {
+			throw new ProviderOverloadedException("Twitter is overloaded with requests. Try again later.");
+		}
 	}
 
-	static final String INVALID_MESSAGE_RECIPIENT_TEXT = "You cannot send messages to users who are not following you.";
-	static final String DUPLICATE_STATUS_TEXT = "Status is a duplicate.";
-	
-	static final String COULD_NOT_FOLLOW_USER_TEXT = "Could not follow user";
-	static final String USER_ALREADY_ON_LIST_TEXT = "is already on your list";
-	
-	static final String USER_IS_NOT_FRIENDS_TEXT = "You are not friends with the specified user.";
+	private Map<String, String> extractErrorDetailsFromResponse(ClientHttpResponse response) throws IOException {
+		ObjectMapper mapper = new ObjectMapper(new JsonFactory());
+	    return mapper.<Map<String, String>>readValue(response.getBody(), new TypeReference<Map<String, String>>() {});
+	}
 
+	private static final String INVALID_MESSAGE_RECIPIENT_TEXT = "You cannot send messages to users who are not following you.";
+	private static final String STATUS_TOO_LONG_TEXT = "Status is over 140 characters.";
+	private static final String DUPLICATE_STATUS_TEXT = "Status is a duplicate.";
+	
+	private static final int ENHANCE_YOUR_CALM = 420;
 }

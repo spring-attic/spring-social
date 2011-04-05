@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.social.AccountNotConnectedException;
+import org.springframework.http.HttpStatus;
 import org.springframework.social.OperationNotPermittedException;
 import org.springframework.social.twitter.types.StatusDetails;
 import org.springframework.social.twitter.types.Tweet;
@@ -72,23 +72,22 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 
 		twitter.tweetApi().updateStatus("Test Message");
 	}
-
+	
+	@Test(expected=StatusLengthException.class)
+	public void updateStatus_tweetTooLong() {
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/update.json"))
+			.andExpect(method(POST))
+			.andExpect(body("status=Really+long+message"))
+			.andRespond(withResponse("{\"error\":\"Status is over 140 characters.\"}", responseHeaders, HttpStatus.FORBIDDEN, ""));
+		twitter.tweetApi().updateStatus("Really long message");
+	}
+	
 	@Test(expected = OperationNotPermittedException.class)
 	public void updateStatus_forbidden() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/update.json"))
 				.andExpect(method(POST))
 				.andExpect(body("status=Test+Message"))
 				.andRespond(withResponse("{\"error\":\"Forbidden\"}", responseHeaders, FORBIDDEN, ""));
-
-		twitter.tweetApi().updateStatus("Test Message");
-	}
-
-	@Test(expected = AccountNotConnectedException.class)
-	public void updateStatus_unauthorized() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/update.json"))
-				.andExpect(method(POST))
-				.andExpect(body("status=Test+Message"))
-				.andRespond(withResponse("{\"error\":\"Not authenticated\"}", responseHeaders, UNAUTHORIZED, ""));
 
 		twitter.tweetApi().updateStatus("Test Message");
 	}
@@ -127,15 +126,6 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/retweet/12345.json"))
 				.andExpect(method(POST))
 				.andRespond(withResponse("{\"error\":\"Forbidden\"}", responseHeaders, FORBIDDEN, ""));
-
-		twitter.tweetApi().retweet(12345);
-	}
-
-	@Test(expected = AccountNotConnectedException.class)
-	public void retweet_unauthorized() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/retweet/12345.json"))
-				.andExpect(method(POST))
-				.andRespond(withResponse("{\"error\":\"Not authenticated\"}", responseHeaders, UNAUTHORIZED, ""));
 
 		twitter.tweetApi().retweet(12345);
 	}

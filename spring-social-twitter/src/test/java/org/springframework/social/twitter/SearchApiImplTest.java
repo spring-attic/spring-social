@@ -277,7 +277,7 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 		List<Trend> trends = localTrends.getTrends();
 		assertEquals(2, trends.size());
 	}	
-
+	
 	// test helpers
 
 	private void assertSearchTweets(List<Tweet> tweets) {

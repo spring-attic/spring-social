@@ -17,7 +17,6 @@ package org.springframework.social.twitter;
 
 import static org.junit.Assert.*;
 import static org.springframework.http.HttpMethod.*;
-import static org.springframework.http.HttpStatus.*;
 import static org.springframework.social.test.client.RequestMatchers.*;
 import static org.springframework.social.test.client.ResponseCreators.*;
 
@@ -144,16 +143,6 @@ public class FriendsApiImplTest extends AbstractTwitterApiTest {
 	    mockServer.verify();
 	}
 	
-	@Test(expected = FriendshipFailureException.class)
-	public void follow_alreadyFollowing() {
-	    mockServer.expect(requestTo("https://api.twitter.com/1/friendships/create.json?screen_name=oizik2"))
-            .andExpect(method(POST))
-            .andRespond(withResponse("{\"error\" : \"Could not follow user: oizik2 is already on your list.\"}",
-                    responseHeaders, FORBIDDEN, ""));
-	    
-		twitter.friendsApi().follow("oizik2");
-	}
-
 	@Test
 	public void unfollow_byUserId() {
         mockServer.expect(requestTo("https://api.twitter.com/1/friendships/destroy.json?user_id=98765"))
@@ -178,15 +167,6 @@ public class FriendsApiImplTest extends AbstractTwitterApiTest {
         mockServer.verify();
     }
 	
-	@Test(expected = FriendshipFailureException.class)
-    public void unfollow_notFollowing() {
-        mockServer.expect(requestTo("https://api.twitter.com/1/friendships/destroy.json?screen_name=oizik2"))
-            .andExpect(method(POST))
-            .andRespond(withResponse("{\"error\" : \"You are not friends with the specified user.\"}", responseHeaders, FORBIDDEN, ""));
-        
-		twitter.friendsApi().unfollow("oizik2");
-    }
-
 	@Test
 	public void exists() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/friendships/exists.json?user_a=kdonald&user_b=tinyrod"))

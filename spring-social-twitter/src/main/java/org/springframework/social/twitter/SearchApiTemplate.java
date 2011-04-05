@@ -19,8 +19,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +27,6 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.social.twitter.support.extractors.SavedSearchResponseExtractor;
-import org.springframework.social.twitter.support.extractors.TrendResponseExtractor;
 import org.springframework.social.twitter.support.extractors.TrendsListResponseExtractor;
 import org.springframework.social.twitter.types.SavedSearch;
 import org.springframework.social.twitter.types.SearchResults;
@@ -50,7 +47,6 @@ public class SearchApiTemplate implements SearchApi {
 
 	private final RestTemplate restTemplate;
 	private SavedSearchResponseExtractor savedSearchExtractor;
-	private TrendResponseExtractor trendExtractor;
 	private TrendsListResponseExtractor trendsListExtractor;
 	private TrendsListResponseExtractor weeklyTrendsListExtractor;
 	private final TwitterRequestApi requestApi;
@@ -59,7 +55,6 @@ public class SearchApiTemplate implements SearchApi {
 		this.requestApi = requestApi;
 		this.restTemplate = restTemplate;
 		this.savedSearchExtractor = new SavedSearchResponseExtractor();
-		this.trendExtractor = new TrendResponseExtractor();
 		this.trendsListExtractor = new TrendsListResponseExtractor(TrendsListResponseExtractor.LONG_TREND_DATE_FORMAT);
 		this.weeklyTrendsListExtractor = new TrendsListResponseExtractor(TrendsListResponseExtractor.SIMPLE_TREND_DATE_FORMAT);
 	}
@@ -180,23 +175,6 @@ public class SearchApiTemplate implements SearchApi {
 		return url;
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<Trends> extractTrendsListFromResponse(Map<String, Object> response, DateFormat dateFormat) {		
-		Map<String, Object> trendsMap = (Map<String, Object>) response.get("trends");
-		List<Trends> trendsList = new ArrayList<Trends>(trendsMap.keySet().size());
-		for (String trendDate : trendsMap.keySet()) {
-			List<Map<String, Object>> trendsMapList = (List<Map<String, Object>>) trendsMap.get(trendDate);
-			List<Trend> trendList = trendExtractor.extractObjects(trendsMapList);
-			trendsList.add(new Trends(toDate(trendDate, dateFormat), trendList));
-		}
-		Collections.sort(trendsList, new Comparator<Trends>() {
-			public int compare(Trends t1, Trends t2) {
-				return t1.getTime().getTime() > t2.getTime().getTime() ? -1 : 1;
-			}
-		});
-		return trendsList;
-	}
-
 	private SearchResults buildSearchResults(Map<String, Object> response, List<Tweet> tweets) {
 		Number maxId = response.containsKey("max_id") ? (Number) response.get("max_id") : 0;
 		Number sinceId = response.containsKey("since_id") ? (Number) response.get("since_id") : 0;
@@ -221,8 +199,6 @@ public class SearchApiTemplate implements SearchApi {
 	}
 
 	private static final DateFormat searchDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
-	private static final DateFormat simpleTrendDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	private static final DateFormat longTrendDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static final DateFormat localTrendDateFormat = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss'Z'");
 
 	// 2011-03-18T16:45:33Z

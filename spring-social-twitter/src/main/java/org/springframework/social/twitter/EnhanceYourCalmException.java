@@ -13,16 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.support.extractors;
+package org.springframework.social.twitter;
 
-import java.util.Map;
+import org.springframework.social.SocialException;
 
-import org.springframework.social.twitter.types.Trend;
-
-public class TrendResponseExtractor extends AbstractResponseExtractor<Trend> {
+@SuppressWarnings("serial")
+public class EnhanceYourCalmException extends SocialException {
 	
-	public Trend extractObject(Map<String, Object> trendMap) {
-		return new Trend((String) trendMap.get("name"), (String) trendMap.get("query"));
+	public EnhanceYourCalmException(String message) {
+		super(message);
 	}
 	
+	public EnhanceYourCalmException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

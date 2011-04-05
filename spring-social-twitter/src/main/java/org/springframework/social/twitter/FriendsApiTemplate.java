@@ -18,7 +18,6 @@ package org.springframework.social.twitter;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
 import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.web.client.RestTemplate;
@@ -109,10 +108,8 @@ public class FriendsApiTemplate implements FriendsApi {
 
 	@SuppressWarnings("unchecked")
 	private String friendshipAssist(String url, Object urlArgs) {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restTemplate.postForEntity(url, "", Map.class, urlArgs);
-        Map<String, Object> body = response.getBody();
-        return (String) body.get("screen_name");
+		Map<String, Object> response = restTemplate.postForObject(url, "", Map.class, urlArgs);
+        return (String) response.get("screen_name");
 	}	
 
 	static final String FRIEND_IDS_URL = TwitterTemplate.API_URL_BASE + "friends/ids.json";

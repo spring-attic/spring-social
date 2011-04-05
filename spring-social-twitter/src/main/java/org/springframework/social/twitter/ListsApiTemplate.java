@@ -17,7 +17,6 @@ package org.springframework.social.twitter;
 
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.social.twitter.support.extractors.TweetResponseExtractor;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
 import org.springframework.social.twitter.support.extractors.UserListResponseExtractor;
@@ -26,7 +25,6 @@ import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.social.twitter.types.UserList;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -181,11 +179,8 @@ public class ListsApiTemplate implements ListsApi {
 		try {
 			restTemplate.getForObject(url, String.class, urlArgs);
 			return true;
-		} catch (HttpClientErrorException e) {
-			if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-				return false;
-			}
-			throw e;
+		} catch (NotFoundException e) {
+			return false;
 		}
 	}
 

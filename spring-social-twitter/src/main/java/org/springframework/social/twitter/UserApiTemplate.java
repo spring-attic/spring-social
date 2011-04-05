@@ -57,12 +57,10 @@ public class UserApiTemplate implements UserApi {
 		return requestApi.fetchObject("account/verify_credentials.json", profileExtractor);
 	}
 
-	@SuppressWarnings("unchecked")
 	public TwitterProfile getUserProfile(String screenName) {
-		return requestApi.fetchObject("users/show.json?screen_name={screenName}", profileExtractor);
+		return requestApi.fetchObject("users/show.json?screen_name={screenName}", profileExtractor, screenName);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public TwitterProfile getUserProfile(long userId) {
 		return requestApi.fetchObject("users/show.json?user_id={userId}", profileExtractor, userId);
 	}
@@ -80,7 +78,6 @@ public class UserApiTemplate implements UserApi {
 		return requestApi.fetchObjects("users/search.json?q={query}", profileExtractor, query);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<SuggestionCategory> getSuggestionCategories() {
 		return requestApi.fetchObjects("users/suggestions.json", suggestionCategoryExtractor);
 	}
@@ -89,11 +86,6 @@ public class UserApiTemplate implements UserApi {
 	public List<TwitterProfile> getSuggestions(String slug) {
 		Map<String, List<Map<String, Object>>> suggestionsMap = restTemplate.getForObject(SUGGESTIONS_URL, Map.class, slug);
 		return profileExtractor.extractObjects(suggestionsMap.get("users"));
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<TwitterProfile> lookupUsers(String url, String... urlArgs) {
-		return profileExtractor.extractObjects((List<Map<String, Object>>) restTemplate.getForObject(url, List.class, (Object[]) urlArgs));
 	}
 
 	static final String SUGGESTIONS_URL = TwitterTemplate.API_URL_BASE + "users/suggestions/{slug}.json";

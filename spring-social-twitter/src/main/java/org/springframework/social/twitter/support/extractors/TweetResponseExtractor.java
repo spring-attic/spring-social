@@ -24,6 +24,7 @@ public class TweetResponseExtractor extends AbstractResponseExtractor<Tweet> {
 		Tweet tweet = new Tweet();
 		tweet.setId(Long.valueOf(String.valueOf(tweetMap.get("id"))));
 		tweet.setText(String.valueOf(tweetMap.get("text")));
+		@SuppressWarnings("unchecked")
 		Map<String, Object> fromUserMap = (Map<String, Object>) tweetMap.get("user");
 		if(fromUserMap != null) {			
 			tweet.setFromUser(String.valueOf(fromUserMap.get("screen_name")));

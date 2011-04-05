@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.social.AccountNotConnectedException;
+import org.springframework.social.BadCredentialsException;
 import org.springframework.social.oauth1.ProtectedResourceClientFactory;
 import org.springframework.social.twitter.support.TwitterErrorHandler;
 import org.springframework.social.twitter.support.extractors.ResponseExtractor;
@@ -39,7 +39,7 @@ import org.springframework.web.client.RestTemplate;
  * authentication. In those cases, you may use a {@link TwitterTemplate} that is
  * created through the default constructor and without any OAuth details.
  * Attempts to perform secured operations through such an instance, however,
- * will result in {@link AccountNotConnectedException} being thrown.
+ * will result in {@link BadCredentialsException} being thrown.
  * </p>
  * @author Craig Walls
  */
@@ -64,7 +64,7 @@ public class TwitterTemplate implements TwitterApi, TwitterRequestApi {
 	 * This constructor creates a new TwitterTemplate able to perform unauthenticated operations against Twitter's API.
 	 * Some operations, such as search, do not require OAuth authentication.
 	 * A TwitterTemplate created with this constructor will support those operations.
-	 * Those operations requiring authentication will throw {@link AccountNotConnectedException}.
+	 * Those operations requiring authentication will throw {@link BadCredentialsException}.
 	 */
 	public TwitterTemplate() {
 		this(new RestTemplate());
@@ -118,15 +118,18 @@ public class TwitterTemplate implements TwitterApi, TwitterRequestApi {
 	
 	// low-level
 	public <T> T fetchObject(String path, ResponseExtractor<T> extractor, Object... params) {
+		@SuppressWarnings("unchecked")
 		Map<String, Object> response = restTemplate.getForObject(API_URL_BASE + path, Map.class, params);
 		return extractor.extractObject(response);
 	}
 	
 	public <T> List<T> fetchObjects(String path, ResponseExtractor<T> extractor, Object... params) {
+		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> response = restTemplate.getForObject(API_URL_BASE + path, List.class, params);
 		return extractor.extractObjects(response);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> List<T> fetchObjects(String path, String jsonPath, ResponseExtractor<T> extractor, Object... params) {
 		Map<String, Object> response = restTemplate.getForObject(API_URL_BASE + path, Map.class, params);
 		List<Map<String, Object>> list = (List<Map<String, Object>>) response.get(jsonPath);
@@ -134,9 +137,10 @@ public class TwitterTemplate implements TwitterApi, TwitterRequestApi {
 	}
 	
 	public void publish(String path, MultiValueMap<String, Object> data, Object... params) {
-		ResponseEntity<Map> response = restTemplate.postForEntity(API_URL_BASE + path, data, Map.class, params);
+		restTemplate.postForEntity(API_URL_BASE + path, data, Map.class, params);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor, Object... params) {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> response = restTemplate.postForEntity(API_URL_BASE + path, data, Map.class, params);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social;
+package org.springframework.social.twitter;
 
-/**
- * Indicates a security-related error while performing an operation on a social
- * network provider (updating a Twitter user's status without an OAuth access
- * token, for example).
- * 
- * @author Craig Walls
- */
-public class AccountNotConnectedException extends SocialException {
-	private static final long serialVersionUID = 1L;
+import org.springframework.social.SocialException;
 
-	public AccountNotConnectedException(String message) {
+// TODO : This may be a candidate for extraction as a more general-purpose provider exception
+@SuppressWarnings("serial")
+public class NotFoundException extends SocialException {
+
+	public NotFoundException(String message) {
 		super(message);
 	}
-
-	public AccountNotConnectedException(String message, Throwable cause) {
+	
+	public NotFoundException(String message, Throwable cause) {
 		super(message, cause);
 	}
-
+	
 }
