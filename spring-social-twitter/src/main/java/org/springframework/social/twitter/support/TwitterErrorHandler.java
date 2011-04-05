@@ -30,9 +30,9 @@ import org.springframework.social.twitter.EnhanceYourCalmException;
 import org.springframework.social.twitter.InternalProviderErrorException;
 import org.springframework.social.twitter.InvalidMessageRecipientException;
 import org.springframework.social.twitter.NotFoundException;
-import org.springframework.social.twitter.StatusLengthException;
 import org.springframework.social.twitter.ProviderDownException;
 import org.springframework.social.twitter.ProviderOverloadedException;
+import org.springframework.social.twitter.StatusLengthException;
 import org.springframework.social.twitter.TwitterTemplate;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpClientErrorException;
@@ -65,16 +65,6 @@ public class TwitterErrorHandler extends DefaultResponseErrorHandler {
 		super.handleError(response);
 	}
 	
-	@Override
-	protected boolean hasError(HttpStatus statusCode) {
-//		if(statusCode == HttpStatus.UNAUTHORIZED) {
-//			throw new BadCredentialsException("");
-//			return true;
-//		}
-		
-		return super.hasError(statusCode);
-	}
-
 	private void handleClientErrors(ClientHttpResponse response) throws IOException {
 		HttpStatus statusCode = response.getStatusCode();
 
