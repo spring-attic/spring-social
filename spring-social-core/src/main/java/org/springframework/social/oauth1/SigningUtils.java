@@ -51,10 +51,9 @@ class SigningUtils {
 		Map<String, String> oauthParameters = new HashMap<String, String>();
 		oauthParameters.put("oauth_consumer_key", consumerKey);
 		oauthParameters.put("oauth_signature_method", HMAC_SHA1_SIGNATURE_NAME);
-		long timestamp = System.currentTimeMillis() / 1000;
+		long timestamp = generateTimestamp();
 		oauthParameters.put("oauth_timestamp", Long.toString(timestamp));
-		long nonce = timestamp + RANDOM.nextInt();
-		oauthParameters.put("oauth_nonce", Long.toString(nonce));
+		oauthParameters.put("oauth_nonce", Long.toString(generateNonce(timestamp)));
 		oauthParameters.put("oauth_version", "1.0");
 		return oauthParameters;
 	}
@@ -92,6 +91,16 @@ class SigningUtils {
 	}
 
 	// internal helpers
+
+	private static long generateTimestamp() {
+		return System.currentTimeMillis() / 1000;
+	}
+	
+	private static long generateNonce(long timestamp) {
+		return timestamp + RANDOM.nextInt();		
+	}
+	
+	private static final Random RANDOM = new Random();
 	
 	private static String buildBaseString(String targetUrl, HttpMethod method, Map<String, String> oauthParameters, MultiValueMap<String, String> additionalParameters) {
 		MultiValueMap<String, String> allParameters = new TreeMultiValueMap<String, String>();
@@ -273,8 +282,6 @@ class SigningUtils {
 
 	private static final String HMAC_SHA1_MAC_NAME = "HmacSHA1";
 
-	private static Random RANDOM = new Random();
-	
 	private static Charset charset = Charset.forName("UTF-8");
 	
 	private SigningUtils() {
