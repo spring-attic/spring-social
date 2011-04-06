@@ -15,14 +15,15 @@
  */
 package org.springframework.social.oauth1;
 
+import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,12 +40,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 class SigningUtils {
-
+	
 	public static Map<String, String> commonOAuthParameters(String consumerKey) {
 		Map<String, String> oauthParameters = new HashMap<String, String>();
 		oauthParameters.put("oauth_consumer_key", consumerKey);
@@ -61,11 +63,11 @@ class SigningUtils {
 		StringBuilder header = new StringBuilder();
 		header.append("OAuth ");
 		for (Entry<String, String> entry : oauthParameters.entrySet()) {
-			header.append(entry.getKey()).append("=\"").append(encode(entry.getValue())).append("\", ");
+			header.append(entry.getKey()).append("=\"").append(encodeParameter(entry.getValue())).append("\", ");
 		}
 		String baseString = buildBaseString(getBaseStringUri(targetUrl), method, oauthParameters, additionalParameters);
 		String signature = calculateSignature(baseString, consumerSecret, tokenSecret);		
-		header.append("oauth_signature=\"").append(encode(signature)).append("\"");
+		header.append("oauth_signature=\"").append(encodeParameter(signature)).append("\"");
 		return header.toString();
 	}
 
@@ -100,14 +102,14 @@ class SigningUtils {
 		for (Iterator<Entry<String, List<String>>> entryIt = allParameters.entrySet().iterator(); entryIt.hasNext();) {
 			Entry<String, List<String>> entry = entryIt.next();
 			String name = entry.getKey();
-			builder.append(encode(name));
+			builder.append(encodeParameter(name));
 			List<String> values = entry.getValue();
 			Collections.sort(values);
 			for (Iterator<String> valueIt = values.iterator(); valueIt.hasNext();) {
 				String value = valueIt.next();
 				if (value != null) {
 					builder.append('=');
-					builder.append(encode(value));
+					builder.append(encodeParameter(value));
 					if (valueIt.hasNext()) {
 						builder.append('&');
 					}
@@ -200,17 +202,65 @@ class SigningUtils {
 			return uri.getPort();
 		}
 	}
+
+	private static final BitSet UNRESERVED;
 	
-	private static String encode(String in) {
+	static {
+		BitSet alpha = new BitSet(256);
+		for (int i = 'a'; i <= 'z'; i++) {
+			alpha.set(i);
+		}
+		for (int i = 'A'; i <= 'Z'; i++) {
+			alpha.set(i);
+		}
+		BitSet digit = new BitSet(256);
+		for (int i = '0'; i <= '9'; i++) {
+			digit.set(i);
+		}
+		
+		BitSet unreserved = new BitSet(256);
+		unreserved.or(alpha);
+		unreserved.or(digit);
+		unreserved.set('-');
+		unreserved.set('.');
+		unreserved.set('_');
+		unreserved.set('~');
+		UNRESERVED = unreserved;
+		
+	}
+	
+	private static String encodeParameter(String param) {
 		try {
-			// TODO should we be using UriUtils instead for RFC-3986 compliance (see: http://tools.ietf.org/html/draft-hammer-oauth-10#section-3.6)
 			// See http://oauth.net/core/1.0a/#encoding_parameters
-			return URLEncoder.encode(in, "UTF-8").replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
+			byte[] bytes = encode(param.getBytes("UTF-8"), UNRESERVED);
+			return new String(bytes, "US-ASCII");
 		} catch (Exception shouldntHappen) {
 			throw new IllegalStateException(shouldntHappen);
 		}
 	}
 
+	private static byte[] encode(byte[] source, BitSet notEncoded) {
+		Assert.notNull(source, "'source' must not be null");
+		ByteArrayOutputStream bos = new ByteArrayOutputStream(source.length * 2);
+		for (int i = 0; i < source.length; i++) {
+			int b = source[i];
+			if (b < 0) {
+				b += 256;
+			}
+			if (notEncoded.get(b)) {
+				bos.write(b);
+			}
+			else {
+				bos.write('%');
+				char hex1 = Character.toUpperCase(Character.forDigit((b >> 4) & 0xF, 16));
+				char hex2 = Character.toUpperCase(Character.forDigit(b & 0xF, 16));
+				bos.write(hex1);
+				bos.write(hex2);
+			}
+		}
+		return bos.toByteArray();
+	}
+	
 	private static String formDecode(String encoded) {
 		try {
 			return URLDecoder.decode(encoded, "UTF-8");
@@ -229,4 +279,6 @@ class SigningUtils {
 	
 	private SigningUtils() {
 	}
+	
+
 }
