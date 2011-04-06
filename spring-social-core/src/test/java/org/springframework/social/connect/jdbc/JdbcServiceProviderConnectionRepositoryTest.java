@@ -102,7 +102,7 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 
 	@Test
 	public void addConnection() {
-		ServiceProviderConnection<TestFacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", "987654321", System.currentTimeMillis() + 3600 * 1000, null, null));
+		ServiceProviderConnection<TestFacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", null, "987654321", System.currentTimeMillis() + 3600 * 1000));
 		connectionRepository.addConnection(connection);
 		ServiceProviderConnection<TestFacebookApi> restoredConnection = connectionRepository.findConnectionByServiceApi(TestFacebookApi.class);
 		assertEquals(connection, restoredConnection);	

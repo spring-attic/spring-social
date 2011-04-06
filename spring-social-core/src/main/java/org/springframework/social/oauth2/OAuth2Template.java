@@ -16,9 +16,13 @@
 package org.springframework.social.oauth2;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -90,17 +94,21 @@ public class OAuth2Template implements OAuth2Operations {
 	// subclassing hooks
 	
 	protected RestTemplate createRestTemplate() {
-		return new RestTemplate();
+		RestTemplate restTemplate = new RestTemplate();
+		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>(2);
+		converters.add(new FormHttpMessageConverter());
+		converters.add(new MappingJacksonHttpMessageConverter());
+		restTemplate.setMessageConverters(converters);
+		return restTemplate;
 	}
 
 	@SuppressWarnings("unchecked")
 	protected AccessGrant postForAccessGrant(String accessTokenUrl, MultiValueMap<String, String> parameters) {
-		Map<String, Object> result = restTemplate.postForObject(accessTokenUrl, parameters, Map.class);
-		return extractAccessGrant(result);
+		return extractAccessGrant(restTemplate.postForObject(accessTokenUrl, parameters, Map.class));
 	}
 	
-	protected Map<String, Object> extractAdditionalAccessGrantParameters(Map<String, Object> result) {
-		return Collections.emptyMap();
+	protected AccessGrant createAccessGrant(String accessToken, String scope, String refreshToken, Long expiresAt, Map<String, Object> result) {
+		return new AccessGrant(accessToken, scope, refreshToken, expiresAt);		
 	}
 		
 	// testing hooks
@@ -124,7 +132,7 @@ public class OAuth2Template implements OAuth2Operations {
 	private AccessGrant extractAccessGrant(Map<String, Object> result) {
 		Integer expiresIn = (Integer) result.get("expires_in");
 		Long expiresAt = expiresIn != null ? System.currentTimeMillis() + expiresIn * 1000 : null;
-		return new AccessGrant((String) result.get("access_token"), (String) result.get("refresh_token"), expiresAt, (String) result.get("scope"), extractAdditionalAccessGrantParameters(result));
+		return createAccessGrant((String) result.get("access_token"), (String) result.get("scope"), (String) result.get("refresh_token"), expiresAt, result);
 	}
 	
 }
