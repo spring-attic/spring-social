@@ -36,7 +36,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriUtils;
 
 /**
- * OAuth10aOperations implementation that uses REST-template to make the OAuth calls.
+ * OAuth10Operations implementation that uses REST-template to make the OAuth calls.
  * @author Keith Donald
  */
 public class OAuth1Template implements OAuth1Operations {
