@@ -23,8 +23,10 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -102,13 +104,32 @@ class SigningUtils {
 	
 	private static final Random RANDOM = new Random();
 	
-	private static String buildBaseString(String targetUrl, HttpMethod method, Map<String, String> oauthParameters, MultiValueMap<String, String> additionalParameters) {
+	static String buildBaseString(String targetUrl, HttpMethod method, Map<String, String> oauthParameters, MultiValueMap<String, String> additionalParameters) {
 		MultiValueMap<String, String> allParameters = new TreeMultiValueMap<String, String>();
 		allParameters.setAll(oauthParameters);
 		allParameters.putAll(additionalParameters);
 		StringBuilder builder = new StringBuilder();
-		builder.append(method.name()).append('&').append(oauthEncode(targetUrl)).append('&');
-		for (Iterator<Entry<String, List<String>>> entryIt = allParameters.entrySet().iterator(); entryIt.hasNext();) {
+		builder.append(method.name()).append('&').append(oauthEncode(targetUrl)).append('&');		
+		String normalizedParameters = normalizeParameters(allParameters);
+		builder.append(oauthEncode(normalizedParameters));
+		return builder.toString();
+	}
+
+	/*
+	 * Normalizes the parameters, per http://tools.ietf.org/html/rfc5849#section-3.4.1.3.2
+	 */
+	private static String normalizeParameters(MultiValueMap<String, String> allParameters) {
+		// TODO : There must be a more elegant way to do this without encoding the name twice (during the sort and during the base string build).
+		List<Entry<String, List<String>>> parameterEntries = new ArrayList<Map.Entry<String,List<String>>>(allParameters.entrySet());
+		Collections.sort(parameterEntries, new Comparator<Entry<String, List<String>>>() {
+			public int compare(Entry<String, List<String>> o1,
+					Entry<String, List<String>> o2) {
+				return oauthEncode(o1.getKey()).compareTo(oauthEncode(o2.getKey()));
+			}
+		});
+		
+		StringBuilder paramBuilder = new StringBuilder();
+		for (Iterator<Entry<String, List<String>>> entryIt = parameterEntries.iterator(); entryIt.hasNext();) {
 			Entry<String, List<String>> entry = entryIt.next();
 			String name = entry.getKey();
 			List<String> values = entry.getValue();
@@ -116,19 +137,19 @@ class SigningUtils {
 			for (Iterator<String> valueIt = values.iterator(); valueIt.hasNext();) {
 				String value = valueIt.next();
 				if (value != null) {
-					builder.append(oauthEncode(name));
-					builder.append("%3D");
-					builder.append(oauthEncode(value));
+					paramBuilder.append(oauthEncode(name));
+					paramBuilder.append("=");
+					paramBuilder.append(oauthEncode(value));
 					if (valueIt.hasNext()) {
-						builder.append("%26");
+						paramBuilder.append("&");
 					}
 				}
 			}
 			if (entryIt.hasNext()) {
-				builder.append("%26");
+				paramBuilder.append("&");
 			}
 		}
-		return builder.toString();
+		return paramBuilder.toString();
 	}
 
 	private static String calculateSignature(String baseString, String consumerSecret, String tokenSecret) {
