@@ -17,6 +17,7 @@ package org.springframework.social.twitter;
 
 import org.springframework.social.oauth1.AbstractOAuth1ServiceProvider;
 import org.springframework.social.oauth1.OAuth1Template;
+import org.springframework.social.oauth1.OAuth1Version;
 
 /**
  * Twitter ServiceProvider implementation.
@@ -28,8 +29,9 @@ public class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<Twitte
 	public TwitterServiceProvider(String consumerKey, String consumerSecret) {
 		super(consumerKey, consumerSecret, new OAuth1Template(consumerKey, consumerSecret,
 			"https://api.twitter.com/oauth/request_token",
-			"https://api.twitter.com/oauth/authorize?oauth_token={requestToken}",
-			"https://api.twitter.com/oauth/access_token"));
+			"https://api.twitter.com/oauth/authorize",
+			"https://api.twitter.com/oauth/access_token",
+			OAuth1Version.CORE_10_REVISION_A));
 	}
 
 	public TwitterApi getServiceApi(String accessToken, String secret) {

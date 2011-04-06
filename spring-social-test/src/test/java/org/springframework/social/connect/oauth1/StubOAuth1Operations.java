@@ -18,10 +18,11 @@ package org.springframework.social.connect.oauth1;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
+import org.springframework.util.MultiValueMap;
 
 class StubOAuth1Operations implements OAuth1Operations {
 
-	public OAuthToken fetchNewRequestToken(String callbackUrl) {
+	public OAuthToken fetchRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters) {
 		return new OAuthToken("12345", "23456");
 	}
 
@@ -29,7 +30,7 @@ class StubOAuth1Operations implements OAuth1Operations {
 		return "http://springsource.org/oauth/authorize?request_token=" + requestToken;
 	}
 
-	public OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken) {
+	public OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters) {
 		return new OAuthToken("34567", "45678");
 	}
 	

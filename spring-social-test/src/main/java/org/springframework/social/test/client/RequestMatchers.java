@@ -119,7 +119,6 @@ public abstract class RequestMatchers {
 
 				boolean foundMatch = false;
 				for (String headerValue : actualHeaders) {
-					System.out.println(headerValue);
 					if (headerValue.contains(substring)) {
 						foundMatch = true;
 						break;

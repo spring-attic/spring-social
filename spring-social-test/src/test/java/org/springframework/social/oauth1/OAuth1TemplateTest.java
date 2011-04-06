@@ -36,14 +36,15 @@ public class OAuth1TemplateTest {
 	private static final String REQUEST_TOKEN_URL = "https://www.someprovider.com/oauth/requestToken";
 	
 	private OAuth1Template oauth10a;
+	
 	private OAuth1Template oauth10;
 
 	@Before
 	public void setup() {
 		oauth10a = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
-				"https://www.someprovider.com/oauth/authorize?oauth_token={request_token}", ACCESS_TOKEN_URL);
+				"https://www.someprovider.com/oauth/authorize", ACCESS_TOKEN_URL, OAuth1Version.CORE_10_REVISION_A);
 		oauth10 = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
-				"https://www.someprovider.com/oauth/authorize?oauth_token={request_token}&callback_url={callback_url}",
+				"https://www.someprovider.com/oauth/authorize",
 				ACCESS_TOKEN_URL, OAuth1Version.CORE_10);
 	}
 
@@ -75,7 +76,7 @@ public class OAuth1TemplateTest {
 				.andRespond(
 						withResponse(new ClassPathResource("requestToken.formencoded", getClass()), responseHeaders));
 
-		OAuthToken requestToken = oauth10a.fetchNewRequestToken("http://www.someclient.com/oauth/callback");
+		OAuthToken requestToken = oauth10a.fetchRequestToken("http://www.someclient.com/oauth/callback", null);
 		assertEquals("1234567890", requestToken.getValue());
 		assertEquals("abcdefghijklmnop", requestToken.getSecret());
 	}
@@ -95,7 +96,7 @@ public class OAuth1TemplateTest {
 				.andExpect(headerContains("Authorization", "oauth_timestamp=\""))
 				.andRespond(withResponse(new ClassPathResource("requestToken.formencoded", getClass()), responseHeaders));
 
-		OAuthToken requestToken = oauth10.fetchNewRequestToken("http://www.someclient.com/oauth/callback");
+		OAuthToken requestToken = oauth10.fetchRequestToken("http://www.someclient.com/oauth/callback", null);
 		assertEquals("1234567890", requestToken.getValue());
 		assertEquals("abcdefghijklmnop", requestToken.getSecret());
 	}
@@ -119,7 +120,7 @@ public class OAuth1TemplateTest {
 				.andRespond(withResponse(new ClassPathResource("accessToken.formencoded", getClass()), responseHeaders));
 
 		OAuthToken requestToken = new OAuthToken("1234567890", "abcdefghijklmnop");
-		OAuthToken accessToken = oauth10a.exchangeForAccessToken(new AuthorizedRequestToken(requestToken, "verifier"));
+		OAuthToken accessToken = oauth10a.exchangeForAccessToken(new AuthorizedRequestToken(requestToken, "verifier"), null);
 		assertEquals("9876543210", accessToken.getValue());
 		assertEquals("ponmlkjihgfedcba", accessToken.getSecret());
 	}
@@ -142,7 +143,7 @@ public class OAuth1TemplateTest {
 				.andRespond(withResponse(new ClassPathResource("accessToken.formencoded", getClass()), responseHeaders));
 
 		OAuthToken requestToken = new OAuthToken("1234567890", "abcdefghijklmnop");
-		OAuthToken accessToken = oauth10.exchangeForAccessToken(new AuthorizedRequestToken(requestToken, "verifier"));
+		OAuthToken accessToken = oauth10.exchangeForAccessToken(new AuthorizedRequestToken(requestToken, "verifier"), null);
 		assertEquals("9876543210", accessToken.getValue());
 		assertEquals("ponmlkjihgfedcba", accessToken.getSecret());
 	}

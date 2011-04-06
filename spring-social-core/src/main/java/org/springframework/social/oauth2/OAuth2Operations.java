@@ -15,6 +15,8 @@
  */
 package org.springframework.social.oauth2;
 
+import org.springframework.util.MultiValueMap;
+
 /**
  * A service interface for the OAuth2 flow.
  * This interface allows you to conduct the "OAuth dance" with a service provider on behalf of a user. 
@@ -23,21 +25,25 @@ package org.springframework.social.oauth2;
 public interface OAuth2Operations {
 
 	/**
-	 * Construct the URL to redirect the user to for connection authorization.
+	 * Construct the URL to redirect the user to for authorization.
 	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider
+	 * @param scope the permissions the application is seeking with the authorization
+	 * @return the absolute authorize URL to redirect the user to for authorization
 	 */ 
-	String buildAuthorizeUrl(String redirectUri, String scope);
-
+	String buildAuthorizeUrl(String redirectUri, String scope, String state);
+	
 	/**
 	 * Exchange the authorization grant for an access grant.
 	 * @param authorizationGrant the authorization grant returned by the provider upon user authorization
 	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider
 	 */
-	AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri);
+	AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri, MultiValueMap<String, String> additionalParameters);
 
 	/**
 	 * Refreshes the access grant.
 	 * @param the refresh token from the previous access grant.
+	 * @param optional scope to narrow to when refreshing access; if null, the existing scope is preserved.
 	 */
-	AccessGrant refreshAccess(String refreshToken);
+	AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters);
+	
 }

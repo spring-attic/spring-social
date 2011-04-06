@@ -97,7 +97,7 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 
 	public void refresh() {
 		synchronized (monitor) {
-			AccessGrant accessGrant = serviceProvider.getOAuthOperations().refreshAccess(refreshToken);
+			AccessGrant accessGrant = serviceProvider.getOAuthOperations().refreshAccess(refreshToken, null, null);
 			initAccessTokens(accessGrant.getAccessToken(), accessGrant.getRefreshToken(), accessGrant.getExpireTime());
 			initServiceApi();
 		}

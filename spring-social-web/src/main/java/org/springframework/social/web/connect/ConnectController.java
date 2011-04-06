@@ -115,11 +115,11 @@ public class ConnectController  {
 		preConnect(connectionFactory, request);
 		if (connectionFactory instanceof OAuth1ServiceProviderConnectionFactory) {
 			OAuth1Operations oauth1Ops = ((OAuth1ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations();
-			OAuthToken requestToken = oauth1Ops.fetchNewRequestToken(callbackUrl(providerId));
+			OAuthToken requestToken = oauth1Ops.fetchRequestToken(callbackUrl(providerId), null);
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
 			return "redirect:" + oauth1Ops.buildAuthorizeUrl(requestToken.getValue(), callbackUrl(providerId));
 		} else if (connectionFactory instanceof OAuth2ServiceProviderConnectionFactory) {
-			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(callbackUrl(providerId), scope);
+			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(callbackUrl(providerId), scope, null);
 		} else {
 			throw new IllegalStateException("Connections to provider '" + providerId + "' not supported");
 		}
@@ -134,7 +134,7 @@ public class ConnectController  {
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="oauth_token")
 	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier", required=false) String verifier, WebRequest request) {
 		OAuth1ServiceProviderConnectionFactory<?> connectionFactory = (OAuth1ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
-		OAuthToken accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier));
+		OAuthToken accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier), null);
 		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessToken);
 		connectionRepository.addConnection(connection);	
 		postConnect(connectionFactory, connection, request);
@@ -149,7 +149,7 @@ public class ConnectController  {
 	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="code")
 	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
 		OAuth2ServiceProviderConnectionFactory<?> connectionFactory = (OAuth2ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
-		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId));
+		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId), null);
 		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessGrant);
 		connectionRepository.addConnection(connection);
 		postConnect(connectionFactory, connection, request);

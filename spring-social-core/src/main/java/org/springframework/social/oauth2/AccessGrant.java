@@ -16,7 +16,6 @@
 package org.springframework.social.oauth2;
 
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -36,10 +35,6 @@ public final class AccessGrant implements Serializable {
 
 	private final Map<String, Object> additionalParameters;
 
-	public AccessGrant(String accessToken) {
-		this(accessToken, null, null, null, Collections.<String, Object>emptyMap());
-	}
-	
 	public AccessGrant(String accessToken, String refreshToken, Long expireTime, String scope, Map<String, Object> additionalParameters) {
 		this.accessToken = accessToken;
 		this.refreshToken = refreshToken;

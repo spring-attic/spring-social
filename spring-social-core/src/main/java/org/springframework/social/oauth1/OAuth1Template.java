@@ -15,8 +15,10 @@
  */
 package org.springframework.social.oauth1;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,11 +29,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriTemplate;
+import org.springframework.web.util.UriUtils;
 
 /**
  * OAuth10aOperations implementation that uses REST-template to make the OAuth calls.
@@ -43,22 +43,15 @@ public class OAuth1Template implements OAuth1Operations {
 
 	private final String consumerSecret;
 
-	private final String requestTokenUrl;
+	private final URI requestTokenUrl;
 
-	private final UriTemplate authorizeUrlTemplate;
+	private final String authorizeUrl;
 
-	private final String accessTokenUrl;
+	private final URI accessTokenUrl;
 
 	private final RestTemplate restTemplate;
 
 	private final OAuth1Version version;
-
-	/**
-	 * Constructs an OAuth1Template in OAuth 1.0a mode.
-	 */
-	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl) {
-		this(consumerKey, consumerSecret, requestTokenUrl, authorizeUrl, accessTokenUrl, OAuth1Version.CORE_10_REVISION_A);
-	}
 
 	/**
 	 * Constructs an OAuth1Template.
@@ -67,74 +60,86 @@ public class OAuth1Template implements OAuth1Operations {
 	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl, OAuth1Version version) {
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
-		this.requestTokenUrl = requestTokenUrl;
+		this.requestTokenUrl = encodeTokenUri(requestTokenUrl);
+		this.authorizeUrl = authorizeUrl;
+		this.accessTokenUrl = encodeTokenUri(accessTokenUrl);
 		this.version = version;
-		this.authorizeUrlTemplate = new UriTemplate(authorizeUrl);
-		this.accessTokenUrl = accessTokenUrl;
-		this.restTemplate = new RestTemplate();
-		List<HttpMessageConverter<?>> converters = Arrays.<HttpMessageConverter<?>> asList(
-				new StringHttpMessageConverter(), new FormHttpMessageConverter());
-		this.restTemplate.setMessageConverters(converters);
+		this.restTemplate = createRestTemplate();
 	}
 
-	public OAuthToken fetchNewRequestToken(String callbackUrl) {
-		Map<String, String> requestTokenParameters = new HashMap<String, String>();
+	public final OAuthToken fetchRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters) {
+		Map<String, String> oauthParameters = new HashMap<String, String>(1, 1);
 		if (version == OAuth1Version.CORE_10_REVISION_A) {
-			requestTokenParameters.put("oauth_callback", callbackUrl);
+			oauthParameters.put("oauth_callback", callbackUrl);
 		}
-		return getTokenFromProvider(requestTokenUrl, requestTokenParameters, Collections.<String, String> emptyMap(), null);
+		return exchangeForToken(requestTokenUrl, oauthParameters, additionalParameters, null);
 	}
 
-	public String buildAuthorizeUrl(String requestToken, String callbackUrl) {
-		if (version == OAuth1Version.CORE_10_REVISION_A) {
-			return authorizeUrlTemplate.expand(requestToken).toString();
-		} else {
-			return authorizeUrlTemplate.expand(requestToken, callbackUrl).toString();
+	public final String buildAuthorizeUrl(String requestToken, String callbackUrl) {
+		StringBuilder authorizeUrl = new StringBuilder(this.authorizeUrl).append('?').append("oauth_token").append('=').append(requestToken);
+		if (version == OAuth1Version.CORE_10) {
+			authorizeUrl.append('&').append("callback_url").append("=").append(callbackUrl);
 		}
+		return encodeUri(authorizeUrl.toString());
 	}
 
-	public OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken) {
-		Map<String, String> accessTokenParameters = new HashMap<String, String>();
-		accessTokenParameters.put("oauth_token", requestToken.getValue());
+	public final OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters) {
+		Map<String, String> tokenParameters = new HashMap<String, String>(2, 1);
+		tokenParameters.put("oauth_token", requestToken.getValue());
 		if (version == OAuth1Version.CORE_10_REVISION_A) {
-			accessTokenParameters.put("oauth_verifier", requestToken.getVerifier());
+			tokenParameters.put("oauth_verifier", requestToken.getVerifier());
 		}
-		return getTokenFromProvider(accessTokenUrl, accessTokenParameters, Collections.<String, String> emptyMap(), requestToken.getSecret());
+		return exchangeForToken(accessTokenUrl, tokenParameters, additionalParameters, requestToken.getSecret());
 	}
 
 	// internal helpers
 
-	protected OAuthToken getTokenFromProvider(String tokenUrl, Map<String, String> tokenRequestParameters, Map<String, String> additionalParameters, String tokenSecret) {
-		HttpHeaders headers = new HttpHeaders();
-		headers.add("Authorization", getAuthorizationHeaderValue(tokenUrl, tokenRequestParameters, additionalParameters, tokenSecret));
-		MultiValueMap<String, String> bodyParameters = new LinkedMultiValueMap<String, String>();
-		bodyParameters.setAll(additionalParameters);
-		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(bodyParameters, headers);
-		ResponseEntity<String> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, request, String.class);
-		Map<String, String> responseMap = parseResponse(response.getBody());
-		return new OAuthToken(responseMap.get("oauth_token"), responseMap.get("oauth_token_secret"));
-	}
-
-	// manually parse the response instead of using a message converter.
-	// The response content type could be text/plain, text/html, etc...and may not trigger the form-encoded message converter
-	private Map<String, String> parseResponse(String response) {
-		Map<String, String> responseMap = new HashMap<String, String>();
-		String[] responseEntries = response.split("&");
-		for (String entry : responseEntries) {
-			String[] keyValuePair = entry.trim().split("=");
-			if (keyValuePair.length > 1) {
-				responseMap.put(keyValuePair[0], keyValuePair[1]);
-			}
+	private URI encodeTokenUri(String url) {
+		try {
+			return new URI(UriUtils.encodeUri(url, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalStateException(e);
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Not a valid url: " + url, e);
 		}
-		return responseMap;
 	}
 
-	protected String getAuthorizationHeaderValue(String tokenUrl, Map<String, String> tokenRequestParameters, Map<String, String> additionalParameters, String tokenSecret) {
+	private RestTemplate createRestTemplate() {
+		RestTemplate restTemplate = new RestTemplate();
+		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>(1);
+		converters.add(new FormHttpMessageConverter());
+		restTemplate.setMessageConverters(converters);
+		return restTemplate;
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private OAuthToken exchangeForToken(URI tokenUrl, Map<String, String> tokenParameters, MultiValueMap<String, String> additionalParameters, String tokenSecret) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Authorization", buildAuthorizationHeaderValue(tokenUrl, tokenParameters, additionalParameters, tokenSecret));
+		ResponseEntity<MultiValueMap> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, new HttpEntity<MultiValueMap<String, String>>(additionalParameters, headers), MultiValueMap.class);
+		MultiValueMap<String, String> body = response.getBody();
+		return new OAuthToken(body.getFirst("oauth_token"), body.getFirst("oauth_token_secret"));
+	}
+
+	private String buildAuthorizationHeaderValue(URI tokenUrl, Map<String, String> tokenParameters, MultiValueMap<String, String> additionalParameters, String tokenSecret) {
 		Map<String, String> oauthParameters = SigningUtils.commonOAuthParameters(consumerKey);
-		oauthParameters.putAll(tokenRequestParameters);
+		oauthParameters.putAll(tokenParameters);
+		if (additionalParameters == null) {
+			additionalParameters = EmptyMultiValueMap.instance();
+		}
 		return SigningUtils.buildAuthorizationHeaderValue(tokenUrl, oauthParameters, additionalParameters, HttpMethod.POST, consumerSecret, tokenSecret);
 	}
 
+	private String encodeUri(String uri) {
+		try {
+			return UriUtils.encodeUri(uri, "UTF-8");
+		}
+		catch (UnsupportedEncodingException ex) {
+			// should not happen, UTF-8 is always supported
+			throw new IllegalStateException(ex);
+		}
+	}
+	
 	// testing hooks
 	RestTemplate getRestTemplate() {
 		return restTemplate;
