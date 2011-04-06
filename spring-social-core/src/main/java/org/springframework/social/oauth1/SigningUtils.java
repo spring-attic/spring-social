@@ -62,11 +62,11 @@ class SigningUtils {
 		StringBuilder header = new StringBuilder();
 		header.append("OAuth ");
 		for (Entry<String, String> entry : oauthParameters.entrySet()) {
-			header.append(entry.getKey()).append("=\"").append(encodeParameter(entry.getValue())).append("\", ");
+			header.append(oauthEncode(entry.getKey())).append("=\"").append(oauthEncode(entry.getValue())).append("\", ");
 		}
 		String baseString = buildBaseString(getBaseStringUri(targetUrl), method, oauthParameters, additionalParameters);
 		String signature = calculateSignature(baseString, consumerSecret, tokenSecret);		
-		header.append("oauth_signature=\"").append(encodeParameter(signature)).append("\"");
+		header.append(oauthEncode("oauth_signature")).append("=\"").append(oauthEncode(signature)).append("\"");
 		return header.toString();
 	}
 
@@ -75,7 +75,7 @@ class SigningUtils {
 		oauthParameters.put("oauth_token", accessToken);
 		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
 		additionalParameters.putAll(readFormParameters(request.getHeaders().getContentType(), body));
-		additionalParameters.putAll(parsePreEncodedParameters(request.getURI().getQuery()));
+		additionalParameters.putAll(parseFormParameters(request.getURI().getQuery()));
 		return buildAuthorizationHeaderValue(request.getURI(), oauthParameters, additionalParameters, request.getMethod(), consumerSecret, accessTokenSecret);
 	}
 	
@@ -86,7 +86,7 @@ class SigningUtils {
 		oauthParameters.put("oauth_token", accessToken);
 		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
 		additionalParameters.putAll(readFormParameters(request.getHeaders().getContentType(), body));
-		additionalParameters.putAll(parsePreEncodedParameters(request.getURI().getQuery()));
+		additionalParameters.putAll(parseFormParameters(request.getURI().getQuery()));
 		return buildAuthorizationHeaderValue(request.getURI(), oauthParameters, additionalParameters, request.getMethod(), consumerSecret, accessTokenSecret);
 	}
 
@@ -107,25 +107,25 @@ class SigningUtils {
 		allParameters.setAll(oauthParameters);
 		allParameters.putAll(additionalParameters);
 		StringBuilder builder = new StringBuilder();
-		builder.append(method.toString()).append('&').append(targetUrl).append('&');
+		builder.append(method.name()).append('&').append(oauthEncode(targetUrl)).append('&');
 		for (Iterator<Entry<String, List<String>>> entryIt = allParameters.entrySet().iterator(); entryIt.hasNext();) {
 			Entry<String, List<String>> entry = entryIt.next();
 			String name = entry.getKey();
-			builder.append(encodeParameter(name));
+			builder.append(oauthEncode(name));
 			List<String> values = entry.getValue();
 			Collections.sort(values);
 			for (Iterator<String> valueIt = values.iterator(); valueIt.hasNext();) {
 				String value = valueIt.next();
 				if (value != null) {
-					builder.append('=');
-					builder.append(encodeParameter(value));
+					builder.append("%3D");
+					builder.append(oauthEncode(value));
 					if (valueIt.hasNext()) {
-						builder.append('&');
+						builder.append("%26");
 					}
 				}
 			}
 			if (entryIt.hasNext()) {
-				builder.append('&');
+				builder.append("%26");
 			}
 		}
 		return builder.toString();
@@ -156,43 +156,30 @@ class SigningUtils {
 	private static MultiValueMap<String, String> readFormParameters(MediaType bodyType, byte[] bodyBytes) {
 		if (bodyType != null && bodyType.equals(MediaType.APPLICATION_FORM_URLENCODED)) {
 			String body = new String(bodyBytes, charset);
-			String[] pairs = StringUtils.tokenizeToStringArray(body, "&");
-			MultiValueMap<String, String> result = new LinkedMultiValueMap<String, String>(pairs.length);
-			for (String pair : pairs) {
-				int idx = pair.indexOf('=');
-				if (idx == -1) {
-					result.add(formDecode(pair), null);
-				}
-				else {
-					String name = formDecode(pair.substring(0, idx));
-					String value = formDecode(pair.substring(idx + 1));
-					result.add(name, value);
-				}
-			}
-			return result;			
+			return parseFormParameters(body);
 		} else {
 			return EmptyMultiValueMap.instance();
 		}
 	}
-
-	private static MultiValueMap<String, String> parsePreEncodedParameters(String parameterString) {
+	
+	private static MultiValueMap<String, String> parseFormParameters(String parameterString) {
 		if (parameterString == null || parameterString.length() == 0) {
 			return EmptyMultiValueMap.instance();
-		}
+		}		
 		String[] pairs = StringUtils.tokenizeToStringArray(parameterString, "&");
 		MultiValueMap<String, String> result = new LinkedMultiValueMap<String, String>(pairs.length);
 		for (String pair : pairs) {
 			int idx = pair.indexOf('=');
 			if (idx == -1) {
-				result.add(pair, null);
+				result.add(formDecode(pair), null);
 			}
 			else {
-				String name = pair.substring(0, idx);
-				String value = pair.substring(idx + 1);
+				String name = formDecode(pair.substring(0, idx));
+				String value = formDecode(pair.substring(idx + 1));
 				result.add(name, value);
 			}
 		}
-		return result;
+		return result;		
 	}
 
 	private static String getBaseStringUri(URI uri) {
@@ -226,7 +213,6 @@ class SigningUtils {
 		for (int i = '0'; i <= '9'; i++) {
 			digit.set(i);
 		}
-		
 		BitSet unreserved = new BitSet(256);
 		unreserved.or(alpha);
 		unreserved.or(digit);
@@ -234,13 +220,12 @@ class SigningUtils {
 		unreserved.set('.');
 		unreserved.set('_');
 		unreserved.set('~');
-		UNRESERVED = unreserved;
-		
+		UNRESERVED = unreserved;		
 	}
 	
-	private static String encodeParameter(String param) {
+	private static String oauthEncode(String param) {
 		try {
-			// See http://oauth.net/core/1.0a/#encoding_parameters
+			// See http://tools.ietf.org/html/rfc5849#section-3.6
 			byte[] bytes = encode(param.getBytes("UTF-8"), UNRESERVED);
 			return new String(bytes, "US-ASCII");
 		} catch (Exception shouldntHappen) {
@@ -285,7 +270,6 @@ class SigningUtils {
 	private static Charset charset = Charset.forName("UTF-8");
 	
 	private SigningUtils() {
-	}
-	
+	}	
 
 }
