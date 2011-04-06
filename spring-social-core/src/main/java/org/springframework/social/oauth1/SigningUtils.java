@@ -196,7 +196,7 @@ class SigningUtils {
 	}
 
 	private static int getPort(URI uri) {
-		if (uri.getScheme().equals("http:") && uri.getPort() == 80 || uri.getScheme().equals("https://") && uri.getPort() == 443) {
+		if (uri.getScheme().equals("http") && uri.getPort() == 80 || uri.getScheme().equals("https") && uri.getPort() == 443) {
 			return -1;
 		} else {
 			return uri.getPort();
