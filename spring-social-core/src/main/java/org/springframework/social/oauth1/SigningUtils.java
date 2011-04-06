@@ -111,12 +111,12 @@ class SigningUtils {
 		for (Iterator<Entry<String, List<String>>> entryIt = allParameters.entrySet().iterator(); entryIt.hasNext();) {
 			Entry<String, List<String>> entry = entryIt.next();
 			String name = entry.getKey();
-			builder.append(oauthEncode(name));
 			List<String> values = entry.getValue();
 			Collections.sort(values);
 			for (Iterator<String> valueIt = values.iterator(); valueIt.hasNext();) {
 				String value = valueIt.next();
 				if (value != null) {
+					builder.append(oauthEncode(name));
 					builder.append("%3D");
 					builder.append(oauthEncode(value));
 					if (valueIt.hasNext()) {
