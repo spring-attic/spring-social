@@ -16,6 +16,7 @@
 package org.springframework.social.oauth2;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,6 @@ import org.springframework.http.converter.json.MappingJacksonHttpMessageConverte
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriUtils;
 
 /**
  * OAuth2Operations implementation that uses REST-template to make the OAuth calls.
@@ -47,20 +47,20 @@ public class OAuth2Template implements OAuth2Operations {
 	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String accessTokenUrl) {
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
-		this.authorizeUrl = authorizeUrl + "?client_id=" + clientId;
+		this.authorizeUrl = authorizeUrl + "?response_type=code&client_id=" + formEncode(clientId);
 		this.accessTokenUrl = accessTokenUrl;
 		this.restTemplate = createRestTemplate();
 	}
 
 	public final String buildAuthorizeUrl(String redirectUri, String scope, String state) {
-		StringBuilder authorizeUrl = new StringBuilder(this.authorizeUrl).append('&').append("redirect_uri").append('=').append(redirectUri);
+		StringBuilder authorizeUrl = new StringBuilder(this.authorizeUrl).append('&').append("redirect_uri").append('=').append(formEncode(redirectUri));
 		if (scope != null) {
-			authorizeUrl.append('&').append("scope").append('=').append(scope);
+			authorizeUrl.append('&').append("scope").append('=').append(formEncode(scope));
 		}
 		if (state != null) {
-			authorizeUrl.append('&').append("state").append('=').append(state);	
+			authorizeUrl.append('&').append("state").append('=').append(formEncode(state));	
 		}
-		return encodeUri(authorizeUrl.toString());
+		return authorizeUrl.toString();
 	}
 
 	public final AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters) {
@@ -119,9 +119,9 @@ public class OAuth2Template implements OAuth2Operations {
 	
 	// internal helpers
 
-	private String encodeUri(String uri) {
+	private String formEncode(String data) {
 		try {
-			return UriUtils.encodeUri(uri, "UTF-8");
+			return URLEncoder.encode(data, "UTF-8");
 		}
 		catch (UnsupportedEncodingException ex) {
 			// should not happen, UTF-8 is always supported

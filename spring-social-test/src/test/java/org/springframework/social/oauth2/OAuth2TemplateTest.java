@@ -41,14 +41,14 @@ public class OAuth2TemplateTest {
 
 	@Test
 	public void buildAuthorizeUrl() {
-		String expected = "http://www.someprovider.com/oauth/authorize?client_id=client_id&redirect_uri=http://www.someclient.com/connect/foo&scope=read,write";
+		String expected = "http://www.someprovider.com/oauth/authorize?response_type=code&client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&scope=read%2Cwrite";
 		String actual = oAuth2Template.buildAuthorizeUrl("http://www.someclient.com/connect/foo", "read,write", null);
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void buildAuthorizeUrl_noScopeInParameters() {
-		String expected = "http://www.someprovider.com/oauth/authorize?client_id=client_id&redirect_uri=http://www.someclient.com/connect/foo";
+		String expected = "http://www.someprovider.com/oauth/authorize?response_type=code&client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo";
 		String actual = oAuth2Template.buildAuthorizeUrl("http://www.someclient.com/connect/foo", null, null);
 		assertEquals(expected, actual);
 	}

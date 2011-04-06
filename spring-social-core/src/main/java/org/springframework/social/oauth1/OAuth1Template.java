@@ -18,6 +18,7 @@ package org.springframework.social.oauth1;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,11 +78,11 @@ public class OAuth1Template implements OAuth1Operations {
 	}
 
 	public final String buildAuthorizeUrl(String requestToken, String callbackUrl) {
-		StringBuilder authorizeUrl = new StringBuilder(this.authorizeUrl).append('?').append("oauth_token").append('=').append(requestToken);
+		StringBuilder authorizeUrl = new StringBuilder(this.authorizeUrl).append('?').append("oauth_token").append('=').append(formEncode(requestToken));
 		if (version == OAuth1Version.CORE_10) {
-			authorizeUrl.append('&').append("callback_url").append("=").append(callbackUrl);
+			authorizeUrl.append('&').append("callback_url").append("=").append(formEncode(callbackUrl));
 		}
-		return encodeUri(authorizeUrl.toString());
+		return authorizeUrl.toString();
 	}
 
 	public final OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters) {
@@ -142,9 +143,9 @@ public class OAuth1Template implements OAuth1Operations {
 		return SigningUtils.buildAuthorizationHeaderValue(tokenUrl, oauthParameters, additionalParameters, HttpMethod.POST, consumerSecret, tokenSecret);
 	}
 
-	private String encodeUri(String uri) {
+	private String formEncode(String data) {
 		try {
-			return UriUtils.encodeUri(uri, "UTF-8");
+			return URLEncoder.encode(data, "UTF-8");
 		}
 		catch (UnsupportedEncodingException ex) {
 			// should not happen, UTF-8 is always supported

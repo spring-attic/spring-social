@@ -52,7 +52,7 @@ public class OAuth1TemplateTest {
 	public void buildAuthorizeUrl() {
 		assertEquals("https://www.someprovider.com/oauth/authorize?oauth_token=request_token",
 				oauth10a.buildAuthorizeUrl("request_token", null));
-		assertEquals("https://www.someprovider.com/oauth/authorize?oauth_token=request_token&callback_url=http://www.someclient.com/oauth/callback",
+		assertEquals("https://www.someprovider.com/oauth/authorize?oauth_token=request_token&callback_url=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback",
 				oauth10.buildAuthorizeUrl("request_token", "http://www.someclient.com/oauth/callback"));
 	}
 
