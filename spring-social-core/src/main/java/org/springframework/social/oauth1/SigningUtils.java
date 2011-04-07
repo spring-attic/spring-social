@@ -59,7 +59,7 @@ class SigningUtils {
 		return oauthParameters;
 	}
 	
-	public static String buildAuthorizationHeaderValue(URI targetUrl, Map<String, String> oauthParameters, MultiValueMap<String, String> additionalParameters, HttpMethod method, String consumerSecret, String tokenSecret) {
+	public static String buildAuthorizationHeaderValue(HttpMethod method, URI targetUrl, Map<String, String> oauthParameters, MultiValueMap<String, String> additionalParameters, String consumerSecret, String tokenSecret) {
 		StringBuilder header = new StringBuilder();
 		header.append("OAuth ");
 		for (Entry<String, String> entry : oauthParameters.entrySet()) {
@@ -80,7 +80,7 @@ class SigningUtils {
 		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
 		additionalParameters.putAll(readFormParameters(request.getHeaders().getContentType(), body));
 		additionalParameters.putAll(parseFormParameters(request.getURI().getQuery()));
-		return buildAuthorizationHeaderValue(request.getURI(), oauthParameters, additionalParameters, request.getMethod(), consumerSecret, accessTokenSecret);
+		return buildAuthorizationHeaderValue(request.getMethod(), request.getURI(), oauthParameters, additionalParameters, consumerSecret, accessTokenSecret);
 	}
 	
 	// spring 3.0 compatibility only: planned for removal in Spring Social 1.1
@@ -91,7 +91,7 @@ class SigningUtils {
 		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
 		additionalParameters.putAll(readFormParameters(request.getHeaders().getContentType(), body));
 		additionalParameters.putAll(parseFormParameters(request.getURI().getQuery()));
-		return buildAuthorizationHeaderValue(request.getURI(), oauthParameters, additionalParameters, request.getMethod(), consumerSecret, accessTokenSecret);
+		return buildAuthorizationHeaderValue(request.getMethod(), request.getURI(), oauthParameters, additionalParameters, consumerSecret, accessTokenSecret);
 	}
 
 	// internal helpers

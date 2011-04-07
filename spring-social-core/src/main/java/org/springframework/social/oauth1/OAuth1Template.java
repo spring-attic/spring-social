@@ -140,7 +140,7 @@ public class OAuth1Template implements OAuth1Operations {
 		if (additionalParameters == null) {
 			additionalParameters = EmptyMultiValueMap.instance();
 		}
-		return SigningUtils.buildAuthorizationHeaderValue(tokenUrl, oauthParameters, additionalParameters, HttpMethod.POST, consumerSecret, tokenSecret);
+		return SigningUtils.buildAuthorizationHeaderValue(HttpMethod.POST, tokenUrl, oauthParameters, additionalParameters, consumerSecret, tokenSecret);
 	}
 
 	private String formEncode(String data) {
