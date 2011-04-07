@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.util.LinkedMultiValueMap;
@@ -27,12 +26,12 @@ public class SigningUtilsTest {
 		additionalParameters.add("c2", "");
 		additionalParameters.add("a3", "2 q");
 		additionalParameters.setAll(oauthParameters);
-		String baseString = SigningUtils.buildBaseString(HttpMethod.POST, "https://api.twitter.com/oauth/request_token", additionalParameters);
+		String baseString = SigningUtils.buildBaseString(HttpMethod.POST, "http://example.com/request", additionalParameters);
 		
 		String[] baseStringParts = baseString.split("&");
 		assertEquals(3, baseStringParts.length);
 		assertEquals("POST", baseStringParts[0]);
-		assertEquals("https%3A%2F%2Fapi.twitter.com%2Foauth%2Frequest_token", baseStringParts[1]);
+		assertEquals("http%3A%2F%2Fexample.com%2Frequest", baseStringParts[1]);
 			
 		String[] parameterParts = baseStringParts[2].split("%26");
 
@@ -52,7 +51,6 @@ public class SigningUtilsTest {
 	}
 	
 	@Test
-	@Ignore("Works...ignoring for now to avoid extra noise while debugging other test.")
 	public void buildBaseString_twitterExample() {
 		/*
 		 * Tests the buildBaseString() method using the example given at http://dev.twitter.com/pages/auth#signing-requests
