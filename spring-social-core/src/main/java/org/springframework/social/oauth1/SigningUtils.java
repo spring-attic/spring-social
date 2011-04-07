@@ -68,7 +68,7 @@ class SigningUtils {
 		MultiValueMap<String, String> collectedParameters = new LinkedMultiValueMap<String, String>((int) ((oauthParameters.size() + additionalParameters.size()) / .75 + 1));
 		collectedParameters.setAll(oauthParameters);
 		collectedParameters.putAll(additionalParameters);		
-		String baseString = buildBaseString(getBaseStringUri(targetUrl), method, collectedParameters);
+		String baseString = buildBaseString(method, getBaseStringUri(targetUrl), collectedParameters);
 		String signature = calculateSignature(baseString, consumerSecret, tokenSecret);		
 		header.append(oauthEncode("oauth_signature")).append("=\"").append(oauthEncode(signature)).append("\"");
 		return header.toString();
@@ -106,7 +106,7 @@ class SigningUtils {
 	
 	private static final Random RANDOM = new Random();
 	
-	private static String buildBaseString(String targetUrl, HttpMethod method, MultiValueMap<String, String> collectedParameters) {
+	private static String buildBaseString(HttpMethod method, String targetUrl, MultiValueMap<String, String> collectedParameters) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(method.name()).append('&').append(oauthEncode(targetUrl)).append('&');		
 		builder.append(oauthEncode(normalizeParameters(collectedParameters)));
