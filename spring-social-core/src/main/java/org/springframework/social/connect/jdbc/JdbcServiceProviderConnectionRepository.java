@@ -18,7 +18,6 @@ package org.springframework.social.connect.jdbc;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -28,12 +27,14 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.social.connect.ServiceProviderConnection;
+import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionFactory;
 import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
-import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
 import org.springframework.social.connect.support.LocalUserIdLocator;
 
@@ -67,18 +68,19 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 			throw new IllegalArgumentException("Unable to execute find: no providerUsers provided");
 		}
 		StringBuilder providerUsersCriteriaSql = new StringBuilder();
-		List<Object> args = new ArrayList<Object>(1 + providerUsers.size() * 2);
-		args.add(getLocalUserId());
+		MapSqlParameterSource source = new MapSqlParameterSource();
+		source.addValue("localUserId", getLocalUserId());
 		for (Iterator<Entry<String, List<String>>> it = providerUsers.entrySet().iterator(); it.hasNext();) {
 			Entry<String, List<String>> entry = it.next();
-			providerUsersCriteriaSql.append("providerId = ? and providerUserId in (?)");
-			args.add(entry.getKey());
-			args.add(entry.getValue());
+			String providerId = entry.getKey();
+			providerUsersCriteriaSql.append("providerId = :providerId_").append(providerId).append(" and providerUserId in (:providerUserIds_").append(providerId).append(")");
+			source.addValue("providerId_" + providerId, providerId);
+			source.addValue("providerUserIds_" + providerId, entry.getValue());
 			if (it.hasNext()) {
 				providerUsersCriteriaSql.append(" or " );
 			}
 		}
-		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and " + providerUsersCriteriaSql, args.toArray(), connectionMapper);
+		return new SimpleJdbcTemplate(jdbcTemplate).query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = :localUserId and " + providerUsersCriteriaSql + " order by providerId, rank", connectionMapper, source);
 	}
 
 	public ServiceProviderConnection<?> findConnection(ServiceProviderConnectionKey connectionKey) {
