@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Set;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -50,21 +51,14 @@ class SigningUtils {
 	
 	private TimestampGenerator timestampGenerator;
 	
-	SigningUtils() {
+	public SigningUtils() {
 		this.timestampGenerator = new DefaultTimestampGenerator();
 	}
 	
-	public Map<String, String> commonOAuthParameters(String consumerKey) {
-		Map<String, String> oauthParameters = new HashMap<String, String>();
-		oauthParameters.put("oauth_consumer_key", consumerKey);
-		oauthParameters.put("oauth_signature_method", HMAC_SHA1_SIGNATURE_NAME);
-		long timestamp = timestampGenerator.generateTimestamp();
-		oauthParameters.put("oauth_timestamp", Long.toString(timestamp));
-		oauthParameters.put("oauth_nonce", Long.toString(timestampGenerator.generateNonce(timestamp)));
-		oauthParameters.put("oauth_version", "1.0");
-		return oauthParameters;
-	}
-	
+	/**
+	 * Builds the authorization header.
+	 * The elements in additionalParameters should be decoded.
+	 */
 	public String buildAuthorizationHeaderValue(HttpMethod method, URI targetUrl, Map<String, String> oauthParameters, MultiValueMap<String, String> additionalParameters, String consumerSecret, String tokenSecret) {
 		StringBuilder header = new StringBuilder();
 		header.append("OAuth ");
@@ -80,26 +74,43 @@ class SigningUtils {
 		return header.toString();
 	}
 
+	/**
+	 * Builds an authorization header from a request.
+	 * Expects that the request's query parameters are form-encoded.
+	 */
 	public String buildAuthorizationHeaderValue(HttpRequest request, byte[] body, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
 		Map<String, String> oauthParameters = commonOAuthParameters(consumerKey);
 		oauthParameters.put("oauth_token", accessToken);
-		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
-		additionalParameters.putAll(readFormParameters(request.getHeaders().getContentType(), body));
-		additionalParameters.putAll(parseFormParameters(request.getURI().getQuery()));
+		MultiValueMap<String, String> additionalParameters = combineMultiValueMaps(
+				readFormParameters(request.getHeaders().getContentType(), body), parseFormParameters(request.getURI().getRawQuery()));
 		return buildAuthorizationHeaderValue(request.getMethod(), request.getURI(), oauthParameters, additionalParameters, consumerSecret, accessTokenSecret);
 	}
 	
-	// spring 3.0 compatibility only: planned for removal in Spring Social 1.1
-
+	/**
+	 * Builds an authorization header from a request.
+	 * Expects that the request's query parameters are form-encoded.
+	 * This method is a Spring 3.0-compatible version of buildAuthorizationHeaderValue(); planned for removal in Spring Social 1.1
+	 */
 	public String spring30buildAuthorizationHeaderValue(ClientHttpRequest request, byte[] body, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
 		Map<String, String> oauthParameters = commonOAuthParameters(consumerKey);
 		oauthParameters.put("oauth_token", accessToken);
-		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
-		additionalParameters.putAll(readFormParameters(request.getHeaders().getContentType(), body));
-		additionalParameters.putAll(parseFormParameters(request.getURI().getQuery()));
+		MultiValueMap<String, String> additionalParameters = combineMultiValueMaps(
+				readFormParameters(request.getHeaders().getContentType(), body), parseFormParameters(request.getURI().getRawQuery()));
 		return buildAuthorizationHeaderValue(request.getMethod(), request.getURI(), oauthParameters, additionalParameters, consumerSecret, accessTokenSecret);
 	}
 
+	
+	Map<String, String> commonOAuthParameters(String consumerKey) {
+		Map<String, String> oauthParameters = new HashMap<String, String>();
+		oauthParameters.put("oauth_consumer_key", consumerKey);
+		oauthParameters.put("oauth_signature_method", HMAC_SHA1_SIGNATURE_NAME);
+		long timestamp = timestampGenerator.generateTimestamp();
+		oauthParameters.put("oauth_timestamp", Long.toString(timestamp));
+		oauthParameters.put("oauth_nonce", Long.toString(timestampGenerator.generateNonce(timestamp)));
+		oauthParameters.put("oauth_version", "1.0");
+		return oauthParameters;
+	}
+	
 	// internal helpers
 	
 	String buildBaseString(HttpMethod method, String targetUrl, MultiValueMap<String, String> collectedParameters) {
@@ -121,7 +132,8 @@ class SigningUtils {
 			List<String> encodedValues = new ArrayList<String>(collectedValues.size());
 			sortedEncodedParameters.put(oauthEncode(collectedName), encodedValues);
 			for (Iterator<String> valueIt = collectedValues.iterator(); valueIt.hasNext();) {
-				// TODO null value semantics need to be clearly defined				
+				// TODO null value semantics need to be clearly defined	
+				//      null should be equivalent to empty value...add the parameter with no value
 				encodedValues.add(oauthEncode(valueIt.next()));
 			}
 			Collections.sort(encodedValues);
@@ -185,7 +197,7 @@ class SigningUtils {
 		for (String pair : pairs) {
 			int idx = pair.indexOf('=');
 			if (idx == -1) {
-				result.add(formDecode(pair), null);
+				result.add(formDecode(pair), "");
 			}
 			else {
 				String name = formDecode(pair.substring(0, idx));
@@ -205,6 +217,21 @@ class SigningUtils {
 		}
 	}
 
+	private MultiValueMap<String, String> combineMultiValueMaps(MultiValueMap<String, String> map1, MultiValueMap<String, String> map2) {
+		MultiValueMap<String, String> combinedMap = new LinkedMultiValueMap<String, String>(map1);
+		// can't use putAll here because it will overwrite anything that has the same key in both maps
+		Set<Entry<String, List<String>>> map2Entries = map2.entrySet();
+		for(Iterator<Entry<String, List<String>>> entryIt = map2Entries.iterator(); entryIt.hasNext();) {
+			Entry<String, List<String>> entry = entryIt.next();
+			String key = entry.getKey();
+			List<String> values = entry.getValue();
+			for (String value : values) {
+				combinedMap.add(key, value);
+			}
+		}
+		return combinedMap;
+	}
+	
 	private int getPort(URI uri) {
 		if (uri.getScheme().equals("http") && uri.getPort() == 80 || uri.getScheme().equals("https") && uri.getPort() == 443) {
 			return -1;
