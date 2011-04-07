@@ -25,10 +25,10 @@ public class ServiceProviderUser {
 	
 	private final String profilePictureUrl;
 
-	public ServiceProviderUser(String id, String profileUrl, String profileName, String profilePictureUrl) {
+	public ServiceProviderUser(String id, String profileName, String profileUrl, String profilePictureUrl) {
 		this.id = id;
-		this.profileUrl = profileUrl;
 		this.profileName = profileName;
+		this.profileUrl = profileUrl;
 		this.profilePictureUrl = profilePictureUrl;
 	}
 

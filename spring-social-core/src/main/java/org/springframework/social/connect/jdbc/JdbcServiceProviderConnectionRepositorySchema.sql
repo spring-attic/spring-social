@@ -10,4 +10,4 @@ create table ServiceProviderConnection (localUserId bigint not null,
 					refreshToken varchar,
 					expireTime bigint,
 					primary key (localUserId, providerId, providerUserId));
-create index ConnectionsToProviderUser on ServiceProviderConnection(providerId, providerUserId);
+create unique index ServiceProviderConnectionRank on ServiceProviderConnection(localUserId, providerId, rank);
