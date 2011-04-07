@@ -26,7 +26,8 @@ public class SigningUtilsTest {
 		additionalParameters.add("a2", "r b");
 		additionalParameters.add("c2", "");
 		additionalParameters.add("a3", "2 q");
-		String baseString = SigningUtils.buildBaseString("https://api.twitter.com/oauth/request_token", HttpMethod.POST, oauthParameters, additionalParameters);
+		additionalParameters.setAll(oauthParameters);
+		String baseString = SigningUtils.buildBaseString(HttpMethod.POST, "https://api.twitter.com/oauth/request_token", additionalParameters);
 		
 		String[] baseStringParts = baseString.split("&");
 		assertEquals(3, baseStringParts.length);
@@ -59,7 +60,9 @@ public class SigningUtilsTest {
 		 */
 		Map<String, String> oauthParameters = SigningUtils.commonOAuthParameters("GDdmIQH6jhtmLUypg82g");
 		oauthParameters.put("oauth_callback", "http://localhost:3005/the_dance/process_callback?service_provider_id=11");
-		String baseString = SigningUtils.buildBaseString("https://api.twitter.com/oauth/request_token", HttpMethod.POST, oauthParameters, new LinkedMultiValueMap<String, String>());
+		LinkedMultiValueMap<String, String> collectedParameters = new LinkedMultiValueMap<String, String>();
+		collectedParameters.setAll(oauthParameters);
+		String baseString = SigningUtils.buildBaseString(HttpMethod.POST, "https://api.twitter.com/oauth/request_token", collectedParameters);
 		
 		String[] baseStringParts = baseString.split("&");
 		assertEquals(3, baseStringParts.length);

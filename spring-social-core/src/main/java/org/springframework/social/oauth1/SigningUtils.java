@@ -106,7 +106,7 @@ class SigningUtils {
 	
 	private static final Random RANDOM = new Random();
 	
-	private static String buildBaseString(HttpMethod method, String targetUrl, MultiValueMap<String, String> collectedParameters) {
+	static String buildBaseString(HttpMethod method, String targetUrl, MultiValueMap<String, String> collectedParameters) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(method.name()).append('&').append(oauthEncode(targetUrl)).append('&');		
 		builder.append(oauthEncode(normalizeParameters(collectedParameters)));
