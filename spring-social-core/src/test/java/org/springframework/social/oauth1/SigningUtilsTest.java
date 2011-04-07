@@ -15,7 +15,7 @@ import org.springframework.util.LinkedMultiValueMap;
 public class SigningUtilsTest {
 
 	@Test
-	public void buildAuthorizationHeader_URI() throws Exception {
+	public void buildAuthorizationHeader() throws Exception {
 		Map<String, String> oauthParameters = SigningUtils.commonOAuthParameters("9djdj82h48djs9d2");
 		oauthParameters.put("oauth_token", "kkk9d7dh3k39sjv7");
 		LinkedMultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
@@ -30,7 +30,7 @@ public class SigningUtilsTest {
 	}
 
 	@Test
-	public void buildAuthorizationHeader_HttpRequest() throws Exception {
+	public void buildAuthorizationHeaderValue() throws Exception {
 		HttpRequest request = new SimpleClientHttpRequestFactory().createRequest(new URI("http://example.com/request?b5=%3D%253D&a3=a&c%40=&a2=r%20b"), HttpMethod.POST);
 		String authorizationHeader = SigningUtils.buildAuthorizationHeaderValue(request, "c2&a3=2+q".getBytes(), "9djdj82h48djs9d2", "consumer_secret", "kkk9d7dh3k39sjv7", "token_secret");
 		assertAuthorizationHeader(authorizationHeader);
