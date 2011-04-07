@@ -54,6 +54,8 @@ public class OAuth1Template implements OAuth1Operations {
 	private final RestTemplate restTemplate;
 
 	private final OAuth1Version version;
+	
+	private final SigningUtils signingUtils;
 
 	/**
 	 * Constructs an OAuth1Template.
@@ -67,6 +69,7 @@ public class OAuth1Template implements OAuth1Operations {
 		this.accessTokenUrl = encodeTokenUri(accessTokenUrl);
 		this.version = version;
 		this.restTemplate = createRestTemplate();
+		this.signingUtils = new SigningUtils();
 	}
 
 	public final OAuthToken fetchRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters) {
@@ -135,12 +138,12 @@ public class OAuth1Template implements OAuth1Operations {
 	}
 
 	private String buildAuthorizationHeaderValue(URI tokenUrl, Map<String, String> tokenParameters, MultiValueMap<String, String> additionalParameters, String tokenSecret) {
-		Map<String, String> oauthParameters = SigningUtils.commonOAuthParameters(consumerKey);
+		Map<String, String> oauthParameters = signingUtils.commonOAuthParameters(consumerKey);
 		oauthParameters.putAll(tokenParameters);
 		if (additionalParameters == null) {
 			additionalParameters = EmptyMultiValueMap.instance();
 		}
-		return SigningUtils.buildAuthorizationHeaderValue(HttpMethod.POST, tokenUrl, oauthParameters, additionalParameters, consumerSecret, tokenSecret);
+		return signingUtils.buildAuthorizationHeaderValue(HttpMethod.POST, tokenUrl, oauthParameters, additionalParameters, consumerSecret, tokenSecret);
 	}
 
 	private String formEncode(String data) {

@@ -69,6 +69,8 @@ class Spring30OAuth1RequestFactory implements ClientHttpRequestFactory {
 		private final String accessToken;
 		
 		private final String accessTokenSecret;
+		
+		private final SigningUtils signingUtils;
 
 		public OAuth1SigningRequest(ClientHttpRequest delegate, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
 			this.delegate = delegate;
@@ -77,11 +79,12 @@ class Spring30OAuth1RequestFactory implements ClientHttpRequestFactory {
 			this.accessToken = accessToken;
 			this.accessTokenSecret = accessTokenSecret;
 			this.bodyOutputStream = new ByteArrayOutputStream();
+			this.signingUtils = new SigningUtils();
 		}
 
 		public ClientHttpResponse execute() throws IOException {
 			byte[] bufferedOutput = bodyOutputStream.toByteArray();
-			String authorizationHeader = SigningUtils.spring30buildAuthorizationHeaderValue(this, bufferedOutput, consumerKey, consumerSecret, accessToken, accessTokenSecret);
+			String authorizationHeader = signingUtils.spring30buildAuthorizationHeaderValue(this, bufferedOutput, consumerKey, consumerSecret, accessToken, accessTokenSecret);
 			delegate.getBody().write(bufferedOutput);
 			delegate.getHeaders().set("Authorization", authorizationHeader);
 			return delegate.execute();
