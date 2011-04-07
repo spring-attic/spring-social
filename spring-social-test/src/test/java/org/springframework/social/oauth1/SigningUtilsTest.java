@@ -2,20 +2,20 @@ package org.springframework.social.oauth1;
 
 import static org.junit.Assert.*;
 
+import java.net.URI;
 import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 
 public class SigningUtilsTest {
-		
+
 	@Test
-	public void buildBaseString_specificationExample() {
-		/*
-		 * Tests the buildBaseString() method using the example given in the OAuth 1 spec
-		 * at http://tools.ietf.org/html/rfc5849#section-3.4.1 as the test data.
-		 */
+	public void buildAuthorizationHeader_URI() throws Exception {
 		Map<String, String> oauthParameters = SigningUtils.commonOAuthParameters("9djdj82h48djs9d2");
 		oauthParameters.put("oauth_token", "kkk9d7dh3k39sjv7");
 		LinkedMultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
@@ -25,8 +25,54 @@ public class SigningUtilsTest {
 		additionalParameters.add("a2", "r b");
 		additionalParameters.add("c2", "");
 		additionalParameters.add("a3", "2 q");
-		additionalParameters.setAll(oauthParameters);
-		String baseString = SigningUtils.buildBaseString(HttpMethod.POST, "http://example.com/request", additionalParameters);
+		String authorizationHeader = SigningUtils.buildAuthorizationHeaderValue(HttpMethod.POST, new URI("http://example.com/request"), oauthParameters, additionalParameters, "consumer_secret", "token_secret");
+		assertAuthorizationHeader(authorizationHeader);
+	}
+
+	@Test
+	public void buildAuthorizationHeader_HttpRequest() throws Exception {
+		HttpRequest request = new SimpleClientHttpRequestFactory().createRequest(new URI("http://example.com/request?b5=%3D%253D&a3=a&c%40=&a2=r%20b"), HttpMethod.POST);
+		String authorizationHeader = SigningUtils.buildAuthorizationHeaderValue(request, "c2&a3=2+q".getBytes(), "9djdj82h48djs9d2", "consumer_secret", "kkk9d7dh3k39sjv7", "token_secret");
+		assertAuthorizationHeader(authorizationHeader);
+	}
+	
+	@Test
+	public void spring30buildAuthorizationHeaderValue() throws Exception {
+		ClientHttpRequest request = new SimpleClientHttpRequestFactory().createRequest(new URI("http://example.com/request?b5=%3D%253D&a3=a&c%40=&a2=r%20b"), HttpMethod.POST);
+		String authorizationHeader = SigningUtils.spring30buildAuthorizationHeaderValue(request, "c2&a3=2+q".getBytes(), "9djdj82h48djs9d2", "consumer_secret", "kkk9d7dh3k39sjv7", "token_secret");
+		assertAuthorizationHeader(authorizationHeader);
+	}
+
+	private void assertAuthorizationHeader(String authorizationHeader) {
+		// TODO: Only tests that the elements of the header are present and that most values are correct.
+		//       Testing the nonce, timestamp, and signature values is tricky, so those values aren't asserted.
+		String[] headerElements = authorizationHeader.split(", ");
+		assertEquals("OAuth oauth_version=\"1.0\"", headerElements[0]);
+		assertTrue(headerElements[1].matches("oauth_nonce=\"(.*)\"")); // TODO: Test nonce better
+		assertEquals("oauth_signature_method=\"HMAC-SHA1\"", headerElements[2]);		
+		assertEquals("oauth_consumer_key=\"9djdj82h48djs9d2\"", headerElements[3]);
+		assertEquals("oauth_token=\"kkk9d7dh3k39sjv7\"", headerElements[4]);
+		assertTrue(headerElements[5].matches("oauth_timestamp=\"(.*)\""));	// TODO: Test timestamp better
+		assertTrue(headerElements[6].matches("oauth_signature=\"(.*)\""));	// TODO: Test signature better	
+	}
+
+	@Test
+	public void buildBaseString_specificationExample() {
+		/*
+		 * Tests the buildBaseString() method using the example given in the OAuth 1 spec
+		 * at http://tools.ietf.org/html/rfc5849#section-3.4.1 as the test data.
+		 */
+		Map<String, String> oauthParameters = SigningUtils.commonOAuthParameters("9djdj82h48djs9d2");
+		oauthParameters.put("oauth_token", "kkk9d7dh3k39sjv7");
+		LinkedMultiValueMap<String, String> collectedParameters = new LinkedMultiValueMap<String, String>();
+		collectedParameters.add("b5", "=%3D");
+		collectedParameters.add("a3", "a");
+		collectedParameters.add("c@", "");
+		collectedParameters.add("a2", "r b");
+		collectedParameters.add("c2", "");
+		collectedParameters.add("a3", "2 q");
+		collectedParameters.setAll(oauthParameters);
+		String baseString = SigningUtils.buildBaseString(HttpMethod.POST, "http://example.com/request", collectedParameters);
 		
 		String[] baseStringParts = baseString.split("&");
 		assertEquals(3, baseStringParts.length);
