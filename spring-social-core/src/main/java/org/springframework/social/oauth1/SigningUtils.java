@@ -23,6 +23,7 @@ import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
@@ -119,8 +120,10 @@ class SigningUtils {
 		MultiValueMap<String, String> sortedEncodedParameters = new TreeMultiValueMap<String, String>();
 		for (Iterator<Entry<String, List<String>>> entryIt = collectedParameters.entrySet().iterator(); entryIt.hasNext();) {
 			Entry<String, List<String>> entry = entryIt.next();
+			String collectedName = entry.getKey();
 			List<String> collectedValues = entry.getValue();	
-			List<String> encodedValues = sortedEncodedParameters.get(oauthEncode(entry.getKey()));
+			List<String> encodedValues = new ArrayList<String>(collectedValues.size());
+			sortedEncodedParameters.put(oauthEncode(collectedName), encodedValues);
 			for (Iterator<String> valueIt = collectedValues.iterator(); valueIt.hasNext();) {
 				// TODO null value semantics need to be clearly defined				
 				encodedValues.add(oauthEncode(valueIt.next()));
@@ -134,7 +137,6 @@ class SigningUtils {
 			List<String> values = entry.getValue();
 			for (Iterator<String> valueIt = values.iterator(); valueIt.hasNext();) {
 				String value = valueIt.next();
-				// TODO null value semantics need to be clearly defined
 				paramsBuilder.append(name).append('=').append(value);
 				if (valueIt.hasNext()) {
 					paramsBuilder.append("&");
