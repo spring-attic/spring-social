@@ -26,8 +26,10 @@ public interface OAuth1Operations {
 
 	/**
 	 * Begin a new authorization flow by fetching a new request token from this service provider.
-	 * The request token should be stored in the user's session up until the authorization callback is made and it's time to exchange it for an {@link #exchangeForAccessToken(AuthorizedRequestToken, MultiValueMap) access token}.
-	 * @param callbackUrl the URL the provider should redirect to after the member authorizes the connection. Ignored for OAuth 1.0 providers. 
+	 * The request token should be stored in the user's session up until the authorization callback is made and it's time to exchange it for an {@link #exchangeForAccessToken(AuthorizedRequestToken) access token}.
+	 * @param callbackUrl the URL the provider should redirect to after the member authorizes the connection. Ignored for OAuth 1.0 providers.
+	 * @param additionalParameters any additional query parameters to be sent when fetching the request token. Should not be encoded.
+	 * @return a temporary request token use for authorization and exchanged for an access token 
 	 */
 	OAuthToken fetchRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters);
 
@@ -52,6 +54,7 @@ public interface OAuth1Operations {
 	/**
 	 * Exchange the authorized request token for an access token.
 	 * @param requestToken an authorized request token and verifier. The verifier will be ignored for OAuth 1.0 providers.
+	 * @param additionalParameters any additional query parameters to be sent when fetching the access token. Should not be encoded. 
 	 * @return an access token granted by the provider
 	 */
 	OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters);

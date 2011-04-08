@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.Set;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -48,18 +49,17 @@ import org.springframework.util.StringUtils;
 
 class SigningUtils {
 	
-	public static Map<String, String> commonOAuthParameters(String consumerKey) {
-		Map<String, String> oauthParameters = new HashMap<String, String>();
-		oauthParameters.put("oauth_consumer_key", consumerKey);
-		oauthParameters.put("oauth_signature_method", HMAC_SHA1_SIGNATURE_NAME);
-		long timestamp = generateTimestamp();
-		oauthParameters.put("oauth_timestamp", Long.toString(timestamp));
-		oauthParameters.put("oauth_nonce", Long.toString(generateNonce(timestamp)));
-		oauthParameters.put("oauth_version", "1.0");
-		return oauthParameters;
+	private TimestampGenerator timestampGenerator;
+	
+	public SigningUtils() {
+		this.timestampGenerator = new DefaultTimestampGenerator();
 	}
 	
-	public static String buildAuthorizationHeaderValue(HttpMethod method, URI targetUrl, Map<String, String> oauthParameters, MultiValueMap<String, String> additionalParameters, String consumerSecret, String tokenSecret) {
+	/**
+	 * Builds the authorization header.
+	 * The elements in additionalParameters are expected to not be encoded.
+	 */
+	public String buildAuthorizationHeaderValue(HttpMethod method, URI targetUrl, Map<String, String> oauthParameters, MultiValueMap<String, String> additionalParameters, String consumerSecret, String tokenSecret) {
 		StringBuilder header = new StringBuilder();
 		header.append("OAuth ");
 		for (Entry<String, String> entry : oauthParameters.entrySet()) {
@@ -74,39 +74,46 @@ class SigningUtils {
 		return header.toString();
 	}
 
-	public static String buildAuthorizationHeaderValue(HttpRequest request, byte[] body, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+	/**
+	 * Builds an authorization header from a request.
+	 * Expects that the request's query parameters are form-encoded.
+	 */
+	public String buildAuthorizationHeaderValue(HttpRequest request, byte[] body, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
 		Map<String, String> oauthParameters = commonOAuthParameters(consumerKey);
 		oauthParameters.put("oauth_token", accessToken);
-		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
-		additionalParameters.putAll(readFormParameters(request.getHeaders().getContentType(), body));
-		additionalParameters.putAll(parseFormParameters(request.getURI().getQuery()));
+		MultiValueMap<String, String> additionalParameters = combineMultiValueMaps(
+				readFormParameters(request.getHeaders().getContentType(), body), parseFormParameters(request.getURI().getRawQuery()));
 		return buildAuthorizationHeaderValue(request.getMethod(), request.getURI(), oauthParameters, additionalParameters, consumerSecret, accessTokenSecret);
 	}
 	
-	// spring 3.0 compatibility only: planned for removal in Spring Social 1.1
-
-	public static String spring30buildAuthorizationHeaderValue(ClientHttpRequest request, byte[] body, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+	/**
+	 * Builds an authorization header from a request.
+	 * Expects that the request's query parameters are form-encoded.
+	 * This method is a Spring 3.0-compatible version of buildAuthorizationHeaderValue(); planned for removal in Spring Social 1.1
+	 */
+	public String spring30buildAuthorizationHeaderValue(ClientHttpRequest request, byte[] body, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
 		Map<String, String> oauthParameters = commonOAuthParameters(consumerKey);
 		oauthParameters.put("oauth_token", accessToken);
-		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
-		additionalParameters.putAll(readFormParameters(request.getHeaders().getContentType(), body));
-		additionalParameters.putAll(parseFormParameters(request.getURI().getQuery()));
+		MultiValueMap<String, String> additionalParameters = combineMultiValueMaps(
+				readFormParameters(request.getHeaders().getContentType(), body), parseFormParameters(request.getURI().getRawQuery()));
 		return buildAuthorizationHeaderValue(request.getMethod(), request.getURI(), oauthParameters, additionalParameters, consumerSecret, accessTokenSecret);
 	}
 
+	
+	Map<String, String> commonOAuthParameters(String consumerKey) {
+		Map<String, String> oauthParameters = new HashMap<String, String>();
+		oauthParameters.put("oauth_consumer_key", consumerKey);
+		oauthParameters.put("oauth_signature_method", HMAC_SHA1_SIGNATURE_NAME);
+		long timestamp = timestampGenerator.generateTimestamp();
+		oauthParameters.put("oauth_timestamp", Long.toString(timestamp));
+		oauthParameters.put("oauth_nonce", Long.toString(timestampGenerator.generateNonce(timestamp)));
+		oauthParameters.put("oauth_version", "1.0");
+		return oauthParameters;
+	}
+	
 	// internal helpers
-
-	private static long generateTimestamp() {
-		return System.currentTimeMillis() / 1000;
-	}
 	
-	private static long generateNonce(long timestamp) {
-		return timestamp + RANDOM.nextInt();		
-	}
-	
-	private static final Random RANDOM = new Random();
-	
-	static String buildBaseString(HttpMethod method, String targetUrl, MultiValueMap<String, String> collectedParameters) {
+	String buildBaseString(HttpMethod method, String targetUrl, MultiValueMap<String, String> collectedParameters) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(method.name()).append('&').append(oauthEncode(targetUrl)).append('&');		
 		builder.append(oauthEncode(normalizeParameters(collectedParameters)));
@@ -116,7 +123,7 @@ class SigningUtils {
 	/*
 	 * Normalizes the parameters, per http://tools.ietf.org/html/rfc5849#section-3.4.1.3.2
 	 */
-	private static String normalizeParameters(MultiValueMap<String, String> collectedParameters) {
+	private String normalizeParameters(MultiValueMap<String, String> collectedParameters) {
 		MultiValueMap<String, String> sortedEncodedParameters = new TreeMultiValueMap<String, String>();
 		for (Iterator<Entry<String, List<String>>> entryIt = collectedParameters.entrySet().iterator(); entryIt.hasNext();) {
 			Entry<String, List<String>> entry = entryIt.next();
@@ -125,7 +132,8 @@ class SigningUtils {
 			List<String> encodedValues = new ArrayList<String>(collectedValues.size());
 			sortedEncodedParameters.put(oauthEncode(collectedName), encodedValues);
 			for (Iterator<String> valueIt = collectedValues.iterator(); valueIt.hasNext();) {
-				// TODO null value semantics need to be clearly defined				
+				// TODO null value semantics need to be clearly defined	
+				//      null should be equivalent to empty value...add the parameter with no value
 				encodedValues.add(oauthEncode(valueIt.next()));
 			}
 			Collections.sort(encodedValues);
@@ -149,12 +157,12 @@ class SigningUtils {
 		return paramsBuilder.toString();
 	}
 
-	private static String calculateSignature(String baseString, String consumerSecret, String tokenSecret) {
+	private String calculateSignature(String baseString, String consumerSecret, String tokenSecret) {
 		String key = consumerSecret + "&" + (tokenSecret != null ? tokenSecret : "");
 		return sign(baseString, key);
 	}
 
-	private static String sign(String signatureBaseString, String key) {
+	private String sign(String signatureBaseString, String key) {
 		try {
 			Mac mac = Mac.getInstance(HMAC_SHA1_MAC_NAME);
 			SecretKeySpec spec = new SecretKeySpec(key.getBytes(), HMAC_SHA1_MAC_NAME);
@@ -171,7 +179,7 @@ class SigningUtils {
 		} 
 	}
 
-	private static MultiValueMap<String, String> readFormParameters(MediaType bodyType, byte[] bodyBytes) {
+	private MultiValueMap<String, String> readFormParameters(MediaType bodyType, byte[] bodyBytes) {
 		if (bodyType != null && bodyType.equals(MediaType.APPLICATION_FORM_URLENCODED)) {
 			String body = new String(bodyBytes, charset);
 			return parseFormParameters(body);
@@ -180,7 +188,7 @@ class SigningUtils {
 		}
 	}
 	
-	private static MultiValueMap<String, String> parseFormParameters(String parameterString) {
+	private MultiValueMap<String, String> parseFormParameters(String parameterString) {
 		if (parameterString == null || parameterString.length() == 0) {
 			return EmptyMultiValueMap.instance();
 		}		
@@ -189,7 +197,7 @@ class SigningUtils {
 		for (String pair : pairs) {
 			int idx = pair.indexOf('=');
 			if (idx == -1) {
-				result.add(formDecode(pair), null);
+				result.add(formDecode(pair), "");
 			}
 			else {
 				String name = formDecode(pair.substring(0, idx));
@@ -200,7 +208,7 @@ class SigningUtils {
 		return result;		
 	}
 
-	private static String getBaseStringUri(URI uri) {
+	private String getBaseStringUri(URI uri) {
 		try {
 			// see: http://tools.ietf.org/html/rfc5849#section-3.4.1.2
 			return new URI(uri.getScheme(), null, uri.getHost(), getPort(uri), uri.getPath(), null, null).toString();
@@ -209,7 +217,22 @@ class SigningUtils {
 		}
 	}
 
-	private static int getPort(URI uri) {
+	private MultiValueMap<String, String> combineMultiValueMaps(MultiValueMap<String, String> map1, MultiValueMap<String, String> map2) {
+		MultiValueMap<String, String> combinedMap = new LinkedMultiValueMap<String, String>(map1);
+		// can't use putAll here because it will overwrite anything that has the same key in both maps
+		Set<Entry<String, List<String>>> map2Entries = map2.entrySet();
+		for(Iterator<Entry<String, List<String>>> entryIt = map2Entries.iterator(); entryIt.hasNext();) {
+			Entry<String, List<String>> entry = entryIt.next();
+			String key = entry.getKey();
+			List<String> values = entry.getValue();
+			for (String value : values) {
+				combinedMap.add(key, value);
+			}
+		}
+		return combinedMap;
+	}
+	
+	private int getPort(URI uri) {
 		if (uri.getScheme().equals("http") && uri.getPort() == 80 || uri.getScheme().equals("https") && uri.getPort() == 443) {
 			return -1;
 		} else {
@@ -286,8 +309,30 @@ class SigningUtils {
 	private static final String HMAC_SHA1_MAC_NAME = "HmacSHA1";
 
 	private static Charset charset = Charset.forName("UTF-8");
-	
-	private SigningUtils() {
-	}	
 
+	// testing hooks	
+	// tests can implement and inject a custom TimestampGenerator to work with fixed nonce and timestamp values
+	void setTimestampGenerator(TimestampGenerator timestampGenerator) {
+		this.timestampGenerator = timestampGenerator;
+	}
+	
+	static interface TimestampGenerator {
+		long generateTimestamp();
+		
+		long generateNonce(long timestamp);
+	}
+	
+	private static class DefaultTimestampGenerator implements TimestampGenerator {
+
+		public long generateTimestamp() {
+			return System.currentTimeMillis() / 1000;
+		}
+		
+		public long generateNonce(long timestamp) {
+			return timestamp + RANDOM.nextInt();		
+		}
+		
+		static final Random RANDOM = new Random();
+		
+	}
 }
