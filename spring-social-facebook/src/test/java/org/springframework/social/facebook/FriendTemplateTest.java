@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.social.facebook.types.Reference;
 
-public class FriendsApiImplTest extends AbstractFacebookApiTest {
+public class FriendTemplateTest extends AbstractFacebookApiTest {
 
 	@Test
 	public void getFriendLists() {
@@ -19,7 +19,7 @@ public class FriendsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/friend-lists.json", getClass()), responseHeaders));
-		List<Reference> friendLists = facebook.friendsApi().getFriendLists();
+		List<Reference> friendLists = facebook.friendOperations().getFriendLists();
 		assertFriendLists(friendLists);
 	}
 
@@ -29,7 +29,7 @@ public class FriendsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/friend-lists.json", getClass()), responseHeaders));
-		List<Reference> friendLists = facebook.friendsApi().getFriendLists("11223344");
+		List<Reference> friendLists = facebook.friendOperations().getFriendLists("11223344");
 		assertFriendLists(friendLists);
 	}
 	
@@ -39,7 +39,7 @@ public class FriendsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/friend-list.json", getClass()), responseHeaders));
-		Reference friendList = facebook.friendsApi().getFriendList("11929590579");
+		Reference friendList = facebook.friendOperations().getFriendList("11929590579");
 		assertEquals("11929590579", friendList.getId());
 		assertEquals("High School Friends", friendList.getName());
 	}
@@ -50,7 +50,7 @@ public class FriendsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/friends.json", getClass()), responseHeaders));
-		List<Reference> members = facebook.friendsApi().getFriendListMembers("192837465");
+		List<Reference> members = facebook.friendOperations().getFriendListMembers("192837465");
 		assertFriends(members);
 	}
 	
@@ -60,7 +60,7 @@ public class FriendsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(POST))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("method=delete", responseHeaders));
-		facebook.friendsApi().deleteFriendList("123456");
+		facebook.friendOperations().deleteFriendList("123456");
 		mockServer.verify();
 	}
 	
@@ -70,7 +70,7 @@ public class FriendsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(POST))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("true", responseHeaders));
-		facebook.friendsApi().addToFriendList("123456", "7890123");
+		facebook.friendOperations().addToFriendList("123456", "7890123");
 		mockServer.verify();
 	}
 	
@@ -80,7 +80,7 @@ public class FriendsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(DELETE))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("true", responseHeaders));
-		facebook.friendsApi().removeFromFriendList("123456", "7890123");
+		facebook.friendOperations().removeFromFriendList("123456", "7890123");
 		mockServer.verify();		
 	}
 	
@@ -90,7 +90,7 @@ public class FriendsApiImplTest extends AbstractFacebookApiTest {
 				.andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andRespond(withResponse(new ClassPathResource("testdata/friends.json", getClass()), responseHeaders));
-		List<Reference> friends = facebook.friendsApi().getFriends();
+		List<Reference> friends = facebook.friendOperations().getFriends();
 		assertFriends(friends);
 	}
 	
@@ -100,7 +100,7 @@ public class FriendsApiImplTest extends AbstractFacebookApiTest {
 				.andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andRespond(withResponse(new ClassPathResource("testdata/friends.json", getClass()), responseHeaders));
-		List<Reference> friends = facebook.friendsApi().getFriends("912873465");
+		List<Reference> friends = facebook.friendOperations().getFriends("912873465");
 		assertFriends(friends);
 	}
 

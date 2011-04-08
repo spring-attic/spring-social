@@ -25,7 +25,7 @@ import org.springframework.social.facebook.types.UserEvent;
  * Defines operations for creating and reading event data as well as RSVP'ing to events on behalf of a user.
  * @author Craig Walls
  */
-public interface EventsApi {
+public interface EventOperations {
 
 	/**
 	 * Retrieves a list of events that the authenticated user has been invited to.

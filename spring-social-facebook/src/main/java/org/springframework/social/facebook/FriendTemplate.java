@@ -24,13 +24,13 @@ import org.springframework.social.facebook.types.FacebookProfile;
 import org.springframework.social.facebook.types.Reference;
 import org.springframework.web.client.RestTemplate;
 
-public class FriendsApiImpl implements FriendsApi {
+public class FriendTemplate implements FriendOperations {
 	
 	private final GraphApi graphApi;
 	private ReferenceResponseExtractor referenceExtractor;
 	private final RestTemplate restTemplate;
 
-	public FriendsApiImpl(GraphApi graphApi, RestTemplate restTemplate) {
+	public FriendTemplate(GraphApi graphApi, RestTemplate restTemplate) {
 		this.graphApi = graphApi;
 		this.restTemplate = restTemplate;
 		referenceExtractor = new ReferenceResponseExtractor();

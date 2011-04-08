@@ -30,7 +30,7 @@ import org.springframework.social.facebook.types.Reference;
 /**
  * @author Craig Walls
  */
-public class CommentApiImplTest extends AbstractFacebookApiTest {
+public class CommentTemplateTest extends AbstractFacebookApiTest {
 	
 	@Test
 	public void getComments() {
@@ -39,7 +39,7 @@ public class CommentApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/comments.json", getClass()), responseHeaders));
 		
-		List<Comment> comments = facebook.commentApi().getComments("123456");
+		List<Comment> comments = facebook.commentOperations().getComments("123456");
 		assertEquals(2, comments.size());
 		Comment comment1 = comments.get(0);
 		assertEquals("1533260333", comment1.getFrom().getId());
@@ -57,7 +57,7 @@ public class CommentApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/comment.json", getClass()), responseHeaders));
-		Comment comment = facebook.commentApi().getComment("1533260333_122829644452184_587062");
+		Comment comment = facebook.commentOperations().getComment("1533260333_122829644452184_587062");
 		assertEquals("1533260333", comment.getFrom().getId());
 		assertEquals("Art Names", comment.getFrom().getName());
 		assertEquals("Howdy!", comment.getMessage());
@@ -70,7 +70,7 @@ public class CommentApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(body("message=Cool+beans"))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("{\"id\":\"123456_543210\"}", responseHeaders));
-		assertEquals("123456_543210", facebook.commentApi().addComment("123456", "Cool beans"));
+		assertEquals("123456_543210", facebook.commentOperations().addComment("123456", "Cool beans"));
 	}
 	
 	@Test
@@ -80,7 +80,7 @@ public class CommentApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(body("method=delete"))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("{}", responseHeaders));
-		facebook.commentApi().deleteComment("1533260333_122829644452184_587062");
+		facebook.commentOperations().deleteComment("1533260333_122829644452184_587062");
 		mockServer.verify();
 	}
 	
@@ -89,7 +89,7 @@ public class CommentApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/123456/likes")).andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andRespond(withResponse(new ClassPathResource("testdata/likes.json", getClass()), responseHeaders));
-		List<Reference> likes = facebook.commentApi().getLikes("123456");
+		List<Reference> likes = facebook.commentOperations().getLikes("123456");
 		assertEquals(3, likes.size());
 		Reference like1 = likes.get(0);
 		assertEquals("1122334455", like1.getId());

@@ -24,7 +24,7 @@ import org.springframework.social.facebook.types.FeedEntry;
  * Interface defining operations that can be performed on a Facebook feed.
  * @author Craig Walls
  */
-public interface FeedApi {
+public interface FeedOperations {
 
 	/**
 	 * Retrieves recent feed entries for the authenticated user. 

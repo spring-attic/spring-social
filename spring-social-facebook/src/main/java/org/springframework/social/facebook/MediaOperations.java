@@ -25,7 +25,7 @@ import org.springframework.social.facebook.types.Video;
  * Defines operations for working with albums, photos, and videos.
  * @author Craig Walls
  */
-public interface MediaApi {
+public interface MediaOperations {
 
 	/**
 	 * Retrieves a list of albums belonging to the authenticated user.

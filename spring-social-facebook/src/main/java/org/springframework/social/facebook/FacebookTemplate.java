@@ -41,23 +41,23 @@ public class FacebookTemplate implements FacebookApi {
 
 	private final RestTemplate restTemplate;
 
-	private UserApi userApi;
+	private UserOperations userOperations;
 	
-	private CheckinApi checkinApi;
+	private CheckinOperations checkinOperations;
 
-	private FriendsApi friendsApi;
+	private FriendOperations friendOperations;
 	
-	private FeedApi feedApi;
+	private FeedOperations feedOperations;
 	
-	private GroupApi groupApi;
+	private GroupOperations groupOperations;
 
-	private CommentApi commentApi;
+	private CommentOperations commentOperations;
 
-	private LikeApi likeApi;
+	private LikeOperations likeOperations;
 	
-	private EventsApi eventsApi;
+	private EventOperations eventOperations;
 	
-	private MediaApi mediaApi;
+	private MediaOperations mediaOperations;
 
 	/**
 	 * Create a new instance of FacebookTemplate.
@@ -71,52 +71,53 @@ public class FacebookTemplate implements FacebookApi {
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
 		restTemplate.getMessageConverters().add(json);
 		restTemplate.setErrorHandler(new FacebookResponseErrorHandler());
+
 		// sub-apis
-		userApi = new UserApiImpl(this);
-		checkinApi = new CheckinApiImpl(this);
-		friendsApi = new FriendsApiImpl(this, restTemplate);
-		feedApi = new FeedApiImpl(this);
-		commentApi = new CommentApiImpl(this);
-		likeApi = new LikeApiImpl(this);
-		eventsApi = new EventsApiImpl(this);
-		mediaApi = new MediaApiImpl(this);
-		groupApi = new GroupApiImpl(this);
+		userOperations = new UserTemplate(this);
+		checkinOperations = new CheckinTemplate(this);
+		friendOperations = new FriendTemplate(this, restTemplate);
+		feedOperations = new FeedTemplate(this);
+		commentOperations = new CommentTemplate(this);
+		likeOperations = new LikeTemplate(this);
+		eventOperations = new EventTemplate(this);
+		mediaOperations = new MediaTemplate(this);
+		groupOperations = new GroupTemplate(this);
 	}
 
-	public UserApi userApi() {
-		return userApi;
+	public UserOperations userOperations() {
+		return userOperations;
 	}
 	
-	public CheckinApi checkinApi() {
-		return checkinApi;
+	public CheckinOperations checkinOperations() {
+		return checkinOperations;
 	}
 
-	public LikeApi likeApi() {
-		return likeApi;
+	public LikeOperations likeOperations() {
+		return likeOperations;
 	}
 
-	public FriendsApi friendsApi() {
-		return friendsApi;
+	public FriendOperations friendOperations() {
+		return friendOperations;
 	}
 	
-	public FeedApi feedApi() {
-		return feedApi;
+	public FeedOperations feedOperations() {
+		return feedOperations;
 	}
 	
-	public GroupApi groupApi() {
-		return groupApi;
+	public GroupOperations groupOperations() {
+		return groupOperations;
 	}
 
-	public CommentApi commentApi() {
-		return commentApi;
+	public CommentOperations commentOperations() {
+		return commentOperations;
 	}
 	
-	public EventsApi eventsApi() {
-		return eventsApi;
+	public EventOperations eventOperations() {
+		return eventOperations;
 	}
 	
-	public MediaApi mediaApi() {
-		return mediaApi;
+	public MediaOperations mediaOperations() {
+		return mediaOperations;
 	}
 	
 	// low-level Graph API operations
@@ -125,11 +126,13 @@ public class FacebookTemplate implements FacebookApi {
 		return extractor.extractObject( (Map<String, Object>) restTemplate.getForObject(OBJECT_URL, Map.class, objectId));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> T fetchObject(String objectId, ResponseExtractor<T> extractor, String... fields) {
 		String joinedFields = join(fields);
 		return extractor.extractObject( (Map<String, Object>) restTemplate.getForObject(OBJECT_URL + "?fields={fields}", Map.class, objectId, joinedFields));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> List<T> fetchObject(ResponseExtractor<T> extractor, String... objectIds) {
 		String joinedIds = join(objectIds);
 		Map<String, Map<String, Object>> response = restTemplate.getForObject(GRAPH_API_URL + "?ids={ids}", Map.class, joinedIds);
@@ -148,6 +151,7 @@ public class FacebookTemplate implements FacebookApi {
 		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
 	}
 	
+	@SuppressWarnings("unchecked")
 	public <T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor, String... fields) {
 		String joinedFields = join(fields);
 		Map<String, Object> response = restTemplate.getForObject(CONNECTION_URL + "?fields={fields}", Map.class, objectId, connectionType, joinedFields);

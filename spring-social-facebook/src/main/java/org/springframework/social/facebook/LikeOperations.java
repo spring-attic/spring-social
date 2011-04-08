@@ -23,7 +23,7 @@ import org.springframework.social.facebook.types.UserLike;
  * Defines operations for working with a user's likes and interests.
  * @author Craig Walls
  */
-public interface LikeApi {
+public interface LikeOperations {
 
 	/**
 	 * Retrieves a list of things that the authenticated user has liked.

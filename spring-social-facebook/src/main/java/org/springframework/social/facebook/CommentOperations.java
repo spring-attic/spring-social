@@ -24,7 +24,7 @@ import org.springframework.social.facebook.types.Reference;
  * Defines operations for reading and posting comments to Facebook.
  * @author Craig Walls
  */
-public interface CommentApi {
+public interface CommentOperations {
 	
 	/**
 	 * Retrieves all comments for a given object.

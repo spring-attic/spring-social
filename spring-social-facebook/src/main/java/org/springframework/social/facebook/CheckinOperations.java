@@ -23,7 +23,7 @@ import org.springframework.social.facebook.types.Checkin;
  * Defines the operations for interacting with a user's Facebook checkins.
  * @author Craig Walls
  */
-public interface CheckinApi {
+public interface CheckinOperations {
 	
 	/**
 	 * Retrieves a list of checkins for the authenticated user.

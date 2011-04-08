@@ -24,7 +24,7 @@ import org.springframework.social.facebook.types.Reference;
  * Defines operations for interacting with a user's friends and friend lists.
  * @author Craig Walls
  */
-public interface FriendsApi {
+public interface FriendOperations {
 
 	/**
 	 * Retrieves a list of custom friend lists belonging to the authenticated user.

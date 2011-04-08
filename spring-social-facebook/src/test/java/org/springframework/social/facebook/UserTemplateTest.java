@@ -32,7 +32,7 @@ import org.springframework.social.facebook.types.WorkEntry;
 /**
  * @author Craig Walls
  */
-public class UserApiImplTest extends AbstractFacebookApiTest {
+public class UserTemplateTest extends AbstractFacebookApiTest {
 	
 	@Test
 	public void getUserProfile_authenticatedUser() {
@@ -41,7 +41,7 @@ public class UserApiImplTest extends AbstractFacebookApiTest {
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andRespond(withResponse(new ClassPathResource("testdata/full-profile.json", getClass()), responseHeaders));
 
-		FacebookProfile profile = facebook.userApi().getUserProfile();
+		FacebookProfile profile = facebook.userOperations().getUserProfile();
 		assertBasicProfileData(profile);
 		assertEquals("cwalls@vmware.com", profile.getEmail());
 		assertEquals("http://www.facebook.com/habuma", profile.getLink());
@@ -76,7 +76,7 @@ public class UserApiImplTest extends AbstractFacebookApiTest {
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andRespond(withResponse(new ClassPathResource("testdata/minimal-profile.json", getClass()), responseHeaders));
 
-		FacebookProfile profile = facebook.userApi().getUserProfile("123456789");
+		FacebookProfile profile = facebook.userOperations().getUserProfile("123456789");
 		assertBasicProfileData(profile);
 	}
 	

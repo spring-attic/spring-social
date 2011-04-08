@@ -25,7 +25,7 @@ import org.springframework.social.facebook.types.Reference;
  * Defines operations for retrieving data about groups and group members.
  * @author Craig Walls
  */
-public interface GroupApi {	
+public interface GroupOperations {	
 	
 	/**
 	 * Retrieve data for a specified group.

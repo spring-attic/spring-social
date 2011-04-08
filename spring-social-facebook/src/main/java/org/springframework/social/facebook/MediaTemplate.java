@@ -26,14 +26,14 @@ import org.springframework.social.facebook.types.Video;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class MediaApiImpl implements MediaApi {
+public class MediaTemplate implements MediaOperations {
 
 	private final AlbumResponseExtractor albumExtractor;
 	private final PhotoResponseExtractor photoExtractor;
 	private final VideoResponseExtractor videoExtractor;
 	private final GraphApi graphApi;
 
-	public MediaApiImpl(GraphApi graphApi) {
+	public MediaTemplate(GraphApi graphApi) {
 		this.graphApi = graphApi;
 		albumExtractor = new AlbumResponseExtractor();
 		photoExtractor = new PhotoResponseExtractor();

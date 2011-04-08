@@ -18,7 +18,7 @@ package org.springframework.social.facebook;
 import org.springframework.social.facebook.types.FacebookProfile;
 
 
-public interface UserApi {
+public interface UserOperations {
 	
 	/**
 	 * Retrieves the profile for the authenticated user.

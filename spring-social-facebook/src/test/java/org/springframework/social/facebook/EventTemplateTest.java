@@ -14,7 +14,7 @@ import org.springframework.social.facebook.types.EventInvitee;
 import org.springframework.social.facebook.types.RsvpStatus;
 import org.springframework.social.facebook.types.UserEvent;
 
-public class EventsApiImplTest extends AbstractFacebookApiTest {
+public class EventTemplateTest extends AbstractFacebookApiTest {
 
 	@Test
 	public void getEvents() {
@@ -22,7 +22,7 @@ public class EventsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/user-events.json", getClass()), responseHeaders));
-		List<UserEvent> events = facebook.eventsApi().getEvents();
+		List<UserEvent> events = facebook.eventOperations().getEvents();
 		assertEvents(events);
 	}
 	
@@ -32,7 +32,7 @@ public class EventsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/user-events.json", getClass()), responseHeaders));
-		List<UserEvent> events = facebook.eventsApi().getEvents("123456789");
+		List<UserEvent> events = facebook.eventOperations().getEvents("123456789");
 		assertEvents(events);
 	}
 	
@@ -42,7 +42,7 @@ public class EventsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/simple-event.json", getClass()), responseHeaders));
-		Event event = facebook.eventsApi().getEvent("193482154020832");
+		Event event = facebook.eventOperations().getEvent("193482154020832");
 		assertEquals("193482154020832", event.getId());
 		assertEquals("100001387295207", event.getOwner().getId());
 		assertEquals("Art Names", event.getOwner().getName());
@@ -61,7 +61,7 @@ public class EventsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/full-event.json", getClass()), responseHeaders));
-		Event event = facebook.eventsApi().getEvent("193482154020832");
+		Event event = facebook.eventOperations().getEvent("193482154020832");
 		assertEquals("193482154020832", event.getId());
 		assertEquals("100001387295207", event.getOwner().getId());
 		assertEquals("Art Names", event.getOwner().getName());
@@ -81,7 +81,7 @@ public class EventsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(body("name=Test+Event&start_time=2011-04-01T15%3A30%3A00&end_time=2011-04-01T18%3A30%3A00"))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("{\"id\":\"193482145020832\"}", responseHeaders));
-		String eventId = facebook.eventsApi().createEvent("Test Event", "2011-04-01T15:30:00", "2011-04-01T18:30:00");
+		String eventId = facebook.eventOperations().createEvent("Test Event", "2011-04-01T15:30:00", "2011-04-01T18:30:00");
 		assertEquals("193482145020832", eventId);
 	}
 	
@@ -91,7 +91,7 @@ public class EventsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/invited.json", getClass()), responseHeaders));
-		List<EventInvitee> invited = facebook.eventsApi().getInvited("193482154020832");
+		List<EventInvitee> invited = facebook.eventOperations().getInvited("193482154020832");
 		assertEquals(3, invited.size());
 		assertInvitee(invited.get(0), "100001387295207", "Art Names", RsvpStatus.ATTENDING);
 		assertInvitee(invited.get(1), "738140579", "Craig Walls", RsvpStatus.UNSURE);
@@ -104,7 +104,7 @@ public class EventsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/attending.json", getClass()), responseHeaders));
-		List<EventInvitee> invited = facebook.eventsApi().getAttending("193482154020832");
+		List<EventInvitee> invited = facebook.eventOperations().getAttending("193482154020832");
 		assertEquals(3, invited.size());
 		assertInvitee(invited.get(0), "100001387295207", "Art Names", RsvpStatus.ATTENDING);
 		assertInvitee(invited.get(1), "738140579", "Craig Walls", RsvpStatus.ATTENDING);
@@ -117,7 +117,7 @@ public class EventsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/maybe-attending.json", getClass()), responseHeaders));
-		List<EventInvitee> invited = facebook.eventsApi().getMaybeAttending("193482154020832");
+		List<EventInvitee> invited = facebook.eventOperations().getMaybeAttending("193482154020832");
 		assertEquals(3, invited.size());
 		assertInvitee(invited.get(0), "100001387295207", "Art Names", RsvpStatus.UNSURE);
 		assertInvitee(invited.get(1), "738140579", "Craig Walls", RsvpStatus.UNSURE);
@@ -130,7 +130,7 @@ public class EventsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/no-replies.json", getClass()), responseHeaders));
-		List<EventInvitee> invited = facebook.eventsApi().getNoReplies("193482154020832");
+		List<EventInvitee> invited = facebook.eventOperations().getNoReplies("193482154020832");
 		assertEquals(3, invited.size());
 		assertInvitee(invited.get(0), "100001387295207", "Art Names", RsvpStatus.NOT_REPLIED);
 		assertInvitee(invited.get(1), "738140579", "Craig Walls", RsvpStatus.NOT_REPLIED);
@@ -143,7 +143,7 @@ public class EventsApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/declined.json", getClass()), responseHeaders));
-		List<EventInvitee> invited = facebook.eventsApi().getDeclined("193482154020832");
+		List<EventInvitee> invited = facebook.eventOperations().getDeclined("193482154020832");
 		assertEquals(3, invited.size());
 		assertInvitee(invited.get(0), "100001387295207", "Art Names", RsvpStatus.DECLINED);
 		assertInvitee(invited.get(1), "738140579", "Craig Walls", RsvpStatus.DECLINED);

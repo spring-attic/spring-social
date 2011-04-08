@@ -24,14 +24,14 @@ import org.springframework.social.facebook.types.Reference;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class CommentApiImpl implements CommentApi {
+public class CommentTemplate implements CommentOperations {
 	private final CommentResponseExtractor commentsExtractor;
 
 	private final ReferenceResponseExtractor referenceExtractor;
 
 	private final GraphApi graphApi;
 
-	public CommentApiImpl(GraphApi graphApi) {
+	public CommentTemplate(GraphApi graphApi) {
 		this.graphApi = graphApi;
 		commentsExtractor = new CommentResponseExtractor();
 		referenceExtractor = new ReferenceResponseExtractor();

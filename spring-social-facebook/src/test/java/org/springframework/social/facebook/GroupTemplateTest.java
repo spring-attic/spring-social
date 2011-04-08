@@ -28,7 +28,7 @@ import org.springframework.social.facebook.types.Group;
 import org.springframework.social.facebook.types.Reference;
 
 
-public class GroupApiImplTest extends AbstractFacebookApiTest {
+public class GroupTemplateTest extends AbstractFacebookApiTest {
 
 	@Test
 	public void getGroup() {
@@ -37,7 +37,7 @@ public class GroupApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/group.json", getClass()), responseHeaders));
 		
-		Group group = facebook.groupApi().getGroup("213106022036379");
+		Group group = facebook.groupOperations().getGroup("213106022036379");
 		assertEquals("213106022036379", group.getId());
 		assertEquals("Test Group", group.getName());
 		assertEquals("Just a test group", group.getDescription());
@@ -55,7 +55,7 @@ public class GroupApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/group-members.json", getClass()), responseHeaders));
-		List<Reference> members = facebook.groupApi().getMembers("213106022036379");
+		List<Reference> members = facebook.groupOperations().getMembers("213106022036379");
 		assertEquals(3, members.size());
 		assertEquals("100001387295207", members.get(0).getId());
 		assertEquals("Art Names", members.get(0).getName());

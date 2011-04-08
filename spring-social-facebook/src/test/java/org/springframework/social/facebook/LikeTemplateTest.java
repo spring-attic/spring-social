@@ -26,14 +26,14 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.social.facebook.types.UserLike;
 
-public class LikeApiImplTest extends AbstractFacebookApiTest {
+public class LikeTemplateTest extends AbstractFacebookApiTest {
 
 	@Test
 	public void getLikes() {
 		mockServer.expect(requestTo("https://graph.facebook.com/me/likes")).andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andRespond(withResponse(new ClassPathResource("testdata/user-likes.json", getClass()), responseHeaders));
-		List<UserLike> likes = facebook.likeApi().getLikes();
+		List<UserLike> likes = facebook.likeOperations().getLikes();
 		assertLikes(likes);
 	}
 
@@ -42,7 +42,7 @@ public class LikeApiImplTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/123456789/likes")).andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andRespond(withResponse(new ClassPathResource("testdata/user-likes.json", getClass()), responseHeaders));
-		List<UserLike> likes = facebook.likeApi().getLikes("123456789");
+		List<UserLike> likes = facebook.likeOperations().getLikes("123456789");
 		assertLikes(likes);
 	}
 	
@@ -52,7 +52,7 @@ public class LikeApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(POST))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("{}", responseHeaders));
-		facebook.likeApi().like("123456");
+		facebook.likeOperations().like("123456");
 		mockServer.verify();
 	}
 	
@@ -63,7 +63,7 @@ public class LikeApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(body("method=delete"))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("{}", responseHeaders));
-		facebook.likeApi().unlike("123456");
+		facebook.likeOperations().unlike("123456");
 		mockServer.verify();
 	}
 

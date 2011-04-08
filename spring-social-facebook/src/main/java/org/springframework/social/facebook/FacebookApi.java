@@ -24,22 +24,49 @@ package org.springframework.social.facebook;
  */
 public interface FacebookApi extends GraphApi {
 	
-	UserApi userApi();
+	/**
+	 * API for performing operations on Facebook user profiles.
+	 */
+	UserOperations userOperations();
 	
-	CheckinApi checkinApi();
-
-	LikeApi likeApi();
-
-	FeedApi feedApi();
+	/**
+	 * API for performing Facebook Places checkin operations.
+	 */
+	CheckinOperations checkinOperations();
 	
-	FriendsApi friendsApi();
-	
-	GroupApi groupApi();
+	/**
+	 * API for performing operations against user likes and interests.
+	 */
+	LikeOperations likeOperations();
 
-	CommentApi commentApi();
-
-	EventsApi eventsApi();
+	/**
+	 * API for performing operations on feeds.
+	 */
+	FeedOperations feedOperations();
 	
-	MediaApi mediaApi();
+	/**
+	 * API for performing operations with a user's set of friends.
+	 */
+	FriendOperations friendOperations();
+	
+	/**
+	 * API for performing operations on groups.
+	 */
+	GroupOperations groupOperations();
+
+	/**
+	 * API for reading and posting comments.
+	 */
+	CommentOperations commentOperations();
+
+	/**
+	 * API for performing operations on events.
+	 */
+	EventOperations eventOperations();
+	
+	/**
+	 * API for performing operations on albums, photos, and videos.
+	 */
+	MediaOperations mediaOperations();
 	
 }

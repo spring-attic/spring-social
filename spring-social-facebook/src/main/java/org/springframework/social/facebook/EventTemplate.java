@@ -26,14 +26,14 @@ import org.springframework.social.facebook.types.UserEvent;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class EventsApiImpl implements EventsApi {
+public class EventTemplate implements EventOperations {
 
 	private EventResponseExtractor eventExtractor;
 	private UserEventResponseExtractor userEventExtractor;
 	private InviteeResponseExtractor inviteeExtractor;
 	private final GraphApi graphApi;
 
-	public EventsApiImpl(GraphApi graphApi) {
+	public EventTemplate(GraphApi graphApi) {
 		this.graphApi = graphApi;
 		eventExtractor = new EventResponseExtractor();
 		userEventExtractor = new UserEventResponseExtractor();

@@ -23,12 +23,12 @@ import org.springframework.social.facebook.types.FeedEntry;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class FeedApiImpl implements FeedApi {
+public class FeedTemplate implements FeedOperations {
 
 	private FeedEntryResponseExtractor feedEntryExtractor;
 	private final GraphApi graphApi;
 
-	public FeedApiImpl(GraphApi graphApi) {
+	public FeedTemplate(GraphApi graphApi) {
 		this.graphApi = graphApi;
 		feedEntryExtractor = new FeedEntryResponseExtractor();
 	}

@@ -28,14 +28,14 @@ import org.springframework.social.facebook.types.Album;
 import org.springframework.social.facebook.types.Photo;
 import org.springframework.social.facebook.types.Video;
 
-public class MediaApiImplTest extends AbstractFacebookApiTest {
+public class MediaTemplateTest extends AbstractFacebookApiTest {
 	@Test
 	public void getAlbums() {
 		mockServer.expect(requestTo("https://graph.facebook.com/me/albums"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/albums.json", getClass()), responseHeaders));
-		List<Album> albums = facebook.mediaApi().getAlbums();
+		List<Album> albums = facebook.mediaOperations().getAlbums();
 		assertAlbums(albums);
 	}
 	
@@ -45,7 +45,7 @@ public class MediaApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/albums.json", getClass()), responseHeaders));
-		List<Album> albums = facebook.mediaApi().getAlbums("192837465");
+		List<Album> albums = facebook.mediaOperations().getAlbums("192837465");
 		assertAlbums(albums);
 	}
 	
@@ -55,7 +55,7 @@ public class MediaApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/album.json", getClass()), responseHeaders));
-		Album album = facebook.mediaApi().getAlbum("10151447271460580");
+		Album album = facebook.mediaOperations().getAlbum("10151447271460580");
 		assertSingleAlbum(album);
 	}
 	
@@ -66,7 +66,7 @@ public class MediaApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/photos.json", getClass()), responseHeaders));
 	
-		List<Photo> photos = facebook.mediaApi().getPhotos("10151447271460580");
+		List<Photo> photos = facebook.mediaOperations().getPhotos("10151447271460580");
 		assertEquals(2, photos.size());
 		assertSinglePhoto(photos.get(1));
 		assertEquals("10150447271355580", photos.get(0).getId());
@@ -99,7 +99,7 @@ public class MediaApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/photo.json", getClass()), responseHeaders));
-		assertSinglePhoto(facebook.mediaApi().getPhoto("10150447271355581"));
+		assertSinglePhoto(facebook.mediaOperations().getPhoto("10150447271355581"));
 	}
 
 	@Test
@@ -108,7 +108,7 @@ public class MediaApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/videos.json", getClass()), responseHeaders));
-		List<Video> videos = facebook.mediaApi().getVideos();
+		List<Video> videos = facebook.mediaOperations().getVideos();
 		assertVideos(videos);
 	}
 
@@ -118,7 +118,7 @@ public class MediaApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/videos.json", getClass()), responseHeaders));
-		List<Video> videos = facebook.mediaApi().getVideos("100001387295207");
+		List<Video> videos = facebook.mediaOperations().getVideos("100001387295207");
 		assertVideos(videos);
 	}
 
@@ -143,7 +143,7 @@ public class MediaApiImplTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/video.json", getClass()), responseHeaders));
-		Video video = facebook.mediaApi().getVideo("161500020572907");
+		Video video = facebook.mediaOperations().getVideo("161500020572907");
 		assertSingleVideo(video);
 	}
 
