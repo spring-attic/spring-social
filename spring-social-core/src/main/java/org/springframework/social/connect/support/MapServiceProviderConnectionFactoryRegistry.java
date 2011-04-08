@@ -16,6 +16,7 @@
 package org.springframework.social.connect.support;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +30,12 @@ public class MapServiceProviderConnectionFactoryRegistry implements ServiceProvi
 
 	private final Map<Class<?>, String> serviceApiTypeIndex = new HashMap<Class<?>, String>();
 
+	public void setConnectionFactories(List<ServiceProviderConnectionFactory<?>> connectionFactories) {
+		for (ServiceProviderConnectionFactory<?> connectionFactory : connectionFactories) {
+			addConnectionFactory(connectionFactory);
+		}
+	}
+	
 	public void addConnectionFactory(ServiceProviderConnectionFactory<?> connectionFactory) {
 		if (connectionFactories.containsKey(connectionFactory.getProviderId())) {
 			throw new IllegalArgumentException("A ConnectionFactory for provider '" + connectionFactory.getProviderId() + "' has already been registered");
