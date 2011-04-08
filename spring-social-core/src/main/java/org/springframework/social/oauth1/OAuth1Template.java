@@ -152,7 +152,7 @@ public class OAuth1Template implements OAuth1Operations {
 	private String buildOAuthUrl(String oauthUrl, String requestToken, String callbackUrl) {
 		StringBuilder authorizeUrl = new StringBuilder(this.authorizeUrl).append('?').append("oauth_token").append('=').append(formEncode(requestToken));
 		if (version == OAuth1Version.CORE_10) {
-			authorizeUrl.append('&').append("callback_url").append("=").append(formEncode(callbackUrl));
+			authorizeUrl.append('&').append("oauth_callback").append("=").append(formEncode(callbackUrl));
 		}
 		return authorizeUrl.toString();
 	}

@@ -15,12 +15,10 @@
  */
 package org.springframework.social.oauth1;
 
-import static org.junit.Assert.assertEquals;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.social.test.client.RequestMatchers.headerContains;
-import static org.springframework.social.test.client.RequestMatchers.method;
-import static org.springframework.social.test.client.RequestMatchers.requestTo;
-import static org.springframework.social.test.client.ResponseCreators.withResponse;
+import static org.junit.Assert.*;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.social.test.client.RequestMatchers.*;
+import static org.springframework.social.test.client.ResponseCreators.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -52,7 +50,7 @@ public class OAuth1TemplateTest {
 	public void buildAuthorizeUrl() {
 		assertEquals("https://www.someprovider.com/oauth/authorize?oauth_token=request_token",
 				oauth10a.buildAuthorizeUrl("request_token", null));
-		assertEquals("https://www.someprovider.com/oauth/authorize?oauth_token=request_token&callback_url=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback",
+		assertEquals("https://www.someprovider.com/oauth/authorize?oauth_token=request_token&oauth_callback=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback",
 				oauth10.buildAuthorizeUrl("request_token", "http://www.someclient.com/oauth/callback"));
 	}
 
