@@ -26,14 +26,14 @@ import java.io.Serializable;
 public class TripItProfile implements Serializable {
 
 	public TripItProfile(String id, String screenName, String publicDisplayName, String homeCity, String company,
-			String profilePath) {
+			String profilePath, String profileImageUrl) {
 		this.id = id;
 		this.screenName = screenName;
 		this.publicDisplayName = publicDisplayName;
 		this.homeCity = homeCity;
 		this.company = company;
 		this.profilePath = profilePath;
-
+		this.profileImageUrl = profileImageUrl;
 	}
 
 	/**
@@ -89,6 +89,15 @@ public class TripItProfile implements Serializable {
 	public String getProfileUrl() {
 		return "http://www.tripit.com/" + profilePath;
 	}
+	
+	/**
+	 * The URL to the user's profile image at TripIt
+	 * 
+	 * @return The URL to the user's profile image at TripIt
+	 */
+	public String getProfileImageUrl() {
+		return profileImageUrl;
+	}
 
 	private final String id;
 	private final String screenName;
@@ -96,4 +105,5 @@ public class TripItProfile implements Serializable {
 	private final String homeCity;
 	private final String company;
 	private final String profilePath;
+	private final String profileImageUrl;
 }

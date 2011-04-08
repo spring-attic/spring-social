@@ -70,7 +70,8 @@ public class TripItTemplate implements TripItApi {
 		String homeCity = String.valueOf(profileMap.get("home_city"));
 		String company = String.valueOf(profileMap.get("company"));
 		String profilePath = String.valueOf(profileMap.get("profile_url"));
-		return new TripItProfile(id, screenName, publicDisplayName, homeCity, company, profilePath);
+		String profileImageUrl = String.valueOf(profileMap.get("photo_url"));
+		return new TripItProfile(id, screenName, publicDisplayName, homeCity, company, profilePath, profileImageUrl);
 	}
 
 	public List<Trip> getUpcomingTrips() {
