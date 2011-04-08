@@ -22,7 +22,7 @@ import org.springframework.social.tripit.TripItServiceProvider;
 public class TripItServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TripItApi> {
 
 	public TripItServiceProviderConnectionFactory(String consumerKey, String consumerSecret) {
-		super("twitter", new TripItServiceProvider(consumerKey, consumerSecret), new TripItServiceApiAdapter());
+		super("tripit", new TripItServiceProvider(consumerKey, consumerSecret), new TripItServiceApiAdapter());
 	}
 
 }

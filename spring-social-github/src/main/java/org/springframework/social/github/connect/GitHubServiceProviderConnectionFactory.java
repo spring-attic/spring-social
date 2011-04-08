@@ -22,7 +22,7 @@ import org.springframework.social.github.GitHubServiceProvider;
 public class GitHubServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<GitHubApi> {
 
 	public GitHubServiceProviderConnectionFactory(String clientId, String clientSecret) {
-		super("gowalla", new GitHubServiceProvider(clientId, clientSecret), new GitHubServiceApiAdapter());
+		super("github", new GitHubServiceProvider(clientId, clientSecret), new GitHubServiceApiAdapter());
 	}
 
 }
