@@ -24,18 +24,60 @@ import org.springframework.util.MultiValueMap;
 
 /**
  * Low level interface defining generic operations for interacting with Twitter's REST API.
+ * Operations in this interface work with paths relative to the Twitter REST API's base path of https://api.twitter.com/1/.
  */
 public interface LowLevelTwitterApi {
 	
+	/**
+	 * Fetches a single object from the given path.
+	 * @param path the relative path to the resource. May contain template placeholder. 
+	 * @param extractor an extractor used to extract the object into a specific type.
+	 * @param params parameters to fill in the template placeholders, if any.
+	 * @return an Java object representing the requested Twitter resource.
+	 */
 	<T> T fetchObject(String path, ResponseExtractor<T> extractor, Object... params);
 	
+	/**
+	 * Fetches a list of objects from the given path.
+	 * @param path the relative path to the resource. May contain template placeholder.
+	 * @param extractor an extractor used to extract the response into a specific type.
+	 * @param params parameters to fill in the template placeholders, if any.
+	 * @return a list of Java objects representing the requested Twitter resource.
+	 */
 	<T> List<T> fetchObjects(String path, ResponseExtractor<T> extractor, Object... params);
 	
-	<T> List<T> fetchObjects(String path, String jsonPath, ResponseExtractor<T> extractor, Object... params);
+	/**
+	 * Fetches a list of objects from the given path.
+	 * @param path the relative path to the resource. May contain template placeholder.
+	 * @param jsonProperty the property in the JSON response that contains the list of objects. 
+	 * @param extractor an extractor used to extract the response into a specific type.
+	 * @param params parameters to fill in the template placeholders, if any.
+	 * @return a list of Java objects representing the requested Twitter resource.
+	 */
+	<T> List<T> fetchObjects(String path, String jsonProperty, ResponseExtractor<T> extractor, Object... params);
 
+	/**
+	 * Publishes data to the Twitter REST API. Does not return any results.
+	 * @param path the relative path to the resource. May contain template placeholder.
+	 * @param data the data to be posted.
+	 * @param params parameters to fill in the template placeholders, if any.
+	 */
 	void publish(String path, MultiValueMap<String, Object> data, Object... params);
 	
+	/**
+	 * Publishes data to the Twitter REST API. Does not return any results.
+	 * @param path the relative path to the resource. May contain template placeholder.
+	 * @param data the data to be posted.
+	 * @param extractor an extractor used to extract the response into a specific type.
+	 * @param params parameters to fill in the template placeholders, if any.
+	 * @return a Java object representing the response after publishing.
+	 */
 	<T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor, Object... params);
 
+	/**
+	 * Deletes a resource.
+	 * @param path the relative path to the resource. May contain template placeholder.
+	 * @param params parameters to fill in the template placeholders, if any.
+	 */
 	void delete(String path, Object... params);
 }
