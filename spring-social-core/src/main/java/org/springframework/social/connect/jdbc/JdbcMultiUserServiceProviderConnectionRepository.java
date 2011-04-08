@@ -15,8 +15,6 @@
  */
 package org.springframework.social.connect.jdbc;
 
-import java.io.Serializable;
-
 import javax.sql.DataSource;
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -41,15 +39,15 @@ public class JdbcMultiUserServiceProviderConnectionRepository implements MultiUs
 		this.textEncryptor = textEncryptor;
 	}
 
-	public Serializable findLocalUserIdConnectedTo(ServiceProviderConnectionKey connectionKey) {
+	public String findLocalUserIdConnectedTo(ServiceProviderConnectionKey connectionKey) {
 		try {
-			return jdbcTemplate.queryForObject("select localUserId from ServiceProviderConnection where providerId = ? and providerUserId = ?", Serializable.class, connectionKey.getProviderId(), connectionKey.getProviderUserId());
+			return jdbcTemplate.queryForObject("select localUserId from ServiceProviderConnection where providerId = ? and providerUserId = ?", String.class, connectionKey.getProviderId(), connectionKey.getProviderUserId());
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
 	}
 
-	public ServiceProviderConnectionRepository createConnectionRepository(Serializable localUserId) {
+	public ServiceProviderConnectionRepository createConnectionRepository(String localUserId) {
 		return new JdbcServiceProviderConnectionRepository(localUserId, jdbcTemplate, connectionFactoryLocator, textEncryptor);
 	}
 

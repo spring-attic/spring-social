@@ -15,8 +15,6 @@
  */
 package org.springframework.social.web.signin;
 
-import java.io.Serializable;
-
 import javax.inject.Inject;
 import javax.inject.Provider;
 
@@ -51,13 +49,11 @@ public class ProviderSignInController {
 	
 	private final String baseCallbackUrl;
 	
-	@SuppressWarnings("rawtypes")
 	private final SignInService signInService;
 
 	private String signupUrl = "/signup";
 	
 	@Inject
-	@SuppressWarnings("rawtypes")
 	public ProviderSignInController(String applicationUrl, ServiceProviderConnectionFactoryLocator connectionFactoryLocator, MultiUserServiceProviderConnectionRepository usersConnectionRepository,
 			Provider<ServiceProviderConnectionRepository> currentUserConnectionRepositoryProvider, SignInService signInService) {
 		this.connectionFactoryLocator = connectionFactoryLocator;
@@ -111,7 +107,7 @@ public class ProviderSignInController {
 	}
 
 	private String handleSignIn(ServiceProviderConnection<?> connection, WebRequest request) {
-		Serializable localUserId = usersConnectionRepository.findLocalUserIdConnectedTo(connection.getKey());
+		String localUserId = usersConnectionRepository.findLocalUserIdConnectedTo(connection.getKey());
 		if (localUserId == null) {
 			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, currentUserConnectionRepositoryProvider);
 			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, WebRequest.SCOPE_SESSION);
@@ -122,8 +118,7 @@ public class ProviderSignInController {
 		}		
 	}
 	
-	@SuppressWarnings("unchecked")
-	private void signIn(Serializable localUserId) {
+	private void signIn(String localUserId) {
 		signInService.signIn(localUserId);		
 	}
 	

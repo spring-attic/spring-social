@@ -15,19 +15,17 @@
  */
 package org.springframework.social.web.signin;
 
-import java.io.Serializable;
-
 /**
  * Strategy interface for authenticating users to an application given their account ID.
  * An application should provide their own implementation of this interface for use by ProviderSignInControllers.
  * @author Craig Walls
  */
-public interface SignInService<T extends Serializable> {
+public interface SignInService {
 	
 	/**
 	 * Sign in the user with the specified accountId.
 	 * @param accountId the user's account id
 	 */
-	void signIn(T accountId);
+	void signIn(String localUserId);
 	
 }

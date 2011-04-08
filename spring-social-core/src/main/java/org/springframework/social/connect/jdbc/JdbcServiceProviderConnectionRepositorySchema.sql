@@ -1,4 +1,4 @@
-create table ServiceProviderConnection (localUserId bigint not null,
+create table ServiceProviderConnection (localUserId varchar not null,
 					providerId varchar not null,
 					providerUserId varchar,
 					rank int not null,

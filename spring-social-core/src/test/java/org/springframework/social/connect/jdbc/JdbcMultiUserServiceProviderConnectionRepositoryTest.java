@@ -65,7 +65,7 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 		connectionFactory = new TestFacebookServiceProviderConnectionFactory();
 		connectionFactoryRegistry.addConnectionFactory(connectionFactory);
 		usersConnectionRepository = new JdbcMultiUserServiceProviderConnectionRepository(database, connectionFactoryRegistry, Encryptors.noOpText());
-		connectionRepository = usersConnectionRepository.createConnectionRepository(1L);
+		connectionRepository = usersConnectionRepository.createConnectionRepository("1");
 	}
 
 	@After
@@ -79,7 +79,7 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 	public void findLocalUserIdConnectedTo() {
 		insertFacebookConnection();
 		Serializable localUserId = usersConnectionRepository.findLocalUserIdConnectedTo(new ServiceProviderConnectionKey("facebook", "9"));
-		assertEquals(1L, localUserId);
+		assertEquals("1", localUserId);
 	}
 	
 	@Test
