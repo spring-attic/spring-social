@@ -1,21 +1,19 @@
 package org.springframework.social.connect.jdbc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
@@ -23,6 +21,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.social.connect.ServiceProviderConnection;
+import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.ServiceProviderUser;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
@@ -35,6 +34,8 @@ import org.springframework.social.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 public class JdbcServiceProviderConnectionRepositoryTest {
 
@@ -123,30 +124,93 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 		insertTwitterConnection();
 		insertFacebookConnection();
 		insertFacebookConnection2();
-		Map<String, List<String>> providerUsers = new LinkedHashMap<String, List<String>>();
-		providerUsers.put("facebook", Arrays.asList("9", "10"));
-		providerUsers.put("twitter", Arrays.asList("1"));
-		List<ServiceProviderConnection<?>> connections = connectionRepository.findConnectionsForUsers(providerUsers);
-		assertEquals(3, connections.size());
-		assertFacebookConnection((ServiceProviderConnection<TestFacebookApi>) connections.get(0));
+		MultiValueMap<String, String> providerUsers = new LinkedMultiValueMap<String, String>();
+		providerUsers.add("facebook", "10");
+		providerUsers.add("facebook", "9");
+		providerUsers.add("twitter", "1");
+		MultiValueMap<String, ServiceProviderConnection<?>> connectionsForUsers = connectionRepository.findConnectionsForUsers(providerUsers);
+		assertEquals(2, connectionsForUsers.size());
+		assertEquals("10", connectionsForUsers.getFirst("facebook").getKey().getProviderUserId());
+		assertFacebookConnection((ServiceProviderConnection<TestFacebookApi>) connectionsForUsers.get("facebook").get(1));
+		assertTwitterConnection((ServiceProviderConnection<TestTwitterApi>) connectionsForUsers.getFirst("twitter"));
 	}
 	
 	@Test
 	public void findConnectionsForUsersEmptyResult() {
-		Map<String, List<String>> providerUsers = new HashMap<String, List<String>>();
-		providerUsers.put("facebook", Collections.singletonList("1"));
+		MultiValueMap<String, String> providerUsers = new LinkedMultiValueMap<String, String>();
+		providerUsers.add("facebook", "1");
 		assertTrue(connectionRepository.findConnectionsForUsers(providerUsers).isEmpty());
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
 	public void findConnectionsForUsersEmptyInput() {
-		Map<String, List<String>> providerUsers = new HashMap<String, List<String>>();
+		MultiValueMap<String, String> providerUsers = new LinkedMultiValueMap<String, String>();
 		connectionRepository.findConnectionsForUsers(providerUsers);
+	}
+	
+	@Test
+	@SuppressWarnings("unchecked")
+	public void findConnection() {
+		insertFacebookConnection();
+		assertFacebookConnection((ServiceProviderConnection<TestFacebookApi>) connectionRepository.findConnection(new ServiceProviderConnectionKey("facebook", "9")));
+	}
+	
+	@Test(expected=EmptyResultDataAccessException.class)
+	public void findConnectionNoSuchConnection() {
+		connectionRepository.findConnection(new ServiceProviderConnectionKey("facebook", "bogus"));
+	}
+
+	@Test
+	public void findConnectionByServiceApi() {
+		insertFacebookConnection();
+		assertFacebookConnection(connectionRepository.findConnectionByServiceApi(TestFacebookApi.class));
+	}
+
+	@Test
+	public void findConnectionByServiceApiSelectFromMultipleByRank() {
+		insertFacebookConnection2();
+		insertFacebookConnection();
+		assertFacebookConnection(connectionRepository.findConnectionByServiceApi(TestFacebookApi.class));
+	}
+
+	@Test(expected=EmptyResultDataAccessException.class)
+	public void findConnectionByServiceApiNoSuchConnection() {
+		assertFacebookConnection(connectionRepository.findConnectionByServiceApi(TestFacebookApi.class));
+	}
+
+	@Test
+	public void findConnectionByServiceApiForUser() {
+		insertFacebookConnection();
+		insertFacebookConnection2();	
+		assertFacebookConnection(connectionRepository.findConnectionByServiceApiForUser(TestFacebookApi.class, "9"));
+		assertEquals("10", connectionRepository.findConnectionByServiceApiForUser(TestFacebookApi.class, "10").getKey().getProviderUserId());
+	}
+
+	@Test(expected=EmptyResultDataAccessException.class)
+	public void findConnectionByServiceApiForUserNoSuchConnection() {
+		assertFacebookConnection(connectionRepository.findConnectionByServiceApiForUser(TestFacebookApi.class, "9"));
+	}
+	
+	@Test
+	public void removeConnectionsToProvider() {
+		insertFacebookConnection();
+		insertFacebookConnection2();
+		assertTrue(dataAccessor.queryForObject("select exists (select 1 from ServiceProviderConnection where providerId = 'facebook')", Boolean.class));
+		connectionRepository.removeConnectionsToProvider("facebook");
+		assertFalse(dataAccessor.queryForObject("select exists (select 1 from ServiceProviderConnection where providerId = 'facebook')", Boolean.class));
 	}
 	
 	@Test
 	public void removeConnectionsToProviderNoOp() {
 		connectionRepository.removeConnectionsToProvider("twitter");
+	}
+
+	@Test
+	public void removeConnection() {
+		insertFacebookConnection();
+		assertTrue(dataAccessor.queryForObject("select exists (select 1 from ServiceProviderConnection where providerId = 'facebook')", Boolean.class));
+		connectionRepository.removeConnection(new ServiceProviderConnectionKey("facebook", "9"));
+		assertFalse(dataAccessor.queryForObject("select exists (select 1 from ServiceProviderConnection where providerId = 'facebook')", Boolean.class));		
 	}
 
 	@Test
@@ -162,6 +226,40 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 		assertEquals(connection, restoredConnection);	
 		assertNewConnection(restoredConnection);
 	}
+	
+	@Test(expected=DuplicateKeyException.class)
+	public void addConnectionDuplicate() {
+		ServiceProviderConnection<TestFacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", null, "987654321", System.currentTimeMillis() + 3600 * 1000));
+		connectionRepository.addConnection(connection);
+		connectionRepository.addConnection(connection);
+	}
+	
+	@Test
+	public void updateConnectionProfileFields() {
+		connectionFactoryRegistry.addConnectionFactory(new TestTwitterServiceProviderConnectionFactory());		
+		insertTwitterConnection();
+		ServiceProviderConnection<TestTwitterApi> twitter = connectionRepository.findConnectionByServiceApi(TestTwitterApi.class);
+		assertEquals("http://twitter.com/kdonald/picture", twitter.getUser().getProfilePictureUrl());
+		twitter.sync();
+		assertEquals("http://twitter.com/kdonald/a_new_picture", twitter.getUser().getProfilePictureUrl());
+		connectionRepository.updateConnection(twitter);
+		ServiceProviderConnection<TestTwitterApi> twitter2 = connectionRepository.findConnectionByServiceApi(TestTwitterApi.class);
+		assertEquals("http://twitter.com/kdonald/a_new_picture", twitter2.getUser().getProfilePictureUrl());
+	}
+	
+	@Test
+	public void updateConnectionAccessFields() {
+		insertFacebookConnection();
+		ServiceProviderConnection<TestFacebookApi> facebook = connectionRepository.findConnectionByServiceApi(TestFacebookApi.class);
+		assertEquals("234567890", facebook.getServiceApi().getAccessToken());
+		facebook.refresh();
+		connectionRepository.updateConnection(facebook);
+		ServiceProviderConnection<TestFacebookApi> facebook2 = connectionRepository.findConnectionByServiceApi(TestFacebookApi.class);
+		assertEquals("765432109", facebook2.getServiceApi().getAccessToken());
+		ServiceProviderConnectionData data = facebook.createData();
+		assertEquals("654321098", data.getRefreshToken());
+	}
+
 		
 	private void insertTwitterConnection() {
 		dataAccessor.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -233,7 +331,17 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 	private static class TestFacebookServiceProvider implements OAuth2ServiceProvider<TestFacebookApi> {
 
 		public OAuth2Operations getOAuthOperations() {
-			return null;
+			return new OAuth2Operations() {
+				public String buildAuthorizeUrl(String redirectUri, String scope, String state) {
+					return null;
+				}
+				public AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri, MultiValueMap<String, String> additionalParameters) {
+					return null;
+				}
+				public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
+					return new AccessGrant("765432109", "read", "654321098", System.currentTimeMillis() + 3600 * 1000);
+				}								
+			};
 		}
 
 		public TestFacebookApi getServiceApi(final String accessToken) {
