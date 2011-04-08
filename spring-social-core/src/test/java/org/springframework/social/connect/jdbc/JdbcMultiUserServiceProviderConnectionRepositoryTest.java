@@ -189,9 +189,18 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 
 	@Test(expected=EmptyResultDataAccessException.class)
 	public void findConnectionByServiceApiNoSuchConnection() {
-		assertFacebookConnection(connectionRepository.findConnectionByServiceApi(TestFacebookApi.class));
+		connectionRepository.findConnectionByServiceApi(TestFacebookApi.class);
 	}
 
+	@Test
+	public void findConnectionsByServiceApi() {
+		insertFacebookConnection();
+		insertFacebookConnection2();
+		List<ServiceProviderConnection<TestFacebookApi>> connections = connectionRepository.findConnectionsByServiceApi(TestFacebookApi.class);
+		assertEquals(2, connections.size());
+		assertFacebookConnection(connections.get(0));
+	}
+	
 	@Test
 	public void findConnectionByServiceApiForUser() {
 		insertFacebookConnection();

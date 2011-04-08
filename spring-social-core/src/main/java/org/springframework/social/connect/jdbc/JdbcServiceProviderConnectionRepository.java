@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -124,6 +125,12 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 		return (ServiceProviderConnection<S>) jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and rank = 1", connectionMapper, localUserId, getProviderId(serviceApiType));
 	}
 
+	@SuppressWarnings("unchecked")
+	public <S> List<ServiceProviderConnection<S>> findConnectionsByServiceApi(Class<S> serviceApiType) {
+		List<?> connections = findConnectionsToProvider(getProviderId(serviceApiType));
+		return (List<ServiceProviderConnection<S>>) connections;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <S> ServiceProviderConnection<S> findConnectionByServiceApiForUser(Class<S> serviceApiType, String providerUserId) {
 		return (ServiceProviderConnection<S>) jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and providerUserId = ?", connectionMapper, localUserId, getProviderId(serviceApiType), providerUserId);

@@ -31,6 +31,8 @@ public interface ServiceProviderConnectionRepository {
 
 	<S> ServiceProviderConnection<S> findConnectionByServiceApi(Class<S> serviceApiType);
 
+	<S> List<ServiceProviderConnection<S>> findConnectionsByServiceApi(Class<S> serviceApiType);
+
 	<S> ServiceProviderConnection<S> findConnectionByServiceApiForUser(Class<S> serviceApiType, String providerUserId);
 
 	void addConnection(ServiceProviderConnection<?> connection);
