@@ -197,6 +197,8 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("Art Names", feedEntry.getFrom().getName());
 		assertEquals(1, feedEntry.getLikes().size());
 		assertEquals(2, feedEntry.getComments().size());
+		assertNull(feedEntry.getComments().get(1).getLikes());
+		assertEquals(3, feedEntry.getComments().get(1).getLikesCount());
 	}
 
 	@Test

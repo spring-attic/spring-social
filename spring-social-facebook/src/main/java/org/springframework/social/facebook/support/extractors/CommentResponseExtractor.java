@@ -31,10 +31,17 @@ public class CommentResponseExtractor extends AbstractResponseExtractor<Comment>
 		String fromId = fromMap.get("id");
 		String fromName = fromMap.get("name");
 		String createdTimeAsString = (String) commentMap.get("created_time");
-		// TODO : Potential problem with the content of likes...in some cases it may be an integer
-		Map<String, Object> likesMap = (Map<String, Object>) commentMap.get("likes");
-		List<Reference> likes = extractReferences(likesMap);
-		return new Comment(id, new Reference(fromId, fromName), message, toDate(createdTimeAsString), likes);
+		Object likesObject = commentMap.get("likes");
+		if(likesObject instanceof Integer) {
+			// comment likes are usually just a count
+			Integer likesCount = (Integer) likesObject;
+			return new Comment(id, new Reference(fromId, fromName), message, toDate(createdTimeAsString), likesCount);
+		} else {
+			// but sometimes (as in the case of a checkin comment), the likes are a list of user references 
+			Map<String, Object> likesMap = (Map<String, Object>) likesObject;
+			List<Reference> likes = extractReferences(likesMap);
+			return new Comment(id, new Reference(fromId, fromName), message, toDate(createdTimeAsString), likes);
+		}
 	}
 
 }

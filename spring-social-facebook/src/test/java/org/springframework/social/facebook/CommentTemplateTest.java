@@ -61,6 +61,8 @@ public class CommentTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("1533260333", comment.getFrom().getId());
 		assertEquals("Art Names", comment.getFrom().getName());
 		assertEquals("Howdy!", comment.getMessage());
+		assertNull(comment.getLikes());
+		assertEquals(4, comment.getLikesCount());
 	}
 	
 	@Test
