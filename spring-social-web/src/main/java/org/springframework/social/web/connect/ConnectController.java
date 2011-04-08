@@ -15,6 +15,7 @@
  */
 package org.springframework.social.web.connect;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.core.GenericTypeResolver;
@@ -88,7 +89,7 @@ public class ConnectController  {
 	 */
 	public void addInterceptor(ConnectInterceptor<?> interceptor) {
 		Class<?> serviceApiType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(), ConnectInterceptor.class);
-		this.interceptors.add(serviceApiType, interceptor);
+		interceptors.add(serviceApiType, interceptor);
 	}
 
 	/**
@@ -178,14 +179,29 @@ public class ConnectController  {
 	
 	// internal helpers
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void preConnect(ServiceProviderConnectionFactory<?> connectionFactory, WebRequest request) {
-		// TODO
+		for (ConnectInterceptor interceptor : interceptingConnectionsTo(connectionFactory)) {
+			interceptor.preConnect(connectionFactory, request);
+		}
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void postConnect(ServiceProviderConnectionFactory<?> connectionFactory, ServiceProviderConnection<?> connection, WebRequest request) {
-		// TODO
+		for (ConnectInterceptor interceptor : interceptingConnectionsTo(connectionFactory)) {
+			interceptor.postConnect(connection, request);
+		}
 	}
 
+	private List<ConnectInterceptor<?>> interceptingConnectionsTo(ServiceProviderConnectionFactory<?> connectionFactory) {
+		Class<?> serviceType = GenericTypeResolver.resolveTypeArgument(connectionFactory.getClass(), ServiceProviderConnectionFactory.class);
+		List<ConnectInterceptor<?>> typedInterceptors = interceptors.get(serviceType);
+		if (typedInterceptors == null) {
+			typedInterceptors = Collections.emptyList();
+		}
+		return typedInterceptors;
+	}
+	
 	private String baseViewPath(String providerId) {
 		return "connect/" + providerId;		
 	}
