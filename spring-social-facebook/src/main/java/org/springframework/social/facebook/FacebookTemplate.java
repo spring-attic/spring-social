@@ -126,13 +126,17 @@ public class FacebookTemplate implements FacebookApi {
 	// low-level Graph API operations
 	@SuppressWarnings("unchecked")
 	public <T> T fetchObject(String objectId, ResponseExtractor<T> extractor) {
-		return extractor.extractObject( (Map<String, Object>) restTemplate.getForObject(OBJECT_URL, Map.class, objectId));
+		Map<String, Object> response = (Map<String, Object>) restTemplate.getForObject(OBJECT_URL, Map.class, objectId);
+		checkForErrors(response);
+		return extractor.extractObject(response);
 	}
 	
 	@SuppressWarnings("unchecked")
 	public <T> T fetchObject(String objectId, ResponseExtractor<T> extractor, String... fields) {
 		String joinedFields = join(fields);
-		return extractor.extractObject( (Map<String, Object>) restTemplate.getForObject(OBJECT_URL + "?fields={fields}", Map.class, objectId, joinedFields));
+		Map<String, Object> response = (Map<String, Object>) restTemplate.getForObject(OBJECT_URL + "?fields={fields}", Map.class, objectId, joinedFields);
+		checkForErrors(response);
+		return extractor.extractObject( response);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -167,8 +171,9 @@ public class FacebookTemplate implements FacebookApi {
 	@SuppressWarnings("unchecked")
 	public String publish(String objectId, String connectionType, MultiValueMap<String, String> data) {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
-		Map<String, String> response = restTemplate.postForObject(CONNECTION_URL, requestData, Map.class, objectId, connectionType);
-		return response.get("id");
+		Map<String, Object> response = restTemplate.postForObject(CONNECTION_URL, requestData, Map.class, objectId, connectionType);
+		checkForErrors(response);
+		return (String) response.get("id");
 	}
 	
 	public void post(String objectId, String connectionType, MultiValueMap<String, String> data) {
@@ -192,6 +197,7 @@ public class FacebookTemplate implements FacebookApi {
 	 * Facebook sometimes returns an error message with an HTTP 200. The HTTP 200 prevents the error handler
 	 * from handling it, so we need to check all responses for errors before assuming that they're good data. 
 	 */
+	@SuppressWarnings("unchecked")
 	private void checkForErrors(Map<String, Object> response) {
 		if(response.containsKey("error")) {
 			Map<String, String> errorDetails = (Map<String, String>) response.get("error");

@@ -30,28 +30,13 @@ import org.springframework.social.twitter.DuplicateTweetException;
 import org.springframework.social.twitter.EnhanceYourCalmException;
 import org.springframework.social.twitter.InvalidMessageRecipientException;
 import org.springframework.social.twitter.StatusLengthException;
-import org.springframework.social.twitter.TwitterTemplate;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
 
 /**
- * Subclass of {@link DefaultResponseErrorHandler} that allows some client and
- * server exceptions to flow through {@link RestTemplate} as non-errors.
- * 
- * By default, RestTemplate interprets HTTP client (4xx series) errors and
- * server (5xx series) errors as exceptions and throws an
- * {@link HttpClientErrorException}. In doing so, this prevents the caller from
- * retrieving the body of the response.
- * 
- * When Twitter returns an error, it places some extra information about that
- * error in the body of the response. In order to allow {@link TwitterTemplate}
- * to read that information, those errors need to be treated as non-errors by
- * RestTemplate. This puts the burden on TwitterTemplate to interpret the error
- * and act accordingly. But it also enables TwitterTemplate to obtain more
- * information about the nature of the error.
- * 
+ * Subclass of {@link DefaultResponseErrorHandler} that handles errors from Twitter's
+ * REST API, interpreting them into appropriate exceptions.
  * @author Craig Walls
  */
 public class TwitterErrorHandler extends DefaultResponseErrorHandler {

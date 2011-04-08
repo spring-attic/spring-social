@@ -24,11 +24,21 @@ import org.codehaus.jackson.type.TypeReference;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 
-public class FacebookErrorHandler extends DefaultResponseErrorHandler {
+/**
+ * Subclass of {@link DefaultResponseErrorHandler} that handles errors from Facebook's
+ * Graph API, interpreting them into appropriate exceptions.
+ * @author Craig Walls
+ */
+class FacebookErrorHandler extends DefaultResponseErrorHandler {
 
+	@Override
 	public void handleError(ClientHttpResponse response) throws IOException {
 		// Can't trust the status code to be helpful. Facebook errors are inconsistent in their choice of status code.		
 		Map<String, String> errorDetails = extractErrorDetailsFromResponse(response);
+		if(errorDetails == null) {
+			// body does not contain the known Facebook error structure...use default handling
+			super.handleError(response);			
+		}
 		handleFacebookError(errorDetails);
 	}
 
@@ -37,8 +47,9 @@ public class FacebookErrorHandler extends DefaultResponseErrorHandler {
 	 * @param errorDetails a Map containing a "type" and a "message" corresponding to the Graph API's error response structure.
 	 */
 	void handleFacebookError(Map<String, String> errorDetails) {
+		// Can't trust the type to be useful. It's often OAuthException, even for things not OAuth-related.
+		// Can rely only on the message (which itself isn't very consistent).
 		String message = errorDetails.get("message");
-		// Can't trust the type to be useful. It's often OAuthException, even for things not OAuth-related. Ignore it
 		 
 		if(message.contains("Requires extended permission")) {
 			String requiredPermission = message.split(": ")[1];
@@ -49,6 +60,8 @@ public class FacebookErrorHandler extends DefaultResponseErrorHandler {
 			throw new GraphAPIException(message);
 		} else if(message.equals("User must be an owner of the friendlist")) { // watch for pattern in similar message in other resources
 			throw new OwnershipException(message);
+		} else if(message.contains("Some of the aliases you requested do not exist")) {
+			throw new GraphAPIException(message);
 		}
 		
 	}
@@ -60,6 +73,6 @@ public class FacebookErrorHandler extends DefaultResponseErrorHandler {
 	    if(responseMap.containsKey("error")) {
 	    	return (Map<String, String>) responseMap.get("error");
 	    }
-	    return null; // need to deal with this better...if it happens at all
+	    return null;
 	}
 }
