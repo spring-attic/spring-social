@@ -27,7 +27,6 @@ public class ProviderSignInUtils {
 	 * Connect the new user account to the provider account the user attempted to sign-in with.
 	 * Should be called after signing-up a new user in the context of a provider sign-in attempt.
 	 * In this context, the user did not yet have a local account but attempted to sign-in using one of his or her existing provider accounts.
-	 * @param accountId the user's account identifier
 	 * @param request the current web request, used to extract sign-in attempt information from the current user session
 	 */
 	public static void handleConnectPostSignUp(WebRequest request) {

@@ -19,7 +19,7 @@ package org.springframework.social.oauth2;
  * Base class for ServiceProviders that use the OAuth2 protocol.
  * OAuth2-based ServiceProvider implementations should extend and implement {@link #getServiceApi(String)}.
  * @author Keith Donald
- * @param <T> the service API type
+ * @param <S> the service API type
  */
 public abstract class AbstractOAuth2ServiceProvider<S> implements OAuth2ServiceProvider<S> {
 
