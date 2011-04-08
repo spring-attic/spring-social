@@ -16,7 +16,8 @@
 package org.springframework.social.connect;
 
 import java.util.List;
-import java.util.Map;
+
+import org.springframework.util.MultiValueMap;
 
 public interface ServiceProviderConnectionRepository {
 
@@ -24,7 +25,7 @@ public interface ServiceProviderConnectionRepository {
 
 	List<ServiceProviderConnection<?>> findConnectionsToProvider(String providerId);
 
-	List<ServiceProviderConnection<?>> findConnectionsForUsers(Map<String, List<String>> providerUsers);
+	MultiValueMap<String, ServiceProviderConnection<?>> findConnectionsForUsers(MultiValueMap<String, String> providerUsers);
 	
 	ServiceProviderConnection<?> findConnection(ServiceProviderConnectionKey connectionKey);
 
@@ -34,6 +35,8 @@ public interface ServiceProviderConnectionRepository {
 
 	void addConnection(ServiceProviderConnection<?> connection);
 
+	void updateConnection(ServiceProviderConnection<?> connection);
+	
 	void removeConnectionsToProvider(String providerId);
 
 	void removeConnection(ServiceProviderConnectionKey connectionKey);
