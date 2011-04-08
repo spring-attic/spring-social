@@ -57,7 +57,7 @@ class SigningUtils {
 	
 	/**
 	 * Builds the authorization header.
-	 * The elements in additionalParameters should be decoded.
+	 * The elements in additionalParameters are expected to not be encoded.
 	 */
 	public String buildAuthorizationHeaderValue(HttpMethod method, URI targetUrl, Map<String, String> oauthParameters, MultiValueMap<String, String> additionalParameters, String consumerSecret, String tokenSecret) {
 		StringBuilder header = new StringBuilder();
