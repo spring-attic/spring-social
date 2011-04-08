@@ -31,6 +31,15 @@ public interface OAuth2Operations {
 	 * @return the absolute authorize URL to redirect the user to for authorization
 	 */ 
 	String buildAuthorizeUrl(String redirectUri, String scope, String state);
+
+	/**
+	 * Construct the URL to redirect the user to for authentication.
+	 * The authenticate URL differs from the authorizationUrl slightly in that it does not require the user to authorize the app multiple times.
+	 * This provides a better user experience for "Sign in with Provider" scenarios.
+	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider
+	 * @return the absolute authenticate URL to redirect the user to for authorization
+	 */ 
+	String buildAuthenticateUrl(String redirectUri, String state);
 	
 	/**
 	 * Exchange the authorization grant for an access grant.

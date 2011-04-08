@@ -36,7 +36,7 @@ public class OAuth2TemplateTest {
 	@Before
 	public void setup() {
 		String authorizeUrl = "http://www.someprovider.com/oauth/authorize";
-		oAuth2Template = new OAuth2Template("client_id", "client_secret", authorizeUrl, ACCESS_TOKEN_URL);
+		oAuth2Template = new OAuth2Template("client_id", "client_secret", authorizeUrl, null, ACCESS_TOKEN_URL);
 	}
 
 	@Test

@@ -25,7 +25,9 @@ import org.springframework.social.oauth2.OAuth2Template;
 public class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<FacebookApi> {
 
 	public FacebookServiceProvider(String clientId, String clientSecret) {
-		super(new OAuth2Template(clientId, clientSecret, "https://graph.facebook.com/oauth/authorize", "https://graph.facebook.com/oauth/access_token"));
+		super(new OAuth2Template(clientId, clientSecret,
+				"https://graph.facebook.com/oauth/authorize", null,
+				"https://graph.facebook.com/oauth/access_token"));
 	}
 
 	public FacebookApi getServiceApi(String accessToken) {

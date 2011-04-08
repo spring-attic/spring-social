@@ -47,6 +47,8 @@ public class OAuth1Template implements OAuth1Operations {
 
 	private final URI requestTokenUrl;
 
+	private final String authenticateUrl;
+	
 	private final String authorizeUrl;
 
 	private final URI accessTokenUrl;
@@ -59,11 +61,12 @@ public class OAuth1Template implements OAuth1Operations {
 	 * Constructs an OAuth1Template.
 	 * @param version the version of OAuth 1, either 10 or 10a.
 	 */
-	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl, OAuth1Version version) {
+	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String authenticateUrl, String accessTokenUrl, OAuth1Version version) {
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
 		this.requestTokenUrl = encodeTokenUri(requestTokenUrl);
 		this.authorizeUrl = authorizeUrl;
+		this.authenticateUrl = authenticateUrl;
 		this.accessTokenUrl = encodeTokenUri(accessTokenUrl);
 		this.version = version;
 		this.restTemplate = createRestTemplate();
@@ -78,11 +81,11 @@ public class OAuth1Template implements OAuth1Operations {
 	}
 
 	public final String buildAuthorizeUrl(String requestToken, String callbackUrl) {
-		StringBuilder authorizeUrl = new StringBuilder(this.authorizeUrl).append('?').append("oauth_token").append('=').append(formEncode(requestToken));
-		if (version == OAuth1Version.CORE_10) {
-			authorizeUrl.append('&').append("callback_url").append("=").append(formEncode(callbackUrl));
-		}
-		return authorizeUrl.toString();
+		return buildOAuthUrl(authorizeUrl, requestToken, callbackUrl);
+	}
+	
+	public final String buildAuthenticateUrl(String requestToken, String callbackUrl) {
+		return authenticateUrl != null ? buildOAuthUrl(authenticateUrl, requestToken, callbackUrl) : buildAuthorizeUrl(requestToken, callbackUrl);
 	}
 
 	public final OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters) {
@@ -143,6 +146,14 @@ public class OAuth1Template implements OAuth1Operations {
 		return SigningUtils.buildAuthorizationHeaderValue(HttpMethod.POST, tokenUrl, oauthParameters, additionalParameters, consumerSecret, tokenSecret);
 	}
 
+	private String buildOAuthUrl(String oauthUrl, String requestToken, String callbackUrl) {
+		StringBuilder authorizeUrl = new StringBuilder(this.authorizeUrl).append('?').append("oauth_token").append('=').append(formEncode(requestToken));
+		if (version == OAuth1Version.CORE_10) {
+			authorizeUrl.append('&').append("callback_url").append("=").append(formEncode(callbackUrl));
+		}
+		return authorizeUrl.toString();
+	}
+	
 	private String formEncode(String data) {
 		try {
 			return URLEncoder.encode(data, "UTF-8");

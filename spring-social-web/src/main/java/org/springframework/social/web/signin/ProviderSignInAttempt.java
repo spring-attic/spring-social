@@ -17,6 +17,11 @@ package org.springframework.social.web.signin;
 
 import java.io.Serializable;
 
+import javax.inject.Provider;
+
+import org.springframework.social.connect.ServiceProviderConnection;
+import org.springframework.social.connect.ServiceProviderConnectionRepository;
+
 /**
  * Models an attempt to sign-in to the application using a provider account.
  * Instances are created when the sign-in process could not be completed because no local account is associated with the provider account.
@@ -25,17 +30,28 @@ import java.io.Serializable;
  * For the latter, existing users should sign-in using their local application credentials and formally connect to the provider they also wish to authenticate with. 
  * @author Keith Donald
  */
-public interface ProviderSignInAttempt extends Serializable {
+@SuppressWarnings("serial")
+public class ProviderSignInAttempt implements Serializable {
 
 	/**
 	 * Name of the session attribute ProviderSignInAttempt instances are indexed under.
 	 */
 	static final String SESSION_ATTRIBUTE = ProviderSignInAttempt.class.getName();
 	
+	private final ServiceProviderConnection<?> connection;
+	
+	private final Provider<ServiceProviderConnectionRepository> connectionRepositoryProvider;
+		
+	public ProviderSignInAttempt(ServiceProviderConnection<?> connection, Provider<ServiceProviderConnectionRepository> connectionRepositoryProvider) {
+		this.connection = connection;
+		this.connectionRepositoryProvider = connectionRepositoryProvider;		
+	}
+
 	/**
-	 * Connect the local account with this provider account.
-	 * @param accountId the local account
+	 * Connect the new local user to the provider.
 	 */
-	void connect(Serializable accountId);
+	void addConnection() {
+		connectionRepositoryProvider.get().addConnection(connection);
+	}
 
 }

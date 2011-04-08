@@ -42,9 +42,9 @@ public class OAuth1TemplateTest {
 	@Before
 	public void setup() {
 		oauth10a = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
-				"https://www.someprovider.com/oauth/authorize", ACCESS_TOKEN_URL, OAuth1Version.CORE_10_REVISION_A);
+				"https://www.someprovider.com/oauth/authorize", null, ACCESS_TOKEN_URL, OAuth1Version.CORE_10_REVISION_A);
 		oauth10 = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
-				"https://www.someprovider.com/oauth/authorize",
+				"https://www.someprovider.com/oauth/authorize", "https://www.someprovider.com/oauth/authenticate",
 				ACCESS_TOKEN_URL, OAuth1Version.CORE_10);
 	}
 

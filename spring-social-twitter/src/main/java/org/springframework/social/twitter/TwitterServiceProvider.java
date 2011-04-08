@@ -30,6 +30,7 @@ public class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<Twitte
 		super(consumerKey, consumerSecret, new OAuth1Template(consumerKey, consumerSecret,
 			"https://api.twitter.com/oauth/request_token",
 			"https://api.twitter.com/oauth/authorize",
+			"https://api.twitter.com/oauth/authenticate",			
 			"https://api.twitter.com/oauth/access_token",
 			OAuth1Version.CORE_10_REVISION_A));
 	}

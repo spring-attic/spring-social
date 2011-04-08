@@ -335,6 +335,9 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 				public String buildAuthorizeUrl(String redirectUri, String scope, String state) {
 					return null;
 				}
+				public String buildAuthenticateUrl(String redirectUri, String state) {
+					return null;
+				}
 				public AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri, MultiValueMap<String, String> additionalParameters) {
 					return null;
 				}
