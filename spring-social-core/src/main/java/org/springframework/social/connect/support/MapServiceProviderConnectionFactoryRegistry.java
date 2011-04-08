@@ -17,6 +17,7 @@ package org.springframework.social.connect.support;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.ServiceProviderConnectionFactory;
@@ -56,6 +57,12 @@ public class MapServiceProviderConnectionFactoryRegistry implements ServiceProvi
 		}
 		return (ServiceProviderConnectionFactory<S>) getConnectionFactory(providerId);
 	}
+
+	public Set<String> registeredProviderIds() {
+		return connectionFactories.keySet();
+	}
+	
+	
 	
 
 }

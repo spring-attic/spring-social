@@ -49,9 +49,9 @@ public interface OAuth2Operations {
 	AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri, MultiValueMap<String, String> additionalParameters);
 
 	/**
-	 * Refreshes the access grant.
-	 * @param the refresh token from the previous access grant.
-	 * @param optional scope to narrow to when refreshing access; if null, the existing scope is preserved.
+	 * Refreshes a previous access grant.
+	 * @param refreshToken the refresh token from the previous access grant.
+	 * @param scope optional scope to narrow to when refreshing access; if null, the existing scope is preserved.
 	 */
 	AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters);
 	

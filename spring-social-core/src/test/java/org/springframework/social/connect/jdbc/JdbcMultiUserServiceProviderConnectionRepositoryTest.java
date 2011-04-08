@@ -3,6 +3,7 @@ package org.springframework.social.connect.jdbc;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.Serializable;
@@ -23,9 +24,9 @@ import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
+import org.springframework.social.connect.ServiceProviderConnectionRepository;
 import org.springframework.social.connect.ServiceProviderUser;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
-import org.springframework.social.connect.support.LocalUserIdLocator;
 import org.springframework.social.connect.support.MapServiceProviderConnectionFactoryRegistry;
 import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
 import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
@@ -37,20 +38,20 @@ import org.springframework.social.oauth2.OAuth2ServiceProvider;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class JdbcServiceProviderConnectionRepositoryTest {
+public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 
 	private EmbeddedDatabase database;
 	
-	private JdbcServiceProviderConnectionRepository connectionRepository;
-
 	private MapServiceProviderConnectionFactoryRegistry connectionFactoryRegistry;
 	
 	private TestFacebookServiceProviderConnectionFactory connectionFactory;
 	
-	private Long localUserId = 1L;
-	
 	private JdbcTemplate dataAccessor;
-	
+
+	private JdbcMultiUserServiceProviderConnectionRepository usersConnectionRepository;
+
+	private ServiceProviderConnectionRepository connectionRepository;
+
 	@Before
 	public void setUp() {
 		EmbeddedDatabaseFactory factory = new EmbeddedDatabaseFactory();
@@ -63,11 +64,8 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 		connectionFactoryRegistry = new MapServiceProviderConnectionFactoryRegistry();
 		connectionFactory = new TestFacebookServiceProviderConnectionFactory();
 		connectionFactoryRegistry.addConnectionFactory(connectionFactory);
-		connectionRepository = new JdbcServiceProviderConnectionRepository(database, connectionFactoryRegistry, new LocalUserIdLocator() {
-			public Serializable getLocalUserId() {
-				return localUserId;
-			}
-		}, Encryptors.noOpText());		
+		usersConnectionRepository = new JdbcMultiUserServiceProviderConnectionRepository(database, connectionFactoryRegistry, Encryptors.noOpText());
+		connectionRepository = usersConnectionRepository.createConnectionRepository(1L);
 	}
 
 	@After
@@ -78,28 +76,44 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 	}
 
 	@Test
+	public void findLocalUserIdConnectedTo() {
+		insertFacebookConnection();
+		Serializable localUserId = usersConnectionRepository.findLocalUserIdConnectedTo(new ServiceProviderConnectionKey("facebook", "9"));
+		assertEquals(1L, localUserId);
+	}
+	
+	@Test
+	public void findLocalUserIdConnectedToNoSuchConnection() {
+		assertNull(usersConnectionRepository.findLocalUserIdConnectedTo(new ServiceProviderConnectionKey("facebook", "9")));
+	}
+	
+	@Test
 	@SuppressWarnings("unchecked")
-	public void findAllConnections() {
+	public void findConnectionsToProviders() {
 		connectionFactoryRegistry.addConnectionFactory(new TestTwitterServiceProviderConnectionFactory());
 		insertTwitterConnection();
 		insertFacebookConnection();
-		List<ServiceProviderConnection<?>> connections = connectionRepository.findAllConnections();
+		MultiValueMap<String, ServiceProviderConnection<?>> connections = connectionRepository.findConnectionsToProviders();
 		assertEquals(2, connections.size());
-		ServiceProviderConnection<TestFacebookApi> facebook = (ServiceProviderConnection<TestFacebookApi>) connections.get(0);
+		ServiceProviderConnection<TestFacebookApi> facebook = (ServiceProviderConnection<TestFacebookApi>) connections.getFirst("facebook");
 		assertFacebookConnection(facebook);
-		ServiceProviderConnection<TestTwitterApi> twitter = (ServiceProviderConnection<TestTwitterApi>) connections.get(1);
+		ServiceProviderConnection<TestTwitterApi> twitter = (ServiceProviderConnection<TestTwitterApi>) connections.getFirst("twitter");
 		assertTwitterConnection(twitter);
 	}
 
 	@Test
 	public void findAllConnectionsEmptyResult() {
-		assertTrue(connectionRepository.findAllConnections().isEmpty());
+		connectionFactoryRegistry.addConnectionFactory(new TestTwitterServiceProviderConnectionFactory());
+		MultiValueMap<String, ServiceProviderConnection<?>> connections = connectionRepository.findConnectionsToProviders();
+		assertEquals(2, connections.size());
+		assertEquals(0, connections.get("facebook").size());
+		assertEquals(0, connections.get("twitter").size());		
 	}
 
 	@Test(expected=IllegalArgumentException.class)
 	public void findAllConnectionsNoProviderRegistered() {
 		insertTwitterConnection();
-		connectionRepository.findAllConnections();	
+		connectionRepository.findConnectionsToProviders();	
 	}
 
 	@Test
