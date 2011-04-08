@@ -23,8 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.sql.DataSource;
-
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -36,33 +34,32 @@ import org.springframework.social.connect.ServiceProviderConnectionFactory;
 import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
-import org.springframework.social.connect.support.LocalUserIdLocator;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class JdbcServiceProviderConnectionRepository implements ServiceProviderConnectionRepository {
+class JdbcServiceProviderConnectionRepository implements ServiceProviderConnectionRepository {
 
+	private final Serializable localUserId;
+	
 	private final JdbcTemplate jdbcTemplate;
 	
 	private final ServiceProviderConnectionFactoryLocator connectionFactoryLocator;
 
-	private final LocalUserIdLocator localUserIdLocator;
-	
 	private final TextEncryptor textEncryptor;
 
-	public JdbcServiceProviderConnectionRepository(DataSource dataSource, ServiceProviderConnectionFactoryLocator connectionFactoryLocator, LocalUserIdLocator localUserIdLocator,  TextEncryptor textEncryptor) {
-		this.jdbcTemplate = new JdbcTemplate(dataSource);
+	public JdbcServiceProviderConnectionRepository(Serializable localUserId, JdbcTemplate jdbcTemplate, ServiceProviderConnectionFactoryLocator connectionFactoryLocator, TextEncryptor textEncryptor) {
+		this.localUserId = localUserId;
+		this.jdbcTemplate = jdbcTemplate;
 		this.connectionFactoryLocator = connectionFactoryLocator;
-		this.localUserIdLocator = localUserIdLocator;
 		this.textEncryptor = textEncryptor;
 	}
 	
 	public List<ServiceProviderConnection<?>> findAllConnections() {
-		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? order by providerId, rank", connectionMapper, getLocalUserId());
+		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? order by providerId, rank", connectionMapper, localUserId);
 	}
 
 	public List<ServiceProviderConnection<?>> findConnectionsToProvider(String providerId) {
-		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? order by rank", connectionMapper, getLocalUserId(), providerId);
+		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? order by rank", connectionMapper, localUserId, providerId);
 	}
 
 	public MultiValueMap<String, ServiceProviderConnection<?>> findConnectionsForUsers(MultiValueMap<String, String> providerUsers) {
@@ -71,7 +68,7 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		}
 		StringBuilder providerUsersCriteriaSql = new StringBuilder();
 		MapSqlParameterSource parameters = new MapSqlParameterSource();
-		parameters.addValue("localUserId", getLocalUserId());
+		parameters.addValue("localUserId", localUserId);
 		for (Iterator<Entry<String, List<String>>> it = providerUsers.entrySet().iterator(); it.hasNext();) {
 			Entry<String, List<String>> entry = it.next();
 			String providerId = entry.getKey();
@@ -103,22 +100,21 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 	}
 
 	public ServiceProviderConnection<?> findConnection(ServiceProviderConnectionKey connectionKey) {
-		return jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and providerUserId = ? order by rank", connectionMapper, getLocalUserId(), connectionKey.getProviderId(), connectionKey.getProviderUserId());
+		return jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and providerUserId = ? order by rank", connectionMapper, localUserId, connectionKey.getProviderId(), connectionKey.getProviderUserId());
 	}
 
 	@SuppressWarnings("unchecked")
 	public <S> ServiceProviderConnection<S> findConnectionByServiceApi(Class<S> serviceApiType) {
-		return (ServiceProviderConnection<S>) jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and rank = 1", connectionMapper, getLocalUserId(), getProviderId(serviceApiType));
+		return (ServiceProviderConnection<S>) jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and rank = 1", connectionMapper, localUserId, getProviderId(serviceApiType));
 	}
 
 	@SuppressWarnings("unchecked")
 	public <S> ServiceProviderConnection<S> findConnectionByServiceApiForUser(Class<S> serviceApiType, String providerUserId) {
-		return (ServiceProviderConnection<S>) jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and providerUserId = ?", connectionMapper, getLocalUserId(), getProviderId(serviceApiType), providerUserId);
+		return (ServiceProviderConnection<S>) jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and providerUserId = ?", connectionMapper, localUserId, getProviderId(serviceApiType), providerUserId);
 	}
 
 	public void addConnection(ServiceProviderConnection<?> connection) {
 		ServiceProviderConnectionData data = connection.createData();
-		Serializable localUserId = getLocalUserId();
 		jdbcTemplate.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, (select ifnull(max(rank) + 1, 1) from ServiceProviderConnection where localUserId = ? and providerId = ?), ?, ?, ?, ?, ?, ?, ?)",
 				localUserId, data.getProviderId(), data.getProviderUserId(), localUserId, data.getProviderId(), data.getProfileName(), data.getProfileUrl(), data.getProfilePictureUrl(),
 				encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime());
@@ -128,24 +124,21 @@ public class JdbcServiceProviderConnectionRepository implements ServiceProviderC
 		ServiceProviderConnectionData data = connection.createData();
 		jdbcTemplate.update("update ServiceProviderConnection set profileName = ?, profileUrl = ?, profilePictureUrl = ?, accessToken = ?, secret = ?, refreshToken = ?, expireTime = ? where localUserId = ? and providerId = ? and providerUserId = ?",
 				data.getProfileName(), data.getProfileUrl(), data.getProfilePictureUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime(),
-				getLocalUserId(), data.getProviderId(), data.getProviderUserId());
+				localUserId, data.getProviderId(), data.getProviderUserId());
 	}
 
 	public void removeConnectionsToProvider(String providerId) {
-		jdbcTemplate.update("delete from ServiceProviderConnection where localUserId = ? and providerId = ?", getLocalUserId(), providerId);
+		jdbcTemplate.update("delete from ServiceProviderConnection where localUserId = ? and providerId = ?", localUserId, providerId);
 	}
 
 	public void removeConnection(ServiceProviderConnectionKey connectionKey) {
-		jdbcTemplate.update("delete from ServiceProviderConnection where localUserId = ? and providerId = ? and providerUserId = ?", getLocalUserId(), connectionKey.getProviderId(), connectionKey.getProviderUserId());		
+		jdbcTemplate.update("delete from ServiceProviderConnection where localUserId = ? and providerId = ? and providerUserId = ?", localUserId, connectionKey.getProviderId(), connectionKey.getProviderUserId());		
 	}
 
 	// internal helpers
 	
 	private final static String SELECT_FROM_SERVICE_PROVIDER_CONNECTION = "select localUserId, providerId, providerUserId, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime from ServiceProviderConnection";
 	
-	private Serializable getLocalUserId() {
-		return localUserIdLocator.getLocalUserId();
-	}
 	
 	private final ServiceProviderConnectionMapper connectionMapper = new ServiceProviderConnectionMapper();
 	
