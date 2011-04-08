@@ -40,6 +40,16 @@ public interface OAuth1Operations {
 	 * @return the absolute authorize URL to redirect the user to for authorization
 	 */
 	String buildAuthorizeUrl(String requestToken, String callbackUrl);
+	
+	/**
+	 * Construct the URL to redirect the user to for authentication.
+	 * The authenticate URL differs from the authorizationUrl slightly in that it does not require the user to authorize the app multiple times.
+	 * This provides a better user experience for "Sign in with Provider" scenarios.
+	 * @param requestToken the request token value, to be encoded in the authorize URL.
+	 * @param callbackUrl the URL the provider should redirect to, returned once the user has signed in and has authorized the app once. Ignored for OAuth 1.0a providers. 
+	 * @return the absolute authenticate URL to redirect the user to for authorization
+	 */
+	String buildAuthenticateUrl(String requestToken, String callbackUrl);
 
 	/**
 	 * Exchange the authorized request token for an access token.

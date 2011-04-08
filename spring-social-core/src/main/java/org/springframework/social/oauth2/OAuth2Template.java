@@ -42,25 +42,30 @@ public class OAuth2Template implements OAuth2Operations {
 
 	private final String authorizeUrl;
 
+	private String authenticateUrl;
+	
 	private final RestTemplate restTemplate;
 	
-	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String accessTokenUrl) {
+	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String authenticateUrl, String accessTokenUrl) {
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
-		this.authorizeUrl = authorizeUrl + "?response_type=code&client_id=" + formEncode(clientId);
+		String clientInfo = "?response_type=code&client_id=" + formEncode(clientId);
+		this.authorizeUrl = authorizeUrl + clientInfo;
+		if (authenticateUrl != null) {
+			this.authenticateUrl = authenticateUrl + "?response_type=code&client_id=" + formEncode(clientId);
+		} else {
+			this.authenticateUrl = null;
+		}
 		this.accessTokenUrl = accessTokenUrl;
 		this.restTemplate = createRestTemplate();
 	}
 
 	public final String buildAuthorizeUrl(String redirectUri, String scope, String state) {
-		StringBuilder authorizeUrl = new StringBuilder(this.authorizeUrl).append('&').append("redirect_uri").append('=').append(formEncode(redirectUri));
-		if (scope != null) {
-			authorizeUrl.append('&').append("scope").append('=').append(formEncode(scope));
-		}
-		if (state != null) {
-			authorizeUrl.append('&').append("state").append('=').append(formEncode(state));	
-		}
-		return authorizeUrl.toString();
+		return buildOAuthUrl(authorizeUrl, redirectUri, scope, state);
+	}
+	
+	public String buildAuthenticateUrl(String redirectUri, String state) {
+		return authenticateUrl != null ? buildOAuthUrl(authenticateUrl, redirectUri, null, state) : buildAuthorizeUrl(redirectUri, null, state);
 	}
 
 	public final AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters) {
@@ -119,6 +124,17 @@ public class OAuth2Template implements OAuth2Operations {
 	
 	// internal helpers
 
+	private String buildOAuthUrl(String baseOauthUrl, String redirectUri, String scope, String state) {
+		StringBuilder oauthUrl = new StringBuilder(baseOauthUrl).append('&').append("redirect_uri").append('=').append(formEncode(redirectUri));
+		if (scope != null) {
+			oauthUrl.append('&').append("scope").append('=').append(formEncode(scope));
+		}
+		if (state != null) {
+			oauthUrl.append('&').append("state").append('=').append(formEncode(state));	
+		}
+		return oauthUrl.toString();		
+	}
+	
 	private String formEncode(String data) {
 		try {
 			return URLEncoder.encode(data, "UTF-8");

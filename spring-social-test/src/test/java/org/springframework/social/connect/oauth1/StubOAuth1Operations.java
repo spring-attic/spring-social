@@ -30,6 +30,10 @@ class StubOAuth1Operations implements OAuth1Operations {
 		return "http://springsource.org/oauth/authorize?request_token=" + requestToken;
 	}
 
+	public String buildAuthenticateUrl(String requestToken, String callbackUrl) {
+		return "http://springsource.org/oauth/authenticate?request_token=" + requestToken;
+	}
+
 	public OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters) {
 		return new OAuthToken("34567", "45678");
 	}

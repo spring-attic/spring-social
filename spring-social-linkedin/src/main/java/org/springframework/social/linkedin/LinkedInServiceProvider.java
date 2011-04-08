@@ -29,6 +29,7 @@ public class LinkedInServiceProvider extends AbstractOAuth1ServiceProvider<Linke
 		super(consumerKey, consumerSecret, new OAuth1Template(consumerKey, consumerSecret,
 			"https://api.linkedin.com/uas/oauth/requestToken",
 			"https://www.linkedin.com/uas/oauth/authorize",
+			"https://www.linkedin.com/uas/oauth/authenticate",			
 			"https://api.linkedin.com/uas/oauth/accessToken",
 			OAuth1Version.CORE_10_REVISION_A));
 	}

@@ -24,6 +24,10 @@ class StubOAuth2Operations implements OAuth2Operations {
 	public String buildAuthorizeUrl(String redirectUri, String scope, String state) {
 		return "http://springsource.org/oauth/authorize?scope=" + scope;
 	}
+	
+	public String buildAuthenticateUrl(String redirectUri, String state) {
+		return buildAuthorizeUrl(redirectUri, null, state);
+	}
 
 	public AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri, MultiValueMap<String, String> additionalParameters) {
 		return new AccessGrant("12345", null, "23456", 1303148118770L);

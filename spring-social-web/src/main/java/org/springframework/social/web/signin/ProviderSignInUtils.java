@@ -15,8 +15,6 @@
  */
 package org.springframework.social.web.signin;
 
-import java.io.Serializable;
-
 import org.springframework.web.context.request.WebRequest;
 
 /**
@@ -32,10 +30,10 @@ public class ProviderSignInUtils {
 	 * @param accountId the user's account identifier
 	 * @param request the current web request, used to extract sign-in attempt information from the current user session
 	 */
-	public static void handleConnectPostSignUp(Serializable accountId, WebRequest request) {
+	public static void handleConnectPostSignUp(WebRequest request) {
 		ProviderSignInAttempt signInAttempt = (ProviderSignInAttempt) request.getAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		if (signInAttempt != null) {
-			signInAttempt.connect(accountId);
+			signInAttempt.addConnection();
 			request.removeAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		}		
 	}
