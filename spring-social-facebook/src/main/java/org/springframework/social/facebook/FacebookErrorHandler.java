@@ -21,7 +21,9 @@ import java.util.Map;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.social.BadCredentialsException;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 
 /**
@@ -32,13 +34,19 @@ import org.springframework.web.client.DefaultResponseErrorHandler;
 class FacebookErrorHandler extends DefaultResponseErrorHandler {
 
 	@Override
-	public void handleError(ClientHttpResponse response) throws IOException {
-		// Can't trust the status code to be helpful. Facebook errors are inconsistent in their choice of status code.		
+	public void handleError(ClientHttpResponse response) throws IOException {				
 		Map<String, String> errorDetails = extractErrorDetailsFromResponse(response);
 		if(errorDetails == null) {
 			// body does not contain the known Facebook error structure...use default handling
 			super.handleError(response);			
 		}
+
+		// 401 is the only status code we can trust from Facebook. 
+		// Facebook is very inconsistent in use of error codes in most other cases.
+		if(response.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+			throw new BadCredentialsException(errorDetails.get("message"));
+		}
+
 		handleFacebookError(errorDetails);
 	}
 
