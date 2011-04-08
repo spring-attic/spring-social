@@ -26,7 +26,7 @@ import org.springframework.social.connect.ServiceProviderConnectionRepository;
  * Models an attempt to sign-in to the application using a provider account.
  * Instances are created when the sign-in process could not be completed because no local account is associated with the provider account.
  * This could happen because the user has not yet signed up with the application, or has not yet connected their application account with the their provider account.
- * For the former scenario, callers should all {@link #connect()} post-signup to establish a connection between a new user account and the provider account.
+ * For the former scenario, callers should invoke {@link #addConnection()} post-signup to establish a connection between a new user account and the provider account.
  * For the latter, existing users should sign-in using their local application credentials and formally connect to the provider they also wish to authenticate with. 
  * @author Keith Donald
  */
