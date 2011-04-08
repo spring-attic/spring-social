@@ -29,9 +29,10 @@ public class GitHubUserProfile implements Serializable {
 	private final String blog;
 	private final String email;
 	private final Date createdDate;
+	private final String profileImageUrl;
 
 	public GitHubUserProfile(long id, String username, String name, String location, String company, String blog,
-			String email, Date createdDate) {
+			String email, String profileImageUrl, Date createdDate) {
 		this.id = id;
 		this.username = username;
 		this.name = name;
@@ -39,6 +40,7 @@ public class GitHubUserProfile implements Serializable {
 		this.company = company;
 		this.blog = blog;
 		this.email = email;
+		this.profileImageUrl = profileImageUrl;
 		this.createdDate = createdDate;
 	}
 
@@ -72,5 +74,9 @@ public class GitHubUserProfile implements Serializable {
 
 	public Date getCreatedDate() {
 		return createdDate;
+	}
+
+	public String getProfileImageUrl() {
+		return profileImageUrl;
 	}
 }

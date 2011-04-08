@@ -69,7 +69,9 @@ public class GitHubTemplate implements GitHubApi {
 		String blog = user.get("blog") != null ? String.valueOf(user.get("blog")) : null;
 		String email = user.get("email") != null ? String.valueOf(user.get("email")) : null;
 		Date createdDate = toDate(String.valueOf(user.get("created_at")), dateFormat);
-		return new GitHubUserProfile(gitHubId, username, name, location, company, blog, email, createdDate);
+		String gravatarId = (String) user.get("gravatar_id");
+		String profileImageUrl = gravatarId != null ? "https://secure.gravatar.com/avatar/" + gravatarId : null;
+		return new GitHubUserProfile(gitHubId, username, name, location, company, blog, email, profileImageUrl, createdDate);
 	}
 
 	public String getProfileUrl() {
