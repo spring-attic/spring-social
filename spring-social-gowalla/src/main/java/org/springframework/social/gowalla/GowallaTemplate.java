@@ -61,7 +61,8 @@ public class GowallaTemplate implements GowallaApi {
 		GowallaProfile profile = new GowallaProfile(String.valueOf(profileInfo.get("username")),
 				String.valueOf(profileInfo.get("first_name")),
 				String.valueOf(profileInfo.get("last_name")), String.valueOf(profileInfo.get("hometown")), pinsCount,
-				stampsCount);
+				stampsCount,
+				(String) profileInfo.get("large_image_url"));
 		return profile;
 	}
 

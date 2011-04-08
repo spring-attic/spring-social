@@ -25,14 +25,16 @@ public class GowallaProfile implements Serializable {
 	private final String hometown;
 	private final int pinsCount;
 	private final int stampsCount;
+	private final String profileImageUrl;
 
-	public GowallaProfile(String id, String firstName, String lastName, String hometown, int pinsCount, int stampsCount) {
+	public GowallaProfile(String id, String firstName, String lastName, String hometown, int pinsCount, int stampsCount, String profileImageUrl) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.hometown = hometown;
 		this.pinsCount = pinsCount;
 		this.stampsCount = stampsCount;
+		this.profileImageUrl = profileImageUrl;
 	}
 
 	public String getFirstName() {
@@ -57,5 +59,9 @@ public class GowallaProfile implements Serializable {
 
 	public String getId() {
 		return id;
+	}
+
+	public String getProfileImageUrl() {
+		return profileImageUrl;
 	}
 }
