@@ -24,7 +24,7 @@ import org.springframework.social.facebook.types.FacebookProfile;
 import org.springframework.social.facebook.types.Group;
 import org.springframework.social.facebook.types.Reference;
 
-public class GroupTemplate implements GroupOperations {
+class GroupTemplate implements GroupOperations {
 	private static final String[] FULL_PROFILE_FIELDS = {"id", "username", "name", "first_name", "last_name", "gender", "locale", "education", "work", "email", "third_party_id", "link", "timezone", "updated_time", "verified", "about", "bio", "birthday", "location", "hometown", "interested_in", "religion", "political", "quotes", "relationship_status", "significant_other", "website"};
 
 	private GroupResponseExtractor groupExtractor;

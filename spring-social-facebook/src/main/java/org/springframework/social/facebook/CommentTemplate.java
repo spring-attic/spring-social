@@ -24,7 +24,7 @@ import org.springframework.social.facebook.types.Reference;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class CommentTemplate implements CommentOperations {
+class CommentTemplate implements CommentOperations {
 	private final CommentResponseExtractor commentsExtractor;
 
 	private final ReferenceResponseExtractor referenceExtractor;

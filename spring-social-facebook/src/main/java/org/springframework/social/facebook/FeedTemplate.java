@@ -23,7 +23,7 @@ import org.springframework.social.facebook.types.FeedEntry;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class FeedTemplate implements FeedOperations {
+class FeedTemplate implements FeedOperations {
 
 	private FeedEntryResponseExtractor feedEntryExtractor;
 	private final GraphApi graphApi;

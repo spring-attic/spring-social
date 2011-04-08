@@ -22,7 +22,7 @@ import org.springframework.social.facebook.types.UserLike;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class LikeTemplate implements LikeOperations {
+class LikeTemplate implements LikeOperations {
 
 	private UserLikeResponseExtractor likeExtractor;
 	private final GraphApi graphApi;

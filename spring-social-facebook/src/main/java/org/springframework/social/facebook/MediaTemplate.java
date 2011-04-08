@@ -26,7 +26,7 @@ import org.springframework.social.facebook.types.Video;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class MediaTemplate implements MediaOperations {
+class MediaTemplate implements MediaOperations {
 
 	private final AlbumResponseExtractor albumExtractor;
 	private final PhotoResponseExtractor photoExtractor;

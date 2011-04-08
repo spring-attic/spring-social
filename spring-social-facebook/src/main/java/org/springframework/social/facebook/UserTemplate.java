@@ -18,7 +18,7 @@ package org.springframework.social.facebook;
 import org.springframework.social.facebook.support.extractors.ProfileResponseExtractor;
 import org.springframework.social.facebook.types.FacebookProfile;
 
-public class UserTemplate implements UserOperations {
+class UserTemplate implements UserOperations {
 
 	private ProfileResponseExtractor profileExtractor;
 	private final GraphApi graphApi;

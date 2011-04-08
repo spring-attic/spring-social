@@ -22,7 +22,7 @@ import org.springframework.social.facebook.types.Checkin;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class CheckinTemplate implements CheckinOperations {
+class CheckinTemplate implements CheckinOperations {
 	private CheckinResponseExtractor checkinExtractor;
 	private final GraphApi graphApi;
 
