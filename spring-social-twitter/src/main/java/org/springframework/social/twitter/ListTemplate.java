@@ -48,6 +48,10 @@ class ListTemplate implements ListOperations {
 	private final LowLevelTwitterApi lowLevelApi;
 	
 	public ListTemplate(LowLevelTwitterApi lowLevelApi, UserOperations userApi) {
+		// TODO : Get user ID sooner and stash it for later use so that we don't
+		//        fetch it for every operation that needs it. This is an easy thing to do,
+		//        but makes the testing a bit tricky.
+		
 		this.lowLevelApi = lowLevelApi;
 		this.userApi = userApi;
 		this.profileExtractor = new TwitterProfileResponseExtractor();

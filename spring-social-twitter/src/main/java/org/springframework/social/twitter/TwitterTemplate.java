@@ -86,12 +86,16 @@ public class TwitterTemplate implements TwitterApi, LowLevelTwitterApi {
 	private TwitterTemplate(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
-		this.timelineOperations = new TimelineTemplate(this, restTemplate);
 		this.userOperations = new UserTemplate(this);
-		this.friendOperations = new FriendTemplate(this, restTemplate);
-		this.listOperations = new ListTemplate(this, userOperations);
-		this.searchOperations = new SearchTemplate(this, restTemplate);
 		this.directMessageOperations = new DirectMessageTemplate(this);
+		
+		// TODO : Break ListTemplate's  dependence on userOperations
+		this.listOperations = new ListTemplate(this, userOperations);
+		
+		// TODO : Break the dependence on restTemplate
+		this.timelineOperations = new TimelineTemplate(this, restTemplate);
+		this.friendOperations = new FriendTemplate(this, restTemplate);
+		this.searchOperations = new SearchTemplate(this, restTemplate);
 	}
 
 	public TimelineOperations timelineOperations() {
@@ -165,6 +169,8 @@ public class TwitterTemplate implements TwitterApi, LowLevelTwitterApi {
 	public void delete(String path, Map<String, String> queryParams) {
 		restTemplate.delete(buildUri(path, queryParams));
 	}
+	
+	// private helper 
 	
 	private URI buildUri(String path, Map<String, String> params) {
 		URIBuilder uriBuilder = URIBuilder.fromUri(API_URL_BASE + path);
