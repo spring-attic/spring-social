@@ -35,7 +35,7 @@ import org.springframework.social.twitter.types.TwitterProfile;
 /**
  * @author Craig Walls
  */
-public class TweetApiImplTest extends AbstractTwitterApiTest {
+public class TweetTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void updateStatus() {
@@ -44,7 +44,7 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 				.andExpect(body("status=Test+Message"))
 				.andRespond(withResponse("{}", responseHeaders));
 
-		twitter.tweetApi().updateStatus("Test Message");
+		twitter.timelineOperations().updateStatus("Test Message");
 
 		mockServer.verify();
 	}
@@ -58,7 +58,7 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 
 		StatusDetails details = new StatusDetails();
 		details.setLocation(123.1f, -111.2f);
-		twitter.tweetApi().updateStatus("Test Message", details);
+		twitter.timelineOperations().updateStatus("Test Message", details);
 
 		mockServer.verify();
 	}
@@ -70,7 +70,7 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 				.andExpect(body("status=Test+Message"))
 				.andRespond(withResponse("{\"error\":\"You already said that\"}", responseHeaders, FORBIDDEN, ""));
 
-		twitter.tweetApi().updateStatus("Test Message");
+		twitter.timelineOperations().updateStatus("Test Message");
 	}
 	
 	@Test(expected=StatusLengthException.class)
@@ -79,7 +79,7 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 			.andExpect(method(POST))
 			.andExpect(body("status=Really+long+message"))
 			.andRespond(withResponse("{\"error\":\"Status is over 140 characters.\"}", responseHeaders, HttpStatus.FORBIDDEN, ""));
-		twitter.tweetApi().updateStatus("Really long message");
+		twitter.timelineOperations().updateStatus("Really long message");
 	}
 	
 	@Test(expected = OperationNotPermittedException.class)
@@ -89,7 +89,7 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 				.andExpect(body("status=Test+Message"))
 				.andRespond(withResponse("{\"error\":\"Forbidden\"}", responseHeaders, FORBIDDEN, ""));
 
-		twitter.tweetApi().updateStatus("Test Message");
+		twitter.timelineOperations().updateStatus("Test Message");
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/destroy/12345.json"))
 			.andExpect(method(DELETE))
 			.andRespond(withResponse("{}", responseHeaders));		
-		twitter.tweetApi().deleteStatus(12345L);
+		twitter.timelineOperations().deleteStatus(12345L);
 		mockServer.verify();
 	}
 	
@@ -107,7 +107,7 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 				.andExpect(method(POST))
 				.andRespond(withResponse("{}", responseHeaders));
 
-		twitter.tweetApi().retweet(12345);
+		twitter.timelineOperations().retweet(12345);
 
 		mockServer.verify();
 	}
@@ -118,7 +118,7 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 				.andExpect(method(POST))
 				.andRespond(withResponse("{\"error\":\"You already said that\"}", responseHeaders, FORBIDDEN, ""));
 
-		twitter.tweetApi().retweet(12345);
+		twitter.timelineOperations().retweet(12345);
 	}
 
 	@Test(expected = OperationNotPermittedException.class)
@@ -127,15 +127,15 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 				.andExpect(method(POST))
 				.andRespond(withResponse("{\"error\":\"Forbidden\"}", responseHeaders, FORBIDDEN, ""));
 
-		twitter.tweetApi().retweet(12345);
+		twitter.timelineOperations().retweet(12345);
 	}
 
 	@Test
 	public void getMentions() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/mentions.json"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> mentions = twitter.tweetApi().getMentions();
+				.andRespond(withResponse(new ClassPathResource("testdata/timeline.json", getClass()), responseHeaders));
+		List<Tweet> mentions = twitter.timelineOperations().getMentions();
 		assertTimelineTweets(mentions);
 	}
 
@@ -143,8 +143,8 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 	public void getPublicTimeline() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/public_timeline.json"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.tweetApi().getPublicTimeline();
+				.andRespond(withResponse(new ClassPathResource("testdata/timeline.json", getClass()), responseHeaders));
+		List<Tweet> timeline = twitter.timelineOperations().getPublicTimeline();
 		assertTimelineTweets(timeline);
 	}
 
@@ -152,8 +152,8 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 	public void getHomeTimeline() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/home_timeline.json"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.tweetApi().getHomeTimeline();
+				.andRespond(withResponse(new ClassPathResource("testdata/timeline.json", getClass()), responseHeaders));
+		List<Tweet> timeline = twitter.timelineOperations().getHomeTimeline();
 		assertTimelineTweets(timeline);
 	}
 
@@ -161,8 +161,8 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 	public void getFriendsTimeline() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/friends_timeline.json"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.tweetApi().getFriendsTimeline();
+				.andRespond(withResponse(new ClassPathResource("testdata/timeline.json", getClass()), responseHeaders));
+		List<Tweet> timeline = twitter.timelineOperations().getFriendsTimeline();
 		assertTimelineTweets(timeline);
 	}
 
@@ -170,8 +170,8 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 	public void getUserTimeline() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/user_timeline.json"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.tweetApi().getUserTimeline();
+				.andRespond(withResponse(new ClassPathResource("testdata/timeline.json", getClass()), responseHeaders));
+		List<Tweet> timeline = twitter.timelineOperations().getUserTimeline();
 		assertTimelineTweets(timeline);
 	}
 
@@ -179,8 +179,8 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 	public void getUserTimeline_forScreenName() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/user_timeline.json?screen_name=habuma"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.tweetApi().getUserTimeline("habuma");
+				.andRespond(withResponse(new ClassPathResource("testdata/timeline.json", getClass()), responseHeaders));
+		List<Tweet> timeline = twitter.timelineOperations().getUserTimeline("habuma");
 		assertTimelineTweets(timeline);
 	}
 
@@ -188,8 +188,8 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 	public void getUserTimeline_forUserId() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/user_timeline.json?user_id=12345"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.tweetApi().getUserTimeline(12345);
+				.andRespond(withResponse(new ClassPathResource("testdata/timeline.json", getClass()), responseHeaders));
+		List<Tweet> timeline = twitter.timelineOperations().getUserTimeline(12345);
 		assertTimelineTweets(timeline);
 	}
 	
@@ -197,8 +197,8 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 	public void getFavorites() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/favorites.json"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("favorite.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.tweetApi().getFavorites();
+				.andRespond(withResponse(new ClassPathResource("testdata/favorite.json", getClass()), responseHeaders));
+		List<Tweet> timeline = twitter.timelineOperations().getFavorites();
 		assertTimelineTweets(timeline);
 	}
 
@@ -207,7 +207,7 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/favorites/create/42.json"))
 			.andExpect(method(POST))
 			.andRespond(withResponse("{}", responseHeaders));
-		twitter.tweetApi().addToFavorites(42L);
+		twitter.timelineOperations().addToFavorites(42L);
 		mockServer.verify();
 	}
 	
@@ -215,8 +215,8 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 	public void getRetweetedBy() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/42/retweeted_by.json"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("list-of-profiles.json", getClass()), responseHeaders));
-		List<TwitterProfile> retweetedBy = twitter.tweetApi().getRetweetedBy(42L);
+			.andRespond(withResponse(new ClassPathResource("testdata/list-of-profiles.json", getClass()), responseHeaders));
+		List<TwitterProfile> retweetedBy = twitter.timelineOperations().getRetweetedBy(42L);
 		assertEquals(2, retweetedBy.size());
 		assertEquals("royclarkson", retweetedBy.get(0).getScreenName());
 		assertEquals("kdonald", retweetedBy.get(1).getScreenName());
@@ -228,8 +228,8 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 	public void getRetweetedByIds() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/42/retweeted_by/ids.json"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("list-of-profile-ids.json", getClass()), responseHeaders));
-		List<Long> retweetedByIds = twitter.tweetApi().getRetweetedByIds(42L);
+			.andRespond(withResponse(new ClassPathResource("testdata/list-of-profile-ids.json", getClass()), responseHeaders));
+		List<Long> retweetedByIds = twitter.timelineOperations().getRetweetedByIds(42L);
 		assertEquals(3, retweetedByIds.size());
 		assertTrue(retweetedByIds.contains(12345));
 		assertTrue(retweetedByIds.contains(23456));
@@ -240,8 +240,8 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 	public void getRetweetedByMe() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/retweeted_by_me.json"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.tweetApi().getRetweetedByMe();
+			.andRespond(withResponse(new ClassPathResource("testdata/timeline.json", getClass()), responseHeaders));
+		List<Tweet> timeline = twitter.timelineOperations().getRetweetedByMe();
 		assertTimelineTweets(timeline);		
 	}
 	
@@ -249,8 +249,8 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 	public void getRetweetedToMe() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/retweeted_to_me.json"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.tweetApi().getRetweetedToMe();
+			.andRespond(withResponse(new ClassPathResource("testdata/timeline.json", getClass()), responseHeaders));
+		List<Tweet> timeline = twitter.timelineOperations().getRetweetedToMe();
 		assertTimelineTweets(timeline);				
 	}
 	
@@ -258,8 +258,8 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 	public void getRetweets() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/retweets/42.json"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.tweetApi().getRetweets(42L);
+			.andRespond(withResponse(new ClassPathResource("testdata/timeline.json", getClass()), responseHeaders));
+		List<Tweet> timeline = twitter.timelineOperations().getRetweets(42L);
 		assertTimelineTweets(timeline);						
 	}
 	
@@ -267,8 +267,8 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 	public void getRetweetsOfMe() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/retweets_of_me.json"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("timeline.json", getClass()), responseHeaders));
-		List<Tweet> timeline = twitter.tweetApi().getRetweetsOfMe();
+			.andRespond(withResponse(new ClassPathResource("testdata/timeline.json", getClass()), responseHeaders));
+		List<Tweet> timeline = twitter.timelineOperations().getRetweetsOfMe();
 		assertTimelineTweets(timeline);				
 	}
 	
@@ -277,7 +277,7 @@ public class TweetApiImplTest extends AbstractTwitterApiTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/favorites/destroy/71.json"))
 			.andExpect(method(POST))
 			.andRespond(withResponse("{}", responseHeaders));
-		twitter.tweetApi().removeFromFavorites(71L);
+		twitter.timelineOperations().removeFromFavorites(71L);
 		mockServer.verify();
 	}
 	

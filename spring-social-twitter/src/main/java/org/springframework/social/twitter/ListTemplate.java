@@ -16,7 +16,10 @@
 package org.springframework.social.twitter;
 
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.social.twitter.support.extractors.AbstractResponseExtractor;
 import org.springframework.social.twitter.support.extractors.TweetResponseExtractor;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
 import org.springframework.social.twitter.support.extractors.UserListResponseExtractor;
@@ -25,24 +28,26 @@ import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.social.twitter.types.UserList;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.HttpClientErrorException;
 
 /**
- * Implementation of {@link ListsApi}, providing a binding to Twitter's list-oriented REST resources.
+ * Implementation of {@link ListOperations}, providing a binding to Twitter's list-oriented REST resources.
  * @author Craig Walls
  */
-public class ListsApiTemplate implements ListsApi {
+class ListTemplate implements ListOperations {
 
-	private final RestTemplate restTemplate;
-	private final UserApi userApi;
-	private TwitterProfileResponseExtractor profileExtractor;
-	private TweetResponseExtractor tweetExtractor;
-	private UserListResponseExtractor userListExtractor;
-	private final TwitterRequestApi requestApi;
+	private final UserOperations userApi;
 	
-	public ListsApiTemplate(TwitterRequestApi requestApi, RestTemplate restTemplate, UserApi userApi) {
-		this.requestApi = requestApi;
-		this.restTemplate = restTemplate;
+	private TwitterProfileResponseExtractor profileExtractor;
+	
+	private TweetResponseExtractor tweetExtractor;
+	
+	private UserListResponseExtractor userListExtractor;
+	
+	private final LowLevelTwitterApi lowLevelApi;
+	
+	public ListTemplate(LowLevelTwitterApi lowLevelApi, UserOperations userApi) {
+		this.lowLevelApi = lowLevelApi;
 		this.userApi = userApi;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
 		this.tweetExtractor = new TweetResponseExtractor();
@@ -50,140 +55,148 @@ public class ListsApiTemplate implements ListsApi {
 	}
 
 	public List<UserList> getLists(long userId) {
-		return requestApi.fetchObjects("{userId}/lists.json", "lists", userListExtractor, userId);
+		return lowLevelApi.fetchObjects("{userId}/lists.json", "lists", userListExtractor, userId);
 	}
 
 	public List<UserList> getLists(String screenName) {
-		return requestApi.fetchObjects("{screenName}/lists.json", "lists", userListExtractor, screenName);
+		return lowLevelApi.fetchObjects("{screenName}/lists.json", "lists", userListExtractor, screenName);
 	}
 
 	public UserList getList(long userId, long listId) {
-		return requestApi.fetchObject("{userId}/lists/{listId}.json", userListExtractor, userId, listId);
+		return lowLevelApi.fetchObject("{userId}/lists/{listId}.json", userListExtractor, userId, listId);
 	}
 
 	public UserList getList(String screenName, String listSlug) {
-		return requestApi.fetchObject("{screenName}/lists/{listSlug}.json", userListExtractor, screenName, listSlug);
+		return lowLevelApi.fetchObject("{screenName}/lists/{listSlug}.json", userListExtractor, screenName, listSlug);
 	}
 
 	public List<Tweet> getListStatuses(long userId, long listId) {
-		return requestApi.fetchObjects("{userId}/lists/{listId}/statuses.json", tweetExtractor, userId, listId);
+		return lowLevelApi.fetchObjects("{userId}/lists/{listId}/statuses.json", tweetExtractor, userId, listId);
 	}
 
 	public List<Tweet> getListStatuses(String screenName, String listSlug) {
-		return requestApi.fetchObjects("{screenName}/lists/{screenName}/statuses.json", tweetExtractor, screenName, screenName);
+		return lowLevelApi.fetchObjects("{screenName}/lists/{screenName}/statuses.json", tweetExtractor, screenName, screenName);
 	}
 
 	public UserList createList(String name, String description, boolean isPublic) {	
 		MultiValueMap<String, Object> request = buildListDataMap(name, description, isPublic);
-		return requestApi.publish("{userId}/lists.json", request, userListExtractor, userApi.getProfileId());
+		return lowLevelApi.publish("{userId}/lists.json", request, userListExtractor, userApi.getProfileId());
 	}
 
 	public UserList updateList(long listId, String name, String description, boolean isPublic) {
 		MultiValueMap<String, Object> request = buildListDataMap(name, description, isPublic);
-		return requestApi.publish("{userId}/lists/{listId}.json", request, userListExtractor, (Long) userApi.getProfileId(), listId);
+		return lowLevelApi.publish("{userId}/lists/{listId}.json", request, userListExtractor, (Long) userApi.getProfileId(), listId);
 	}
 
 	public void deleteList(long listId) {
-		requestApi.delete("{userId}/lists/{listId}.json", userApi.getProfileId(), listId);
+		lowLevelApi.delete("{userId}/lists/{listId}.json", userApi.getProfileId(), listId);
 	}
 
 	public List<TwitterProfile> getListMembers(long userId, long listId) {
-		return requestApi.fetchObjects("{userId}/{listId}/members.json", "users", profileExtractor, userId, listId);
+		return lowLevelApi.fetchObjects("{userId}/{listId}/members.json", "users", profileExtractor, userId, listId);
 	}
 	
 	public List<TwitterProfile> getListMembers(String screenName, String listSlug) {
-		return requestApi.fetchObjects("{screenName}/{listSlug}/members.json", "users", profileExtractor, screenName, listSlug);
+		return lowLevelApi.fetchObjects("{screenName}/{listSlug}/members.json", "users", profileExtractor, screenName, listSlug);
 	}
 
 	public UserList addToList(long listId, long... newMemberIds) {
 		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
 		request.set("user_id", ArrayUtils.join(newMemberIds));		
-		return requestApi.publish("{userId}/{listId}/members/create_all.json", request, userListExtractor, userApi.getProfileId(), listId);
+		return lowLevelApi.publish("{userId}/{listId}/members/create_all.json", request, userListExtractor, userApi.getProfileId(), listId);
 	}
 
 	public UserList addToList(String listSlug, String... newMemberScreenNames) {
 		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
 		request.set("screen_name", ArrayUtils.join(newMemberScreenNames));		
-		return requestApi.publish("{userId}/{listSlug}/members/create_all.json", request, userListExtractor, userApi.getProfileId(), listSlug);
+		return lowLevelApi.publish("{userId}/{listSlug}/members/create_all.json", request, userListExtractor, userApi.getProfileId(), listSlug);
 	}
 
 	public void removeFromList(long listId, long memberId) {
-		requestApi.delete("{userId}/{listId}/members.json?id={memberId}", userApi.getProfileId(), listId, memberId);
+		lowLevelApi.delete("{userId}/{listId}/members.json?id={memberId}", userApi.getProfileId(), listId, memberId);
 	}
 
 	public void removeFromList(String listSlug, String memberScreenName) {
-		requestApi.delete("{userId}/{listSlug}/members.json?id={memberScreenName}", userApi.getProfileId(), listSlug, memberScreenName);
+		lowLevelApi.delete("{userId}/{listSlug}/members.json?id={memberScreenName}", userApi.getProfileId(), listSlug, memberScreenName);
 	}
 
 	public List<TwitterProfile> getListSubscribers(long userId, long listId) {
-		return requestApi.fetchObjects("{userId}/{listId}/subscribers.json", "users", profileExtractor, userId, listId);
+		return lowLevelApi.fetchObjects("{userId}/{listId}/subscribers.json", "users", profileExtractor, userId, listId);
 	}
 
 	public List<TwitterProfile> getListSubscribers(String screenName, String listSlug) {
-		return requestApi.fetchObjects("{screenName}/{listSlug}/subscribers.json", "users", profileExtractor, screenName, listSlug);
+		return lowLevelApi.fetchObjects("{screenName}/{listSlug}/subscribers.json", "users", profileExtractor, screenName, listSlug);
 	}
 
 	public UserList subscribe(long ownerId, long listId) {
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
-		return requestApi.publish("{userId}/{listId}/subscribers.json", data, userListExtractor, ownerId, listId);
+		return lowLevelApi.publish("{userId}/{listId}/subscribers.json", data, userListExtractor, ownerId, listId);
 	}
 
 	public UserList subscribe(String ownerScreenName, String listSlug) {
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
-		return requestApi.publish("{screenName}/{listSlug}/subscribers.json", data, userListExtractor, ownerScreenName, listSlug);
+		return lowLevelApi.publish("{screenName}/{listSlug}/subscribers.json", data, userListExtractor, ownerScreenName, listSlug);
 	}
 
 	public void unsubscribe(long ownerId, long listId) {
-		requestApi.delete("{userId}/{listId}/subscribers.json", ownerId, listId);
+		lowLevelApi.delete("{userId}/{listId}/subscribers.json", ownerId, listId);
 	}
 
 	public void unsubscribe(String ownerScreenName, String listSlug) {
-		requestApi.delete("{screenName}/{listSlug}/subscribers.json", ownerScreenName, listSlug);
+		lowLevelApi.delete("{screenName}/{listSlug}/subscribers.json", ownerScreenName, listSlug);
 	}
 
 	public List<UserList> getMemberships(long userId) {
-		return requestApi.fetchObjects("{screenName}/lists/memberships.json", "lists", userListExtractor, userId);
+		return lowLevelApi.fetchObjects("{screenName}/lists/memberships.json", "lists", userListExtractor, userId);
 	}
 
 	public List<UserList> getMemberships(String screenName) {
-		return requestApi.fetchObjects("{screenName}/lists/memberships.json", "lists", userListExtractor, screenName);
+		return lowLevelApi.fetchObjects("{screenName}/lists/memberships.json", "lists", userListExtractor, screenName);
 	}
 
 	public List<UserList> getSubscriptions(long userId) {
-		return requestApi.fetchObjects("{screenName}/lists/subscriptions.json", "lists", userListExtractor, userId);
+		return lowLevelApi.fetchObjects("{screenName}/lists/subscriptions.json", "lists", userListExtractor, userId);
 	}
 
 	public List<UserList> getSubscriptions(String screenName) {
-		return requestApi.fetchObjects("{screenName}/lists/subscriptions.json", "lists", userListExtractor, screenName);
+		return lowLevelApi.fetchObjects("{screenName}/lists/subscriptions.json", "lists", userListExtractor, screenName);
 	}
 
 	public boolean isMember(long userId, long listId, long memberId) {
-		return checkListConnection(CHECK_MEMBER_URL, userId, listId, memberId);
+		return checkListConnection("{user_id}/{list_id}/members/{member_id}.json", userId, listId, memberId);
 	}
 
 	public boolean isMember(String screenName, String listSlug, String memberScreenName) {
-		return checkListConnection(CHECK_MEMBER_URL, screenName, listSlug, memberScreenName);
+		return checkListConnection("{user_id}/{list_id}/members/{member_id}.json", screenName, listSlug, memberScreenName);
 	}
 
 	public boolean isSubscriber(long userId, long listId, long subscriberId) {
-		return checkListConnection(CHECK_SUBSCRIBER_URL, userId, listId, subscriberId);
+		return checkListConnection("{user_id}/{list_id}/subscribers/{subscriber_id}.json", userId, listId, subscriberId);
 	}
 
 	public boolean isSubscriber(String screenName, String listSlug, String subscriberScreenName) {
-		return checkListConnection(CHECK_SUBSCRIBER_URL, screenName, listSlug, subscriberScreenName);
+		return checkListConnection("{user_id}/{list_id}/subscribers/{subscriber_id}.json", screenName, listSlug, subscriberScreenName);
 	}
 
 	// private helpers
 
-	private boolean checkListConnection(String url, Object... urlArgs) {
+	private boolean checkListConnection(String path, Object... urlArgs) {
 		try {
-			restTemplate.getForObject(url, String.class, urlArgs);
+			lowLevelApi.fetchObject(path, new NoOpExtractor(), urlArgs);
 			return true;
-		} catch (NotFoundException e) {
-			return false;
+		} catch (HttpClientErrorException e) {
+			if(e.getStatusCode() == HttpStatus.NOT_FOUND) {
+				return false;
+			} 
+			throw e;
 		}
 	}
 
+	private static class NoOpExtractor extends AbstractResponseExtractor<Object> {
+		public Object extractObject(Map<String, Object> responseMap) {
+			return null;
+		}
+	}
 
 	private MultiValueMap<String, Object> buildListDataMap(String name,
 			String description, boolean isPublic) {

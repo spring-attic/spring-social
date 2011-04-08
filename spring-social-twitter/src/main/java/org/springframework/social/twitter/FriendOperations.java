@@ -23,7 +23,7 @@ import org.springframework.social.twitter.types.TwitterProfile;
  * Interface defining the operations for working with a user's friends and followers.
  * @author Craig Walls
  */
-public interface FriendsApi {
+public interface FriendOperations {
 
 	/**
 	 * Retrieves a list of users that the given user follows.

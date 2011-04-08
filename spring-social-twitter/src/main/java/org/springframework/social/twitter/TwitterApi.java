@@ -27,26 +27,26 @@ public interface TwitterApi {
 	/**
 	 * Returns the portion of the Twitter API containing the user operations.
 	 */
-	UserApi userApi();
+	UserOperations userOperations();
 
 	/**
 	 * Returns the portion of the Twitter API containing the tweet and timeline operations.
 	 */
-	TweetApi tweetApi();
+	TimelineOperations timelineOperations();
 
 	/**
 	 * Returns the portion of the Twitter API containing the friends and followers operations.
 	 */
-	FriendsApi friendsApi();
+	FriendOperations friendOperations();
 
 	/**
 	 * Returns the portion of the Twitter API containing the search operations.
 	 */
-	SearchApi searchApi();
+	SearchOperations searchOperations();
 
 	/**
 	 * Returns the portion of the Twitter API containing the direct message operations.
 	 */
-	DirectMessageApi directMessageApi();
+	DirectMessageOperations directMessageOperations();
 
 }

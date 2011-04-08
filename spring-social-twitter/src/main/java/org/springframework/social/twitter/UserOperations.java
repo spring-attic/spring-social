@@ -24,7 +24,7 @@ import org.springframework.social.twitter.types.TwitterProfile;
  * Interface defining the operations for retrieving information about Twitter users.
  * @author Craig Walls
  */
-public interface UserApi {
+public interface UserOperations {
 
 	/**
 	 * Retrieves the authenticated user's Twitter ID.

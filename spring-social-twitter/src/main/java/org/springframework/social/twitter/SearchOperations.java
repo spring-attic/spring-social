@@ -26,7 +26,7 @@ import org.springframework.social.twitter.types.Tweet;
  * Interface defining the operations for searching Twitter and retrieving trending data.
  * @author Craig Walls
  */
-public interface SearchApi {
+public interface SearchOperations {
 	
 	/**
 	 * Searches Twitter, returning the first 50 matching {@link Tweet}s

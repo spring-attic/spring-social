@@ -26,19 +26,18 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.social.twitter.types.DirectMessage;
 
-
 /**
  * @author Craig Walls
  */
-public class DirectMessageApiImplTest extends AbstractTwitterApiTest {
+public class DirectMessageTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void getDirectMessagesReceived() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/direct_messages.json"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("messages.json", getClass()), responseHeaders));
+				.andRespond(withResponse(new ClassPathResource("testdata/messages.json", getClass()), responseHeaders));
 
-		List<DirectMessage> messages = twitter.directMessageApi().getDirectMessagesReceived();
+		List<DirectMessage> messages = twitter.directMessageOperations().getDirectMessagesReceived();
 		assertDirectMessageListContents(messages);
 	}
 
@@ -46,9 +45,9 @@ public class DirectMessageApiImplTest extends AbstractTwitterApiTest {
 	public void getDirectMessagesSent() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/direct_messages/sent.json"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("messages.json", getClass()), responseHeaders));
+				.andRespond(withResponse(new ClassPathResource("testdata/messages.json", getClass()), responseHeaders));
 
-		List<DirectMessage> messages = twitter.directMessageApi().getDirectMessagesSent();
+		List<DirectMessage> messages = twitter.directMessageOperations().getDirectMessagesSent();
 		assertDirectMessageListContents(messages);
 	}
 
@@ -57,7 +56,7 @@ public class DirectMessageApiImplTest extends AbstractTwitterApiTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/direct_messages/new.json")).andExpect(method(POST))
 				.andExpect(body("screen_name=habuma&text=Hello+there%21"))
 				.andRespond(withResponse("{}", responseHeaders));
-		twitter.directMessageApi().sendDirectMessage("habuma", "Hello there!");
+		twitter.directMessageOperations().sendDirectMessage("habuma", "Hello there!");
 		mockServer.verify();
 	}
 
@@ -65,7 +64,7 @@ public class DirectMessageApiImplTest extends AbstractTwitterApiTest {
 	public void sendDirectMessage_toUserId() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/direct_messages/new.json")).andExpect(method(POST))
 				.andExpect(body("user_id=11223&text=Hello+there%21")).andRespond(withResponse("{}", responseHeaders));
-		twitter.directMessageApi().sendDirectMessage(11223, "Hello there!");
+		twitter.directMessageOperations().sendDirectMessage(11223, "Hello there!");
 		mockServer.verify();
 	}
 	
@@ -73,8 +72,8 @@ public class DirectMessageApiImplTest extends AbstractTwitterApiTest {
 	public void deleteDirectMessage() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/direct_messages/destroy/42.json"))
 				.andExpect(method(DELETE))
-				.andRespond(withResponse(new ClassPathResource("directMessage.json", getClass()), responseHeaders));
-		twitter.directMessageApi().deleteDirectMessage(42L);
+				.andRespond(withResponse(new ClassPathResource("testdata/directMessage.json", getClass()), responseHeaders));
+		twitter.directMessageOperations().deleteDirectMessage(42L);
 		mockServer.verify();
 	}
 

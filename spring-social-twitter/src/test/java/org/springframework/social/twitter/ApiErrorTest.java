@@ -15,6 +15,7 @@
  */
 package org.springframework.social.twitter;
 
+import static org.junit.Assert.*;
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.social.test.client.RequestMatchers.*;
 import static org.springframework.social.test.client.ResponseCreators.*;
@@ -22,6 +23,7 @@ import static org.springframework.social.test.client.ResponseCreators.*;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.social.BadCredentialsException;
+import org.springframework.web.client.HttpServerErrorException;
 
 public class ApiErrorTest extends AbstractTwitterApiTest {
 
@@ -31,7 +33,7 @@ public class ApiErrorTest extends AbstractTwitterApiTest {
 			.andExpect(method(POST))
 			.andExpect(body("status=Some+message"))
 			.andRespond(withResponse("", responseHeaders, HttpStatus.UNAUTHORIZED, ""));
-		twitter.tweetApi().updateStatus("Some message");		
+		twitter.timelineOperations().updateStatus("Some message");		
 	}
 	
 	@Test(expected=EnhanceYourCalmException.class)
@@ -39,30 +41,45 @@ public class ApiErrorTest extends AbstractTwitterApiTest {
 		mockServer.expect(requestTo("https://search.twitter.com/search.json?q=%23spring&rpp=50&page=1"))
 			.andExpect(method(GET))
 			.andRespond(withResponse("{\"error\":\"You have been rate limited. Enhance your calm.\"}", responseHeaders, HttpStatus.valueOf(420), ""));		
-		twitter.searchApi().search("#spring");
+		twitter.searchOperations().search("#spring");
 	}
 
-	@Test(expected=InternalProviderErrorException.class)
+	@Test
 	public void twitterIsBroken() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/home_timeline.json"))
-			.andExpect(method(GET))
-			.andRespond(withResponse("Non-JSON body", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR, ""));
-		twitter.tweetApi().getHomeTimeline();
+		try {
+			mockServer.expect(requestTo("https://api.twitter.com/1/statuses/home_timeline.json"))
+				.andExpect(method(GET))
+				.andRespond(withResponse("Non-JSON body", responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR, ""));
+			twitter.timelineOperations().getHomeTimeline();
+			fail();
+		} catch (HttpServerErrorException e) {
+			assertEquals("500 Something is broken at Twitter. Please see http://dev.twitter.com/pages/support to report the issue.", e.getMessage());
+		}
 	}
 	
-	@Test(expected=ProviderDownException.class)
+	@Test
 	public void twitterIsDownOrBeingUpgraded() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/home_timeline.json"))
-			.andExpect(method(GET))
-			.andRespond(withResponse("Non-JSON body", responseHeaders, HttpStatus.BAD_GATEWAY, ""));
-		twitter.tweetApi().getHomeTimeline();
+		try {
+			mockServer.expect(requestTo("https://api.twitter.com/1/statuses/home_timeline.json"))
+				.andExpect(method(GET))
+				.andRespond(withResponse("Non-JSON body", responseHeaders, HttpStatus.BAD_GATEWAY, ""));
+			twitter.timelineOperations().getHomeTimeline();
+			fail();
+		} catch (HttpServerErrorException e) {
+			assertEquals("502 Twitter is down or is being upgraded.", e.getMessage());
+		}
 	}
 	
-	@Test(expected=ProviderOverloadedException.class)
+	@Test
 	public void twitterIsOverloaded() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/home_timeline.json"))
-			.andExpect(method(GET))
-			.andRespond(withResponse("Non-JSON body", responseHeaders, HttpStatus.SERVICE_UNAVAILABLE, ""));
-		twitter.tweetApi().getHomeTimeline();
+		try {
+			mockServer.expect(requestTo("https://api.twitter.com/1/statuses/home_timeline.json"))
+				.andExpect(method(GET))
+				.andRespond(withResponse("Non-JSON body", responseHeaders, HttpStatus.SERVICE_UNAVAILABLE, ""));
+			twitter.timelineOperations().getHomeTimeline();
+			fail();
+		} catch (HttpServerErrorException e) {
+			assertEquals("503 Twitter is overloaded with requests. Try again later.", e.getMessage());
+		}
 	}
 }

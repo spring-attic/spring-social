@@ -20,8 +20,12 @@ import java.util.List;
 import org.springframework.social.twitter.support.extractors.ResponseExtractor;
 import org.springframework.util.MultiValueMap;
 
-// TODO : Needs a better name
-public interface TwitterRequestApi {
+// TODO: Consider a finding a better name for this interface
+
+/**
+ * Low level interface defining generic operations for interacting with Twitter's REST API.
+ */
+public interface LowLevelTwitterApi {
 	
 	<T> T fetchObject(String path, ResponseExtractor<T> extractor, Object... params);
 	

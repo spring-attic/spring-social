@@ -23,7 +23,7 @@ import org.springframework.social.twitter.types.DirectMessage;
  * Interface defining the Twitter operations for working with direct messages.
  * @author Craig Walls
  */
-public interface DirectMessageApi {
+public interface DirectMessageOperations {
 
 	/**
 	 * Retrieve the 20 most recently received direct messages for the authenticating user.

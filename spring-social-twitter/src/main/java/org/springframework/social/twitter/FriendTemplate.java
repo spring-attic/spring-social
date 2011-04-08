@@ -18,22 +18,25 @@ package org.springframework.social.twitter;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.social.twitter.support.extractors.ListOfLongExtractor;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
 import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Implementation of {@link FriendsApiTemplate}, providing a binding to Twitter's friends and followers-oriented REST resources.
+ * Implementation of {@link FriendTemplate}, providing a binding to Twitter's friends and followers-oriented REST resources.
  * @author Craig Walls
  */
-public class FriendsApiTemplate implements FriendsApi {
+class FriendTemplate implements FriendOperations {
 	
 	private final RestTemplate restTemplate;
+	
 	private TwitterProfileResponseExtractor profileExtractor;
-	private final TwitterRequestApi requestApi;
+	
+	private final LowLevelTwitterApi requestApi;
 
-	public FriendsApiTemplate(TwitterRequestApi requestApi, RestTemplate restTemplate) {
-		this.requestApi = requestApi;
+	public FriendTemplate(LowLevelTwitterApi lowLevelApi, RestTemplate restTemplate) {
+		this.requestApi = lowLevelApi;
 		this.restTemplate = restTemplate;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
 	}
@@ -94,16 +97,12 @@ public class FriendsApiTemplate implements FriendsApi {
 		return restTemplate.getForObject(EXISTS_URL, boolean.class, userA, userB);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Long> getIncomingFriendships() {
-		Map<String, Object> incomingMap = restTemplate.getForObject(FRIENDSHIPS_INCOMING_URL, Map.class);
-		return (List<Long>) incomingMap.get("ids");
+		return requestApi.fetchObject("friendships/incoming.json", new ListOfLongExtractor("ids"));
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Long> getOutgoingFriendships() {
-		Map<String, Object> outgoingMap = restTemplate.getForObject(FRIENDSHIPS_OUTGOING_URL, Map.class);
-		return (List<Long>) outgoingMap.get("ids");
+		return requestApi.fetchObject("friendships/outgoing.json", new ListOfLongExtractor("ids"));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -112,13 +111,9 @@ public class FriendsApiTemplate implements FriendsApi {
         return (String) response.get("screen_name");
 	}	
 
-	static final String FRIEND_IDS_URL = TwitterTemplate.API_URL_BASE + "friends/ids.json";
-	static final String FOLLOWER_IDS_URL = TwitterTemplate.API_URL_BASE + "followers/ids.json";
-	static final String FRIENDS_STATUSES_URL = TwitterTemplate.API_URL_BASE + "statuses/friends.json";
-	static final String FOLLOWERS_STATUSES_URL = TwitterTemplate.API_URL_BASE + "statuses/followers.json";
-	static final String FOLLOW_URL = TwitterTemplate.API_URL_BASE + "friendships/create.json";
-	static final String UNFOLLOW_URL = TwitterTemplate.API_URL_BASE + "friendships/destroy.json";
-	static final String EXISTS_URL = TwitterTemplate.API_URL_BASE + "friendships/exists.json?user_a={user_a}&user_b={user_b}";
-	static final String FRIENDSHIPS_INCOMING_URL = TwitterTemplate.API_URL_BASE + "friendships/incoming.json";
-	static final String FRIENDSHIPS_OUTGOING_URL = TwitterTemplate.API_URL_BASE + "friendships/outgoing.json";
+	private static final String FRIEND_IDS_URL = TwitterTemplate.API_URL_BASE + "friends/ids.json";
+	private static final String FOLLOWER_IDS_URL = TwitterTemplate.API_URL_BASE + "followers/ids.json";
+	private static final String FOLLOW_URL = TwitterTemplate.API_URL_BASE + "friendships/create.json";
+	private static final String UNFOLLOW_URL = TwitterTemplate.API_URL_BASE + "friendships/destroy.json";
+	private static final String EXISTS_URL = TwitterTemplate.API_URL_BASE + "friendships/exists.json?user_a={user_a}&user_b={user_b}";
 }

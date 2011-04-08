@@ -25,7 +25,7 @@ import org.springframework.social.twitter.types.TwitterProfile;
  * Interface defining the operations for sending and retrieving tweets. 
  * @author Craig Walls
  */
-public interface TweetApi {
+public interface TimelineOperations {
 
 	/**
 	 * Retrieves the 20 most recently posted tweets from the public timeline.

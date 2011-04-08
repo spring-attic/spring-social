@@ -40,19 +40,23 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Implementation of {@link SearchApi}, providing a binding to Twitter's search and trend-oriented REST resources.
+ * Implementation of {@link SearchOperations}, providing a binding to Twitter's search and trend-oriented REST resources.
  * @author Craig Walls
  */
-public class SearchApiTemplate implements SearchApi {
+class SearchTemplate implements SearchOperations {
 
 	private final RestTemplate restTemplate;
+	
 	private SavedSearchResponseExtractor savedSearchExtractor;
+	
 	private TrendsListResponseExtractor trendsListExtractor;
+	
 	private TrendsListResponseExtractor weeklyTrendsListExtractor;
-	private final TwitterRequestApi requestApi;
+	
+	private final LowLevelTwitterApi lowLevelApi;
 
-	public SearchApiTemplate(TwitterRequestApi requestApi, RestTemplate restTemplate) {
-		this.requestApi = requestApi;
+	public SearchTemplate(LowLevelTwitterApi lowLevelApi, RestTemplate restTemplate) {
+		this.lowLevelApi = lowLevelApi;
 		this.restTemplate = restTemplate;
 		this.savedSearchExtractor = new SavedSearchResponseExtractor();
 		this.trendsListExtractor = new TrendsListResponseExtractor(TrendsListResponseExtractor.LONG_TREND_DATE_FORMAT);
@@ -95,21 +99,21 @@ public class SearchApiTemplate implements SearchApi {
 	}
 
 	public List<SavedSearch> getSavedSearches() {
-		return requestApi.fetchObjects("saved_searches.json", savedSearchExtractor);
+		return lowLevelApi.fetchObjects("saved_searches.json", savedSearchExtractor);
 	}
 
 	public SavedSearch getSavedSearch(long searchId) {
-		return requestApi.fetchObject("saved_searches/show/{searchId}.json", savedSearchExtractor, searchId);
+		return lowLevelApi.fetchObject("saved_searches/show/{searchId}.json", savedSearchExtractor, searchId);
 	}
 
 	public void createSavedSearch(String query) {		
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
 		data.set("query", query);
-		requestApi.publish("saved_searches/create.json", data);
+		lowLevelApi.publish("saved_searches/create.json", data);
 	}
 
 	public void deleteSavedSearch(long searchId) {
-		requestApi.delete("saved_searches/destroy/{searchId}.json", searchId);
+		lowLevelApi.delete("saved_searches/destroy/{searchId}.json", searchId);
 	}
 	
 	// Trends
@@ -120,7 +124,7 @@ public class SearchApiTemplate implements SearchApi {
 	
 	public Trends getCurrentTrends(boolean excludeHashtags) {
 		String path = makeTrendPath("trends/current.json", excludeHashtags, null);
-		return requestApi.fetchObject(path, trendsListExtractor).get(0);
+		return lowLevelApi.fetchObject(path, trendsListExtractor).get(0);
 	}
 
 	public List<Trends> getDailyTrends() {
@@ -133,7 +137,7 @@ public class SearchApiTemplate implements SearchApi {
 
 	public List<Trends> getDailyTrends(boolean excludeHashtags, String startDate) {
 		String path = makeTrendPath("trends/daily.json", excludeHashtags, startDate);
-		return requestApi.fetchObject(path, trendsListExtractor);
+		return lowLevelApi.fetchObject(path, trendsListExtractor);
 	}
 	
 	public List<Trends> getWeeklyTrends() {
@@ -146,7 +150,7 @@ public class SearchApiTemplate implements SearchApi {
 	
 	public List<Trends> getWeeklyTrends(boolean excludeHashtags, String startDate) {
 		String path = makeTrendPath("trends/weekly.json", excludeHashtags, startDate);
-		return requestApi.fetchObject(path, weeklyTrendsListExtractor);
+		return lowLevelApi.fetchObject(path, weeklyTrendsListExtractor);
 	}
 
 	public Trends getLocalTrends(long whereOnEarthId) {
@@ -213,14 +217,7 @@ public class SearchApiTemplate implements SearchApi {
 
 	static final int DEFAULT_RESULTS_PER_PAGE = 50;
 
-	static final String SEARCH_API_URL_BASE = "https://search.twitter.com";
-	static final String SEARCH_URL = SEARCH_API_URL_BASE + "/search.json?q={query}&rpp={rpp}&page={page}";
-	static final String SAVED_SEARCHES_URL = TwitterTemplate.API_URL_BASE + "saved_searches.json";
-	static final String SAVED_SEARCH_URL = TwitterTemplate.API_URL_BASE + "saved_searches/show/{searchId}.json";
-	static final String CREATE_SAVED_SEARCH_URL = TwitterTemplate.API_URL_BASE + "saved_searches/create.json";
-	static final String DELETE_SAVED_SEARCH_URL = TwitterTemplate.API_URL_BASE + "saved_searches/destroy/{searchId}.json";
-	static final String CURRENT_TRENDS_URL = TwitterTemplate.API_URL_BASE + "trends/current.json";
-	static final String DAILY_TRENDS_URL = TwitterTemplate.API_URL_BASE + "trends/daily.json";
-	static final String WEEKLY_TRENDS_URL = TwitterTemplate.API_URL_BASE + "trends/weekly.json";
-	static final String LOCAL_TRENDS_URL = TwitterTemplate.API_URL_BASE + "trends/{whereOnEarth_id}.json";
+	private static final String SEARCH_API_URL_BASE = "https://search.twitter.com";
+	private static final String SEARCH_URL = SEARCH_API_URL_BASE + "/search.json?q={query}&rpp={rpp}&page={page}";
+	private static final String LOCAL_TRENDS_URL = TwitterTemplate.API_URL_BASE + "trends/{whereOnEarth_id}.json";
 }

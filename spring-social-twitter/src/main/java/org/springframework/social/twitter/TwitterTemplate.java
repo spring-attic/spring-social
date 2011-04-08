@@ -43,21 +43,21 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class TwitterTemplate implements TwitterApi, TwitterRequestApi {
+public class TwitterTemplate implements TwitterApi, LowLevelTwitterApi {
 
 	private final RestTemplate restTemplate;
 
-	private final TweetApi tweetApi;
+	private final TimelineOperations timelineOperations;
 
-	private final UserApi userApi;
+	private final UserOperations userOperations;
 
-	private final FriendsApi friendsApi;
+	private final FriendOperations friendOperations;
 
-	private final ListsApi listsApi;
+	private final ListOperations listOperations;
 
-	private final SearchApi searchApi;
+	private final SearchOperations searchOperations;
 
-	private final DirectMessageApi directMessageApi;
+	private final DirectMessageOperations directMessageOperations;
 
 	/**
 	 * Create a new instance of TwitterTemplate.
@@ -84,36 +84,36 @@ public class TwitterTemplate implements TwitterApi, TwitterRequestApi {
 	private TwitterTemplate(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
-		this.tweetApi = new TweetApiTemplate(this, restTemplate);
-		this.userApi = new UserApiTemplate(this, restTemplate);
-		this.friendsApi = new FriendsApiTemplate(this, restTemplate);
-		this.listsApi = new ListsApiTemplate(this, restTemplate, userApi);
-		this.searchApi = new SearchApiTemplate(this, restTemplate);
-		this.directMessageApi = new DirectMessageApiTemplate(this);
+		this.timelineOperations = new TimelineTemplate(this, restTemplate);
+		this.userOperations = new UserTemplate(this);
+		this.friendOperations = new FriendTemplate(this, restTemplate);
+		this.listOperations = new ListTemplate(this, userOperations);
+		this.searchOperations = new SearchTemplate(this, restTemplate);
+		this.directMessageOperations = new DirectMessageTemplate(this);
 	}
 
-	public TweetApi tweetApi() {
-		return tweetApi;
+	public TimelineOperations timelineOperations() {
+		return timelineOperations;
 	}
 
-	public FriendsApi friendsApi() {
-		return friendsApi;
+	public FriendOperations friendOperations() {
+		return friendOperations;
 	}
 
-	public ListsApi listsApi() {
-		return listsApi;
+	public ListOperations listOperations() {
+		return listOperations;
 	}
 
-	public SearchApi searchApi() {
-		return searchApi;
+	public SearchOperations searchOperations() {
+		return searchOperations;
 	}
 
-	public DirectMessageApi directMessageApi() {
-		return directMessageApi;
+	public DirectMessageOperations directMessageOperations() {
+		return directMessageOperations;
 	}
 
-	public UserApi userApi() {
-		return userApi;
+	public UserOperations userOperations() {
+		return userOperations;
 	}
 	
 	// low-level

@@ -22,20 +22,18 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatus.Series;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.social.BadCredentialsException;
 import org.springframework.social.OperationNotPermittedException;
 import org.springframework.social.twitter.DuplicateTweetException;
 import org.springframework.social.twitter.EnhanceYourCalmException;
-import org.springframework.social.twitter.InternalProviderErrorException;
 import org.springframework.social.twitter.InvalidMessageRecipientException;
-import org.springframework.social.twitter.NotFoundException;
-import org.springframework.social.twitter.ProviderDownException;
-import org.springframework.social.twitter.ProviderOverloadedException;
 import org.springframework.social.twitter.StatusLengthException;
 import org.springframework.social.twitter.TwitterTemplate;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -60,8 +58,14 @@ public class TwitterErrorHandler extends DefaultResponseErrorHandler {
 		
 	@Override
 	public void handleError(ClientHttpResponse response) throws IOException {
-		handleServerErrors(response);
-		handleClientErrors(response);
+		HttpStatus statusCode = response.getStatusCode();
+		
+		if(statusCode.series() == Series.SERVER_ERROR) {
+			handleServerErrors(statusCode);
+		} else if (statusCode.series() == Series.CLIENT_ERROR) {
+			handleClientErrors(response);
+		}
+		
 		super.handleError(response);
 	}
 	
@@ -86,20 +90,19 @@ public class TwitterErrorHandler extends DefaultResponseErrorHandler {
 				throw new OperationNotPermittedException(errorText);
 			}			
 		} else if (statusCode == HttpStatus.NOT_FOUND) {
-			throw new NotFoundException(errorText + "; Path: " + errorMap.get("request"));
+			throw new HttpClientErrorException(statusCode, errorText + "; Path: " + errorMap.get("request"));
 		} else if (statusCode == HttpStatus.valueOf(ENHANCE_YOUR_CALM)) {
 			throw new EnhanceYourCalmException(errorText);
 		}
 	}
 
-	private void handleServerErrors(ClientHttpResponse response) throws IOException {
-		HttpStatus statusCode = response.getStatusCode();
+	private void handleServerErrors(HttpStatus statusCode) throws IOException {
 		if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR) {
-			throw new InternalProviderErrorException("Something is broken at Twitter. Please see http://dev.twitter.com/pages/support to report the issue.");
+			throw new HttpServerErrorException(statusCode, "Something is broken at Twitter. Please see http://dev.twitter.com/pages/support to report the issue.");
 		} else if (statusCode == HttpStatus.BAD_GATEWAY) {
-			throw new ProviderDownException("Twitter is down or is being upgraded.");
+			throw new HttpServerErrorException(statusCode, "Twitter is down or is being upgraded.");
 		} else if (statusCode == HttpStatus.SERVICE_UNAVAILABLE) {
-			throw new ProviderOverloadedException("Twitter is overloaded with requests. Try again later.");
+			throw new HttpServerErrorException(statusCode, "Twitter is overloaded with requests. Try again later.");
 		}
 	}
 

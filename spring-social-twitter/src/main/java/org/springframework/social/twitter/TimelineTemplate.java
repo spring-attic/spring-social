@@ -27,10 +27,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Implementation of {@link TweetApi}, providing a binding to Twitter's tweet and timeline-oriented REST resources.
+ * Implementation of {@link TimelineOperations}, providing a binding to Twitter's tweet and timeline-oriented REST resources.
  * @author Craig Walls
  */
-public class TweetApiTemplate implements TweetApi {
+class TimelineTemplate implements TimelineOperations {
 
 	private final RestTemplate restTemplate;
 
@@ -38,57 +38,57 @@ public class TweetApiTemplate implements TweetApi {
 	
 	private TweetResponseExtractor tweetExtractor;
 
-	private final TwitterRequestApi requestApi;
+	private final LowLevelTwitterApi lowLevelApi;
 
-	public TweetApiTemplate(TwitterRequestApi requestApi, RestTemplate restTemplate) {
-		this.requestApi = requestApi;
+	public TimelineTemplate(LowLevelTwitterApi lowLevelApi, RestTemplate restTemplate) {
+		this.lowLevelApi = lowLevelApi;
 		this.restTemplate = restTemplate;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
 		this.tweetExtractor = new TweetResponseExtractor();
 	}
 
 	public List<Tweet> getPublicTimeline() {
-		return requestApi.fetchObjects("statuses/public_timeline.json", tweetExtractor);
+		return lowLevelApi.fetchObjects("statuses/public_timeline.json", tweetExtractor);
 	}
 
 	public List<Tweet> getHomeTimeline() {
-		return requestApi.fetchObjects("statuses/home_timeline.json", tweetExtractor);
+		return lowLevelApi.fetchObjects("statuses/home_timeline.json", tweetExtractor);
 	}
 
 	public List<Tweet> getFriendsTimeline() {
-		return requestApi.fetchObjects("statuses/friends_timeline.json", tweetExtractor);
+		return lowLevelApi.fetchObjects("statuses/friends_timeline.json", tweetExtractor);
 	}
 
 	public List<Tweet> getUserTimeline() {
-		return requestApi.fetchObjects("statuses/user_timeline.json", tweetExtractor);
+		return lowLevelApi.fetchObjects("statuses/user_timeline.json", tweetExtractor);
 	}
 
 	public List<Tweet> getUserTimeline(String screenName) {
-		return requestApi.fetchObjects("statuses/user_timeline.json?screen_name={screenName}", tweetExtractor, screenName);
+		return lowLevelApi.fetchObjects("statuses/user_timeline.json?screen_name={screenName}", tweetExtractor, screenName);
 	}
 
 	public List<Tweet> getUserTimeline(long userId) {
-		return requestApi.fetchObjects("statuses/user_timeline.json?user_id={userId}", tweetExtractor, userId);
+		return lowLevelApi.fetchObjects("statuses/user_timeline.json?user_id={userId}", tweetExtractor, userId);
 	}
 
 	public List<Tweet> getMentions() {
-		return requestApi.fetchObjects("statuses/mentions.json", tweetExtractor);
+		return lowLevelApi.fetchObjects("statuses/mentions.json", tweetExtractor);
 	}
 
 	public List<Tweet> getRetweetedByMe() {
-		return requestApi.fetchObjects("statuses/retweeted_by_me.json", tweetExtractor);
+		return lowLevelApi.fetchObjects("statuses/retweeted_by_me.json", tweetExtractor);
 	}
 
 	public List<Tweet> getRetweetedToMe() {
-		return requestApi.fetchObjects("statuses/retweeted_to_me.json", tweetExtractor);
+		return lowLevelApi.fetchObjects("statuses/retweeted_to_me.json", tweetExtractor);
 	}
 
 	public List<Tweet> getRetweetsOfMe() {
-		return requestApi.fetchObjects("statuses/retweets_of_me.json", tweetExtractor);
+		return lowLevelApi.fetchObjects("statuses/retweets_of_me.json", tweetExtractor);
 	}
 
 	public Tweet getStatus(long tweetId) {
-		return requestApi.fetchObject("statuses/show/{tweet_id}.json", tweetExtractor, tweetId);
+		return lowLevelApi.fetchObject("statuses/show/{tweet_id}.json", tweetExtractor, tweetId);
 	}
 
 	public void updateStatus(String message) {
@@ -99,24 +99,24 @@ public class TweetApiTemplate implements TweetApi {
 		MultiValueMap<String, Object> tweetParams = new LinkedMultiValueMap<String, Object>();
 		tweetParams.add("status", message);
 		tweetParams.setAll(details.toParameterMap());
-		requestApi.publish("statuses/update.json", tweetParams);
+		lowLevelApi.publish("statuses/update.json", tweetParams);
 	}
 
 	public void deleteStatus(long tweetId) {
-		requestApi.delete("statuses/destroy/{tweetId}.json", tweetId);
+		lowLevelApi.delete("statuses/destroy/{tweetId}.json", tweetId);
 	}
 
 	public void retweet(long tweetId) {
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
-		requestApi.publish("statuses/retweet/{tweetId}.json", data, tweetId);
+		lowLevelApi.publish("statuses/retweet/{tweetId}.json", data, tweetId);
 	}
 
 	public List<Tweet> getRetweets(long tweetId) {
-		return requestApi.fetchObjects("statuses/retweets/{tweetId}.json", tweetExtractor, tweetId);
+		return lowLevelApi.fetchObjects("statuses/retweets/{tweetId}.json", tweetExtractor, tweetId);
 	}
 
 	public List<TwitterProfile> getRetweetedBy(long tweetId) {
-		return requestApi.fetchObjects("statuses/{tweet_id}/retweeted_by.json", profileExtractor, tweetId);
+		return lowLevelApi.fetchObjects("statuses/{tweet_id}/retweeted_by.json", profileExtractor, tweetId);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -125,17 +125,17 @@ public class TweetApiTemplate implements TweetApi {
 	}
 
 	public List<Tweet> getFavorites() {
-		return requestApi.fetchObjects("favorites.json", tweetExtractor);
+		return lowLevelApi.fetchObjects("favorites.json", tweetExtractor);
 	}
 
 	public void addToFavorites(long tweetId) {
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
-		requestApi.publish("favorites/create/{tweetId}.json", data, tweetId);
+		lowLevelApi.publish("favorites/create/{tweetId}.json", data, tweetId);
 	}
 
 	public void removeFromFavorites(long tweetId) {
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
-		requestApi.publish("favorites/destroy/{tweetId}.json", data, tweetId);
+		lowLevelApi.publish("favorites/destroy/{tweetId}.json", data, tweetId);
 	}
 
 	private static final String RETWEETED_BY_IDS_URL = TwitterTemplate.API_URL_BASE + "statuses/{tweet_id}/retweeted_by/ids.json";

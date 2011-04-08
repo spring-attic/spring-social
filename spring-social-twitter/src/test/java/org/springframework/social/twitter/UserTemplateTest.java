@@ -31,15 +31,15 @@ import org.springframework.social.twitter.types.TwitterProfile;
 /**
  * @author Craig Walls
  */
-public class UserApiImplTest extends AbstractTwitterApiTest {
+public class UserTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void getProfileId() {
 		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 		mockServer.expect(requestTo("https://api.twitter.com/1/account/verify_credentials.json"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("verify-credentials.json", getClass()), responseHeaders));
-		assertEquals(161064614, twitter.userApi().getProfileId());
+				.andRespond(withResponse(new ClassPathResource("testdata/verify-credentials.json", getClass()), responseHeaders));
+		assertEquals(161064614, twitter.userOperations().getProfileId());
 	}
 
 	@Test
@@ -47,17 +47,17 @@ public class UserApiImplTest extends AbstractTwitterApiTest {
 		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 		mockServer.expect(requestTo("https://api.twitter.com/1/account/verify_credentials.json"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("verify-credentials.json", getClass()), responseHeaders));
-		assertEquals("artnames", twitter.userApi().getScreenName());
+				.andRespond(withResponse(new ClassPathResource("testdata/verify-credentials.json", getClass()), responseHeaders));
+		assertEquals("artnames", twitter.userOperations().getScreenName());
 	}
 
 	@Test
 	public void getUserProfile() throws Exception {
 		mockServer.expect(requestTo("https://api.twitter.com/1/account/verify_credentials.json"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("verify-credentials.json", getClass()), responseHeaders));
+				.andRespond(withResponse(new ClassPathResource("testdata/verify-credentials.json", getClass()), responseHeaders));
 
-		TwitterProfile profile = twitter.userApi().getUserProfile();
+		TwitterProfile profile = twitter.userOperations().getUserProfile();
 		assertEquals(161064614, profile.getId());
 		assertEquals("artnames", profile.getScreenName());
 		assertEquals("Art Names", profile.getName());
@@ -71,9 +71,9 @@ public class UserApiImplTest extends AbstractTwitterApiTest {
 	public void getUserProfile_userId() throws Exception {
 		mockServer.expect(requestTo("https://api.twitter.com/1/users/show.json?user_id=12345"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("twitter-profile.json", getClass()), responseHeaders));
+				.andRespond(withResponse(new ClassPathResource("testdata/twitter-profile.json", getClass()), responseHeaders));
 
-		TwitterProfile profile = twitter.userApi().getUserProfile(12345);
+		TwitterProfile profile = twitter.userOperations().getUserProfile(12345);
 		assertEquals(12345, profile.getId());
 		assertEquals("habuma", profile.getScreenName());
 		assertEquals("Craig Walls", profile.getName());
@@ -87,8 +87,8 @@ public class UserApiImplTest extends AbstractTwitterApiTest {
 	public void getUsers_byUserId() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/users/lookup.json?user_id=14846645,14718006"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("list-of-profiles.json", getClass()), responseHeaders));
-		List<TwitterProfile> users = twitter.userApi().getUsers(14846645, 14718006);
+			.andRespond(withResponse(new ClassPathResource("testdata/list-of-profiles.json", getClass()), responseHeaders));
+		List<TwitterProfile> users = twitter.userOperations().getUsers(14846645, 14718006);
 		assertEquals(2, users.size());
 		assertEquals("royclarkson", users.get(0).getScreenName());
 		assertEquals("kdonald", users.get(1).getScreenName());
@@ -98,8 +98,8 @@ public class UserApiImplTest extends AbstractTwitterApiTest {
 	public void getUsers_byScreenName() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/users/lookup.json?screen_name=royclarkson,kdonald"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("list-of-profiles.json", getClass()), responseHeaders));
-		List<TwitterProfile> users = twitter.userApi().getUsers("royclarkson", "kdonald");
+			.andRespond(withResponse(new ClassPathResource("testdata/list-of-profiles.json", getClass()), responseHeaders));
+		List<TwitterProfile> users = twitter.userOperations().getUsers("royclarkson", "kdonald");
 		assertEquals(2, users.size());
 		assertEquals("royclarkson", users.get(0).getScreenName());
 		assertEquals("kdonald", users.get(1).getScreenName());
@@ -109,8 +109,8 @@ public class UserApiImplTest extends AbstractTwitterApiTest {
 	public void searchForUsers() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/users/search.json?q=some%20query"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("list-of-profiles.json", getClass()), responseHeaders));
-		List<TwitterProfile> users = twitter.userApi().searchForUsers("some query");
+			.andRespond(withResponse(new ClassPathResource("testdata/list-of-profiles.json", getClass()), responseHeaders));
+		List<TwitterProfile> users = twitter.userOperations().searchForUsers("some query");
 		assertEquals(2, users.size());
 		assertEquals("royclarkson", users.get(0).getScreenName());
 		assertEquals("kdonald", users.get(1).getScreenName());
@@ -120,8 +120,8 @@ public class UserApiImplTest extends AbstractTwitterApiTest {
 	public void getSuggestionCategories() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/users/suggestions.json"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("suggestion-categories.json", getClass()), responseHeaders));
-		List<SuggestionCategory> categories = twitter.userApi().getSuggestionCategories();
+			.andRespond(withResponse(new ClassPathResource("testdata/suggestion-categories.json", getClass()), responseHeaders));
+		List<SuggestionCategory> categories = twitter.userOperations().getSuggestionCategories();
 		assertEquals(4, categories.size());
 		assertEquals("Art & Design", categories.get(0).getName());
 		assertEquals("art-design", categories.get(0).getSlug());
@@ -141,9 +141,9 @@ public class UserApiImplTest extends AbstractTwitterApiTest {
 	public void getSuggestions() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/users/suggestions/springsource.json"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("suggestions.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/suggestions.json", getClass()), responseHeaders));
 
-		List<TwitterProfile> users = twitter.userApi().getSuggestions("springsource");
+		List<TwitterProfile> users = twitter.userOperations().getSuggestions("springsource");
 		assertEquals(2, users.size());
 		assertEquals("royclarkson", users.get(0).getScreenName());
 		assertEquals("kdonald", users.get(1).getScreenName());

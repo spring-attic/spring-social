@@ -34,14 +34,14 @@ import org.springframework.social.twitter.types.Tweet;
 /**
  * @author Craig Walls
  */
-public class SearchApiImplTest extends AbstractTwitterApiTest {
+public class SearchTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void search_queryOnly() {
 		mockServer.expect(requestTo("https://search.twitter.com/search.json?q=%23spring&rpp=50&page=1"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("search.json", getClass()), responseHeaders));
-		SearchResults searchResults = twitter.searchApi().search("#spring");
+				.andRespond(withResponse(new ClassPathResource("testdata/search.json", getClass()), responseHeaders));
+		SearchResults searchResults = twitter.searchOperations().search("#spring");
 		assertEquals(10, searchResults.getSinceId());
 		assertEquals(999, searchResults.getMaxId());
 		List<Tweet> tweets = searchResults.getTweets();
@@ -52,8 +52,8 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void search_pageAndResultsPerPage() {
 		mockServer.expect(requestTo("https://search.twitter.com/search.json?q=%23spring&rpp=10&page=2"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("search.json", getClass()), responseHeaders));
-		SearchResults searchResults = twitter.searchApi().search("#spring", 2, 10);
+				.andRespond(withResponse(new ClassPathResource("testdata/search.json", getClass()), responseHeaders));
+		SearchResults searchResults = twitter.searchOperations().search("#spring", 2, 10);
 		assertEquals(10, searchResults.getSinceId());
 		assertEquals(999, searchResults.getMaxId());
 		List<Tweet> tweets = searchResults.getTweets();
@@ -64,8 +64,8 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void search_sinceAndMaxId() {
 		mockServer.expect(requestTo("https://search.twitter.com/search.json?q=%23spring&rpp=10&page=2&since_id=123&max_id=54321"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("search.json", getClass()), responseHeaders));
-		SearchResults searchResults = twitter.searchApi().search("#spring", 2, 10, 123, 54321);
+				.andRespond(withResponse(new ClassPathResource("testdata/search.json", getClass()), responseHeaders));
+		SearchResults searchResults = twitter.searchOperations().search("#spring", 2, 10, 123, 54321);
 		assertEquals(10, searchResults.getSinceId());
 		assertEquals(999, searchResults.getMaxId());
 		List<Tweet> tweets = searchResults.getTweets();
@@ -76,8 +76,8 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void getSavedSearches() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/saved_searches.json"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("saved-searches.json", getClass()), responseHeaders));
-		List<SavedSearch> savedSearches = twitter.searchApi().getSavedSearches();
+			.andRespond(withResponse(new ClassPathResource("testdata/saved-searches.json", getClass()), responseHeaders));
+		List<SavedSearch> savedSearches = twitter.searchOperations().getSavedSearches();
 		assertEquals(2, savedSearches.size());
 		SavedSearch search1 = savedSearches.get(0);
 		assertEquals(26897775, search1.getId());
@@ -95,8 +95,8 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void getSavedSearch() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/saved_searches/show/26897775.json"))
 				.andExpect(method(GET))
-				.andRespond(withResponse(new ClassPathResource("saved-search.json", getClass()), responseHeaders));
-		SavedSearch savedSearch = twitter.searchApi().getSavedSearch(26897775);
+				.andRespond(withResponse(new ClassPathResource("testdata/saved-search.json", getClass()), responseHeaders));
+		SavedSearch savedSearch = twitter.searchOperations().getSavedSearch(26897775);
 		assertEquals(26897775, savedSearch.getId());
 		assertEquals("#springsocial", savedSearch.getQuery());
 		assertEquals("#springsocial", savedSearch.getName());
@@ -109,7 +109,7 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 			.andExpect(method(POST))
 			.andExpect(body("query=%23twitter"))
 			.andRespond(withResponse("{}", responseHeaders));
-		twitter.searchApi().createSavedSearch("#twitter");
+		twitter.searchOperations().createSavedSearch("#twitter");
 		mockServer.verify();
 	}
 
@@ -118,7 +118,7 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 		mockServer.expect(requestTo("https://api.twitter.com/1/saved_searches/destroy/26897775.json"))
 			.andExpect(method(DELETE))
 			.andRespond(withResponse("{}", responseHeaders));
-		twitter.searchApi().deleteSavedSearch(26897775);
+		twitter.searchOperations().deleteSavedSearch(26897775);
 		mockServer.verify();
 	}
 	
@@ -126,8 +126,8 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void getCurrentTrends() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/trends/current.json"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("current-trends.json", getClass()), responseHeaders));
-		Trends currentTrends = twitter.searchApi().getCurrentTrends();
+			.andRespond(withResponse(new ClassPathResource("testdata/current-trends.json", getClass()), responseHeaders));
+		Trends currentTrends = twitter.searchOperations().getCurrentTrends();
 		List<Trend> trends = currentTrends.getTrends();
 		assertEquals(2, trends.size());
 		assertEquals("Cool Stuff", trends.get(0).getName());
@@ -140,8 +140,8 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void getCurrentTrends_excludeHashtags() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/trends/current.json?exclude=hashtags"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("current-trends.json", getClass()), responseHeaders));
-		Trends currentTrends = twitter.searchApi().getCurrentTrends(true);
+			.andRespond(withResponse(new ClassPathResource("testdata/current-trends.json", getClass()), responseHeaders));
+		Trends currentTrends = twitter.searchOperations().getCurrentTrends(true);
 		List<Trend> trends = currentTrends.getTrends();
 		assertEquals(2, trends.size());
 	}
@@ -150,9 +150,9 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void getDailyTrends() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/trends/daily.json"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("daily-trends.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/daily-trends.json", getClass()), responseHeaders));
 
-		List<Trends> dailyTrends = twitter.searchApi().getDailyTrends();
+		List<Trends> dailyTrends = twitter.searchOperations().getDailyTrends();
 		assertEquals(24, dailyTrends.size());
 		int i = 0;
 		for (Trends currentTrends : dailyTrends) {
@@ -170,9 +170,9 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void getDailyTrends_excludeHashtags() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/trends/daily.json?exclude=hashtags"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("daily-trends.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/daily-trends.json", getClass()), responseHeaders));
 
-		List<Trends> dailyTrends = twitter.searchApi().getDailyTrends(true);
+		List<Trends> dailyTrends = twitter.searchOperations().getDailyTrends(true);
 		assertEquals(24, dailyTrends.size());
 		mockServer.verify();
 	}
@@ -181,9 +181,9 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void getDailyTrends_withStartDate() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/trends/daily.json?date=2011-03-17"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("daily-trends.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/daily-trends.json", getClass()), responseHeaders));
 
-		List<Trends> dailyTrends = twitter.searchApi().getDailyTrends(false, "2011-03-17");
+		List<Trends> dailyTrends = twitter.searchOperations().getDailyTrends(false, "2011-03-17");
 		assertEquals(24, dailyTrends.size());
 		mockServer.verify();
 	}
@@ -192,9 +192,9 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void getDailyTrends_withStartDateAndExcludeHashtags() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/trends/daily.json?exclude=hashtags&date=2011-03-17"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("daily-trends.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/daily-trends.json", getClass()), responseHeaders));
 
-		List<Trends> dailyTrends = twitter.searchApi().getDailyTrends(true, "2011-03-17");
+		List<Trends> dailyTrends = twitter.searchOperations().getDailyTrends(true, "2011-03-17");
 		assertEquals(24, dailyTrends.size());
 		mockServer.verify();
 	}
@@ -203,9 +203,9 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void getWeeklyTrends() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/trends/weekly.json"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("weekly-trends.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/weekly-trends.json", getClass()), responseHeaders));
 
-		List<Trends> dailyTrends = twitter.searchApi().getWeeklyTrends();
+		List<Trends> dailyTrends = twitter.searchOperations().getWeeklyTrends();
 		assertEquals(7, dailyTrends.size());
 		int i = 0;
 		for (Trends currentTrends : dailyTrends) {
@@ -223,9 +223,9 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void getWeeklyTrends_excludeHashtags() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/trends/weekly.json?exclude=hashtags"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("weekly-trends.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/weekly-trends.json", getClass()), responseHeaders));
 
-		List<Trends> dailyTrends = twitter.searchApi().getWeeklyTrends(true);
+		List<Trends> dailyTrends = twitter.searchOperations().getWeeklyTrends(true);
 		assertEquals(7, dailyTrends.size());
 		mockServer.verify();
 	}
@@ -234,9 +234,9 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void getWeeklyTrends_withStartDate() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/trends/weekly.json?date=2011-03-18"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("weekly-trends.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/weekly-trends.json", getClass()), responseHeaders));
 
-		List<Trends> dailyTrends = twitter.searchApi().getWeeklyTrends(false, "2011-03-18");
+		List<Trends> dailyTrends = twitter.searchOperations().getWeeklyTrends(false, "2011-03-18");
 		assertEquals(7, dailyTrends.size());
 		mockServer.verify();
 	}
@@ -245,9 +245,9 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void getWeeklyTrends_withStartDateAndExcludeHashtags() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/trends/weekly.json?exclude=hashtags&date=2011-03-18"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("weekly-trends.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/weekly-trends.json", getClass()), responseHeaders));
 
-		List<Trends> dailyTrends = twitter.searchApi().getWeeklyTrends(true, "2011-03-18");
+		List<Trends> dailyTrends = twitter.searchOperations().getWeeklyTrends(true, "2011-03-18");
 		assertEquals(7, dailyTrends.size());
 		mockServer.verify();
 	}
@@ -256,8 +256,8 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void getLocalTrends() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/trends/2442047.json"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("local-trends.json", getClass()), responseHeaders));
-		Trends localTrends = twitter.searchApi().getLocalTrends(2442047);
+			.andRespond(withResponse(new ClassPathResource("testdata/local-trends.json", getClass()), responseHeaders));
+		Trends localTrends = twitter.searchOperations().getLocalTrends(2442047);
 		List<Trend> trends = localTrends.getTrends();
 		assertEquals(2, trends.size());
 		Trend trend1 = trends.get(0);
@@ -272,8 +272,8 @@ public class SearchApiImplTest extends AbstractTwitterApiTest {
 	public void getLocalTrends_excludeHashtags() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/trends/2442047.json?exclude=hashtags"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("local-trends.json", getClass()), responseHeaders));
-		Trends localTrends = twitter.searchApi().getLocalTrends(2442047, true);
+			.andRespond(withResponse(new ClassPathResource("testdata/local-trends.json", getClass()), responseHeaders));
+		Trends localTrends = twitter.searchOperations().getLocalTrends(2442047, true);
 		List<Trend> trends = localTrends.getTrends();
 		assertEquals(2, trends.size());
 	}	

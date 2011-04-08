@@ -23,43 +23,44 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /**
- * Implementation of {@link DirectMessageApi}, providing a binding to Twitter's direct message-oriented REST resources.
+ * Implementation of {@link DirectMessageOperations}, providing a binding to Twitter's direct message-oriented REST resources.
  * @author Craig Walls
  */
-public class DirectMessageApiTemplate implements DirectMessageApi {
+class DirectMessageTemplate implements DirectMessageOperations {
 
 	private DirectMessageResponseExtractor directMessageExtractor;
-	private final TwitterRequestApi requestApi;
+	
+	private final LowLevelTwitterApi lowLevelApi;
 
-	public DirectMessageApiTemplate(TwitterRequestApi requestApi) {
-		this.requestApi = requestApi;
+	public DirectMessageTemplate(LowLevelTwitterApi lowLevelApi) {
+		this.lowLevelApi = lowLevelApi;
 		this.directMessageExtractor = new DirectMessageResponseExtractor();
 	}
 
 	public List<DirectMessage> getDirectMessagesReceived() {
-		return requestApi.fetchObjects("direct_messages.json", directMessageExtractor);
+		return lowLevelApi.fetchObjects("direct_messages.json", directMessageExtractor);
 	}
 
 	public List<DirectMessage> getDirectMessagesSent() {
-		return requestApi.fetchObjects("direct_messages/sent.json", directMessageExtractor);
+		return lowLevelApi.fetchObjects("direct_messages/sent.json", directMessageExtractor);
 	}
 
 	public void sendDirectMessage(String toScreenName, String text) {
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
 		data.add("screen_name", String.valueOf(toScreenName));
 		data.add("text", text);
-	    requestApi.publish("direct_messages/new.json", data);
+	    lowLevelApi.publish("direct_messages/new.json", data);
 	}
 
 	public void sendDirectMessage(long toUserId, String text) {
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
 		data.add("user_id", String.valueOf(toUserId));
 		data.add("text", text);
-	    requestApi.publish("direct_messages/new.json", data);
+	    lowLevelApi.publish("direct_messages/new.json", data);
 	}
 
 	public void deleteDirectMessage(long messageId) {
-		requestApi.delete("direct_messages/destroy/{dmId}.json", messageId);
+		lowLevelApi.delete("direct_messages/destroy/{dmId}.json", messageId);
 	}
 
 }

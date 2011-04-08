@@ -25,7 +25,7 @@ import org.springframework.social.twitter.types.UserList;
  * Interface defining the operations for working with a user's lists.
  * @author Craig Walls
  */
-public interface ListsApi {
+public interface ListOperations {
 
 	/**
 	 * Retrieves user lists for a given user.

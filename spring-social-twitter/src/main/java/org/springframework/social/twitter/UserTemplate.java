@@ -16,76 +16,68 @@
 package org.springframework.social.twitter;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.social.twitter.support.extractors.SuggestionCategoryResponseExtractor;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
 import org.springframework.social.twitter.types.SuggestionCategory;
 import org.springframework.social.twitter.types.TwitterProfile;
-import org.springframework.web.client.RestTemplate;
 
 /**
- * Implementation of the {@link UserApi} interface providing binding to Twitters' user-oriented REST resources.
+ * Implementation of the {@link UserOperations} interface providing binding to Twitters' user-oriented REST resources.
  * @author Craig Walls
  */
-public class UserApiTemplate implements UserApi {
+class UserTemplate implements UserOperations {
 
-	private final TwitterRequestApi requestApi;
-
-	private final RestTemplate restTemplate;
+	private final LowLevelTwitterApi lowLevelApi;
 	
 	private final TwitterProfileResponseExtractor profileExtractor;
 
 	private final SuggestionCategoryResponseExtractor suggestionCategoryExtractor;
 
-	public UserApiTemplate(TwitterRequestApi requestApi, RestTemplate restTemplate) {
-		this.requestApi = requestApi;
-		this.restTemplate = restTemplate;
+	public UserTemplate(LowLevelTwitterApi lowLevelApi) {
+		this.lowLevelApi = lowLevelApi;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
 		this.suggestionCategoryExtractor = new SuggestionCategoryResponseExtractor();
 	}
 
 	public long getProfileId() {
-		return requestApi.fetchObject("account/verify_credentials.json", profileExtractor).getId();
+		return lowLevelApi.fetchObject("account/verify_credentials.json", profileExtractor).getId();
 	}
 
 	public String getScreenName() {
-		return requestApi.fetchObject("account/verify_credentials.json", profileExtractor).getScreenName();
+		return lowLevelApi.fetchObject("account/verify_credentials.json", profileExtractor).getScreenName();
 	}
 
 	public TwitterProfile getUserProfile() {
-		return requestApi.fetchObject("account/verify_credentials.json", profileExtractor);
+		return lowLevelApi.fetchObject("account/verify_credentials.json", profileExtractor);
 	}
 
 	public TwitterProfile getUserProfile(String screenName) {
-		return requestApi.fetchObject("users/show.json?screen_name={screenName}", profileExtractor, screenName);
+		return lowLevelApi.fetchObject("users/show.json?screen_name={screenName}", profileExtractor, screenName);
 	}
 	
 	public TwitterProfile getUserProfile(long userId) {
-		return requestApi.fetchObject("users/show.json?user_id={userId}", profileExtractor, userId);
+		return lowLevelApi.fetchObject("users/show.json?user_id={userId}", profileExtractor, userId);
 	}
 
 	public List<TwitterProfile> getUsers(long... userIds) {
-		return requestApi.fetchObjects("users/lookup.json?user_id={userId}", profileExtractor, ArrayUtils.join(userIds));
+		return lowLevelApi.fetchObjects("users/lookup.json?user_id={userId}", profileExtractor, ArrayUtils.join(userIds));
 	}
 
 	public List<TwitterProfile> getUsers(String... screenNames) {
-		return requestApi.fetchObjects("users/lookup.json?screen_name={screenName}", profileExtractor, ArrayUtils.join(screenNames));
+		return lowLevelApi.fetchObjects("users/lookup.json?screen_name={screenName}", profileExtractor, ArrayUtils.join(screenNames));
 	}
 
-	// TODO Remove lookupUsers...user fetch
 	public List<TwitterProfile> searchForUsers(String query) {
-		return requestApi.fetchObjects("users/search.json?q={query}", profileExtractor, query);
+		return lowLevelApi.fetchObjects("users/search.json?q={query}", profileExtractor, query);
 	}
 	
 	public List<SuggestionCategory> getSuggestionCategories() {
-		return requestApi.fetchObjects("users/suggestions.json", suggestionCategoryExtractor);
+		return lowLevelApi.fetchObjects("users/suggestions.json", suggestionCategoryExtractor);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<TwitterProfile> getSuggestions(String slug) {
-		Map<String, List<Map<String, Object>>> suggestionsMap = restTemplate.getForObject(SUGGESTIONS_URL, Map.class, slug);
-		return profileExtractor.extractObjects(suggestionsMap.get("users"));
+		return lowLevelApi.fetchObjects("users/suggestions/{slug}.json", "users", profileExtractor, slug);
 	}
 
 	static final String SUGGESTIONS_URL = TwitterTemplate.API_URL_BASE + "users/suggestions/{slug}.json";
