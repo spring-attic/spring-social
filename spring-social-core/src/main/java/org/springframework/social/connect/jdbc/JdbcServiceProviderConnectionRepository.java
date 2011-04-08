@@ -19,9 +19,12 @@ import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -54,8 +57,21 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 		this.textEncryptor = textEncryptor;
 	}
 	
-	public List<ServiceProviderConnection<?>> findAllConnections() {
-		return jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? order by providerId, rank", connectionMapper, localUserId);
+	public MultiValueMap<String, ServiceProviderConnection<?>> findConnectionsToProviders() {
+		List<ServiceProviderConnection<?>> resultList = jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? order by providerId, rank", connectionMapper, localUserId);
+		MultiValueMap<String, ServiceProviderConnection<?>> connections = new LinkedMultiValueMap<String, ServiceProviderConnection<?>>();
+		Set<String> registeredProviderIds = connectionFactoryLocator.registeredProviderIds();
+		for (String registeredProviderId : registeredProviderIds) {
+			connections.put(registeredProviderId, Collections.<ServiceProviderConnection<?>>emptyList());
+		}
+		for (ServiceProviderConnection<?> connection : resultList) {
+			String providerId = connection.getKey().getProviderId();
+			if (connections.get(providerId).size() == 0) {
+				connections.put(providerId, new LinkedList<ServiceProviderConnection<?>>());
+			}
+			connections.add(providerId, connection);
+		}
+		return connections;
 	}
 
 	public List<ServiceProviderConnection<?>> findConnectionsToProvider(String providerId) {

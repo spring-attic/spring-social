@@ -89,27 +89,31 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 	
 	@Test
 	@SuppressWarnings("unchecked")
-	public void findAllConnections() {
+	public void findConnectionsToProviders() {
 		connectionFactoryRegistry.addConnectionFactory(new TestTwitterServiceProviderConnectionFactory());
 		insertTwitterConnection();
 		insertFacebookConnection();
-		List<ServiceProviderConnection<?>> connections = connectionRepository.findAllConnections();
+		MultiValueMap<String, ServiceProviderConnection<?>> connections = connectionRepository.findConnectionsToProviders();
 		assertEquals(2, connections.size());
-		ServiceProviderConnection<TestFacebookApi> facebook = (ServiceProviderConnection<TestFacebookApi>) connections.get(0);
+		ServiceProviderConnection<TestFacebookApi> facebook = (ServiceProviderConnection<TestFacebookApi>) connections.getFirst("facebook");
 		assertFacebookConnection(facebook);
-		ServiceProviderConnection<TestTwitterApi> twitter = (ServiceProviderConnection<TestTwitterApi>) connections.get(1);
+		ServiceProviderConnection<TestTwitterApi> twitter = (ServiceProviderConnection<TestTwitterApi>) connections.getFirst("twitter");
 		assertTwitterConnection(twitter);
 	}
 
 	@Test
 	public void findAllConnectionsEmptyResult() {
-		assertTrue(connectionRepository.findAllConnections().isEmpty());
+		connectionFactoryRegistry.addConnectionFactory(new TestTwitterServiceProviderConnectionFactory());
+		MultiValueMap<String, ServiceProviderConnection<?>> connections = connectionRepository.findConnectionsToProviders();
+		assertEquals(2, connections.size());
+		assertEquals(0, connections.get("facebook").size());
+		assertEquals(0, connections.get("twitter").size());		
 	}
 
 	@Test(expected=IllegalArgumentException.class)
 	public void findAllConnectionsNoProviderRegistered() {
 		insertTwitterConnection();
-		connectionRepository.findAllConnections();	
+		connectionRepository.findConnectionsToProviders();	
 	}
 
 	@Test

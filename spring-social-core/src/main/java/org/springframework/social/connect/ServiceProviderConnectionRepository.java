@@ -21,7 +21,7 @@ import org.springframework.util.MultiValueMap;
 
 public interface ServiceProviderConnectionRepository {
 
-	List<ServiceProviderConnection<?>> findAllConnections();
+	MultiValueMap<String, ServiceProviderConnection<?>> findConnectionsToProviders();
 
 	List<ServiceProviderConnection<?>> findConnectionsToProvider(String providerId);
 
