@@ -59,6 +59,8 @@ public class FacebookTemplate implements FacebookApi {
 	
 	private MediaOperations mediaOperations;
 
+	private FacebookErrorHandler errorHandler;
+
 	/**
 	 * Create a new instance of FacebookTemplate.
 	 * This constructor creates the FacebookTemplate using a given access token.
@@ -70,7 +72,8 @@ public class FacebookTemplate implements FacebookApi {
 		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
 		restTemplate.getMessageConverters().add(json);
-		restTemplate.setErrorHandler(new FacebookResponseErrorHandler());
+		errorHandler = new FacebookErrorHandler();
+		restTemplate.setErrorHandler(errorHandler);
 
 		// sub-apis
 		userOperations = new UserTemplate(this);
@@ -135,11 +138,12 @@ public class FacebookTemplate implements FacebookApi {
 	@SuppressWarnings("unchecked")
 	public <T> List<T> fetchObject(ResponseExtractor<T> extractor, String... objectIds) {
 		String joinedIds = join(objectIds);
-		Map<String, Map<String, Object>> response = restTemplate.getForObject(GRAPH_API_URL + "?ids={ids}", Map.class, joinedIds);
+		Map<String, Object> response = restTemplate.getForObject(GRAPH_API_URL + "?ids={ids}", Map.class, joinedIds);		
+		checkForErrors(response);
 		Set<String> keys = response.keySet();
 		List<T> objects = new ArrayList<T>(keys.size());
 		for (String key : keys) {
-			Map<String, Object> objectMap = response.get(key);
+			Map<String, Object> objectMap = (Map<String, Object>) response.get(key);
 			objects.add(extractor.extractObject(objectMap));
 		}
 		return objects;
@@ -148,6 +152,7 @@ public class FacebookTemplate implements FacebookApi {
 	@SuppressWarnings("unchecked")
 	public <T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor) {
 		Map<String, Object> response = restTemplate.getForObject(CONNECTION_URL, Map.class, objectId, connectionType);
+		checkForErrors(response);
 		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
 	}
 	
@@ -155,6 +160,7 @@ public class FacebookTemplate implements FacebookApi {
 	public <T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor, String... fields) {
 		String joinedFields = join(fields);
 		Map<String, Object> response = restTemplate.getForObject(CONNECTION_URL + "?fields={fields}", Map.class, objectId, connectionType, joinedFields);
+		checkForErrors(response);
 		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
 	}
 	
@@ -167,7 +173,7 @@ public class FacebookTemplate implements FacebookApi {
 	
 	public void post(String objectId, String connectionType, MultiValueMap<String, String> data) {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
-		System.out.println(restTemplate.postForObject(CONNECTION_URL, requestData, String.class, objectId, connectionType));
+		restTemplate.postForObject(CONNECTION_URL, requestData, String.class, objectId, connectionType);
 	}
 	
 	public void delete(String objectId) {
@@ -182,7 +188,16 @@ public class FacebookTemplate implements FacebookApi {
 		restTemplate.postForObject(CONNECTION_URL, deleteRequest, String.class, objectId, connectionType);
 	}
 
-
+	/*
+	 * Facebook sometimes returns an error message with an HTTP 200. The HTTP 200 prevents the error handler
+	 * from handling it, so we need to check all responses for errors before assuming that they're good data. 
+	 */
+	private void checkForErrors(Map<String, Object> response) {
+		if(response.containsKey("error")) {
+			Map<String, String> errorDetails = (Map<String, String>) response.get("error");
+			errorHandler.handleFacebookError(errorDetails);
+		}
+	}
 	// subclassing hooks
 	
 	protected RestTemplate getRestTemplate() {

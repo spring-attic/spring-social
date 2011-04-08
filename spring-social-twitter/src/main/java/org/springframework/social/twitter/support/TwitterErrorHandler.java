@@ -66,6 +66,7 @@ public class TwitterErrorHandler extends DefaultResponseErrorHandler {
 			handleClientErrors(response);
 		}
 		
+		// if not otherwise handled, do default handling
 		super.handleError(response);
 	}
 	
