@@ -15,6 +15,7 @@
  */
 package org.springframework.social.facebook;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import org.springframework.social.facebook.support.extractors.ProfileResponseExt
 import org.springframework.social.facebook.support.extractors.ReferenceResponseExtractor;
 import org.springframework.social.facebook.types.FacebookProfile;
 import org.springframework.social.facebook.types.Reference;
+import org.springframework.social.util.URIBuilder;
 import org.springframework.web.client.RestTemplate;
 
 public class FriendTemplate implements FriendOperations {
@@ -62,8 +64,9 @@ public class FriendTemplate implements FriendOperations {
 	}
 	
 	public Reference createFriendList(String userId, String name) {
+		URI uri = URIBuilder.fromUri(GraphApi.GRAPH_API_URL + userId + "/friendlists").queryParam("name", name).build();
 		@SuppressWarnings("unchecked")
-		Map<String, Object> friendListMap = restTemplate.postForObject(GraphApi.CONNECTION_URL + "?name={name}", "", Map.class, userId, "friendlists", name);
+		Map<String, Object> friendListMap = restTemplate.postForObject(uri, "", Map.class);
 		return referenceExtractor.extractObject(friendListMap);
 	}
 	
@@ -72,11 +75,13 @@ public class FriendTemplate implements FriendOperations {
 	}
 
 	public void addToFriendList(String friendListId, String friendId) {
-		restTemplate.postForObject(GraphApi.CONNECTION_URL + "/{friendId}", "", String.class, friendListId, "members", friendId);
+		URI uri = URIBuilder.fromUri(GraphApi.GRAPH_API_URL + friendListId + "/members/" + friendId).build();
+		restTemplate.postForObject(uri, "", String.class);
 	}
 	
 	public void removeFromFriendList(String friendListId, String friendId) {
-		restTemplate.delete(GraphApi.CONNECTION_URL + "/{friendId}", friendListId, "members", friendId);
+		URI uri = URIBuilder.fromUri(GraphApi.GRAPH_API_URL + friendListId + "/members/" + friendId).build();
+		restTemplate.delete(uri);
 	}
 	
 	public List<Reference> getFriends() {

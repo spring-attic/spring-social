@@ -15,6 +15,7 @@
  */
 package org.springframework.social.facebook;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.facebook.support.extractors.ResponseExtractor;
 import org.springframework.social.oauth2.ProtectedResourceClientFactory;
+import org.springframework.social.util.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -126,7 +128,8 @@ public class FacebookTemplate implements FacebookApi {
 	// low-level Graph API operations
 	@SuppressWarnings("unchecked")
 	public <T> T fetchObject(String objectId, ResponseExtractor<T> extractor) {
-		Map<String, Object> response = (Map<String, Object>) restTemplate.getForObject(OBJECT_URL, Map.class, objectId);
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
+		Map<String, Object> response = (Map<String, Object>) restTemplate.getForObject(uri, Map.class);
 		checkForErrors(response);
 		return extractor.extractObject(response);
 	}
@@ -134,7 +137,8 @@ public class FacebookTemplate implements FacebookApi {
 	@SuppressWarnings("unchecked")
 	public <T> T fetchObject(String objectId, ResponseExtractor<T> extractor, String... fields) {
 		String joinedFields = join(fields);
-		Map<String, Object> response = (Map<String, Object>) restTemplate.getForObject(OBJECT_URL + "?fields={fields}", Map.class, objectId, joinedFields);
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).queryParam("fields", joinedFields).build();
+		Map<String, Object> response = (Map<String, Object>) restTemplate.getForObject(uri, Map.class);
 		checkForErrors(response);
 		return extractor.extractObject( response);
 	}
@@ -142,7 +146,8 @@ public class FacebookTemplate implements FacebookApi {
 	@SuppressWarnings("unchecked")
 	public <T> List<T> fetchObject(ResponseExtractor<T> extractor, String... objectIds) {
 		String joinedIds = join(objectIds);
-		Map<String, Object> response = restTemplate.getForObject(GRAPH_API_URL + "?ids={ids}", Map.class, joinedIds);		
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL).queryParam("ids", joinedIds).build();
+		Map<String, Object> response = restTemplate.getForObject(uri, Map.class);		
 		checkForErrors(response);
 		Set<String> keys = response.keySet();
 		List<T> objects = new ArrayList<T>(keys.size());
@@ -155,7 +160,8 @@ public class FacebookTemplate implements FacebookApi {
 	
 	@SuppressWarnings("unchecked")
 	public <T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor) {
-		Map<String, Object> response = restTemplate.getForObject(CONNECTION_URL, Map.class, objectId, connectionType);
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
+		Map<String, Object> response = restTemplate.getForObject(uri, Map.class);
 		checkForErrors(response);
 		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
 	}
@@ -163,7 +169,8 @@ public class FacebookTemplate implements FacebookApi {
 	@SuppressWarnings("unchecked")
 	public <T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor, String... fields) {
 		String joinedFields = join(fields);
-		Map<String, Object> response = restTemplate.getForObject(CONNECTION_URL + "?fields={fields}", Map.class, objectId, connectionType, joinedFields);
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).queryParam("fields", joinedFields).build();
+		Map<String, Object> response = restTemplate.getForObject(uri, Map.class);
 		checkForErrors(response);
 		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
 	}
@@ -171,26 +178,30 @@ public class FacebookTemplate implements FacebookApi {
 	@SuppressWarnings("unchecked")
 	public String publish(String objectId, String connectionType, MultiValueMap<String, String> data) {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
-		Map<String, Object> response = restTemplate.postForObject(CONNECTION_URL, requestData, Map.class, objectId, connectionType);
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
+		Map<String, Object> response = restTemplate.postForObject(uri, requestData, Map.class);
 		checkForErrors(response);
 		return (String) response.get("id");
 	}
 	
 	public void post(String objectId, String connectionType, MultiValueMap<String, String> data) {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
-		restTemplate.postForObject(CONNECTION_URL, requestData, String.class, objectId, connectionType);
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
+		restTemplate.postForObject(uri, requestData, String.class);
 	}
 	
 	public void delete(String objectId) {
 		LinkedMultiValueMap<String, String> deleteRequest = new LinkedMultiValueMap<String, String>();
 		deleteRequest.set("method", "delete");
-		restTemplate.postForObject(OBJECT_URL, deleteRequest, String.class, objectId);
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
+		restTemplate.postForObject(uri, deleteRequest, String.class);
 	}
 	
 	public void delete(String objectId, String connectionType) {
 		LinkedMultiValueMap<String, String> deleteRequest = new LinkedMultiValueMap<String, String>();
 		deleteRequest.set("method", "delete");
-		restTemplate.postForObject(CONNECTION_URL, deleteRequest, String.class, objectId, connectionType);
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
+		restTemplate.postForObject(uri, deleteRequest, String.class);
 	}
 
 	/*

@@ -111,9 +111,9 @@ public interface GraphApi {
 	 */
 	void delete(String objectId, String connectionType);
 	
-	static final String GRAPH_API_URL = "https://graph.facebook.com";
+	static final String GRAPH_API_URL = "https://graph.facebook.com/";
 	
-	static final String OBJECT_URL = GRAPH_API_URL + "/{objectId}";
+	static final String OBJECT_URL = GRAPH_API_URL + "{objectId}";
 
 	static final String CONNECTION_URL = OBJECT_URL + "/{connection}";	
 
