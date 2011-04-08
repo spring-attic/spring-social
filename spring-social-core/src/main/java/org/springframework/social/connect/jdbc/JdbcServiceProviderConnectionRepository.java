@@ -15,7 +15,6 @@
  */
 package org.springframework.social.connect.jdbc;
 
-import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,7 +25,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -43,7 +41,7 @@ import org.springframework.util.MultiValueMap;
 
 class JdbcServiceProviderConnectionRepository implements ServiceProviderConnectionRepository {
 
-	private final Serializable localUserId;
+	private final String localUserId;
 	
 	private final JdbcTemplate jdbcTemplate;
 	
@@ -51,7 +49,7 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 
 	private final TextEncryptor textEncryptor;
 
-	public JdbcServiceProviderConnectionRepository(Serializable localUserId, JdbcTemplate jdbcTemplate, ServiceProviderConnectionFactoryLocator connectionFactoryLocator, TextEncryptor textEncryptor) {
+	public JdbcServiceProviderConnectionRepository(String localUserId, JdbcTemplate jdbcTemplate, ServiceProviderConnectionFactoryLocator connectionFactoryLocator, TextEncryptor textEncryptor) {
 		this.localUserId = localUserId;
 		this.jdbcTemplate = jdbcTemplate;
 		this.connectionFactoryLocator = connectionFactoryLocator;

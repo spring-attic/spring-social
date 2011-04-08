@@ -15,12 +15,10 @@
  */
 package org.springframework.social.connect;
 
-import java.io.Serializable;
-
 public interface MultiUserServiceProviderConnectionRepository {
 
-	Serializable findLocalUserIdConnectedTo(ServiceProviderConnectionKey connectionKey);
+	String findLocalUserIdConnectedTo(ServiceProviderConnectionKey connectionKey);
 	
-	ServiceProviderConnectionRepository createConnectionRepository(Serializable localUserId);
+	ServiceProviderConnectionRepository createConnectionRepository(String localUserId);
 	
 }
