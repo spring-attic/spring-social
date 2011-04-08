@@ -19,10 +19,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.social.facebook.support.extractors.ResponseExtractor;
 import org.springframework.social.oauth2.ProtectedResourceClientFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -40,6 +41,24 @@ public class FacebookTemplate implements FacebookApi {
 
 	private final RestTemplate restTemplate;
 
+	private UserApi userApi;
+	
+	private CheckinApi checkinApi;
+
+	private FriendsApi friendsApi;
+	
+	private FeedApi feedApi;
+	
+	private GroupApi groupApi;
+
+	private CommentApi commentApi;
+
+	private LikeApi likeApi;
+	
+	private EventsApi eventsApi;
+	
+	private MediaApi mediaApi;
+
 	/**
 	 * Create a new instance of FacebookTemplate.
 	 * This constructor creates the FacebookTemplate using a given access token.
@@ -51,75 +70,130 @@ public class FacebookTemplate implements FacebookApi {
 		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
 		restTemplate.getMessageConverters().add(json);
+		restTemplate.setErrorHandler(new FacebookResponseErrorHandler());
+		// sub-apis
+		userApi = new UserApiImpl(this);
+		checkinApi = new CheckinApiImpl(this);
+		friendsApi = new FriendsApiImpl(this, restTemplate);
+		feedApi = new FeedApiImpl(this);
+		commentApi = new CommentApiImpl(this);
+		likeApi = new LikeApiImpl(this);
+		eventsApi = new EventsApiImpl(this);
+		mediaApi = new MediaApiImpl(this);
+		groupApi = new GroupApiImpl(this);
 	}
 
-	public String getProfileId() {
-		return Long.toString(getUserProfile().getId());
-	}
-
-    public String getProfileUrl() {
-        return "http://www.facebook.com/profile.php?id=" + getProfileId();
-    }
-
-	public FacebookProfile getUserProfile() {
-		return getUserProfile(CURRENT_USER_ID);
-	}
-
-	public FacebookProfile getUserProfile(String facebookId) {
-		@SuppressWarnings("unchecked")
-		Map<String, ?> profileMap = restTemplate.getForObject(OBJECT_URL, Map.class,
-				facebookId);
-
-		long id = Long.valueOf(String.valueOf(profileMap.get("id")));
-		String name = String.valueOf(profileMap.get("name"));
-		String firstName = String.valueOf(profileMap.get("first_name"));
-		String lastName = String.valueOf(profileMap.get("last_name"));
-		String email = String.valueOf(profileMap.get("email"));
-		return new FacebookProfile(id, name, firstName, lastName, email);
-    }
-
-	public List<String> getFriendIds() {
-		ResponseEntity<Map> response = restTemplate.getForEntity(CONNECTION_URL, Map.class, CURRENT_USER_ID, FRIENDS);
-		Map<String, List<Map<String, String>>> resultsMap = response.getBody();
-		List<Map<String, String>> friends = resultsMap.get("data");
-		List<String> friendIds = new ArrayList<String>();
-		for (Map<String, String> friendData : friends) {
-	        friendIds.add(friendData.get("id"));
-        }
-	    return friendIds;
-    }
-	
-	public void updateStatus(String message) {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		map.set("message", message);
-		publish(CURRENT_USER_ID, FEED, map);
+	public UserApi userApi() {
+		return userApi;
 	}
 	
-	public void updateStatus(String message, FacebookLink link) {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		map.set("link", link.getLink());
-		map.set("name", link.getName());
-		map.set("caption", link.getCaption());
-		map.set("description", link.getDescription());
-		map.set("message", message);
-		publish(CURRENT_USER_ID, FEED, map);
+	public CheckinApi checkinApi() {
+		return checkinApi;
+	}
+
+	public LikeApi likeApi() {
+		return likeApi;
+	}
+
+	public FriendsApi friendsApi() {
+		return friendsApi;
 	}
 	
-	public void publish(String object, String connection, MultiValueMap<String, String> data) {
+	public FeedApi feedApi() {
+		return feedApi;
+	}
+	
+	public GroupApi groupApi() {
+		return groupApi;
+	}
+
+	public CommentApi commentApi() {
+		return commentApi;
+	}
+	
+	public EventsApi eventsApi() {
+		return eventsApi;
+	}
+	
+	public MediaApi mediaApi() {
+		return mediaApi;
+	}
+	
+	// low-level Graph API operations
+	@SuppressWarnings("unchecked")
+	public <T> T fetchObject(String objectId, ResponseExtractor<T> extractor) {
+		return extractor.extractObject( (Map<String, Object>) restTemplate.getForObject(OBJECT_URL, Map.class, objectId));
+	}
+	
+	public <T> T fetchObject(String objectId, ResponseExtractor<T> extractor, String... fields) {
+		String joinedFields = join(fields);
+		return extractor.extractObject( (Map<String, Object>) restTemplate.getForObject(OBJECT_URL + "?fields={fields}", Map.class, objectId, joinedFields));
+	}
+	
+	public <T> List<T> fetchObject(ResponseExtractor<T> extractor, String... objectIds) {
+		String joinedIds = join(objectIds);
+		Map<String, Map<String, Object>> response = restTemplate.getForObject(GRAPH_API_URL + "?ids={ids}", Map.class, joinedIds);
+		Set<String> keys = response.keySet();
+		List<T> objects = new ArrayList<T>(keys.size());
+		for (String key : keys) {
+			Map<String, Object> objectMap = response.get(key);
+			objects.add(extractor.extractObject(objectMap));
+		}
+		return objects;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor) {
+		Map<String, Object> response = restTemplate.getForObject(CONNECTION_URL, Map.class, objectId, connectionType);
+		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
+	}
+	
+	public <T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor, String... fields) {
+		String joinedFields = join(fields);
+		Map<String, Object> response = restTemplate.getForObject(CONNECTION_URL + "?fields={fields}", Map.class, objectId, connectionType, joinedFields);
+		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String publish(String objectId, String connectionType, MultiValueMap<String, String> data) {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
-		restTemplate.postForLocation(CONNECTION_URL, requestData, object, connection);
+		Map<String, String> response = restTemplate.postForObject(CONNECTION_URL, requestData, Map.class, objectId, connectionType);
+		return response.get("id");
 	}
+	
+	public void post(String objectId, String connectionType, MultiValueMap<String, String> data) {
+		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
+		System.out.println(restTemplate.postForObject(CONNECTION_URL, requestData, String.class, objectId, connectionType));
+	}
+	
+	public void delete(String objectId) {
+		LinkedMultiValueMap<String, String> deleteRequest = new LinkedMultiValueMap<String, String>();
+		deleteRequest.set("method", "delete");
+		restTemplate.postForObject(OBJECT_URL, deleteRequest, String.class, objectId);
+	}
+	
+	public void delete(String objectId, String connectionType) {
+		LinkedMultiValueMap<String, String> deleteRequest = new LinkedMultiValueMap<String, String>();
+		deleteRequest.set("method", "delete");
+		restTemplate.postForObject(CONNECTION_URL, deleteRequest, String.class, objectId, connectionType);
+	}
+
 
 	// subclassing hooks
 	
 	protected RestTemplate getRestTemplate() {
 		return restTemplate;
 	}
+
+	private String join(String[] strings) {
+		StringBuilder builder = new StringBuilder();
+		if(strings.length > 0) {
+			builder.append(strings[0]);
+			for (String string : strings) {
+				builder.append("," + string);
+			}
+		}
+		return builder.toString();
+	}
 	
-	static final String OBJECT_URL = "https://graph.facebook.com/{objectId}";
-	static final String CONNECTION_URL = OBJECT_URL + "/{connection}";
-	
-	static final String FRIENDS = "friends";
-	static final String FEED = "feed";
-	static final String CURRENT_USER_ID = "me";
 }

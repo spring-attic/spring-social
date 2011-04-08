@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,31 +15,22 @@
  */
 package org.springframework.social.facebook;
 
+import org.springframework.social.facebook.types.FacebookProfile;
 
-/**
- * Interface specifying a basic set of operations for interacting with Facebook.
- * Implemented by {@link FacebookTemplate}. Not often used directly, but a
- * useful option to enhance testability, as it can easily be mocked or stubbed.
- * @author Craig Walls
- */
-public interface FacebookApi extends GraphApi {
-	
-	UserApi userApi();
-	
-	CheckinApi checkinApi();
 
-	LikeApi likeApi();
+public interface UserApi {
+	
+	/**
+	 * Retrieves the profile for the authenticated user.
+	 * @return the user's profile information.
+	 */
+	FacebookProfile getUserProfile();
+	
+	/**
+	 * Retrieves the profile for the specified user.
+	 * @param userId the Facebook user ID to retrieve profile data for.
+	 * @return the user's profile information.
+	 */
+	FacebookProfile getUserProfile(String userId);
 
-	FeedApi feedApi();
-	
-	FriendsApi friendsApi();
-	
-	GroupApi groupApi();
-
-	CommentApi commentApi();
-
-	EventsApi eventsApi();
-	
-	MediaApi mediaApi();
-	
 }
