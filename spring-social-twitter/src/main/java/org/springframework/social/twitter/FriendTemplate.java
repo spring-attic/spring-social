@@ -15,6 +15,7 @@
  */
 package org.springframework.social.twitter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -42,11 +43,11 @@ class FriendTemplate implements FriendOperations {
 	}
 
 	public List<TwitterProfile> getFriends(long userId) {
-		return requestApi.fetchObjects("statuses/friends.json?user_id={user_id}", profileExtractor, userId);
+		return requestApi.fetchObjects("statuses/friends.json", profileExtractor, Collections.singletonMap("user_id", String.valueOf(userId)));
 	}
 
 	public List<TwitterProfile> getFriends(String screenName) {
-		return requestApi.fetchObjects("statuses/friends.json?screen_name={screenName}", profileExtractor, screenName);
+		return requestApi.fetchObjects("statuses/friends.json", profileExtractor, Collections.singletonMap("screen_name", screenName));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -60,11 +61,11 @@ class FriendTemplate implements FriendOperations {
 	}
 
 	public List<TwitterProfile> getFollowers(long userId) {
-		return requestApi.fetchObjects("statuses/followers.json?user_id={user_id}", profileExtractor, userId);
+		return requestApi.fetchObjects("statuses/followers.json", profileExtractor, Collections.singletonMap("user_id", String.valueOf(userId)));
 	}
 
 	public List<TwitterProfile> getFollowers(String screenName) {
-		return requestApi.fetchObjects("statuses/followers.json?screen_name={screenName}", profileExtractor, screenName);
+		return requestApi.fetchObjects("statuses/followers.json", profileExtractor, Collections.singletonMap("screen_name", screenName));
 	}
 
 	@SuppressWarnings("unchecked")

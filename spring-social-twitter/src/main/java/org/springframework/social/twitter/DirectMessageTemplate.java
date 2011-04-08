@@ -60,7 +60,7 @@ class DirectMessageTemplate implements DirectMessageOperations {
 	}
 
 	public void deleteDirectMessage(long messageId) {
-		lowLevelApi.delete("direct_messages/destroy/{dmId}.json", messageId);
+		lowLevelApi.delete("direct_messages/destroy/" + messageId + ".json");
 	}
 
 }

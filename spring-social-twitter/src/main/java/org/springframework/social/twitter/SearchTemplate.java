@@ -103,7 +103,7 @@ class SearchTemplate implements SearchOperations {
 	}
 
 	public SavedSearch getSavedSearch(long searchId) {
-		return lowLevelApi.fetchObject("saved_searches/show/{searchId}.json", savedSearchExtractor, searchId);
+		return lowLevelApi.fetchObject("saved_searches/show/" + searchId + ".json", savedSearchExtractor);
 	}
 
 	public void createSavedSearch(String query) {		
@@ -113,7 +113,7 @@ class SearchTemplate implements SearchOperations {
 	}
 
 	public void deleteSavedSearch(long searchId) {
-		lowLevelApi.delete("saved_searches/destroy/{searchId}.json", searchId);
+		lowLevelApi.delete("saved_searches/destroy/" + searchId + ".json");
 	}
 	
 	// Trends

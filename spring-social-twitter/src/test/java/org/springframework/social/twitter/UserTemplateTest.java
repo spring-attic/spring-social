@@ -85,7 +85,7 @@ public class UserTemplateTest extends AbstractTwitterApiTest {
 	
 	@Test
 	public void getUsers_byUserId() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/users/lookup.json?user_id=14846645,14718006"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/users/lookup.json?user_id=14846645%2C14718006"))
 			.andExpect(method(GET))
 			.andRespond(withResponse(new ClassPathResource("testdata/list-of-profiles.json", getClass()), responseHeaders));
 		List<TwitterProfile> users = twitter.userOperations().getUsers(14846645, 14718006);
@@ -96,7 +96,7 @@ public class UserTemplateTest extends AbstractTwitterApiTest {
 	
 	@Test
 	public void getUsers_byScreenName() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/users/lookup.json?screen_name=royclarkson,kdonald"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/users/lookup.json?screen_name=royclarkson%2Ckdonald"))
 			.andExpect(method(GET))
 			.andRespond(withResponse(new ClassPathResource("testdata/list-of-profiles.json", getClass()), responseHeaders));
 		List<TwitterProfile> users = twitter.userOperations().getUsers("royclarkson", "kdonald");
@@ -107,7 +107,7 @@ public class UserTemplateTest extends AbstractTwitterApiTest {
 	
 	@Test
 	public void searchForUsers() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/users/search.json?q=some%20query"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/users/search.json?q=some+query"))
 			.andExpect(method(GET))
 			.andRespond(withResponse(new ClassPathResource("testdata/list-of-profiles.json", getClass()), responseHeaders));
 		List<TwitterProfile> users = twitter.userOperations().searchForUsers("some query");

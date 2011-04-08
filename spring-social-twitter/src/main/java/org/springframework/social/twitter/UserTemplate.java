@@ -15,6 +15,7 @@
  */
 package org.springframework.social.twitter;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.social.twitter.support.extractors.SuggestionCategoryResponseExtractor;
@@ -53,23 +54,25 @@ class UserTemplate implements UserOperations {
 	}
 
 	public TwitterProfile getUserProfile(String screenName) {
-		return lowLevelApi.fetchObject("users/show.json?screen_name={screenName}", profileExtractor, screenName);
+		return lowLevelApi.fetchObject("users/show.json", profileExtractor, Collections.singletonMap("screen_name", screenName));
 	}
 	
 	public TwitterProfile getUserProfile(long userId) {
-		return lowLevelApi.fetchObject("users/show.json?user_id={userId}", profileExtractor, userId);
+		return lowLevelApi.fetchObject("users/show.json", profileExtractor, Collections.singletonMap("user_id", String.valueOf(userId)));
 	}
 
 	public List<TwitterProfile> getUsers(long... userIds) {
-		return lowLevelApi.fetchObjects("users/lookup.json?user_id={userId}", profileExtractor, ArrayUtils.join(userIds));
+		String joinedIds = ArrayUtils.join(userIds);
+		return lowLevelApi.fetchObjects("users/lookup.json", profileExtractor, Collections.singletonMap("user_id", joinedIds) );
 	}
 
 	public List<TwitterProfile> getUsers(String... screenNames) {
-		return lowLevelApi.fetchObjects("users/lookup.json?screen_name={screenName}", profileExtractor, ArrayUtils.join(screenNames));
+		String joinedScreenNames = ArrayUtils.join(screenNames);
+		return lowLevelApi.fetchObjects("users/lookup.json", profileExtractor, Collections.singletonMap("screen_name", joinedScreenNames));
 	}
 
 	public List<TwitterProfile> searchForUsers(String query) {
-		return lowLevelApi.fetchObjects("users/search.json?q={query}", profileExtractor, query);
+		return lowLevelApi.fetchObjects("users/search.json", profileExtractor, Collections.singletonMap("q", query));
 	}
 	
 	public List<SuggestionCategory> getSuggestionCategories() {
@@ -77,7 +80,7 @@ class UserTemplate implements UserOperations {
 	}
 
 	public List<TwitterProfile> getSuggestions(String slug) {
-		return lowLevelApi.fetchObjects("users/suggestions/{slug}.json", "users", profileExtractor, slug);
+		return lowLevelApi.fetchObjects("users/suggestions/" + slug + ".json", "users", profileExtractor);
 	}
 
 	static final String SUGGESTIONS_URL = TwitterTemplate.API_URL_BASE + "users/suggestions/{slug}.json";

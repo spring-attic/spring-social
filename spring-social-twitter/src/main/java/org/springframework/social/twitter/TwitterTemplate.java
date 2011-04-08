@@ -15,14 +15,16 @@
  */
 package org.springframework.social.twitter;
 
+import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.social.BadCredentialsException;
 import org.springframework.social.oauth1.ProtectedResourceClientFactory;
 import org.springframework.social.twitter.support.TwitterErrorHandler;
 import org.springframework.social.twitter.support.extractors.ResponseExtractor;
+import org.springframework.social.util.URIBuilder;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
@@ -117,40 +119,61 @@ public class TwitterTemplate implements TwitterApi, LowLevelTwitterApi {
 	}
 	
 	// low-level
-	public <T> T fetchObject(String path, ResponseExtractor<T> extractor, Object... params) {
+	public <T> T fetchObject(String path, ResponseExtractor<T> extractor) {
+		return fetchObject(path, extractor, Collections.<String, String>emptyMap() );
+	}
+	
+	public <T> T fetchObject(String path, ResponseExtractor<T> extractor, Map<String, String> params) {
 		@SuppressWarnings("unchecked")
-		Map<String, Object> response = restTemplate.getForObject(API_URL_BASE + path, Map.class, params);
+		Map<String, Object> response = restTemplate.getForObject(buildUri(path, params), Map.class);
 		return extractor.extractObject(response);
 	}
 	
-	public <T> List<T> fetchObjects(String path, ResponseExtractor<T> extractor, Object... params) {
+	public <T> List<T> fetchObjects(String path, ResponseExtractor<T> extractor) {
 		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> response = restTemplate.getForObject(API_URL_BASE + path, List.class, params);
+		List<Map<String, Object>> response = restTemplate.getForObject(buildUri(path, Collections.<String, String>emptyMap() ), List.class);
+		return extractor.extractObjects(response);
+	}
+
+	public <T> List<T> fetchObjects(String path, ResponseExtractor<T> extractor, Map<String, String> params) {
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> response = restTemplate.getForObject(buildUri(path, params), List.class);
 		return extractor.extractObjects(response);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> List<T> fetchObjects(String path, String jsonPath, ResponseExtractor<T> extractor, Object... params) {
-		Map<String, Object> response = restTemplate.getForObject(API_URL_BASE + path, Map.class, params);
-		List<Map<String, Object>> list = (List<Map<String, Object>>) response.get(jsonPath);
+	public <T> List<T> fetchObjects(String path, String jsonProperty, ResponseExtractor<T> extractor) {
+		Map<String, Object> response = restTemplate.getForObject(buildUri(path, Collections.<String, String>emptyMap()), Map.class);
+		List<Map<String, Object>> list = (List<Map<String, Object>>) response.get(jsonProperty);
 		return extractor.extractObjects(list);
 	}
 	
-	public void publish(String path, MultiValueMap<String, Object> data, Object... params) {
-		restTemplate.postForEntity(API_URL_BASE + path, data, Map.class, params);
+	public void publish(String path, MultiValueMap<String, Object> data) {
+		restTemplate.postForEntity(buildUri(path, Collections.<String, String>emptyMap()), data, Map.class);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor, Object... params) {
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restTemplate.postForEntity(API_URL_BASE + path, data, Map.class, params);
-		return extractor.extractObject(response.getBody());
+	public <T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor) {
+		Map<String, Object> response = (Map<String, Object>) restTemplate.postForObject(buildUri(path, Collections.<String, String>emptyMap()), data, Map.class);
+		return extractor.extractObject(response);
 	}
 
-	public void delete(String path, Object... params) {
-		restTemplate.delete(API_URL_BASE + path, params);
+	public void delete(String path) {
+		delete(path, Collections.<String, String>emptyMap());
 	}
 	
+	public void delete(String path, Map<String, String> queryParams) {
+		restTemplate.delete(buildUri(path, queryParams));
+	}
+	
+	private URI buildUri(String path, Map<String, String> params) {
+		URIBuilder uriBuilder = URIBuilder.fromUri(API_URL_BASE + path);
+		for (String paramName : params.keySet()) {
+			uriBuilder.queryParam(paramName, String.valueOf(params.get(paramName)));
+		}
+		URI uri = uriBuilder.build();
+		return uri;
+	}
 	// subclassing hooks
 
 	protected RestTemplate getRestTemplate() {
