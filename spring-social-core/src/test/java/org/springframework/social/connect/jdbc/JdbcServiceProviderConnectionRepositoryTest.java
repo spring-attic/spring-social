@@ -21,6 +21,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.social.connect.ServiceProviderConnection;
+import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.ServiceProviderUser;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
@@ -255,6 +256,8 @@ public class JdbcServiceProviderConnectionRepositoryTest {
 		connectionRepository.updateConnection(facebook);
 		ServiceProviderConnection<TestFacebookApi> facebook2 = connectionRepository.findConnectionByServiceApi(TestFacebookApi.class);
 		assertEquals("765432109", facebook2.getServiceApi().getAccessToken());
+		ServiceProviderConnectionData data = facebook.createData();
+		assertEquals("654321098", data.getRefreshToken());
 	}
 
 		
