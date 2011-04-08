@@ -17,6 +17,7 @@ package org.springframework.social.web.signin;
 
 import java.io.Serializable;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.springframework.core.annotation.AnnotationUtils;
@@ -55,6 +56,7 @@ public class ProviderSignInController {
 
 	private String signupUrl = "/signup";
 	
+	@Inject
 	@SuppressWarnings("rawtypes")
 	public ProviderSignInController(String applicationUrl, ServiceProviderConnectionFactoryLocator connectionFactoryLocator, MultiUserServiceProviderConnectionRepository usersConnectionRepository,
 			Provider<ServiceProviderConnectionRepository> currentUserConnectionRepositoryProvider, SignInService signInService) {
