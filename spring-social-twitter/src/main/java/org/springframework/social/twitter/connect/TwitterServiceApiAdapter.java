@@ -15,25 +15,30 @@
  */
 package org.springframework.social.twitter.connect;
 
+import org.springframework.social.BadCredentialsException;
 import org.springframework.social.connect.ServiceProviderUser;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.twitter.TwitterApi;
-import org.springframework.social.twitter.TwitterProfile;
+import org.springframework.social.twitter.types.TwitterProfile;
 
 public class TwitterServiceApiAdapter implements ServiceApiAdapter<TwitterApi> {
 
 	public boolean test(TwitterApi serviceApi) {
-		// TODO call whatever api method should be used for testing
-		return true;
+		try {
+			serviceApi.userOperations().getUserProfile();
+			return true;
+		} catch (BadCredentialsException e) {
+			return false;
+		}
 	}
 
 	public ServiceProviderUser getUser(TwitterApi serviceApi) {
-		TwitterProfile profile = serviceApi.getUserProfile();
+		TwitterProfile profile = serviceApi.userOperations().getUserProfile();
 		return new ServiceProviderUser(Long.toString(profile.getId()), profile.getScreenName(), profile.getProfileUrl(), profile.getProfileImageUrl());
 	}
 
 	public void updateStatus(TwitterApi serviceApi, String message) {
-		serviceApi.updateStatus(message);	
+		serviceApi.timelineOperations().updateStatus(message);	
 	}
 
 }

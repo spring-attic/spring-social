@@ -15,15 +15,18 @@
  */
 package org.springframework.social.facebook;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.social.facebook.support.extractors.ResponseExtractor;
 import org.springframework.social.oauth2.ProtectedResourceClientFactory;
+import org.springframework.social.util.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -40,6 +43,26 @@ public class FacebookTemplate implements FacebookApi {
 
 	private final RestTemplate restTemplate;
 
+	private UserOperations userOperations;
+	
+	private CheckinOperations checkinOperations;
+
+	private FriendOperations friendOperations;
+	
+	private FeedOperations feedOperations;
+	
+	private GroupOperations groupOperations;
+
+	private CommentOperations commentOperations;
+
+	private LikeOperations likeOperations;
+	
+	private EventOperations eventOperations;
+	
+	private MediaOperations mediaOperations;
+
+	private FacebookErrorHandler errorHandler;
+
 	/**
 	 * Create a new instance of FacebookTemplate.
 	 * This constructor creates the FacebookTemplate using a given access token.
@@ -51,75 +74,162 @@ public class FacebookTemplate implements FacebookApi {
 		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
 		restTemplate.getMessageConverters().add(json);
+		errorHandler = new FacebookErrorHandler();
+		restTemplate.setErrorHandler(errorHandler);
+
+		// sub-apis
+		userOperations = new UserTemplate(this);
+		checkinOperations = new CheckinTemplate(this);
+		friendOperations = new FriendTemplate(this, restTemplate);
+		feedOperations = new FeedTemplate(this);
+		commentOperations = new CommentTemplate(this);
+		likeOperations = new LikeTemplate(this);
+		eventOperations = new EventTemplate(this);
+		mediaOperations = new MediaTemplate(this);
+		groupOperations = new GroupTemplate(this);
 	}
 
-	public String getProfileId() {
-		return Long.toString(getUserProfile().getId());
-	}
-
-    public String getProfileUrl() {
-        return "http://www.facebook.com/profile.php?id=" + getProfileId();
-    }
-
-	public FacebookProfile getUserProfile() {
-		return getUserProfile(CURRENT_USER_ID);
-	}
-
-	public FacebookProfile getUserProfile(String facebookId) {
-		@SuppressWarnings("unchecked")
-		Map<String, ?> profileMap = restTemplate.getForObject(OBJECT_URL, Map.class,
-				facebookId);
-
-		long id = Long.valueOf(String.valueOf(profileMap.get("id")));
-		String name = String.valueOf(profileMap.get("name"));
-		String firstName = String.valueOf(profileMap.get("first_name"));
-		String lastName = String.valueOf(profileMap.get("last_name"));
-		String email = String.valueOf(profileMap.get("email"));
-		return new FacebookProfile(id, name, firstName, lastName, email);
-    }
-
-	public List<String> getFriendIds() {
-		ResponseEntity<Map> response = restTemplate.getForEntity(CONNECTION_URL, Map.class, CURRENT_USER_ID, FRIENDS);
-		Map<String, List<Map<String, String>>> resultsMap = response.getBody();
-		List<Map<String, String>> friends = resultsMap.get("data");
-		List<String> friendIds = new ArrayList<String>();
-		for (Map<String, String> friendData : friends) {
-	        friendIds.add(friendData.get("id"));
-        }
-	    return friendIds;
-    }
-	
-	public void updateStatus(String message) {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		map.set("message", message);
-		publish(CURRENT_USER_ID, FEED, map);
+	public UserOperations userOperations() {
+		return userOperations;
 	}
 	
-	public void updateStatus(String message, FacebookLink link) {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-		map.set("link", link.getLink());
-		map.set("name", link.getName());
-		map.set("caption", link.getCaption());
-		map.set("description", link.getDescription());
-		map.set("message", message);
-		publish(CURRENT_USER_ID, FEED, map);
+	public CheckinOperations checkinOperations() {
+		return checkinOperations;
+	}
+
+	public LikeOperations likeOperations() {
+		return likeOperations;
+	}
+
+	public FriendOperations friendOperations() {
+		return friendOperations;
 	}
 	
-	public void publish(String object, String connection, MultiValueMap<String, String> data) {
+	public FeedOperations feedOperations() {
+		return feedOperations;
+	}
+	
+	public GroupOperations groupOperations() {
+		return groupOperations;
+	}
+
+	public CommentOperations commentOperations() {
+		return commentOperations;
+	}
+	
+	public EventOperations eventOperations() {
+		return eventOperations;
+	}
+	
+	public MediaOperations mediaOperations() {
+		return mediaOperations;
+	}
+	
+	// low-level Graph API operations
+	@SuppressWarnings("unchecked")
+	public <T> T fetchObject(String objectId, ResponseExtractor<T> extractor) {
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
+		Map<String, Object> response = (Map<String, Object>) restTemplate.getForObject(uri, Map.class);
+		checkForErrors(response);
+		return extractor.extractObject(response);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T fetchObject(String objectId, ResponseExtractor<T> extractor, String... fields) {
+		String joinedFields = join(fields);
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).queryParam("fields", joinedFields).build();
+		Map<String, Object> response = (Map<String, Object>) restTemplate.getForObject(uri, Map.class);
+		checkForErrors(response);
+		return extractor.extractObject( response);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> List<T> fetchObject(ResponseExtractor<T> extractor, String... objectIds) {
+		String joinedIds = join(objectIds);
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL).queryParam("ids", joinedIds).build();
+		Map<String, Object> response = restTemplate.getForObject(uri, Map.class);		
+		checkForErrors(response);
+		Set<String> keys = response.keySet();
+		List<T> objects = new ArrayList<T>(keys.size());
+		for (String key : keys) {
+			Map<String, Object> objectMap = (Map<String, Object>) response.get(key);
+			objects.add(extractor.extractObject(objectMap));
+		}
+		return objects;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor) {
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
+		Map<String, Object> response = restTemplate.getForObject(uri, Map.class);
+		checkForErrors(response);
+		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor, String... fields) {
+		String joinedFields = join(fields);
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).queryParam("fields", joinedFields).build();
+		Map<String, Object> response = restTemplate.getForObject(uri, Map.class);
+		checkForErrors(response);
+		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String publish(String objectId, String connectionType, MultiValueMap<String, String> data) {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
-		restTemplate.postForLocation(CONNECTION_URL, requestData, object, connection);
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
+		Map<String, Object> response = restTemplate.postForObject(uri, requestData, Map.class);
+		checkForErrors(response);
+		return (String) response.get("id");
+	}
+	
+	public void post(String objectId, String connectionType, MultiValueMap<String, String> data) {
+		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
+		restTemplate.postForObject(uri, requestData, String.class);
+	}
+	
+	public void delete(String objectId) {
+		LinkedMultiValueMap<String, String> deleteRequest = new LinkedMultiValueMap<String, String>();
+		deleteRequest.set("method", "delete");
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
+		restTemplate.postForObject(uri, deleteRequest, String.class);
+	}
+	
+	public void delete(String objectId, String connectionType) {
+		LinkedMultiValueMap<String, String> deleteRequest = new LinkedMultiValueMap<String, String>();
+		deleteRequest.set("method", "delete");
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
+		restTemplate.postForObject(uri, deleteRequest, String.class);
 	}
 
+	/*
+	 * Facebook sometimes returns an error message with an HTTP 200. The HTTP 200 prevents the error handler
+	 * from handling it, so we need to check all responses for errors before assuming that they're good data. 
+	 */
+	@SuppressWarnings("unchecked")
+	private void checkForErrors(Map<String, Object> response) {
+		if(response.containsKey("error")) {
+			Map<String, String> errorDetails = (Map<String, String>) response.get("error");
+			errorHandler.handleFacebookError(errorDetails);
+		}
+	}
 	// subclassing hooks
 	
 	protected RestTemplate getRestTemplate() {
 		return restTemplate;
 	}
+
+	private String join(String[] strings) {
+		StringBuilder builder = new StringBuilder();
+		if(strings.length > 0) {
+			builder.append(strings[0]);
+			for (String string : strings) {
+				builder.append("," + string);
+			}
+		}
+		return builder.toString();
+	}
 	
-	static final String OBJECT_URL = "https://graph.facebook.com/{objectId}";
-	static final String CONNECTION_URL = OBJECT_URL + "/{connection}";
-	
-	static final String FRIENDS = "friends";
-	static final String FEED = "feed";
-	static final String CURRENT_USER_ID = "me";
 }
