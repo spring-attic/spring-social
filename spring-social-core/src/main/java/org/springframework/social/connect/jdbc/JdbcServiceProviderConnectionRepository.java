@@ -173,11 +173,15 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 		
 		private ServiceProviderConnectionData mapConnectionData(ResultSet rs) throws SQLException {
 			return new ServiceProviderConnectionData(rs.getString("providerId"), rs.getString("providerUserId"), rs.getString("profileName"), rs.getString("profileUrl"), rs.getString("profilePictureUrl"),
-					decrypt(rs.getString("accessToken")), decrypt(rs.getString("secret")), decrypt(rs.getString("refreshToken")), rs.getLong("expireTime"));
+					decrypt(rs.getString("accessToken")), decrypt(rs.getString("secret")), decrypt(rs.getString("refreshToken")), expireTime(rs.getLong("expireTime")));
 		}
 		
 		private String decrypt(String encryptedText) {
 			return encryptedText != null ? textEncryptor.decrypt(encryptedText) : encryptedText;
+		}
+		
+		private Long expireTime(long expireTime) {
+			return expireTime == 0 ? null : expireTime;
 		}
 		
 	}
