@@ -91,7 +91,7 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 
 	public boolean hasExpired() {
 		synchronized (monitor) {
-			return System.currentTimeMillis() >= expireTime;
+			return expireTime != null && System.currentTimeMillis() >= expireTime;
 		}
 	}
 
