@@ -118,7 +118,7 @@ public class OAuth2Template implements OAuth2Operations {
 		
 	// testing hooks
 	
-	RestTemplate getRestTemplate() {
+	protected RestTemplate getRestTemplate() {
 		return restTemplate;
 	}
 	
