@@ -26,7 +26,8 @@ public interface OAuth1Operations {
 
 	/**
 	 * Begin a new authorization flow by fetching a new request token from this service provider.
-	 * The request token should be stored in the user's session up until the authorization callback is made and it's time to exchange it for an {@link #exchangeForAccessToken(AuthorizedRequestToken) access token}.
+	 * The request token should be stored in the user's session up until the authorization callback is made
+	 * and it's time to exchange it for an {@link #exchangeForAccessToken(AuthorizedRequestToken, MultiValueMap) access token}.
 	 * @param callbackUrl the URL the provider should redirect to after the member authorizes the connection. Ignored for OAuth 1.0 providers.
 	 * @param additionalParameters any additional query parameters to be sent when fetching the request token. Should not be encoded.
 	 * @return a temporary request token use for authorization and exchanged for an access token 
