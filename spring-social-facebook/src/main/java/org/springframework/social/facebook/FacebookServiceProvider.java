@@ -25,7 +25,7 @@ public class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<Faceb
 
 	public FacebookServiceProvider(String clientId, String clientSecret) {
 		super(new FacebookOAuth2Template(clientId, clientSecret,
-				"https://graph.facebook.com/oauth/authorize", null,
+				"https://graph.facebook.com/oauth/authorize",
 				"https://graph.facebook.com/oauth/access_token"));
 	}
 

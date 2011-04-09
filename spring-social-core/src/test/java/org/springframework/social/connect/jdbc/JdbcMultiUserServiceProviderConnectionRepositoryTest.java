@@ -243,7 +243,7 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 
 	@Test
 	public void addConnection() {
-		ServiceProviderConnection<TestFacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", null, "987654321", System.currentTimeMillis() + 3600 * 1000));
+		ServiceProviderConnection<TestFacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", null, "987654321", 3600));
 		connectionRepository.addConnection(connection);
 		ServiceProviderConnection<TestFacebookApi> restoredConnection = connectionRepository.findConnectionByServiceApi(TestFacebookApi.class);
 		assertEquals(connection, restoredConnection);	
@@ -252,7 +252,7 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 	
 	@Test(expected=DuplicateKeyException.class)
 	public void addConnectionDuplicate() {
-		ServiceProviderConnection<TestFacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", null, "987654321", System.currentTimeMillis() + 3600 * 1000));
+		ServiceProviderConnection<TestFacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", null, "987654321", 3600));
 		connectionRepository.addConnection(connection);
 		connectionRepository.addConnection(connection);
 	}
@@ -365,7 +365,7 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 					return null;
 				}
 				public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
-					return new AccessGrant("765432109", "read", "654321098", System.currentTimeMillis() + 3600 * 1000);
+					return new AccessGrant("765432109", "read", "654321098", 3600);
 				}								
 			};
 		}

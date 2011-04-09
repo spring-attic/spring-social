@@ -70,7 +70,7 @@ class Spring30OAuth1RequestFactory implements ClientHttpRequestFactory {
 		
 		private final String accessTokenSecret;
 		
-		private final SigningUtils signingUtils;
+		private final SigningSupport signingUtils;
 
 		public OAuth1SigningRequest(ClientHttpRequest delegate, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
 			this.delegate = delegate;
@@ -79,7 +79,7 @@ class Spring30OAuth1RequestFactory implements ClientHttpRequestFactory {
 			this.accessToken = accessToken;
 			this.accessTokenSecret = accessTokenSecret;
 			this.bodyOutputStream = new ByteArrayOutputStream();
-			this.signingUtils = new SigningUtils();
+			this.signingUtils = new SigningSupport();
 		}
 
 		public ClientHttpResponse execute() throws IOException {

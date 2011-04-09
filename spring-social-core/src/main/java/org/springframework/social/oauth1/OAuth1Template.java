@@ -57,7 +57,7 @@ public class OAuth1Template implements OAuth1Operations {
 
 	private final OAuth1Version version;
 	
-	private final SigningUtils signingUtils;
+	private final SigningSupport signingUtils;
 
 	/**
 	 * Constructs an OAuth1Template.
@@ -72,7 +72,7 @@ public class OAuth1Template implements OAuth1Operations {
 		this.accessTokenUrl = encodeTokenUri(accessTokenUrl);
 		this.version = version;
 		this.restTemplate = createRestTemplate();
-		this.signingUtils = new SigningUtils();
+		this.signingUtils = new SigningSupport();
 	}
 
 	public final OAuthToken fetchRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters) {

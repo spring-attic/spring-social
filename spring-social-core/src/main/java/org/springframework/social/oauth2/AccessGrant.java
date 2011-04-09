@@ -32,11 +32,11 @@ public final class AccessGrant implements Serializable {
 	
 	private final Long expireTime;
 
-	public AccessGrant(String accessToken, String scope, String refreshToken, Long expireTime) {
+	public AccessGrant(String accessToken, String scope, String refreshToken, Integer expiresIn) {
 		this.accessToken = accessToken;
 		this.scope = scope;
 		this.refreshToken = refreshToken;
-		this.expireTime = expireTime;
+		this.expireTime = expiresIn != null ? System.currentTimeMillis() + expiresIn * 1000 : null;
 	}
 
 	/**

@@ -15,10 +15,11 @@
  */
 package org.springframework.social.facebook;
 
-import java.util.Map;
+import java.util.Collections;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Template;
 import org.springframework.util.MultiValueMap;
@@ -32,30 +33,28 @@ import org.springframework.web.client.RestTemplate;
  */
 public class FacebookOAuth2Template extends OAuth2Template {
 
-	public FacebookOAuth2Template(String clientId, String clientSecret, String authorizeUrl, String authenticateUrl, String accessTokenUrl) {
-		super(clientId, clientSecret, authorizeUrl, authenticateUrl, accessTokenUrl);
+	public FacebookOAuth2Template(String clientId, String clientSecret, String authorizeUrl, String accessTokenUrl) {
+		super(clientId, clientSecret, authorizeUrl, null, accessTokenUrl);
 	}
 
 	@Override
 	protected RestTemplate createRestTemplate() {
 		RestTemplate restTemplate = new RestTemplate();
 		FormHttpMessageConverter messageConverter = new FormHttpMessageConverter() {
-			@Override
 			public boolean canRead(Class<?> clazz, MediaType mediaType) {
-				return clazz.equals(Map.class) && mediaType != null && mediaType.getType().equals("text")
-					&& mediaType.getSubtype().equals("plain");
+				// always read as x-www-url-formencoded even though Facebook sets contentType to text/plain				
+				return true;
 			}
 		};
-		restTemplate.getMessageConverters().add(messageConverter);
+		restTemplate.setMessageConverters(Collections.<HttpMessageConverter<?>>singletonList(messageConverter));
 		return restTemplate;
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")	
 	protected AccessGrant postForAccessGrant(String accessTokenUrl, MultiValueMap<String, String> parameters) {
-		MultiValueMap<String, String> response = (MultiValueMap<String, String>) getRestTemplate().postForObject(accessTokenUrl, parameters, Map.class);
-		String accessToken = response.getFirst("access_token");
+		MultiValueMap<String, String> response = getRestTemplate().postForObject(accessTokenUrl, parameters, MultiValueMap.class);
 		String expires = response.getFirst("expires");
-		Long expireTime = expires != null ? System.currentTimeMillis() + Long.valueOf(expires) * 1000 : null;
-		return new AccessGrant(accessToken, null, null, expireTime);
+		return new AccessGrant(response.getFirst("access_token"), null, null, expires != null ? Integer.valueOf(expires) : null);
 	}
 }

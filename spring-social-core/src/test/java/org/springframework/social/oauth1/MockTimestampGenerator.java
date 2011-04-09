@@ -19,7 +19,7 @@ package org.springframework.social.oauth1;
  * Enables testing SigningUtils with a fixed timestamp and nonce.
  * @author Craig Walls
  */
-class MockTimestampGenerator implements SigningUtils.TimestampGenerator {
+class MockTimestampGenerator implements SigningSupport.TimestampGenerator {
 	private final long timestamp;
 
 	private final long nonce;

@@ -15,12 +15,11 @@
  */
 package org.springframework.social.oauth1;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
 import java.util.Map;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
@@ -30,12 +29,11 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.social.util.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 
-public class SigningUtilsTest {
+public class SigningSupportTest {
 
 	@Test
-	@Ignore
 	public void buildAuthorizationHeaderValue_URI() throws Exception {
-		SigningUtils signingUtils = new SigningUtils();
+		SigningSupport signingUtils = new SigningSupport();
 		signingUtils.setTimestampGenerator(new MockTimestampGenerator(123456789, 987654321));
 		Map<String, String> oauthParameters = signingUtils.commonOAuthParameters("9djdj82h48djs9d2");
 		oauthParameters.put("oauth_token", "kkk9d7dh3k39sjv7");
@@ -52,7 +50,7 @@ public class SigningUtilsTest {
 
 	@Test
 	public void buildAuthorizationHeaderValue_Request() throws Exception {
-		SigningUtils signingUtils = new SigningUtils();
+		SigningSupport signingUtils = new SigningSupport();
 		signingUtils.setTimestampGenerator(new MockTimestampGenerator(123456789, 987654321));
 		URI uri = URIBuilder.fromUri("http://example.com/request").queryParam("b5", "=%3D").queryParam("a3", "a").queryParam("c@", "")
 			.queryParam("a2", "r b").build();
@@ -64,7 +62,7 @@ public class SigningUtilsTest {
 	
 	@Test
 	public void spring30buildAuthorizationHeaderValue() throws Exception {
-		SigningUtils signingUtils = new SigningUtils();
+		SigningSupport signingUtils = new SigningSupport();
 		signingUtils.setTimestampGenerator(new MockTimestampGenerator(123456789, 987654321));
 		URI uri = URIBuilder.fromUri("http://example.com/request").queryParam("b5", "=%3D").queryParam("a3", "a").queryParam("c@", "")
 			.queryParam("a2", "r b").build();
@@ -91,7 +89,7 @@ public class SigningUtilsTest {
 	 */
 	@Test
 	public void buildBaseString_specificationExample() {
-		SigningUtils signingUtils = new SigningUtils();
+		SigningSupport signingUtils = new SigningSupport();
 		signingUtils.setTimestampGenerator(new MockTimestampGenerator(2468013579L, 1357924680));
 		Map<String, String> oauthParameters = signingUtils.commonOAuthParameters("9djdj82h48djs9d2");
 		oauthParameters.put("oauth_token", "kkk9d7dh3k39sjv7");
@@ -132,7 +130,7 @@ public class SigningUtilsTest {
 	 */
 	@Test
 	public void buildBaseString_twitterExample() {
-		SigningUtils signingUtils = new SigningUtils();
+		SigningSupport signingUtils = new SigningSupport();
 		signingUtils.setTimestampGenerator(new MockTimestampGenerator(2468013579L, 1357924680));
 		Map<String, String> oauthParameters = signingUtils.commonOAuthParameters("GDdmIQH6jhtmLUypg82g");
 		oauthParameters.put("oauth_callback", "http://localhost:3005/the_dance/process_callback?service_provider_id=11");

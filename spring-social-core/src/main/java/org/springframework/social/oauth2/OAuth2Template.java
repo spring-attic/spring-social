@@ -112,8 +112,8 @@ public class OAuth2Template implements OAuth2Operations {
 		return extractAccessGrant(restTemplate.postForObject(accessTokenUrl, parameters, Map.class));
 	}
 	
-	protected AccessGrant createAccessGrant(String accessToken, String scope, String refreshToken, Long expiresAt, Map<String, Object> result) {
-		return new AccessGrant(accessToken, scope, refreshToken, expiresAt);		
+	protected AccessGrant createAccessGrant(String accessToken, String scope, String refreshToken, Integer expiresIn, Map<String, Object> result) {
+		return new AccessGrant(accessToken, scope, refreshToken, expiresIn);
 	}
 		
 	// testing hooks
@@ -146,9 +146,7 @@ public class OAuth2Template implements OAuth2Operations {
 	}
 	
 	private AccessGrant extractAccessGrant(Map<String, Object> result) {
-		Integer expiresIn = (Integer) result.get("expires_in");
-		Long expiresAt = expiresIn != null ? System.currentTimeMillis() + expiresIn * 1000 : null;
-		return createAccessGrant((String) result.get("access_token"), (String) result.get("scope"), (String) result.get("refresh_token"), expiresAt, result);
+		return createAccessGrant((String) result.get("access_token"), (String) result.get("scope"), (String) result.get("refresh_token"), (Integer) result.get("expires_in"), result);
 	}
 	
 }

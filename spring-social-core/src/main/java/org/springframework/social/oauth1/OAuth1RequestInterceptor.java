@@ -38,7 +38,7 @@ class OAuth1RequestInterceptor implements ClientHttpRequestInterceptor {
 	
 	private final String accessTokenSecret;
 	
-	private final SigningUtils signingUtils;
+	private final SigningSupport signingUtils;
 	
 	/**
 	 * Creates an OAuth 1.0 protected resource request interceptor.
@@ -49,7 +49,7 @@ class OAuth1RequestInterceptor implements ClientHttpRequestInterceptor {
 		this.consumerSecret = consumerSecret;
 		this.accessToken = accessToken;
 		this.accessTokenSecret = accessTokenSecret;
-		this.signingUtils = new SigningUtils();
+		this.signingUtils = new SigningSupport();
 	}
 
 	public ClientHttpResponse intercept(final HttpRequest request, final byte[] body, ClientHttpRequestExecution execution) throws IOException {
