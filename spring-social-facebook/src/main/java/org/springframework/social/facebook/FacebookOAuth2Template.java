@@ -22,6 +22,7 @@ import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Template;
+import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
@@ -39,7 +40,7 @@ public class FacebookOAuth2Template extends OAuth2Template {
 
 	@Override
 	protected RestTemplate createRestTemplate() {
-		RestTemplate restTemplate = new RestTemplate();
+		RestTemplate restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 		FormHttpMessageConverter messageConverter = new FormHttpMessageConverter() {
 			public boolean canRead(Class<?> clazz, MediaType mediaType) {
 				// always read as x-www-url-formencoded even though Facebook sets contentType to text/plain				

@@ -31,6 +31,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriUtils;
@@ -109,7 +110,7 @@ public class OAuth1Template implements OAuth1Operations {
 	// internal helpers
 
 	private RestTemplate createRestTemplate() {
-		RestTemplate restTemplate = new RestTemplate();
+		RestTemplate restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>(1);
 		converters.add(new FormHttpMessageConverter() {
 			public boolean canRead(Class<?> clazz, MediaType mediaType) {

@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.support.httpclient;
+package org.springframework.social.support;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.social.support.httpclient.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -24,10 +25,10 @@ import org.springframework.util.ClassUtils;
  * If not, falls back to SimpleClientHttpRequestFactory.
  * @author Craig Walls
  */
-public class RequestFactorySelector {
+public class ClientHttpRequestFactorySelector {
 	
 	public static ClientHttpRequestFactory getRequestFactory() {
-		if(httpComponentsAvailable) {
+		if (httpComponentsAvailable) {
 			return new HttpComponentsClientHttpRequestFactory();
 		} else {
 			return new SimpleClientHttpRequestFactory();
