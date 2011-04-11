@@ -16,6 +16,7 @@
 package org.springframework.social.oauth1;
 
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.social.support.httpclient.RequestFactorySelector;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -43,7 +44,7 @@ public class ProtectedResourceClientFactory {
 	 * Constructs a RestTemplate that adds the OAuth1 Authorization header to each request before it is executed.
 	 */
 	public static RestTemplate create(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
-		RestTemplate client = new RestTemplate();
+		RestTemplate client = new RestTemplate(RequestFactorySelector.getRequestFactory());
 		if (interceptorsSupported) {
 			// favored
 			client.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(consumerKey, consumerSecret, accessToken, accessTokenSecret)});

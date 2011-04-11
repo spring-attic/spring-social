@@ -45,8 +45,10 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class TwitterTemplate implements TwitterApi, LowLevelTwitterApi {
+public class TwitterTemplate implements TwitterApi {
 
+	private boolean isAuthorizedForUser;
+	
 	private final RestTemplate restTemplate;
 
 	private final TimelineOperations timelineOperations;
@@ -81,6 +83,7 @@ public class TwitterTemplate implements TwitterApi, LowLevelTwitterApi {
 	 */
 	public TwitterTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
 		this(ProtectedResourceClientFactory.create(apiKey, apiSecret, accessToken, accessTokenSecret));
+		isAuthorizedForUser = true;
 	}
 	
 	private TwitterTemplate(RestTemplate restTemplate) {
@@ -98,6 +101,10 @@ public class TwitterTemplate implements TwitterApi, LowLevelTwitterApi {
 		this.searchOperations = new SearchTemplate(this, restTemplate);
 	}
 
+	public boolean isAuthorizedForUser() {
+		return isAuthorizedForUser;
+	}
+	
 	public TimelineOperations timelineOperations() {
 		return timelineOperations;
 	}

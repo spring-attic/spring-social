@@ -69,12 +69,28 @@ class MediaTemplate implements MediaOperations {
 		return graphApi.publish(ownerId, "albums", data);
 	}
 	
+	public byte[] getAlbumImage(String albumId) {
+		return getAlbumImage(albumId, ImageType.NORMAL);
+	}
+	
+	public byte[] getAlbumImage(String albumId, ImageType imageType) {
+		return graphApi.fetchImage(albumId, "picture", imageType);
+	}
+	
 	public List<Photo> getPhotos(String albumId) {
 		return graphApi.fetchConnections(albumId, "photos", photoExtractor);
 	}
 	
 	public Photo getPhoto(String photoId) {
 		return graphApi.fetchObject(photoId, photoExtractor);
+	}
+	
+	public byte[] getPhotoImage(String photoId) {
+		return getPhotoImage(photoId, ImageType.NORMAL);
+	}
+	
+	public byte[] getPhotoImage(String photoId, ImageType imageType) {
+		return graphApi.fetchImage(photoId, "picture", imageType);
 	}
 
 	public List<Video> getVideos() {
@@ -87,5 +103,13 @@ class MediaTemplate implements MediaOperations {
 	
 	public Video getVideo(String videoId) {
 		return graphApi.fetchObject(videoId, videoExtractor);
+	}
+	
+	public byte[] getVideoImage(String videoId) {
+		return getVideoImage(videoId, ImageType.NORMAL);
+	}
+	
+	public byte[] getVideoImage(String videoId, ImageType imageType) {
+		return graphApi.fetchImage(videoId, "picture", imageType);
 	}
 }

@@ -22,7 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.facebook.support.extractors.ResponseExtractor;
 import org.springframework.social.oauth2.ProtectedResourceClientFactory;
@@ -173,6 +175,16 @@ public class FacebookTemplate implements FacebookApi {
 		Map<String, Object> response = restTemplate.getForObject(uri, Map.class);
 		checkForErrors(response);
 		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
+	}
+	
+	public byte[] fetchImage(String objectId, String connectionType, ImageType type) {
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType + "?type=" + type.toString().toLowerCase()).build();
+		ResponseEntity<byte[]> response = restTemplate.getForEntity(uri, byte[].class);
+		if(response.getStatusCode() == HttpStatus.FOUND) {
+			throw new UnsupportedOperationException("Attempt to fetch image resulted in a redirect which could not be followed. Add Apache HttpComponents HttpClient to the classpath " +
+					"to be able to follow redirects.");
+		}
+		return response.getBody();
 	}
 	
 	@SuppressWarnings("unchecked")
