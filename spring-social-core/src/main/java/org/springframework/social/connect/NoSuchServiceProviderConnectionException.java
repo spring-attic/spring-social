@@ -15,15 +15,17 @@
  */
 package org.springframework.social.connect;
 
-import java.util.List;
-import java.util.Set;
-
-public interface MultiUserServiceProviderConnectionRepository {
-
-	String findLocalUserIdConnectedTo(ServiceProviderConnectionKey connectionKey);
-
-	Set<String> findLocalUserIdsConnectedTo(String providerId, List<String> providerUserIds);
+@SuppressWarnings("serial")
+public final class NoSuchServiceProviderConnectionException extends RuntimeException {
 	
-	ServiceProviderConnectionRepository createConnectionRepository(String localUserId);
+	private final ServiceProviderConnectionKey connectionKey;
+
+	public NoSuchServiceProviderConnectionException(ServiceProviderConnectionKey connectionKey) {
+		this.connectionKey = connectionKey;
+	}
+
+	public ServiceProviderConnectionKey getConnectionKey() {
+		return connectionKey;
+	}
 	
 }

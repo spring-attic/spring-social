@@ -6,21 +6,22 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.social.connect.NoSuchServiceProviderConnectionException;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
@@ -78,13 +79,23 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 	@Test
 	public void findLocalUserIdConnectedTo() {
 		insertFacebookConnection();
-		Serializable localUserId = usersConnectionRepository.findLocalUserIdConnectedTo(new ServiceProviderConnectionKey("facebook", "9"));
+		String localUserId = usersConnectionRepository.findLocalUserIdConnectedTo(new ServiceProviderConnectionKey("facebook", "9"));
 		assertEquals("1", localUserId);
 	}
 	
 	@Test
 	public void findLocalUserIdConnectedToNoSuchConnection() {
 		assertNull(usersConnectionRepository.findLocalUserIdConnectedTo(new ServiceProviderConnectionKey("facebook", "9")));
+	}
+	
+	@Test
+	public void findLocalUserIdsConnectedTo() {
+		insertFacebookConnection();
+		insertFacebookConnection3();
+		Set<String> localUserIds = usersConnectionRepository.findLocalUserIdsConnectedTo("facebook", Arrays.asList("9", "11"));
+		assertEquals(2, localUserIds.size());
+		assertTrue(localUserIds.contains("1"));
+		assertTrue(localUserIds.contains("2"));		
 	}
 	
 	@Test
@@ -169,7 +180,7 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 		assertFacebookConnection((ServiceProviderConnection<TestFacebookApi>) connectionRepository.findConnection(new ServiceProviderConnectionKey("facebook", "9")));
 	}
 	
-	@Test(expected=EmptyResultDataAccessException.class)
+	@Test(expected=NoSuchServiceProviderConnectionException.class)
 	public void findConnectionNoSuchConnection() {
 		connectionRepository.findConnection(new ServiceProviderConnectionKey("facebook", "bogus"));
 	}
@@ -187,9 +198,9 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 		assertFacebookConnection(connectionRepository.findConnectionByServiceApi(TestFacebookApi.class));
 	}
 
-	@Test(expected=EmptyResultDataAccessException.class)
+	@Test
 	public void findConnectionByServiceApiNoSuchConnection() {
-		connectionRepository.findConnectionByServiceApi(TestFacebookApi.class);
+		assertNull(connectionRepository.findConnectionByServiceApi(TestFacebookApi.class));
 	}
 
 	@Test
@@ -209,7 +220,7 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 		assertEquals("10", connectionRepository.findConnectionByServiceApiForUser(TestFacebookApi.class, "10").getKey().getProviderUserId());
 	}
 
-	@Test(expected=EmptyResultDataAccessException.class)
+	@Test(expected=NoSuchServiceProviderConnectionException.class)
 	public void findConnectionByServiceApiForUserNoSuchConnection() {
 		assertFacebookConnection(connectionRepository.findConnectionByServiceApiForUser(TestFacebookApi.class, "9"));
 	}
@@ -286,17 +297,22 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 		
 	private void insertTwitterConnection() {
 		dataAccessor.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-				1L, "twitter", "1", 1, "@kdonald", "http://twitter.com/kdonald", "http://twitter.com/kdonald/picture", "123456789", "987654321", null, null);
+				"1", "twitter", "1", 1, "@kdonald", "http://twitter.com/kdonald", "http://twitter.com/kdonald/picture", "123456789", "987654321", null, null);
 	}
 	
 	private void insertFacebookConnection() {
 		dataAccessor.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-				1L, "facebook", "9", 1, null, null, null, "234567890", null, "345678901", System.currentTimeMillis() + 3600000);
+				"1", "facebook", "9", 1, null, null, null, "234567890", null, "345678901", System.currentTimeMillis() + 3600000);
 	}
 	
 	private void insertFacebookConnection2() {
 		dataAccessor.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-				1L, "facebook", "10", 2, null, null, null, "456789012", null, "56789012", System.currentTimeMillis() + 3600000);
+				"1", "facebook", "10", 2, null, null, null, "456789012", null, "56789012", System.currentTimeMillis() + 3600000);
+	}
+
+	private void insertFacebookConnection3() {
+		dataAccessor.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+				"2", "facebook", "11", 2, null, null, null, "456789012", null, "56789012", System.currentTimeMillis() + 3600000);
 	}
 	
 	private void assertNewConnection(ServiceProviderConnection<TestFacebookApi> connection) {
