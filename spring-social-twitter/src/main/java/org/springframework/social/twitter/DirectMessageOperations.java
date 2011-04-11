@@ -72,7 +72,6 @@ public interface DirectMessageOperations {
 	/**
 	 * Deletes a direct message for the authenticated user.
 	 * @param messageId the ID of the message to be removed.
-	 * @param messageId
 	 */
 	void deleteDirectMessage(long messageId);
 }

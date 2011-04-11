@@ -63,7 +63,7 @@ public interface CheckinOperations {
 	 * @param placeId the ID of the place to check into.
 	 * @param latitude the latitude of the place.
 	 * @param longitude the longitude of the place.
-	 * @param a message to post along with the checkin.
+	 * @param message a message to post along with the checkin.
 	 * @param tags a varargs list of user IDs to tag on the checkin.
 	 * @return the ID of the checkin.
 	 */

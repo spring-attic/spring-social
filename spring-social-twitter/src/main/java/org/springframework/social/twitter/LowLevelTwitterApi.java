@@ -32,21 +32,25 @@ public interface LowLevelTwitterApi {
 	 * Fetches a single object from the given path.
 	 * @param path the relative path to the resource.  
 	 * @param extractor an extractor used to extract the object into a specific type.
-	 * @param params parameters to fill in the template placeholders, if any.
 	 * @return an Java object representing the requested Twitter resource.
 	 */
 	<T> T fetchObject(String path, ResponseExtractor<T> extractor);
 
-	
 	/**
 	 * Fetches a single object from the given path.
 	 * @param path the relative path to the resource.  
 	 * @param extractor an extractor used to extract the object into a specific type.
-	 * @param params parameters to fill in the template placeholders, if any.
+	 * @param queryParams parameters to fill in the template placeholders, if any.
 	 * @return an Java object representing the requested Twitter resource.
 	 */
 	<T> T fetchObject(String path, ResponseExtractor<T> extractor, Map<String, String> queryParams);
 	
+	/**
+	 * Fetches a list of objects from the given path.
+	 * @param path the relative path to the resource. 
+	 * @param extractor an extractor used to extract the response into a specific type.
+	 * @return a list of Java objects representing the requested Twitter resource.
+	 */
 	<T> List<T> fetchObjects(String path, ResponseExtractor<T> extractor);
 	
 	/**
@@ -86,7 +90,6 @@ public interface LowLevelTwitterApi {
 	 * @param path the relative path to the resource. 
 	 * @param data the data to be posted.
 	 * @param extractor an extractor used to extract the response into a specific type.
-	 * @param params parameters to fill in the template placeholders, if any.
 	 * @return a Java object representing the response after publishing.
 	 */
 	<T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor);
@@ -94,9 +97,13 @@ public interface LowLevelTwitterApi {
 	/**
 	 * Deletes a resource.
 	 * @param path the relative path to the resource. 
-	 * @param params parameters to fill in the template placeholders, if any.
 	 */
 	void delete(String path);
 
+	/**
+	 * Deletes a resource.
+	 * @param path the relative path to the resource. 
+	 * @param queryParams parameters to fill in the template placeholders, if any.
+	 */
 	void delete(String path, Map<String, String> queryParams);
 }

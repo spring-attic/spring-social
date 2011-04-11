@@ -125,7 +125,7 @@ public interface ListOperations {
 	/**
 	 * Adds one or more new members to a user list.
 	 * @param listSlug the slug of the list.
-	 * @param newMemberIds one or more profile IDs of the Twitter profiles to add to the list.
+	 * @param newMemberScreenNames one or more profile IDs of the Twitter profiles to add to the list.
 	 * @return the {@link UserList}
 	 */
 	UserList addToList(String listSlug, String... newMemberScreenNames);
@@ -140,7 +140,7 @@ public interface ListOperations {
 	/**
 	 * Removes a member from a user list.
 	 * @param listSlug the slug of the list.
-	 * @param memberId the ID of the member to be removed.
+	 * @param memberScreenName the ID of the member to be removed.
 	 */
 	void removeFromList(String listSlug, String memberScreenName);
 
@@ -164,7 +164,6 @@ public interface ListOperations {
 	 * Unsubscribes the authenticating user from a list.
 	 * @param userId the user ID of the list owner.
 	 * @param listId the ID of the list.
-	 * @return the {@link UserList}
 	 */
 	void unsubscribe(long userId, long listId);
 
@@ -172,7 +171,6 @@ public interface ListOperations {
 	 * Unsubscribes the authenticating user from a list.
 	 * @param screenName the screen name of the list owner.
 	 * @param listSlug the slug of the list.
-	 * @return the {@link UserList}
 	 */
 	void unsubscribe(String screenName, String listSlug);
 
@@ -231,7 +229,7 @@ public interface ListOperations {
 	
 	/**
 	 * Checks to see if a given user is a member of a given list.
-	 * @param screen name the screen name of the list's owner
+	 * @param screenName the screen name of the list's owner
 	 * @param listSlug the list's slug
 	 * @param memberScreenName the screenName to check for membership
 	 * @return true if the user is a member of the list
@@ -249,7 +247,7 @@ public interface ListOperations {
 	
 	/**
 	 * Checks to see if a given user subscribes to a given list.
-	 * @param screen name the screen name of the list's owner
+	 * @param screenName the screen name of the list's owner
 	 * @param listSlug the list's slug
 	 * @param subscriberScreenName the screenName to check for subscribership
 	 * @return true if the user is a member of the list
