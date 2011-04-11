@@ -52,6 +52,9 @@ public class LinkedInProfile implements Serializable {
 
 	@XmlElement
 	String industry;
+	
+	@XmlElement(name = "picture-url")
+	String profilePictureUrl;
 
 	/**
 	 * The user's LinkedIn profile ID
@@ -117,5 +120,12 @@ public class LinkedInProfile implements Serializable {
 	 */
 	public String getPublicProfileUrl() {
 		return publicProfileUrls != null && publicProfileUrls.length > 0 ? publicProfileUrls[0] : null;
+	}
+	
+	/**
+	 * A URL to the user's profile picture.
+	 */
+	public String getProfilePictureUrl() {
+		return profilePictureUrl;
 	}
 }

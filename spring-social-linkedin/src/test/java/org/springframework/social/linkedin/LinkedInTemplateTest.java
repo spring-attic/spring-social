@@ -58,6 +58,7 @@ public class LinkedInTemplateTest {
 		assertEquals("Computer Software", profile.getIndustry());
 		assertEquals("http://www.linkedin.com/in/habuma", profile.getPublicProfileUrl());
 		assertEquals("http://www.linkedin.com/standardProfileUrl", profile.getStandardProfileUrl());
+		assertEquals("http://media.linkedin.com/pictureUrl", profile.getProfilePictureUrl());
 	}
 
 	@Test
