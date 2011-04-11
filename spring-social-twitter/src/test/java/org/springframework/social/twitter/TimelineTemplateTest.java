@@ -35,7 +35,7 @@ import org.springframework.social.twitter.types.TwitterProfile;
 /**
  * @author Craig Walls
  */
-public class TweetTemplateTest extends AbstractTwitterApiTest {
+public class TimelineTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void updateStatus() {
