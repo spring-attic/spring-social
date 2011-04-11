@@ -84,7 +84,7 @@ public class UserTemplateTest extends AbstractFacebookApiTest {
 	@Test
 	public void getUserProfileImage() {
 		responseHeaders.setContentType(MediaType.IMAGE_JPEG);
-		mockServer.expect(requestTo("https://graph.facebook.com/me/picture?type=large"))
+		mockServer.expect(requestTo("https://graph.facebook.com/me/picture?type=normal"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/tinyrod.jpg", getClass()), responseHeaders));
@@ -96,7 +96,7 @@ public class UserTemplateTest extends AbstractFacebookApiTest {
 	@Test
 	public void getUserProfileImage_specificUserByUserId() {
 		responseHeaders.setContentType(MediaType.IMAGE_JPEG);
-		mockServer.expect(requestTo("https://graph.facebook.com/1234567/picture?type=large"))
+		mockServer.expect(requestTo("https://graph.facebook.com/1234567/picture?type=normal"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/tinyrod.jpg", getClass()), responseHeaders));

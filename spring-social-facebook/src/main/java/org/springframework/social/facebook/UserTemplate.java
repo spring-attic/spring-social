@@ -37,10 +37,18 @@ class UserTemplate implements UserOperations {
 	}
 
 	public byte[] getUserProfileImage() {
-		return getUserProfileImage("me");
+		return getUserProfileImage("me", ImageType.NORMAL);
 	}
 	
 	public byte[] getUserProfileImage(String userId) {
-		return graphApi.fetchImage(userId, "picture", ImageType.LARGE);
+		return getUserProfileImage(userId, ImageType.NORMAL);
+	}
+
+	public byte[] getUserProfileImage(ImageType imageType) {
+		return getUserProfileImage("me", imageType);
+	}
+	
+	public byte[] getUserProfileImage(String userId, ImageType imageType) {
+		return graphApi.fetchImage(userId, "picture", imageType);
 	}
 }
