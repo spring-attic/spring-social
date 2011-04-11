@@ -64,6 +64,9 @@ public class FriendsTemplateTest extends AbstractTwitterApiTest {
 		
 		List<Long> followerIds = twitter.friendOperations().getFriendIds(98765L);
 		assertEquals(3, followerIds.size());
+		assertEquals(12345L, (long) followerIds.get(0));
+		assertEquals(9223372036854775807L, (long) followerIds.get(1));		
+		assertEquals(34567L, (long) followerIds.get(2));
 	}
 
 	@Test
@@ -74,6 +77,9 @@ public class FriendsTemplateTest extends AbstractTwitterApiTest {
 		
 		List<Long> followerIds = twitter.friendOperations().getFriendIds("habuma");
 		assertEquals(3, followerIds.size());
+		assertEquals(12345L, (long) followerIds.get(0));
+		assertEquals(9223372036854775807L, (long) followerIds.get(1));		
+		assertEquals(34567L, (long) followerIds.get(2));
 	}
 	
 	@Test 
@@ -108,6 +114,9 @@ public class FriendsTemplateTest extends AbstractTwitterApiTest {
 		
 		List<Long> followerIds = twitter.friendOperations().getFollowerIds(98765L);
 		assertEquals(3, followerIds.size());
+		assertEquals(12345L, (long) followerIds.get(0));
+		assertEquals(9223372036854775807L, (long) followerIds.get(1));		
+		assertEquals(34567L, (long) followerIds.get(2));
 	}
 
 	@Test
@@ -118,6 +127,9 @@ public class FriendsTemplateTest extends AbstractTwitterApiTest {
 		
 		List<Long> followerIds = twitter.friendOperations().getFollowerIds("habuma");
 		assertEquals(3, followerIds.size());
+		assertEquals(12345L, (long) followerIds.get(0));
+		assertEquals(9223372036854775807L, (long) followerIds.get(1));		
+		assertEquals(34567L, (long) followerIds.get(2));
 	}
 	
 	@Test
@@ -188,9 +200,9 @@ public class FriendsTemplateTest extends AbstractTwitterApiTest {
 
 		List<Long> friendships = twitter.friendOperations().getIncomingFriendships();
 		assertEquals(3, friendships.size());
-		assertTrue(friendships.contains(12345));
-		assertTrue(friendships.contains(23456));
-		assertTrue(friendships.contains(34567));
+		assertEquals(12345, (long) friendships.get(0));
+		assertEquals(23456, (long) friendships.get(1));
+		assertEquals(34567, (long) friendships.get(2));
 	}
 	
 	@Test
@@ -201,8 +213,8 @@ public class FriendsTemplateTest extends AbstractTwitterApiTest {
 
 		List<Long> friendships = twitter.friendOperations().getOutgoingFriendships();
 		assertEquals(3, friendships.size());
-		assertTrue(friendships.contains(12345));
-		assertTrue(friendships.contains(23456));
-		assertTrue(friendships.contains(34567));
+		assertEquals(12345, (long) friendships.get(0));
+		assertEquals(23456, (long) friendships.get(1));
+		assertEquals(34567, (long) friendships.get(2));
 	}
 }

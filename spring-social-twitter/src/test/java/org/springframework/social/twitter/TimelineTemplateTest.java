@@ -231,9 +231,9 @@ public class TimelineTemplateTest extends AbstractTwitterApiTest {
 			.andRespond(withResponse(new ClassPathResource("testdata/list-of-profile-ids.json", getClass()), responseHeaders));
 		List<Long> retweetedByIds = twitter.timelineOperations().getRetweetedByIds(42L);
 		assertEquals(3, retweetedByIds.size());
-		assertTrue(retweetedByIds.contains(12345));
-		assertTrue(retweetedByIds.contains(23456));
-		assertTrue(retweetedByIds.contains(34567));
+		assertEquals(12345, (long) retweetedByIds.get(0));
+		assertEquals(9223372036854775807L, (long) retweetedByIds.get(1));
+		assertEquals(34567, (long) retweetedByIds.get(2));
 	}
 	
 	@Test

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.springframework.social.twitter.support.CollectionUtils;
 import org.springframework.social.twitter.support.extractors.AbstractResponseExtractor;
 import org.springframework.social.twitter.support.extractors.ListOfLongExtractor;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
@@ -56,12 +57,14 @@ class FriendTemplate implements FriendOperations {
 	
 	@SuppressWarnings("unchecked")
 	public List<Long> getFriendIds(long userId) {
-		return (List<Long>) requestApi.fetchObject("friends/ids.json", List.class, Collections.singletonMap("user_id", String.valueOf(userId)));
+		List<Number> friendIds = (List<Number>) requestApi.fetchObject("friends/ids.json", List.class, Collections.singletonMap("user_id", String.valueOf(userId)));
+		return CollectionUtils.asLongList(friendIds);
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getFriendIds(String screenName) {
-		return (List<Long>) requestApi.fetchObject("friends/ids.json", List.class, Collections.singletonMap("screen_name", screenName));
+		List<Number> friendIds = (List<Number>) requestApi.fetchObject("friends/ids.json", List.class, Collections.singletonMap("screen_name", screenName));
+		return CollectionUtils.asLongList(friendIds);
 	}
 
 	public List<TwitterProfile> getFollowers(long userId) {
@@ -74,12 +77,14 @@ class FriendTemplate implements FriendOperations {
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getFollowerIds(long userId) {
-		return (List<Long>) requestApi.fetchObject("followers/ids.json", List.class, Collections.singletonMap("user_id", String.valueOf(userId)));
+		List<Number> followerIds = (List<Number>) requestApi.fetchObject("followers/ids.json", List.class, Collections.singletonMap("user_id", String.valueOf(userId)));
+		return CollectionUtils.asLongList(followerIds);
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getFollowerIds(String screenName) {
-		return (List<Long>) requestApi.fetchObject("followers/ids.json", List.class, Collections.singletonMap("screen_name", screenName));
+		List<Number> followerIds = (List<Number>) requestApi.fetchObject("followers/ids.json", List.class, Collections.singletonMap("screen_name", screenName));
+		return CollectionUtils.asLongList(followerIds);
 	}
 
 	public String follow(long userId) {
@@ -112,7 +117,7 @@ class FriendTemplate implements FriendOperations {
 	public List<Long> getOutgoingFriendships() {
 		return requestApi.fetchObject("friendships/outgoing.json", new ListOfLongExtractor("ids"));
 	}
-	
+
 	private static final MultiValueMap<String, Object> EMPTY_DATA = new LinkedMultiValueMap<String, Object>();
 	
 	private static class MapExtractor extends AbstractResponseExtractor<Map<String, Object>> {
@@ -120,4 +125,5 @@ class FriendTemplate implements FriendOperations {
 			return responseMap;
 		}
 	}
+	
 }
