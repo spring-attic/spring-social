@@ -25,6 +25,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
 import org.springframework.social.facebook.types.EducationEntry;
 import org.springframework.social.facebook.types.FacebookProfile;
 import org.springframework.social.facebook.types.WorkEntry;
@@ -78,6 +79,30 @@ public class UserTemplateTest extends AbstractFacebookApiTest {
 
 		FacebookProfile profile = facebook.userOperations().getUserProfile("123456789");
 		assertBasicProfileData(profile);
+	}
+	
+	@Test
+	public void getUserProfileImage() {
+		responseHeaders.setContentType(MediaType.IMAGE_JPEG);
+		mockServer.expect(requestTo("https://graph.facebook.com/me/picture?type=large"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("testdata/tinyrod.jpg", getClass()), responseHeaders));
+		facebook.userOperations().getUserProfileImage();
+		// TODO: Fix mock server handle binary data so we can test contents (or at least size) of image data.
+		mockServer.verify();
+	}
+	
+	@Test
+	public void getUserProfileImage_specificUserByUserId() {
+		responseHeaders.setContentType(MediaType.IMAGE_JPEG);
+		mockServer.expect(requestTo("https://graph.facebook.com/1234567/picture?type=large"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("testdata/tinyrod.jpg", getClass()), responseHeaders));
+		facebook.userOperations().getUserProfileImage("1234567");
+		// TODO: Fix mock server handle binary data so we can test contents (or at least size) of image data.
+		mockServer.verify();
 	}
 	
 	private void assertBasicProfileData(FacebookProfile profile) {

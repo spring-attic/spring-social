@@ -36,4 +36,11 @@ class UserTemplate implements UserOperations {
 		return graphApi.fetchObject(facebookId, profileExtractor);
 	}
 
+	public byte[] getUserProfileImage() {
+		return getUserProfileImage("me");
+	}
+	
+	public byte[] getUserProfileImage(String userId) {
+		return graphApi.fetchImage(userId, "picture", ImageType.LARGE);
+	}
 }

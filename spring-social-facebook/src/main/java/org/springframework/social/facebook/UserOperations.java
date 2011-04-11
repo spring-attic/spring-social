@@ -33,4 +33,17 @@ public interface UserOperations {
 	 */
 	FacebookProfile getUserProfile(String userId);
 
+	/**
+	 * Retrieves the user's profile image.
+	 * @return an array of bytes containing the user's profile image.
+	 */
+	byte[] getUserProfileImage();
+
+	/**
+	 * Retrieves the user's profile image.
+	 * @param userId the Facebook user ID to retrieve profile data for.
+	 * @return an array of bytes containing the user's profile image.
+	 */
+	byte[] getUserProfileImage(String userId);
+	
 }

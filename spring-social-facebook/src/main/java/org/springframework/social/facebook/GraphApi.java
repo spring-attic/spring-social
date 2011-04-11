@@ -76,6 +76,15 @@ public interface GraphApi {
 	<T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor, String... fields);
 
 	/**
+	 * Fetches an image as an array of bytes.
+	 * @param objectId the object ID
+	 * @param connectionType the connection type
+	 * @param type the type of image to retrieve (eg., small, normal, large, or square)
+	 * @return an image as an array of bytes.
+	 */
+	byte[] fetchImage(String objectId, String connectionType, ImageType type);	
+
+	/**
 	 * Publishes data to an object's connection.
 	 * Requires appropriate permission to publish to the object connection.
 	 * @param objectId the object ID to publish to.
@@ -115,6 +124,7 @@ public interface GraphApi {
 	
 	static final String OBJECT_URL = GRAPH_API_URL + "{objectId}";
 
-	static final String CONNECTION_URL = OBJECT_URL + "/{connection}";	
+	static final String CONNECTION_URL = OBJECT_URL + "/{connection}";
+
 
 }

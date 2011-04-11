@@ -16,6 +16,7 @@
 package org.springframework.social.oauth2;
 
 import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.social.support.httpclient.RequestFactorySelector;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -57,7 +58,7 @@ public class ProtectedResourceClientFactory {
 	// internal helpers
 	
 	private static RestTemplate version(String accessToken, OAuth2Version version) {
-		RestTemplate client = new RestTemplate();
+		RestTemplate client = new RestTemplate(RequestFactorySelector.getRequestFactory());
 		if (interceptorsSupported) {
 			// favored
 			client.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth2RequestInterceptor(accessToken, version) });
