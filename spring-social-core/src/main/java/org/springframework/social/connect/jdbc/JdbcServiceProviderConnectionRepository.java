@@ -25,11 +25,13 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
+import org.springframework.social.connect.NoSuchServiceProviderConnectionException;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionFactory;
@@ -115,12 +117,21 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 	}
 
 	public ServiceProviderConnection<?> findConnection(ServiceProviderConnectionKey connectionKey) {
-		return jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and providerUserId = ? order by rank", connectionMapper, localUserId, connectionKey.getProviderId(), connectionKey.getProviderUserId());
+		try {
+			return jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and providerUserId = ?", connectionMapper, localUserId, connectionKey.getProviderId(), connectionKey.getProviderUserId());
+		} catch (EmptyResultDataAccessException e) {
+			throw new NoSuchServiceProviderConnectionException(connectionKey);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public <S> ServiceProviderConnection<S> findConnectionByServiceApi(Class<S> serviceApiType) {
-		return (ServiceProviderConnection<S>) jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and rank = 1", connectionMapper, localUserId, getProviderId(serviceApiType));
+		try {
+			String providerId = getProviderId(serviceApiType);
+			return (ServiceProviderConnection<S>) jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and rank = 1", connectionMapper, localUserId, providerId);
+		} catch (EmptyResultDataAccessException e) {
+			return null;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -131,7 +142,8 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 	
 	@SuppressWarnings("unchecked")
 	public <S> ServiceProviderConnection<S> findConnectionByServiceApiForUser(Class<S> serviceApiType, String providerUserId) {
-		return (ServiceProviderConnection<S>) jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and providerUserId = ?", connectionMapper, localUserId, getProviderId(serviceApiType), providerUserId);
+		String providerId = getProviderId(serviceApiType);
+		return (ServiceProviderConnection<S>) findConnection(new ServiceProviderConnectionKey(providerId, providerUserId));
 	}
 
 	public void addConnection(ServiceProviderConnection<?> connection) {

@@ -15,10 +15,20 @@
  */
 package org.springframework.social.connect.jdbc;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.sql.DataSource;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.social.connect.MultiUserServiceProviderConnectionRepository;
 import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
@@ -45,6 +55,22 @@ public class JdbcMultiUserServiceProviderConnectionRepository implements MultiUs
 		} catch (EmptyResultDataAccessException e) {
 			return null;
 		}
+	}
+
+	public Set<String> findLocalUserIdsConnectedTo(String providerId, List<String> providerUserIds) {
+		MapSqlParameterSource parameters = new MapSqlParameterSource();
+		parameters.addValue("providerId", providerId);
+		parameters.addValue("providerUserIds", providerUserIds);
+		final Set<String> localUserIds = new HashSet<String>();
+		return new NamedParameterJdbcTemplate(jdbcTemplate).query("select localUserId from ServiceProviderConnection where providerId = :providerId and providerUserId in (:providerUserIds)", parameters,
+			new ResultSetExtractor<Set<String>>() {
+				public Set<String> extractData(ResultSet rs) throws SQLException, DataAccessException {
+					while (rs.next()) {
+						localUserIds.add(rs.getString("localUserId"));
+					}
+					return localUserIds;
+				}
+			});
 	}
 
 	public ServiceProviderConnectionRepository createConnectionRepository(String localUserId) {
