@@ -93,13 +93,13 @@ public class TwitterTemplate implements TwitterApi {
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
 		this.userOperations = new UserTemplate(this);
 		this.directMessageOperations = new DirectMessageTemplate(this);
+		this.friendOperations = new FriendTemplate(this);
+		this.timelineOperations = new TimelineTemplate(this);
 		
 		// TODO : Break ListTemplate's  dependence on userOperations
 		this.listOperations = new ListTemplate(this, userOperations);
 		
 		// TODO : Break the dependence on restTemplate
-		this.timelineOperations = new TimelineTemplate(this, restTemplate);
-		this.friendOperations = new FriendTemplate(this, restTemplate);
 		this.searchOperations = new SearchTemplate(this, restTemplate);
 	}
 
@@ -161,6 +161,14 @@ public class TwitterTemplate implements TwitterApi {
 		return extractor.extractObjects(list);
 	}
 	
+	public <T> T fetchObject(String path, Class<T> type) {
+		return fetchObject(path, type, Collections.<String, String>emptyMap());
+	}
+
+	public <T> T fetchObject(String path, Class<T> type, Map<String, String> params) {
+		return restTemplate.getForObject(buildUri(path, params), type);
+	}
+
 	public byte[] fetchImage(String path) {		
 		ResponseEntity<byte[]> response = restTemplate.getForEntity(buildUri(path, Collections.<String, String>emptyMap()), byte[].class);
 		if(response.getStatusCode() == HttpStatus.FOUND) {
@@ -173,10 +181,14 @@ public class TwitterTemplate implements TwitterApi {
 	public void publish(String path, MultiValueMap<String, Object> data) {
 		restTemplate.postForEntity(buildUri(path, Collections.<String, String>emptyMap()), data, Map.class);
 	}
+
+	public <T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor) {
+		return publish(path, data, extractor, Collections.<String, String>emptyMap());
+	}
 	
 	@SuppressWarnings("unchecked")
-	public <T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor) {
-		Map<String, Object> response = (Map<String, Object>) restTemplate.postForObject(buildUri(path, Collections.<String, String>emptyMap()), data, Map.class);
+	public <T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor, Map<String, String> params) {
+		Map<String, Object> response = (Map<String, Object>) restTemplate.postForObject(buildUri(path, params), data, Map.class);
 		return extractor.extractObject(response);
 	}
 

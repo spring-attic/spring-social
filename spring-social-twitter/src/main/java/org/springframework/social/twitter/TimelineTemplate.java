@@ -25,7 +25,6 @@ import org.springframework.social.twitter.types.Tweet;
 import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * Implementation of {@link TimelineOperations}, providing a binding to Twitter's tweet and timeline-oriented REST resources.
@@ -33,17 +32,14 @@ import org.springframework.web.client.RestTemplate;
  */
 class TimelineTemplate implements TimelineOperations {
 
-	private final RestTemplate restTemplate;
-
 	private TwitterProfileResponseExtractor profileExtractor;
 	
 	private TweetResponseExtractor tweetExtractor;
 
 	private final LowLevelTwitterApi lowLevelApi;
 
-	public TimelineTemplate(LowLevelTwitterApi lowLevelApi, RestTemplate restTemplate) {
+	public TimelineTemplate(LowLevelTwitterApi lowLevelApi) {
 		this.lowLevelApi = lowLevelApi;
-		this.restTemplate = restTemplate;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
 		this.tweetExtractor = new TweetResponseExtractor();
 	}
@@ -122,7 +118,7 @@ class TimelineTemplate implements TimelineOperations {
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getRetweetedByIds(long tweetId) {
-		return restTemplate.getForObject(RETWEETED_BY_IDS_URL, List.class, tweetId);
+		return (List<Long>) lowLevelApi.fetchObject("statuses/" + tweetId + "/retweeted_by/ids.json", List.class);
 	}
 
 	public List<Tweet> getFavorites() {
@@ -139,5 +135,4 @@ class TimelineTemplate implements TimelineOperations {
 		lowLevelApi.publish("favorites/destroy/" + tweetId + ".json", data);
 	}
 
-	private static final String RETWEETED_BY_IDS_URL = TwitterTemplate.API_URL_BASE + "statuses/{tweet_id}/retweeted_by/ids.json";
 }

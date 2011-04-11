@@ -18,28 +18,32 @@ package org.springframework.social.twitter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
+import org.springframework.social.twitter.support.extractors.AbstractResponseExtractor;
 import org.springframework.social.twitter.support.extractors.ListOfLongExtractor;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
 import org.springframework.social.twitter.types.TwitterProfile;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * Implementation of {@link FriendTemplate}, providing a binding to Twitter's friends and followers-oriented REST resources.
  * @author Craig Walls
  */
 class FriendTemplate implements FriendOperations {
-	
-	private final RestTemplate restTemplate;
-	
+		
 	private TwitterProfileResponseExtractor profileExtractor;
 	
+	private final MapExtractor mapExtractor;
+
 	private final LowLevelTwitterApi requestApi;
 
-	public FriendTemplate(LowLevelTwitterApi lowLevelApi, RestTemplate restTemplate) {
+
+	public FriendTemplate(LowLevelTwitterApi lowLevelApi) {
 		this.requestApi = lowLevelApi;
-		this.restTemplate = restTemplate;
 		this.profileExtractor = new TwitterProfileResponseExtractor();
+		this.mapExtractor = new MapExtractor();
 	}
 
 	public List<TwitterProfile> getFriends(long userId) {
@@ -52,12 +56,12 @@ class FriendTemplate implements FriendOperations {
 	
 	@SuppressWarnings("unchecked")
 	public List<Long> getFriendIds(long userId) {
-		return restTemplate.getForObject(FRIEND_IDS_URL + "?user_id={userId}", List.class, userId);
+		return (List<Long>) requestApi.fetchObject("friends/ids.json", List.class, Collections.singletonMap("user_id", String.valueOf(userId)));
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getFriendIds(String screenName) {
-		return restTemplate.getForObject(FRIEND_IDS_URL + "?screen_name={screenName}", List.class, screenName);
+		return (List<Long>) requestApi.fetchObject("friends/ids.json", List.class, Collections.singletonMap("screen_name", screenName));
 	}
 
 	public List<TwitterProfile> getFollowers(long userId) {
@@ -70,32 +74,35 @@ class FriendTemplate implements FriendOperations {
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getFollowerIds(long userId) {
-		return restTemplate.getForObject(FOLLOWER_IDS_URL + "?user_id={userId}", List.class, userId);
+		return (List<Long>) requestApi.fetchObject("followers/ids.json", List.class, Collections.singletonMap("user_id", String.valueOf(userId)));
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getFollowerIds(String screenName) {
-		return restTemplate.getForObject(FOLLOWER_IDS_URL + "?screen_name={screenName}", List.class, screenName);
+		return (List<Long>) requestApi.fetchObject("followers/ids.json", List.class, Collections.singletonMap("screen_name", screenName));
 	}
 
 	public String follow(long userId) {
-		return this.friendshipAssist(FOLLOW_URL + "?user_id={user_id}", userId);
+		return (String) requestApi.publish("friendships/create.json", EMPTY_DATA, mapExtractor, Collections.singletonMap("user_id", String.valueOf(userId))).get("screen_name");
 	}
 
 	public String follow(String screenName) {
-		return this.friendshipAssist(FOLLOW_URL + "?screen_name={screen_name}", screenName);
+		return (String) requestApi.publish("friendships/create.json", EMPTY_DATA, mapExtractor, Collections.singletonMap("screen_name", screenName)).get("screen_name");
 	}
 	
 	public String unfollow(long userId) {
-		return this.friendshipAssist(UNFOLLOW_URL + "?user_id={user_id}", userId);
+		return (String) requestApi.publish("friendships/destroy.json", EMPTY_DATA, mapExtractor, Collections.singletonMap("user_id", String.valueOf(userId))).get("screen_name");
 	}
 
 	public String unfollow(String screenName) {
-		return this.friendshipAssist(UNFOLLOW_URL + "?screen_name={screen_name}", screenName);
+		return (String) requestApi.publish("friendships/destroy.json", EMPTY_DATA, mapExtractor, Collections.singletonMap("screen_name", screenName)).get("screen_name");
 	}
 	
 	public boolean friendshipExists(String userA, String userB) {
-		return restTemplate.getForObject(EXISTS_URL, boolean.class, userA, userB);
+		Map<String, String> params = new TreeMap<String, String>();
+		params.put("user_a", userA);
+		params.put("user_b", userB);
+		return requestApi.fetchObject("friendships/exists.json", boolean.class, params);
 	}
 
 	public List<Long> getIncomingFriendships() {
@@ -105,16 +112,12 @@ class FriendTemplate implements FriendOperations {
 	public List<Long> getOutgoingFriendships() {
 		return requestApi.fetchObject("friendships/outgoing.json", new ListOfLongExtractor("ids"));
 	}
-
-	@SuppressWarnings("unchecked")
-	private String friendshipAssist(String url, Object urlArgs) {
-		Map<String, Object> response = restTemplate.postForObject(url, "", Map.class, urlArgs);
-        return (String) response.get("screen_name");
-	}	
-
-	private static final String FRIEND_IDS_URL = TwitterTemplate.API_URL_BASE + "friends/ids.json";
-	private static final String FOLLOWER_IDS_URL = TwitterTemplate.API_URL_BASE + "followers/ids.json";
-	private static final String FOLLOW_URL = TwitterTemplate.API_URL_BASE + "friendships/create.json";
-	private static final String UNFOLLOW_URL = TwitterTemplate.API_URL_BASE + "friendships/destroy.json";
-	private static final String EXISTS_URL = TwitterTemplate.API_URL_BASE + "friendships/exists.json?user_a={user_a}&user_b={user_b}";
+	
+	private static final MultiValueMap<String, Object> EMPTY_DATA = new LinkedMultiValueMap<String, Object>();
+	
+	private static class MapExtractor extends AbstractResponseExtractor<Map<String, Object>> {
+		public Map<String, Object> extractObject(Map<String, Object> responseMap) {
+			return responseMap;
+		}
+	}
 }

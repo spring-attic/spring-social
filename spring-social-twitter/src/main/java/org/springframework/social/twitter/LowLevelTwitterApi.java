@@ -71,6 +71,10 @@ public interface LowLevelTwitterApi {
 	 */
 	<T> List<T> fetchObjects(String path, String jsonProperty, ResponseExtractor<T> extractor);
 
+	<T> T fetchObject(String path, Class<T> type);
+
+	<T> T fetchObject(String path, Class<T> type, Map<String, String> params);
+
 	/**
 	 * Fetches an image an array of bytes from the given path.
 	 * @param path the relative path to the resource. 
@@ -95,6 +99,16 @@ public interface LowLevelTwitterApi {
 	<T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor);
 
 	/**
+	 * Publishes data to the Twitter REST API. Does not return any results.
+	 * @param path the relative path to the resource. 
+	 * @param data the data to be posted.
+	 * @param extractor an extractor used to extract the response into a specific type.
+	 * @param params parameters to fill in the template placeholders, if any.
+	 * @return a Java object representing the response after publishing.
+	 */
+	<T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor, Map<String, String> params);
+
+	/**
 	 * Deletes a resource.
 	 * @param path the relative path to the resource. 
 	 */
@@ -106,4 +120,5 @@ public interface LowLevelTwitterApi {
 	 * @param queryParams parameters to fill in the template placeholders, if any.
 	 */
 	void delete(String path, Map<String, String> queryParams);
+	
 }

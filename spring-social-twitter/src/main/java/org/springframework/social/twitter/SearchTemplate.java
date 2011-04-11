@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.social.twitter.support.extractors.SavedSearchResponseExtractor;
 import org.springframework.social.twitter.support.extractors.TrendsListResponseExtractor;
 import org.springframework.social.twitter.types.SavedSearch;
@@ -71,7 +70,6 @@ class SearchTemplate implements SearchOperations {
 		return search(query, page, resultsPerPage, 0, 0);
 	}
 
-	@SuppressWarnings("unchecked")
 	public SearchResults search(String query, int page, int resultsPerPage, int sinceId, int maxId) {
 		Map<String, String> parameters = new HashMap<String, String>();
 		parameters.put("query", query);
@@ -86,10 +84,9 @@ class SearchTemplate implements SearchOperations {
 			searchUrl += "&max_id={max}";
 			parameters.put("max", String.valueOf(maxId));
 		}
-		@SuppressWarnings("rawtypes")
-		ResponseEntity<Map> response = restTemplate.getForEntity(searchUrl, Map.class, parameters);
-		// handleResponseErrors(response);
-		Map<String, Object> resultsMap = response.getBody();
+		@SuppressWarnings("unchecked")
+		Map<String, Object> resultsMap = restTemplate.getForObject(searchUrl, Map.class, parameters);
+		@SuppressWarnings("unchecked")
 		List<Map<String, Object>> items = (List<Map<String, Object>>) resultsMap.get("results");
 		List<Tweet> tweets = new ArrayList<Tweet>(resultsMap.size());
 		for (Map<String, Object> item : items) {
@@ -157,11 +154,14 @@ class SearchTemplate implements SearchOperations {
 		return getLocalTrends(whereOnEarthId, false);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Trends getLocalTrends(long whereOnEarthId, boolean excludeHashtags) {
-		String url = makeTrendPath(LOCAL_TRENDS_URL, excludeHashtags, null);
-		List<Map<String, Object>> response = restTemplate.getForObject(url, List.class, whereOnEarthId);
-		
+		Map<String, String> params = new HashMap<String, String>();
+		if(excludeHashtags) {
+			params.put("exclude", "hashtags");
+		}
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> response = lowLevelApi.fetchObject("trends/" + whereOnEarthId + ".json", List.class, params);
+		@SuppressWarnings("unchecked")
 		List<Map<String, String>> trendMapList = (List<Map<String, String>>) response.get(0).get("trends");
 		List<Trend> trendList = new ArrayList<Trend>(trendMapList.size());
 		for (Map<String, String> trendMap : trendMapList) {
@@ -219,5 +219,4 @@ class SearchTemplate implements SearchOperations {
 
 	private static final String SEARCH_API_URL_BASE = "https://search.twitter.com";
 	private static final String SEARCH_URL = SEARCH_API_URL_BASE + "/search.json?q={query}&rpp={rpp}&page={page}";
-	private static final String LOCAL_TRENDS_URL = TwitterTemplate.API_URL_BASE + "trends/{whereOnEarth_id}.json";
 }
