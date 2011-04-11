@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.social.BadCredentialsException;
 import org.springframework.social.oauth1.ProtectedResourceClientFactory;
 import org.springframework.social.twitter.support.TwitterErrorHandler;
@@ -157,6 +159,15 @@ public class TwitterTemplate implements TwitterApi {
 		Map<String, Object> response = restTemplate.getForObject(buildUri(path, Collections.<String, String>emptyMap()), Map.class);
 		List<Map<String, Object>> list = (List<Map<String, Object>>) response.get(jsonProperty);
 		return extractor.extractObjects(list);
+	}
+	
+	public byte[] fetchImage(String path) {		
+		ResponseEntity<byte[]> response = restTemplate.getForEntity(buildUri(path, Collections.<String, String>emptyMap()), byte[].class);
+		if(response.getStatusCode() == HttpStatus.FOUND) {
+			throw new UnsupportedOperationException("Attempt to fetch image resulted in a redirect which could not be followed. Add Apache HttpComponents HttpClient to the classpath " +
+					"to be able to follow redirects.");
+		}
+		return response.getBody();
 	}
 	
 	public void publish(String path, MultiValueMap<String, Object> data) {

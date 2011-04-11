@@ -118,7 +118,27 @@ public class FriendTemplateTest extends AbstractFacebookApiTest {
 		List<Reference> friends = facebook.friendOperations().getFriends("912873465");
 		assertFriends(friends);
 	}
+	
+	@Test
+	public void getFriendIds() {
+		mockServer.expect(requestTo("https://graph.facebook.com/me/friends?fields=id"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("testdata/friend-ids.json", getClass()), responseHeaders));
+		List<String> friendIds = facebook.friendOperations().getFriendIds();
+		assertFriendIds(friendIds);
+	}
 
+	@Test
+	public void getFriendIds_forSpecificUser() {
+		mockServer.expect(requestTo("https://graph.facebook.com/912873465/friends?fields=id"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("testdata/friend-ids.json", getClass()), responseHeaders));
+		List<String> friendIds = facebook.friendOperations().getFriendIds("912873465");
+		assertFriendIds(friendIds);
+	}
+	
 	private void assertFriends(List<Reference> friends) {
 		assertEquals(3, friends.size());
 		assertEquals("12345", friends.get(0).getId());
@@ -137,6 +157,13 @@ public class FriendTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("Family", friendLists.get(1).getName());
 		assertEquals("7716889379", friendLists.get(2).getId());
 		assertEquals("College Friends", friendLists.get(2).getName());
+	}
+
+	private void assertFriendIds(List<String> friendIds) {
+		assertEquals(3, friendIds.size());
+		assertEquals("7918522", friendIds.get(0));
+		assertEquals("149000307", friendIds.get(1));
+		assertEquals("151101314", friendIds.get(2));
 	}
 
 }

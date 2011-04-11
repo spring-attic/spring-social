@@ -30,7 +30,7 @@ import org.springframework.util.MultiValueMap;
 public interface LowLevelTwitterApi {
 	/**
 	 * Fetches a single object from the given path.
-	 * @param path the relative path to the resource. May contain template placeholder. 
+	 * @param path the relative path to the resource.  
 	 * @param extractor an extractor used to extract the object into a specific type.
 	 * @param params parameters to fill in the template placeholders, if any.
 	 * @return an Java object representing the requested Twitter resource.
@@ -40,7 +40,7 @@ public interface LowLevelTwitterApi {
 	
 	/**
 	 * Fetches a single object from the given path.
-	 * @param path the relative path to the resource. May contain template placeholder. 
+	 * @param path the relative path to the resource.  
 	 * @param extractor an extractor used to extract the object into a specific type.
 	 * @param params parameters to fill in the template placeholders, if any.
 	 * @return an Java object representing the requested Twitter resource.
@@ -51,7 +51,7 @@ public interface LowLevelTwitterApi {
 	
 	/**
 	 * Fetches a list of objects from the given path.
-	 * @param path the relative path to the resource. May contain template placeholder.
+	 * @param path the relative path to the resource. 
 	 * @param extractor an extractor used to extract the response into a specific type.
 	 * @param params parameters to fill in the template placeholders, if any.
 	 * @return a list of Java objects representing the requested Twitter resource.
@@ -60,7 +60,7 @@ public interface LowLevelTwitterApi {
 
 	/**
 	 * Fetches a list of objects from the given path.
-	 * @param path the relative path to the resource. May contain template placeholder.
+	 * @param path the relative path to the resource. 
 	 * @param jsonProperty the property in the JSON response that contains the list of objects. 
 	 * @param extractor an extractor used to extract the response into a specific type.
 	 * @return a list of Java objects representing the requested Twitter resource.
@@ -68,15 +68,22 @@ public interface LowLevelTwitterApi {
 	<T> List<T> fetchObjects(String path, String jsonProperty, ResponseExtractor<T> extractor);
 
 	/**
+	 * Fetches an image an array of bytes from the given path.
+	 * @param path the relative path to the resource. 
+	 * @return an array of bytes containing the requested image.
+	 */
+	byte[] fetchImage(String path);
+	
+	/**
 	 * Publishes data to the Twitter REST API. Does not return any results.
-	 * @param path the relative path to the resource. May contain template placeholder.
+	 * @param path the relative path to the resource. 
 	 * @param data the data to be posted.
 	 */
 	void publish(String path, MultiValueMap<String, Object> data);
 	
 	/**
 	 * Publishes data to the Twitter REST API. Does not return any results.
-	 * @param path the relative path to the resource. May contain template placeholder.
+	 * @param path the relative path to the resource. 
 	 * @param data the data to be posted.
 	 * @param extractor an extractor used to extract the response into a specific type.
 	 * @param params parameters to fill in the template placeholders, if any.
@@ -86,7 +93,7 @@ public interface LowLevelTwitterApi {
 
 	/**
 	 * Deletes a resource.
-	 * @param path the relative path to the resource. May contain template placeholder.
+	 * @param path the relative path to the resource. 
 	 * @param params parameters to fill in the template placeholders, if any.
 	 */
 	void delete(String path);

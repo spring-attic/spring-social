@@ -104,6 +104,12 @@ public interface FriendOperations {
 	List<Reference> getFriends();
 	
 	/**
+	 * Retrieves a list of the authenticating user's friends' IDs.
+	 * @return a list of Strings, where each entry is the ID of one of the user's friends.
+	 */
+	List<String> getFriendIds();
+	
+	/**
 	 * Retrieves profile data for the authenticated user's friends.
 	 * @return a list {@link FacebookProfile}s, each representing a friend of the user, or an empty list if not available.
 	 */
@@ -116,6 +122,13 @@ public interface FriendOperations {
 	 */
 	List<Reference> getFriends(String userId);
 
+	/**
+	 * Retrieves a list of the authenticating user's friends' IDs.
+	 * @param userId the user's ID
+	 * @return a list of Strings, where each entry is the ID of one of the user's friends.
+	 */
+	List<String> getFriendIds(String userId);
+	
 	/**
 	 * Retrieves profile data for the specified user's friends.
 	 * @param userId the user's ID

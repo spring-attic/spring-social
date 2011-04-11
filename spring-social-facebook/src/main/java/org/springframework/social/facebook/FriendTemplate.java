@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.springframework.social.facebook.support.extractors.ProfileResponseExtractor;
 import org.springframework.social.facebook.support.extractors.ReferenceResponseExtractor;
+import org.springframework.social.facebook.support.extractors.StringResponseExtractor;
 import org.springframework.social.facebook.types.FacebookProfile;
 import org.springframework.social.facebook.types.Reference;
 import org.springframework.social.util.URIBuilder;
@@ -29,7 +30,11 @@ import org.springframework.web.client.RestTemplate;
 class FriendTemplate implements FriendOperations {
 	
 	private final GraphApi graphApi;
+	
 	private ReferenceResponseExtractor referenceExtractor;
+	
+	private StringResponseExtractor idExtractor;
+	
 	private final RestTemplate restTemplate;
 
 	public FriendTemplate(GraphApi graphApi, RestTemplate restTemplate) {
@@ -37,6 +42,7 @@ class FriendTemplate implements FriendOperations {
 		this.restTemplate = restTemplate;
 		referenceExtractor = new ReferenceResponseExtractor();
 		profileExtractor = new ProfileResponseExtractor();
+		idExtractor = new StringResponseExtractor("id");
 	}
 	
 	public List<Reference> getFriendLists() {
@@ -88,12 +94,20 @@ class FriendTemplate implements FriendOperations {
 		return getFriends("me");
 	}
 	
+	public List<String> getFriendIds() {
+		return getFriendIds("me");
+	}
+	
 	public List<FacebookProfile> getFriendProfiles() {
 		return getFriendProfiles("me");
 	}
 
 	public List<Reference> getFriends(String userId) {
 		return graphApi.fetchConnections(userId, "friends", referenceExtractor);
+	}
+	
+	public List<String> getFriendIds(String userId) {
+		return graphApi.fetchConnections(userId, "friends", idExtractor, "id");
 	}
 	
 	public List<FacebookProfile> getFriendProfiles(String userId) {

@@ -237,8 +237,8 @@ public class FacebookTemplate implements FacebookApi {
 		StringBuilder builder = new StringBuilder();
 		if(strings.length > 0) {
 			builder.append(strings[0]);
-			for (String string : strings) {
-				builder.append("," + string);
+			for (int i = 1; i < strings.length; i++) {
+				builder.append("," + strings[i]);
 			}
 		}
 		return builder.toString();
