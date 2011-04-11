@@ -58,6 +58,21 @@ public interface MediaOperations {
 	String createAlbum(String name, String description);
 
 	/**
+	 * Retrieves an album's image as an array of bytes. Returns the image in Facebook's "normal" type.
+	 * @param albumId the album ID
+	 * @return an array of bytes containing the album's image.
+	 */
+	byte[] getAlbumImage(String albumId);
+
+	/**
+	 * Retrieves an album's image as an array of bytes.
+	 * @param albumId the album ID
+	 * @param imageType the image type (eg., small, normal, large. square)
+	 * @return an array of bytes containing the album's image.
+	 */
+	byte[] getAlbumImage(String albumId, ImageType imageType);
+
+	/**
 	 * Retrieves photo data from a specific album.
 	 * @param albumId the album's ID
 	 * @return a list of {@link Photo}s in the specified album.
@@ -70,6 +85,21 @@ public interface MediaOperations {
 	 * @return the requested {@link Photo}
 	 */
 	Photo getPhoto(String photoId);
+	
+	/**
+	 * Retrieves a photo's image as an array of bytes. Returns the image in Facebook's "normal" type.
+	 * @param photoId the photo ID
+	 * @return an array of bytes containing the photo's image.
+	 */
+	byte[] getPhotoImage(String photoId);
+
+	/**
+	 * Retrieves a photo's image as an array of bytes.
+	 * @param photoId the photo ID
+	 * @param imageType the image type (eg., small, normal, large. square)
+	 * @return an array of bytes containing the photo's image.
+	 */
+	byte[] getPhotoImage(String photoId, ImageType imageType);
 	
 	/**
 	 * Retrieves a list of videos for the authenticated user.
@@ -90,4 +120,19 @@ public interface MediaOperations {
 	 * @return the requested {@link Video} data.
 	 */
 	Video getVideo(String videoId);
+	
+	/**
+	 * Retrieves a video's image as an array of bytes. Returns the image in Facebook's "normal" type.
+	 * @param videoId the video ID
+	 * @return an array of bytes containing the video's image.
+	 */
+	byte[] getVideoImage(String videoId);
+
+	/**
+	 * Retrieves a video's image as an array of bytes.
+	 * @param videoId the video ID
+	 * @param imageType the image type (eg., small, normal, large. square)
+	 * @return an array of bytes containing the video's image.
+	 */
+	byte[] getVideoImage(String videoId, ImageType imageType);
 }

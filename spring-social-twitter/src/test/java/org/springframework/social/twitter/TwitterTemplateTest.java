@@ -22,15 +22,15 @@ import org.junit.Test;
 public class TwitterTemplateTest {
 	
 	@Test
-	public void notForAuthenticatedUser() {
-		TwitterTemplate twitter = new TwitterTemplate();
-		assertFalse(twitter.forAuthenticatedUser());
+	public void isAuthorizedForUser() {
+		TwitterTemplate twitter = new TwitterTemplate("API_KEY", "API_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET");
+		assertTrue(twitter.isAuthorizedForUser());
 	}
 
 	@Test
-	public void forAuthenticatedUser() {
-		TwitterTemplate twitter = new TwitterTemplate("API_KEY", "API_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET");
-		assertTrue(twitter.forAuthenticatedUser());
+	public void isAuthorizedForUser_notAuthorized() {
+		TwitterTemplate twitter = new TwitterTemplate();
+		assertFalse(twitter.isAuthorizedForUser());
 	}
 
 }

@@ -35,6 +35,21 @@ public interface GroupOperations {
 	Group getGroup(String groupId);
 	
 	/**
+	 * Retrieves a group's image as an array of bytes. Returns the image in Facebook's "normal" type.
+	 * @param groupId the group ID
+	 * @return an array of bytes containing the group's image.
+	 */
+	byte[] getGroupImage(String groupId);
+
+	/**
+	 * Retrieves a group's image as an array of bytes.
+	 * @param groupId the group ID
+	 * @param imageType the image type (eg., small, normal, large. square)
+	 * @return an array of bytes containing the group's image.
+	 */
+	byte[] getGroupImage(String groupId, ImageType imageType);
+	
+	/**
 	 * Retrieves the members of the specified group.
 	 * @param groupId the ID of the group
 	 * @return a list of {@link Reference}s, one for each member of the group.

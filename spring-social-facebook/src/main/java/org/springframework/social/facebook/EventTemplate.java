@@ -55,6 +55,14 @@ class EventTemplate implements EventOperations {
 		return graphApi.fetchObject(eventId, eventExtractor);
 	}
 	
+	public byte[] getEventImage(String eventId) {
+		return getEventImage(eventId, ImageType.NORMAL);
+	}
+	
+	public byte[] getEventImage(String eventId, ImageType imageType) {
+		return graphApi.fetchImage(eventId, "picture", imageType);
+	}
+	
 	public String createEvent(String name, String startTime, String endTime) {
 		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
 		data.set("name", name);

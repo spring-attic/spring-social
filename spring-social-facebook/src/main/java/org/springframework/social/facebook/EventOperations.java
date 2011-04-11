@@ -50,6 +50,21 @@ public interface EventOperations {
 	Event getEvent(String eventId);
 	
 	/**
+	 * Retrieves an event's image as an array of bytes. Returns the image in Facebook's "normal" type.
+	 * @param eventId the event ID
+	 * @return an array of bytes containing the event's image.
+	 */
+	byte[] getEventImage(String eventId);
+
+	/**
+	 * Retrieves an event's image as an array of bytes.
+	 * @param eventId the event ID
+	 * @param imageType the image type (eg., small, normal, large. square)
+	 * @return an array of bytes containing the event's image.
+	 */
+	byte[] getEventImage(String eventId, ImageType imageType);
+	
+	/**
 	 * Creates an event.
 	 * The String passed in for start time and end time is flexible in regard to format. Some valid examples are:
 	 * <ul>

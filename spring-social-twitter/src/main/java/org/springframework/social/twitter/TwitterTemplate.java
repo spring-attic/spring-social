@@ -47,7 +47,7 @@ import org.springframework.web.client.RestTemplate;
  */
 public class TwitterTemplate implements TwitterApi {
 
-	private boolean forAuthenticatedUser;
+	private boolean isAuthorizedForUser;
 	
 	private final RestTemplate restTemplate;
 
@@ -83,7 +83,7 @@ public class TwitterTemplate implements TwitterApi {
 	 */
 	public TwitterTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
 		this(ProtectedResourceClientFactory.create(apiKey, apiSecret, accessToken, accessTokenSecret));
-		forAuthenticatedUser = true;
+		isAuthorizedForUser = true;
 	}
 	
 	private TwitterTemplate(RestTemplate restTemplate) {
@@ -101,8 +101,8 @@ public class TwitterTemplate implements TwitterApi {
 		this.searchOperations = new SearchTemplate(this, restTemplate);
 	}
 
-	public boolean forAuthenticatedUser() {
-		return forAuthenticatedUser;
+	public boolean isAuthorizedForUser() {
+		return isAuthorizedForUser;
 	}
 	
 	public TimelineOperations timelineOperations() {

@@ -27,7 +27,7 @@ public interface TwitterApi extends LowLevelTwitterApi {
 	/**
 	 * Returns true if the TwitterApi is created to act on behalf of a user (eg., if it was created with OAuth credentials).
 	 */
-	boolean forAuthenticatedUser();
+	boolean isAuthorizedForUser();
 	
 	/**
 	 * Returns the portion of the Twitter API containing the user operations.

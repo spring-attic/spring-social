@@ -44,6 +44,14 @@ class GroupTemplate implements GroupOperations {
 		return graphApi.fetchObject(groupId, groupExtractor);
 	}
 	
+	public byte[] getGroupImage(String groupId) {
+		return getGroupImage(groupId, ImageType.NORMAL);
+	}
+	
+	public byte[] getGroupImage(String groupId, ImageType imageType) {
+		return graphApi.fetchImage(groupId, "picture", imageType);
+	}
+	
 	public List<Reference> getMembers(String groupId) {
 		return graphApi.fetchConnections(groupId, "members", referenceExtractor);
 	}
