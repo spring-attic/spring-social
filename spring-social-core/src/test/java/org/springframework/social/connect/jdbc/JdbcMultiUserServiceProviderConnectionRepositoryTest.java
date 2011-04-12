@@ -14,13 +14,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.social.connect.DuplicateServiceProviderConnectionException;
 import org.springframework.social.connect.NoSuchServiceProviderConnectionException;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionData;
@@ -261,7 +261,7 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 		assertNewConnection(restoredConnection);
 	}
 	
-	@Test(expected=DuplicateKeyException.class)
+	@Test(expected=DuplicateServiceProviderConnectionException.class)
 	public void addConnectionDuplicate() {
 		ServiceProviderConnection<TestFacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", null, "987654321", 3600));
 		connectionRepository.addConnection(connection);
