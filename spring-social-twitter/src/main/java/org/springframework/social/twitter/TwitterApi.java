@@ -23,11 +23,6 @@ package org.springframework.social.twitter;
  * @author Craig Walls
  */
 public interface TwitterApi extends LowLevelTwitterApi {
-
-	/**
-	 * Returns true if the TwitterApi is created to act on behalf of a user (eg., if it was created with OAuth credentials).
-	 */
-	boolean isAuthorizedForUser();
 	
 	/**
 	 * Returns the portion of the Twitter API containing the user operations.

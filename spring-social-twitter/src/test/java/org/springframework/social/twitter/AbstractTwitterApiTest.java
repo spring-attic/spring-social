@@ -35,7 +35,7 @@ public abstract class AbstractTwitterApiTest {
 
 	@Before
 	public void setup() {
-		twitter = new TwitterTemplate();
+		twitter = new TwitterTemplate("API_KEY", "API_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET");
 		mockServer = MockRestServiceServer.createServer(twitter.getRestTemplate());
 		responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.APPLICATION_JSON);

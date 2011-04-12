@@ -42,7 +42,7 @@ import org.springframework.web.client.RestTemplate;
  * Implementation of {@link SearchOperations}, providing a binding to Twitter's search and trend-oriented REST resources.
  * @author Craig Walls
  */
-class SearchTemplate implements SearchOperations {
+class SearchTemplate extends AbstractTwitterOperations implements SearchOperations {
 
 	private final RestTemplate restTemplate;
 	
@@ -52,10 +52,8 @@ class SearchTemplate implements SearchOperations {
 	
 	private TrendsListResponseExtractor weeklyTrendsListExtractor;
 	
-	private final LowLevelTwitterApi lowLevelApi;
-
 	public SearchTemplate(LowLevelTwitterApi lowLevelApi, RestTemplate restTemplate) {
-		this.lowLevelApi = lowLevelApi;
+		super(lowLevelApi);
 		this.restTemplate = restTemplate;
 		this.savedSearchExtractor = new SavedSearchResponseExtractor();
 		this.trendsListExtractor = new TrendsListResponseExtractor(TrendsListResponseExtractor.LONG_TREND_DATE_FORMAT);
@@ -96,21 +94,25 @@ class SearchTemplate implements SearchOperations {
 	}
 
 	public List<SavedSearch> getSavedSearches() {
-		return lowLevelApi.fetchObjects("saved_searches.json", savedSearchExtractor);
+		requireUserAuthorization();
+		return getLowLevelTwitterApi().fetchObjects("saved_searches.json", savedSearchExtractor);
 	}
 
 	public SavedSearch getSavedSearch(long searchId) {
-		return lowLevelApi.fetchObject("saved_searches/show/" + searchId + ".json", savedSearchExtractor);
+		requireUserAuthorization();
+		return getLowLevelTwitterApi().fetchObject("saved_searches/show/" + searchId + ".json", savedSearchExtractor);
 	}
 
 	public void createSavedSearch(String query) {		
+		requireUserAuthorization();
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
 		data.set("query", query);
-		lowLevelApi.publish("saved_searches/create.json", data);
+		getLowLevelTwitterApi().publish("saved_searches/create.json", data);
 	}
 
 	public void deleteSavedSearch(long searchId) {
-		lowLevelApi.delete("saved_searches/destroy/" + searchId + ".json");
+		requireUserAuthorization();
+		getLowLevelTwitterApi().delete("saved_searches/destroy/" + searchId + ".json");
 	}
 	
 	// Trends
@@ -118,10 +120,10 @@ class SearchTemplate implements SearchOperations {
 	public Trends getCurrentTrends() {
 		return getCurrentTrends(false);
 	}
-	
+
 	public Trends getCurrentTrends(boolean excludeHashtags) {
 		String path = makeTrendPath("trends/current.json", excludeHashtags, null);
-		return lowLevelApi.fetchObject(path, trendsListExtractor).get(0);
+		return getLowLevelTwitterApi().fetchObject(path, trendsListExtractor).get(0);
 	}
 
 	public List<Trends> getDailyTrends() {
@@ -134,7 +136,7 @@ class SearchTemplate implements SearchOperations {
 
 	public List<Trends> getDailyTrends(boolean excludeHashtags, String startDate) {
 		String path = makeTrendPath("trends/daily.json", excludeHashtags, startDate);
-		return lowLevelApi.fetchObject(path, trendsListExtractor);
+		return getLowLevelTwitterApi().fetchObject(path, trendsListExtractor);
 	}
 	
 	public List<Trends> getWeeklyTrends() {
@@ -147,7 +149,7 @@ class SearchTemplate implements SearchOperations {
 	
 	public List<Trends> getWeeklyTrends(boolean excludeHashtags, String startDate) {
 		String path = makeTrendPath("trends/weekly.json", excludeHashtags, startDate);
-		return lowLevelApi.fetchObject(path, weeklyTrendsListExtractor);
+		return getLowLevelTwitterApi().fetchObject(path, weeklyTrendsListExtractor);
 	}
 
 	public Trends getLocalTrends(long whereOnEarthId) {
@@ -160,7 +162,7 @@ class SearchTemplate implements SearchOperations {
 			params.put("exclude", "hashtags");
 		}
 		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> response = lowLevelApi.fetchObject("trends/" + whereOnEarthId + ".json", List.class, params);
+		List<Map<String, Object>> response = getLowLevelTwitterApi().fetchObject("trends/" + whereOnEarthId + ".json", List.class, params);
 		@SuppressWarnings("unchecked")
 		List<Map<String, String>> trendMapList = (List<Map<String, String>>) response.get(0).get("trends");
 		List<Trend> trendList = new ArrayList<Trend>(trendMapList.size());

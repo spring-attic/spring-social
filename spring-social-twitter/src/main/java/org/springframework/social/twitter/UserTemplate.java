@@ -27,60 +27,64 @@ import org.springframework.social.twitter.types.TwitterProfile;
  * Implementation of the {@link UserOperations} interface providing binding to Twitters' user-oriented REST resources.
  * @author Craig Walls
  */
-class UserTemplate implements UserOperations {
-
-	private final LowLevelTwitterApi lowLevelApi;
+class UserTemplate extends AbstractTwitterOperations implements UserOperations {
 	
 	private final TwitterProfileResponseExtractor profileExtractor;
 
 	private final SuggestionCategoryResponseExtractor suggestionCategoryExtractor;
 
 	public UserTemplate(LowLevelTwitterApi lowLevelApi) {
-		this.lowLevelApi = lowLevelApi;
+		super(lowLevelApi);
 		this.profileExtractor = new TwitterProfileResponseExtractor();
 		this.suggestionCategoryExtractor = new SuggestionCategoryResponseExtractor();
 	}
 
 	public long getProfileId() {
-		return lowLevelApi.fetchObject("account/verify_credentials.json", profileExtractor).getId();
+		requireUserAuthorization();
+		return getLowLevelTwitterApi().fetchObject("account/verify_credentials.json", profileExtractor).getId();
 	}
 
 	public String getScreenName() {
-		return lowLevelApi.fetchObject("account/verify_credentials.json", profileExtractor).getScreenName();
+		requireUserAuthorization();
+		return getLowLevelTwitterApi().fetchObject("account/verify_credentials.json", profileExtractor).getScreenName();
 	}
 
 	public TwitterProfile getUserProfile() {
-		return lowLevelApi.fetchObject("account/verify_credentials.json", profileExtractor);
+		requireUserAuthorization();
+		return getLowLevelTwitterApi().fetchObject("account/verify_credentials.json", profileExtractor);
 	}
 
 	public TwitterProfile getUserProfile(String screenName) {
-		return lowLevelApi.fetchObject("users/show.json", profileExtractor, Collections.singletonMap("screen_name", screenName));
+		return getLowLevelTwitterApi().fetchObject("users/show.json", profileExtractor, Collections.singletonMap("screen_name", screenName));
 	}
 	
 	public TwitterProfile getUserProfile(long userId) {
-		return lowLevelApi.fetchObject("users/show.json", profileExtractor, Collections.singletonMap("user_id", String.valueOf(userId)));
+		return getLowLevelTwitterApi().fetchObject("users/show.json", profileExtractor, Collections.singletonMap("user_id", String.valueOf(userId)));
 	}
 
 	public List<TwitterProfile> getUsers(long... userIds) {
+		requireUserAuthorization();
 		String joinedIds = ArrayUtils.join(userIds);
-		return lowLevelApi.fetchObjects("users/lookup.json", profileExtractor, Collections.singletonMap("user_id", joinedIds) );
+		return getLowLevelTwitterApi().fetchObjects("users/lookup.json", profileExtractor, Collections.singletonMap("user_id", joinedIds) );
 	}
 
 	public List<TwitterProfile> getUsers(String... screenNames) {
+		requireUserAuthorization();
 		String joinedScreenNames = ArrayUtils.join(screenNames);
-		return lowLevelApi.fetchObjects("users/lookup.json", profileExtractor, Collections.singletonMap("screen_name", joinedScreenNames));
+		return getLowLevelTwitterApi().fetchObjects("users/lookup.json", profileExtractor, Collections.singletonMap("screen_name", joinedScreenNames));
 	}
 
 	public List<TwitterProfile> searchForUsers(String query) {
-		return lowLevelApi.fetchObjects("users/search.json", profileExtractor, Collections.singletonMap("q", query));
+		requireUserAuthorization();
+		return getLowLevelTwitterApi().fetchObjects("users/search.json", profileExtractor, Collections.singletonMap("q", query));
 	}
 	
 	public List<SuggestionCategory> getSuggestionCategories() {
-		return lowLevelApi.fetchObjects("users/suggestions.json", suggestionCategoryExtractor);
+		return getLowLevelTwitterApi().fetchObjects("users/suggestions.json", suggestionCategoryExtractor);
 	}
 
 	public List<TwitterProfile> getSuggestions(String slug) {
-		return lowLevelApi.fetchObjects("users/suggestions/" + slug + ".json", "users", profileExtractor);
+		return getLowLevelTwitterApi().fetchObjects("users/suggestions/" + slug + ".json", "users", profileExtractor);
 	}
 
 	static final String SUGGESTIONS_URL = TwitterTemplate.API_URL_BASE + "users/suggestions/{slug}.json";

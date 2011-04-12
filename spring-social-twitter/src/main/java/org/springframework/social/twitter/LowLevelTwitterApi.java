@@ -28,6 +28,12 @@ import org.springframework.util.MultiValueMap;
  * Operations in this interface work with paths relative to the Twitter REST API's base path of https://api.twitter.com/1/.
  */
 public interface LowLevelTwitterApi {
+
+	/**
+	 * Returns true if the TwitterApi is configured to act on behalf of a user (eg., if it was created with OAuth credentials).
+	 */
+	boolean isAuthorizedForUser();
+
 	/**
 	 * Fetches a single object from the given path.
 	 * @param path the relative path to the resource.  
