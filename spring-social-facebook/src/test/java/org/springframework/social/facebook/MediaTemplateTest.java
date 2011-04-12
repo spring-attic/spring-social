@@ -88,7 +88,7 @@ public class MediaTemplateTest extends AbstractFacebookApiTest {
 		assertEquals(56, photos.get(0).getTinyImage().getHeight());
 		assertEquals("http://www.facebook.com/photo.php?pid=17698198&id=738140578", photos.get(0).getLink());
 		assertEquals("http://static.ak.fbcdn.net/rsrc.php/v1/yz/r/StEh3RhPvjk.gif", photos.get(0).getIcon());
-		assertEquals((Integer) 1, (Integer) photos.get(0).getPosition());
+		assertEquals(1, (int) photos.get(0).getPosition());
 		assertEquals(toDate("2011-03-24T21:36:06+0000"), photos.get(0).getCreatedTime());
 		assertEquals(toDate("2011-03-24T21:37:43+0000"), photos.get(0).getUpdatedTime());
 	}
@@ -190,7 +190,7 @@ public class MediaTemplateTest extends AbstractFacebookApiTest {
 		assertEquals(56, photo.getTinyImage().getHeight());
 		assertEquals("http://www.facebook.com/photo.php?pid=17698198&id=738140579", photo.getLink());
 		assertEquals("http://static.ak.fbcdn.net/rsrc.php/v1/yz/r/StEh3RhPvjl.gif", photo.getIcon());
-		assertEquals((Integer) 2, (Integer) photo.getPosition());
+		assertEquals(2, (int) photo.getPosition());
 		assertEquals(toDate("2011-03-24T21:36:06+0000"), photo.getCreatedTime());
 		assertEquals(toDate("2011-03-24T21:37:43+0000"), photo.getUpdatedTime());
 	}
