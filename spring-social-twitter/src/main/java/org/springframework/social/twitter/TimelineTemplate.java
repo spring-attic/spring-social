@@ -18,7 +18,6 @@ package org.springframework.social.twitter;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.social.twitter.support.CollectionUtils;
 import org.springframework.social.twitter.support.extractors.TweetResponseExtractor;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
 import org.springframework.social.twitter.types.StatusDetails;
@@ -119,8 +118,7 @@ class TimelineTemplate implements TimelineOperations {
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getRetweetedByIds(long tweetId) {
-		List<Number> retweetedByIds = (List<Number>) lowLevelApi.fetchObject("statuses/" + tweetId + "/retweeted_by/ids.json", List.class);
-		return CollectionUtils.asLongList(retweetedByIds);
+		return lowLevelApi.fetchObject("statuses/" + tweetId + "/retweeted_by/ids.json", List.class);
 	}
 
 	public List<Tweet> getFavorites() {

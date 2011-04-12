@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.springframework.social.twitter.support.CollectionUtils;
 import org.springframework.social.twitter.support.extractors.AbstractResponseExtractor;
 import org.springframework.social.twitter.support.extractors.ListOfLongExtractor;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
@@ -57,14 +56,12 @@ class FriendTemplate implements FriendOperations {
 	
 	@SuppressWarnings("unchecked")
 	public List<Long> getFriendIds(long userId) {
-		List<Number> friendIds = (List<Number>) requestApi.fetchObject("friends/ids.json", List.class, Collections.singletonMap("user_id", String.valueOf(userId)));
-		return CollectionUtils.asLongList(friendIds);
+		return requestApi.fetchObject("friends/ids.json", List.class, Collections.singletonMap("user_id", String.valueOf(userId)));
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getFriendIds(String screenName) {
-		List<Number> friendIds = (List<Number>) requestApi.fetchObject("friends/ids.json", List.class, Collections.singletonMap("screen_name", screenName));
-		return CollectionUtils.asLongList(friendIds);
+		return requestApi.fetchObject("friends/ids.json", List.class, Collections.singletonMap("screen_name", screenName));
 	}
 
 	public List<TwitterProfile> getFollowers(long userId) {
@@ -77,14 +74,12 @@ class FriendTemplate implements FriendOperations {
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getFollowerIds(long userId) {
-		List<Number> followerIds = (List<Number>) requestApi.fetchObject("followers/ids.json", List.class, Collections.singletonMap("user_id", String.valueOf(userId)));
-		return CollectionUtils.asLongList(followerIds);
+		return requestApi.fetchObject("followers/ids.json", List.class, Collections.singletonMap("user_id", String.valueOf(userId)));
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getFollowerIds(String screenName) {
-		List<Number> followerIds = (List<Number>) requestApi.fetchObject("followers/ids.json", List.class, Collections.singletonMap("screen_name", screenName));
-		return CollectionUtils.asLongList(followerIds);
+		return requestApi.fetchObject("followers/ids.json", List.class, Collections.singletonMap("screen_name", screenName));
 	}
 
 	public String follow(long userId) {

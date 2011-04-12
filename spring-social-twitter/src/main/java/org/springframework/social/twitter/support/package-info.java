@@ -1,4 +1,4 @@
 /**
- * Implementations of the sub-API interfaces composed into TwitterTemplate
+ * Support classes for Twitter API
  */
 package org.springframework.social.twitter.support;
