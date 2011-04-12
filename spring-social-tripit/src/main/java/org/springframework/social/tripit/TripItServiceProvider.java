@@ -28,8 +28,7 @@ public class TripItServiceProvider extends AbstractOAuth1ServiceProvider<TripItA
 	public TripItServiceProvider(String consumerKey, String consumerSecret) {
 		super(consumerKey, consumerSecret, new OAuth1Template(consumerKey, consumerSecret,
 			"https://api.tripit.com/oauth/request_token",
-			"https://www.tripit.com/oauth/authorize",
-			"https://www.tripit.com/oauth/authenticate",			
+			"https://www.tripit.com/oauth/authorize", null,			
 			"https://api.tripit.com/oauth/access_token",
 			OAuth1Version.CORE_10));
 	}
