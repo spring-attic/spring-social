@@ -61,6 +61,21 @@ public interface UserOperations {
 	TwitterProfile getUserProfile(long userId);
 
 	/**
+	 * Retrieves the user's profile image. Returns the image in Twitter's "normal" size (48px x 48px).
+	 * @param screenName the screen name of the user
+	 * @return an array of bytes containing the user's profile image.
+	 */
+	byte[] getUserProfileImage(String screenName);
+
+	/**
+	 * Retrieves the user's profile image. Returns the image in Twitter's "normal" type.
+	 * @param screenName the screen name of the user
+	 * @param size the size of the image
+	 * @return an array of bytes containing the user's profile image.
+	 */
+	byte[] getUserProfileImage(String screenName, ImageSize size);
+	
+	/**
 	 * Retrieves a list of Twitter profiles for the given list of user IDs.
 	 */
 	List<TwitterProfile> getUsers(long... userIds);

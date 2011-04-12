@@ -65,7 +65,6 @@ public class NumbersAsLongDeserializerTest {
 		@SuppressWarnings("unchecked")
 		List<Long> response = restTemplate.getForObject("http://foo.bar/xyz", List.class);
 		assertEquals(3, response.size());
-		System.out.println(Long.MAX_VALUE);
 		assertEquals(12345, (long) response.get(0));
 		assertEquals(9223372036854775807L, (long) response.get(1));
 		assertEquals(1, (long) response.get(2));		

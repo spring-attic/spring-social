@@ -29,6 +29,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.BadCredentialsException;
 import org.springframework.social.oauth1.ProtectedResourceClientFactory;
+import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.social.twitter.support.NumbersAsLongDeserializer;
 import org.springframework.social.twitter.support.TwitterErrorHandler;
 import org.springframework.social.twitter.support.extractors.ResponseExtractor;
@@ -79,7 +80,7 @@ public class TwitterTemplate implements TwitterApi {
 	 * Those operations requiring authentication will throw {@link BadCredentialsException}.
 	 */
 	public TwitterTemplate() {
-		this(new RestTemplate());
+		this(new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory()));
 	}
 
 	/**
@@ -176,8 +177,8 @@ public class TwitterTemplate implements TwitterApi {
 		return restTemplate.getForObject(buildUri(path, params), type);
 	}
 
-	public byte[] fetchImage(String path) {		
-		ResponseEntity<byte[]> response = restTemplate.getForEntity(buildUri(path, Collections.<String, String>emptyMap()), byte[].class);
+	public byte[] fetchImage(String path, Map<String, String> queryParams) {
+		ResponseEntity<byte[]> response = restTemplate.getForEntity(buildUri(path, queryParams), byte[].class);
 		if(response.getStatusCode() == HttpStatus.FOUND) {
 			throw new UnsupportedOperationException("Attempt to fetch image resulted in a redirect which could not be followed. Add Apache HttpComponents HttpClient to the classpath " +
 					"to be able to follow redirects.");

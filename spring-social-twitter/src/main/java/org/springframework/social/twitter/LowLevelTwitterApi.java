@@ -63,10 +63,10 @@ public interface LowLevelTwitterApi {
 	 * Fetches a list of objects from the given path.
 	 * @param path the relative path to the resource. 
 	 * @param extractor an extractor used to extract the response into a specific type.
-	 * @param params parameters to fill in the template placeholders, if any.
+	 * @param queryParams parameters to fill in the template placeholders, if any.
 	 * @return a list of Java objects representing the requested Twitter resource.
 	 */
-	<T> List<T> fetchObjects(String path, ResponseExtractor<T> extractor, Map<String, String> params);
+	<T> List<T> fetchObjects(String path, ResponseExtractor<T> extractor, Map<String, String> queryParams);
 
 	/**
 	 * Fetches a list of objects from the given path.
@@ -77,16 +77,30 @@ public interface LowLevelTwitterApi {
 	 */
 	<T> List<T> fetchObjects(String path, String jsonProperty, ResponseExtractor<T> extractor);
 
+	/**
+	 * Fetches an object from the given path.
+	 * @param path the relative path to the resource. 
+	 * @param type the type of object to map the resource to
+	 * @return the requested object.
+	 */
 	<T> T fetchObject(String path, Class<T> type);
 
-	<T> T fetchObject(String path, Class<T> type, Map<String, String> params);
+	/**
+	 * Fetches an object from the given path.
+	 * @param path the relative path to the resource. 
+	 * @param type the type of object to map the resource to
+	 * @param queryParams parameters to fill in the template placeholders, if any.
+	 * @return the requested object.
+	 */
+	<T> T fetchObject(String path, Class<T> type, Map<String, String> queryParams);
 
 	/**
 	 * Fetches an image an array of bytes from the given path.
 	 * @param path the relative path to the resource. 
+	 * @param queryParams parameters to fill in the template placeholders, if any.
 	 * @return an array of bytes containing the requested image.
 	 */
-	byte[] fetchImage(String path);
+	byte[] fetchImage(String path, Map<String, String> queryParams);
 	
 	/**
 	 * Publishes data to the Twitter REST API. Does not return any results.
@@ -109,10 +123,10 @@ public interface LowLevelTwitterApi {
 	 * @param path the relative path to the resource. 
 	 * @param data the data to be posted.
 	 * @param extractor an extractor used to extract the response into a specific type.
-	 * @param params parameters to fill in the template placeholders, if any.
+	 * @param queryParams parameters to fill in the template placeholders, if any.
 	 * @return a Java object representing the response after publishing.
 	 */
-	<T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor, Map<String, String> params);
+	<T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor, Map<String, String> queryParams);
 
 	/**
 	 * Deletes a resource.

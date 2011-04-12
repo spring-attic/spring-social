@@ -16,7 +16,9 @@
 package org.springframework.social.twitter;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.social.twitter.support.extractors.SuggestionCategoryResponseExtractor;
 import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
@@ -60,6 +62,17 @@ class UserTemplate extends AbstractTwitterOperations implements UserOperations {
 	
 	public TwitterProfile getUserProfile(long userId) {
 		return getLowLevelTwitterApi().fetchObject("users/show.json", profileExtractor, Collections.singletonMap("user_id", String.valueOf(userId)));
+	}
+	
+	public byte[] getUserProfileImage(String screenName) {
+		return getUserProfileImage(screenName, ImageSize.NORMAL);
+	}
+	
+	public byte[] getUserProfileImage(String screenName, ImageSize size) {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("screen_name", screenName);
+		params.put("size", size.toString().toLowerCase());
+		return getLowLevelTwitterApi().fetchImage("users/profile_image", params);
 	}
 
 	public List<TwitterProfile> getUsers(long... userIds) {
