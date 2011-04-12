@@ -25,12 +25,14 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
+import org.springframework.social.connect.DuplicateServiceProviderConnectionException;
 import org.springframework.social.connect.NoSuchServiceProviderConnectionException;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionData;
@@ -147,10 +149,14 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 	}
 
 	public void addConnection(ServiceProviderConnection<?> connection) {
-		ServiceProviderConnectionData data = connection.createData();
-		jdbcTemplate.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, (select ifnull(max(rank) + 1, 1) from ServiceProviderConnection where localUserId = ? and providerId = ?), ?, ?, ?, ?, ?, ?, ?)",
-				localUserId, data.getProviderId(), data.getProviderUserId(), localUserId, data.getProviderId(), data.getProfileName(), data.getProfileUrl(), data.getProfilePictureUrl(),
-				encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime());
+		try {
+			ServiceProviderConnectionData data = connection.createData();
+			jdbcTemplate.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, (select ifnull(max(rank) + 1, 1) from ServiceProviderConnection where localUserId = ? and providerId = ?), ?, ?, ?, ?, ?, ?, ?)",
+					localUserId, data.getProviderId(), data.getProviderUserId(), localUserId, data.getProviderId(), data.getProfileName(), data.getProfileUrl(), data.getProfilePictureUrl(),
+					encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime());
+		} catch (DuplicateKeyException e) {
+			throw new DuplicateServiceProviderConnectionException(connection.getKey());
+		}
 	}
 	
 	public void updateConnection(ServiceProviderConnection<?> connection) {
