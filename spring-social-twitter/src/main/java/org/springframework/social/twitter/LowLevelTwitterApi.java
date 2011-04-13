@@ -20,6 +20,9 @@ import java.util.Map;
 import org.springframework.util.MultiValueMap;
 
 // TODO: Consider a finding a better name for this interface
+// TODO: Now that the extractors approach is gone, these operations do very little more than add a layer
+//       above what RestTemplate already does. Consider ditching this and just passing RestTemplate into
+//       sub-apis.
 
 /**
  * Low level interface defining generic operations for interacting with Twitter's REST API.

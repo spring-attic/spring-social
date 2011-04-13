@@ -219,7 +219,4 @@ class ListTemplate extends AbstractTwitterOperations implements ListOperations {
 		return request;
 	}
 
-	static final String CHECK_MEMBER_URL = TwitterTemplate.API_URL_BASE + "{user_id}/{list_id}/members/{member_id}.json";
-	static final String CHECK_SUBSCRIBER_URL = TwitterTemplate.API_URL_BASE + "{user_id}/{list_id}/subscribers/{subscriber_id}.json";
-
 }

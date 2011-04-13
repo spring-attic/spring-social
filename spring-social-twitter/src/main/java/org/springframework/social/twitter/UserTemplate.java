@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.social.twitter.support.json.SuggestionCategoryList;
-import org.springframework.social.twitter.support.json.TwitterProfileUsersList;
 import org.springframework.social.twitter.support.json.TwitterProfileList;
+import org.springframework.social.twitter.support.json.TwitterProfileUsersList;
 import org.springframework.social.twitter.types.SuggestionCategory;
 import org.springframework.social.twitter.types.TwitterProfile;
 
@@ -95,5 +95,4 @@ class UserTemplate extends AbstractTwitterOperations implements UserOperations {
 		return getLowLevelTwitterApi().fetchObject("users/suggestions/" + slug + ".json", TwitterProfileUsersList.class).getList();
 	}
 
-	static final String SUGGESTIONS_URL = TwitterTemplate.API_URL_BASE + "users/suggestions/{slug}.json";
 }
