@@ -29,7 +29,6 @@ import org.springframework.social.BadCredentialsException;
 import org.springframework.social.oauth1.ProtectedResourceClientFactory;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.social.twitter.support.TwitterErrorHandler;
-import org.springframework.social.twitter.support.extractors.ResponseExtractor;
 import org.springframework.social.twitter.support.json.TwitterModule;
 import org.springframework.social.util.URIBuilder;
 import org.springframework.util.MultiValueMap;
@@ -137,36 +136,7 @@ public class TwitterTemplate implements TwitterApi {
 		return userOperations;
 	}
 	
-	// low-level
-	public <T> T fetchObject(String path, ResponseExtractor<T> extractor) {
-		return fetchObject(path, extractor, Collections.<String, String>emptyMap() );
-	}
-	
-	public <T> T fetchObject(String path, ResponseExtractor<T> extractor, Map<String, String> params) {
-		@SuppressWarnings("unchecked")
-		Map<String, Object> response = restTemplate.getForObject(buildUri(path, params), Map.class);
-		return extractor.extractObject(response);
-	}
-	
-	public <T> List<T> fetchObjects(String path, ResponseExtractor<T> extractor) {
-		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> response = restTemplate.getForObject(buildUri(path, Collections.<String, String>emptyMap() ), List.class);
-		return extractor.extractObjects(response);
-	}
-
-	public <T> List<T> fetchObjects(String path, ResponseExtractor<T> extractor, Map<String, String> params) {
-		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> response = restTemplate.getForObject(buildUri(path, params), List.class);
-		return extractor.extractObjects(response);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <T> List<T> fetchObjects(String path, String jsonProperty, ResponseExtractor<T> extractor) {
-		Map<String, Object> response = restTemplate.getForObject(buildUri(path, Collections.<String, String>emptyMap()), Map.class);
-		List<Map<String, Object>> list = (List<Map<String, Object>>) response.get(jsonProperty);
-		return extractor.extractObjects(list);
-	}
-	
+	// low-level	
 	public <T> T fetchObject(String path, Class<T> type) {
 		return fetchObject(path, type, Collections.<String, String>emptyMap());
 	}
@@ -188,18 +158,12 @@ public class TwitterTemplate implements TwitterApi {
 		restTemplate.postForEntity(buildUri(path, Collections.<String, String>emptyMap()), data, Map.class);
 	}
 
-	public <T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor) {
-		return publish(path, data, extractor, Collections.<String, String>emptyMap());
-	}
-
 	public <T> T publish(String path, MultiValueMap<String, Object> data, Class<T> type) {
 		return restTemplate.postForObject(buildUri(path, Collections.<String, String>emptyMap()), data, type);
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor, Map<String, String> params) {
-		Map<String, Object> response = (Map<String, Object>) restTemplate.postForObject(buildUri(path, params), data, Map.class);
-		return extractor.extractObject(response);
+	public <T> T publish(String path, MultiValueMap<String, Object> data, Class<T> type, Map<String, String> queryParams) {
+		return restTemplate.postForObject(buildUri(path, queryParams), data, type);
 	}
 
 	public void delete(String path) {

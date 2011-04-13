@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.support.extractors;
+package org.springframework.social.twitter.support.json;
 
 import java.util.List;
 import java.util.Map;
 
-public interface ResponseExtractor<T> {
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.social.twitter.types.Trend;
 
-	T extractObject(Map<String, Object> responseMap);
+@JsonIgnoreProperties(ignoreUnknown=true)
+public class WeeklyTrendsList extends AbstractTrendsList {
 
-	List<T> extractObjects(List<Map<String, Object>> responseList);
+	@JsonCreator
+	public WeeklyTrendsList(@JsonProperty("trends") Map<String, List<Trend>> trends) {
+		super(trends, WEEKLY_TREND_DATE_FORMAT);
+	}
 
 }

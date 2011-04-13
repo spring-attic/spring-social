@@ -27,23 +27,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.twitter.types.Trend;
 import org.springframework.social.twitter.types.Trends;
 
-@JsonIgnoreProperties(ignoreUnknown=true)
-public class TrendsList {
+public class AbstractTrendsList {
 	private final List<Trends> list;
 
-	@JsonCreator
-	public TrendsList(@JsonProperty("trends") Map<String, List<Trend>> trends) {
+	public AbstractTrendsList(Map<String, List<Trend>> trends, DateFormat dateFormat) {
 		list = new ArrayList<Trends>(trends.size());
 		for(Iterator<Entry<String, List<Trend>>> trendsIt = trends.entrySet().iterator(); trendsIt.hasNext();) {
 			Entry<String, List<Trend>> entry = trendsIt.next();
 			
-			list.add(new Trends(toDate(entry.getKey(), LONG_TREND_DATE_FORMAT), entry.getValue()));
+			list.add(new Trends(toDate(entry.getKey(), dateFormat), entry.getValue()));
 		}
 		Collections.sort(list, new Comparator<Trends>() {
 			public int compare(Trends t1, Trends t2) {
@@ -68,9 +63,9 @@ public class TrendsList {
         }
     }
     
-	public static final DateFormat SIMPLE_TREND_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	public static final DateFormat WEEKLY_TREND_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
-	public static final DateFormat LONG_TREND_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public static final DateFormat DAILY_TREND_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public static final DateFormat LOCAL_TREND_DATE_FORMAT = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss'Z'");
 

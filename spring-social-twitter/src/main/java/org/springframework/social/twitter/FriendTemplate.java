@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.springframework.social.twitter.support.extractors.AbstractResponseExtractor;
 import org.springframework.social.twitter.support.json.LongIdsList;
 import org.springframework.social.twitter.support.json.LongList;
 import org.springframework.social.twitter.support.json.TwitterProfileList;
@@ -34,11 +33,8 @@ import org.springframework.util.MultiValueMap;
  */
 class FriendTemplate extends AbstractTwitterOperations implements FriendOperations {
 	
-	private final MapExtractor mapExtractor;
-
 	public FriendTemplate(LowLevelTwitterApi lowLevelApi) {
 		super(lowLevelApi);
-		this.mapExtractor = new MapExtractor();
 	}
 
 	public List<TwitterProfile> getFriends(long userId) {
@@ -75,22 +71,22 @@ class FriendTemplate extends AbstractTwitterOperations implements FriendOperatio
 
 	public String follow(long userId) {
 		requireUserAuthorization();
-		return (String) getLowLevelTwitterApi().publish("friendships/create.json", EMPTY_DATA, mapExtractor, Collections.singletonMap("user_id", String.valueOf(userId))).get("screen_name");
+		return (String) getLowLevelTwitterApi().publish("friendships/create.json", EMPTY_DATA, Map.class, Collections.singletonMap("user_id", String.valueOf(userId))).get("screen_name");
 	}
 
 	public String follow(String screenName) {
 		requireUserAuthorization();
-		return (String) getLowLevelTwitterApi().publish("friendships/create.json", EMPTY_DATA, mapExtractor, Collections.singletonMap("screen_name", screenName)).get("screen_name");
+		return (String) getLowLevelTwitterApi().publish("friendships/create.json", EMPTY_DATA, Map.class, Collections.singletonMap("screen_name", screenName)).get("screen_name");
 	}
 	
 	public String unfollow(long userId) {
 		requireUserAuthorization();
-		return (String) getLowLevelTwitterApi().publish("friendships/destroy.json", EMPTY_DATA, mapExtractor, Collections.singletonMap("user_id", String.valueOf(userId))).get("screen_name");
+		return (String) getLowLevelTwitterApi().publish("friendships/destroy.json", EMPTY_DATA, Map.class, Collections.singletonMap("user_id", String.valueOf(userId))).get("screen_name");
 	}
 
 	public String unfollow(String screenName) {
 		requireUserAuthorization();
-		return (String) getLowLevelTwitterApi().publish("friendships/destroy.json", EMPTY_DATA, mapExtractor, Collections.singletonMap("screen_name", screenName)).get("screen_name");
+		return (String) getLowLevelTwitterApi().publish("friendships/destroy.json", EMPTY_DATA, Map.class, Collections.singletonMap("screen_name", screenName)).get("screen_name");
 	}
 	
 	// doesn't require authentication
@@ -113,11 +109,5 @@ class FriendTemplate extends AbstractTwitterOperations implements FriendOperatio
 	}
 
 	private static final MultiValueMap<String, Object> EMPTY_DATA = new LinkedMultiValueMap<String, Object>();
-	
-	private static class MapExtractor extends AbstractResponseExtractor<Map<String, Object>> {
-		public Map<String, Object> extractObject(Map<String, Object> responseMap) {
-			return responseMap;
-		}
-	}
 	
 }

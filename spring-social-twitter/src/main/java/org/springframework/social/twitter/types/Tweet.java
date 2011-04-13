@@ -31,6 +31,21 @@ public class Tweet {
 	private long fromUserId;
 	private String languageCode;
 	private String source;
+	
+	// TODO: Get rid of this
+	public Tweet() {}
+	
+	public Tweet(long id, String text, Date createdAt, String fromUser, String profileImageUrl, Long toUserId, long fromUserId, String languageCode, String source) {
+		this.id = id;
+		this.text = text;
+		this.createdAt = createdAt;
+		this.fromUser = fromUser;
+		this.profileImageUrl = profileImageUrl;
+		this.toUserId = toUserId;
+		this.fromUserId = fromUserId;
+		this.languageCode = languageCode;
+		this.source = source;		
+	}
 
 	public String getText() {
 		return text;

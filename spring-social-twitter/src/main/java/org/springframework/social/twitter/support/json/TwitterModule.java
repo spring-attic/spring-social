@@ -22,6 +22,7 @@ import org.springframework.social.twitter.types.SavedSearch;
 import org.springframework.social.twitter.types.SuggestionCategory;
 import org.springframework.social.twitter.types.Trend;
 import org.springframework.social.twitter.types.Trends;
+import org.springframework.social.twitter.types.Tweet;
 import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.social.twitter.types.UserList;
 
@@ -39,5 +40,6 @@ public class TwitterModule extends SimpleModule {
 		context.setMixInAnnotations(SuggestionCategory.class, SuggestionCategoryMixin.class);
 		context.setMixInAnnotations(DirectMessage.class, DirectMessageMixin.class);
 		context.setMixInAnnotations(UserList.class, UserListMixin.class);
+		context.setMixInAnnotations(Tweet.class, TweetMixin.class);
 	}
 }

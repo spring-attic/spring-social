@@ -17,11 +17,9 @@ package org.springframework.social.twitter;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.social.twitter.support.extractors.AbstractResponseExtractor;
-import org.springframework.social.twitter.support.extractors.TweetResponseExtractor;
+import org.springframework.social.twitter.support.json.TweetList;
 import org.springframework.social.twitter.support.json.TwitterProfileUsersList;
 import org.springframework.social.twitter.support.json.UserListList;
 import org.springframework.social.twitter.types.Tweet;
@@ -38,16 +36,13 @@ import org.springframework.web.client.HttpClientErrorException;
 class ListTemplate extends AbstractTwitterOperations implements ListOperations {
 
 	private final UserOperations userApi;
-		
-	private TweetResponseExtractor tweetExtractor;
-			
+					
 	public ListTemplate(LowLevelTwitterApi lowLevelApi, UserOperations userApi) {
 		// TODO : Get user ID sooner and stash it for later use so that we don't
 		//        fetch it for every operation that needs it. This is an easy thing to do,
 		//        but makes the testing a bit tricky.
 		super(lowLevelApi);
 		this.userApi = userApi;
-		this.tweetExtractor = new TweetResponseExtractor();
 	}
 
 	public List<UserList> getLists(long userId) {
@@ -71,11 +66,11 @@ class ListTemplate extends AbstractTwitterOperations implements ListOperations {
 	}
 
 	public List<Tweet> getListStatuses(long userId, long listId) {
-		return getLowLevelTwitterApi().fetchObjects("{userId}/lists/{listId}/statuses.json", tweetExtractor);
+		return getLowLevelTwitterApi().fetchObject("{userId}/lists/{listId}/statuses.json", TweetList.class).getList();
 	}
 
 	public List<Tweet> getListStatuses(String screenName, String listSlug) {
-		return getLowLevelTwitterApi().fetchObjects("{screenName}/lists/{screenName}/statuses.json", tweetExtractor);
+		return getLowLevelTwitterApi().fetchObject("{screenName}/lists/{screenName}/statuses.json", TweetList.class).getList();
 	}
 
 	public UserList createList(String name, String description, boolean isPublic) {	
@@ -205,19 +200,13 @@ class ListTemplate extends AbstractTwitterOperations implements ListOperations {
 
 	private boolean checkListConnection(String path) {
 		try {
-			getLowLevelTwitterApi().fetchObject(path, new NoOpExtractor());
+			getLowLevelTwitterApi().fetchObject(path, String.class);
 			return true;
 		} catch (HttpClientErrorException e) {
 			if(e.getStatusCode() == HttpStatus.NOT_FOUND) {
 				return false;
 			} 
 			throw e;
-		}
-	}
-
-	private static class NoOpExtractor extends AbstractResponseExtractor<Object> {
-		public Object extractObject(Map<String, Object> responseMap) {
-			return null;
 		}
 	}
 

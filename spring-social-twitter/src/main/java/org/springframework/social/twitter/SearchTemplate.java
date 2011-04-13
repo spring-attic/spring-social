@@ -25,9 +25,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.social.twitter.support.extractors.TrendsListResponseExtractor;
+import org.springframework.social.twitter.support.json.DailyTrendsList;
 import org.springframework.social.twitter.support.json.SavedSearchList;
-import org.springframework.social.twitter.support.json.TrendsList;
+import org.springframework.social.twitter.support.json.WeeklyTrendsList;
 import org.springframework.social.twitter.types.SavedSearch;
 import org.springframework.social.twitter.types.SearchResults;
 import org.springframework.social.twitter.types.Trend;
@@ -47,15 +47,9 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 
 	private final RestTemplate restTemplate;
 		
-	private TrendsListResponseExtractor trendsListExtractor;
-	
-	private TrendsListResponseExtractor weeklyTrendsListExtractor;
-	
 	public SearchTemplate(LowLevelTwitterApi lowLevelApi, RestTemplate restTemplate) {
 		super(lowLevelApi);
 		this.restTemplate = restTemplate;
-		this.trendsListExtractor = new TrendsListResponseExtractor(TrendsListResponseExtractor.LONG_TREND_DATE_FORMAT);
-		this.weeklyTrendsListExtractor = new TrendsListResponseExtractor(TrendsListResponseExtractor.SIMPLE_TREND_DATE_FORMAT);
 	}
 
 	public SearchResults search(String query) {
@@ -121,7 +115,7 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 
 	public Trends getCurrentTrends(boolean excludeHashtags) {
 		String path = makeTrendPath("trends/current.json", excludeHashtags, null);
-		return getLowLevelTwitterApi().fetchObject(path, TrendsList.class).getList().get(0);
+		return getLowLevelTwitterApi().fetchObject(path, DailyTrendsList.class).getList().get(0);
 	}
 
 	public List<Trends> getDailyTrends() {
@@ -134,7 +128,7 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 
 	public List<Trends> getDailyTrends(boolean excludeHashtags, String startDate) {
 		String path = makeTrendPath("trends/daily.json", excludeHashtags, startDate);
-		return getLowLevelTwitterApi().fetchObject(path, TrendsList.class).getList();
+		return getLowLevelTwitterApi().fetchObject(path, DailyTrendsList.class).getList();
 	}
 	
 	public List<Trends> getWeeklyTrends() {
@@ -147,7 +141,7 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 	
 	public List<Trends> getWeeklyTrends(boolean excludeHashtags, String startDate) {
 		String path = makeTrendPath("trends/weekly.json", excludeHashtags, startDate);
-		return getLowLevelTwitterApi().fetchObject(path, weeklyTrendsListExtractor);
+		return getLowLevelTwitterApi().fetchObject(path, WeeklyTrendsList.class).getList();
 	}
 
 	public Trends getLocalTrends(long whereOnEarthId) {
