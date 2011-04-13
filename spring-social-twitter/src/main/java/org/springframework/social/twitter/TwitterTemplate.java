@@ -15,14 +15,9 @@
  */
 package org.springframework.social.twitter;
 
-import java.net.URI;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.BadCredentialsException;
@@ -30,8 +25,6 @@ import org.springframework.social.oauth1.ProtectedResourceClientFactory;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.social.twitter.support.TwitterErrorHandler;
 import org.springframework.social.twitter.support.json.TwitterModule;
-import org.springframework.social.util.URIBuilder;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -133,55 +126,8 @@ public class TwitterTemplate implements TwitterApi {
 	public UserOperations userOperations() {
 		return userOperations;
 	}
-	
-	// low-level	
-	public <T> T fetchObject(String path, Class<T> type) {
-		return fetchObject(path, type, Collections.<String, String>emptyMap());
-	}
-
-	public <T> T fetchObject(String path, Class<T> type, Map<String, String> params) {
-		return restTemplate.getForObject(buildUri(path, params), type);
-	}
-
-	public byte[] fetchImage(String path, Map<String, String> queryParams) {
-		ResponseEntity<byte[]> response = restTemplate.getForEntity(buildUri(path, queryParams), byte[].class);
-		if(response.getStatusCode() == HttpStatus.FOUND) {
-			throw new UnsupportedOperationException("Attempt to fetch image resulted in a redirect which could not be followed. Add Apache HttpComponents HttpClient to the classpath " +
-					"to be able to follow redirects.");
-		}
-		return response.getBody();
-	}
-	
-	public void publish(String path, MultiValueMap<String, Object> data) {
-		restTemplate.postForEntity(buildUri(path, Collections.<String, String>emptyMap()), data, Map.class);
-	}
-
-	public <T> T publish(String path, MultiValueMap<String, Object> data, Class<T> type) {
-		return restTemplate.postForObject(buildUri(path, Collections.<String, String>emptyMap()), data, type);
-	}
-
-	public <T> T publish(String path, MultiValueMap<String, Object> data, Class<T> type, Map<String, String> queryParams) {
-		return restTemplate.postForObject(buildUri(path, queryParams), data, type);
-	}
-
-	public void delete(String path) {
-		delete(path, Collections.<String, String>emptyMap());
-	}
-	
-	public void delete(String path, Map<String, String> queryParams) {
-		restTemplate.delete(buildUri(path, queryParams));
-	}
-	
+		
 	// private helper 
-	
-	private URI buildUri(String path, Map<String, String> params) {
-		URIBuilder uriBuilder = URIBuilder.fromUri(API_URL_BASE + path);
-		for (String paramName : params.keySet()) {
-			uriBuilder.queryParam(paramName, String.valueOf(params.get(paramName)));
-		}
-		URI uri = uriBuilder.build();
-		return uri;
-	}
 
 	private void registerTwitterModule(RestTemplate restTemplate) {
 		List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
