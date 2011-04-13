@@ -15,21 +15,16 @@
  */
 package org.springframework.social.twitter;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.social.twitter.support.json.DailyTrendsList;
+import org.springframework.social.twitter.support.json.LocalTrendsHolder;
 import org.springframework.social.twitter.support.json.SavedSearchList;
 import org.springframework.social.twitter.support.json.WeeklyTrendsList;
 import org.springframework.social.twitter.types.SavedSearch;
 import org.springframework.social.twitter.types.SearchResults;
-import org.springframework.social.twitter.types.Trend;
 import org.springframework.social.twitter.types.Trends;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -141,16 +136,7 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 		if(excludeHashtags) {
 			params.put("exclude", "hashtags");
 		}
-		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> response = getLowLevelTwitterApi().fetchObject("trends/" + whereOnEarthId + ".json", List.class, params);
-		@SuppressWarnings("unchecked")
-		List<Map<String, String>> trendMapList = (List<Map<String, String>>) response.get(0).get("trends");
-		List<Trend> trendList = new ArrayList<Trend>(trendMapList.size());
-		for (Map<String, String> trendMap : trendMapList) {
-			trendList.add(new Trend(trendMap.get("name"), trendMap.get("query")));
-		}
-		String dateString = String.valueOf(response.get(0).get("created_at"));
-		return new Trends(toDate(dateString, localTrendDateFormat), trendList);
+		return getLowLevelTwitterApi().fetchObject("trends/" + whereOnEarthId + ".json", LocalTrendsHolder.class, params).getTrends();
 	}
 
 	private String makeTrendPath(String basePath, boolean excludeHashtags, String startDate) {
@@ -159,18 +145,6 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 		url += excludeHashtags && startDate != null ? "&" : "";
 		url += startDate != null ? "date=" + startDate : "";
 		return url;
-	}
-
-	private static final DateFormat localTrendDateFormat = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss'Z'");
-
-	// 2011-03-18T16:45:33Z
-
-	private static Date toDate(String dateString, DateFormat dateFormat) {
-		try {
-			return dateFormat.parse(dateString);
-		} catch (ParseException e) {
-			return null;
-		}
 	}
 
 	static final int DEFAULT_RESULTS_PER_PAGE = 50;

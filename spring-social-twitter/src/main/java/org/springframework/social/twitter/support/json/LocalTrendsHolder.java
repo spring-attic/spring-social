@@ -15,20 +15,27 @@
  */
 package org.springframework.social.twitter.support.json;
 
-import java.util.List;
-import java.util.Map;
-
-import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.twitter.types.Trend;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.springframework.social.twitter.types.Trends;
 
+/**
+ * Holds a Trends object deserialized from Twitter's local trends JSON structure.
+ * Provides a convenient place to hang the @JsonDeserialize annotation.
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class LocalTrendsList extends AbstractTrendsList {
+@JsonDeserialize(using = LocalTrendsDeserializer.class)
+public class LocalTrendsHolder {
+	
+	private final Trends trends;
 
-	@JsonCreator
-	public LocalTrendsList(@JsonProperty("trends") Map<String, List<Trend>> trends) {
-		super(trends, WEEKLY_TREND_DATE_FORMAT);
+	public LocalTrendsHolder(Trends trends) {
+		this.trends = trends;
 	}
 
+	public Trends getTrends() {
+		return trends;
+	}
+	
 }
