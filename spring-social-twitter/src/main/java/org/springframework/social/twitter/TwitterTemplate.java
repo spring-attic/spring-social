@@ -77,7 +77,7 @@ public class TwitterTemplate implements TwitterApi {
 	 * Those operations requiring authentication will throw {@link BadCredentialsException}.
 	 */
 	public TwitterTemplate() {
-		this(new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory()));
+		this(new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory()), false);
 	}
 
 	/**
@@ -88,24 +88,22 @@ public class TwitterTemplate implements TwitterApi {
 	 * @param accessTokenSecret an access token secret acquired through OAuth authentication with LinkedIn
 	 */
 	public TwitterTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
-		this(ProtectedResourceClientFactory.create(apiKey, apiSecret, accessToken, accessTokenSecret));
-		isAuthorizedForUser = true;
+		this(ProtectedResourceClientFactory.create(apiKey, apiSecret, accessToken, accessTokenSecret), true);
 	}
 	
-	private TwitterTemplate(RestTemplate restTemplate) {
+	private TwitterTemplate(RestTemplate restTemplate, boolean isAuthorizedForUser) {
 		this.restTemplate = restTemplate;
+		this.isAuthorizedForUser = isAuthorizedForUser;
 		registerTwitterModule(restTemplate);
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
-		this.userOperations = new UserTemplate(this);
-		this.directMessageOperations = new DirectMessageTemplate(this);
-		this.friendOperations = new FriendTemplate(this);
-		this.timelineOperations = new TimelineTemplate(this);
+		this.userOperations = new UserTemplate(restTemplate, isAuthorizedForUser);
+		this.directMessageOperations = new DirectMessageTemplate(restTemplate, isAuthorizedForUser);
+		this.friendOperations = new FriendTemplate(restTemplate, isAuthorizedForUser);
+		this.timelineOperations = new TimelineTemplate(restTemplate, isAuthorizedForUser);
+		this.searchOperations = new SearchTemplate(restTemplate, isAuthorizedForUser);
 		
 		// TODO : Break ListTemplate's  dependence on userOperations
-		this.listOperations = new ListTemplate(this, userOperations);
-		
-		// TODO : Break the dependence on restTemplate
-		this.searchOperations = new SearchTemplate(this, restTemplate);
+		this.listOperations = new ListTemplate(restTemplate, userOperations, isAuthorizedForUser);		
 	}
 
 	public boolean isAuthorizedForUser() {
@@ -203,6 +201,6 @@ public class TwitterTemplate implements TwitterApi {
 		return restTemplate;
 	}
 
-	public static final String API_URL_BASE = "https://api.twitter.com/1/";
+	private static final String API_URL_BASE = "https://api.twitter.com/1/";
 
 }

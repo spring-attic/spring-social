@@ -26,6 +26,7 @@ import org.springframework.social.twitter.types.Tweet;
 import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Implementation of {@link TimelineOperations}, providing a binding to Twitter's tweet and timeline-oriented REST resources.
@@ -33,59 +34,62 @@ import org.springframework.util.MultiValueMap;
  */
 class TimelineTemplate extends AbstractTwitterOperations implements TimelineOperations {
 	
-	public TimelineTemplate(LowLevelTwitterApi lowLevelApi) {
-		super(lowLevelApi);
+	private final RestTemplate restTemplate;
+
+	public TimelineTemplate(RestTemplate restTemplate, boolean isAuthorizedForUser) {
+		super(isAuthorizedForUser);
+		this.restTemplate = restTemplate;
 	}
 
 	public List<Tweet> getPublicTimeline() {
-		return getLowLevelTwitterApi().fetchObject("statuses/public_timeline.json", TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/public_timeline.json"), TweetList.class).getList();
 	}
 
 	public List<Tweet> getHomeTimeline() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("statuses/home_timeline.json", TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/home_timeline.json"), TweetList.class).getList();
 	}
 
 	public List<Tweet> getFriendsTimeline() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("statuses/friends_timeline.json", TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/friends_timeline.json"), TweetList.class).getList();
 	}
 
 	public List<Tweet> getUserTimeline() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("statuses/user_timeline.json", TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/user_timeline.json"), TweetList.class).getList();
 	}
 
 	public List<Tweet> getUserTimeline(String screenName) {
-		return getLowLevelTwitterApi().fetchObject("statuses/user_timeline.json", TweetList.class, Collections.singletonMap("screen_name", screenName)).getList();
+		return restTemplate.getForObject(buildUri("statuses/user_timeline.json", Collections.singletonMap("screen_name", screenName)), TweetList.class).getList();
 	}
 
 	public List<Tweet> getUserTimeline(long userId) {
-		return getLowLevelTwitterApi().fetchObject("statuses/user_timeline.json", TweetList.class, Collections.singletonMap("user_id", String.valueOf(userId))).getList();
+		return restTemplate.getForObject(buildUri("statuses/user_timeline.json", Collections.singletonMap("user_id", String.valueOf(userId))), TweetList.class).getList();
 	}
 
 	public List<Tweet> getMentions() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("statuses/mentions.json", TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/mentions.json"), TweetList.class).getList();
 	}
 
 	public List<Tweet> getRetweetedByMe() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("statuses/retweeted_by_me.json", TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/retweeted_by_me.json"), TweetList.class).getList();
 	}
 
 	public List<Tweet> getRetweetedToMe() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("statuses/retweeted_to_me.json", TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/retweeted_to_me.json"), TweetList.class).getList();
 	}
 
 	public List<Tweet> getRetweetsOfMe() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("statuses/retweets_of_me.json", TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/retweets_of_me.json"), TweetList.class).getList();
 	}
 
 	public Tweet getStatus(long tweetId) {
-		return getLowLevelTwitterApi().fetchObject("statuses/show/" + tweetId + ".json", Tweet.class);
+		return restTemplate.getForObject(buildUri("statuses/show/" + tweetId + ".json"), Tweet.class);
 	}
 
 	public void updateStatus(String message) {
@@ -97,49 +101,49 @@ class TimelineTemplate extends AbstractTwitterOperations implements TimelineOper
 		MultiValueMap<String, Object> tweetParams = new LinkedMultiValueMap<String, Object>();
 		tweetParams.add("status", message);
 		tweetParams.setAll(details.toParameterMap());
-		getLowLevelTwitterApi().publish("statuses/update.json", tweetParams);
+		restTemplate.postForObject(buildUri("statuses/update.json"), tweetParams, String.class);
 	}
 
 	public void deleteStatus(long tweetId) {
 		requireUserAuthorization();
-		getLowLevelTwitterApi().delete("statuses/destroy/" + tweetId + ".json");
+		restTemplate.delete(buildUri("statuses/destroy/" + tweetId + ".json"));
 	}
 
 	public void retweet(long tweetId) {
 		requireUserAuthorization();
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
-		getLowLevelTwitterApi().publish("statuses/retweet/" + tweetId + ".json", data);
+		restTemplate.postForObject(buildUri("statuses/retweet/" + tweetId + ".json"), data, String.class);
 	}
 
 	public List<Tweet> getRetweets(long tweetId) {
-		return getLowLevelTwitterApi().fetchObject("statuses/retweets/" + tweetId + ".json", TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/retweets/" + tweetId + ".json"), TweetList.class).getList();
 	}
 
 	public List<TwitterProfile> getRetweetedBy(long tweetId) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("statuses/" + tweetId + "/retweeted_by.json", TwitterProfileList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/" + tweetId + "/retweeted_by.json"), TwitterProfileList.class).getList();
 	}
 
 	public List<Long> getRetweetedByIds(long tweetId) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("statuses/" + tweetId + "/retweeted_by/ids.json", LongList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/" + tweetId + "/retweeted_by/ids.json"), LongList.class).getList();
 	}
 
 	public List<Tweet> getFavorites() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("favorites.json", TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("favorites.json"), TweetList.class).getList();
 	}
 
 	public void addToFavorites(long tweetId) {
 		requireUserAuthorization();
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
-		getLowLevelTwitterApi().publish("favorites/create/" + tweetId + ".json", data);
+		restTemplate.postForObject(buildUri("favorites/create/" + tweetId + ".json"), data, String.class);
 	}
 
 	public void removeFromFavorites(long tweetId) {
 		requireUserAuthorization();
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
-		getLowLevelTwitterApi().publish("favorites/destroy/" + tweetId + ".json", data);
+		restTemplate.postForObject(buildUri("favorites/destroy/" + tweetId + ".json"), data, String.class);
 	}
 
 }

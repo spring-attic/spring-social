@@ -22,7 +22,7 @@ package org.springframework.social.twitter;
  *
  * @author Craig Walls
  */
-public interface TwitterApi extends LowLevelTwitterApi {
+public interface TwitterApi {
 	
 	/**
 	 * Returns the portion of the Twitter API containing the user operations.

@@ -28,6 +28,7 @@ import org.springframework.social.twitter.types.UserList;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Implementation of {@link ListOperations}, providing a binding to Twitter's list-oriented REST resources.
@@ -36,144 +37,147 @@ import org.springframework.web.client.HttpClientErrorException;
 class ListTemplate extends AbstractTwitterOperations implements ListOperations {
 
 	private final UserOperations userApi;
+	
+	private final RestTemplate restTemplate;
 					
-	public ListTemplate(LowLevelTwitterApi lowLevelApi, UserOperations userApi) {
+	public ListTemplate(RestTemplate restTemplate, UserOperations userApi, boolean isAuthorizedForUser) {
 		// TODO : Get user ID sooner and stash it for later use so that we don't
 		//        fetch it for every operation that needs it. This is an easy thing to do,
 		//        but makes the testing a bit tricky.
-		super(lowLevelApi);
+		super(isAuthorizedForUser);
+		this.restTemplate = restTemplate;
 		this.userApi = userApi;
 	}
 
 	public List<UserList> getLists(long userId) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject(userId + "/lists.json", UserListList.class).getList();
+		return restTemplate.getForObject(buildUri(userId + "/lists.json"), UserListList.class).getList();
 	}
 
 	public List<UserList> getLists(String screenName) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject(screenName + "/lists.json", UserListList.class).getList();
+		return restTemplate.getForObject(buildUri(screenName + "/lists.json"), UserListList.class).getList();
 	}
 
 	public UserList getList(long userId, long listId) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject(userId + "/lists/" + listId + ".json", UserList.class);
+		return restTemplate.getForObject(buildUri(userId + "/lists/" + listId + ".json"), UserList.class);
 	}
 
 	public UserList getList(String screenName, String listSlug) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject(screenName + "/lists/" + listSlug + ".json", UserList.class);
+		return restTemplate.getForObject(buildUri(screenName + "/lists/" + listSlug + ".json"), UserList.class);
 	}
 
 	public List<Tweet> getListStatuses(long userId, long listId) {
-		return getLowLevelTwitterApi().fetchObject("{userId}/lists/{listId}/statuses.json", TweetList.class).getList();
+		return restTemplate.getForObject(buildUri(userId + "/lists/" + listId + "/statuses.json"), TweetList.class).getList();
 	}
 
 	public List<Tweet> getListStatuses(String screenName, String listSlug) {
-		return getLowLevelTwitterApi().fetchObject("{screenName}/lists/{screenName}/statuses.json", TweetList.class).getList();
+		return restTemplate.getForObject(buildUri(screenName + "/lists/" + listSlug + "/statuses.json"), TweetList.class).getList();
 	}
 
 	public UserList createList(String name, String description, boolean isPublic) {	
 		requireUserAuthorization();
 		MultiValueMap<String, Object> request = buildListDataMap(name, description, isPublic);
-		return getLowLevelTwitterApi().publish(userApi.getProfileId() + "/lists.json", request, UserList.class);
+		return restTemplate.postForObject(buildUri(userApi.getProfileId() + "/lists.json"), request, UserList.class);
 	}
 
 	public UserList updateList(long listId, String name, String description, boolean isPublic) {
 		requireUserAuthorization();
 		MultiValueMap<String, Object> request = buildListDataMap(name, description, isPublic);
-		return getLowLevelTwitterApi().publish(userApi.getProfileId() + "/lists/" + listId + ".json", request, UserList.class);
+		return restTemplate.postForObject(buildUri(userApi.getProfileId() + "/lists/" + listId + ".json"), request, UserList.class);
 	}
 
 	public void deleteList(long listId) {
 		requireUserAuthorization();
-		getLowLevelTwitterApi().delete(userApi.getProfileId() + "/lists/" + listId + ".json");
+		restTemplate.delete(buildUri(userApi.getProfileId() + "/lists/" + listId + ".json"));
 	}
 
 	public List<TwitterProfile> getListMembers(long userId, long listId) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject(userId + "/" + listId + "/members.json", TwitterProfileUsersList.class).getList();
+		return restTemplate.getForObject(buildUri(userId + "/" + listId + "/members.json"), TwitterProfileUsersList.class).getList();
 	}
 	
 	public List<TwitterProfile> getListMembers(String screenName, String listSlug) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject(screenName + "/" + listSlug + "/members.json", TwitterProfileUsersList.class).getList();
+		return restTemplate.getForObject(buildUri(screenName + "/" + listSlug + "/members.json"), TwitterProfileUsersList.class).getList();
 	}
 
 	public UserList addToList(long listId, long... newMemberIds) {
 		requireUserAuthorization();
 		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
-		request.set("user_id", ArrayUtils.join(newMemberIds));		
-		return getLowLevelTwitterApi().publish(userApi.getProfileId() + "/" + listId + "/members/create_all.json", request, UserList.class);
+		request.set("user_id", ArrayUtils.join(newMemberIds));
+		return restTemplate.postForObject(buildUri(userApi.getProfileId() + "/" + listId + "/members/create_all.json"), request, UserList.class);
 	}
 
 	public UserList addToList(String listSlug, String... newMemberScreenNames) {
 		requireUserAuthorization();
 		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
 		request.set("screen_name", ArrayUtils.join(newMemberScreenNames));		
-		return getLowLevelTwitterApi().publish(userApi.getProfileId() + "/" + listSlug + "/members/create_all.json", request, UserList.class);
+		return restTemplate.postForObject(buildUri(userApi.getProfileId() + "/" + listSlug + "/members/create_all.json"), request, UserList.class);
 	}
 
 	public void removeFromList(long listId, long memberId) {
 		requireUserAuthorization();
-		getLowLevelTwitterApi().delete(userApi.getProfileId() + "/" + listId + "/members.json", Collections.singletonMap("id", String.valueOf(memberId)));
+		restTemplate.delete(buildUri(userApi.getProfileId() + "/" + listId + "/members.json", Collections.singletonMap("id", String.valueOf(memberId))));
 	}
 
 	public void removeFromList(String listSlug, String memberScreenName) {
 		requireUserAuthorization();
-		getLowLevelTwitterApi().delete(userApi.getProfileId() + "/" + listSlug + "/members.json", Collections.singletonMap("id", memberScreenName));
+		restTemplate.delete(buildUri(userApi.getProfileId() + "/" + listSlug + "/members.json", Collections.singletonMap("id", String.valueOf(memberScreenName))));
 	}
 
 	public List<TwitterProfile> getListSubscribers(long userId, long listId) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject(userId + "/" + listId + "/subscribers.json", TwitterProfileUsersList.class).getList();
+		return restTemplate.getForObject(buildUri(userId + "/" + listId + "/subscribers.json"), TwitterProfileUsersList.class).getList();
 	}
 
 	public List<TwitterProfile> getListSubscribers(String screenName, String listSlug) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject(screenName + "/" + listSlug + "/subscribers.json", TwitterProfileUsersList.class).getList();
+		return restTemplate.getForObject(buildUri(screenName + "/" + listSlug + "/subscribers.json"), TwitterProfileUsersList.class).getList();
 	}
 
 	public UserList subscribe(long ownerId, long listId) {
 		requireUserAuthorization();
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
-		return getLowLevelTwitterApi().publish(ownerId + "/" + listId + "/subscribers.json", data, UserList.class);
+		return restTemplate.postForObject(buildUri(ownerId + "/" + listId + "/subscribers.json"), data, UserList.class);
 	}
 
 	public UserList subscribe(String ownerScreenName, String listSlug) {
 		requireUserAuthorization();
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
-		return getLowLevelTwitterApi().publish(ownerScreenName + "/" + listSlug + "/subscribers.json", data, UserList.class);
+		return restTemplate.postForObject(buildUri(ownerScreenName + "/" + listSlug + "/subscribers.json"), data, UserList.class);
 	}
 
 	public void unsubscribe(long ownerId, long listId) {
 		requireUserAuthorization();
-		getLowLevelTwitterApi().delete(ownerId + "/" + listId + "/subscribers.json");
+		restTemplate.delete(buildUri(ownerId + "/" + listId + "/subscribers.json"));
 	}
 
 	public void unsubscribe(String ownerScreenName, String listSlug) {
 		requireUserAuthorization();
-		getLowLevelTwitterApi().delete(ownerScreenName + "/" + listSlug + "/subscribers.json");
+		restTemplate.delete(buildUri(ownerScreenName + "/" + listSlug + "/subscribers.json"));
 	}
 
 	public List<UserList> getMemberships(long userId) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject(userId + "/lists/memberships.json", UserListList.class).getList();
+		return restTemplate.getForObject(buildUri(userId + "/lists/memberships.json"), UserListList.class).getList();
 	}
 
 	public List<UserList> getMemberships(String screenName) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject(screenName + "/lists/memberships.json", UserListList.class).getList();
+		return restTemplate.getForObject(buildUri(screenName + "/lists/memberships.json"), UserListList.class).getList();
 	}
 
 	public List<UserList> getSubscriptions(long userId) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject(userId + "/lists/subscriptions.json", UserListList.class).getList();
+		return restTemplate.getForObject(buildUri(userId + "/lists/subscriptions.json"), UserListList.class).getList();
 	}
 
 	public List<UserList> getSubscriptions(String screenName) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject(screenName + "/lists/subscriptions.json", UserListList.class).getList();
+		return restTemplate.getForObject(buildUri(screenName + "/lists/subscriptions.json"), UserListList.class).getList();
 	}
 
 	public boolean isMember(long userId, long listId, long memberId) {
@@ -200,7 +204,7 @@ class ListTemplate extends AbstractTwitterOperations implements ListOperations {
 
 	private boolean checkListConnection(String path) {
 		try {
-			getLowLevelTwitterApi().fetchObject(path, String.class);
+			restTemplate.getForObject(buildUri(path), String.class);
 			return true;
 		} catch (HttpClientErrorException e) {
 			if(e.getStatusCode() == HttpStatus.NOT_FOUND) {

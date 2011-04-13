@@ -30,7 +30,7 @@ import org.springframework.social.twitter.types.TwitterProfile;
 /**
  * @author Craig Walls
  */
-public class FriendsTemplateTest extends AbstractTwitterApiTest {
+public class FriendTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void getFriends_byUserId() {

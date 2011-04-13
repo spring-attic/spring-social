@@ -15,32 +15,36 @@
  */
 package org.springframework.social.twitter;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.social.twitter.support.json.DirectMessageList;
 import org.springframework.social.twitter.types.DirectMessage;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Implementation of {@link DirectMessageOperations}, providing a binding to Twitter's direct message-oriented REST resources.
  * @author Craig Walls
  */
 class DirectMessageTemplate extends AbstractTwitterOperations implements DirectMessageOperations {
-
 	
-	public DirectMessageTemplate(LowLevelTwitterApi lowLevelApi) {
-		super(lowLevelApi);
+	private final RestTemplate restTemplate;
+
+	public DirectMessageTemplate(RestTemplate restTemplate, boolean isAuthorizedForUser) {
+		super(isAuthorizedForUser);
+		this.restTemplate = restTemplate;
 	}
 
 	public List<DirectMessage> getDirectMessagesReceived() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("direct_messages.json", DirectMessageList.class).getList();
+		return restTemplate.getForObject(buildUri("direct_messages.json", Collections.<String, String>emptyMap()), DirectMessageList.class).getList();
 	}
 
 	public List<DirectMessage> getDirectMessagesSent() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("direct_messages/sent.json", DirectMessageList.class).getList();
+		return restTemplate.getForObject(buildUri("direct_messages/sent.json", Collections.<String, String>emptyMap()), DirectMessageList.class).getList();
 	}
 
 	public void sendDirectMessage(String toScreenName, String text) {
@@ -48,7 +52,7 @@ class DirectMessageTemplate extends AbstractTwitterOperations implements DirectM
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
 		data.add("screen_name", String.valueOf(toScreenName));
 		data.add("text", text);
-	    getLowLevelTwitterApi().publish("direct_messages/new.json", data);
+		restTemplate.postForObject(buildUri("direct_messages/new.json", Collections.<String, String>emptyMap()), data, String.class);
 	}
 
 	public void sendDirectMessage(long toUserId, String text) {
@@ -56,12 +60,12 @@ class DirectMessageTemplate extends AbstractTwitterOperations implements DirectM
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
 		data.add("user_id", String.valueOf(toUserId));
 		data.add("text", text);
-	    getLowLevelTwitterApi().publish("direct_messages/new.json", data);
+		restTemplate.postForObject(buildUri("direct_messages/new.json", Collections.<String, String>emptyMap()), data, String.class);
 	}
 
 	public void deleteDirectMessage(long messageId) {
 		requireUserAuthorization();
-		getLowLevelTwitterApi().delete("direct_messages/destroy/" + messageId + ".json");
+		restTemplate.delete(buildUri("direct_messages/destroy/" + messageId + ".json", Collections.<String, String>emptyMap()));
 	}
 
 }

@@ -26,6 +26,7 @@ import org.springframework.social.twitter.support.json.TwitterProfileList;
 import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Implementation of {@link FriendTemplate}, providing a binding to Twitter's friends and followers-oriented REST resources.
@@ -33,60 +34,63 @@ import org.springframework.util.MultiValueMap;
  */
 class FriendTemplate extends AbstractTwitterOperations implements FriendOperations {
 	
-	public FriendTemplate(LowLevelTwitterApi lowLevelApi) {
-		super(lowLevelApi);
+	private final RestTemplate restTemplate;
+
+	public FriendTemplate(RestTemplate restTemplate, boolean isAuthorizedForUser) {
+		super(isAuthorizedForUser);
+		this.restTemplate = restTemplate;
 	}
 
 	public List<TwitterProfile> getFriends(long userId) {
-		return getLowLevelTwitterApi().fetchObject("statuses/friends.json", TwitterProfileList.class, Collections.singletonMap("user_id", String.valueOf(userId))).getList();
+		return restTemplate.getForObject(buildUri("statuses/friends.json", Collections.singletonMap("user_id", String.valueOf(userId))), TwitterProfileList.class).getList();
 	}
 
 	public List<TwitterProfile> getFriends(String screenName) {
-		return getLowLevelTwitterApi().fetchObject("statuses/friends.json", TwitterProfileList.class, Collections.singletonMap("screen_name", screenName)).getList();
+		return restTemplate.getForObject(buildUri("statuses/friends.json", Collections.singletonMap("screen_name", screenName)), TwitterProfileList.class).getList();
 	}
 	
 	public List<Long> getFriendIds(long userId) {
-		return getLowLevelTwitterApi().fetchObject("friends/ids.json", LongList.class, Collections.singletonMap("user_id", String.valueOf(userId))).getList();
+		return restTemplate.getForObject(buildUri("friends/ids.json", Collections.singletonMap("user_id", String.valueOf(userId))), LongList.class).getList();
 	}
 
 	public List<Long> getFriendIds(String screenName) {
-		return getLowLevelTwitterApi().fetchObject("friends/ids.json", LongList.class, Collections.singletonMap("screen_name", screenName)).getList();
+		return restTemplate.getForObject(buildUri("friends/ids.json", Collections.singletonMap("screen_name", screenName)), LongList.class).getList();
 	}
 
 	public List<TwitterProfile> getFollowers(long userId) {
-		return getLowLevelTwitterApi().fetchObject("statuses/followers.json", TwitterProfileList.class, Collections.singletonMap("user_id", String.valueOf(userId))).getList();
+		return restTemplate.getForObject(buildUri("statuses/followers.json", Collections.singletonMap("user_id", String.valueOf(userId))), TwitterProfileList.class).getList();
 	}
 
 	public List<TwitterProfile> getFollowers(String screenName) {
-		return getLowLevelTwitterApi().fetchObject("statuses/followers.json", TwitterProfileList.class, Collections.singletonMap("screen_name", screenName)).getList();
+		return restTemplate.getForObject(buildUri("statuses/followers.json", Collections.singletonMap("screen_name", screenName)), TwitterProfileList.class).getList();
 	}
 
 	public List<Long> getFollowerIds(long userId) {
-		return getLowLevelTwitterApi().fetchObject("followers/ids.json", LongList.class, Collections.singletonMap("user_id", String.valueOf(userId))).getList();
+		return restTemplate.getForObject(buildUri("followers/ids.json", Collections.singletonMap("user_id", String.valueOf(userId))), LongList.class).getList();
 	}
 
 	public List<Long> getFollowerIds(String screenName) {
-		return getLowLevelTwitterApi().fetchObject("followers/ids.json", LongList.class, Collections.singletonMap("screen_name", screenName)).getList();
+		return restTemplate.getForObject(buildUri("followers/ids.json", Collections.singletonMap("screen_name", screenName)), LongList.class).getList();
 	}
 
 	public String follow(long userId) {
 		requireUserAuthorization();
-		return (String) getLowLevelTwitterApi().publish("friendships/create.json", EMPTY_DATA, Map.class, Collections.singletonMap("user_id", String.valueOf(userId))).get("screen_name");
+		return (String) restTemplate.postForObject(buildUri("friendships/create.json", Collections.singletonMap("user_id", String.valueOf(userId))), EMPTY_DATA, Map.class).get("screen_name");
 	}
 
 	public String follow(String screenName) {
 		requireUserAuthorization();
-		return (String) getLowLevelTwitterApi().publish("friendships/create.json", EMPTY_DATA, Map.class, Collections.singletonMap("screen_name", screenName)).get("screen_name");
+		return (String) restTemplate.postForObject(buildUri("friendships/create.json", Collections.singletonMap("screen_name", screenName)), EMPTY_DATA, Map.class).get("screen_name");
 	}
 	
 	public String unfollow(long userId) {
 		requireUserAuthorization();
-		return (String) getLowLevelTwitterApi().publish("friendships/destroy.json", EMPTY_DATA, Map.class, Collections.singletonMap("user_id", String.valueOf(userId))).get("screen_name");
+		return (String) restTemplate.postForObject(buildUri("friendships/destroy.json", Collections.singletonMap("user_id", String.valueOf(userId))), EMPTY_DATA, Map.class).get("screen_name");
 	}
 
 	public String unfollow(String screenName) {
 		requireUserAuthorization();
-		return (String) getLowLevelTwitterApi().publish("friendships/destroy.json", EMPTY_DATA, Map.class, Collections.singletonMap("screen_name", screenName)).get("screen_name");
+		return (String) restTemplate.postForObject(buildUri("friendships/destroy.json", Collections.singletonMap("screen_name", screenName)), EMPTY_DATA, Map.class).get("screen_name");
 	}
 	
 	// doesn't require authentication
@@ -95,17 +99,17 @@ class FriendTemplate extends AbstractTwitterOperations implements FriendOperatio
 		Map<String, String> params = new TreeMap<String, String>();
 		params.put("user_a", userA);
 		params.put("user_b", userB);
-		return getLowLevelTwitterApi().fetchObject("friendships/exists.json", boolean.class, params);
+		return restTemplate.getForObject(buildUri("friendships/exists.json", params), boolean.class);
 	}
 
 	public List<Long> getIncomingFriendships() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("friendships/incoming.json", LongIdsList.class).getList();
+		return restTemplate.getForObject(buildUri("friendships/incoming.json", Collections.<String, String>emptyMap()), LongIdsList.class).getList();
 	}
 
 	public List<Long> getOutgoingFriendships() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("friendships/outgoing.json", LongIdsList.class).getList();
+		return restTemplate.getForObject(buildUri("friendships/outgoing.json", Collections.<String, String>emptyMap()), LongIdsList.class).getList();
 	}
 
 	private static final MultiValueMap<String, Object> EMPTY_DATA = new LinkedMultiValueMap<String, Object>();

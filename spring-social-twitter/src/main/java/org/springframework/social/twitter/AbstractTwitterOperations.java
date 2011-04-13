@@ -15,21 +15,39 @@
  */
 package org.springframework.social.twitter;
 
+import java.net.URI;
+import java.util.Collections;
+import java.util.Map;
+
+import org.springframework.social.util.URIBuilder;
+
 class AbstractTwitterOperations {
 	
-	private final LowLevelTwitterApi lowLevelApi;
+	private final boolean isAuthorizedForUser;
 
-	public AbstractTwitterOperations(LowLevelTwitterApi lowLevelApi) {
-		this.lowLevelApi = lowLevelApi;
-	}
-	
-	protected LowLevelTwitterApi getLowLevelTwitterApi() {
-		return lowLevelApi;
+	public AbstractTwitterOperations(boolean isAuthorizedForUser) {
+		this.isAuthorizedForUser = isAuthorizedForUser;
 	}
 	
 	protected void requireUserAuthorization() {
-		if(!lowLevelApi.isAuthorizedForUser()) {
+		if(!isAuthorizedForUser) {
 			throw new IllegalStateException("User authorization required: TwitterTemplate must be created with OAuth credentials to perform this operation.");
 		}
 	}
+	
+	protected URI buildUri(String path) {
+		return buildUri(path, Collections.<String, String>emptyMap());
+	}
+	
+	protected URI buildUri(String path, Map<String, String> params) {
+		URIBuilder uriBuilder = URIBuilder.fromUri(API_URL_BASE + path);
+		for (String paramName : params.keySet()) {
+			uriBuilder.queryParam(paramName, String.valueOf(params.get(paramName)));
+		}
+		URI uri = uriBuilder.build();
+		return uri;
+	}
+	
+	private static final String API_URL_BASE = "https://api.twitter.com/1/";
+
 }

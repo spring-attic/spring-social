@@ -38,8 +38,8 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 
 	private final RestTemplate restTemplate;
 		
-	public SearchTemplate(LowLevelTwitterApi lowLevelApi, RestTemplate restTemplate) {
-		super(lowLevelApi);
+	public SearchTemplate(RestTemplate restTemplate, boolean isAuthorizedForUser) {
+		super(isAuthorizedForUser);
 		this.restTemplate = restTemplate;
 	}
 
@@ -70,24 +70,24 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 
 	public List<SavedSearch> getSavedSearches() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("saved_searches.json", SavedSearchList.class).getList();
+		return restTemplate.getForObject(buildUri("saved_searches.json"), SavedSearchList.class).getList();
 	}
 
 	public SavedSearch getSavedSearch(long searchId) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("saved_searches/show/" + searchId + ".json", SavedSearch.class);
+		return restTemplate.getForObject(buildUri("saved_searches/show/" + searchId + ".json"), SavedSearch.class);
 	}
 
 	public void createSavedSearch(String query) {		
 		requireUserAuthorization();
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
 		data.set("query", query);
-		getLowLevelTwitterApi().publish("saved_searches/create.json", data);
+		restTemplate.postForObject(buildUri("saved_searches/create.json"), data, String.class);
 	}
 
 	public void deleteSavedSearch(long searchId) {
 		requireUserAuthorization();
-		getLowLevelTwitterApi().delete("saved_searches/destroy/" + searchId + ".json");
+		restTemplate.delete(buildUri("saved_searches/destroy/" + searchId + ".json"));
 	}
 	
 	// Trends
@@ -98,7 +98,7 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 
 	public Trends getCurrentTrends(boolean excludeHashtags) {
 		String path = makeTrendPath("trends/current.json", excludeHashtags, null);
-		return getLowLevelTwitterApi().fetchObject(path, DailyTrendsList.class).getList().get(0);
+		return restTemplate.getForObject(buildUri(path), DailyTrendsList.class).getList().get(0);
 	}
 
 	public List<Trends> getDailyTrends() {
@@ -111,7 +111,7 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 
 	public List<Trends> getDailyTrends(boolean excludeHashtags, String startDate) {
 		String path = makeTrendPath("trends/daily.json", excludeHashtags, startDate);
-		return getLowLevelTwitterApi().fetchObject(path, DailyTrendsList.class).getList();
+		return restTemplate.getForObject(buildUri(path), DailyTrendsList.class).getList();
 	}
 	
 	public List<Trends> getWeeklyTrends() {
@@ -124,7 +124,7 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 	
 	public List<Trends> getWeeklyTrends(boolean excludeHashtags, String startDate) {
 		String path = makeTrendPath("trends/weekly.json", excludeHashtags, startDate);
-		return getLowLevelTwitterApi().fetchObject(path, WeeklyTrendsList.class).getList();
+		return restTemplate.getForObject(buildUri(path), WeeklyTrendsList.class).getList();
 	}
 
 	public Trends getLocalTrends(long whereOnEarthId) {
@@ -136,7 +136,7 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 		if(excludeHashtags) {
 			params.put("exclude", "hashtags");
 		}
-		return getLowLevelTwitterApi().fetchObject("trends/" + whereOnEarthId + ".json", LocalTrendsHolder.class, params).getTrends();
+		return restTemplate.getForObject(buildUri("trends/" + whereOnEarthId + ".json", params), LocalTrendsHolder.class).getTrends();
 	}
 
 	private String makeTrendPath(String basePath, boolean excludeHashtags, String startDate) {
