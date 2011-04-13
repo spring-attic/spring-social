@@ -13,22 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.support.extractors;
+package org.springframework.social.twitter.support.json;
 
-import java.util.List;
-import java.util.Map;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
 
-public class ListOfLongExtractor extends AbstractResponseExtractor<List<Long>> {
-
-	private final String jsonPath;
-
-	public ListOfLongExtractor(String jsonPath) {
-		this.jsonPath = jsonPath;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public List<Long> extractObject(Map<String, Object> responseMap) {
-		return (List<Long>) responseMap.get(jsonPath);
-	}
-	
+public abstract class SuggestionCategoryMixin {
+	@JsonCreator
+	public SuggestionCategoryMixin(
+			@JsonProperty("name") String name, 
+			@JsonProperty("slug") String slug, 
+			@JsonProperty("size") int size) {}
 }

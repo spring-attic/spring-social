@@ -17,7 +17,7 @@ package org.springframework.social.twitter;
 
 import java.util.List;
 
-import org.springframework.social.twitter.support.extractors.DirectMessageResponseExtractor;
+import org.springframework.social.twitter.support.json.DirectMessageList;
 import org.springframework.social.twitter.types.DirectMessage;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -28,21 +28,19 @@ import org.springframework.util.MultiValueMap;
  */
 class DirectMessageTemplate extends AbstractTwitterOperations implements DirectMessageOperations {
 
-	private DirectMessageResponseExtractor directMessageExtractor;
 	
 	public DirectMessageTemplate(LowLevelTwitterApi lowLevelApi) {
 		super(lowLevelApi);
-		this.directMessageExtractor = new DirectMessageResponseExtractor();
 	}
 
 	public List<DirectMessage> getDirectMessagesReceived() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObjects("direct_messages.json", directMessageExtractor);
+		return getLowLevelTwitterApi().fetchObject("direct_messages.json", DirectMessageList.class).getList();
 	}
 
 	public List<DirectMessage> getDirectMessagesSent() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObjects("direct_messages/sent.json", directMessageExtractor);
+		return getLowLevelTwitterApi().fetchObject("direct_messages/sent.json", DirectMessageList.class).getList();
 	}
 
 	public void sendDirectMessage(String toScreenName, String text) {

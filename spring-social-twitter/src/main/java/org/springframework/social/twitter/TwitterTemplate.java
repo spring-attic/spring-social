@@ -20,9 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.module.SimpleModule;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -30,9 +28,9 @@ import org.springframework.http.converter.json.MappingJacksonHttpMessageConverte
 import org.springframework.social.BadCredentialsException;
 import org.springframework.social.oauth1.ProtectedResourceClientFactory;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
-import org.springframework.social.twitter.support.NumbersAsLongDeserializer;
 import org.springframework.social.twitter.support.TwitterErrorHandler;
 import org.springframework.social.twitter.support.extractors.ResponseExtractor;
+import org.springframework.social.twitter.support.json.TwitterModule;
 import org.springframework.social.util.URIBuilder;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -97,7 +95,7 @@ public class TwitterTemplate implements TwitterApi {
 	
 	private TwitterTemplate(RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
-		registerNumbersAsLongDeserializer(restTemplate);
+		registerTwitterModule(restTemplate);
 		restTemplate.setErrorHandler(new TwitterErrorHandler());
 		this.userOperations = new UserTemplate(this);
 		this.directMessageOperations = new DirectMessageTemplate(this);
@@ -193,7 +191,11 @@ public class TwitterTemplate implements TwitterApi {
 	public <T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor) {
 		return publish(path, data, extractor, Collections.<String, String>emptyMap());
 	}
-	
+
+	public <T> T publish(String path, MultiValueMap<String, Object> data, Class<T> type) {
+		return restTemplate.postForObject(buildUri(path, Collections.<String, String>emptyMap()), data, type);
+	}
+
 	@SuppressWarnings("unchecked")
 	public <T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor, Map<String, String> params) {
 		Map<String, Object> response = (Map<String, Object>) restTemplate.postForObject(buildUri(path, params), data, Map.class);
@@ -219,14 +221,13 @@ public class TwitterTemplate implements TwitterApi {
 		return uri;
 	}
 
-	private void registerNumbersAsLongDeserializer(RestTemplate restTemplate) {
+	private void registerTwitterModule(RestTemplate restTemplate) {
 		List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
 		for (HttpMessageConverter<?> converter : converters) {
 			if(converter instanceof MappingJacksonHttpMessageConverter) {
 				MappingJacksonHttpMessageConverter jsonConverter = (MappingJacksonHttpMessageConverter) converter;
 				ObjectMapper objectMapper = new ObjectMapper();				
-				SimpleModule module = new SimpleModule("NumbersModule", new Version(1, 0, 0, null)).addDeserializer(Object.class, new NumbersAsLongDeserializer());
-				objectMapper.registerModule(module);
+				objectMapper.registerModule(new TwitterModule());
 				jsonConverter.setObjectMapper(objectMapper);
 			}
 		}

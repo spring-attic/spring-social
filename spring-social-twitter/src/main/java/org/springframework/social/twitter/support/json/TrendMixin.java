@@ -13,19 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.support.extractors;
+package org.springframework.social.twitter.support.json;
 
-import java.util.Map;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
 
-import org.springframework.social.twitter.types.SuggestionCategory;
+@JsonIgnoreProperties(ignoreUnknown=true)
+public abstract class TrendMixin {
 
-public class SuggestionCategoryResponseExtractor extends AbstractResponseExtractor<SuggestionCategory> {
+	@JsonCreator
+	public TrendMixin(@JsonProperty("name") String name, @JsonProperty("query") String query) {}
 
-	public SuggestionCategory extractObject(Map<String, Object> categoryMap) {
-		return new SuggestionCategory(
-				String.valueOf(categoryMap.get("name")), 
-				String.valueOf(categoryMap.get("slug")), 
-				Integer.valueOf(String.valueOf(categoryMap.get("size"))));
-	}
-	
 }

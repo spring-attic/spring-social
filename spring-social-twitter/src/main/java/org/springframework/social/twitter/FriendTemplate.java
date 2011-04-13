@@ -21,8 +21,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.springframework.social.twitter.support.extractors.AbstractResponseExtractor;
-import org.springframework.social.twitter.support.extractors.ListOfLongExtractor;
-import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
+import org.springframework.social.twitter.support.json.LongIdsList;
+import org.springframework.social.twitter.support.json.LongList;
+import org.springframework.social.twitter.support.json.TwitterProfileList;
 import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -32,51 +33,44 @@ import org.springframework.util.MultiValueMap;
  * @author Craig Walls
  */
 class FriendTemplate extends AbstractTwitterOperations implements FriendOperations {
-		
-	private TwitterProfileResponseExtractor profileExtractor;
 	
 	private final MapExtractor mapExtractor;
 
 	public FriendTemplate(LowLevelTwitterApi lowLevelApi) {
 		super(lowLevelApi);
-		this.profileExtractor = new TwitterProfileResponseExtractor();
 		this.mapExtractor = new MapExtractor();
 	}
 
 	public List<TwitterProfile> getFriends(long userId) {
-		return getLowLevelTwitterApi().fetchObjects("statuses/friends.json", profileExtractor, Collections.singletonMap("user_id", String.valueOf(userId)));
+		return getLowLevelTwitterApi().fetchObject("statuses/friends.json", TwitterProfileList.class, Collections.singletonMap("user_id", String.valueOf(userId))).getList();
 	}
 
 	public List<TwitterProfile> getFriends(String screenName) {
-		return getLowLevelTwitterApi().fetchObjects("statuses/friends.json", profileExtractor, Collections.singletonMap("screen_name", screenName));
+		return getLowLevelTwitterApi().fetchObject("statuses/friends.json", TwitterProfileList.class, Collections.singletonMap("screen_name", screenName)).getList();
 	}
 	
-	@SuppressWarnings("unchecked")
 	public List<Long> getFriendIds(long userId) {
-		return getLowLevelTwitterApi().fetchObject("friends/ids.json", List.class, Collections.singletonMap("user_id", String.valueOf(userId)));
+		return getLowLevelTwitterApi().fetchObject("friends/ids.json", LongList.class, Collections.singletonMap("user_id", String.valueOf(userId))).getList();
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Long> getFriendIds(String screenName) {
-		return getLowLevelTwitterApi().fetchObject("friends/ids.json", List.class, Collections.singletonMap("screen_name", screenName));
+		return getLowLevelTwitterApi().fetchObject("friends/ids.json", LongList.class, Collections.singletonMap("screen_name", screenName)).getList();
 	}
 
 	public List<TwitterProfile> getFollowers(long userId) {
-		return getLowLevelTwitterApi().fetchObjects("statuses/followers.json", profileExtractor, Collections.singletonMap("user_id", String.valueOf(userId)));
+		return getLowLevelTwitterApi().fetchObject("statuses/followers.json", TwitterProfileList.class, Collections.singletonMap("user_id", String.valueOf(userId))).getList();
 	}
 
 	public List<TwitterProfile> getFollowers(String screenName) {
-		return getLowLevelTwitterApi().fetchObjects("statuses/followers.json", profileExtractor, Collections.singletonMap("screen_name", screenName));
+		return getLowLevelTwitterApi().fetchObject("statuses/followers.json", TwitterProfileList.class, Collections.singletonMap("screen_name", screenName)).getList();
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Long> getFollowerIds(long userId) {
-		return getLowLevelTwitterApi().fetchObject("followers/ids.json", List.class, Collections.singletonMap("user_id", String.valueOf(userId)));
+		return getLowLevelTwitterApi().fetchObject("followers/ids.json", LongList.class, Collections.singletonMap("user_id", String.valueOf(userId))).getList();
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Long> getFollowerIds(String screenName) {
-		return getLowLevelTwitterApi().fetchObject("followers/ids.json", List.class, Collections.singletonMap("screen_name", screenName));
+		return getLowLevelTwitterApi().fetchObject("followers/ids.json", LongList.class, Collections.singletonMap("screen_name", screenName)).getList();
 	}
 
 	public String follow(long userId) {
@@ -110,12 +104,12 @@ class FriendTemplate extends AbstractTwitterOperations implements FriendOperatio
 
 	public List<Long> getIncomingFriendships() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("friendships/incoming.json", new ListOfLongExtractor("ids"));
+		return getLowLevelTwitterApi().fetchObject("friendships/incoming.json", LongIdsList.class).getList();
 	}
 
 	public List<Long> getOutgoingFriendships() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("friendships/outgoing.json", new ListOfLongExtractor("ids"));
+		return getLowLevelTwitterApi().fetchObject("friendships/outgoing.json", LongIdsList.class).getList();
 	}
 
 	private static final MultiValueMap<String, Object> EMPTY_DATA = new LinkedMultiValueMap<String, Object>();

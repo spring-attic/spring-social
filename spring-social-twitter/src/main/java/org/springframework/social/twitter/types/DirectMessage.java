@@ -22,68 +22,50 @@ import java.util.Date;
  * @author Craig Walls
  */
 public class DirectMessage {
-	private long id;
-	private String text;
-	private long senderId;
-	private String senderScreenName;
-	private long recipientId;
-	private String recipientScreenName;
-	private Date createdAt;
+	private final long id;
+	private final String text;
+	private final long senderId;
+	private final String senderScreenName;
+	private final long recipientId;
+	private final String recipientScreenName;
+	private final Date createdAt;
 
+	public DirectMessage(long id, String text, long senderId, String senderScreenName, long recipientId, String recipientScreenName, Date createdAt) {
+		this.id = id;
+		this.text = text;
+		this.senderId = senderId;
+		this.senderScreenName = senderScreenName;
+		this.recipientId = recipientId;
+		this.recipientScreenName = recipientScreenName;
+		this.createdAt = createdAt;
+	}
+	
 	public long getId() {
 		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
 	}
 
 	public String getText() {
 		return text;
 	}
 
-	public void setText(String text) {
-		this.text = text;
-	}
-
 	public long getSenderId() {
 		return senderId;
-	}
-
-	public void setSenderId(long senderId) {
-		this.senderId = senderId;
 	}
 
 	public String getSenderScreenName() {
 		return senderScreenName;
 	}
 
-	public void setSenderScreenName(String senderScreenName) {
-		this.senderScreenName = senderScreenName;
-	}
-
 	public long getRecipientId() {
 		return recipientId;
-	}
-
-	public void setRecipientId(long recipientId) {
-		this.recipientId = recipientId;
 	}
 
 	public String getRecipientScreenName() {
 		return recipientScreenName;
 	}
 
-	public void setRecipientScreenName(String recipientScreenName) {
-		this.recipientScreenName = recipientScreenName;
-	}
-
 	public Date getCreatedAt() {
 		return createdAt;
-	}
-
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
 	}
 
 }

@@ -20,8 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.social.twitter.support.extractors.SuggestionCategoryResponseExtractor;
-import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
+import org.springframework.social.twitter.support.json.SuggestionCategoryList;
+import org.springframework.social.twitter.support.json.TwitterProfileUsersList;
+import org.springframework.social.twitter.support.json.TwitterProfileList;
 import org.springframework.social.twitter.types.SuggestionCategory;
 import org.springframework.social.twitter.types.TwitterProfile;
 
@@ -31,37 +32,31 @@ import org.springframework.social.twitter.types.TwitterProfile;
  */
 class UserTemplate extends AbstractTwitterOperations implements UserOperations {
 	
-	private final TwitterProfileResponseExtractor profileExtractor;
-
-	private final SuggestionCategoryResponseExtractor suggestionCategoryExtractor;
-
 	public UserTemplate(LowLevelTwitterApi lowLevelApi) {
 		super(lowLevelApi);
-		this.profileExtractor = new TwitterProfileResponseExtractor();
-		this.suggestionCategoryExtractor = new SuggestionCategoryResponseExtractor();
 	}
 
 	public long getProfileId() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("account/verify_credentials.json", profileExtractor).getId();
+		return getLowLevelTwitterApi().fetchObject("account/verify_credentials.json", TwitterProfile.class).getId();
 	}
 
 	public String getScreenName() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("account/verify_credentials.json", profileExtractor).getScreenName();
+		return getLowLevelTwitterApi().fetchObject("account/verify_credentials.json", TwitterProfile.class).getScreenName();
 	}
 
 	public TwitterProfile getUserProfile() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("account/verify_credentials.json", profileExtractor);
+		return getLowLevelTwitterApi().fetchObject("account/verify_credentials.json", TwitterProfile.class);
 	}
 
 	public TwitterProfile getUserProfile(String screenName) {
-		return getLowLevelTwitterApi().fetchObject("users/show.json", profileExtractor, Collections.singletonMap("screen_name", screenName));
+		return getLowLevelTwitterApi().fetchObject("users/show.json", TwitterProfile.class, Collections.singletonMap("screen_name", screenName));
 	}
 	
 	public TwitterProfile getUserProfile(long userId) {
-		return getLowLevelTwitterApi().fetchObject("users/show.json", profileExtractor, Collections.singletonMap("user_id", String.valueOf(userId)));
+		return getLowLevelTwitterApi().fetchObject("users/show.json", TwitterProfile.class, Collections.singletonMap("user_id", String.valueOf(userId)));
 	}
 	
 	public byte[] getUserProfileImage(String screenName) {
@@ -78,26 +73,26 @@ class UserTemplate extends AbstractTwitterOperations implements UserOperations {
 	public List<TwitterProfile> getUsers(long... userIds) {
 		requireUserAuthorization();
 		String joinedIds = ArrayUtils.join(userIds);
-		return getLowLevelTwitterApi().fetchObjects("users/lookup.json", profileExtractor, Collections.singletonMap("user_id", joinedIds) );
+		return getLowLevelTwitterApi().fetchObject("users/lookup.json", TwitterProfileList.class, Collections.singletonMap("user_id", joinedIds) ).getList();
 	}
 
 	public List<TwitterProfile> getUsers(String... screenNames) {
 		requireUserAuthorization();
 		String joinedScreenNames = ArrayUtils.join(screenNames);
-		return getLowLevelTwitterApi().fetchObjects("users/lookup.json", profileExtractor, Collections.singletonMap("screen_name", joinedScreenNames));
+		return getLowLevelTwitterApi().fetchObject("users/lookup.json", TwitterProfileList.class, Collections.singletonMap("screen_name", joinedScreenNames)).getList();
 	}
 
 	public List<TwitterProfile> searchForUsers(String query) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObjects("users/search.json", profileExtractor, Collections.singletonMap("q", query));
+		return getLowLevelTwitterApi().fetchObject("users/search.json", TwitterProfileList.class, Collections.singletonMap("q", query)).getList();
 	}
 	
 	public List<SuggestionCategory> getSuggestionCategories() {
-		return getLowLevelTwitterApi().fetchObjects("users/suggestions.json", suggestionCategoryExtractor);
+		return getLowLevelTwitterApi().fetchObject("users/suggestions.json", SuggestionCategoryList.class).getList();
 	}
 
 	public List<TwitterProfile> getSuggestions(String slug) {
-		return getLowLevelTwitterApi().fetchObjects("users/suggestions/" + slug + ".json", "users", profileExtractor);
+		return getLowLevelTwitterApi().fetchObject("users/suggestions/" + slug + ".json", TwitterProfileUsersList.class).getList();
 	}
 
 	static final String SUGGESTIONS_URL = TwitterTemplate.API_URL_BASE + "users/suggestions/{slug}.json";

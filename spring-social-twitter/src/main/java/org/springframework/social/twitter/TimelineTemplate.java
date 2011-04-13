@@ -19,7 +19,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.social.twitter.support.extractors.TweetResponseExtractor;
-import org.springframework.social.twitter.support.extractors.TwitterProfileResponseExtractor;
+import org.springframework.social.twitter.support.json.LongList;
+import org.springframework.social.twitter.support.json.TwitterProfileList;
 import org.springframework.social.twitter.types.StatusDetails;
 import org.springframework.social.twitter.types.Tweet;
 import org.springframework.social.twitter.types.TwitterProfile;
@@ -31,14 +32,11 @@ import org.springframework.util.MultiValueMap;
  * @author Craig Walls
  */
 class TimelineTemplate extends AbstractTwitterOperations implements TimelineOperations {
-
-	private TwitterProfileResponseExtractor profileExtractor;
 	
 	private TweetResponseExtractor tweetExtractor;
 
 	public TimelineTemplate(LowLevelTwitterApi lowLevelApi) {
 		super(lowLevelApi);
-		this.profileExtractor = new TwitterProfileResponseExtractor();
 		this.tweetExtractor = new TweetResponseExtractor();
 	}
 
@@ -122,13 +120,12 @@ class TimelineTemplate extends AbstractTwitterOperations implements TimelineOper
 
 	public List<TwitterProfile> getRetweetedBy(long tweetId) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObjects("statuses/" + tweetId + "/retweeted_by.json", profileExtractor);
+		return getLowLevelTwitterApi().fetchObject("statuses/" + tweetId + "/retweeted_by.json", TwitterProfileList.class).getList();
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<Long> getRetweetedByIds(long tweetId) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("statuses/" + tweetId + "/retweeted_by/ids.json", List.class);
+		return getLowLevelTwitterApi().fetchObject("statuses/" + tweetId + "/retweeted_by/ids.json", LongList.class).getList();
 	}
 
 	public List<Tweet> getFavorites() {

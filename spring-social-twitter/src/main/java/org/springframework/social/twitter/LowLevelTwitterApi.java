@@ -118,6 +118,8 @@ public interface LowLevelTwitterApi {
 	 */
 	<T> T publish(String path, MultiValueMap<String, Object> data, ResponseExtractor<T> extractor);
 
+	<T> T publish(String path, MultiValueMap<String, Object> data, Class<T> type);
+
 	/**
 	 * Publishes data to the Twitter REST API. Does not return any results.
 	 * @param path the relative path to the resource. 

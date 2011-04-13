@@ -26,15 +26,26 @@ import java.util.Date;
 public class TwitterProfile implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private long id;
-	private String screenName;
-	private String name;
-	private String url;
-	private String profileImageUrl;
-	private String description;
-	private String location;
-	private Date createdDate;
+	private final long id;
+	private final String screenName;
+	private final String name;
+	private final String url;
+	private final String profileImageUrl;
+	private final String description;
+	private final String location;
+	private final Date createdDate;
 
+	public TwitterProfile(long id, String screenName, String name, String url, String profileImageUrl, String description, String location, Date createdDate) {
+		this.id = id;
+		this.screenName = screenName;
+		this.name = name;
+		this.url = url;
+		this.profileImageUrl = profileImageUrl;
+		this.description = description;
+		this.location = location;
+		this.createdDate = createdDate;		
+	}
+	
 	/**
 	 * The user's Twitter ID
 	 * 
@@ -42,10 +53,6 @@ public class TwitterProfile implements Serializable {
 	 */
 	public long getId() {
 		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
 	}
 
 	/**
@@ -57,10 +64,6 @@ public class TwitterProfile implements Serializable {
 		return screenName;
 	}
 
-	public void setScreenName(String screenName) {
-		this.screenName = screenName;
-	}
-
 	/**
 	 * The user's full name
 	 * 
@@ -68,10 +71,6 @@ public class TwitterProfile implements Serializable {
 	 */
 	public String getName() {
 		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	/**
@@ -83,10 +82,6 @@ public class TwitterProfile implements Serializable {
 		return url;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
 	/**
 	 * The user's description
 	 * 
@@ -96,10 +91,6 @@ public class TwitterProfile implements Serializable {
 		return description;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	/**
 	 * The user's location
 	 * 
@@ -107,14 +98,6 @@ public class TwitterProfile implements Serializable {
 	 */
 	public String getLocation() {
 		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
-	public void setProfileImageUrl(String profileImageUrl) {
-		this.profileImageUrl = profileImageUrl;
 	}
 
 	/**
@@ -137,10 +120,6 @@ public class TwitterProfile implements Serializable {
 	 */
 	public String getProfileUrl() {
 		return "http://www.twitter.com/" + screenName;
-	}
-
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
 	}
 
 	/**

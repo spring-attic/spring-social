@@ -25,8 +25,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.social.twitter.support.extractors.SavedSearchResponseExtractor;
 import org.springframework.social.twitter.support.extractors.TrendsListResponseExtractor;
+import org.springframework.social.twitter.support.json.SavedSearchList;
+import org.springframework.social.twitter.support.json.TrendsList;
 import org.springframework.social.twitter.types.SavedSearch;
 import org.springframework.social.twitter.types.SearchResults;
 import org.springframework.social.twitter.types.Trend;
@@ -45,9 +46,7 @@ import org.springframework.web.client.RestTemplate;
 class SearchTemplate extends AbstractTwitterOperations implements SearchOperations {
 
 	private final RestTemplate restTemplate;
-	
-	private SavedSearchResponseExtractor savedSearchExtractor;
-	
+		
 	private TrendsListResponseExtractor trendsListExtractor;
 	
 	private TrendsListResponseExtractor weeklyTrendsListExtractor;
@@ -55,7 +54,6 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 	public SearchTemplate(LowLevelTwitterApi lowLevelApi, RestTemplate restTemplate) {
 		super(lowLevelApi);
 		this.restTemplate = restTemplate;
-		this.savedSearchExtractor = new SavedSearchResponseExtractor();
 		this.trendsListExtractor = new TrendsListResponseExtractor(TrendsListResponseExtractor.LONG_TREND_DATE_FORMAT);
 		this.weeklyTrendsListExtractor = new TrendsListResponseExtractor(TrendsListResponseExtractor.SIMPLE_TREND_DATE_FORMAT);
 	}
@@ -95,12 +93,12 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 
 	public List<SavedSearch> getSavedSearches() {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObjects("saved_searches.json", savedSearchExtractor);
+		return getLowLevelTwitterApi().fetchObject("saved_searches.json", SavedSearchList.class).getList();
 	}
 
 	public SavedSearch getSavedSearch(long searchId) {
 		requireUserAuthorization();
-		return getLowLevelTwitterApi().fetchObject("saved_searches/show/" + searchId + ".json", savedSearchExtractor);
+		return getLowLevelTwitterApi().fetchObject("saved_searches/show/" + searchId + ".json", SavedSearch.class);
 	}
 
 	public void createSavedSearch(String query) {		
@@ -123,7 +121,7 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 
 	public Trends getCurrentTrends(boolean excludeHashtags) {
 		String path = makeTrendPath("trends/current.json", excludeHashtags, null);
-		return getLowLevelTwitterApi().fetchObject(path, trendsListExtractor).get(0);
+		return getLowLevelTwitterApi().fetchObject(path, TrendsList.class).getList().get(0);
 	}
 
 	public List<Trends> getDailyTrends() {
@@ -136,7 +134,7 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 
 	public List<Trends> getDailyTrends(boolean excludeHashtags, String startDate) {
 		String path = makeTrendPath("trends/daily.json", excludeHashtags, startDate);
-		return getLowLevelTwitterApi().fetchObject(path, trendsListExtractor);
+		return getLowLevelTwitterApi().fetchObject(path, TrendsList.class).getList();
 	}
 	
 	public List<Trends> getWeeklyTrends() {
