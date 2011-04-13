@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.social.twitter.support.json.DailyTrendsList;
@@ -32,11 +31,8 @@ import org.springframework.social.twitter.types.SavedSearch;
 import org.springframework.social.twitter.types.SearchResults;
 import org.springframework.social.twitter.types.Trend;
 import org.springframework.social.twitter.types.Trends;
-import org.springframework.social.twitter.types.Tweet;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.NumberUtils;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -74,15 +70,7 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 			searchUrl += "&max_id={max}";
 			parameters.put("max", String.valueOf(maxId));
 		}
-		@SuppressWarnings("unchecked")
-		Map<String, Object> resultsMap = restTemplate.getForObject(searchUrl, Map.class, parameters);
-		@SuppressWarnings("unchecked")
-		List<Map<String, Object>> items = (List<Map<String, Object>>) resultsMap.get("results");
-		List<Tweet> tweets = new ArrayList<Tweet>(resultsMap.size());
-		for (Map<String, Object> item : items) {
-			tweets.add(populateTweetFromSearchResults(item));
-		}
-		return buildSearchResults(resultsMap, tweets);
+		return restTemplate.getForObject(searchUrl, SearchResults.class, parameters);
 	}
 
 	public List<SavedSearch> getSavedSearches() {
@@ -173,30 +161,6 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 		return url;
 	}
 
-	private SearchResults buildSearchResults(Map<String, Object> response, List<Tweet> tweets) {
-		Number maxId = response.containsKey("max_id") ? (Number) response.get("max_id") : 0;
-		Number sinceId = response.containsKey("since_id") ? (Number) response.get("since_id") : 0;
-		return new SearchResults(tweets, maxId.longValue(), sinceId.longValue(), response.get("next_page") == null);
-	}
-
-	private Tweet populateTweetFromSearchResults(Map<String, Object> item) {
-		Tweet tweet = new Tweet();
-		tweet.setId(NumberUtils.parseNumber(ObjectUtils.nullSafeToString(item.get("id")), Long.class));
-		tweet.setFromUser(ObjectUtils.nullSafeToString(item.get("from_user")));
-		tweet.setText(ObjectUtils.nullSafeToString(item.get("text")));
-		tweet.setCreatedAt(toDate(ObjectUtils.nullSafeToString(item.get("created_at")), searchDateFormat));
-		tweet.setFromUserId(NumberUtils.parseNumber(ObjectUtils.nullSafeToString(item.get("from_user_id")), Long.class));
-		Object toUserId = item.get("to_user_id");
-		if (toUserId != null) {
-			tweet.setToUserId(NumberUtils.parseNumber(ObjectUtils.nullSafeToString(toUserId), Long.class));
-		}
-		tweet.setLanguageCode(ObjectUtils.nullSafeToString(item.get("iso_language_code")));
-		tweet.setProfileImageUrl(ObjectUtils.nullSafeToString(item.get("profile_image_url")));
-		tweet.setSource(ObjectUtils.nullSafeToString(item.get("source")));
-		return tweet;
-	}
-
-	private static final DateFormat searchDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
 	private static final DateFormat localTrendDateFormat = new SimpleDateFormat("yyyy-mm-dd'T'HH:mm:ss'Z'");
 
 	// 2011-03-18T16:45:33Z

@@ -30,6 +30,10 @@ public class SearchResults {
 	private long sinceId;
 	private boolean lastPage;
 
+	public SearchResults(List<Tweet> tweets, long maxId, long sinceId) {
+		this(tweets, maxId, sinceId, false);
+	}
+	
 	public SearchResults(List<Tweet> tweets, long maxId, long sinceId, boolean lastPage) {
 		this.tweets = tweets;
 		this.maxId = maxId;

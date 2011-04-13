@@ -19,6 +19,7 @@ import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.module.SimpleModule;
 import org.springframework.social.twitter.types.DirectMessage;
 import org.springframework.social.twitter.types.SavedSearch;
+import org.springframework.social.twitter.types.SearchResults;
 import org.springframework.social.twitter.types.SuggestionCategory;
 import org.springframework.social.twitter.types.Trend;
 import org.springframework.social.twitter.types.Trends;
@@ -41,5 +42,6 @@ public class TwitterModule extends SimpleModule {
 		context.setMixInAnnotations(DirectMessage.class, DirectMessageMixin.class);
 		context.setMixInAnnotations(UserList.class, UserListMixin.class);
 		context.setMixInAnnotations(Tweet.class, TweetMixin.class);
+		context.setMixInAnnotations(SearchResults.class, SearchResultsMixin.class);
 	}
 }

@@ -15,10 +15,20 @@
  */
 package org.springframework.social.twitter.support.json;
 
+import java.util.List;
+
+import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.social.twitter.types.Tweet;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonDeserialize(using = TweetDeserializer.class)
-public interface TweetMixin {
+public class SearchResultsMixin {
+
+	@JsonCreator
+	public SearchResultsMixin(
+			@JsonProperty("results") List<Tweet> tweets, 
+			@JsonProperty("max_id") long maxId, 
+			@JsonProperty("since_id") long sinceId) {}
+	
 }

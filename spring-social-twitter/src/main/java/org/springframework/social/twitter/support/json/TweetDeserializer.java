@@ -29,6 +29,11 @@ import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.springframework.social.twitter.types.Tweet;
 
+/**
+ * Custom Jackson deserializer for tweets. Tweets can't be simply mapped like other Twitter model objects because the JSON structure
+ * varies between the search API and the timeline API. This deserializer determine which structure is in play and creates a tweet from it.
+ * @author Craig Walls
+ */
 public class TweetDeserializer extends JsonDeserializer<Tweet> {
 
 	@Override
@@ -37,11 +42,22 @@ public class TweetDeserializer extends JsonDeserializer<Tweet> {
 		long id = tree.get("id").getValueAsLong();
 		String text = tree.get("text").getValueAsText();
 		JsonNode fromUserNode = tree.get("user");
-		String fromScreenName = fromUserNode.get("screen_name").getValueAsText();
-		long fromId = fromUserNode.get("id").getValueAsLong();
-		String fromImageUrl = fromUserNode.get("profile_image_url").getValueAsText();
+		String fromScreenName = null;
+		long fromId = 0;
+		String fromImageUrl = null;
+		DateFormat dateFormat = TIMELINE_DATE_FORMAT;
+		if(fromUserNode != null) {
+			fromScreenName = fromUserNode.get("screen_name").getValueAsText();
+			fromId = fromUserNode.get("id").getValueAsLong();
+			fromImageUrl = fromUserNode.get("profile_image_url").getValueAsText();
+		} else {
+			fromScreenName = tree.get("from_user").getValueAsText();
+			fromId = tree.get("from_user_id").getValueAsLong();
+			fromImageUrl = tree.get("profile_image_url").getValueAsText();
+			dateFormat = SEARCH_DATE_FORMAT;
+		}
+		Date createdAt = toDate(tree.get("created_at").getValueAsText(), dateFormat);
 		String source = tree.get("source").getValueAsText();
-		Date createdAt = toDate(tree.get("created_at").getValueAsText());
 		JsonNode toUserIdNode = tree.get("in_reply_to_user_id");
 		Long toUserId = toUserIdNode != null ? toUserIdNode.getValueAsLong() : null;
 		JsonNode languageCodeNode = tree.get("iso_language_code");
@@ -51,13 +67,13 @@ public class TweetDeserializer extends JsonDeserializer<Tweet> {
 		return tweet;
 	}
 	
-    private Date toDate(String dateString) {
+    private Date toDate(String dateString, DateFormat dateFormat) {
         if (dateString == null) {
             return null;
         }
 
         try {
-            return TIMELINE_DATE_FORMAT.parse(dateString);
+            return dateFormat.parse(dateString);
         } catch (ParseException e) {
             return null;
         }
@@ -65,5 +81,7 @@ public class TweetDeserializer extends JsonDeserializer<Tweet> {
 
 
 	private static final DateFormat TIMELINE_DATE_FORMAT = new SimpleDateFormat("EEE MMM dd HH:mm:ss ZZZZZ yyyy", Locale.ENGLISH);
+
+	private static final DateFormat SEARCH_DATE_FORMAT = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
 
 }

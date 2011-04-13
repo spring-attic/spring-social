@@ -32,9 +32,6 @@ public class Tweet {
 	private String languageCode;
 	private String source;
 	
-	// TODO: Get rid of this
-	public Tweet() {}
-	
 	public Tweet(long id, String text, Date createdAt, String fromUser, String profileImageUrl, Long toUserId, long fromUserId, String languageCode, String source) {
 		this.id = id;
 		this.text = text;
