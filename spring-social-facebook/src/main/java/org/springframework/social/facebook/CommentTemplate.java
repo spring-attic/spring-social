@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.springframework.social.facebook.support.extractors.CommentResponseExtractor;
 import org.springframework.social.facebook.support.extractors.ReferenceResponseExtractor;
+import org.springframework.social.facebook.support.json.ReferenceList;
 import org.springframework.social.facebook.types.Comment;
 import org.springframework.social.facebook.types.Reference;
 import org.springframework.util.LinkedMultiValueMap;
@@ -56,7 +57,7 @@ class CommentTemplate implements CommentOperations {
 	}
 
 	public List<Reference> getLikes(String objectId) {
-		return graphApi.fetchConnections(objectId, "likes", referenceExtractor);
+		return graphApi.fetchConnections(objectId, "likes", ReferenceList.class).getList();
 	}
 
 }

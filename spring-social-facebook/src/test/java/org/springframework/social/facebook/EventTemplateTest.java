@@ -26,29 +26,29 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.social.facebook.types.Event;
 import org.springframework.social.facebook.types.EventInvitee;
+import org.springframework.social.facebook.types.Invitation;
 import org.springframework.social.facebook.types.RsvpStatus;
-import org.springframework.social.facebook.types.UserEvent;
 
 public class EventTemplateTest extends AbstractFacebookApiTest {
 
 	@Test
-	public void getEvents() {
+	public void getInvitations() {
 		mockServer.expect(requestTo("https://graph.facebook.com/me/events"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/user-events.json", getClass()), responseHeaders));
-		List<UserEvent> events = facebook.eventOperations().getEvents();
-		assertEvents(events);
+		List<Invitation> events = facebook.eventOperations().getInvitations();
+		assertInvitations(events);
 	}
 	
 	@Test
-	public void getEvents_forSpecificUser() {
+	public void getInvitations_forSpecificUser() {
 		mockServer.expect(requestTo("https://graph.facebook.com/123456789/events"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/user-events.json", getClass()), responseHeaders));
-		List<UserEvent> events = facebook.eventOperations().getEvents("123456789");
-		assertEvents(events);
+		List<Invitation> events = facebook.eventOperations().getInvitations("123456789");
+		assertInvitations(events);
 	}
 	
 	@Test
@@ -63,8 +63,8 @@ public class EventTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("Art Names", event.getOwner().getName());
 		assertEquals("Breakdancing Class", event.getName());
 		assertEquals(Event.Privacy.OPEN, event.getPrivacy());
-		assertEquals(toDate("2011-03-30T14:30:00"), event.getStartTime());
-		assertEquals(toDate("2011-03-30T17:30:00"), event.getEndTime());
+		assertEquals(toDate("2011-03-30T14:30:00+0000"), event.getStartTime());
+		assertEquals(toDate("2011-03-30T17:30:00+0000"), event.getEndTime());
 		assertEquals(toDate("2011-03-30T14:30:28+0000"), event.getUpdatedTime());
 		assertNull(event.getDescription());
 		assertNull(event.getLocation());
@@ -82,8 +82,8 @@ public class EventTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("Art Names", event.getOwner().getName());
 		assertEquals("Breakdancing Class", event.getName());
 		assertEquals(Event.Privacy.SECRET, event.getPrivacy());
-		assertEquals(toDate("2011-03-30T14:30:00"), event.getStartTime());
-		assertEquals(toDate("2011-03-30T17:30:00"), event.getEndTime());
+		assertEquals(toDate("2011-03-30T14:30:00+0000"), event.getStartTime());
+		assertEquals(toDate("2011-03-30T17:30:00+0000"), event.getEndTime());
 		assertEquals(toDate("2011-03-30T14:38:40+0000"), event.getUpdatedTime());
 		assertEquals("Bring your best parachute pants!", event.getDescription());
 		assertEquals("2400 Dunlavy Dr, Denton, TX", event.getLocation());
@@ -181,19 +181,21 @@ public class EventTemplateTest extends AbstractFacebookApiTest {
 		assertEquals(rsvpStatus, invitee.getRsvpStatus());
 	}
 	
-	private void assertEvents(List<UserEvent> events) {
+	private void assertInvitations(List<Invitation> events) {
 		assertEquals(2, events.size());
-		assertEquals("188420717869087", events.get(0).getId());
+		assertEquals("188420717869087", events.get(0).getEventId());
 		assertEquals("Afternoon naptime", events.get(0).getName());
 		assertEquals("On the couch", events.get(0).getLocation());
-		assertEquals(toDate("2011-03-26T14:00:00"), events.get(0).getStartTime());
-		assertEquals(toDate("2011-03-26T15:00:00"), events.get(0).getEndTime());
+		// Facebook event times don't have a timezone component, so they end up parsed as in +0000
+		// Unfortunately, this is probably not the actual time of the event.
+		assertEquals(toDate("2011-03-26T14:00:00+0000"), events.get(0).getStartTime());
+		assertEquals(toDate("2011-03-26T15:00:00+0000"), events.get(0).getEndTime());
 		assertEquals(RsvpStatus.ATTENDING, events.get(0).getRsvpStatus());
-		assertEquals("188420717869780", events.get(1).getId());
+		assertEquals("188420717869780", events.get(1).getEventId());
 		assertEquals("Mow the lawn", events.get(1).getName());
 		assertNull(events.get(1).getLocation());
-		assertEquals(toDate("2011-03-26T15:00:00"), events.get(1).getStartTime());
-		assertEquals(toDate("2011-03-26T16:00:00"), events.get(1).getEndTime());
+		assertEquals(toDate("2011-03-26T15:00:00+0000"), events.get(1).getStartTime());
+		assertEquals(toDate("2011-03-26T16:00:00+0000"), events.get(1).getEndTime());
 		assertEquals(RsvpStatus.NOT_REPLIED, events.get(1).getRsvpStatus());
 	}
 	

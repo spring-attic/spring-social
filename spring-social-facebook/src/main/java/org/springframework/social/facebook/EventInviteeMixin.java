@@ -13,18 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.support.extractors;
+package org.springframework.social.facebook;
 
-import java.util.Map;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.springframework.social.facebook.support.json.RsvpStatusDeserializer;
+import org.springframework.social.facebook.types.RsvpStatus;
 
-import org.springframework.social.facebook.types.WorkEntry;
-
-public class WorkResponseExtractor extends AbstractResponseExtractor<WorkEntry> {
-
-	@SuppressWarnings("unchecked")
-	public WorkEntry extractObject(Map<String, Object> workEntryMap) {
-		return new WorkEntry(extractReferenceFromMap((Map<String, Object>) workEntryMap.get("employer")),
-				(String) workEntryMap.get("start_date"), (String) workEntryMap.get("end_date"));
-	}
-
+public class EventInviteeMixin {
+	
+	@JsonCreator
+	public EventInviteeMixin(
+			@JsonProperty("id") String id, 
+			@JsonProperty("name") String name, 
+			@JsonProperty("rsvp_status") @JsonDeserialize(using=RsvpStatusDeserializer.class) RsvpStatus rsvpStatus) {}
+	
 }

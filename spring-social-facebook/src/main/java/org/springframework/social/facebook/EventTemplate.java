@@ -17,42 +17,32 @@ package org.springframework.social.facebook;
 
 import java.util.List;
 
-import org.springframework.social.facebook.support.extractors.EventResponseExtractor;
-import org.springframework.social.facebook.support.extractors.InviteeResponseExtractor;
-import org.springframework.social.facebook.support.extractors.UserEventResponseExtractor;
+import org.springframework.social.facebook.support.json.EventInviteeList;
+import org.springframework.social.facebook.support.json.InvitationList;
 import org.springframework.social.facebook.types.Event;
 import org.springframework.social.facebook.types.EventInvitee;
-import org.springframework.social.facebook.types.UserEvent;
+import org.springframework.social.facebook.types.Invitation;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 class EventTemplate implements EventOperations {
-
-	private EventResponseExtractor eventExtractor;
-	
-	private UserEventResponseExtractor userEventExtractor;
-	
-	private InviteeResponseExtractor inviteeExtractor;
-	
+			
 	private final GraphApi graphApi;
 
 	public EventTemplate(GraphApi graphApi) {
 		this.graphApi = graphApi;
-		eventExtractor = new EventResponseExtractor();
-		userEventExtractor = new UserEventResponseExtractor();
-		inviteeExtractor = new InviteeResponseExtractor();
 	}
 
-	public List<UserEvent> getEvents() {
-		return getEvents("me");
+	public List<Invitation> getInvitations() {
+		return getInvitations("me");
 	}
 
-	public List<UserEvent> getEvents(String userId) {
-		return graphApi.fetchConnections(userId, "events", userEventExtractor);
+	public List<Invitation> getInvitations(String userId) {
+		return graphApi.fetchConnections(userId, "events", InvitationList.class).getList();
 	}
 	
 	public Event getEvent(String eventId) {
-		return graphApi.fetchObject(eventId, eventExtractor);
+		return graphApi.fetchObject(eventId, Event.class);
 	}
 	
 	public byte[] getEventImage(String eventId) {
@@ -76,23 +66,23 @@ class EventTemplate implements EventOperations {
 	}
 
 	public List<EventInvitee> getInvited(String eventId) {
-		return graphApi.fetchConnections(eventId, "invited", inviteeExtractor);
+		return graphApi.fetchConnections(eventId, "invited", EventInviteeList.class).getList();
 	}
 
 	public List<EventInvitee> getAttending(String eventId) {
-		return graphApi.fetchConnections(eventId, "attending", inviteeExtractor);
+		return graphApi.fetchConnections(eventId, "attending", EventInviteeList.class).getList();
 	}
 	
 	public List<EventInvitee> getMaybeAttending(String eventId) {
-		return graphApi.fetchConnections(eventId, "maybe", inviteeExtractor);
+		return graphApi.fetchConnections(eventId, "maybe", EventInviteeList.class).getList();
 	}
 	
 	public List<EventInvitee> getNoReplies(String eventId) {
-		return graphApi.fetchConnections(eventId, "noreply", inviteeExtractor);
+		return graphApi.fetchConnections(eventId, "noreply", EventInviteeList.class).getList();
 	}
 
 	public List<EventInvitee> getDeclined(String eventId) {
-		return graphApi.fetchConnections(eventId, "declined", inviteeExtractor);
+		return graphApi.fetchConnections(eventId, "declined", EventInviteeList.class).getList();
 	}
 	
 	public void acceptInvitation(String eventId) {

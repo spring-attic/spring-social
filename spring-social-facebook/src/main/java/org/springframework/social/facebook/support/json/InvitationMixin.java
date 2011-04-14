@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.support.extractors;
+package org.springframework.social.facebook.support.json;
 
-import java.util.Map;
+import java.util.Date;
 
-import org.springframework.social.facebook.types.EventInvitee;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.springframework.social.facebook.types.RsvpStatus;
 
-public class InviteeResponseExtractor extends AbstractResponseExtractor<EventInvitee> {
+public abstract class InvitationMixin {
+
+	@JsonCreator
+	public InvitationMixin(
+			@JsonProperty("id") String eventId, 
+			@JsonProperty("name") String name, 
+			@JsonProperty("start_time") Date startTime, 
+			@JsonProperty("end_time") Date endTime, 
+			@JsonProperty("rsvp_status") @JsonDeserialize(using=RsvpStatusDeserializer.class) RsvpStatus rsvpStatus) {}
 	
-	public EventInvitee extractObject(Map<String, Object> inviteeMap) {
-		return new EventInvitee((String) inviteeMap.get("id"), 
-				(String) inviteeMap.get("name"), 
-				RsvpStatus.valueOf(((String) inviteeMap.get("rsvp_status")).toUpperCase()));
-	}
+	@JsonProperty("location")
+	String location;
 	
 }

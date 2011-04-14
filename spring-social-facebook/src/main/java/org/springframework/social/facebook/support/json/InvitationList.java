@@ -13,20 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.support.extractors;
+package org.springframework.social.facebook.support.json;
 
-import java.util.Map;
+import java.util.List;
 
-import org.springframework.social.facebook.types.EducationEntry;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.social.facebook.types.Invitation;
 
-public class EducationResponseExtractor extends AbstractResponseExtractor<EducationEntry> {
+@JsonIgnoreProperties("paging")
+public class InvitationList {
 
-	@SuppressWarnings("unchecked")
-	public EducationEntry extractObject(Map<String, Object> educationEntryMap) {
-		return new EducationEntry(
-				extractReferenceFromMap((Map<String, Object>) educationEntryMap.get("school")), 
-				extractReferenceFromMap((Map<String, Object>) educationEntryMap.get("year")), 
-				(String) educationEntryMap.get("type"));
+	private final List<Invitation> list;
+
+	@JsonCreator
+	public InvitationList(@JsonProperty("data") List<Invitation> list) {
+		this.list = list;
 	}
 
+	public List<Invitation> getList() {
+		return list;
+	}
 }

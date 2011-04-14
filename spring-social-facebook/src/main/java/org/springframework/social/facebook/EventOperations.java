@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.springframework.social.facebook.types.Event;
 import org.springframework.social.facebook.types.EventInvitee;
-import org.springframework.social.facebook.types.UserEvent;
+import org.springframework.social.facebook.types.Invitation;
 
 /**
  * Defines operations for creating and reading event data as well as RSVP'ing to events on behalf of a user.
@@ -30,17 +30,17 @@ public interface EventOperations {
 	/**
 	 * Retrieves a list of events that the authenticated user has been invited to.
 	 * Requires "user_events" or "friends_events" permission.
-	 * @return a list {@link UserEvent}s for the user, or an empty list if not available.
+	 * @return a list {@link Invitation}s for the user, or an empty list if not available.
 	 */
-	List<UserEvent> getEvents();
+	List<Invitation> getInvitations();
 
 	/**
 	 * Retrieves a list of events that the specified user has been invited to.
 	 * Requires "user_events" or "friends_events" permission.
 	 * @param userId the user's ID
-	 * @return a list {@link UserEvent}s for the user, or an empty list if not available.
+	 * @return a list {@link Invitation}s for the user, or an empty list if not available.
 	 */
-	List<UserEvent> getEvents(String userId);
+	List<Invitation> getInvitations(String userId);
 	
 	/**
 	 * Retrieves event data for a specified event.

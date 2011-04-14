@@ -254,6 +254,7 @@ public class FacebookTemplate implements FacebookApi {
 	private void checkForErrors(Map<String, Object> response) {
 		if(response.containsKey("error")) {
 			System.out.println("Error");
+			// TODO: Revisit this problem of determining errors that look like successes
 //			Map<String, String> errorDetails = (Map<String, String>) response.get("error");
 //			errorHandler.handleFacebookError(errorDetails);
 		}

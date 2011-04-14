@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,19 @@ import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.types.UserLike;
+import org.springframework.social.facebook.types.EventInvitee;
 
-public class UserLikeList {
-	private final List<UserLike> list;
+public class EventInviteeList {
+
+	private final List<EventInvitee> list;
 
 	@JsonCreator
-	public UserLikeList(@JsonProperty("data") List<UserLike> list) {
+	public EventInviteeList(@JsonProperty("data") List<EventInvitee> list) {
 		this.list = list;
 	}
 
-	public List<UserLike> getList() {
+	public List<EventInvitee> getList() {
 		return list;
 	}
+	
 }

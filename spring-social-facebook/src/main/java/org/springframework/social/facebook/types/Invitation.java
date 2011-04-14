@@ -17,9 +17,9 @@ package org.springframework.social.facebook.types;
 
 import java.util.Date;
 
-public class UserEvent {
+public class Invitation {
 
-	private final String id;
+	private final String eventId;
 
 	private final String name;
 
@@ -31,12 +31,12 @@ public class UserEvent {
 
 	private final RsvpStatus rsvpStatus;
 
-	public UserEvent(String id, String name, Date startTime, Date endTime, RsvpStatus rsvpStatus) {
-		this(id, name, startTime, endTime, rsvpStatus, null);
+	public Invitation(String eventId, String name, Date startTime, Date endTime, RsvpStatus rsvpStatus) {
+		this(eventId, name, startTime, endTime, rsvpStatus, null);
 	}
 
-	public UserEvent(String id, String name, Date startTime, Date endTime, RsvpStatus rsvpStatus, String location) {
-		this.id = id;
+	public Invitation(String eventId, String name, Date startTime, Date endTime, RsvpStatus rsvpStatus, String location) {
+		this.eventId = eventId;
 		this.name = name;
 		this.startTime = startTime;
 		this.endTime = endTime;
@@ -44,8 +44,8 @@ public class UserEvent {
 		this.rsvpStatus = rsvpStatus;
 	}
 
-	public String getId() {
-		return id;
+	public String getEventId() {
+		return eventId;
 	}
 
 	public String getName() {
