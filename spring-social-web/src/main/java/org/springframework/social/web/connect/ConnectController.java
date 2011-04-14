@@ -33,6 +33,7 @@ import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
+import org.springframework.social.oauth2.GrantType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
@@ -53,6 +54,7 @@ import org.springframework.web.context.request.WebRequest;
  * </ul>
  * @author Keith Donald
  * @author Craig Walls
+ * @author Roy Clarkson
  */
 @Controller
 @RequestMapping("/connect/")
@@ -123,7 +125,7 @@ public class ConnectController  {
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
 			return "redirect:" + oauth1Ops.buildAuthorizeUrl(requestToken.getValue(), callbackUrl(providerId));
 		} else if (connectionFactory instanceof OAuth2ServiceProviderConnectionFactory) {
-			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(callbackUrl(providerId), scope, null);
+			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(callbackUrl(providerId), scope, null, GrantType.AuthorizationCode, null);
 		} else {
 			throw new IllegalStateException("Connections to provider '" + providerId + "' not supported");
 		}

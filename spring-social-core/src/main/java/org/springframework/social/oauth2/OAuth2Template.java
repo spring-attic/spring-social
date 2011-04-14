@@ -18,8 +18,10 @@ package org.springframework.social.oauth2;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -32,6 +34,7 @@ import org.springframework.web.client.RestTemplate;
 /**
  * OAuth2Operations implementation that uses REST-template to make the OAuth calls.
  * @author Keith Donald
+ * @author Roy Clarkson
  */
 public class OAuth2Template implements OAuth2Operations {
 
@@ -50,10 +53,10 @@ public class OAuth2Template implements OAuth2Operations {
 	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String authenticateUrl, String accessTokenUrl) {
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
-		String clientInfo = "?response_type=code&client_id=" + formEncode(clientId);
+		String clientInfo = "?client_id=" + formEncode(clientId);
 		this.authorizeUrl = authorizeUrl + clientInfo;
 		if (authenticateUrl != null) {
-			this.authenticateUrl = authenticateUrl + "?response_type=code&client_id=" + formEncode(clientId);
+			this.authenticateUrl = authenticateUrl + "?client_id=" + formEncode(clientId);
 		} else {
 			this.authenticateUrl = null;
 		}
@@ -61,12 +64,12 @@ public class OAuth2Template implements OAuth2Operations {
 		this.restTemplate = createRestTemplate();
 	}
 
-	public final String buildAuthorizeUrl(String redirectUri, String scope, String state) {
-		return buildOAuthUrl(authorizeUrl, redirectUri, scope, state);
+	public final String buildAuthorizeUrl(String redirectUri, String scope, String state, GrantType grantType, MultiValueMap<String, String> additionalParameters) {
+		return buildOAuthUrl(authorizeUrl, redirectUri, scope, state, grantType, additionalParameters);
 	}
 	
-	public String buildAuthenticateUrl(String redirectUri, String state) {
-		return authenticateUrl != null ? buildOAuthUrl(authenticateUrl, redirectUri, null, state) : buildAuthorizeUrl(redirectUri, null, state);
+	public String buildAuthenticateUrl(String redirectUri, String state, GrantType grantType, MultiValueMap<String, String> additionalParameters) {
+		return authenticateUrl != null ? buildOAuthUrl(authenticateUrl, redirectUri, null, state, grantType, additionalParameters) : buildAuthorizeUrl(redirectUri, null, state, grantType, additionalParameters);
 	}
 
 	public final AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters) {
@@ -125,13 +128,26 @@ public class OAuth2Template implements OAuth2Operations {
 	
 	// internal helpers
 
-	private String buildOAuthUrl(String baseOauthUrl, String redirectUri, String scope, String state) {
+	private String buildOAuthUrl(String baseOauthUrl, String redirectUri, String scope, String state, GrantType grantType, MultiValueMap<String, String> additionalParameters) {
 		StringBuilder oauthUrl = new StringBuilder(baseOauthUrl).append('&').append("redirect_uri").append('=').append(formEncode(redirectUri));
+		if (grantType == GrantType.AuthorizationCode) {
+			oauthUrl.append('&').append("response_type").append('=').append("code");
+		} else if (grantType == GrantType.ImplicitGrant) {
+			oauthUrl.append('&').append("response_type").append('=').append("token");
+		}
 		if (scope != null) {
 			oauthUrl.append('&').append("scope").append('=').append(formEncode(scope));
 		}
 		if (state != null) {
 			oauthUrl.append('&').append("state").append('=').append(formEncode(state));	
+		}
+		if (additionalParameters != null) {
+			for (Iterator<Entry<String, List<String>>> params = additionalParameters.entrySet().iterator(); params.hasNext();) {
+				Entry<String, List<String>> param = params.next();
+				for (Iterator<String> paramValues = param.getValue().iterator(); paramValues.hasNext();) {
+					oauthUrl.append('&').append(param.getKey()).append('=').append(formEncode(paramValues.next()));
+				}
+			}
 		}
 		return oauthUrl.toString();		
 	}

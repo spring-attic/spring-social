@@ -21,6 +21,7 @@ import org.springframework.util.MultiValueMap;
  * A service interface for the OAuth2 flow.
  * This interface allows you to conduct the "OAuth dance" with a service provider on behalf of a user. 
  * @author Keith Donald
+ * @author Roy Clarkson
  */
 public interface OAuth2Operations {
 
@@ -30,7 +31,7 @@ public interface OAuth2Operations {
 	 * @param scope the permissions the application is seeking with the authorization
 	 * @return the absolute authorize URL to redirect the user to for authorization
 	 */ 
-	String buildAuthorizeUrl(String redirectUri, String scope, String state);
+	String buildAuthorizeUrl(String redirectUri, String scope, String state, GrantType grantType, MultiValueMap<String, String> additionalParameters);
 
 	/**
 	 * Construct the URL to redirect the user to for authentication.
@@ -39,7 +40,7 @@ public interface OAuth2Operations {
 	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider
 	 * @return the absolute authenticate URL to redirect the user to for authorization
 	 */ 
-	String buildAuthenticateUrl(String redirectUri, String state);
+	String buildAuthenticateUrl(String redirectUri, String state, GrantType grantType, MultiValueMap<String, String> additionalParameters);
 	
 	/**
 	 * Exchange the authorization grant for an access grant.
