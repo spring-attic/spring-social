@@ -17,19 +17,17 @@ package org.springframework.social.facebook;
 
 import java.util.List;
 
-import org.springframework.social.facebook.support.extractors.UserLikeResponseExtractor;
+import org.springframework.social.facebook.support.json.UserLikeList;
 import org.springframework.social.facebook.types.UserLike;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 class LikeTemplate implements LikeOperations {
 
-	private UserLikeResponseExtractor likeExtractor;
 	private final GraphApi graphApi;
 
 	public LikeTemplate(GraphApi graphApi) {
 		this.graphApi = graphApi;
-		likeExtractor = new UserLikeResponseExtractor();
 	}
 
 	public List<UserLike> getLikes() {
@@ -37,7 +35,7 @@ class LikeTemplate implements LikeOperations {
 	}
 
 	public List<UserLike> getLikes(String userId) {
-		return graphApi.fetchConnections(userId, "likes", likeExtractor);
+		return graphApi.fetchConnections(userId, "likes", UserLikeList.class).getList();
 	}
 	
 	public void like(String objectId) {
@@ -54,7 +52,7 @@ class LikeTemplate implements LikeOperations {
 	}
 
 	public List<UserLike> getBooks(String userId) {
-		return graphApi.fetchConnections(userId, "books", likeExtractor);
+		return graphApi.fetchConnections(userId, "books", UserLikeList.class).getList();
 	}
 
 	public List<UserLike> getMovies() {
@@ -62,7 +60,7 @@ class LikeTemplate implements LikeOperations {
 	}
 
 	public List<UserLike> getMovies(String userId) {
-		return graphApi.fetchConnections(userId, "movies", likeExtractor);
+		return graphApi.fetchConnections(userId, "movies", UserLikeList.class).getList();
 	}
 
 	public List<UserLike> getMusic() {
@@ -70,7 +68,7 @@ class LikeTemplate implements LikeOperations {
 	}
 
 	public List<UserLike> getMusic(String userId) {
-		return graphApi.fetchConnections(userId, "music", likeExtractor);
+		return graphApi.fetchConnections(userId, "music", UserLikeList.class).getList();
 	}
 
 	public List<UserLike> getTelevision() {
@@ -78,7 +76,7 @@ class LikeTemplate implements LikeOperations {
 	}
 
 	public List<UserLike> getTelevision(String userId) {
-		return graphApi.fetchConnections(userId, "television", likeExtractor);
+		return graphApi.fetchConnections(userId, "television", UserLikeList.class).getList();
 	}
 
 	public List<UserLike> getActivities() {
@@ -86,7 +84,7 @@ class LikeTemplate implements LikeOperations {
 	}
 
 	public List<UserLike> getActivities(String userId) {
-		return graphApi.fetchConnections(userId, "activities", likeExtractor);
+		return graphApi.fetchConnections(userId, "activities", UserLikeList.class).getList();
 	}
 
 	public List<UserLike> getInterests() {
@@ -94,6 +92,6 @@ class LikeTemplate implements LikeOperations {
 	}
 
 	public List<UserLike> getInterests(String userId) {
-		return graphApi.fetchConnections(userId, "interests", likeExtractor);
+		return graphApi.fetchConnections(userId, "interests", UserLikeList.class).getList();
 	}
 }

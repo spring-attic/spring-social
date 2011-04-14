@@ -33,13 +33,9 @@ public class Group {
 	
 	private final String email;
 
-	private final String description;
+	private String description;
 
 	public Group(String id, Reference owner, String name, Privacy privacy, String icon, Date updatedTime, String email) {
-		this(id, owner, name, privacy, icon, updatedTime, email, null);
-	}
-	
-	public Group(String id, Reference owner, String name, Privacy privacy, String icon, Date updatedTime, String email, String description) {
 		this.id = id;
 		this.owner = owner;
 		this.name = name;
@@ -47,7 +43,6 @@ public class Group {
 		this.icon = icon;
 		this.updatedTime = updatedTime;
 		this.email = email;
-		this.description = description;
 	}
 
 	public String getId() {

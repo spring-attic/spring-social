@@ -199,9 +199,12 @@ public class FacebookTemplate implements FacebookApi {
 	}
 	
 	public <T> T fetchConnections(String objectId, String connectionType, Class<T> type, String... fields) {
-		String joinedFields = join(fields);
-		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).queryParam("fields", joinedFields).build();
-		return restTemplate.getForObject(uri, type);
+		URIBuilder uriBuilder = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType);
+		if(fields.length > 0) {
+			String joinedFields = join(fields);
+			uriBuilder.queryParam("fields", joinedFields);
+		}		
+		return restTemplate.getForObject(uriBuilder.build(), type);
 	}
 	
 	public byte[] fetchImage(String objectId, String connectionType, ImageType type) {

@@ -25,7 +25,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.social.facebook.types.Group;
-import org.springframework.social.facebook.types.Reference;
+import org.springframework.social.facebook.types.GroupMemberReference;
 
 
 public class GroupTemplateTest extends AbstractFacebookApiTest {
@@ -55,13 +55,16 @@ public class GroupTemplateTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/group-members.json", getClass()), responseHeaders));
-		List<Reference> members = facebook.groupOperations().getMembers("213106022036379");
+		List<GroupMemberReference> members = facebook.groupOperations().getMembers("213106022036379");
 		assertEquals(3, members.size());
 		assertEquals("100001387295207", members.get(0).getId());
 		assertEquals("Art Names", members.get(0).getName());
+		assertFalse(members.get(0).isAdministrator());
 		assertEquals("738140579", members.get(1).getId());
 		assertEquals("Craig Walls", members.get(1).getName());
+		assertTrue(members.get(1).isAdministrator());
 		assertEquals("627039468", members.get(2).getId());
 		assertEquals("Chuck Wagon", members.get(2).getName());
+		assertTrue(members.get(2).isAdministrator());
 	}
 }

@@ -97,7 +97,9 @@ public class Album {
 	}
 
 	// TODO: Determine if this is the complete set of possible values
-	public static enum Type { NORMAL, MOBILE, PROFILE }
+	public static enum Type { 
+		NORMAL, MOBILE, PROFILE
+	}
 	
 	// TODO Determine if this is the complete set of possible values. 
 	//      Also decide if this needs to be extracted for use elsewhere

@@ -13,21 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.support.extractors;
+package org.springframework.social.facebook.support.json;
 
-import java.util.Date;
-import java.util.Map;
+import java.util.List;
 
-import org.springframework.social.facebook.types.UserLike;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.social.facebook.types.GroupMemberReference;
 
-public class UserLikeResponseExtractor extends AbstractResponseExtractor<UserLike> {
+public class GroupMemberReferenceList {
+	
+	private final List<GroupMemberReference> list;
 
-	public UserLike extractObject(Map<String, Object> likeMap) {
-		String id = (String) likeMap.get("id");
-		String name = (String) likeMap.get("name");
-		String category = (String) likeMap.get("category");
-		Date createdTime = toDate((String) likeMap.get("created_time"));
-		return new UserLike(id, name, category, createdTime);
+	@JsonCreator
+	public GroupMemberReferenceList(@JsonProperty("data") List<GroupMemberReference> list) {
+		this.list = list;
 	}
 
+	public List<GroupMemberReference> getList() {
+		return list;
+	}
 }

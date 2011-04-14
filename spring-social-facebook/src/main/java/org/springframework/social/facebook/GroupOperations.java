@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.springframework.social.facebook.types.FacebookProfile;
 import org.springframework.social.facebook.types.Group;
+import org.springframework.social.facebook.types.GroupMemberReference;
 import org.springframework.social.facebook.types.Reference;
 
 /**
@@ -54,7 +55,7 @@ public interface GroupOperations {
 	 * @param groupId the ID of the group
 	 * @return a list of {@link Reference}s, one for each member of the group.
 	 */
-	List<Reference> getMembers(String groupId);
+	List<GroupMemberReference> getMembers(String groupId);
 
 	/**
 	 * Retrieves the profiles for the members of the specified group.

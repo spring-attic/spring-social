@@ -17,9 +17,13 @@ package org.springframework.social.facebook.support.json;
 
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.module.SimpleModule;
+import org.springframework.social.facebook.types.Album;
 import org.springframework.social.facebook.types.EducationEntry;
 import org.springframework.social.facebook.types.FacebookProfile;
+import org.springframework.social.facebook.types.Group;
+import org.springframework.social.facebook.types.GroupMemberReference;
 import org.springframework.social.facebook.types.Reference;
+import org.springframework.social.facebook.types.UserLike;
 import org.springframework.social.facebook.types.WorkEntry;
 
 public class FacebookModule extends SimpleModule {
@@ -34,5 +38,9 @@ public class FacebookModule extends SimpleModule {
 		context.setMixInAnnotations(WorkEntry.class, WorkEntryMixin.class);
 		context.setMixInAnnotations(EducationEntry.class, EducationEntryMixin.class);
 		context.setMixInAnnotations(Reference.class, ReferenceMixin.class);
+		context.setMixInAnnotations(GroupMemberReference.class, GroupMemberReferenceMixin.class);
+		context.setMixInAnnotations(Album.class, AlbumMixin.class);
+		context.setMixInAnnotations(UserLike.class, UserLikeMixin.class);
+		context.setMixInAnnotations(Group.class, GroupMixin.class);
 	}
 }

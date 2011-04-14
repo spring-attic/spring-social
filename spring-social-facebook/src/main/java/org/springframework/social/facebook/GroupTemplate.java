@@ -17,30 +17,22 @@ package org.springframework.social.facebook;
 
 import java.util.List;
 
-import org.springframework.social.facebook.support.extractors.GroupResponseExtractor;
-import org.springframework.social.facebook.support.extractors.ReferenceResponseExtractor;
 import org.springframework.social.facebook.support.json.FacebookProfileList;
+import org.springframework.social.facebook.support.json.GroupMemberReferenceList;
 import org.springframework.social.facebook.types.FacebookProfile;
 import org.springframework.social.facebook.types.Group;
-import org.springframework.social.facebook.types.Reference;
+import org.springframework.social.facebook.types.GroupMemberReference;
 
 class GroupTemplate implements GroupOperations {
-	private static final String[] FULL_PROFILE_FIELDS = {"id", "username", "name", "first_name", "last_name", "gender", "locale", "education", "work", "email", "third_party_id", "link", "timezone", "updated_time", "verified", "about", "bio", "birthday", "location", "hometown", "interested_in", "religion", "political", "quotes", "relationship_status", "significant_other", "website"};
-
-	private GroupResponseExtractor groupExtractor;
 	
 	private final GraphApi graphApi;
 
-	private ReferenceResponseExtractor referenceExtractor;
-
 	public GroupTemplate(GraphApi graphApi) {
 		this.graphApi = graphApi;
-		groupExtractor = new GroupResponseExtractor();
-		referenceExtractor = new ReferenceResponseExtractor();
 	}
 	
 	public Group getGroup(String groupId) {
-		return graphApi.fetchObject(groupId, groupExtractor);
+		return graphApi.fetchObject(groupId, Group.class);
 	}
 	
 	public byte[] getGroupImage(String groupId) {
@@ -51,12 +43,14 @@ class GroupTemplate implements GroupOperations {
 		return graphApi.fetchImage(groupId, "picture", imageType);
 	}
 	
-	public List<Reference> getMembers(String groupId) {
-		return graphApi.fetchConnections(groupId, "members", referenceExtractor);
+	public List<GroupMemberReference> getMembers(String groupId) {
+		return graphApi.fetchConnections(groupId, "members", GroupMemberReferenceList.class).getList();
 	}
 
 	public List<FacebookProfile> getMemberProfiles(String groupId) {
 		return graphApi.fetchConnections(groupId, "members", FacebookProfileList.class, FULL_PROFILE_FIELDS).getList();
 	}
+
+	private static final String[] FULL_PROFILE_FIELDS = {"id", "username", "name", "first_name", "last_name", "gender", "locale", "education", "work", "email", "third_party_id", "link", "timezone", "updated_time", "verified", "about", "bio", "birthday", "location", "hometown", "interested_in", "religion", "political", "quotes", "relationship_status", "significant_other", "website"};
 
 }
