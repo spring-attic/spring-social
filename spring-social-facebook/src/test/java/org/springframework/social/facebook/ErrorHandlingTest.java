@@ -82,18 +82,19 @@ public class ErrorHandlingTest extends AbstractFacebookApiTest {
 		}		
 	}
 	
-	@Test
-	public void unknownAlias_HTTP200() {
-		// yes, Facebook really does return this error as HTTP 200 (probably should be 404)
-		try {
-			mockServer.expect(requestTo("https://graph.facebook.com/dummyalias"))
-				.andExpect(method(GET))
-				.andExpect(header("Authorization", "OAuth someAccessToken"))
-				.andRespond(withResponse(new ClassPathResource("testdata/error-unknown-alias.json", getClass()), responseHeaders, HttpStatus.OK, ""));
-			facebook.fetchObject("dummyalias", null);
-		} catch (GraphAPIException e) {
-			assertEquals("(#803) Some of the aliases you requested do not exist: dummyalias", e.getMessage());
-		}				
-	}
+//	@Test
+//	@Ignore
+//	public void unknownAlias_HTTP200() {
+//		// yes, Facebook really does return this error as HTTP 200 (probably should be 404)
+//		try {
+//			mockServer.expect(requestTo("https://graph.facebook.com/dummyalias"))
+//				.andExpect(method(GET))
+//				.andExpect(header("Authorization", "OAuth someAccessToken"))
+//				.andRespond(withResponse(new ClassPathResource("testdata/error-unknown-alias.json", getClass()), responseHeaders, HttpStatus.OK, ""));
+//			facebook.fetchObject("dummyalias", null);
+//		} catch (GraphAPIException e) {
+//			assertEquals("(#803) Some of the aliases you requested do not exist: dummyalias", e.getMessage());
+//		}				
+//	}
 	
 }

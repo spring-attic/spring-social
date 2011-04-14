@@ -29,7 +29,7 @@ import java.util.Locale;
 @SuppressWarnings("serial")
 public class FacebookProfile implements Serializable {
 
-	private final long id;
+	private final String id;
 
 	private final String username;
 
@@ -83,7 +83,7 @@ public class FacebookProfile implements Serializable {
 	
 	private List<EducationEntry> education;
 
-	private FacebookProfile(long id, String username, String name, String firstName, String lastName, String gender, Locale locale) {
+	public FacebookProfile(String id, String username, String name, String firstName, String lastName, String gender, Locale locale) {
 		this.id = id;
 		this.username = username;
 		this.name = name;
@@ -97,10 +97,10 @@ public class FacebookProfile implements Serializable {
 	 * The user's Facebook ID
 	 * @return The user's Facebook ID
 	 */
-	public long getId() {
+	public String getId() {
 		return id;
 	}
-
+	
 	/**
 	 * The user's Facebook username
 	 * @return the user's Facebook username
@@ -330,7 +330,7 @@ public class FacebookProfile implements Serializable {
 	}
 	
 	public static class Builder {
-		private long id;
+		private String id;
 
 		private String name;
 
@@ -384,7 +384,7 @@ public class FacebookProfile implements Serializable {
 
 		private List<EducationEntry> education;
 
-		public Builder(long id, String username, String name, String firstName, String lastName, String gender, String locale) {
+		public Builder(String id, String username, String name, String firstName, String lastName, String gender, String locale) {
 			this.id = id;
 			this.username = username;
 			this.name = name;

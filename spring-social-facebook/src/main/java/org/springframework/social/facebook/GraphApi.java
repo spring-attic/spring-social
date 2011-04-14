@@ -35,6 +35,8 @@ public interface GraphApi {
 	 */
 	<T> T fetchObject(String objectId, ResponseExtractor<T> extractor);
 
+	<T> T fetchObject(String objectId, Class<T> type);
+
 	/**
 	 * Fetches an object, extracting it into the type via the given {@link ResponseExtractor}.
 	 * Requires appropriate permission to fetch the object.
@@ -74,6 +76,8 @@ public interface GraphApi {
 	 * @return a list of Java objects representing the Facebook objects in the connections.
 	 */
 	<T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor, String... fields);
+
+	<T> T fetchConnections(String objectId, String connectionType, Class<T> type, String... fields);
 
 	/**
 	 * Fetches an image as an array of bytes.

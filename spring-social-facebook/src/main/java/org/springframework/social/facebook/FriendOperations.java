@@ -56,13 +56,6 @@ public interface FriendOperations {
 	List<Reference> getFriendListMembers(String friendListId);
 
 	/**
-	 * Retrieves profile data for all users who are members of the specified friend list.
-	 * @param friendListId the friend list ID.
-	 * @return a list of {@link FacebookProfile}, each representing a member of the friend list.
-	 */
-	List<FacebookProfile> getFriendListMemberProfiles(String friendListId);
-	
-	/**
 	 * Creates a new friend list for the authenticated user.
 	 * @param name the name of the friend list.
 	 * @return a {@link Reference} to the newly created friend list.

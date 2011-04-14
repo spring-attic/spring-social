@@ -22,11 +22,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.facebook.support.extractors.ResponseExtractor;
+import org.springframework.social.facebook.support.json.FacebookModule;
 import org.springframework.social.oauth2.ProtectedResourceClientFactory;
 import org.springframework.social.util.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
@@ -76,6 +79,7 @@ public class FacebookTemplate implements FacebookApi {
 		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
 		restTemplate.getMessageConverters().add(json);
+		registerFacebookModule(restTemplate);
 		errorHandler = new FacebookErrorHandler();
 		restTemplate.setErrorHandler(errorHandler);
 
@@ -89,6 +93,18 @@ public class FacebookTemplate implements FacebookApi {
 		eventOperations = new EventTemplate(this);
 		mediaOperations = new MediaTemplate(this);
 		groupOperations = new GroupTemplate(this);
+	}
+
+	private void registerFacebookModule(RestTemplate restTemplate2) {
+		List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
+		for (HttpMessageConverter<?> converter : converters) {
+			if(converter instanceof MappingJacksonHttpMessageConverter) {
+				MappingJacksonHttpMessageConverter jsonConverter = (MappingJacksonHttpMessageConverter) converter;
+				ObjectMapper objectMapper = new ObjectMapper();				
+				objectMapper.registerModule(new FacebookModule());
+				jsonConverter.setObjectMapper(objectMapper);
+			}
+		}
 	}
 
 	public UserOperations userOperations() {
@@ -136,6 +152,11 @@ public class FacebookTemplate implements FacebookApi {
 		return extractor.extractObject(response);
 	}
 	
+	public <T> T fetchObject(String objectId, Class<T> type) {
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
+		return restTemplate.getForObject(uri, type);
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <T> T fetchObject(String objectId, ResponseExtractor<T> extractor, String... fields) {
 		String joinedFields = join(fields);
@@ -175,6 +196,12 @@ public class FacebookTemplate implements FacebookApi {
 		Map<String, Object> response = restTemplate.getForObject(uri, Map.class);
 		checkForErrors(response);
 		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
+	}
+	
+	public <T> T fetchConnections(String objectId, String connectionType, Class<T> type, String... fields) {
+		String joinedFields = join(fields);
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).queryParam("fields", joinedFields).build();
+		return restTemplate.getForObject(uri, type);
 	}
 	
 	public byte[] fetchImage(String objectId, String connectionType, ImageType type) {
@@ -223,8 +250,9 @@ public class FacebookTemplate implements FacebookApi {
 	@SuppressWarnings("unchecked")
 	private void checkForErrors(Map<String, Object> response) {
 		if(response.containsKey("error")) {
-			Map<String, String> errorDetails = (Map<String, String>) response.get("error");
-			errorHandler.handleFacebookError(errorDetails);
+			System.out.println("Error");
+//			Map<String, String> errorDetails = (Map<String, String>) response.get("error");
+//			errorHandler.handleFacebookError(errorDetails);
 		}
 	}
 	// subclassing hooks

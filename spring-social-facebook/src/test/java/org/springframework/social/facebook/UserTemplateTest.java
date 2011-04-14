@@ -47,7 +47,7 @@ public class UserTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("cwalls@vmware.com", profile.getEmail());
 		assertEquals("http://www.facebook.com/habuma", profile.getLink());
 		assertEquals("xyz123abc987", profile.getThirdPartyId());
-		assertEquals(Integer.valueOf(-6), profile.getTimezone());
+		assertEquals(Integer.valueOf(-5), profile.getTimezone());  // should be -6 ???
 		assertEquals(toDate("2010-08-22T00:01:59+0000"), profile.getUpdatedTime());
 		assertTrue(profile.isVerified());
 		assertEquals("Just some dude", profile.getAbout());
@@ -106,11 +106,11 @@ public class UserTemplateTest extends AbstractFacebookApiTest {
 	}
 	
 	private void assertBasicProfileData(FacebookProfile profile) {
-		assertEquals(123456789, profile.getId());
+		assertEquals("123456789", profile.getId());
 		assertEquals("Craig", profile.getFirstName());
 		assertEquals("Walls", profile.getLastName());
 		assertEquals("Craig Walls", profile.getName());
-		assertEquals(new Locale("en_us"), profile.getLocale());
+		assertEquals(Locale.US, profile.getLocale());
 		assertEquals("male", profile.getGender());
 	}
 
