@@ -35,12 +35,12 @@ public class CommentResponseExtractor extends AbstractResponseExtractor<Comment>
 		if(likesObject instanceof Integer) {
 			// comment likes are usually just a count
 			Integer likesCount = (Integer) likesObject;
-			return new Comment(id, new Reference(fromId, fromName), message, toDate(createdTimeAsString), likesCount);
+			return new Comment(id, new Reference(fromId, fromName), message, toDate(createdTimeAsString));
 		} else {
 			// but sometimes (as in the case of a checkin comment), the likes are a list of user references 
 			Map<String, Object> likesMap = (Map<String, Object>) likesObject;
 			List<Reference> likes = extractReferences(likesMap);
-			return new Comment(id, new Reference(fromId, fromName), message, toDate(createdTimeAsString), likes);
+			return new Comment(id, new Reference(fromId, fromName), message, toDate(createdTimeAsString));
 		}
 	}
 

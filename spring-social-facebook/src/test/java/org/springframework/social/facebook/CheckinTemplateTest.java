@@ -25,7 +25,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.social.facebook.types.Checkin;
-import org.springframework.social.facebook.types.Location;
+import org.springframework.social.facebook.types.Place;
 
 public class CheckinTemplateTest extends AbstractFacebookApiTest {
 
@@ -94,16 +94,16 @@ public class CheckinTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("10150431253050580", checkin.getId());
 		assertEquals("738140579", checkin.getFrom().getId());
 		assertEquals("Craig Walls", checkin.getFrom().getName());
-		Location place1 = checkin.getPlace();
+		Place place1 = checkin.getPlace();
 		assertEquals("117372064948189", place1.getId());
 		assertEquals("Freebirds World Burrito", place1.getName());
-		assertEquals("238 W Campbell Rd", place1.getStreet());
-		assertEquals("Richardson", place1.getCity());
-		assertEquals("TX", place1.getState());
-		assertEquals("United States", place1.getCountry());
-		assertEquals("75080-3512", place1.getZip());
-		assertEquals(32.975537, place1.getLatitude(), 0.0001);
-		assertEquals(-96.722944, place1.getLongitude(), 0.0001);
+		assertEquals("238 W Campbell Rd", place1.getLocation().getStreet());
+		assertEquals("Richardson", place1.getLocation().getCity());
+		assertEquals("TX", place1.getLocation().getState());
+		assertEquals("United States", place1.getLocation().getCountry());
+		assertEquals("75080-3512", place1.getLocation().getZip());
+		assertEquals(32.975537, place1.getLocation().getLatitude(), 0.0001);
+		assertEquals(-96.722944, place1.getLocation().getLongitude(), 0.0001);
 		assertEquals("6628568379", checkin.getApplication().getId());
 		assertEquals("Facebook for iPhone", checkin.getApplication().getName());
 		assertEquals(toDate("2011-03-13T01:00:49+0000"), checkin.getCreatedTime());
@@ -120,11 +120,11 @@ public class CheckinTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("738140579", checkin2.getTags().get(0).getId());
 		assertEquals("Craig Walls", checkin2.getTags().get(0).getName());
 		assertEquals("With my favorite people! ;-)", checkin2.getMessage());
-		Location place2 = checkin2.getPlace();
+		Place place2 = checkin2.getPlace();
 		assertEquals("150366431753543", place2.getId());
 		assertEquals("Somewhere", place2.getName());
-		assertEquals(35.0231428, place2.getLatitude(), 0.0001);
-		assertEquals(-98.740305416667, place2.getLongitude(), 0.0001);
+		assertEquals(35.0231428, place2.getLocation().getLatitude(), 0.0001);
+		assertEquals(-98.740305416667, place2.getLocation().getLongitude(), 0.0001);
 		assertEquals("6628568379", checkin2.getApplication().getId());
 		assertEquals("Facebook for iPhone", checkin2.getApplication().getName());
 		assertEquals(toDate("2011-02-11T20:59:41+0000"), checkin2.getCreatedTime());

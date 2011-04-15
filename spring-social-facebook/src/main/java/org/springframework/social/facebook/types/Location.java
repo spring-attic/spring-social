@@ -16,13 +16,10 @@
 package org.springframework.social.facebook.types;
 
 public class Location {
-	private String id;
 
-	private String name;
+	private final double latitude;
 
-	private double latitude;
-
-	private double longitude;
+	private final double longitude;
 
 	private String street;
 
@@ -34,19 +31,9 @@ public class Location {
 
 	private String zip;
 
-	private Location(String id, String name, double latitude, double longitude) {
-		this.id = id;
-		this.name = name;
+	private Location(double latitude, double longitude) {
 		this.latitude = latitude;
 		this.longitude = longitude;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public double getLatitude() {
@@ -78,9 +65,6 @@ public class Location {
 	}
 
 	public static class Builder {
-		private String id;
-
-		private String name;
 
 		private double latitude;
 
@@ -96,9 +80,7 @@ public class Location {
 
 		private String zip;
 
-		public Builder(String id, String name, double latitude, double longitude) {
-			this.id = id;
-			this.name = name;
+		public Builder(double latitude, double longitude) {
 			this.latitude = latitude;
 			this.longitude = longitude;
 		}
@@ -129,7 +111,7 @@ public class Location {
 		}
 
 		public Location build() {
-			Location location = new Location(id, name, latitude, longitude);
+			Location location = new Location(latitude, longitude);
 			location.street = street;
 			location.city = city;
 			location.state = state;

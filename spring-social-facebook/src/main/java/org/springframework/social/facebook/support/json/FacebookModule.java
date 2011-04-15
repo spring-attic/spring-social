@@ -19,6 +19,8 @@ import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.module.SimpleModule;
 import org.springframework.social.facebook.EventInviteeMixin;
 import org.springframework.social.facebook.types.Album;
+import org.springframework.social.facebook.types.Checkin;
+import org.springframework.social.facebook.types.Comment;
 import org.springframework.social.facebook.types.EducationEntry;
 import org.springframework.social.facebook.types.Event;
 import org.springframework.social.facebook.types.EventInvitee;
@@ -26,6 +28,9 @@ import org.springframework.social.facebook.types.FacebookProfile;
 import org.springframework.social.facebook.types.Group;
 import org.springframework.social.facebook.types.GroupMemberReference;
 import org.springframework.social.facebook.types.Invitation;
+import org.springframework.social.facebook.types.Location;
+import org.springframework.social.facebook.types.LocationMixin;
+import org.springframework.social.facebook.types.Place;
 import org.springframework.social.facebook.types.Reference;
 import org.springframework.social.facebook.types.UserLike;
 import org.springframework.social.facebook.types.WorkEntry;
@@ -49,5 +54,9 @@ public class FacebookModule extends SimpleModule {
 		context.setMixInAnnotations(Event.class, EventMixin.class);
 		context.setMixInAnnotations(Invitation.class, InvitationMixin.class);
 		context.setMixInAnnotations(EventInvitee.class, EventInviteeMixin.class);
+		context.setMixInAnnotations(Checkin.class, CheckinMixin.class);
+		context.setMixInAnnotations(Place.class, PlaceMixin.class);
+		context.setMixInAnnotations(Location.class, LocationMixin.class);
+		context.setMixInAnnotations(Comment.class, CommentMixin.class);
 	}
 }

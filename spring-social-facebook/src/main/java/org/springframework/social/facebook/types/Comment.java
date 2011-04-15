@@ -41,27 +41,12 @@ public class Comment {
 	 * @param from the author of the comment
 	 * @param message the comment text
 	 * @param createdTime the creation time of the comment
-	 * @param likes a list of user references for people who like this comment.
 	 */
-	public Comment(String id, Reference from, String message, Date createdTime, List<Reference> likes) {
-		this(id, from, message, createdTime, likes != null ? likes.size() : 0);
-		this.likes = likes;
-	}
-
-	/**
-	 * Constructs a Comment object.
-	 * @param id the comment's Graph API ID
-	 * @param from the author of the comment
-	 * @param message the comment text
-	 * @param createdTime the creation time of the comment
-	 * @param likesCount the number of users who have liked this comment.
-	 */
-	public Comment(String id, Reference from, String message, Date createdTime, int likesCount) {
+	public Comment(String id, Reference from, String message, Date createdTime) {
 		this.id = id;
 		this.from = from;
 		this.message = message;
 		this.createdTime = createdTime;
-		this.likesCount = likesCount;
 	}
 
 	/**

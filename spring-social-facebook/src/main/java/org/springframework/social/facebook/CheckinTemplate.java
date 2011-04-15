@@ -17,18 +17,16 @@ package org.springframework.social.facebook;
 
 import java.util.List;
 
-import org.springframework.social.facebook.support.extractors.CheckinResponseExtractor;
+import org.springframework.social.facebook.support.json.CheckinList;
 import org.springframework.social.facebook.types.Checkin;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 class CheckinTemplate implements CheckinOperations {
-	private CheckinResponseExtractor checkinExtractor;
 	private final GraphApi graphApi;
 
 	public CheckinTemplate(GraphApi graphApi) {
 		this.graphApi = graphApi;
-		this.checkinExtractor = new CheckinResponseExtractor();
 	}
 	
 	public List<Checkin> getCheckins() {
@@ -36,11 +34,11 @@ class CheckinTemplate implements CheckinOperations {
 	}
 
 	public List<Checkin> getCheckins(String objectId) {
-		return graphApi.fetchConnections(objectId, "checkins", checkinExtractor);
+		return graphApi.fetchConnections(objectId, "checkins", CheckinList.class).getList();
 	}
 
 	public Checkin getCheckin(String checkinId) {
-		return graphApi.fetchObject(checkinId, checkinExtractor);
+		return graphApi.fetchObject(checkinId, Checkin.class);
 	}
 	
 	public String checkin(String placeId, double latitude, double longitude) {

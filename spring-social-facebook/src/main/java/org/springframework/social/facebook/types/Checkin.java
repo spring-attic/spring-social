@@ -18,10 +18,13 @@ package org.springframework.social.facebook.types;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.social.facebook.support.json.CommentList;
+import org.springframework.social.facebook.support.json.ReferenceList;
+
 public class Checkin {
 	private String id;
 
-	private Location place;
+	private Place place;
 
 	private Reference from;
 
@@ -31,13 +34,13 @@ public class Checkin {
 
 	private String message;
 
-	private List<Comment> comments;
+	private CommentList comments;
 
-	private List<Reference> likes;
+	private ReferenceList likes;
 
-	private List<Reference> tags;
+	private ReferenceList tags;
 
-	private Checkin(String id, Location place, Reference from, Reference application, Date createdTime) {
+	private Checkin(String id, Place place, Reference from, Reference application, Date createdTime) {
 		this.id = id;
 		this.place = place;
 		this.from = from;
@@ -49,7 +52,7 @@ public class Checkin {
 		return id;
 	}
 
-	public Location getPlace() {
+	public Place getPlace() {
 		return place;
 	}
 
@@ -70,71 +73,15 @@ public class Checkin {
 	}
 
 	public List<Comment> getComments() {
-		return comments;
+		return comments.getList();
 	}
 
 	public List<Reference> getLikes() {
-		return likes;
+		return likes.getList();
 	}
 
 	public List<Reference> getTags() {
-		return tags;
+		return tags.getList();
 	}
 
-	public static class Builder {
-		private String id;
-
-		private Location place;
-
-		private Reference from;
-
-		private Reference application;
-
-		private Date createdTime;
-
-		private String message;
-
-		private List<Comment> comments;
-
-		private List<Reference> likes;
-
-		private List<Reference> tags;
-
-		public Builder(String id, Location place, Reference from, Reference application, Date createdTime) {
-			this.id = id;
-			this.place = place;
-			this.from = from;
-			this.application = application;
-			this.createdTime = createdTime;
-		}
-
-		public Builder message(String message) {
-			this.message = message;
-			return this;
-		}
-
-		public Builder comments(List<Comment> comments) {
-			this.comments = comments;
-			return this;
-		}
-
-		public Builder likes(List<Reference> likes) {
-			this.likes = likes;
-			return this;
-		}
-
-		public Builder tags(List<Reference> tags) {
-			this.tags = tags;
-			return this;
-		}
-
-		public Checkin build() {
-			Checkin checkin = new Checkin(id, place, from, application, createdTime);
-			checkin.message = message;
-			checkin.comments = comments;
-			checkin.likes = likes;
-			checkin.tags = tags;
-			return checkin;
-		}
-	}
 }

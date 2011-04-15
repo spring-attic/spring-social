@@ -17,8 +17,7 @@ package org.springframework.social.facebook;
 
 import java.util.List;
 
-import org.springframework.social.facebook.support.extractors.CommentResponseExtractor;
-import org.springframework.social.facebook.support.extractors.ReferenceResponseExtractor;
+import org.springframework.social.facebook.support.json.CommentList;
 import org.springframework.social.facebook.support.json.ReferenceList;
 import org.springframework.social.facebook.types.Comment;
 import org.springframework.social.facebook.types.Reference;
@@ -26,24 +25,19 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 class CommentTemplate implements CommentOperations {
-	private final CommentResponseExtractor commentsExtractor;
-
-	private final ReferenceResponseExtractor referenceExtractor;
 
 	private final GraphApi graphApi;
 
 	public CommentTemplate(GraphApi graphApi) {
 		this.graphApi = graphApi;
-		commentsExtractor = new CommentResponseExtractor();
-		referenceExtractor = new ReferenceResponseExtractor();
 	}
 
 	public List<Comment> getComments(String objectId) {
-		return graphApi.fetchConnections(objectId, "comments", commentsExtractor);
+		return graphApi.fetchConnections(objectId, "comments", CommentList.class).getList();
 	}
 
 	public Comment getComment(String commentId) {
-		return graphApi.fetchObject(commentId, commentsExtractor);
+		return graphApi.fetchObject(commentId, Comment.class);
 	}
 
 	public String addComment(String objectId, String message) {
