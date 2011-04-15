@@ -27,5 +27,9 @@ public class GraphAPIException extends SocialException {
 	public GraphAPIException(String message) {
 		super(message);
 	}
-	
+
+	public GraphAPIException(String message, Throwable e) {
+		super(message, e);
+	}
+
 }

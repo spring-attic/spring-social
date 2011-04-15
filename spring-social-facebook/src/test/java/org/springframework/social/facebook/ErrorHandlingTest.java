@@ -23,6 +23,7 @@ import static org.springframework.social.test.client.ResponseCreators.*;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.social.facebook.types.FacebookProfile;
 
 public class ErrorHandlingTest extends AbstractFacebookApiTest {
 
@@ -63,6 +64,7 @@ public class ErrorHandlingTest extends AbstractFacebookApiTest {
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andRespond(withResponse(new ClassPathResource("testdata/error-unknown-path.json", getClass()), responseHeaders, HttpStatus.BAD_REQUEST, ""));
 			facebook.fetchConnections("me", "boguspath", String.class);
+			fail();
 		} catch (GraphAPIException e) {
 			assertEquals("Unknown path components: /boguspath", e.getMessage());
 		}
@@ -77,24 +79,25 @@ public class ErrorHandlingTest extends AbstractFacebookApiTest {
 				.andExpect(body("method=delete"))
 				.andRespond(withResponse(new ClassPathResource("testdata/error-not-the-owner.json", getClass()), responseHeaders, HttpStatus.INTERNAL_SERVER_ERROR, ""));
 			facebook.friendOperations().deleteFriendList("1234567890");
+			fail();
 		} catch (OwnershipException e) {
 			assertEquals("User must be an owner of the friendlist", e.getMessage());
 		}		
 	}
 	
-//	@Test
-//	@Ignore
-//	public void unknownAlias_HTTP200() {
-//		// yes, Facebook really does return this error as HTTP 200 (probably should be 404)
-//		try {
-//			mockServer.expect(requestTo("https://graph.facebook.com/dummyalias"))
-//				.andExpect(method(GET))
-//				.andExpect(header("Authorization", "OAuth someAccessToken"))
-//				.andRespond(withResponse(new ClassPathResource("testdata/error-unknown-alias.json", getClass()), responseHeaders, HttpStatus.OK, ""));
-//			facebook.fetchObject("dummyalias", null);
-//		} catch (GraphAPIException e) {
-//			assertEquals("(#803) Some of the aliases you requested do not exist: dummyalias", e.getMessage());
-//		}				
-//	}
+	@Test
+	public void unknownAlias_HTTP200() {
+		// yes, Facebook really does return this error as HTTP 200 (probably should be 404)
+		try {
+			mockServer.expect(requestTo("https://graph.facebook.com/dummyalias"))
+				.andExpect(method(GET))
+				.andExpect(header("Authorization", "OAuth someAccessToken"))
+				.andRespond(withResponse(new ClassPathResource("testdata/error-unknown-alias.json", getClass()), responseHeaders, HttpStatus.OK, ""));
+			facebook.fetchObject("dummyalias", FacebookProfile.class);
+			fail("Expected GraphAPIException when fetching an unknown object alias");
+		} catch (GraphAPIException e) {
+			assertEquals("Unknown alias: dummyalias", e.getMessage());
+		}				
+	}
 	
 }

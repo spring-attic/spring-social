@@ -20,13 +20,12 @@ import java.util.List;
 import java.util.Locale;
 
 import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.EducationEntry;
 import org.springframework.social.facebook.types.Reference;
 import org.springframework.social.facebook.types.WorkEntry;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+//@JsonIgnoreProperties(ignoreUnknown = true)
 public abstract class FacebookProfileMixin {
 
 	@JsonCreator

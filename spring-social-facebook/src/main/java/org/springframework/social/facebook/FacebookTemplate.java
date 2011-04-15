@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.exc.UnrecognizedPropertyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +32,7 @@ import org.springframework.social.oauth2.ProtectedResourceClientFactory;
 import org.springframework.social.util.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -142,8 +144,20 @@ public class FacebookTemplate implements FacebookApi {
 	
 	// low-level Graph API operations
 	public <T> T fetchObject(String objectId, Class<T> type) {
-		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
-		return restTemplate.getForObject(uri, type);
+		try {
+			URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
+			return restTemplate.getForObject(uri, type);
+		} catch (ResourceAccessException e) {
+			// Handle the special case where an unknown alias results in an error returned as a HTTP 200
+			if(e.getCause() instanceof UnrecognizedPropertyException) {
+				UnrecognizedPropertyException jsonException = (UnrecognizedPropertyException) e.getCause();
+				if(jsonException.getUnrecognizedPropertyName().equals("error")) {
+					throw new GraphAPIException("Unknown alias: " + objectId);
+				}
+			}
+			// Handle any other errors that may come back from Facebook as HTTP 200
+			throw new GraphAPIException("Unexpected graph API exception", e.getCause());
+		}
 	}
 		
 	public <T> T fetchConnections(String objectId, String connectionType, Class<T> type, String... fields) {
@@ -170,7 +184,6 @@ public class FacebookTemplate implements FacebookApi {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
 		Map<String, Object> response = restTemplate.postForObject(uri, requestData, Map.class);
-		checkForErrors(response);
 		return (String) response.get("id");
 	}
 	
@@ -194,19 +207,6 @@ public class FacebookTemplate implements FacebookApi {
 		restTemplate.postForObject(uri, deleteRequest, String.class);
 	}
 
-	/*
-	 * Facebook sometimes returns an error message with an HTTP 200. The HTTP 200 prevents the error handler
-	 * from handling it, so we need to check all responses for errors before assuming that they're good data. 
-	 */
-	@SuppressWarnings("unchecked")
-	private void checkForErrors(Map<String, Object> response) {
-		if(response.containsKey("error")) {
-			System.out.println("Error");
-			// TODO: Revisit this problem of determining errors that look like successes
-//			Map<String, String> errorDetails = (Map<String, String>) response.get("error");
-//			errorHandler.handleFacebookError(errorDetails);
-		}
-	}
 	// subclassing hooks
 	
 	protected RestTemplate getRestTemplate() {
