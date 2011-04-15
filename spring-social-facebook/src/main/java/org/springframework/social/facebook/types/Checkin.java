@@ -22,17 +22,17 @@ import org.springframework.social.facebook.support.json.CommentList;
 import org.springframework.social.facebook.support.json.ReferenceList;
 
 public class Checkin {
-	private String id;
+	private String id;  // in Post
 
 	private Place place;
 
-	private Reference from;
+	private Reference from;  // in Post
 
-	private Reference application;
+	private Reference application;   // in Post ??? (should probably be)
 
-	private Date createdTime;
+	private Date createdTime;  // in Post
 
-	private String message;
+	private String message;  // in Post
 
 	private CommentList comments;
 

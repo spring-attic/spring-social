@@ -20,19 +20,19 @@ import java.util.List;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.types.FeedEntry;
+import org.springframework.social.facebook.types.Post;
 
 @JsonIgnoreProperties("paging")
-public class FeedEntryList {
+public class PostList {
 	
-	private final List<FeedEntry> list;
+	private final List<Post> list;
 
 	@JsonCreator
-	public FeedEntryList(@JsonProperty("data") List<FeedEntry> list) {
+	public PostList(@JsonProperty("data") List<Post> list) {
 		this.list = list;
 	}
 
-	public List<FeedEntry> getList() {
+	public List<Post> getList() {
 		return list;
 	}
 }

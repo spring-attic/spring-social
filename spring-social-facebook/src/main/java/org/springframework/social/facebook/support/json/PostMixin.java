@@ -22,16 +22,24 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Reference;
 
-@JsonIgnoreProperties({"type", "application", "object_id"}) // TODO: Consider using type
-abstract class FeedEntryMixin {
+@JsonIgnoreProperties({"type", "application", "object_id", "subject"}) // TODO: Consider using type
+abstract class PostMixin {
 	
 	@JsonCreator
-	FeedEntryMixin(
+	PostMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("from") Reference from, 
-			@JsonProperty("message") String message, 
 			@JsonProperty("created_time") Date createdTime, 
 			@JsonProperty("updated_time") Date updatedTime) {}
+
+	@JsonProperty("to")
+	ReferenceList to;
+	
+	@JsonProperty("message")
+	String message;
+
+	@JsonProperty("caption")
+	String caption;
 	
 	@JsonProperty("picture")
 	String picture;

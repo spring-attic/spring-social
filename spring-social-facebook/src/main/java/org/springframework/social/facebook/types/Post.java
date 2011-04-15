@@ -26,39 +26,40 @@ import org.springframework.social.facebook.support.json.ReferenceList;
  * Represents a single entry in a feed.
  * @author Craig Walls
  */
-public class FeedEntry {
+public class Post {
 	// TODO: This covers several kinds of feed entry items...wondering if it'd be better to somehow extract separate types for each kind, even though they're all quite similar.
 	
 	private final String id;
 
 	private final Reference from;
 
-	private final String message;
-	
-	private String picture;
-	
-	private String link;
-	
-	private String subject;
-	
-	private String name;
-	
-	private String description;
-	
-	private String icon;
-
 	private final Date createdTime;
 
 	private final Date updatedTime;
 
+	private ReferenceList to;
+	
+	private String message;
+	
+	private String picture;
+	
+	private String link;
+		
+	private String name;
+	
+	private String caption;
+	
+	private String description;
+	
+	private String icon;
+	
 	private ReferenceList likes;
 
 	private CommentList comments;
 
-	private FeedEntry(String id, Reference from, String message, Date createdTime, Date updatedTime) {
+	private Post(String id, Reference from, Date createdTime, Date updatedTime) {
 		this.id = id;
 		this.from = from;
-		this.message = message;
 		this.createdTime = createdTime;
 		this.updatedTime = updatedTime;
 	}
@@ -69,6 +70,14 @@ public class FeedEntry {
 
 	public Reference getFrom() {
 		return from;
+	}
+
+	public ReferenceList getTo() {
+		return to;
+	}
+
+	public String getCaption() {
+		return caption;
 	}
 
 	public String getMessage() {
@@ -83,10 +92,6 @@ public class FeedEntry {
 		return link;
 	}
 
-	public String getSubject() {
-		return subject;
-	}
-	
 	public String getName() {
 		return name;
 	}
