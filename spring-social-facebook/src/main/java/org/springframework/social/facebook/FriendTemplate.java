@@ -18,7 +18,6 @@ package org.springframework.social.facebook;
 import java.net.URI;
 import java.util.List;
 
-import org.springframework.social.facebook.support.extractors.StringResponseExtractor;
 import org.springframework.social.facebook.support.json.FacebookProfileList;
 import org.springframework.social.facebook.support.json.FriendIdList;
 import org.springframework.social.facebook.support.json.ReferenceList;
@@ -30,15 +29,12 @@ import org.springframework.web.client.RestTemplate;
 class FriendTemplate implements FriendOperations {
 	
 	private final GraphApi graphApi;
-		
-	private StringResponseExtractor idExtractor;
 
 	private final RestTemplate restTemplate;
 
 	public FriendTemplate(GraphApi graphApi, RestTemplate restTemplate) {
 		this.graphApi = graphApi;
 		this.restTemplate = restTemplate;
-		idExtractor = new StringResponseExtractor("id");
 	}
 	
 	public List<Reference> getFriendLists() {

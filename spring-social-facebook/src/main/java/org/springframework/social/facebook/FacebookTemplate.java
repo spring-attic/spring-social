@@ -16,11 +16,9 @@
 package org.springframework.social.facebook;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.HttpStatus;
@@ -28,7 +26,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
-import org.springframework.social.facebook.support.extractors.ResponseExtractor;
 import org.springframework.social.facebook.support.json.FacebookModule;
 import org.springframework.social.oauth2.ProtectedResourceClientFactory;
 import org.springframework.social.util.URIBuilder;
@@ -144,60 +141,11 @@ public class FacebookTemplate implements FacebookApi {
 	}
 	
 	// low-level Graph API operations
-	@SuppressWarnings("unchecked")
-	public <T> T fetchObject(String objectId, ResponseExtractor<T> extractor) {
-		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
-		Map<String, Object> response = (Map<String, Object>) restTemplate.getForObject(uri, Map.class);
-		checkForErrors(response);
-		return extractor.extractObject(response);
-	}
-	
 	public <T> T fetchObject(String objectId, Class<T> type) {
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
 		return restTemplate.getForObject(uri, type);
 	}
-	
-	@SuppressWarnings("unchecked")
-	public <T> T fetchObject(String objectId, ResponseExtractor<T> extractor, String... fields) {
-		String joinedFields = join(fields);
-		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).queryParam("fields", joinedFields).build();
-		Map<String, Object> response = (Map<String, Object>) restTemplate.getForObject(uri, Map.class);
-		checkForErrors(response);
-		return extractor.extractObject( response);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <T> List<T> fetchObject(ResponseExtractor<T> extractor, String... objectIds) {
-		String joinedIds = join(objectIds);
-		URI uri = URIBuilder.fromUri(GRAPH_API_URL).queryParam("ids", joinedIds).build();
-		Map<String, Object> response = restTemplate.getForObject(uri, Map.class);		
-		checkForErrors(response);
-		Set<String> keys = response.keySet();
-		List<T> objects = new ArrayList<T>(keys.size());
-		for (String key : keys) {
-			Map<String, Object> objectMap = (Map<String, Object>) response.get(key);
-			objects.add(extractor.extractObject(objectMap));
-		}
-		return objects;
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor) {
-		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
-		Map<String, Object> response = restTemplate.getForObject(uri, Map.class);
-		checkForErrors(response);
-		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
-	}
-	
-	@SuppressWarnings("unchecked")
-	public <T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor, String... fields) {
-		String joinedFields = join(fields);
-		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).queryParam("fields", joinedFields).build();
-		Map<String, Object> response = restTemplate.getForObject(uri, Map.class);
-		checkForErrors(response);
-		return extractor.extractObjects((List<Map<String, Object>>) response.get("data"));
-	}
-	
+		
 	public <T> T fetchConnections(String objectId, String connectionType, Class<T> type, String... fields) {
 		URIBuilder uriBuilder = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType);
 		if(fields.length > 0) {

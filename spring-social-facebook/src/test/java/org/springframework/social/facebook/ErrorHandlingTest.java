@@ -62,7 +62,7 @@ public class ErrorHandlingTest extends AbstractFacebookApiTest {
 				.andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andRespond(withResponse(new ClassPathResource("testdata/error-unknown-path.json", getClass()), responseHeaders, HttpStatus.BAD_REQUEST, ""));
-			facebook.fetchConnections("me", "boguspath", null);
+			facebook.fetchConnections("me", "boguspath", String.class);
 		} catch (GraphAPIException e) {
 			assertEquals("Unknown path components: /boguspath", e.getMessage());
 		}

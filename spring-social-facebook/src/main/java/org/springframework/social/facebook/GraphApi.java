@@ -15,10 +15,8 @@
  */
 package org.springframework.social.facebook;
 
-import java.util.List;
-
-import org.springframework.social.facebook.support.extractors.ResponseExtractor;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.ResponseExtractor;
 
 /**
  * Defines low-level operations against Facebook's Graph API
@@ -30,53 +28,20 @@ public interface GraphApi {
 	 * Fetches an object, extracting it into the type via the given {@link ResponseExtractor}.
 	 * Requires appropriate permission to fetch the object.
 	 * @param objectId the Facebook object's ID
-	 * @param extractor a {@link ResponseExtractor} to extract the object into a specific type.
+	 * @param type the Java type to fetch
 	 * @return an Java object representing the requested Facebook object.
 	 */
-	<T> T fetchObject(String objectId, ResponseExtractor<T> extractor);
-
 	<T> T fetchObject(String objectId, Class<T> type);
 
 	/**
-	 * Fetches an object, extracting it into the type via the given {@link ResponseExtractor}.
-	 * Requires appropriate permission to fetch the object.
-	 * @param objectId the Facebook object's ID
-	 * @param extractor a {@link ResponseExtractor} to extract the object into a specific type.
-	 * @param fields the fields to include in the response.
-	 * @return an Java object representing the requested Facebook object.
-	 */
-	<T> T fetchObject(String objectId, ResponseExtractor<T> extractor, String... fields);
-
-	/**
-	 * Fetches multiple objects, extracting them into a Java type via the given {@link ResponseExtractor}.
-	 * Requires appropriate permission to fetch the object.
-	 * @param extractor a {@link ResponseExtractor} to extract the object into a specific type.
-	 * @param objectIds the Facebook object IDs
-	 * @return an Java object representing the requested Facebook object.
-	 */
-	<T> List<T> fetchObject(ResponseExtractor<T> extractor, String... objectIds);
-
-	/**
 	 * Fetches connections, extracting them into a Java type via the given {@link ResponseExtractor}.
 	 * Requires appropriate permission to fetch the object connection.
 	 * @param objectId the ID of the object to retrieve the connections for.
 	 * @param connectionType the connection type.
-	 * @param extractor a {@link ResponseExtractor} to extract the connections into a specific type.
-	 * @return a list of Java objects representing the Facebook objects in the connections.
-	 */
-	<T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor);
-
-	/**
-	 * Fetches connections, extracting them into a Java type via the given {@link ResponseExtractor}.
-	 * Requires appropriate permission to fetch the object connection.
-	 * @param objectId the ID of the object to retrieve the connections for.
-	 * @param connectionType the connection type.
-	 * @param extractor a {@link ResponseExtractor} to extract the connections into a specific type.
+	 * @param type the Java type to fetch
 	 * @param fields the fields to include in the response.
 	 * @return a list of Java objects representing the Facebook objects in the connections.
 	 */
-	<T> List<T> fetchConnections(String objectId, String connectionType, ResponseExtractor<T> extractor, String... fields);
-
 	<T> T fetchConnections(String objectId, String connectionType, Class<T> type, String... fields);
 
 	/**
