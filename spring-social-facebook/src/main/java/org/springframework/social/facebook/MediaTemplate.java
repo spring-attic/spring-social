@@ -18,8 +18,8 @@ package org.springframework.social.facebook;
 import java.util.List;
 
 import org.springframework.social.facebook.support.extractors.PhotoResponseExtractor;
-import org.springframework.social.facebook.support.extractors.VideoResponseExtractor;
 import org.springframework.social.facebook.support.json.AlbumList;
+import org.springframework.social.facebook.support.json.VideoList;
 import org.springframework.social.facebook.types.Album;
 import org.springframework.social.facebook.types.Photo;
 import org.springframework.social.facebook.types.Video;
@@ -29,13 +29,11 @@ import org.springframework.util.MultiValueMap;
 class MediaTemplate implements MediaOperations {
 
 	private final PhotoResponseExtractor photoExtractor;
-	private final VideoResponseExtractor videoExtractor;
 	private final GraphApi graphApi;
 
 	public MediaTemplate(GraphApi graphApi) {
 		this.graphApi = graphApi;
 		photoExtractor = new PhotoResponseExtractor();
-		videoExtractor = new VideoResponseExtractor();
 	}
 
 	public List<Album> getAlbums() {
@@ -96,11 +94,11 @@ class MediaTemplate implements MediaOperations {
 	}
 	
 	public List<Video> getVideos(String ownerId) {
-		return graphApi.fetchConnections(ownerId, "videos", videoExtractor);
+		return graphApi.fetchConnections(ownerId, "videos", VideoList.class).getList();
 	}
 	
 	public Video getVideo(String videoId) {
-		return graphApi.fetchObject(videoId, videoExtractor);
+		return graphApi.fetchObject(videoId, Video.class);
 	}
 	
 	public byte[] getVideoImage(String videoId) {

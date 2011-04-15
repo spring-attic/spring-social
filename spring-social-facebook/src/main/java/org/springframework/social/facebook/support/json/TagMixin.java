@@ -13,46 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.types;
+package org.springframework.social.facebook.support.json;
 
 import java.util.Date;
 
-public class Tag {
-	private final String id;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
 
-	private final String name;
+public class TagMixin {
 	
-	private final Integer x;
+	@JsonCreator
+	public TagMixin(
+			@JsonProperty("id") String id, 
+			@JsonProperty("name") String name, 
+			@JsonProperty("x") Integer x, 
+			@JsonProperty("y") Integer y, 
+			@JsonProperty("created_time") Date createdTime) {}
 	
-	private final Integer y;
-	
-	private final Date createdTime;
-	
-	public String getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public Integer getX() {
-		return x;
-	}
-
-	public Integer getY() {
-		return y;
-	}
-
-	public Date getCreatedTime() {
-		return createdTime;
-	}
-
-	public Tag(String id, String name, Integer x, Integer y, Date createdTime) {
-		this.id = id;
-		this.name = name;
-		this.x = x;
-		this.y = y;
-		this.createdTime = createdTime;			
-	}
 }

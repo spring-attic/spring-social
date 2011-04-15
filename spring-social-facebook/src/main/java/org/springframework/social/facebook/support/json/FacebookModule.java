@@ -32,7 +32,9 @@ import org.springframework.social.facebook.types.Location;
 import org.springframework.social.facebook.types.LocationMixin;
 import org.springframework.social.facebook.types.Place;
 import org.springframework.social.facebook.types.Reference;
+import org.springframework.social.facebook.types.Tag;
 import org.springframework.social.facebook.types.UserLike;
+import org.springframework.social.facebook.types.Video;
 import org.springframework.social.facebook.types.WorkEntry;
 
 public class FacebookModule extends SimpleModule {
@@ -58,5 +60,7 @@ public class FacebookModule extends SimpleModule {
 		context.setMixInAnnotations(Place.class, PlaceMixin.class);
 		context.setMixInAnnotations(Location.class, LocationMixin.class);
 		context.setMixInAnnotations(Comment.class, CommentMixin.class);
+		context.setMixInAnnotations(Tag.class, TagMixin.class);
+		context.setMixInAnnotations(Video.class, VideoMixin.class);
 	}
 }
