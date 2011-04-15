@@ -18,6 +18,7 @@ package org.springframework.social.facebook.support.json;
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.module.SimpleModule;
 import org.springframework.social.facebook.EventInviteeMixin;
+import org.springframework.social.facebook.support.json.PhotoMixin.ImageMixin;
 import org.springframework.social.facebook.types.Album;
 import org.springframework.social.facebook.types.Checkin;
 import org.springframework.social.facebook.types.Comment;
@@ -30,6 +31,8 @@ import org.springframework.social.facebook.types.GroupMemberReference;
 import org.springframework.social.facebook.types.Invitation;
 import org.springframework.social.facebook.types.Location;
 import org.springframework.social.facebook.types.LocationMixin;
+import org.springframework.social.facebook.types.Photo;
+import org.springframework.social.facebook.types.Photo.Image;
 import org.springframework.social.facebook.types.Place;
 import org.springframework.social.facebook.types.Reference;
 import org.springframework.social.facebook.types.Tag;
@@ -62,5 +65,8 @@ public class FacebookModule extends SimpleModule {
 		context.setMixInAnnotations(Comment.class, CommentMixin.class);
 		context.setMixInAnnotations(Tag.class, TagMixin.class);
 		context.setMixInAnnotations(Video.class, VideoMixin.class);
+		context.setMixInAnnotations(Photo.class, PhotoMixin.class);
+		context.setMixInAnnotations(Image.class, ImageMixin.class);
+
 	}
 }

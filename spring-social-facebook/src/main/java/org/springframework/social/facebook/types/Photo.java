@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.social.facebook.support.json.TagList;
+
 public class Photo {
 	private String id;
 	
@@ -37,7 +39,7 @@ public class Photo {
 	
 	private Date updatedTime;
 	
-	private List<Tag> tags;
+	private TagList tags;
 	
 	private Image sourceImage;
 	
@@ -47,14 +49,20 @@ public class Photo {
 		
 	private Image tinyImage;
 	
-	private Photo(String id, Reference from, String link, String icon, Date createdTime, Image sourceImage, Image smallImage) {
+	private Photo(String id, Reference from, String link, String icon, Date createdTime, List<Image> images) {
 		this.id = id;
 		this.from = from;
 		this.link = link;
 		this.icon = icon;
 		this.createdTime = createdTime;
-		this.sourceImage = sourceImage;
-		this.smallImage = smallImage;
+		
+		System.out.println("**** : " + images);
+		
+		Map<Character, Image> imageMap = extractImages(images);
+		this.tinyImage = imageMap.get('t');
+		this.sourceImage = imageMap.get('n');
+		this.smallImage = imageMap.get('s');
+		this.albumImage = imageMap.get('a');
 	}
 	
 	public String getId() {
@@ -106,7 +114,7 @@ public class Photo {
 	}
 	
 	public List<Tag> getTags() {
-		return tags;
+		return tags != null ? tags.getList() : null;
 	}
 	
 	public static class Image {
@@ -136,71 +144,15 @@ public class Photo {
 			return source;
 		}
 	}
-	
 
+	private Map<Character, Image> extractImages(List<Image> images) {
+		Map<Character, Image> imageMap = new HashMap<Character, Image>();
+		
+		for (Image image : images) {
+			imageMap.put(image.getSource().charAt(image.getSource().length() - 5), image);
+		}
 	
-	public static class Builder {
-		private String id;
-		private String name;
-		private Reference from;
-		private String link;
-		private String icon;
-		private Integer position;
-		private Date createdTime;
-		private Date updatedTime;
-		private List<Image> images;
-		private List<Tag> tags;
-		
-		public Builder(String id, Reference from, String link, String icon, Date createdTime, List<Image> images) {
-			this.id = id;
-			this.from = from;
-			this.link = link;
-			this.icon = icon;
-			this.createdTime = createdTime;
-			this.images = images;					
-		}
-		
-		public Builder name(String name) {
-			this.name = name;
-			return this;
-		}
-		
-		public Builder updatedTime(Date updatedTime) {
-			this.updatedTime = updatedTime;
-			return this;
-		}
-		
-		public Builder tags(List<Tag> tags) {
-			this.tags = tags;
-			return this;
-		}
-		
-		public Builder position(Integer position) {
-			this.position = position;
-			return this;
-		}
-		
-		public Photo build() {
-			Map<Character, Image> imageMap = extractImages(images);
-			Photo photo = new Photo(id, from, link, icon, createdTime, imageMap.get('n'), imageMap.get('s'));
-			photo.name = name;
-			photo.updatedTime = updatedTime;
-			photo.tags = tags;
-			photo.albumImage = imageMap.get('a');
-			photo.tinyImage = imageMap.get('t');
-			photo.position = position;
-			return photo;
-		}
-		
-		private Map<Character, Image> extractImages(List<Image> images) {
-			Map<Character, Image> imageMap = new HashMap<Character, Image>();
-			
-			for (Image image : images) {
-				imageMap.put(image.getSource().charAt(image.getSource().length() - 5), image);
-			}
-		
-			return imageMap;
-		}		
+		return imageMap;
 	}
 }
 
