@@ -18,9 +18,11 @@ package org.springframework.social.facebook.support.json;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Comment;
 
+@JsonIgnoreProperties("count")
 public class CommentList {
 	private final List<Comment> list;
 

@@ -13,19 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.support.extractors;
+package org.springframework.social.facebook.support.json;
 
-import java.util.Map;
+import java.util.List;
 
-import org.springframework.social.facebook.types.Reference;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.social.facebook.types.FeedEntry;
 
-public class ReferenceResponseExtractor extends AbstractResponseExtractor<Reference> {
+@JsonIgnoreProperties("paging")
+public class FeedEntryList {
+	
+	private final List<FeedEntry> list;
 
-	public Reference extractObject(Map<String, Object> referenceMap) {
-		if (referenceMap == null) {
-			return null;
-		}
-		return new Reference((String) referenceMap.get("id"), (String) referenceMap.get("name"));
+	@JsonCreator
+	public FeedEntryList(@JsonProperty("data") List<FeedEntry> list) {
+		this.list = list;
 	}
 
+	public List<FeedEntry> getList() {
+		return list;
+	}
 }

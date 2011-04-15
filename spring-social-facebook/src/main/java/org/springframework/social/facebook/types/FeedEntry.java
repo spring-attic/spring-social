@@ -15,9 +15,11 @@
  */
 package org.springframework.social.facebook.types;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.social.facebook.support.json.CommentList;
+import org.springframework.social.facebook.support.json.ReferenceList;
 
 
 /**
@@ -49,9 +51,9 @@ public class FeedEntry {
 
 	private final Date updatedTime;
 
-	private List<Reference> likes;
+	private ReferenceList likes;
 
-	private List<Comment> comments;
+	private CommentList comments;
 
 	private FeedEntry(String id, Reference from, String message, Date createdTime, Date updatedTime) {
 		this.id = id;
@@ -106,99 +108,10 @@ public class FeedEntry {
 	}
 
 	public List<Reference> getLikes() {
-		return likes;
+		return likes.getList();
 	}
 
 	public List<Comment> getComments() {
-		return comments;
-	}
-
-	public static class Builder {
-		private String id;
-
-		private Reference from;
-
-		private String message;
-
-		private String picture;
-		
-		private String link;
-		
-		private String subject;
-		
-		private String name;
-		
-		private String description;
-		
-		private String icon;
-
-		private Date createdTime;
-
-		private Date updatedTime;
-
-		private List<Reference> likes = Collections.emptyList();
-
-		private List<Comment> comments = Collections.emptyList();
-
-		public Builder(String id, Reference from, String message, Date createdTime, Date updatedTime) {
-			this.id = id;
-			this.from = from;
-			this.message = message;
-			this.createdTime = createdTime;
-			this.updatedTime = updatedTime;
-		}
-		
-		public Builder picture(String picture) {
-			this.picture = picture;
-			return this;
-		}
-
-		public Builder subject(String subject) {
-			this.subject = subject;
-			return this;
-		}
-		
-		public Builder link(String link) {
-			this.link = link;
-			return this;
-		}
-
-		public Builder name(String name) {
-			this.name = name;
-			return this;
-		}
-
-		public Builder description(String description) {
-			this.description = description;
-			return this;
-		}
-		
-		public Builder icon(String icon) {
-			this.icon = icon;
-			return this;
-		}
-
-		public Builder likes(List<Reference> likes) {
-			this.likes = likes;
-			return this;
-		}
-
-		public Builder comments(List<Comment> comments) {
-			this.comments = comments;
-			return this;
-		}
-
-		public FeedEntry build() {
-			FeedEntry feedEntry = new FeedEntry(id, from, message, createdTime, updatedTime);
-			feedEntry.picture = picture;
-			feedEntry.link = link;
-			feedEntry.subject = subject;
-			feedEntry.name = name;
-			feedEntry.description = description;
-			feedEntry.icon = icon;
-			feedEntry.likes = likes;
-			feedEntry.comments = comments;
-			return feedEntry;
-		}
+		return comments.getList();
 	}
 }

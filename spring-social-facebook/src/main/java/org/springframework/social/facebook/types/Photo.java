@@ -56,8 +56,6 @@ public class Photo {
 		this.icon = icon;
 		this.createdTime = createdTime;
 		
-		System.out.println("**** : " + images);
-		
 		Map<Character, Image> imageMap = extractImages(images);
 		this.tinyImage = imageMap.get('t');
 		this.sourceImage = imageMap.get('n');

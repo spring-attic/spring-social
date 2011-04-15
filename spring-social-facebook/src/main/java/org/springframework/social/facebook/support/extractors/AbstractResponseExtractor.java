@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.social.facebook.types.Reference;
-
 public abstract class AbstractResponseExtractor<T> implements ResponseExtractor<T> {
 	
 	public List<T> extractObjects(List<Map<String, Object>> responseList) {
@@ -53,20 +51,6 @@ public abstract class AbstractResponseExtractor<T> implements ResponseExtractor<
 		}
 	}
 
-	protected Reference extractReferenceFromMap(Map<String, Object> referenceMap) {
-		return REFERENCE_EXTRACTOR.extractObject(referenceMap);
-	}
-
-	@SuppressWarnings("unchecked")
-	protected List<Reference> extractReferences(Map<String, Object> referencesMap) {
-		if (referencesMap == null) {
-			return null;
-		}
-		return REFERENCE_EXTRACTOR.extractObjects((List<Map<String, Object>>) referencesMap.get("data"));
-	}
-
 	private static final DateFormat FB_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ENGLISH);
-
-	private static final ReferenceResponseExtractor REFERENCE_EXTRACTOR = new ReferenceResponseExtractor();
 
 }

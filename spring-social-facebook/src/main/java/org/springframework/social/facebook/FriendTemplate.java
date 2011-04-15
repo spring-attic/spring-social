@@ -17,11 +17,11 @@ package org.springframework.social.facebook;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.social.facebook.support.extractors.ReferenceResponseExtractor;
 import org.springframework.social.facebook.support.extractors.StringResponseExtractor;
 import org.springframework.social.facebook.support.json.FacebookProfileList;
+import org.springframework.social.facebook.support.json.FriendIdList;
+import org.springframework.social.facebook.support.json.ReferenceList;
 import org.springframework.social.facebook.types.FacebookProfile;
 import org.springframework.social.facebook.types.Reference;
 import org.springframework.social.util.URIBuilder;
@@ -30,9 +30,7 @@ import org.springframework.web.client.RestTemplate;
 class FriendTemplate implements FriendOperations {
 	
 	private final GraphApi graphApi;
-	
-	private ReferenceResponseExtractor referenceExtractor;
-	
+		
 	private StringResponseExtractor idExtractor;
 
 	private final RestTemplate restTemplate;
@@ -40,7 +38,6 @@ class FriendTemplate implements FriendOperations {
 	public FriendTemplate(GraphApi graphApi, RestTemplate restTemplate) {
 		this.graphApi = graphApi;
 		this.restTemplate = restTemplate;
-		referenceExtractor = new ReferenceResponseExtractor();
 		idExtractor = new StringResponseExtractor("id");
 	}
 	
@@ -49,15 +46,15 @@ class FriendTemplate implements FriendOperations {
 	}
 
 	public List<Reference> getFriendLists(String userId) {
-		return graphApi.fetchConnections(userId, "friendlists", referenceExtractor);
+		return graphApi.fetchConnections(userId, "friendlists", ReferenceList.class).getList();
 	}
 	
 	public Reference getFriendList(String friendListId) {
-		return graphApi.fetchObject(friendListId, referenceExtractor);
+		return graphApi.fetchObject(friendListId, Reference.class);
 	}
 	
 	public List<Reference> getFriendListMembers(String friendListId) {
-		return graphApi.fetchConnections(friendListId, "members", referenceExtractor);
+		return graphApi.fetchConnections(friendListId, "members", ReferenceList.class).getList();
 	}
 
 	public Reference createFriendList(String name) {
@@ -66,9 +63,7 @@ class FriendTemplate implements FriendOperations {
 	
 	public Reference createFriendList(String userId, String name) {
 		URI uri = URIBuilder.fromUri(GraphApi.GRAPH_API_URL + userId + "/friendlists").queryParam("name", name).build();
-		@SuppressWarnings("unchecked")
-		Map<String, Object> friendListMap = restTemplate.postForObject(uri, "", Map.class);
-		return referenceExtractor.extractObject(friendListMap);
+		return restTemplate.postForObject(uri, "", Reference.class);
 	}
 	
 	public void deleteFriendList(String friendListId) {
@@ -98,11 +93,11 @@ class FriendTemplate implements FriendOperations {
 	}
 
 	public List<Reference> getFriends(String userId) {
-		return graphApi.fetchConnections(userId, "friends", referenceExtractor);
+		return graphApi.fetchConnections(userId, "friends", ReferenceList.class).getList();
 	}
 	
 	public List<String> getFriendIds(String userId) {
-		return graphApi.fetchConnections(userId, "friends", idExtractor, "id");
+		return graphApi.fetchConnections(userId, "friends", FriendIdList.class, "id").getList();
 	}
 	
 	public List<FacebookProfile> getFriendProfiles(String userId) {
