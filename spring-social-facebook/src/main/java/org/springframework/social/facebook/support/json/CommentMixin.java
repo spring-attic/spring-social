@@ -18,11 +18,9 @@ package org.springframework.social.facebook.support.json;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Reference;
 
-@JsonIgnoreProperties("likes") // TODO: Temporary until I work out how to deal with two different kinds of likes
 class CommentMixin {
 
 	@JsonCreator
@@ -32,4 +30,6 @@ class CommentMixin {
 			@JsonProperty("message") String message, 
 			@JsonProperty("created_time") Date createdTime) {}
 	
+	@JsonProperty("likes")
+	int likesCount;
 }

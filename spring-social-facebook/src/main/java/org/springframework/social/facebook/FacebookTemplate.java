@@ -155,7 +155,6 @@ public class FacebookTemplate implements FacebookApi {
 					throw new GraphAPIException("Unknown alias: " + objectId);
 				}
 			}
-			// Handle any other errors that may come back from Facebook as HTTP 200
 			throw new GraphAPIException("Unexpected graph API exception", e.getCause());
 		}
 	}

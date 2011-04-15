@@ -195,12 +195,14 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("Hello world!", feedEntry.getMessage());
 		assertEquals("100001387295207", feedEntry.getFrom().getId());
 		assertEquals("Art Names", feedEntry.getFrom().getName());
-		assertEquals(1, feedEntry.getLikes().size());
+		assertEquals(2, feedEntry.getLikes().size());
+		assertEquals("1533260333", feedEntry.getLikes().get(0).getId());
+		assertEquals("Roy Clarkson", feedEntry.getLikes().get(0).getName());
+		assertEquals("1322692345", feedEntry.getLikes().get(1).getId());
+		assertEquals("Jim Smith", feedEntry.getLikes().get(1).getName());
 		assertEquals(2, feedEntry.getComments().size());
 		assertNull(feedEntry.getComments().get(1).getLikes());
-		
-		// TODO : Reinstate after likes work again
-//		assertEquals(3, feedEntry.getComments().get(1).getLikesCount());
+		assertEquals(3, feedEntry.getComments().get(1).getLikesCount());
 	}
 
 	@Test
