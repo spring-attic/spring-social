@@ -20,10 +20,10 @@ import java.util.Date;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-public class UserLikeMixin {
+class UserLikeMixin {
 	
 	@JsonCreator
-	public UserLikeMixin(
+	UserLikeMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("name") String name, 
 			@JsonProperty("category") String category,

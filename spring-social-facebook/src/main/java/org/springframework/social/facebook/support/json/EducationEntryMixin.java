@@ -19,9 +19,9 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Reference;
 
-public class EducationEntryMixin {
+class EducationEntryMixin {
 	@JsonCreator
-	public EducationEntryMixin(
+	EducationEntryMixin(
 			@JsonProperty("school") Reference school, 
 			@JsonProperty("year") Reference year, 
 			@JsonProperty("type") String type) {}

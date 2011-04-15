@@ -22,10 +22,10 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Place;
 import org.springframework.social.facebook.types.Reference;
 
-public abstract class CheckinMixin {
+abstract class CheckinMixin {
 
 	@JsonCreator
-	public CheckinMixin(
+	CheckinMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("place") Place place, 
 			@JsonProperty("from") Reference from, 

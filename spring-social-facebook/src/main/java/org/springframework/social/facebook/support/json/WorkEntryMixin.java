@@ -19,10 +19,10 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Reference;
 
-public abstract class WorkEntryMixin {
+abstract class WorkEntryMixin {
 	
 	@JsonCreator
-	public WorkEntryMixin(
+	WorkEntryMixin(
 			@JsonProperty("employer") Reference employer, 
 			@JsonProperty("start_date") String startDate, 
 			@JsonProperty("end_date") String endDate) {}

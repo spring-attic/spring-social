@@ -20,10 +20,10 @@ import java.util.Date;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-public class TagMixin {
+class TagMixin {
 	
 	@JsonCreator
-	public TagMixin(
+	TagMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("name") String name, 
 			@JsonProperty("x") Integer x, 

@@ -28,10 +28,10 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.springframework.social.facebook.types.Event.Privacy;
 import org.springframework.social.facebook.types.Reference;
 
-public abstract class EventMixin {
+abstract class EventMixin {
 
 	@JsonCreator
-	public EventMixin(
+	EventMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("name") String name, 
 			@JsonProperty("owner") Reference owner, 

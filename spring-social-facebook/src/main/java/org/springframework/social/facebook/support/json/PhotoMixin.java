@@ -25,10 +25,10 @@ import org.springframework.social.facebook.types.Photo.Image;
 import org.springframework.social.facebook.types.Reference;
 
 @JsonIgnoreProperties({"picture", "source", "height", "width"})
-public abstract class PhotoMixin {
+abstract class PhotoMixin {
 
 	@JsonCreator
-	public PhotoMixin(
+	PhotoMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("from") Reference from, 
 			@JsonProperty("link") String link, 

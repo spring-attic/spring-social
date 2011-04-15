@@ -22,10 +22,10 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.springframework.social.facebook.types.RsvpStatus;
 
-public abstract class InvitationMixin {
+abstract class InvitationMixin {
 
 	@JsonCreator
-	public InvitationMixin(
+	InvitationMixin(
 			@JsonProperty("id") String eventId, 
 			@JsonProperty("name") String name, 
 			@JsonProperty("start_time") Date startTime, 

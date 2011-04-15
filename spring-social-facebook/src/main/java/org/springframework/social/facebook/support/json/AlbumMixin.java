@@ -31,10 +31,10 @@ import org.springframework.social.facebook.types.Album.Type;
 import org.springframework.social.facebook.types.Reference;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class AlbumMixin {
+abstract class AlbumMixin {
 
 	@JsonCreator
-	public AlbumMixin(
+	AlbumMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("from") Reference from, 
 			@JsonProperty("name") String name, 

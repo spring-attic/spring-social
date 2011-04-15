@@ -21,7 +21,7 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Reference;
 
-public abstract class VideoMixin {
+abstract class VideoMixin {
 
 	@JsonCreator
 	VideoMixin(

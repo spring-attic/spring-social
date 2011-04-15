@@ -30,10 +30,10 @@ import org.springframework.social.facebook.types.Group.Privacy;
 import org.springframework.social.facebook.types.Reference;
 
 @JsonIgnoreProperties("version")
-public abstract class GroupMixin {
+abstract class GroupMixin {
 	
 	@JsonCreator
-	public GroupMixin(
+	GroupMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("owner") Reference owner, 
 			@JsonProperty("name") String name, 

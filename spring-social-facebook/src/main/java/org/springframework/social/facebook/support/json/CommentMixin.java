@@ -23,10 +23,10 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Reference;
 
 @JsonIgnoreProperties("likes") // TODO: Temporary until I work out how to deal with two different kinds of likes
-public class CommentMixin {
+class CommentMixin {
 
 	@JsonCreator
-	public CommentMixin(
+	CommentMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("from") Reference from, 
 			@JsonProperty("message") String message, 

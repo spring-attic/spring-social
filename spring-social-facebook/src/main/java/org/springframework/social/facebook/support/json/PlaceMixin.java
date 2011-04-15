@@ -19,10 +19,10 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Location;
 
-public abstract class PlaceMixin {
+abstract class PlaceMixin {
 
 	@JsonCreator
-	public PlaceMixin(
+	PlaceMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("name") String name, 
 			@JsonProperty("location") Location location) {}

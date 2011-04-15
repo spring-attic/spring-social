@@ -18,10 +18,10 @@ package org.springframework.social.facebook.support.json;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-public abstract class ReferenceMixin {
+abstract class ReferenceMixin {
 
 	@JsonCreator
-	public ReferenceMixin(
+	ReferenceMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("name") String name) {}
 }
