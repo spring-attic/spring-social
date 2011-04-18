@@ -17,7 +17,6 @@ package org.springframework.social.facebook.support.json;
 
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.module.SimpleModule;
-import org.springframework.social.facebook.EventInviteeMixin;
 import org.springframework.social.facebook.support.json.PhotoMixin.ImageMixin;
 import org.springframework.social.facebook.types.Album;
 import org.springframework.social.facebook.types.Checkin;

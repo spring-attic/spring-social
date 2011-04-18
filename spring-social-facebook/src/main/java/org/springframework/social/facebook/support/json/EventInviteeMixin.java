@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook;
+package org.springframework.social.facebook.support.json;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
-import org.springframework.social.facebook.support.json.RsvpStatusDeserializer;
 import org.springframework.social.facebook.types.RsvpStatus;
 
 public class EventInviteeMixin {
