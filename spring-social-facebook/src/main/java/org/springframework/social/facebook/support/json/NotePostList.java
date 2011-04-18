@@ -31,10 +31,7 @@ import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.codehaus.jackson.node.ObjectNode;
-import org.springframework.social.facebook.types.Comment;
 import org.springframework.social.facebook.types.NotePost;
-import org.springframework.social.facebook.types.Post;
-import org.springframework.social.facebook.types.Reference;
 
 /**
  * Holder class to hold a typed list of note Posts, pulled from the "data" field of the JSON object structure.
@@ -58,6 +55,8 @@ public class NotePostList {
 	private static class NotePostDeserializer extends JsonDeserializer<List<NotePost>> {
 		@Override
 		public List<NotePost> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+			ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.setDeserializationConfig(ctxt.getConfig());
 			List<NotePost> posts = new ArrayList<NotePost>();
 			JsonNode tree = jp.readValueAsTree();
 			for(Iterator<JsonNode> iterator = tree.iterator(); iterator.hasNext();) {
@@ -70,15 +69,4 @@ public class NotePostList {
 		}
 	}
 	
-	private static final ObjectMapper objectMapper;
-	
-	// TODO: Address duplication between this, StatusPostList, LinkePostList, and FacebookModule
-	static {
-		objectMapper = new ObjectMapper();
-		objectMapper.getDeserializationConfig().addMixInAnnotations(Post.class, PostMixin.class);
-		objectMapper.getDeserializationConfig().addMixInAnnotations(NotePost.class, NotePostMixin.class);
-		objectMapper.getDeserializationConfig().addMixInAnnotations(Reference.class, ReferenceMixin.class);
-		objectMapper.getDeserializationConfig().addMixInAnnotations(Comment.class, CommentMixin.class);
-	}
-
 }
