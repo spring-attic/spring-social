@@ -17,6 +17,12 @@ package org.springframework.social.facebook.types;
 
 import java.util.Date;
 
+// TODO : Reconcile this with FacebookLink
+
+/**
+ * Model class representing a link Post to a user's wall.
+ * @author Craig Walls
+ */
 public class LinkPost extends Post {
 	public LinkPost(String id, Reference from, Date createdTime, Date updatedTime) {
 		super(id, from, createdTime, updatedTime);

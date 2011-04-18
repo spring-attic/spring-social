@@ -21,6 +21,11 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Tag;
 
+/**
+ * Holder class to hold a typed list of Tags, pulled from the "data" field of the JSON object structure.
+ * This helps Jackson know what type to deserialize list data into. 
+ * @author Craig Walls
+ */
 public class TagList {
 
 	private final List<Tag> list;

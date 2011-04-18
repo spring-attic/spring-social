@@ -20,6 +20,11 @@ import java.util.List;
 
 import org.springframework.social.facebook.support.json.TagList;
 
+/**
+ * Model class representing a Post announcing a Video to a feed. This is not the Video itself.
+ * To get the Video object, get the video's ID by calling getVideoId() then pass it to MediaOperations.getVideo(videoId).
+ * @author Craig Walls
+ */
 public class VideoPost extends Post {
 	
 	private String videoId;

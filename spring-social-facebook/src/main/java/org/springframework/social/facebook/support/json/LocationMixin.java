@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.types;
+package org.springframework.social.facebook.support.json;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-public abstract class LocationMixin {
+/**
+ * Annotated mixin to add Jackson annotations to Location. 
+ * @author Craig Walls
+ */
+abstract class LocationMixin {
 	
 	@JsonCreator
-	public LocationMixin(
+	LocationMixin(
 			@JsonProperty("latitude") double latitude, 
 			@JsonProperty("longitude") double longitude) {}
 	

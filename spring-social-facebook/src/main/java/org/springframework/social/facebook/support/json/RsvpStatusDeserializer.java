@@ -23,8 +23,11 @@ import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.springframework.social.facebook.types.RsvpStatus;
 
-
-public class RsvpStatusDeserializer extends JsonDeserializer<RsvpStatus> {
+/**
+ * Deserializer to convert an Invitation's or EventInvitee's "rsvp_status" value to an RsvpStatus. 
+ * @author Craig Walls
+ */
+class RsvpStatusDeserializer extends JsonDeserializer<RsvpStatus> {
 
 	@Override
 	public RsvpStatus deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {

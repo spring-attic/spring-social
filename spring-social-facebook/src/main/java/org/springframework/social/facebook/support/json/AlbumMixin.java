@@ -30,6 +30,10 @@ import org.springframework.social.facebook.types.Album.Privacy;
 import org.springframework.social.facebook.types.Album.Type;
 import org.springframework.social.facebook.types.Reference;
 
+/**
+ * Annotated mixin to add Jackson annotations to Album. 
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 abstract class AlbumMixin {
 

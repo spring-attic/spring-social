@@ -22,6 +22,10 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Place;
 import org.springframework.social.facebook.types.Reference;
 
+/**
+ * Annotated mixin to add Jackson annotations to CheckinPost. 
+ * @author Craig Walls
+ */
 abstract class CheckinPostMixin extends PostMixin {
 
 	@JsonCreator

@@ -20,6 +20,11 @@ import java.util.List;
 
 import org.springframework.social.facebook.support.json.TagList;
 
+/**
+ * Model class representing a Post to a feed announcing a Photo. Note that this is not the Photo itself.
+ * To get the Photo object, get the Photo's ID by calling getPhotoId(), then calling getPhoto(photoId) on MediaOperations.
+ * @author Craig Walls
+ */
 public class PhotoPost extends Post {
 
 	private String photoId;

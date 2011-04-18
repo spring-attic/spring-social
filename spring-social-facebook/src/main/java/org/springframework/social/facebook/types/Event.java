@@ -17,6 +17,10 @@ package org.springframework.social.facebook.types;
 
 import java.util.Date;
 
+/**
+ * Model class representing an event.
+ * @author Craig Walls
+ */
 public class Event {
 	
 	private final String id;

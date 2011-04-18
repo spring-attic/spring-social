@@ -29,6 +29,11 @@ import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
+/**
+ * Holder class to hold a typed list of FriendIds, pulled from the "data" field of the JSON object structure.
+ * This helps Jackson know what type to deserialize list data into. 
+ * @author Craig Walls
+ */
 public class FriendIdList {
 	
 	private final List<String> list;

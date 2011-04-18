@@ -15,6 +15,10 @@
  */
 package org.springframework.social.facebook.types;
 
+/**
+ * Model class representing a place that a user may check into on Facebook Places.
+ * @author Craig Walls
+ */
 public class Place {
 
 	private final String id;

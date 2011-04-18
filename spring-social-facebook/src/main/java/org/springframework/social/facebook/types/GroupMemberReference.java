@@ -15,6 +15,10 @@
  */
 package org.springframework.social.facebook.types;
 
+/**
+ * Model class representing a reference to a group member.
+ * @author Craig Walls
+ */
 public class GroupMemberReference extends Reference {
 	
 	private final boolean administrator;

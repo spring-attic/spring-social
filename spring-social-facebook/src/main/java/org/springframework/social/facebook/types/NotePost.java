@@ -17,6 +17,10 @@ package org.springframework.social.facebook.types;
 
 import java.util.Date;
 
+/**
+ * Model class representing a note Post to a user's wall.
+ * @author Craig Walls
+ */
 public class NotePost extends Post {
 	
 	private String subject;

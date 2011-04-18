@@ -20,7 +20,11 @@ import java.util.Date;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-class UserLikeMixin {
+/**
+ * Annotated mixin to add Jackson annotations to UserLike. 
+ * @author Craig Walls
+ */
+abstract class UserLikeMixin {
 	
 	@JsonCreator
 	UserLikeMixin(

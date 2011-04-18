@@ -23,10 +23,10 @@ import org.springframework.social.facebook.support.json.ReferenceList;
 
 
 /**
- * Represents a single entry in a feed.
+ * Model class representing an entry in a feed. 
  * @author Craig Walls
  */
-public class Post {
+public abstract class Post {
 	
 	private final String id;
 

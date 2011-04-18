@@ -16,7 +16,7 @@
 package org.springframework.social.facebook.types;
 
 /**
- * Represents an entry in the user's education history.
+ * Model class representing an entry in a user's education history.
  * @author Craig Walls
  */
 public class EducationEntry {

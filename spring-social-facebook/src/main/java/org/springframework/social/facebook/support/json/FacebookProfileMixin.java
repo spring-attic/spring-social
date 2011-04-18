@@ -25,11 +25,14 @@ import org.springframework.social.facebook.types.EducationEntry;
 import org.springframework.social.facebook.types.Reference;
 import org.springframework.social.facebook.types.WorkEntry;
 
-//@JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class FacebookProfileMixin {
+/**
+ * Annotated mixin to add Jackson annotations to FacebookProfile. 
+ * @author Craig Walls
+ */
+abstract class FacebookProfileMixin {
 
 	@JsonCreator
-	public FacebookProfileMixin(
+	FacebookProfileMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("username") String username, 
 			@JsonProperty("name") String name, 

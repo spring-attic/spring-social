@@ -17,6 +17,10 @@ package org.springframework.social.facebook.types;
 
 import java.util.Date;
 
+/**
+ * Model class representing a simple status message Post to a feed.
+ * @author Craig Walls
+ */
 public class StatusPost extends Post {
 
 	public StatusPost(String id, Reference from, Date createdTime, Date updatedTime) {

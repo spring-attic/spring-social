@@ -20,10 +20,14 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.springframework.social.facebook.types.RsvpStatus;
 
-public class EventInviteeMixin {
+/**
+ * Annotated mixin to add Jackson annotations to EventInvitee. 
+ * @author Craig Walls
+ */
+abstract class EventInviteeMixin {
 	
 	@JsonCreator
-	public EventInviteeMixin(
+	EventInviteeMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("name") String name, 
 			@JsonProperty("rsvp_status") @JsonDeserialize(using=RsvpStatusDeserializer.class) RsvpStatus rsvpStatus) {}

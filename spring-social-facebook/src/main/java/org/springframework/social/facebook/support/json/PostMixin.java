@@ -39,6 +39,11 @@ import org.springframework.social.facebook.types.Reference;
 import org.springframework.social.facebook.types.StatusPost;
 import org.springframework.social.facebook.types.VideoPost;
 
+/**
+ * Annotated mixin to add Jackson annotations to Post.
+ * Also defines Post subtypes to deserialize into based on the "type" attribute. 
+ * @author Craig Walls
+ */
 @JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
 @JsonSubTypes({
 				@Type(name="checkin", value=CheckinPost.class),

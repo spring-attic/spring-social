@@ -20,16 +20,20 @@ import java.util.List;
 
 import org.springframework.social.facebook.support.json.TagList;
 
+/**
+ * Model class representing a video.
+ * @author Craig Walls
+ */
 public class Video {
 	private String id;
 	
 	private Reference from;
 	
-	private TagList tags; // optional
+	private TagList tags;
 	
-	private String name; // optional
+	private String name;
 	
-	private String description; // optional
+	private String description;
 	
 	private String picture;
 	

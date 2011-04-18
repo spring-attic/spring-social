@@ -36,6 +36,11 @@ import org.springframework.social.facebook.types.NotePost;
 import org.springframework.social.facebook.types.Post;
 import org.springframework.social.facebook.types.Reference;
 
+/**
+ * Holder class to hold a typed list of note Posts, pulled from the "data" field of the JSON object structure.
+ * This helps Jackson know what type to deserialize list data into. 
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties("paging")
 public class NotePostList {
 

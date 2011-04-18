@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Represents a comment.
+ * Model class representing a comment.
  * @author Craig Walls
  */
 public class Comment {

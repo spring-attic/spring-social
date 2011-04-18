@@ -23,7 +23,6 @@ import java.util.Locale;
 
 /**
  * Model class containing a Facebook user's profile information.
- * 
  * @author Craig Walls
  */
 @SuppressWarnings("serial")

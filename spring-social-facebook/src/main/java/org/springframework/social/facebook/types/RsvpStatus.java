@@ -15,6 +15,10 @@
  */
 package org.springframework.social.facebook.types;
 
+/**
+ * Enumeration of statuses that an invitee may have for an event.
+ * @author Craig Walls
+ */
 public enum RsvpStatus {
 	ATTENDING, DECLINED, UNSURE, NOT_REPLIED;
 }

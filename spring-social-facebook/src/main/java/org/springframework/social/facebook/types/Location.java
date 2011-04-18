@@ -15,6 +15,10 @@
  */
 package org.springframework.social.facebook.types;
 
+/**
+ * Model class representing a location of a place that a user may check into in Facebook Places.
+ * @author Craig Walls
+ */
 public class Location {
 
 	private final double latitude;

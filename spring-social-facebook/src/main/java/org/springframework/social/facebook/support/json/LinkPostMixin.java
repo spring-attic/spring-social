@@ -21,6 +21,10 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Reference;
 
+/**
+ * Annotated mixin to add Jackson annotations to LinkPost. 
+ * @author Craig Walls
+ */
 abstract class LinkPostMixin extends PostMixin {
 
 	@JsonCreator

@@ -22,6 +22,10 @@ import java.util.Map;
 
 import org.springframework.social.facebook.support.json.TagList;
 
+/**
+ * Model class representing a photo.
+ * @author Craig Walls
+ */
 public class Photo {
 	private String id;
 	

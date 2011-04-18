@@ -20,6 +20,12 @@ import java.util.List;
 
 import org.springframework.social.facebook.support.json.TagList;
 
+/**
+ * Model class representing a feed Post to announce a Checkin on a user's wall.
+ * Note that although a CheckinPost contains some details about a Checkin, it is not the Checkin object itself.
+ * To get the Checkin, get the Checkin ID by calling getCheckinId() and then call getChecking(checkinId) on CheckinOperations.
+ * @author Craig Walls
+ */
 public class CheckinPost extends Post {
 	
 	private Place place;
@@ -36,5 +42,9 @@ public class CheckinPost extends Post {
 	
 	public List<Tag> getTags() {
 		return tags.getList();
+	}
+	
+	public String checkinId() {
+		return this.getId().split("_")[1];
 	}
 }

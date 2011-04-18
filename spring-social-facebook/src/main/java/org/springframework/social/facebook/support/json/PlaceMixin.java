@@ -19,6 +19,10 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Location;
 
+/**
+ * Annotated mixin to add Jackson annotations to Place. 
+ * @author Craig Walls
+ */
 abstract class PlaceMixin {
 
 	@JsonCreator

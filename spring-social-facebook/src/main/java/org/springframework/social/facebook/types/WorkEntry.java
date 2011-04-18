@@ -16,7 +16,7 @@
 package org.springframework.social.facebook.types;
 
 /**
- * Represents an entry in the user's work history.
+ * Model class representing an entry in the user's work history.
  * @author Craig Walls
  */
 public class WorkEntry {
