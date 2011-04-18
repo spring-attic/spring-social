@@ -66,6 +66,18 @@ public class UserTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("533477039", profile.getSignificantOther().getId());
 		assertEquals("Raymie Walls", profile.getSignificantOther().getName());
 		assertEquals("http://www.habuma.com", profile.getWebsite());
+		assertEquals(3, profile.getInspirationalPeople().size());
+		assertEquals("121966051173827", profile.getInspirationalPeople().get(0).getId());
+		assertEquals("Homer Simpson", profile.getInspirationalPeople().get(0).getName());
+		assertEquals("44596990399", profile.getInspirationalPeople().get(1).getId());
+		assertEquals("Alice Cooper", profile.getInspirationalPeople().get(1).getName());
+		assertEquals("56368119740", profile.getInspirationalPeople().get(2).getId());
+		assertEquals("Captain Jack Sparrow", profile.getInspirationalPeople().get(2).getName());
+		assertEquals(2, profile.getLanguages().size());
+		assertEquals("106059522759137", profile.getLanguages().get(0).getId());
+		assertEquals("English", profile.getLanguages().get(0).getName());
+		assertEquals("113599388650247", profile.getLanguages().get(1).getId());
+		assertEquals("Klingon", profile.getLanguages().get(1).getName());
 		assertWorkHistory(profile.getWork());
 		assertEducationHistory(profile.getEducation());
 	}

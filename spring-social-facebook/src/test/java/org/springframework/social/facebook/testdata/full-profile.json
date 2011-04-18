@@ -41,6 +41,20 @@
          "end_date": "2010-05"
       }
    ],
+   "inspirational_people": [
+      {
+         "id": "121966051173827",
+         "name": "Homer Simpson"
+      },
+      {
+         "id": "44596990399",
+         "name": "Alice Cooper"
+      },
+      {
+         "id": "56368119740",
+         "name": "Captain Jack Sparrow"
+      }
+   ],
    "education": [
       {
          "school": {
@@ -63,6 +77,16 @@
             "name": "1989"
          },
          "type": "High School"
+      }
+   ],
+   "languages": [
+      {
+         "id": "106059522759137",
+         "name": "English"
+      },
+      {
+         "id": "113599388650247",
+         "name": "Klingon"
       }
    ],
    "religion":"Jedi",
