@@ -30,7 +30,11 @@ import java.util.Map.Entry;
 import org.springframework.social.twitter.types.Trend;
 import org.springframework.social.twitter.types.Trends;
 
-public class AbstractTrendsList {
+/**
+ * Abstract model class representing a list of trends.
+ * @author Craig Walls
+ */
+class AbstractTrendsList {
 	private final List<Trends> list;
 
 	public AbstractTrendsList(Map<String, List<Trend>> trends, DateFormat dateFormat) {

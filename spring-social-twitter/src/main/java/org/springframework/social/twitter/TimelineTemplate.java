@@ -42,50 +42,50 @@ class TimelineTemplate extends AbstractTwitterOperations implements TimelineOper
 	}
 
 	public List<Tweet> getPublicTimeline() {
-		return restTemplate.getForObject(buildUri("statuses/public_timeline.json"), TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/public_timeline.json"), TweetList.class);
 	}
 
 	public List<Tweet> getHomeTimeline() {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri("statuses/home_timeline.json"), TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/home_timeline.json"), TweetList.class);
 	}
 
 	public List<Tweet> getFriendsTimeline() {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri("statuses/friends_timeline.json"), TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/friends_timeline.json"), TweetList.class);
 	}
 
 	public List<Tweet> getUserTimeline() {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri("statuses/user_timeline.json"), TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/user_timeline.json"), TweetList.class);
 	}
 
 	public List<Tweet> getUserTimeline(String screenName) {
-		return restTemplate.getForObject(buildUri("statuses/user_timeline.json", Collections.singletonMap("screen_name", screenName)), TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/user_timeline.json", Collections.singletonMap("screen_name", screenName)), TweetList.class);
 	}
 
 	public List<Tweet> getUserTimeline(long userId) {
-		return restTemplate.getForObject(buildUri("statuses/user_timeline.json", Collections.singletonMap("user_id", String.valueOf(userId))), TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/user_timeline.json", Collections.singletonMap("user_id", String.valueOf(userId))), TweetList.class);
 	}
 
 	public List<Tweet> getMentions() {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri("statuses/mentions.json"), TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/mentions.json"), TweetList.class);
 	}
 
 	public List<Tweet> getRetweetedByMe() {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri("statuses/retweeted_by_me.json"), TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/retweeted_by_me.json"), TweetList.class);
 	}
 
 	public List<Tweet> getRetweetedToMe() {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri("statuses/retweeted_to_me.json"), TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/retweeted_to_me.json"), TweetList.class);
 	}
 
 	public List<Tweet> getRetweetsOfMe() {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri("statuses/retweets_of_me.json"), TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/retweets_of_me.json"), TweetList.class);
 	}
 
 	public Tweet getStatus(long tweetId) {
@@ -116,22 +116,22 @@ class TimelineTemplate extends AbstractTwitterOperations implements TimelineOper
 	}
 
 	public List<Tweet> getRetweets(long tweetId) {
-		return restTemplate.getForObject(buildUri("statuses/retweets/" + tweetId + ".json"), TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/retweets/" + tweetId + ".json"), TweetList.class);
 	}
 
 	public List<TwitterProfile> getRetweetedBy(long tweetId) {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri("statuses/" + tweetId + "/retweeted_by.json"), TwitterProfileList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/" + tweetId + "/retweeted_by.json"), TwitterProfileList.class);
 	}
 
 	public List<Long> getRetweetedByIds(long tweetId) {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri("statuses/" + tweetId + "/retweeted_by/ids.json"), LongList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/" + tweetId + "/retweeted_by/ids.json"), LongList.class);
 	}
 
 	public List<Tweet> getFavorites() {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri("favorites.json"), TweetList.class).getList();
+		return restTemplate.getForObject(buildUri("favorites.json"), TweetList.class);
 	}
 
 	public void addToFavorites(long tweetId) {

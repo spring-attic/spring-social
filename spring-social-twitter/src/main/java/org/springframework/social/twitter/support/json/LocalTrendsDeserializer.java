@@ -32,7 +32,11 @@ import org.codehaus.jackson.map.JsonDeserializer;
 import org.springframework.social.twitter.types.Trend;
 import org.springframework.social.twitter.types.Trends;
 
-public class LocalTrendsDeserializer extends JsonDeserializer<LocalTrendsHolder> {
+/**
+ * Deserializer to read local trends data into a LocalTrendsHolder object.
+ * @author Craig Walls
+ */
+class LocalTrendsDeserializer extends JsonDeserializer<LocalTrendsHolder> {
 
 	@Override
 	public LocalTrendsHolder deserialize(JsonParser jp, DeserializationContext ctxt)

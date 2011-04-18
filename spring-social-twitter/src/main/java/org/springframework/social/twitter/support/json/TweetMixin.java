@@ -18,7 +18,12 @@ package org.springframework.social.twitter.support.json;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
+/**
+ * Mixin class for adding Jackson annotations to Tweet. 
+ * Relies on TweetDeserializer to do actual deserialization, as Tweet JSON structures differ slightly between timeline lists and search results.
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonDeserialize(using = TweetDeserializer.class)
-public interface TweetMixin {
+interface TweetMixin {
 }

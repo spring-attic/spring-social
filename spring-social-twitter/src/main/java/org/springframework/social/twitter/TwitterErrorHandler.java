@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.support;
+package org.springframework.social.twitter;
 
 import java.io.IOException;
 import java.util.Map;
@@ -26,10 +26,6 @@ import org.springframework.http.HttpStatus.Series;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.social.BadCredentialsException;
 import org.springframework.social.OperationNotPermittedException;
-import org.springframework.social.twitter.DuplicateTweetException;
-import org.springframework.social.twitter.EnhanceYourCalmException;
-import org.springframework.social.twitter.InvalidMessageRecipientException;
-import org.springframework.social.twitter.StatusLengthException;
 import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
@@ -39,7 +35,7 @@ import org.springframework.web.client.HttpServerErrorException;
  * REST API, interpreting them into appropriate exceptions.
  * @author Craig Walls
  */
-public class TwitterErrorHandler extends DefaultResponseErrorHandler {
+class TwitterErrorHandler extends DefaultResponseErrorHandler {
 		
 	@Override
 	public void handleError(ClientHttpResponse response) throws IOException {

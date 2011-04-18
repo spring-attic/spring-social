@@ -21,9 +21,13 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
-public abstract class DirectMessageMixin {
+/**
+ * Mixin class for adding Jackson annotations to DirectMessage.
+ * @author Craig Walls
+ */
+abstract class DirectMessageMixin {
 	@JsonCreator
-	public DirectMessageMixin(
+	DirectMessageMixin(
 			@JsonProperty("id") long id, 
 			@JsonProperty("text") String text, 
 			@JsonProperty("sender_id") long senderId, 

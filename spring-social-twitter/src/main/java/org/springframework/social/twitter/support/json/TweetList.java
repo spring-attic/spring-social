@@ -15,21 +15,14 @@
  */
 package org.springframework.social.twitter.support.json;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import org.codehaus.jackson.annotate.JsonCreator;
 import org.springframework.social.twitter.types.Tweet;
 
-public class TweetList {
-
-	private final List<Tweet> list;
-
-	@JsonCreator
-	public TweetList(List<Tweet> list) {
-		this.list = list;
-	}
-
-	public List<Tweet> getList() {
-		return list;
-	}
+/**
+ * Typed list of Tweet. This helps Jackson know what type to deserialize list contents into.
+ * @author Craig Walls
+ */
+@SuppressWarnings("serial")
+public class TweetList extends ArrayList<Tweet> {
 }

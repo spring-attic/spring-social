@@ -15,21 +15,13 @@
  */
 package org.springframework.social.twitter.support.json;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
-
-public class LongList {
-	private final List<Long> list;
-
-	@JsonCreator
-	public LongList(@JsonProperty List<Long> list) {
-		this.list = list;
-	}
-
-	public List<Long> getList() {
-		return list;
-	}
-
+/**
+ * Typed list of Long. 
+ * This helps Jackson know to deserialize values into Long instead of choosing Integer, Long, or BigDecimal
+ * @author Craig Walls
+ */
+@SuppressWarnings("serial")
+public class LongList extends ArrayList<Long> {	
 }

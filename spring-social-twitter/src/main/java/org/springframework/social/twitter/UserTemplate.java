@@ -84,22 +84,22 @@ class UserTemplate extends AbstractTwitterOperations implements UserOperations {
 	public List<TwitterProfile> getUsers(long... userIds) {
 		requireUserAuthorization();
 		String joinedIds = ArrayUtils.join(userIds);
-		return restTemplate.getForObject(buildUri("users/lookup.json", Collections.singletonMap("user_id", joinedIds)), TwitterProfileList.class).getList();
+		return restTemplate.getForObject(buildUri("users/lookup.json", Collections.singletonMap("user_id", joinedIds)), TwitterProfileList.class);
 	}
 
 	public List<TwitterProfile> getUsers(String... screenNames) {
 		requireUserAuthorization();
 		String joinedScreenNames = ArrayUtils.join(screenNames);
-		return restTemplate.getForObject(buildUri("users/lookup.json", Collections.singletonMap("screen_name", joinedScreenNames)), TwitterProfileList.class).getList();
+		return restTemplate.getForObject(buildUri("users/lookup.json", Collections.singletonMap("screen_name", joinedScreenNames)), TwitterProfileList.class);
 	}
 
 	public List<TwitterProfile> searchForUsers(String query) {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri("users/search.json", Collections.singletonMap("q", query)), TwitterProfileList.class).getList();
+		return restTemplate.getForObject(buildUri("users/search.json", Collections.singletonMap("q", query)), TwitterProfileList.class);
 	}
 	
 	public List<SuggestionCategory> getSuggestionCategories() {
-		return restTemplate.getForObject(buildUri("users/suggestions.json"), SuggestionCategoryList.class).getList();
+		return restTemplate.getForObject(buildUri("users/suggestions.json"), SuggestionCategoryList.class);
 	}
 
 	public List<TwitterProfile> getSuggestions(String slug) {

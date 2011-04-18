@@ -24,10 +24,14 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.springframework.social.twitter.types.Trend;
 
+/**
+ * Mixin class for adding Jackson annotations to Trends.
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public abstract class TrendsMixin {
+abstract class TrendsMixin {
 	@JsonCreator
-	public TrendsMixin(
+	TrendsMixin(
 			@JsonProperty("created_at") @JsonDeserialize(using=TimelineDateDeserializer.class) Date time, 
 			@JsonProperty("trends") List<Trend> trends) {}
 }

@@ -18,9 +18,13 @@ package org.springframework.social.twitter.support.json;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-public abstract class SuggestionCategoryMixin {
+/**
+ * Mixin class for adding Jackson annotations to SuggestionCategory.
+ * @author Craig Walls
+ */
+abstract class SuggestionCategoryMixin {
 	@JsonCreator
-	public SuggestionCategoryMixin(
+	SuggestionCategoryMixin(
 			@JsonProperty("name") String name, 
 			@JsonProperty("slug") String slug, 
 			@JsonProperty("size") int size) {}

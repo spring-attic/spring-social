@@ -34,7 +34,7 @@ import org.springframework.social.twitter.types.Tweet;
  * varies between the search API and the timeline API. This deserializer determine which structure is in play and creates a tweet from it.
  * @author Craig Walls
  */
-public class TweetDeserializer extends JsonDeserializer<Tweet> {
+class TweetDeserializer extends JsonDeserializer<Tweet> {
 
 	@Override
 	public Tweet deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {

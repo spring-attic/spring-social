@@ -22,10 +22,14 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
+/**
+ * Mixin class for adding Jackson annotations to SavedSearch.
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public abstract class SavedSearchMixin {
+abstract class SavedSearchMixin {
 	@JsonCreator
-	public SavedSearchMixin(
+	SavedSearchMixin(
 			@JsonProperty("id") long id,
 			@JsonProperty("name") String name,
 			@JsonProperty("query") String query,

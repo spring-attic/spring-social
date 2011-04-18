@@ -15,21 +15,15 @@
  */
 package org.springframework.social.twitter.support.json;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import org.codehaus.jackson.annotate.JsonCreator;
 import org.springframework.social.twitter.types.SuggestionCategory;
 
-public class SuggestionCategoryList {
-
-	private final List<SuggestionCategory> list;
-
-	@JsonCreator
-	public SuggestionCategoryList(List<SuggestionCategory> list) {
-		this.list = list;
-	}
-
-	public List<SuggestionCategory> getList() {
-		return list;
-	}
+/**
+ * Typed list of SuggestionCategory.
+ * This helps Jackson know what type to deserialize the list contents into.
+ * @author Craig Walls
+ */
+@SuppressWarnings("serial")
+public class SuggestionCategoryList extends ArrayList<SuggestionCategory> {
 }
