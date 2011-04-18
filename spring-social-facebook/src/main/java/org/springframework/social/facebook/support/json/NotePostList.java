@@ -1,0 +1,79 @@
+/*
+ * Copyright 2010 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.springframework.social.facebook.support.json;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.DeserializationContext;
+import org.codehaus.jackson.map.JsonDeserializer;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.node.ObjectNode;
+import org.springframework.social.facebook.types.Comment;
+import org.springframework.social.facebook.types.NotePost;
+import org.springframework.social.facebook.types.Post;
+import org.springframework.social.facebook.types.Reference;
+
+@JsonIgnoreProperties("paging")
+public class NotePostList {
+
+	private final List<NotePost> list;
+
+	@JsonCreator
+	public NotePostList(@JsonProperty("data") @JsonDeserialize(using=NotePostDeserializer.class) List<NotePost> list) {
+		this.list = list;
+	}
+
+	public List<NotePost> getList() {
+		return list;
+	}
+	
+	private static class NotePostDeserializer extends JsonDeserializer<List<NotePost>> {
+		@Override
+		public List<NotePost> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+			List<NotePost> posts = new ArrayList<NotePost>();
+			JsonNode tree = jp.readValueAsTree();
+			for(Iterator<JsonNode> iterator = tree.iterator(); iterator.hasNext();) {
+				ObjectNode node = (ObjectNode) iterator.next();
+				node.put("type", "note");	
+				NotePost post = objectMapper.readValue(node, NotePost.class);
+				posts.add(post);
+			}
+			return posts;
+		}
+	}
+	
+	private static final ObjectMapper objectMapper;
+	
+	// TODO: Address duplication between this, StatusPostList, LinkePostList, and FacebookModule
+	static {
+		objectMapper = new ObjectMapper();
+		objectMapper.getDeserializationConfig().addMixInAnnotations(Post.class, PostMixin.class);
+		objectMapper.getDeserializationConfig().addMixInAnnotations(NotePost.class, NotePostMixin.class);
+		objectMapper.getDeserializationConfig().addMixInAnnotations(Reference.class, ReferenceMixin.class);
+		objectMapper.getDeserializationConfig().addMixInAnnotations(Comment.class, CommentMixin.class);
+	}
+
+}

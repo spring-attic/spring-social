@@ -15,14 +15,39 @@
  */
 package org.springframework.social.facebook.support.json;
 
+import java.io.IOException;
 import java.util.Date;
 
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.annotate.JsonSubTypes;
+import org.codehaus.jackson.annotate.JsonSubTypes.Type;
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.annotate.JsonTypeInfo.As;
+import org.codehaus.jackson.annotate.JsonTypeInfo.Id;
+import org.codehaus.jackson.map.DeserializationContext;
+import org.codehaus.jackson.map.JsonDeserializer;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.springframework.social.facebook.types.CheckinPost;
+import org.springframework.social.facebook.types.LinkPost;
+import org.springframework.social.facebook.types.NotePost;
+import org.springframework.social.facebook.types.PhotoPost;
+import org.springframework.social.facebook.types.Post.PostType;
 import org.springframework.social.facebook.types.Reference;
+import org.springframework.social.facebook.types.StatusPost;
+import org.springframework.social.facebook.types.VideoPost;
 
-@JsonIgnoreProperties({"type", "application", "object_id", "subject"}) // TODO: Consider using type
+@JsonTypeInfo(use=Id.NAME, include=As.PROPERTY, property="type")
+@JsonSubTypes({
+				@Type(name="checkin", value=CheckinPost.class),
+				@Type(name="link", value=LinkPost.class),
+				@Type(name="note", value=NotePost.class),
+				@Type(name="photo", value=PhotoPost.class),
+				@Type(name="status", value=StatusPost.class),
+				@Type(name="video", value=VideoPost.class)
+				})
 abstract class PostMixin {
 	
 	@JsonCreator
@@ -58,6 +83,13 @@ abstract class PostMixin {
 	
 	@JsonProperty("icon")
 	String icon;
+	
+	@JsonProperty("application")
+	Reference application;
+	
+	@JsonProperty("type")
+	@JsonDeserialize(using = TypeDeserializer.class)
+	PostType type;
 
 	@JsonProperty("likes")
 	ReferenceList likes;
@@ -65,4 +97,10 @@ abstract class PostMixin {
 	@JsonProperty("comments")
 	CommentList comments;
 
+	private static class TypeDeserializer extends JsonDeserializer<PostType> {
+		@Override
+		public PostType deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+			return PostType.valueOf(jp.getText().toUpperCase());
+		}
+	}
 }

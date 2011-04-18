@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,25 +15,21 @@
  */
 package org.springframework.social.facebook.support.json;
 
-import java.util.List;
+import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.types.Post;
+import org.springframework.social.facebook.types.Reference;
 
-@JsonIgnoreProperties("paging")
-public class PostList {
-	
-	private final List<Post> list;
+abstract class LinkPostMixin extends PostMixin {
 
 	@JsonCreator
-	public PostList(@JsonProperty("data") List<Post> list) {
-		this.list = list;
-	}
-
-	public List<Post> getList() {
-		return list;
+	LinkPostMixin(
+			@JsonProperty("id") String id, 
+			@JsonProperty("from") Reference from, 
+			@JsonProperty("created_time") Date createdTime,
+			@JsonProperty("updated_time") Date updatedTime) {
+		super(id, from, createdTime, updatedTime);
 	}
 	
 }

@@ -17,9 +17,15 @@ package org.springframework.social.facebook;
 
 import java.util.List;
 
+import org.springframework.social.facebook.support.json.LinkPostList;
+import org.springframework.social.facebook.support.json.NotePostList;
 import org.springframework.social.facebook.support.json.PostList;
+import org.springframework.social.facebook.support.json.StatusPostList;
 import org.springframework.social.facebook.types.FacebookLink;
+import org.springframework.social.facebook.types.LinkPost;
+import org.springframework.social.facebook.types.NotePost;
 import org.springframework.social.facebook.types.Post;
+import org.springframework.social.facebook.types.StatusPost;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -47,32 +53,28 @@ class FeedTemplate implements FeedOperations {
 		return graphApi.fetchConnections(userId, "home", PostList.class).getList();
 	}
 	
-	public List<Post> getStatuses() {
+	public List<StatusPost> getStatuses() {
 		return getStatuses("me");
 	}
 	
-	public List<Post> getStatuses(String userId) {
-		return graphApi.fetchConnections(userId, "statuses", PostList.class).getList();
+	public List<StatusPost> getStatuses(String userId) {
+		return graphApi.fetchConnections(userId, "statuses", StatusPostList.class).getList();
 	}
 	
-	public List<Post> getLinks() {
+	public List<LinkPost> getLinks() {
 		return getLinks("me");
 	}
 	
-	public List<Post> getLinks(String ownerId) {
-		return graphApi.fetchConnections(ownerId, "links", PostList.class).getList();
+	public List<LinkPost> getLinks(String ownerId) {
+		return graphApi.fetchConnections(ownerId, "links", LinkPostList.class).getList();
 	}
 
-	public Post getNote(String noteId) {
-		return graphApi.fetchObject(noteId, Post.class);
-	}
-	
-	public List<Post> getNotes() {
+	public List<NotePost> getNotes() {
 		return getNotes("me");
 	}
 	
-	public List<Post> getNotes(String ownerId) {
-		return graphApi.fetchConnections(ownerId, "notes", PostList.class).getList();
+	public List<NotePost> getNotes(String ownerId) {
+		return graphApi.fetchConnections(ownerId, "notes", NotePostList.class).getList();
 	}
 	
 	public List<Post> getPosts() {

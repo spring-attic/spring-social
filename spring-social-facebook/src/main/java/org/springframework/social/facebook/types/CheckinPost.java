@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.support.json;
+package org.springframework.social.facebook.types;
 
+import java.util.Date;
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.types.Post;
+import org.springframework.social.facebook.support.json.TagList;
 
-@JsonIgnoreProperties("paging")
-public class PostList {
+public class CheckinPost extends Post {
 	
-	private final List<Post> list;
-
-	@JsonCreator
-	public PostList(@JsonProperty("data") List<Post> list) {
-		this.list = list;
+	private Place place;
+	
+	private TagList tags;
+	
+	public CheckinPost(String id, Reference from, Date createdTime, Date updatedTime) {
+		super(id, from, createdTime, updatedTime);
 	}
 
-	public List<Post> getList() {
-		return list;
+	public Place getPlace() {
+		return place;
 	}
 	
+	public List<Tag> getTags() {
+		return tags.getList();
+	}
 }

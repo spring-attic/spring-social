@@ -25,7 +25,11 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.social.facebook.types.FacebookLink;
+import org.springframework.social.facebook.types.LinkPost;
+import org.springframework.social.facebook.types.NotePost;
+import org.springframework.social.facebook.types.PhotoPost;
 import org.springframework.social.facebook.types.Post;
+import org.springframework.social.facebook.types.StatusPost;
 
 /**
  * @author Craig Walls
@@ -39,7 +43,10 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andRespond(withResponse(new ClassPathResource("testdata/feed.json", getClass()), responseHeaders));
 		List<Post> feed = facebook.feedOperations().getFeed();
-		assertEquals(3, feed.size());
+		assertEquals(3, feed.size());		
+		assertTrue(feed.get(0) instanceof StatusPost);
+		assertTrue(feed.get(1) instanceof PhotoPost);
+		assertTrue(feed.get(2) instanceof StatusPost);
 		assertFeedEntries(feed);
 	}
 	
@@ -94,7 +101,7 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 		assertStatuses(facebook.feedOperations().getStatuses("24680"));
 	}
 
-	private void assertStatuses(List<Post> statuses) {
+	private void assertStatuses(List<StatusPost> statuses) {
 		assertEquals(3, statuses.size());
 		assertEquals("161195833936659", statuses.get(0).getId());
 		assertEquals("100001387295207", statuses.get(0).getFrom().getId());
@@ -122,6 +129,7 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 		assertLinks(facebook.feedOperations().getLinks());
 	}
 	
+
 	@Test
 	public void getLinks_forSpecificUser() {
 		mockServer.expect(requestTo("https://graph.facebook.com/13579/links"))
@@ -137,16 +145,16 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/user-notes.json", getClass()), responseHeaders));		
-		List<Post> notes = facebook.feedOperations().getNotes();
+		List<NotePost> notes = facebook.feedOperations().getNotes();
 		assertNotes(notes);
 	}
 
-	private void assertNotes(List<Post> notes) {
+	private void assertNotes(List<NotePost> notes) {
 		assertEquals(2, notes.size());
 		assertEquals("161200187269557", notes.get(0).getId());
 		assertEquals("100001387295207", notes.get(0).getFrom().getId());
 		assertEquals("Art Names", notes.get(0).getFrom().getName());
-//		assertEquals("Just a note", notes.get(0).getSubject());
+		assertEquals("Just a note", notes.get(0).getSubject());
 		assertEquals("<p>This is just a test note. Nothing special to see here.</p>", notes.get(0).getMessage());
 		assertEquals("http://static.ak.fbcdn.net/rsrc.php/v1/yY/r/1gBp2bDGEuh.gif", notes.get(0).getIcon());
 		assertEquals(toDate("2011-03-28T15:17:41+0000"), notes.get(0).getCreatedTime());
@@ -154,7 +162,7 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("160546394001603", notes.get(1).getId());
 		assertEquals("100001387295207", notes.get(1).getFrom().getId());
 		assertEquals("Art Names", notes.get(1).getFrom().getName());
-//		assertEquals("Test Note", notes.get(1).getSubject());
+		assertEquals("Test Note", notes.get(1).getSubject());
 		assertEquals("<p>Just a <strong>test</strong> note...nothing to see here.</p>", notes.get(1).getMessage());
 		assertEquals("http://static.ak.fbcdn.net/rsrc.php/v1/yY/r/1gBp2bDGEuh.gif", notes.get(1).getIcon());
 		assertEquals(toDate("2011-03-25T18:25:01+0000"), notes.get(1).getCreatedTime());
@@ -245,17 +253,21 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("Just trying something", feed.get(0).getMessage());
 		assertEquals("100001387295207", feed.get(0).getFrom().getId());
 		assertEquals("Art Names", feed.get(0).getFrom().getName());
+		assertNull(feed.get(0).getApplication());
 		assertEquals("100001387295207_160064384049804", feed.get(1).getId());
 		assertEquals("Check out my ride", feed.get(1).getMessage());
 		assertEquals("100001387295207", feed.get(1).getFrom().getId());
 		assertEquals("Art Names", feed.get(1).getFrom().getName());
+		assertNull(feed.get(1).getApplication());
 		assertEquals("100001387295207_153453231377586", feed.get(2).getId());
 		assertEquals("Hello Facebook!", feed.get(2).getMessage());
 		assertEquals("100001387295207", feed.get(2).getFrom().getId());
 		assertEquals("Art Names", feed.get(2).getFrom().getName());
+		assertEquals("162886103757745", feed.get(2).getApplication().getId());
+		assertEquals("Spring Social Showcase", feed.get(2).getApplication().getName());
 	}
 	
-	private void assertLinks(List<Post> feed) {
+	private void assertLinks(List<LinkPost> feed) {
 		assertEquals(2, feed.size());
 		assertEquals("125736073702566", feed.get(0).getId());
 		assertEquals("Warning about Facebook Phishing: See http://www.facebook.com/group.php?gid=9874388706", feed.get(0).getMessage());

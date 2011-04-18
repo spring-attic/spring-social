@@ -18,7 +18,10 @@ package org.springframework.social.facebook;
 import java.util.List;
 
 import org.springframework.social.facebook.types.FacebookLink;
+import org.springframework.social.facebook.types.LinkPost;
+import org.springframework.social.facebook.types.NotePost;
 import org.springframework.social.facebook.types.Post;
+import org.springframework.social.facebook.types.StatusPost;
 
 /**
  * Interface defining operations that can be performed on a Facebook feed.
@@ -65,40 +68,40 @@ public interface FeedOperations {
 	 * Retrieves the status entries from the authenticated user's feed.
 	 * @return a list of status {@link Post}s. 
 	 */
-	List<Post> getStatuses();
+	List<StatusPost> getStatuses();
 	
 	/**
 	 * Retrieves the status entries from the specified user's feed.
 	 * @param userId the user's ID
 	 * @return a list of status {@link Post}s. 
 	 */
-	List<Post> getStatuses(String userId);
+	List<StatusPost> getStatuses(String userId);
 	
 	/**
 	 * Retrieves the link entries from the authenticated user's feed.
 	 * @return a list of link {@link Post}s. 
 	 */
-	List<Post> getLinks();
+	List<LinkPost> getLinks();
 	
 	/**
 	 * Retrieves the link entries from the specified owner's feed.
 	 * @param ownerId the owner of the feed (could be a user, page, event, etc)
 	 * @return a list of link {@link Post}s. 
 	 */
-	List<Post> getLinks(String ownerId);
+	List<LinkPost> getLinks(String ownerId);
 	
 	/**
 	 * Retrieves the note entries from the authenticated user's feed.
 	 * @return a list of note {@link Post}s. 
 	 */
-	List<Post> getNotes();
+	List<NotePost> getNotes();
 	
 	/**
 	 * Retrieves the note entries from the specified owner's feed.
 	 * @param ownerId the owner of the feed (could be a user, page, event, etc)
 	 * @return a list of note {@link Post}s. 
 	 */
-	List<Post> getNotes(String ownerId);
+	List<NotePost> getNotes(String ownerId);
 	
 	/**
 	 * Retrieves the post entries from the authenticated user's feed.

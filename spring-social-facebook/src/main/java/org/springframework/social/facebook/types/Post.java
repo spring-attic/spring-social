@@ -27,7 +27,6 @@ import org.springframework.social.facebook.support.json.ReferenceList;
  * @author Craig Walls
  */
 public class Post {
-	// TODO: This covers several kinds of feed entry items...wondering if it'd be better to somehow extract separate types for each kind, even though they're all quite similar.
 	
 	private final String id;
 
@@ -53,11 +52,15 @@ public class Post {
 	
 	private String icon;
 	
+	private Reference application;
+	
+	private PostType type;
+	
 	private ReferenceList likes;
 
 	private CommentList comments;
 
-	private Post(String id, Reference from, Date createdTime, Date updatedTime) {
+	public Post(String id, Reference from, Date createdTime, Date updatedTime) {
 		this.id = id;
 		this.from = from;
 		this.createdTime = createdTime;
@@ -112,6 +115,14 @@ public class Post {
 		return updatedTime;
 	}
 
+	public Reference getApplication() {
+		return application;
+	}
+
+	public PostType getType() {
+		return type;
+	}
+	
 	public List<Reference> getLikes() {
 		return likes.getList();
 	}
@@ -119,4 +130,6 @@ public class Post {
 	public List<Comment> getComments() {
 		return comments.getList();
 	}
+
+	public static enum PostType { CHECKIN, LINK, NOTE, PHOTO, STATUS, VIDEO }
 }
