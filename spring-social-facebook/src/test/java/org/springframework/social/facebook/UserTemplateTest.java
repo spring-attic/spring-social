@@ -78,6 +78,23 @@ public class UserTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("English", profile.getLanguages().get(0).getName());
 		assertEquals("113599388650247", profile.getLanguages().get(1).getId());
 		assertEquals("Klingon", profile.getLanguages().get(1).getName());
+		assertEquals(1, profile.getSports().size());
+		assertEquals("114371035246890", profile.getSports().get(0).getId());
+		assertEquals("Ping Pong", profile.getSports().get(0).getName());
+		assertEquals(3, profile.getFavoriteTeams().size());
+		assertEquals("37152881613", profile.getFavoriteTeams().get(0).getId());
+		assertEquals("Chicago Bulls", profile.getFavoriteTeams().get(0).getName());
+		assertEquals("159957123994", profile.getFavoriteTeams().get(1).getId());
+		assertEquals("Oklahoma City Thunder", profile.getFavoriteTeams().get(1).getName());
+		assertEquals("92774416228", profile.getFavoriteTeams().get(2).getId());
+		assertEquals("Baltimore Ravens", profile.getFavoriteTeams().get(2).getName());
+		assertEquals(3, profile.getFavoriteAtheletes().size());
+		assertEquals("107670255929059", profile.getFavoriteAtheletes().get(0).getId());
+		assertEquals("Emmitt Smith", profile.getFavoriteAtheletes().get(0).getName());
+		assertEquals("108193242541968", profile.getFavoriteAtheletes().get(1).getId());
+		assertEquals("Cal Ripken, Jr.", profile.getFavoriteAtheletes().get(1).getName());
+		assertEquals("62975399193", profile.getFavoriteAtheletes().get(2).getId());
+		assertEquals("Michael Jordan", profile.getFavoriteAtheletes().get(2).getName());
 		assertWorkHistory(profile.getWork());
 		assertEducationHistory(profile.getEducation());
 	}

@@ -71,6 +71,12 @@ public class FacebookProfile implements Serializable {
 	private List<Reference> inspirationalPeople;
 
 	private List<Reference> languages;
+	
+	private List<Reference> sports;
+	
+	private List<Reference> favoriteTeams;
+	
+	private List<Reference> favoriteAthletes;
 
 	private String religion;
 
@@ -283,6 +289,18 @@ public class FacebookProfile implements Serializable {
 	 */
 	public List<Reference> getLanguages() {
 		return languages;
+	}
+	
+	public List<Reference> getSports() {
+		return sports;
+	}
+	
+	public List<Reference> getFavoriteTeams() {
+		return favoriteTeams;
+	}
+	
+	public List<Reference> getFavoriteAtheletes() {
+		return favoriteAthletes;
 	}
 
 	/**

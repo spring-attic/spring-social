@@ -88,6 +88,15 @@ abstract class FacebookProfileMixin {
 
 	@JsonProperty("languages")
 	List<Reference> languages;
+	
+	@JsonProperty("sports")
+	List<Reference> sports;
+	
+	@JsonProperty("favorite_teams")
+	List<Reference> favoriteTeams;
+	
+	@JsonProperty("favorite_athletes")
+	List<Reference> favoriteAthletes;
 
 	@JsonProperty("religion")
 	String religion;
