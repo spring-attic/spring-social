@@ -18,13 +18,12 @@ package org.springframework.social.connect.jdbc;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.sql.DataSource;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -35,6 +34,11 @@ import org.springframework.social.connect.ServiceProviderConnectionFactoryLocato
 import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
 
+/**
+ * {@link MultiUserServiceProviderConnectionRepository} that uses the JDBC API persist connection data to a relational database.
+ * The supporting schema is defined in JdbcMultiUserServiceProviderConnectionRepository.sql.
+ * @author Keith Donald
+ */
 public class JdbcMultiUserServiceProviderConnectionRepository implements MultiUserServiceProviderConnectionRepository {
 
 	private final JdbcTemplate jdbcTemplate;
@@ -52,12 +56,12 @@ public class JdbcMultiUserServiceProviderConnectionRepository implements MultiUs
 	public String findLocalUserIdConnectedTo(ServiceProviderConnectionKey connectionKey) {
 		try {
 			return jdbcTemplate.queryForObject("select localUserId from ServiceProviderConnection where providerId = ? and providerUserId = ?", String.class, connectionKey.getProviderId(), connectionKey.getProviderUserId());
-		} catch (EmptyResultDataAccessException e) {
+		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}
 	}
 
-	public Set<String> findLocalUserIdsConnectedTo(String providerId, List<String> providerUserIds) {
+	public Set<String> findLocalUserIdsConnectedTo(String providerId, Set<String> providerUserIds) {
 		MapSqlParameterSource parameters = new MapSqlParameterSource();
 		parameters.addValue("providerId", providerId);
 		parameters.addValue("providerUserIds", providerUserIds);

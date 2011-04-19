@@ -15,8 +15,14 @@
  */
 package org.springframework.social.connect;
 
+/**
+ * Thrown by a {@link ServiceProviderConnectionRepository} when attempting to add a ServiceProviderConnection 
+ * and a connection already exists with the given key.
+ * @author Keith Donald
+ * @see ServiceProviderConnectionRepository#addConnection(ServiceProviderConnection)
+ */
+@SuppressWarnings("serial")
 public final class DuplicateServiceProviderConnectionException extends RuntimeException {
-	private static final long serialVersionUID = 1L;
 	
 	private final ServiceProviderConnectionKey connectionKey;
 
@@ -24,6 +30,9 @@ public final class DuplicateServiceProviderConnectionException extends RuntimeEx
 		this.connectionKey = connectionKey;
 	}
 
+	/**
+	 * The connection key that already exists.
+	 */
 	public ServiceProviderConnectionKey getConnectionKey() {
 		return connectionKey;
 	}

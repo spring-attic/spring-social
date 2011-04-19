@@ -17,7 +17,9 @@ package org.springframework.social.oauth1;
 
 /**
  * Base class for ServiceProviders that use the OAuth1 protocol.
- * OAuth1-based ServiceProvider implementations should extend and implement {@link #getServiceApi(String, String)}.
+ * OAuth1-based ServiceProvider implementors should extend and implement {@link #getServiceApi(String, String)}.
+ * They should also define a single constructor that accepts the consumerKey/consumerSecret
+ * and internally creates and passes up a {@link OAuth1Operations} instance.
  * @author Keith Donald
  * @param <S> the service API type
  */
@@ -29,22 +31,44 @@ public abstract class AbstractOAuth1ServiceProvider<S> implements OAuth1ServiceP
 	
 	private final OAuth1Operations oauth1Operations;
 
+	/**
+	 * Creates a OAuth1ServiceProvider.
+	 * @param consumerKey the consumer (or client) key assigned to the application by the provider.
+	 * @param consumerSecret the consumer (or client) secret assigned to the application by the provider.
+	 * @param oauth1Operations the template that allows the OAuth1-based authorization flow to be conducted with the provider.
+	 */
 	public AbstractOAuth1ServiceProvider(String consumerKey, String consumerSecret, OAuth1Operations oauth1Operations) {
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
 		this.oauth1Operations = oauth1Operations;
 	}
 
-	protected final String getConsumerKey() {
-		return consumerKey;
-	}
-
-	protected final String getConsumerSecret() {
-		return consumerSecret;
-	}
-
+	// implementing OAuth1ServiceProvider
+	
 	public final OAuth1Operations getOAuthOperations() {
 		return oauth1Operations;
 	}
 	
+	public abstract S getServiceApi(String accessToken, String secret);
+	
+	// subclassing hooks
+	
+	/**
+	 * The consumer (or client) key assigned to the application by the provider.
+	 * Exposed to subclasses to support constructing service API instances.
+	 * @see #getServiceApi(String, String)
+	 */
+	protected final String getConsumerKey() {
+		return consumerKey;
+	}
+
+	/**
+	 * The consumer (or client) secret assigned to the application by the provider.
+	 * Exposed to subclasses to support constructing service API instances.
+	 * @see #getServiceApi(String, String)
+	 */
+	protected final String getConsumerSecret() {
+		return consumerSecret;
+	}
+
 }

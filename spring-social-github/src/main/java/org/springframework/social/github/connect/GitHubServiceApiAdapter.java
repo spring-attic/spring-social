@@ -15,8 +15,8 @@
  */
 package org.springframework.social.github.connect;
 
+import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderUser;
-import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.github.GitHubApi;
 import org.springframework.social.github.GitHubUserProfile;
 import org.springframework.web.client.HttpClientErrorException;
