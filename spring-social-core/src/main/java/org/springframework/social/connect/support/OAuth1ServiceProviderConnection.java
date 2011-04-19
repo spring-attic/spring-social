@@ -22,6 +22,14 @@ import org.springframework.social.connect.ServiceProviderUser;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
 
+/**
+ * An OAuth1-based ServiceProviderConnection implementation.
+ * In general, this implementation is expected to be suitable for all OAuth1-based providers and should not require subclassing.
+ * Subclasses of {@link OAuth1ServiceProviderConnectionFactory} should be favored to encapsulate details specific to an OAuth1-based provider.
+ * @author Keith Donald
+ * @param <S> the service API type
+ * @see OAuth1ServiceProviderConnectionFactory
+ */
 public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnection<S> {
 
 	private final ServiceProviderConnectionKey key;
@@ -40,6 +48,17 @@ public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnec
 
 	private final Object monitor = new Object();
 	
+	/**
+	 * Creates a new {@link OAuth1ServiceProviderConnection} from the data provided.
+	 * Designed to be called to create a {@link OAuth1ServiceProviderConnection} after receiving an access token response successfully.
+	 * The providerUserId may be null in this case: if so, this constructor will try to resolve it using the service API obtained from the {@link OAuth1ServiceProvider}.
+	 * @param providerId the provider id e.g. "twitter"
+	 * @param providerUserId the provider user ID (may be null if not returned as part of the access token response)
+	 * @param accessToken the granted access token
+	 * @param secret the access token secret (OAuth1-specific)
+	 * @param serviceProvider the ServiceProvider model
+	 * @param serviceApiAdapter the ServiceApiAdapter for the ServiceProvider.
+	 */
 	public OAuth1ServiceProviderConnection(String providerId, String providerUserId, String accessToken, String secret, OAuth1ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
 		this.serviceProvider = serviceProvider;
 		this.serviceApiAdapter = serviceApiAdapter;
@@ -48,6 +67,16 @@ public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnec
 		this.key = createKey(providerId, providerUserId);
 	}
 
+	/**
+	 * Creates a new {@link OAuth1ServiceProviderConnection} from the data provided.
+	 * Designed to be called when re-constituting an existing {@link ServiceProviderConnection}, for example, from {@link ServiceProviderConnectionData}.
+	 * @param key the service provider connection key
+	 * @param user the service provider user model
+	 * @param accessToken the access token
+	 * @param secret the access token secret
+	 * @param serviceProvider the ServiceProvider model
+	 * @param serviceApiAdapter the ServiceApiAdapter for the ServiceProvider.
+	 */
 	public OAuth1ServiceProviderConnection(ServiceProviderConnectionKey key, ServiceProviderUser user, String accessToken, String secret, OAuth1ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
 		this.key = key;
 		this.user = user;
@@ -57,6 +86,8 @@ public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnec
 		initServiceApi();
 	}
 
+	// implementing ServiceProviderConnection
+	
 	public ServiceProviderConnectionKey getKey() {
 		return key;
 	}
@@ -72,11 +103,12 @@ public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnec
 	}
 
 	public boolean hasExpired() {
+		// not supported by OAuth 1
 		return false;
 	}
 
 	public void refresh() {
-		
+		// not supported by OAuth 1
 	}
 
 	public void updateStatus(String message) {

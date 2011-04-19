@@ -24,18 +24,33 @@ import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.ServiceProviderConnectionFactory;
 import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
 
+/**
+ * A Map-based registry for {@link ServiceProviderConnectionFactory service provider connection factories}.
+ * Implements {@link ServiceProviderConnectionFactoryLocator} for locating registered factory instances.
+ * @author Keith Donald
+ */
 public class MapServiceProviderConnectionFactoryRegistry implements ServiceProviderConnectionFactoryLocator {
 
 	private final Map<String, ServiceProviderConnectionFactory<?>> connectionFactories = new HashMap<String, ServiceProviderConnectionFactory<?>>();
 
 	private final Map<Class<?>, String> serviceApiTypeIndex = new HashMap<Class<?>, String>();
 
+	/**
+	 * Set the group of service provider connection factories registered in this registry.
+	 * JavaBean setter that allows for this object to be more easily configured by tools.
+	 * For programmatic configuration, prefer {@link #addConnectionFactory(ServiceProviderConnectionFactory)}.
+	 * @param connectionFactories the set of connection factories to register
+	 */
 	public void setConnectionFactories(List<ServiceProviderConnectionFactory<?>> connectionFactories) {
 		for (ServiceProviderConnectionFactory<?> connectionFactory : connectionFactories) {
 			addConnectionFactory(connectionFactory);
 		}
 	}
 	
+	/**
+	 * Add a {@link ServiceProviderConnectionFactory} to this registry.
+	 * @param connectionFactory the connection factory
+	 */
 	public void addConnectionFactory(ServiceProviderConnectionFactory<?> connectionFactory) {
 		if (connectionFactories.containsKey(connectionFactory.getProviderId())) {
 			throw new IllegalArgumentException("A ConnectionFactory for provider '" + connectionFactory.getProviderId() + "' has already been registered");
@@ -47,6 +62,8 @@ public class MapServiceProviderConnectionFactoryRegistry implements ServiceProvi
 		connectionFactories.put(connectionFactory.getProviderId(), connectionFactory);
 		serviceApiTypeIndex.put(serviceApiType, connectionFactory.getProviderId());
 	}
+
+	// implementing ServiceProviderConnectionFactoryLocator
 	
 	public ServiceProviderConnectionFactory<?> getConnectionFactory(String providerId) {
 		ServiceProviderConnectionFactory<?> connectionFactory = connectionFactories.get(providerId);
@@ -69,7 +86,4 @@ public class MapServiceProviderConnectionFactoryRegistry implements ServiceProvi
 		return connectionFactories.keySet();
 	}
 	
-	
-	
-
 }
