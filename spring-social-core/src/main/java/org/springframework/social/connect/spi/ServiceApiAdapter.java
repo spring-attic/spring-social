@@ -15,14 +15,35 @@
  */
 package org.springframework.social.connect.spi;
 
+import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderUser;
 
+/**
+ * An adapter that bridges between the uniform {@link ServiceProviderConnection} model and a specific provider API model.
+ * @author Keith Donald
+ * @param <S> the service API
+ */
 public interface ServiceApiAdapter<S> {
 	
+	/**
+	 * Implements {@link ServiceProviderConnection#test()} for connections to the given service API.
+	 * @param serviceApi the service API
+	 * @return true if the API is functional, false if not
+	 */
 	boolean test(S serviceApi);
 	
+	/**
+	 * Implements {@link ServiceProviderConnection#getUser()} for connections to the given service API.
+	 * @param serviceApi the service API
+	 * @return the uniform service provider user model
+	 */
 	ServiceProviderUser getUser(S serviceApi);
 	
+	/**
+	 * Implements {@link ServiceProviderConnection#updateStatus(String)} for connections to the given service API.
+	 * @param serviceApi the service API
+	 * @param message the status message
+	 */
 	void updateStatus(S serviceApi, String message);
 	
 }
