@@ -21,6 +21,10 @@ import java.util.List;
 import org.springframework.social.facebook.support.json.CommentList;
 import org.springframework.social.facebook.support.json.ReferenceList;
 
+/**
+ * Model class representing a user checkin on Facebook Places.
+ * @author Craig Walls
+ */
 public class Checkin {
 	private String id;
 
@@ -28,7 +32,7 @@ public class Checkin {
 
 	private Reference from;
 
-	private Reference application;
+	private Reference application; 
 
 	private Date createdTime;
 

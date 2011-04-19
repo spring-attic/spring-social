@@ -25,7 +25,11 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.social.facebook.types.FacebookLink;
-import org.springframework.social.facebook.types.FeedEntry;
+import org.springframework.social.facebook.types.LinkPost;
+import org.springframework.social.facebook.types.NotePost;
+import org.springframework.social.facebook.types.PhotoPost;
+import org.springframework.social.facebook.types.Post;
+import org.springframework.social.facebook.types.StatusPost;
 
 /**
  * @author Craig Walls
@@ -38,8 +42,11 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 				.andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andRespond(withResponse(new ClassPathResource("testdata/feed.json", getClass()), responseHeaders));
-		List<FeedEntry> feed = facebook.feedOperations().getFeed();
-		assertEquals(3, feed.size());
+		List<Post> feed = facebook.feedOperations().getFeed();
+		assertEquals(3, feed.size());		
+		assertTrue(feed.get(0) instanceof StatusPost);
+		assertTrue(feed.get(1) instanceof PhotoPost);
+		assertTrue(feed.get(2) instanceof StatusPost);
 		assertFeedEntries(feed);
 	}
 	
@@ -49,7 +56,7 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 				.andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andRespond(withResponse(new ClassPathResource("testdata/feed.json", getClass()), responseHeaders));
-		List<FeedEntry> feed = facebook.feedOperations().getFeed("12345678");
+		List<Post> feed = facebook.feedOperations().getFeed("12345678");
 		assertEquals(3, feed.size());
 		assertFeedEntries(feed);
 	}	
@@ -60,7 +67,7 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/feed.json", getClass()), responseHeaders));
-		List<FeedEntry> homeFeed = facebook.feedOperations().getHomeFeed();
+		List<Post> homeFeed = facebook.feedOperations().getHomeFeed();
 		assertEquals(3, homeFeed.size());
 		assertFeedEntries(homeFeed);
 	}
@@ -71,7 +78,7 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/feed.json", getClass()), responseHeaders));
-		List<FeedEntry> homeFeed = facebook.feedOperations().getHomeFeed("223311");
+		List<Post> homeFeed = facebook.feedOperations().getHomeFeed("223311");
 		assertEquals(3, homeFeed.size());
 		assertFeedEntries(homeFeed);
 	}
@@ -94,7 +101,7 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 		assertStatuses(facebook.feedOperations().getStatuses("24680"));
 	}
 
-	private void assertStatuses(List<FeedEntry> statuses) {
+	private void assertStatuses(List<StatusPost> statuses) {
 		assertEquals(3, statuses.size());
 		assertEquals("161195833936659", statuses.get(0).getId());
 		assertEquals("100001387295207", statuses.get(0).getFrom().getId());
@@ -122,6 +129,7 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 		assertLinks(facebook.feedOperations().getLinks());
 	}
 	
+
 	@Test
 	public void getLinks_forSpecificUser() {
 		mockServer.expect(requestTo("https://graph.facebook.com/13579/links"))
@@ -137,11 +145,11 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/user-notes.json", getClass()), responseHeaders));		
-		List<FeedEntry> notes = facebook.feedOperations().getNotes();
+		List<NotePost> notes = facebook.feedOperations().getNotes();
 		assertNotes(notes);
 	}
 
-	private void assertNotes(List<FeedEntry> notes) {
+	private void assertNotes(List<NotePost> notes) {
 		assertEquals(2, notes.size());
 		assertEquals("161200187269557", notes.get(0).getId());
 		assertEquals("100001387295207", notes.get(0).getFrom().getId());
@@ -167,7 +175,7 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 				.andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andRespond(withResponse(new ClassPathResource("testdata/feed.json", getClass()), responseHeaders));
-		List<FeedEntry> feed = facebook.feedOperations().getPosts();
+		List<Post> feed = facebook.feedOperations().getPosts();
 		assertEquals(3, feed.size());
 		assertFeedEntries(feed);
 	}
@@ -178,7 +186,7 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 				.andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andRespond(withResponse(new ClassPathResource("testdata/feed.json", getClass()), responseHeaders));
-		List<FeedEntry> feed = facebook.feedOperations().getPosts("12345678");
+		List<Post> feed = facebook.feedOperations().getPosts("12345678");
 		assertEquals(3, feed.size());
 		assertFeedEntries(feed);
 	}	
@@ -189,8 +197,8 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/100001387295207_123939024341978"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("testdata/feedEntry.json", getClass()), responseHeaders));
-		FeedEntry feedEntry = facebook.feedOperations().getFeedEntry("100001387295207_123939024341978");
+			.andRespond(withResponse(new ClassPathResource("testdata/post.json", getClass()), responseHeaders));
+		Post feedEntry = facebook.feedOperations().getFeedEntry("100001387295207_123939024341978");
 		assertEquals("100001387295207_123939024341978", feedEntry.getId());
 		assertEquals("Hello world!", feedEntry.getMessage());
 		assertEquals("100001387295207", feedEntry.getFrom().getId());
@@ -240,22 +248,26 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 		mockServer.verify();
 	}
 	
-	private void assertFeedEntries(List<FeedEntry> feed) {
+	private void assertFeedEntries(List<Post> feed) {
 		assertEquals("100001387295207_160065090716400", feed.get(0).getId());
 		assertEquals("Just trying something", feed.get(0).getMessage());
 		assertEquals("100001387295207", feed.get(0).getFrom().getId());
 		assertEquals("Art Names", feed.get(0).getFrom().getName());
+		assertNull(feed.get(0).getApplication());
 		assertEquals("100001387295207_160064384049804", feed.get(1).getId());
 		assertEquals("Check out my ride", feed.get(1).getMessage());
 		assertEquals("100001387295207", feed.get(1).getFrom().getId());
 		assertEquals("Art Names", feed.get(1).getFrom().getName());
+		assertNull(feed.get(1).getApplication());
 		assertEquals("100001387295207_153453231377586", feed.get(2).getId());
 		assertEquals("Hello Facebook!", feed.get(2).getMessage());
 		assertEquals("100001387295207", feed.get(2).getFrom().getId());
 		assertEquals("Art Names", feed.get(2).getFrom().getName());
+		assertEquals("162886103757745", feed.get(2).getApplication().getId());
+		assertEquals("Spring Social Showcase", feed.get(2).getApplication().getName());
 	}
 	
-	private void assertLinks(List<FeedEntry> feed) {
+	private void assertLinks(List<LinkPost> feed) {
 		assertEquals(2, feed.size());
 		assertEquals("125736073702566", feed.get(0).getId());
 		assertEquals("Warning about Facebook Phishing: See http://www.facebook.com/group.php?gid=9874388706", feed.get(0).getMessage());

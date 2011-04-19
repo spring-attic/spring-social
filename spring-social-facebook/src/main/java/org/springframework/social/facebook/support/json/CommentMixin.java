@@ -21,7 +21,11 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Reference;
 
-class CommentMixin {
+/**
+ * Annotated mixin to add Jackson annotations to Comment. 
+ * @author Craig Walls
+ */
+abstract class CommentMixin {
 
 	@JsonCreator
 	CommentMixin(

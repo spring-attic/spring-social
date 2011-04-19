@@ -22,6 +22,10 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.twitter.types.UserList;
 
+/**
+ * Holder for list of UserList, pulled from JSON object's "lists" property.
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserListList {
 	private final List<UserList> list;

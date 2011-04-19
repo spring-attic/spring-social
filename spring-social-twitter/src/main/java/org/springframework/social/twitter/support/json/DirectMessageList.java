@@ -15,21 +15,14 @@
  */
 package org.springframework.social.twitter.support.json;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import org.codehaus.jackson.annotate.JsonCreator;
 import org.springframework.social.twitter.types.DirectMessage;
 
-public class DirectMessageList {
-
-	private final List<DirectMessage> list;
-
-	@JsonCreator
-	public DirectMessageList(List<DirectMessage> list) {
-		this.list = list;
-	}
-
-	public List<DirectMessage> getList() {
-		return list;
-	}
+/**
+ * Typed list of direct messages. This helps Jackson know what type to deserialize list content into.
+ * @author Craig Walls
+ */
+@SuppressWarnings("serial")
+public class DirectMessageList extends ArrayList<DirectMessage> {
 }

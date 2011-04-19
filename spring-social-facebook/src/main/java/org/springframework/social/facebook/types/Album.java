@@ -17,6 +17,10 @@ package org.springframework.social.facebook.types;
 
 import java.util.Date;
 
+/**
+ * Model class representing a Facebook photo album.
+ * @author Craig Walls
+ */
 public class Album {
 
 	private String id;

@@ -24,6 +24,10 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Photo.Image;
 import org.springframework.social.facebook.types.Reference;
 
+/**
+ * Annotated mixin to add Jackson annotations to Photo. 
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties({"picture", "source", "height", "width"})
 abstract class PhotoMixin {
 

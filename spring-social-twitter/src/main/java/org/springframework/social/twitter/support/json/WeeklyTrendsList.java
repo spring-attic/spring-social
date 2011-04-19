@@ -23,6 +23,10 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.twitter.types.Trend;
 
+/**
+ * Holder of a list of weekly trends.
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class WeeklyTrendsList extends AbstractTrendsList {
 

@@ -70,7 +70,7 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 
 	public List<SavedSearch> getSavedSearches() {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri("saved_searches.json"), SavedSearchList.class).getList();
+		return restTemplate.getForObject(buildUri("saved_searches.json"), SavedSearchList.class);
 	}
 
 	public SavedSearch getSavedSearch(long searchId) {

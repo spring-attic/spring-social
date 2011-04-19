@@ -39,12 +39,12 @@ class DirectMessageTemplate extends AbstractTwitterOperations implements DirectM
 
 	public List<DirectMessage> getDirectMessagesReceived() {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri("direct_messages.json", Collections.<String, String>emptyMap()), DirectMessageList.class).getList();
+		return restTemplate.getForObject(buildUri("direct_messages.json", Collections.<String, String>emptyMap()), DirectMessageList.class);
 	}
 
 	public List<DirectMessage> getDirectMessagesSent() {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri("direct_messages/sent.json", Collections.<String, String>emptyMap()), DirectMessageList.class).getList();
+		return restTemplate.getForObject(buildUri("direct_messages/sent.json", Collections.<String, String>emptyMap()), DirectMessageList.class);
 	}
 
 	public void sendDirectMessage(String toScreenName, String text) {

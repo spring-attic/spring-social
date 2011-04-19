@@ -23,7 +23,6 @@ import java.util.Locale;
 
 /**
  * Model class containing a Facebook user's profile information.
- * 
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
@@ -68,6 +67,16 @@ public class FacebookProfile implements Serializable {
 	private Reference hometown;
 	
 	private List<String> interestedIn;
+
+	private List<Reference> inspirationalPeople;
+
+	private List<Reference> languages;
+	
+	private List<Reference> sports;
+	
+	private List<Reference> favoriteTeams;
+	
+	private List<Reference> favoriteAthletes;
 
 	private String religion;
 
@@ -264,6 +273,34 @@ public class FacebookProfile implements Serializable {
 	 */
 	public List<String> getInterestedIn() {
 		return interestedIn;
+	}
+	
+	/**
+	 * A list of references to people the user is inspired by.
+	 * @return a list of {@link Reference} to people the user is inspired by, if available.
+	 */
+	public List<Reference> getInspirationalPeople() {
+		return inspirationalPeople;
+	}
+	
+	/**
+	 * A list of references to languages the user claims to know.
+	 * @return a list of {@link Reference} to languages the user knows, if available.
+	 */
+	public List<Reference> getLanguages() {
+		return languages;
+	}
+	
+	public List<Reference> getSports() {
+		return sports;
+	}
+	
+	public List<Reference> getFavoriteTeams() {
+		return favoriteTeams;
+	}
+	
+	public List<Reference> getFavoriteAtheletes() {
+		return favoriteAthletes;
 	}
 
 	/**

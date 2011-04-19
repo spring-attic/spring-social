@@ -27,7 +27,11 @@ import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 
-public class TimelineDateDeserializer extends JsonDeserializer<Date> {
+/**
+ * Deserializer to read date values from Twitter timeline entries.
+ * @author Craig Walls
+ */
+class TimelineDateDeserializer extends JsonDeserializer<Date> {
 
 	@Override
 	public Date deserialize(JsonParser jp, DeserializationContext ctxt)

@@ -20,7 +20,11 @@ import java.util.Date;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-class TagMixin {
+/**
+ * Annotated mixin to add Jackson annotations to Tag. 
+ * @author Craig Walls
+ */
+abstract class TagMixin {
 	
 	@JsonCreator
 	TagMixin(

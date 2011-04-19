@@ -22,6 +22,10 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.springframework.social.facebook.types.RsvpStatus;
 
+/**
+ * Annotated mixin to add Jackson annotations to Invitation. 
+ * @author Craig Walls
+ */
 abstract class InvitationMixin {
 
 	@JsonCreator

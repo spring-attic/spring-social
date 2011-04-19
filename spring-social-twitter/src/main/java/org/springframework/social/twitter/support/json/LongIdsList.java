@@ -21,6 +21,11 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+/**
+ * Holder for a typed list of Long pulled from an "ids" field in the JSON object. 
+ * This helps Jackson know to deserialize values into Long instead of choosing Integer, Long, or BigDecimal
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class LongIdsList {
 	private final List<Long> list;

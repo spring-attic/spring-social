@@ -22,11 +22,15 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.twitter.types.Tweet;
 
+/**
+ * Mixin class for adding Jackson annotations to SearchResults.
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SearchResultsMixin {
+class SearchResultsMixin {
 
 	@JsonCreator
-	public SearchResultsMixin(
+	SearchResultsMixin(
 			@JsonProperty("results") List<Tweet> tweets, 
 			@JsonProperty("max_id") long maxId, 
 			@JsonProperty("since_id") long sinceId) {}

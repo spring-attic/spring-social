@@ -15,20 +15,15 @@
  */
 package org.springframework.social.twitter.support.json;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import org.codehaus.jackson.annotate.JsonCreator;
 import org.springframework.social.twitter.types.SavedSearch;
 
-public class SavedSearchList {
-	private final List<SavedSearch> savedSearches;
-
-	@JsonCreator
-	public SavedSearchList(List<SavedSearch> savedSearches) {
-		this.savedSearches = savedSearches;
-	}
-
-	public List<SavedSearch> getList() {
-		return savedSearches;
-	}
+/**
+ * Typed list of SavedSearch.
+ * This helps Jackson know what type to deserialize the list contents into.
+ * @author Craig Walls
+ */
+@SuppressWarnings("serial")
+public class SavedSearchList extends ArrayList<SavedSearch> {
 }

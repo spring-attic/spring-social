@@ -17,6 +17,10 @@ package org.springframework.social.facebook.types;
 
 import java.util.Date;
 
+/**
+ * Model class representing a Group.
+ * @author Craig Walls
+ */
 public class Group {
 	
 	private final String id;

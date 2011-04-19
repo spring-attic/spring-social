@@ -15,6 +15,10 @@
  */
 package org.springframework.social.facebook.types;
 
+/**
+ * Model class representing someone who has been invited to an event.
+ * @author Craig Walls
+ */
 public class EventInvitee {
 	private String id;
 	
@@ -28,14 +32,26 @@ public class EventInvitee {
 		this.rsvpStatus = rsvpStatus;
 	}
 
+	/**
+	 * The invitee's user ID.
+	 * @return
+	 */
 	public String getId() {
 		return id;
 	}
 
+	/**
+	 * The invitee's name.
+	 * @return
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * The invitee's RSVP status (attending, unsure, not-replied, or declined).
+	 * @return
+	 */
 	public RsvpStatus getRsvpStatus() {
 		return rsvpStatus;
 	}

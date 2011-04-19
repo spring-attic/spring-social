@@ -22,6 +22,11 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Album;
 
+/**
+ * Holder class to hold a typed list of Albums, pulled from the "data" field of the JSON object structure.
+ * This helps Jackson know what type to deserialize list data into. 
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AlbumList {
 	

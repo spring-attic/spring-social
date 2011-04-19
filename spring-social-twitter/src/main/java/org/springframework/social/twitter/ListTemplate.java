@@ -70,11 +70,11 @@ class ListTemplate extends AbstractTwitterOperations implements ListOperations {
 	}
 
 	public List<Tweet> getListStatuses(long userId, long listId) {
-		return restTemplate.getForObject(buildUri(userId + "/lists/" + listId + "/statuses.json"), TweetList.class).getList();
+		return restTemplate.getForObject(buildUri(userId + "/lists/" + listId + "/statuses.json"), TweetList.class);
 	}
 
 	public List<Tweet> getListStatuses(String screenName, String listSlug) {
-		return restTemplate.getForObject(buildUri(screenName + "/lists/" + listSlug + "/statuses.json"), TweetList.class).getList();
+		return restTemplate.getForObject(buildUri(screenName + "/lists/" + listSlug + "/statuses.json"), TweetList.class);
 	}
 
 	public UserList createList(String name, String description, boolean isPublic) {	

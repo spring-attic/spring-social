@@ -17,9 +17,15 @@ package org.springframework.social.facebook;
 
 import java.util.List;
 
-import org.springframework.social.facebook.support.json.FeedEntryList;
+import org.springframework.social.facebook.support.json.LinkPostList;
+import org.springframework.social.facebook.support.json.NotePostList;
+import org.springframework.social.facebook.support.json.PostList;
+import org.springframework.social.facebook.support.json.StatusPostList;
 import org.springframework.social.facebook.types.FacebookLink;
-import org.springframework.social.facebook.types.FeedEntry;
+import org.springframework.social.facebook.types.LinkPost;
+import org.springframework.social.facebook.types.NotePost;
+import org.springframework.social.facebook.types.Post;
+import org.springframework.social.facebook.types.StatusPost;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -31,59 +37,55 @@ class FeedTemplate implements FeedOperations {
 		this.graphApi = graphApi;
 	}
 
-	public List<FeedEntry> getFeed() {
+	public List<Post> getFeed() {
 		return getFeed("me");
 	}
 
-	public List<FeedEntry> getFeed(String ownerId) {
-		return graphApi.fetchConnections(ownerId, "feed", FeedEntryList.class).getList();
+	public List<Post> getFeed(String ownerId) {
+		return graphApi.fetchConnections(ownerId, "feed", PostList.class).getList();
 	}
 
-	public List<FeedEntry> getHomeFeed() {
+	public List<Post> getHomeFeed() {
 		return getHomeFeed("me");
 	}
 
-	public List<FeedEntry> getHomeFeed(String userId) {
-		return graphApi.fetchConnections(userId, "home", FeedEntryList.class).getList();
+	public List<Post> getHomeFeed(String userId) {
+		return graphApi.fetchConnections(userId, "home", PostList.class).getList();
 	}
 	
-	public List<FeedEntry> getStatuses() {
+	public List<StatusPost> getStatuses() {
 		return getStatuses("me");
 	}
 	
-	public List<FeedEntry> getStatuses(String userId) {
-		return graphApi.fetchConnections(userId, "statuses", FeedEntryList.class).getList();
+	public List<StatusPost> getStatuses(String userId) {
+		return graphApi.fetchConnections(userId, "statuses", StatusPostList.class).getList();
 	}
 	
-	public List<FeedEntry> getLinks() {
+	public List<LinkPost> getLinks() {
 		return getLinks("me");
 	}
 	
-	public List<FeedEntry> getLinks(String ownerId) {
-		return graphApi.fetchConnections(ownerId, "links", FeedEntryList.class).getList();
+	public List<LinkPost> getLinks(String ownerId) {
+		return graphApi.fetchConnections(ownerId, "links", LinkPostList.class).getList();
 	}
 
-	public FeedEntry getNote(String noteId) {
-		return graphApi.fetchObject(noteId, FeedEntry.class);
-	}
-	
-	public List<FeedEntry> getNotes() {
+	public List<NotePost> getNotes() {
 		return getNotes("me");
 	}
 	
-	public List<FeedEntry> getNotes(String ownerId) {
-		return graphApi.fetchConnections(ownerId, "notes", FeedEntryList.class).getList();
+	public List<NotePost> getNotes(String ownerId) {
+		return graphApi.fetchConnections(ownerId, "notes", NotePostList.class).getList();
 	}
 	
-	public List<FeedEntry> getPosts() {
+	public List<Post> getPosts() {
 		return getPosts("me");
 	}
-	public List<FeedEntry> getPosts(String ownerId) {
-		return graphApi.fetchConnections(ownerId, "posts", FeedEntryList.class).getList();
+	public List<Post> getPosts(String ownerId) {
+		return graphApi.fetchConnections(ownerId, "posts", PostList.class).getList();
 	}
 	
-	public FeedEntry getFeedEntry(String entryId) {
-		return graphApi.fetchObject(entryId, FeedEntry.class);
+	public Post getFeedEntry(String entryId) {
+		return graphApi.fetchObject(entryId, Post.class);
 	}
 
 	public String updateStatus(String message) {

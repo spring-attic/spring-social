@@ -41,6 +41,55 @@
          "end_date": "2010-05"
       }
    ],
+   "sports": [
+      {
+         "id": "114371035246890",
+         "name": "Ping Pong",
+         "description": "For fun "
+      }
+   ],
+   "favorite_teams": [
+      {
+         "id": "37152881613",
+         "name": "Chicago Bulls"
+      },
+      {
+         "id": "159957123994",
+         "name": "Oklahoma City Thunder"
+      },
+      {
+         "id": "92774416228",
+         "name": "Baltimore Ravens"
+      }
+   ],
+   "favorite_athletes": [
+      {
+         "id": "107670255929059",
+         "name": "Emmitt Smith"
+      },
+      {
+         "id": "108193242541968",
+         "name": "Cal Ripken, Jr."
+      },
+      {
+         "id": "62975399193",
+         "name": "Michael Jordan"
+      }
+   ],
+   "inspirational_people": [
+      {
+         "id": "121966051173827",
+         "name": "Homer Simpson"
+      },
+      {
+         "id": "44596990399",
+         "name": "Alice Cooper"
+      },
+      {
+         "id": "56368119740",
+         "name": "Captain Jack Sparrow"
+      }
+   ],
    "education": [
       {
          "school": {
@@ -63,6 +112,16 @@
             "name": "1989"
          },
          "type": "High School"
+      }
+   ],
+   "languages": [
+      {
+         "id": "106059522759137",
+         "name": "English"
+      },
+      {
+         "id": "113599388650247",
+         "name": "Klingon"
       }
    ],
    "religion":"Jedi",

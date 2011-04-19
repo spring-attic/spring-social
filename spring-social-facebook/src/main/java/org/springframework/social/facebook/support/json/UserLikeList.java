@@ -21,6 +21,11 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.UserLike;
 
+/**
+ * Holder class to hold a typed list of UserLikes, pulled from the "data" field of the JSON object structure.
+ * This helps Jackson know what type to deserialize list data into. 
+ * @author Craig Walls
+ */
 public class UserLikeList {
 	private final List<UserLike> list;
 

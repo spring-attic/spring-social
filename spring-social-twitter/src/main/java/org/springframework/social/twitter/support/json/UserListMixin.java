@@ -19,11 +19,15 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+/**
+ * Mixin class for adding Jackson annotations to UserList.
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public abstract class UserListMixin {
+abstract class UserListMixin {
 
 	@JsonCreator
-	public UserListMixin(
+	UserListMixin(
 			@JsonProperty("id") long id, 
 			@JsonProperty("name") String name, 
 			@JsonProperty("full_name") String fullName, 

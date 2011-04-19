@@ -13,31 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.types;
+package org.springframework.social.facebook.support.json;
+
+import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.social.facebook.types.Post;
 
-public abstract class LocationMixin {
+/**
+ * Holder class to hold a typed list of Posts, pulled from the "data" field of the JSON object structure.
+ * This helps Jackson know what type to deserialize list data into. 
+ * @author Craig Walls
+ */
+@JsonIgnoreProperties("paging")
+public class PostList {
 	
+	private final List<Post> list;
+
 	@JsonCreator
-	public LocationMixin(
-			@JsonProperty("latitude") double latitude, 
-			@JsonProperty("longitude") double longitude) {}
+	public PostList(@JsonProperty("data") List<Post> list) {
+		this.list = list;
+	}
+
+	public List<Post> getList() {
+		return list;
+	}
 	
-	@JsonProperty("street")
-	String street;
-
-	@JsonProperty("city")
-	String city;
-
-	@JsonProperty("state")
-	String state;
-
-	@JsonProperty("country")
-	String country;
-
-	@JsonProperty("zip")
-	String zip;
-
 }

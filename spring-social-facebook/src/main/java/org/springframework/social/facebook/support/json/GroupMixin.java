@@ -29,6 +29,10 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.springframework.social.facebook.types.Group.Privacy;
 import org.springframework.social.facebook.types.Reference;
 
+/**
+ * Annotated mixin to add Jackson annotations to Group. 
+ * @author Craig Walls
+ */
 @JsonIgnoreProperties("version")
 abstract class GroupMixin {
 	

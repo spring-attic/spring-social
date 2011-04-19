@@ -42,35 +42,35 @@ class FriendTemplate extends AbstractTwitterOperations implements FriendOperatio
 	}
 
 	public List<TwitterProfile> getFriends(long userId) {
-		return restTemplate.getForObject(buildUri("statuses/friends.json", Collections.singletonMap("user_id", String.valueOf(userId))), TwitterProfileList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/friends.json", Collections.singletonMap("user_id", String.valueOf(userId))), TwitterProfileList.class);
 	}
 
 	public List<TwitterProfile> getFriends(String screenName) {
-		return restTemplate.getForObject(buildUri("statuses/friends.json", Collections.singletonMap("screen_name", screenName)), TwitterProfileList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/friends.json", Collections.singletonMap("screen_name", screenName)), TwitterProfileList.class);
 	}
 	
 	public List<Long> getFriendIds(long userId) {
-		return restTemplate.getForObject(buildUri("friends/ids.json", Collections.singletonMap("user_id", String.valueOf(userId))), LongList.class).getList();
+		return restTemplate.getForObject(buildUri("friends/ids.json", Collections.singletonMap("user_id", String.valueOf(userId))), LongList.class);
 	}
 
 	public List<Long> getFriendIds(String screenName) {
-		return restTemplate.getForObject(buildUri("friends/ids.json", Collections.singletonMap("screen_name", screenName)), LongList.class).getList();
+		return restTemplate.getForObject(buildUri("friends/ids.json", Collections.singletonMap("screen_name", screenName)), LongList.class);
 	}
 
 	public List<TwitterProfile> getFollowers(long userId) {
-		return restTemplate.getForObject(buildUri("statuses/followers.json", Collections.singletonMap("user_id", String.valueOf(userId))), TwitterProfileList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/followers.json", Collections.singletonMap("user_id", String.valueOf(userId))), TwitterProfileList.class);
 	}
 
 	public List<TwitterProfile> getFollowers(String screenName) {
-		return restTemplate.getForObject(buildUri("statuses/followers.json", Collections.singletonMap("screen_name", screenName)), TwitterProfileList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/followers.json", Collections.singletonMap("screen_name", screenName)), TwitterProfileList.class);
 	}
 
 	public List<Long> getFollowerIds(long userId) {
-		return restTemplate.getForObject(buildUri("followers/ids.json", Collections.singletonMap("user_id", String.valueOf(userId))), LongList.class).getList();
+		return restTemplate.getForObject(buildUri("followers/ids.json", Collections.singletonMap("user_id", String.valueOf(userId))), LongList.class);
 	}
 
 	public List<Long> getFollowerIds(String screenName) {
-		return restTemplate.getForObject(buildUri("followers/ids.json", Collections.singletonMap("screen_name", screenName)), LongList.class).getList();
+		return restTemplate.getForObject(buildUri("followers/ids.json", Collections.singletonMap("screen_name", screenName)), LongList.class);
 	}
 
 	public String follow(long userId) {

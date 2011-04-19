@@ -19,10 +19,16 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.types.Reference;
 
-class EducationEntryMixin {
+/**
+ * Annotated mixin to add Jackson annotations to EducationEntry. 
+ * @author Craig Walls
+ */
+abstract class EducationEntryMixin {
+
 	@JsonCreator
 	EducationEntryMixin(
 			@JsonProperty("school") Reference school, 
 			@JsonProperty("year") Reference year, 
 			@JsonProperty("type") String type) {}
+	
 }

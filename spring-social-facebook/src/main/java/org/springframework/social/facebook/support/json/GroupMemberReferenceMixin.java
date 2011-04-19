@@ -18,10 +18,14 @@ package org.springframework.social.facebook.support.json;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-public abstract class GroupMemberReferenceMixin {
+/**
+ * Annotated mixin to add Jackson annotations to GroupMemberReference. 
+ * @author Craig Walls
+ */
+abstract class GroupMemberReferenceMixin {
 
 	@JsonCreator
-	public GroupMemberReferenceMixin(
+	GroupMemberReferenceMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("name") String name,
 			@JsonProperty("administrator") boolean administrator) {}

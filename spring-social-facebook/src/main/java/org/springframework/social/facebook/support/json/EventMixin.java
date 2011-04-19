@@ -28,6 +28,10 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.springframework.social.facebook.types.Event.Privacy;
 import org.springframework.social.facebook.types.Reference;
 
+/**
+ * Annotated mixin to add Jackson annotations to Event. 
+ * @author Craig Walls
+ */
 abstract class EventMixin {
 
 	@JsonCreator

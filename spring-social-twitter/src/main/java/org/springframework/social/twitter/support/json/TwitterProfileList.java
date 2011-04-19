@@ -15,22 +15,14 @@
  */
 package org.springframework.social.twitter.support.json;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import org.codehaus.jackson.annotate.JsonCreator;
 import org.springframework.social.twitter.types.TwitterProfile;
 
-public class TwitterProfileList {
-
-	private final List<TwitterProfile> list;
-
-	@JsonCreator
-	public TwitterProfileList(List<TwitterProfile> list) {
-		this.list = list;
-	}
-
-	public List<TwitterProfile> getList() {
-		return list;
-	}
-	
+/**
+ * Typed list of TwitterProfile. This helps Jackson know which type to deserialize list contents into.
+ * @author Craig Walls
+ */
+@SuppressWarnings("serial")
+public class TwitterProfileList extends ArrayList<TwitterProfile> {
 }

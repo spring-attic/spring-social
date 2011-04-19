@@ -23,7 +23,6 @@ import org.springframework.http.converter.json.MappingJacksonHttpMessageConverte
 import org.springframework.social.BadCredentialsException;
 import org.springframework.social.oauth1.ProtectedResourceClientFactory;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
-import org.springframework.social.twitter.support.TwitterErrorHandler;
 import org.springframework.social.twitter.support.json.TwitterModule;
 import org.springframework.web.client.RestTemplate;
 
@@ -146,7 +145,5 @@ public class TwitterTemplate implements TwitterApi {
 	protected RestTemplate getRestTemplate() {
 		return restTemplate;
 	}
-
-	private static final String API_URL_BASE = "https://api.twitter.com/1/";
 
 }

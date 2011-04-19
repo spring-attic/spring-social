@@ -27,6 +27,9 @@ import org.springframework.social.twitter.types.Tweet;
 import org.springframework.social.twitter.types.TwitterProfile;
 import org.springframework.social.twitter.types.UserList;
 
+/**
+ * Jackson module for registering mixin annotations against Twitter model classes.
+ */
 public class TwitterModule extends SimpleModule {
 	public TwitterModule() {
 		super("TwitterModule", new Version(1, 0, 0, null));

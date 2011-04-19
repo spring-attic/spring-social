@@ -17,6 +17,10 @@ package org.springframework.social.facebook.types;
 
 import java.util.Date;
 
+/**
+ * Model class representing a tagged user in a video, photo, or checkin. 
+ * @author Craig Walls
+ */
 public class Tag {
 	private final String id;
 

@@ -18,7 +18,8 @@ package org.springframework.social.facebook.types;
 import java.util.Date;
 
 /**
- * Represents an item that a user likes.
+ * Model class representing an object that the user likes. This could be something that they explicitly liked by clicking a "like" button.
+ * Or it could be something such as a favorite movie that they identified in their profile.
  * @author Craig Walls
  */
 public class UserLike {
