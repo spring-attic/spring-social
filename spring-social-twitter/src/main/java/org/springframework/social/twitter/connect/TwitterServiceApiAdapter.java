@@ -16,8 +16,8 @@
 package org.springframework.social.twitter.connect;
 
 import org.springframework.social.BadCredentialsException;
+import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderUser;
-import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.twitter.TwitterApi;
 import org.springframework.social.twitter.types.TwitterProfile;
 

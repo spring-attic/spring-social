@@ -15,8 +15,8 @@
  */
 package org.springframework.social.gowalla.connect;
 
+import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderUser;
-import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.gowalla.GowallaApi;
 import org.springframework.social.gowalla.GowallaProfile;
 import org.springframework.web.client.HttpClientErrorException;
