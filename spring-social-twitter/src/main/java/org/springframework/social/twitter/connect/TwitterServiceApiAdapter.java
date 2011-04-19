@@ -19,7 +19,7 @@ import org.springframework.social.BadCredentialsException;
 import org.springframework.social.connect.ServiceProviderUser;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.twitter.TwitterApi;
-import org.springframework.social.twitter.types.TwitterProfile;
+import org.springframework.social.twitter.TwitterProfile;
 
 public class TwitterServiceApiAdapter implements ServiceApiAdapter<TwitterApi> {
 

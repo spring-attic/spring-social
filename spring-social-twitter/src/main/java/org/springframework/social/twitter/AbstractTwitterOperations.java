@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.springframework.social.util.URIBuilder;
 
-class AbstractTwitterOperations {
+public class AbstractTwitterOperations {
 	
 	private final boolean isAuthorizedForUser;
 

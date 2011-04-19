@@ -23,7 +23,19 @@ import org.springframework.http.converter.json.MappingJacksonHttpMessageConverte
 import org.springframework.social.BadCredentialsException;
 import org.springframework.social.oauth1.ProtectedResourceClientFactory;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
-import org.springframework.social.twitter.support.json.TwitterModule;
+import org.springframework.social.twitter.direct.DirectMessageOperations;
+import org.springframework.social.twitter.direct.DirectMessageTemplate;
+import org.springframework.social.twitter.friend.FriendOperations;
+import org.springframework.social.twitter.friend.FriendTemplate;
+import org.springframework.social.twitter.json.TwitterModule;
+import org.springframework.social.twitter.list.ListOperations;
+import org.springframework.social.twitter.list.ListTemplate;
+import org.springframework.social.twitter.search.SearchOperations;
+import org.springframework.social.twitter.search.SearchTemplate;
+import org.springframework.social.twitter.timeline.TimelineOperations;
+import org.springframework.social.twitter.timeline.TimelineTemplate;
+import org.springframework.social.twitter.user.UserOperations;
+import org.springframework.social.twitter.user.UserTemplate;
 import org.springframework.web.client.RestTemplate;
 
 /**

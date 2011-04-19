@@ -25,8 +25,8 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.social.twitter.types.TwitterProfile;
-import org.springframework.social.twitter.types.UserList;
+import org.springframework.social.twitter.TwitterProfile;
+import org.springframework.social.twitter.list.UserList;
 
 /**
  * @author Craig Walls

@@ -15,6 +15,12 @@
  */
 package org.springframework.social.twitter;
 
+import org.springframework.social.twitter.direct.DirectMessageOperations;
+import org.springframework.social.twitter.friend.FriendOperations;
+import org.springframework.social.twitter.search.SearchOperations;
+import org.springframework.social.twitter.timeline.TimelineOperations;
+import org.springframework.social.twitter.user.UserOperations;
+
 /**
  * Interface specifying a basic set of operations for interacting with Twitter.
  * Implemented by TwitterTemplate. Not often used directly, but a useful option
