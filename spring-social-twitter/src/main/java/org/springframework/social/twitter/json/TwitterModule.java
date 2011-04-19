@@ -31,6 +31,7 @@ import org.springframework.social.twitter.search.Trend;
 import org.springframework.social.twitter.search.TrendMixin;
 import org.springframework.social.twitter.search.Trends;
 import org.springframework.social.twitter.search.TrendsMixin;
+import org.springframework.social.twitter.timeline.TweetMixin;
 import org.springframework.social.twitter.user.SuggestionCategory;
 import org.springframework.social.twitter.user.SuggestionCategoryMixin;
 import org.springframework.social.twitter.user.TwitterProfileMixin;

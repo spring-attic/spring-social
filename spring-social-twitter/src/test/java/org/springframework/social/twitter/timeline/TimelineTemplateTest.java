@@ -217,7 +217,7 @@ public class TimelineTemplateTest extends AbstractTwitterApiTest {
 	public void getRetweetedBy() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/42/retweeted_by.json"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("list-of-profiles.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("retweeted-by.json", getClass()), responseHeaders));
 		List<TwitterProfile> retweetedBy = twitter.timelineOperations().getRetweetedBy(42L);
 		assertEquals(2, retweetedBy.size());
 		assertEquals("royclarkson", retweetedBy.get(0).getScreenName());
@@ -230,7 +230,7 @@ public class TimelineTemplateTest extends AbstractTwitterApiTest {
 	public void getRetweetedByIds() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/42/retweeted_by/ids.json"))
 			.andExpect(method(GET))
-			.andRespond(withResponse(new ClassPathResource("list-of-profile-ids.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("retweeted-by-ids.json", getClass()), responseHeaders));
 		List<Long> retweetedByIds = twitter.timelineOperations().getRetweetedByIds(42L);
 		assertEquals(3, retweetedByIds.size());
 		assertEquals(12345, (long) retweetedByIds.get(0));

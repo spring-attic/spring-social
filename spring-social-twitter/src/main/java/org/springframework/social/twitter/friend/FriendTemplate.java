@@ -15,6 +15,7 @@
  */
 package org.springframework.social.twitter.friend;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,6 @@ import java.util.TreeMap;
 
 import org.springframework.social.twitter.AbstractTwitterOperations;
 import org.springframework.social.twitter.TwitterProfile;
-import org.springframework.social.twitter.json.LongList;
 import org.springframework.social.twitter.user.TwitterProfileList;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -114,4 +114,6 @@ public class FriendTemplate extends AbstractTwitterOperations implements FriendO
 
 	private static final MultiValueMap<String, Object> EMPTY_DATA = new LinkedMultiValueMap<String, Object>();
 	
+	@SuppressWarnings("serial")
+	private static class LongList extends ArrayList<Long> {}
 }

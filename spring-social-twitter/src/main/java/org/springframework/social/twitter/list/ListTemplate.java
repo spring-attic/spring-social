@@ -15,6 +15,7 @@
  */
 package org.springframework.social.twitter.list;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,7 +23,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.social.twitter.AbstractTwitterOperations;
 import org.springframework.social.twitter.Tweet;
 import org.springframework.social.twitter.TwitterProfile;
-import org.springframework.social.twitter.json.TweetList;
 import org.springframework.social.twitter.user.TwitterProfileUsersList;
 import org.springframework.social.twitter.util.ArrayUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -219,5 +219,8 @@ public class ListTemplate extends AbstractTwitterOperations implements ListOpera
 		request.set("mode", isPublic ? "public" : "private");
 		return request;
 	}
+
+	@SuppressWarnings("serial")
+	private static class TweetList extends ArrayList<Tweet> {}
 
 }

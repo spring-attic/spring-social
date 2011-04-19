@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.json;
+package org.springframework.social.twitter.timeline;
 
-import java.util.ArrayList;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 /**
- * Typed list of Long. 
- * This helps Jackson know to deserialize values into Long instead of choosing Integer, Long, or BigDecimal
+ * Mixin class for adding Jackson annotations to Tweet. 
+ * Relies on TweetDeserializer to do actual deserialization, as Tweet JSON structures differ slightly between timeline lists and search results.
  * @author Craig Walls
  */
-@SuppressWarnings("serial")
-public class LongList extends ArrayList<Long> {	
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonDeserialize(using = TweetDeserializer.class)
+public interface TweetMixin {
 }

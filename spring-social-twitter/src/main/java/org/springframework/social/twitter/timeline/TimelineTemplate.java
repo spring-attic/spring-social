@@ -15,14 +15,13 @@
  */
 package org.springframework.social.twitter.timeline;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.springframework.social.twitter.AbstractTwitterOperations;
 import org.springframework.social.twitter.Tweet;
 import org.springframework.social.twitter.TwitterProfile;
-import org.springframework.social.twitter.json.LongList;
-import org.springframework.social.twitter.json.TweetList;
 import org.springframework.social.twitter.user.TwitterProfileList;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -146,4 +145,9 @@ public class TimelineTemplate extends AbstractTwitterOperations implements Timel
 		restTemplate.postForObject(buildUri("favorites/destroy/" + tweetId + ".json"), data, String.class);
 	}
 
+	@SuppressWarnings("serial")
+	private static class LongList extends ArrayList<Long>{}
+	
+	@SuppressWarnings("serial")
+	private static class TweetList extends ArrayList<Tweet> {}
 }
