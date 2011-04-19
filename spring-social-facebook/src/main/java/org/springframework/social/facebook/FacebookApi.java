@@ -15,6 +15,16 @@
  */
 package org.springframework.social.facebook;
 
+import org.springframework.social.facebook.comment.CommentOperations;
+import org.springframework.social.facebook.event.EventOperations;
+import org.springframework.social.facebook.feed.FeedOperations;
+import org.springframework.social.facebook.friend.FriendOperations;
+import org.springframework.social.facebook.group.GroupOperations;
+import org.springframework.social.facebook.like.LikeOperations;
+import org.springframework.social.facebook.media.MediaOperations;
+import org.springframework.social.facebook.places.PlacesOperations;
+import org.springframework.social.facebook.user.UserOperations;
+
 
 /**
  * Interface specifying a basic set of operations for interacting with Facebook.
@@ -32,7 +42,7 @@ public interface FacebookApi extends GraphApi {
 	/**
 	 * API for performing Facebook Places checkin operations.
 	 */
-	CheckinOperations checkinOperations();
+	PlacesOperations placesOperations();
 	
 	/**
 	 * API for performing operations against user likes and interests.

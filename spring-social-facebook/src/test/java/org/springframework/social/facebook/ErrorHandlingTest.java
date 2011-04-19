@@ -23,7 +23,7 @@ import static org.springframework.social.test.client.ResponseCreators.*;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.social.facebook.types.FacebookProfile;
+import org.springframework.social.facebook.user.FacebookProfile;
 
 public class ErrorHandlingTest extends AbstractFacebookApiTest {
 

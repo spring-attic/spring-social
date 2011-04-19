@@ -27,7 +27,25 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
-import org.springframework.social.facebook.support.json.FacebookModule;
+import org.springframework.social.facebook.comment.CommentOperations;
+import org.springframework.social.facebook.comment.CommentTemplate;
+import org.springframework.social.facebook.event.EventOperations;
+import org.springframework.social.facebook.event.EventTemplate;
+import org.springframework.social.facebook.feed.FeedOperations;
+import org.springframework.social.facebook.feed.FeedTemplate;
+import org.springframework.social.facebook.friend.FriendOperations;
+import org.springframework.social.facebook.friend.FriendTemplate;
+import org.springframework.social.facebook.group.GroupOperations;
+import org.springframework.social.facebook.group.GroupTemplate;
+import org.springframework.social.facebook.json.FacebookModule;
+import org.springframework.social.facebook.like.LikeOperations;
+import org.springframework.social.facebook.like.LikeTemplate;
+import org.springframework.social.facebook.media.MediaOperations;
+import org.springframework.social.facebook.media.MediaTemplate;
+import org.springframework.social.facebook.places.PlacesOperations;
+import org.springframework.social.facebook.places.PlacesTemplate;
+import org.springframework.social.facebook.user.UserOperations;
+import org.springframework.social.facebook.user.UserTemplate;
 import org.springframework.social.oauth2.ProtectedResourceClientFactory;
 import org.springframework.social.util.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
@@ -49,7 +67,7 @@ public class FacebookTemplate implements FacebookApi {
 
 	private UserOperations userOperations;
 	
-	private CheckinOperations checkinOperations;
+	private PlacesOperations placesOperations;
 
 	private FriendOperations friendOperations;
 	
@@ -84,7 +102,7 @@ public class FacebookTemplate implements FacebookApi {
 
 		// sub-apis
 		userOperations = new UserTemplate(this);
-		checkinOperations = new CheckinTemplate(this);
+		placesOperations = new PlacesTemplate(this);
 		friendOperations = new FriendTemplate(this, restTemplate);
 		feedOperations = new FeedTemplate(this);
 		commentOperations = new CommentTemplate(this);
@@ -110,8 +128,8 @@ public class FacebookTemplate implements FacebookApi {
 		return userOperations;
 	}
 	
-	public CheckinOperations checkinOperations() {
-		return checkinOperations;
+	public PlacesOperations placesOperations() {
+		return placesOperations;
 	}
 
 	public LikeOperations likeOperations() {
