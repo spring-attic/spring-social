@@ -26,7 +26,7 @@ package org.springframework.social.connect;
 public interface ServiceProviderConnection<S> {
 
 	/**
-	 * The key that identifies this ServiceProviderConnection.
+	 * The key identifying this ServiceProviderConnection.
 	 * A composite key that consists of the "providerId" plus "providerUserId"; for example, "facebook" and "125660". 
 	 */
 	ServiceProviderConnectionKey getKey();
@@ -40,7 +40,7 @@ public interface ServiceProviderConnection<S> {
 	/**
 	 * Test this connection.
 	 * If false, indicates calls to the {@link #getServiceApi() serviceApi} will fail.
-	 * Used to support proactively test authorization credentials such as an API access token before invoking the service API.
+	 * Used to proactively test authorization credentials such as an API access token before invoking the service API.
 	 */
 	boolean test();
 	
@@ -48,7 +48,7 @@ public interface ServiceProviderConnection<S> {
 	 * Returns true if this connection has expired.
 	 * An expired connection cannot be used; calls to {@link #test()} return false, and any service API invocations fail.
 	 * If expired, you may call {@link #refresh()} to renew the connection.
-	 * Not supported by all ServiceProviderConnection implementations; if not supported, will always return false.
+	 * Not supported by all ServiceProviderConnection implementations; always returns false if not supported.
 	 */
 	boolean hasExpired();
 

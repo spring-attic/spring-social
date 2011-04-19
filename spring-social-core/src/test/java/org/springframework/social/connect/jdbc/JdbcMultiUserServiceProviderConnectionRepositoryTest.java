@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -88,12 +89,19 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 	public void findLocalUserIdConnectedToNoSuchConnection() {
 		assertNull(usersConnectionRepository.findLocalUserIdConnectedTo(new ServiceProviderConnectionKey("facebook", "9")));
 	}
+
+	@Test
+	public void findLocalUserIdMultipleConnectionsToSameProviderUser() {
+		insertFacebookConnection();
+		insertFacebookConnectionSameFacebookUser();
+		assertNull(usersConnectionRepository.findLocalUserIdConnectedTo(new ServiceProviderConnectionKey("facebook", "9")));
+	}
 	
 	@Test
 	public void findLocalUserIdsConnectedTo() {
 		insertFacebookConnection();
 		insertFacebookConnection3();
-		Set<String> localUserIds = usersConnectionRepository.findLocalUserIdsConnectedTo("facebook", Arrays.asList("9", "11"));
+		Set<String> localUserIds = usersConnectionRepository.findLocalUserIdsConnectedTo("facebook", new HashSet<String>(Arrays.asList("9", "11")));
 		assertEquals(2, localUserIds.size());
 		assertTrue(localUserIds.contains("1"));
 		assertTrue(localUserIds.contains("2"));		
@@ -105,7 +113,7 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 		connectionFactoryRegistry.addConnectionFactory(new TestTwitterServiceProviderConnectionFactory());
 		insertTwitterConnection();
 		insertFacebookConnection();
-		MultiValueMap<String, ServiceProviderConnection<?>> connections = connectionRepository.findConnectionsToProviders();
+		MultiValueMap<String, ServiceProviderConnection<?>> connections = connectionRepository.findConnections();
 		assertEquals(2, connections.size());
 		ServiceProviderConnection<TestFacebookApi> facebook = (ServiceProviderConnection<TestFacebookApi>) connections.getFirst("facebook");
 		assertFacebookConnection(facebook);
@@ -116,7 +124,7 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 	@Test
 	public void findAllConnectionsEmptyResult() {
 		connectionFactoryRegistry.addConnectionFactory(new TestTwitterServiceProviderConnectionFactory());
-		MultiValueMap<String, ServiceProviderConnection<?>> connections = connectionRepository.findConnectionsToProviders();
+		MultiValueMap<String, ServiceProviderConnection<?>> connections = connectionRepository.findConnections();
 		assertEquals(2, connections.size());
 		assertEquals(0, connections.get("facebook").size());
 		assertEquals(0, connections.get("twitter").size());		
@@ -125,7 +133,7 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 	@Test(expected=IllegalArgumentException.class)
 	public void findAllConnectionsNoProviderRegistered() {
 		insertTwitterConnection();
-		connectionRepository.findConnectionsToProviders();	
+		connectionRepository.findConnections();	
 	}
 
 	@Test
@@ -315,7 +323,12 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 		dataAccessor.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				"2", "facebook", "11", 2, null, null, null, "456789012", null, "56789012", System.currentTimeMillis() + 3600000);
 	}
-	
+
+	private void insertFacebookConnectionSameFacebookUser() {
+		dataAccessor.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+				"2", "facebook", "9", 1, null, null, null, "234567890", null, "345678901", System.currentTimeMillis() + 3600000);
+	}
+
 	private void assertNewConnection(ServiceProviderConnection<TestFacebookApi> connection) {
 		assertEquals("facebook", connection.getKey().getProviderId());
 		assertEquals("9", connection.getKey().getProviderUserId());

@@ -82,6 +82,7 @@ public class ConnectController  {
 
 	/**
 	 * Configure the list of interceptors that should receive callbacks during the connection process.
+	 * Convenient when an instance of this class is configured using a tool that supports JavaBeans-based configuration.
 	 */
 	public void setInterceptors(List<ConnectInterceptor<?>> interceptors) {
 		for (ConnectInterceptor<?> interceptor : interceptors) {
@@ -91,6 +92,7 @@ public class ConnectController  {
 
 	/**
 	 * Adds a ConnectInterceptor to receive callbacks during the connection process.
+	 * Useful for programmatic configuration.
 	 */
 	public void addInterceptor(ConnectInterceptor<?> interceptor) {
 		Class<?> serviceApiType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(), ConnectInterceptor.class);
@@ -116,7 +118,7 @@ public class ConnectController  {
 	 * Fetches a new request token from the provider, temporarily stores it in the session, then redirects the member to the provider's site for authorization.
 	 */
 	@RequestMapping(value="{providerId}", method=RequestMethod.POST)
-	public String connect(@PathVariable String providerId, @RequestParam(required=false) String scope, WebRequest request) {
+	public String connect(@PathVariable String providerId, WebRequest request) {
 		ServiceProviderConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
 		preConnect(connectionFactory, request);
 		if (connectionFactory instanceof OAuth1ServiceProviderConnectionFactory) {
@@ -125,9 +127,10 @@ public class ConnectController  {
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
 			return "redirect:" + oauth1Ops.buildAuthorizeUrl(requestToken.getValue(), callbackUrl(providerId));
 		} else if (connectionFactory instanceof OAuth2ServiceProviderConnectionFactory) {
+			String scope = request.getParameter("scope");
 			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(callbackUrl(providerId), scope, null, GrantType.AuthorizationCode, null);
 		} else {
-			throw new IllegalStateException("Connections to provider '" + providerId + "' not supported");
+			return handleConnectToCustomConnectionFactory(connectionFactory, request);
 		}
 	}
 
@@ -180,6 +183,16 @@ public class ConnectController  {
 	public String removeConnections(@PathVariable String providerId, @PathVariable String providerUserId) {
 		connectionRepository.removeConnection(new ServiceProviderConnectionKey(providerId, providerUserId));
 		return redirectToProviderConnect(providerId);
+	}
+
+	// subclassing hooks
+	
+	/**
+	 * Hook method subclasses may override to create connections to providers of custom types other than OAuth1 or OAuth2.
+	 * Default implementation throws an {@link IllegalStateException} indicating the custom {@link ServiceProviderConnectionFactory} is not supported.
+	 */
+	protected String handleConnectToCustomConnectionFactory(ServiceProviderConnectionFactory<?> connectionFactory, WebRequest request) {
+		throw new IllegalStateException("Connections to provider '" + connectionFactory.getProviderId() + "' are not supported");		
 	}
 	
 	// internal helpers

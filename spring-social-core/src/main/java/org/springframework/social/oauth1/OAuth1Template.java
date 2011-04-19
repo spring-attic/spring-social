@@ -76,7 +76,7 @@ public class OAuth1Template implements OAuth1Operations {
 		this.signingUtils = new SigningSupport();
 	}
 
-	public final OAuthToken fetchRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters) {
+	public OAuthToken fetchRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters) {
 		Map<String, String> oauthParameters = new HashMap<String, String>(1, 1);
 		if (version == OAuth1Version.CORE_10_REVISION_A) {
 			oauthParameters.put("oauth_callback", callbackUrl);
@@ -84,15 +84,15 @@ public class OAuth1Template implements OAuth1Operations {
 		return exchangeForToken(requestTokenUrl, oauthParameters, additionalParameters, null);
 	}
 
-	public final String buildAuthorizeUrl(String requestToken, String callbackUrl) {
+	public String buildAuthorizeUrl(String requestToken, String callbackUrl) {
 		return buildOAuthUrl(authorizeUrl, requestToken, callbackUrl);
 	}
 	
-	public final String buildAuthenticateUrl(String requestToken, String callbackUrl) {
+	public String buildAuthenticateUrl(String requestToken, String callbackUrl) {
 		return authenticateUrl != null ? buildOAuthUrl(authenticateUrl, requestToken, callbackUrl) : buildAuthorizeUrl(requestToken, callbackUrl);
 	}
 
-	public final OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters) {
+	public OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters) {
 		Map<String, String> tokenParameters = new HashMap<String, String>(2, 1);
 		tokenParameters.put("oauth_token", requestToken.getValue());
 		if (version == OAuth1Version.CORE_10_REVISION_A) {

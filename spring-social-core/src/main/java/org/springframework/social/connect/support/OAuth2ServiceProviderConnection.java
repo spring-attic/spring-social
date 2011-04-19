@@ -29,6 +29,14 @@ import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
 
+/**
+ * An OAuth2-based ServiceProviderConnection implementation.
+ * In general, this implementation is expected to be suitable for all OAuth2-based providers and should not require subclassing.
+ * Subclasses of {@link OAuth2ServiceProviderConnectionFactory} should be favored to encapsulate details specific to an OAuth2-based provider.
+ * @author Keith Donald
+ * @param <S> the service API type
+ * @see OAuth2ServiceProviderConnectionFactory
+ */
 public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnection<S> {
 
 	private final ServiceProviderConnectionKey key;
@@ -51,6 +59,18 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 
 	private final Object monitor = new Object();
 
+	/**
+	 * Creates a new {@link OAuth2ServiceProviderConnection} from the data provided.
+	 * Designed to be called to create a {@link OAuth2ServiceProviderConnection} after receiving an access grant successfully.
+	 * The providerUserId may be null in this case: if so, this constructor will try to resolve it using the service API obtained from the {@link OAuth2ServiceProvider}.
+	 * @param providerId the provider id e.g. "facebook".
+	 * @param providerUserId the provider user id (may be null if not returned as part of the access grant)
+	 * @param accessToken the granted access token
+	 * @param refreshToken the granted refresh token
+	 * @param expireTime the access token expiration time
+	 * @param serviceProvider the service provider model
+	 * @param serviceApiAdapter the service api adapter for the service provider
+	 */
 	public OAuth2ServiceProviderConnection(String providerId, String providerUserId, String accessToken, String refreshToken, Long expireTime,
 			OAuth2ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
 		this.serviceProvider = serviceProvider;
@@ -61,6 +81,17 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 		this.key = createKey(providerId, providerUserId);
 	}
 	
+	/**
+	 * Creates a new {@link OAuth2ServiceProviderConnection} from the data provided.
+	 * Designed to be called when re-constituting an existing {@link ServiceProviderConnection}, for example, from {@link ServiceProviderConnectionData}.
+	 * @param key the connection key
+	 * @param user the service provider user model
+	 * @param accessToken the access token
+	 * @param refreshToken the refresh token
+	 * @param expireTime the expire time
+	 * @param serviceProvider the service provider model
+	 * @param serviceApiAdapter the service api adapter for the service provider
+	 */
 	public OAuth2ServiceProviderConnection(ServiceProviderConnectionKey key, ServiceProviderUser user, String accessToken, String refreshToken, Long expireTime,
 			OAuth2ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
 		this.key = key;
