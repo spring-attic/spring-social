@@ -61,7 +61,7 @@ public class OAuth2Template implements OAuth2Operations {
 		this.restTemplate = createRestTemplate();
 	}
 
-	public final String buildAuthorizeUrl(String redirectUri, String scope, String state) {
+	public String buildAuthorizeUrl(String redirectUri, String scope, String state) {
 		return buildOAuthUrl(authorizeUrl, redirectUri, scope, state);
 	}
 	
@@ -69,7 +69,7 @@ public class OAuth2Template implements OAuth2Operations {
 		return authenticateUrl != null ? buildOAuthUrl(authenticateUrl, redirectUri, null, state) : buildAuthorizeUrl(redirectUri, null, state);
 	}
 
-	public final AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters) {
+	public AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters) {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 		params.set("client_id", clientId);
 		params.set("client_secret", clientSecret);
@@ -82,7 +82,7 @@ public class OAuth2Template implements OAuth2Operations {
 		return postForAccessGrant(accessTokenUrl, params);
 	}
 
-	public final AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
+	public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 		params.set("client_id", clientId);
 		params.set("client_secret", clientSecret);
