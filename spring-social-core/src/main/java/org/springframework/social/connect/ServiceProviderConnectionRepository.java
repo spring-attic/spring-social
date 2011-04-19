@@ -19,6 +19,10 @@ import java.util.List;
 
 import org.springframework.util.MultiValueMap;
 
+/**
+ * Data access interface for saving and restoring ServiceProviderConnection objects from a persistent store.
+ * @author Keith Donald
+ */
 public interface ServiceProviderConnectionRepository {
 
 	MultiValueMap<String, ServiceProviderConnection<?>> findConnectionsToProviders();

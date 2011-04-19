@@ -15,6 +15,13 @@
  */
 package org.springframework.social.connect;
 
+/**
+ * A data transfer object that allows the internal state of a ServiceProviderConnection to be persisted and transferred between layers of an application.
+ * Some fields may be null depending on the specific type of ServiceProviderConnection.
+ * For example, an OAuth2ServiceProviderConnection has a null 'secret' field while an OAuth1ServiceProviderConnection has null 'refreshToken' and 'expireTime' fields.
+ * @author Keith Donald
+ * @see ServiceProviderConnection#createData()
+ */
 public class ServiceProviderConnectionData {
 	
 	private String providerId;

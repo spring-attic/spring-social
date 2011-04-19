@@ -15,6 +15,11 @@
  */
 package org.springframework.social.connect;
 
+/**
+ * A common abstraction modeling a service provider user profile.
+ * With this information, a client application can render a descriptive link to the user's profile on the provider's system.
+ * @author Keith Donald
+ */
 public class ServiceProviderUser {
 
 	private final String id;
@@ -33,7 +38,8 @@ public class ServiceProviderUser {
 	}
 
 	/**
-	 * The id of the user.
+	 * The system-assigned id of the user.
+	 * This value should generally never change.
 	 */
 	public String getId() {
 		return id;
