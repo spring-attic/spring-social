@@ -60,7 +60,7 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 		this.textEncryptor = textEncryptor;
 	}
 	
-	public MultiValueMap<String, ServiceProviderConnection<?>> findConnectionsToProviders() {
+	public MultiValueMap<String, ServiceProviderConnection<?>> findConnections() {
 		List<ServiceProviderConnection<?>> resultList = jdbcTemplate.query(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? order by providerId, rank", connectionMapper, localUserId);
 		MultiValueMap<String, ServiceProviderConnection<?>> connections = new LinkedMultiValueMap<String, ServiceProviderConnection<?>>();
 		Set<String> registeredProviderIds = connectionFactoryLocator.registeredProviderIds();

@@ -17,12 +17,33 @@ package org.springframework.social.connect;
 
 import java.util.Set;
 
+/**
+ * A ServiceLocator for {@link ServiceProviderConnectionFactory} instances.
+ * Supports lookup by providerId and by serviceApiType.
+ * @author Keith Donald
+ * @see ServiceProviderConnectionFactory
+ */
 public interface ServiceProviderConnectionFactoryLocator {
 
+	/**
+	 * Lookup a ServiceProviderConnectionFactory by providerId; for example, "facebook".
+	 * The returned factory can be used to create connections to the provider.
+	 * Used to support connection creation in a dynamic manner across the set of registered providers.
+	 */
 	ServiceProviderConnectionFactory<?> getConnectionFactory(String providerId);
 
+	/**
+	 * Lookup a ServiceProviderConnectionFactory by serviceApiType; for example, FacebookApi.class.
+	 * The returned factory can be used to create connections to the provider.
+	 * Primarily used in support of connection restoration requested by application code.
+	 * @see ServiceProviderConnectionRepository#findConnectionByServiceApi(Class)
+	 */
 	<S> ServiceProviderConnectionFactory<S> getConnectionFactory(Class<S> serviceApiType);
 
+	/**
+	 * Returns the set of providerIds for which a {@link ServiceProviderConnectionFactory} is registered; for example, <code>{ "twitter", "facebook", "foursquare" }</code>
+	 * Elements in this set can be passed to {@link #getConnectionFactory(String)} to fetch a specific factory instance.
+	 */
 	Set<String> registeredProviderIds();
 	
 }

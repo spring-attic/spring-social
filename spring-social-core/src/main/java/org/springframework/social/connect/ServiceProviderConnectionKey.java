@@ -15,12 +15,23 @@
  */
 package org.springframework.social.connect;
 
+/**
+ * The unique business key for a ServiceProviderConnection instance.
+ * A composite key that consists of the providerId (e.g. "facebook") plus providerUserId (e.g. "125660").
+ * Provides the basis for connection equals() and hashCode().
+ * @author Keith Donald
+ */
 public final class ServiceProviderConnectionKey {
 	
 	private final String providerId;
 	
 	private final String providerUserId;
 
+	/**
+	 * Creates a new ServiceProviderConnectionKey.
+	 * @param providerId
+	 * @param providerUserId
+	 */
 	public ServiceProviderConnectionKey(String providerId, String providerUserId) {
 		this.providerId = providerId;
 		this.providerUserId = providerUserId;
@@ -45,6 +56,8 @@ public final class ServiceProviderConnectionKey {
 	public String getProviderUserId() {
 		return providerUserId;
 	}
+	
+	// object identity
 	
 	public boolean equals(Object o) {
 		if (!(o instanceof ServiceProviderConnectionKey)) {

@@ -15,6 +15,8 @@
  */
 package org.springframework.social.connect;
 
+import java.io.Serializable;
+
 /**
  * A data transfer object that allows the internal state of a ServiceProviderConnection to be persisted and transferred between layers of an application.
  * Some fields may be null depending on the specific type of ServiceProviderConnection.
@@ -22,7 +24,8 @@ package org.springframework.social.connect;
  * @author Keith Donald
  * @see ServiceProviderConnection#createData()
  */
-public class ServiceProviderConnectionData {
+@SuppressWarnings("serial")
+public class ServiceProviderConnectionData implements Serializable {
 	
 	private String providerId;
 	
@@ -54,38 +57,68 @@ public class ServiceProviderConnectionData {
 		this.expireTime = expireTime;
 	}
 
+	/**
+	 * The id of the provider the connection is associated with.
+	 */
 	public String getProviderId() {
 		return providerId;
 	}
 
+	/**
+	 * The id of the provider user this connection is connected to.
+	 */
 	public String getProviderUserId() {
 		return providerUserId;
 	}
 
+	/**
+	 * A display name for the provider user's profile.
+	 */
 	public String getProfileName() {
 		return profileName;
 	}
 
+	/**
+	 * A link to the provider's user profile page.
+	 */
 	public String getProfileUrl() {
 		return profileUrl;
 	}
 
+	/**
+	 * A link to the provider user's profile picture.
+	 */
 	public String getProfilePictureUrl() {
 		return profilePictureUrl;
 	}
 
+	/**
+	 * The access token required to make authorized API calls.
+	 */
 	public String getAccessToken() {
 		return accessToken;
 	}
 
+	/**
+	 * The secret token needed to make authorized API calls.
+	 * Required for OAuth1-based connections.
+	 */
 	public String getSecret() {
 		return secret;
 	}
 
+	/**
+	 * A token use to renew this connection. Optional.
+	 * Always null for OAuth1-based connections.
+	 */
 	public String getRefreshToken() {
 		return refreshToken;
 	}
 
+	/**
+	 * The time the connection expires. Optional.
+	 * Always null for OAuth1-based connections.
+	 */
 	public Long getExpireTime() {
 		return expireTime;
 	}

@@ -30,6 +30,13 @@ public class ServiceProviderUser {
 	
 	private final String profilePictureUrl;
 
+	/**
+	 * Creates a new ServiceProviderUser model.
+	 * @param id the id of the user
+	 * @param profileName the display name for the user's profile
+	 * @param profileUrl a link to the user's profile
+	 * @param profilePictureUrl a link to the user's profile picture
+	 */
 	public ServiceProviderUser(String id, String profileName, String profileUrl, String profilePictureUrl) {
 		this.id = id;
 		this.profileName = profileName;
@@ -39,7 +46,7 @@ public class ServiceProviderUser {
 
 	/**
 	 * The system-assigned id of the user.
-	 * This value should generally never change.
+	 * This value should ideally never change.
 	 */
 	public String getId() {
 		return id;

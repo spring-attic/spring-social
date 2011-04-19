@@ -15,15 +15,38 @@
  */
 package org.springframework.social.connect;
 
-import java.util.List;
 import java.util.Set;
 
+/**
+ * A data access interface for managing a global store of LocalUser-to-ServiceProviderUser Connections.
+ * Provides data access operations that apply across multiple local user records.
+ * Also acts as a factory for a local-user-specific {@link ServiceProviderConnectionRepository}.
+ * @author Keith Donald
+ * @see ServiceProviderConnectionRepository
+ */
 public interface MultiUserServiceProviderConnectionRepository {
 
+	/**
+	 * Find the id of the <i>single</i> local user who has a {@link ServiceProviderConnection} with the given key.
+	 * Used to support the ProviderSignIn scenario where the user id returned is used to sign the local application user in using his or her provider account.
+	 * Returns null if there is not exactly one local user connected to the provider user.
+	 * @param connectionKey the key identifying a provider user
+	 */
 	String findLocalUserIdConnectedTo(ServiceProviderConnectionKey connectionKey);
 
-	Set<String> findLocalUserIdsConnectedTo(String providerId, List<String> providerUserIds);
+	/**
+	 * Find the ids of the local users who are connected to the specific provider user accounts.
+	 * @param providerId the provider id, e.g. "facebook"
+	 * @param providerUserIds the set of provider user ids e.g. ("125600", "131345", "54321").
+	 * @return the set of local user ids connected to those service provider users, or empty if none.
+	 */
+	Set<String> findLocalUserIdsConnectedTo(String providerId, Set<String> providerUserIds);
 	
+	/**
+	 * Create a single-user {@link ServiceProviderConnectionRepository} instance for the local user assigned the given id.
+	 * @param localUserId the id of the local user account.
+	 * @return the ServiceProviderConnectionRepository, exposing a number of operations for accessing and updating the given local user's provider connections.
+	 */
 	ServiceProviderConnectionRepository createConnectionRepository(String localUserId);
 	
 }

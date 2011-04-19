@@ -15,6 +15,12 @@
  */
 package org.springframework.social.connect;
 
+/**
+ * Thrown by a {@link ServiceProviderConnectionRepository} when attempting to fetch a ServiceProviderConnection 
+ * and no such connection exists with the provided key.
+ * @author Keith Donald
+ * @see ServiceProviderConnectionRepository#findConnection(ServiceProviderConnectionKey)
+ */
 @SuppressWarnings("serial")
 public final class NoSuchServiceProviderConnectionException extends RuntimeException {
 	
@@ -24,6 +30,9 @@ public final class NoSuchServiceProviderConnectionException extends RuntimeExcep
 		this.connectionKey = connectionKey;
 	}
 
+	/**
+	 * The invalid key value.
+	 */
 	public ServiceProviderConnectionKey getConnectionKey() {
 		return connectionKey;
 	}
