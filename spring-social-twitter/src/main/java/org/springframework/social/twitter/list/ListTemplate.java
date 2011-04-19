@@ -24,7 +24,6 @@ import org.springframework.social.twitter.Tweet;
 import org.springframework.social.twitter.TwitterProfile;
 import org.springframework.social.twitter.json.TweetList;
 import org.springframework.social.twitter.user.TwitterProfileUsersList;
-import org.springframework.social.twitter.user.UserOperations;
 import org.springframework.social.twitter.util.ArrayUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -36,18 +35,15 @@ import org.springframework.web.client.RestTemplate;
  * @author Craig Walls
  */
 public class ListTemplate extends AbstractTwitterOperations implements ListOperations {
-
-	private final UserOperations userApi;
 	
 	private final RestTemplate restTemplate;
+
+	private final Long userProfileId;
 					
-	public ListTemplate(RestTemplate restTemplate, UserOperations userApi, boolean isAuthorizedForUser) {
-		// TODO : Get user ID sooner and stash it for later use so that we don't
-		//        fetch it for every operation that needs it. This is an easy thing to do,
-		//        but makes the testing a bit tricky.
-		super(isAuthorizedForUser);
+	public ListTemplate(RestTemplate restTemplate, Long userProfileId) {
+		super(userProfileId != null);
 		this.restTemplate = restTemplate;
-		this.userApi = userApi;
+		this.userProfileId = userProfileId;
 	}
 
 	public List<UserList> getLists(long userId) {
@@ -81,18 +77,18 @@ public class ListTemplate extends AbstractTwitterOperations implements ListOpera
 	public UserList createList(String name, String description, boolean isPublic) {	
 		requireUserAuthorization();
 		MultiValueMap<String, Object> request = buildListDataMap(name, description, isPublic);
-		return restTemplate.postForObject(buildUri(userApi.getProfileId() + "/lists.json"), request, UserList.class);
+		return restTemplate.postForObject(buildUri(userProfileId + "/lists.json"), request, UserList.class);
 	}
 
 	public UserList updateList(long listId, String name, String description, boolean isPublic) {
 		requireUserAuthorization();
 		MultiValueMap<String, Object> request = buildListDataMap(name, description, isPublic);
-		return restTemplate.postForObject(buildUri(userApi.getProfileId() + "/lists/" + listId + ".json"), request, UserList.class);
+		return restTemplate.postForObject(buildUri(userProfileId + "/lists/" + listId + ".json"), request, UserList.class);
 	}
 
 	public void deleteList(long listId) {
 		requireUserAuthorization();
-		restTemplate.delete(buildUri(userApi.getProfileId() + "/lists/" + listId + ".json"));
+		restTemplate.delete(buildUri(userProfileId + "/lists/" + listId + ".json"));
 	}
 
 	public List<TwitterProfile> getListMembers(long userId, long listId) {
@@ -109,24 +105,24 @@ public class ListTemplate extends AbstractTwitterOperations implements ListOpera
 		requireUserAuthorization();
 		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
 		request.set("user_id", ArrayUtils.join(newMemberIds));
-		return restTemplate.postForObject(buildUri(userApi.getProfileId() + "/" + listId + "/members/create_all.json"), request, UserList.class);
+		return restTemplate.postForObject(buildUri(userProfileId + "/" + listId + "/members/create_all.json"), request, UserList.class);
 	}
 
 	public UserList addToList(String listSlug, String... newMemberScreenNames) {
 		requireUserAuthorization();
 		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
 		request.set("screen_name", ArrayUtils.join(newMemberScreenNames));		
-		return restTemplate.postForObject(buildUri(userApi.getProfileId() + "/" + listSlug + "/members/create_all.json"), request, UserList.class);
+		return restTemplate.postForObject(buildUri(userProfileId + "/" + listSlug + "/members/create_all.json"), request, UserList.class);
 	}
 
 	public void removeFromList(long listId, long memberId) {
 		requireUserAuthorization();
-		restTemplate.delete(buildUri(userApi.getProfileId() + "/" + listId + "/members.json", Collections.singletonMap("id", String.valueOf(memberId))));
+		restTemplate.delete(buildUri(userProfileId + "/" + listId + "/members.json", Collections.singletonMap("id", String.valueOf(memberId))));
 	}
 
 	public void removeFromList(String listSlug, String memberScreenName) {
 		requireUserAuthorization();
-		restTemplate.delete(buildUri(userApi.getProfileId() + "/" + listSlug + "/members.json", Collections.singletonMap("id", String.valueOf(memberScreenName))));
+		restTemplate.delete(buildUri(userProfileId + "/" + listSlug + "/members.json", Collections.singletonMap("id", String.valueOf(memberScreenName))));
 	}
 
 	public List<TwitterProfile> getListSubscribers(long userId, long listId) {

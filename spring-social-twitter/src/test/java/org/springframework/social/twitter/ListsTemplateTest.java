@@ -22,10 +22,10 @@ import static org.springframework.social.test.client.ResponseCreators.*;
 
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.social.twitter.TwitterProfile;
 import org.springframework.social.twitter.list.UserList;
 
 /**
@@ -33,6 +33,7 @@ import org.springframework.social.twitter.list.UserList;
  */
 public class ListsTemplateTest extends AbstractTwitterApiTest {
 	
+	@Before
 	public void primeProfileId() {
 		mockServer.expect(requestTo("https://api.twitter.com/1/account/verify_credentials.json"))
 			.andExpect(method(GET))
@@ -73,7 +74,7 @@ public class ListsTemplateTest extends AbstractTwitterApiTest {
 	
 	@Test
 	public void createList_publicListForUserId() {
-		primeProfileId();
+		
 		mockServer.expect(requestTo("https://api.twitter.com/1/161064614/lists.json"))
 			.andExpect(method(POST))
 			.andExpect(body("name=forfun&description=Just+for+Fun&mode=public"))
@@ -83,7 +84,7 @@ public class ListsTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void createList_privateListForUserId() {
-		primeProfileId();
+		
 		mockServer.expect(requestTo("https://api.twitter.com/1/161064614/lists.json"))
 			.andExpect(method(POST))
 			.andExpect(body("name=forfun2&description=Just+for+Fun%2C+too&mode=private"))
@@ -93,7 +94,7 @@ public class ListsTemplateTest extends AbstractTwitterApiTest {
 	
 	@Test
 	public void updateList_publicListForUserId() {
-		primeProfileId();
+		
 		mockServer.expect(requestTo("https://api.twitter.com/1/161064614/lists/40841803.json"))
 			.andExpect(method(POST))
 			.andExpect(body("name=forfun&description=Just+for+Fun&mode=public"))
@@ -103,7 +104,7 @@ public class ListsTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void updateList_privateListForUserId() {
-		primeProfileId();
+		
 		mockServer.expect(requestTo("https://api.twitter.com/1/161064614/lists/40841803.json"))
 			.andExpect(method(POST))
 			.andExpect(body("name=forfun2&description=Just+for+Fun%2C+too&mode=private"))
@@ -113,7 +114,7 @@ public class ListsTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void deleteList_forUserIdByListId() {
-		primeProfileId();
+		
 		mockServer.expect(requestTo("https://api.twitter.com/1/161064614/lists/40841803.json"))
 			.andExpect(method(DELETE))
 			.andRespond(withResponse("{}", responseHeaders));
@@ -139,7 +140,7 @@ public class ListsTemplateTest extends AbstractTwitterApiTest {
 	
 	@Test
 	public void addToList_forUserIdListIdSingle() {
-		primeProfileId();
+		
 		mockServer.expect(requestTo("https://api.twitter.com/1/161064614/40841803/members/create_all.json"))
 			.andExpect(method(POST))
 			.andExpect(body("user_id=123456"))
@@ -150,7 +151,7 @@ public class ListsTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void addToList_forUserIdListIdMultiple() {
-		primeProfileId();
+		
 		mockServer.expect(requestTo("https://api.twitter.com/1/161064614/40841803/members/create_all.json"))
 			.andExpect(method(POST))
 			.andExpect(body("user_id=123456%2C234567%2C345678"))
@@ -161,7 +162,7 @@ public class ListsTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void removeFromList_ownerIdListIdMemberId() {
-		primeProfileId();
+		
 		mockServer.expect(requestTo("https://api.twitter.com/1/161064614/40841803/members.json?id=12345"))
 			.andExpect(method(DELETE))
 			.andRespond(withResponse("{}", responseHeaders));
