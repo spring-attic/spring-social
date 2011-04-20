@@ -15,6 +15,7 @@
  */
 package org.springframework.social.connect.signin.web;
 
+import org.springframework.social.connect.ServiceProviderUserProfile;
 import org.springframework.web.context.request.WebRequest;
 
 /**
@@ -24,17 +25,39 @@ import org.springframework.web.context.request.WebRequest;
 public class ProviderSignInUtils {
 	
 	/**
-	 * Connect the new user account to the provider account the user attempted to sign-in with.
+	 * Get the profile of the provider user the client attempted to sign-in with.
+	 * This profile data can be used to pre-populate a local application registration/signup form.
+	 * Returns null if no provider sign-in was attempted.
+	 * @param request the current web request, used to extract sign-in attempt information from the current user session
+	 */
+	public static ServiceProviderUserProfile getUserProfile(WebRequest request) {
+		ProviderSignInAttempt signInAttempt = getProviderSignInAttempt(request);
+		return signInAttempt != null ? signInAttempt.getUserProfile() : null;
+	}
+
+	/**
+	 * Connect the new user to the provider user the client attempted to sign-in with.
 	 * Should be called after signing-up a new user in the context of a provider sign-in attempt.
 	 * In this context, the user did not yet have a local account but attempted to sign-in using one of his or her existing provider accounts.
+	 * Ensures provider sign-in attempt session context is cleaned up.
+	 * Does nothing if no provider sign-in was attempted for the current user session (is safe to call in that case).
 	 * @param request the current web request, used to extract sign-in attempt information from the current user session
 	 */
 	public static void handleConnectPostSignUp(WebRequest request) {
-		ProviderSignInAttempt signInAttempt = (ProviderSignInAttempt) request.getAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+		ProviderSignInAttempt signInAttempt = getProviderSignInAttempt(request);
 		if (signInAttempt != null) {
 			signInAttempt.addConnection();
 			request.removeAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		}		
+	}
+
+	// internal helpers
+	
+	private ProviderSignInUtils() {	
+	}
+	
+	private static ProviderSignInAttempt getProviderSignInAttempt(WebRequest request) {
+		return (ProviderSignInAttempt) request.getAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 	}
 	
 }
