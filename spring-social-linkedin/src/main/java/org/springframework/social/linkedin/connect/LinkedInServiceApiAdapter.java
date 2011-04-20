@@ -15,8 +15,9 @@
  */
 package org.springframework.social.linkedin.connect;
 
-import org.springframework.social.connect.spi.ServiceApiAdapter;
-import org.springframework.social.connect.spi.ServiceProviderUser;
+import org.springframework.social.connect.ServiceApiAdapter;
+import org.springframework.social.connect.ServiceProviderConnectionValues;
+import org.springframework.social.connect.ServiceProviderUserProfile;
 import org.springframework.social.linkedin.LinkedInApi;
 import org.springframework.social.linkedin.LinkedInProfile;
 import org.springframework.web.client.HttpClientErrorException;
@@ -33,12 +34,16 @@ public class LinkedInServiceApiAdapter implements ServiceApiAdapter<LinkedInApi>
 		}
 	}
 
-	public ServiceProviderUser getUser(LinkedInApi serviceApi) {
+	public ServiceProviderConnectionValues getConnectionValues(LinkedInApi serviceApi) {
 		LinkedInProfile profile = serviceApi.getUserProfile();
-		String profileName = profile.getFirstName() + " " + profile.getLastName();
-		return new ServiceProviderUser(profile.getId(), profileName, profile.getPublicProfileUrl(), profile.getProfilePictureUrl());
+		String displayName = profile.getFirstName() + " " + profile.getLastName();
+		return new ServiceProviderConnectionValues(profile.getId(), displayName, profile.getPublicProfileUrl(), profile.getProfilePictureUrl());
 	}
 
+	public ServiceProviderUserProfile fetchUserProfile(LinkedInApi serviceApi) {
+		return new ServiceProviderUserProfile(null, null, null, null, null);
+	}
+	
 	public void updateStatus(LinkedInApi serviceApi, String message) {
 		// not supported yet
 	}

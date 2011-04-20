@@ -15,8 +15,9 @@
  */
 package org.springframework.social.gowalla.connect;
 
-import org.springframework.social.connect.spi.ServiceApiAdapter;
-import org.springframework.social.connect.spi.ServiceProviderUser;
+import org.springframework.social.connect.ServiceApiAdapter;
+import org.springframework.social.connect.ServiceProviderConnectionValues;
+import org.springframework.social.connect.ServiceProviderUserProfile;
 import org.springframework.social.gowalla.GowallaApi;
 import org.springframework.social.gowalla.GowallaProfile;
 import org.springframework.web.client.HttpClientErrorException;
@@ -33,13 +34,17 @@ public class GowallaServiceApiAdapter implements ServiceApiAdapter<GowallaApi> {
 		}
 	}
 
-	public ServiceProviderUser getUser(GowallaApi serviceApi) {
+	public ServiceProviderConnectionValues getConnectionValues(GowallaApi serviceApi) {
 		GowallaProfile userProfile = serviceApi.getUserProfile();
-		String profileName = userProfile.getFirstName() + " " + userProfile.getLastName();
+		String displayName = userProfile.getFirstName() + " " + userProfile.getLastName();
 		String profileUrl = serviceApi.getProfileUrl();
-		return new ServiceProviderUser(userProfile.getId(), profileName, profileUrl, userProfile.getProfileImageUrl());
+		return new ServiceProviderConnectionValues(userProfile.getId(), displayName, profileUrl, userProfile.getProfileImageUrl());
 	}
 
+	public ServiceProviderUserProfile fetchUserProfile(GowallaApi serviceApi) {
+		return new ServiceProviderUserProfile(null, null, null, null, null);
+	}
+	
 	public void updateStatus(GowallaApi serviceApi, String message) {
 		// not supported
 	}

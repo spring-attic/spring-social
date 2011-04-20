@@ -15,8 +15,9 @@
  */
 package org.springframework.social.tripit.connect;
 
-import org.springframework.social.connect.spi.ServiceApiAdapter;
-import org.springframework.social.connect.spi.ServiceProviderUser;
+import org.springframework.social.connect.ServiceApiAdapter;
+import org.springframework.social.connect.ServiceProviderConnectionValues;
+import org.springframework.social.connect.ServiceProviderUserProfile;
 import org.springframework.social.tripit.TripItApi;
 import org.springframework.social.tripit.TripItProfile;
 import org.springframework.web.client.HttpClientErrorException;
@@ -33,12 +34,16 @@ public class TripItServiceApiAdapter implements ServiceApiAdapter<TripItApi> {
 		}
 	}
 
-	public ServiceProviderUser getUser(TripItApi serviceApi) {
+	public ServiceProviderConnectionValues getConnectionValues(TripItApi serviceApi) {
 		TripItProfile userProfile = serviceApi.getUserProfile();
 		String profileUrl = serviceApi.getProfileUrl();
-		return new ServiceProviderUser(userProfile.getId(), userProfile.getScreenName(), profileUrl, userProfile.getProfileImageUrl());
+		return new ServiceProviderConnectionValues(userProfile.getId(), userProfile.getScreenName(), profileUrl, userProfile.getProfileImageUrl());
 	}
 
+	public ServiceProviderUserProfile fetchUserProfile(TripItApi serviceApi) {
+		return new ServiceProviderUserProfile(null, null, null, null, null);
+	}
+	
 	public void updateStatus(TripItApi serviceApi, String message) {
 		// not supported
 	}
