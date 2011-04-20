@@ -54,5 +54,10 @@ public interface TwitterApi {
 	 * Returns the portion of the Twitter API containing the direct message operations.
 	 */
 	DirectMessageOperations directMessageOperations();
+	
+	/**
+	 * Returns the portion of the Twitter API containing the user list operations.
+	 */
+	ListOperations listOperations();
 
 }
