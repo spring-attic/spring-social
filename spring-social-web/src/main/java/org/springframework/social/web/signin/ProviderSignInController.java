@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
 @Controller
-@RequestMapping("/signin/")
+@RequestMapping("/signin")
 public class ProviderSignInController {
 
 	private final ServiceProviderConnectionFactoryLocator connectionFactoryLocator;
@@ -64,7 +64,7 @@ public class ProviderSignInController {
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 	}
 	
-	@RequestMapping(value="{providerId}", method=RequestMethod.POST)
+	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
 	public String signin(@PathVariable String providerId, WebRequest request) {
 		ServiceProviderConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
 		if (connectionFactory instanceof OAuth1ServiceProviderConnectionFactory) {
@@ -79,7 +79,7 @@ public class ProviderSignInController {
 		}
 	}
 	
-	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="oauth_token")
+	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="oauth_token")
 	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier", required=false) String verifier, WebRequest request) {
 		OAuth1ServiceProviderConnectionFactory<?> connectionFactory = (OAuth1ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		OAuthToken accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier), null);
@@ -87,7 +87,7 @@ public class ProviderSignInController {
 		return handleSignIn(connection, request);
 	}
 	
-	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="code")
+	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
 		OAuth2ServiceProviderConnectionFactory<?> connectionFactory = (OAuth2ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId), null);
@@ -98,7 +98,7 @@ public class ProviderSignInController {
 	// internal helpers
 	
 	private String callbackUrl(String providerId) {
-		return baseCallbackUrl + providerId;
+		return baseCallbackUrl + "/" + providerId;
 	}
 	
 	private OAuthToken extractCachedRequestToken(WebRequest request) {

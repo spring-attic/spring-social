@@ -21,13 +21,14 @@ import javax.inject.Provider;
 
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
+import org.springframework.social.connect.ServiceProviderUser;
 
 /**
- * Models an attempt to sign-in to the application using a provider account.
- * Instances are created when the sign-in process could not be completed because no local account is associated with the provider account.
- * This could happen because the user has not yet signed up with the application, or has not yet connected their application account with the their provider account.
+ * Models an attempt to sign-in to the application using a provider user identity.
+ * Instances are created when the provider sign-in process could not be completed because no local user is associated with the provider user.
+ * This could happen because the user has not yet signed up with the application, or has not yet connected their local application identity with the their provider identity.
  * For the former scenario, callers should invoke {@link #addConnection()} post-signup to establish a connection between a new user account and the provider account.
- * For the latter, existing users should sign-in using their local application credentials and formally connect to the provider they also wish to authenticate with. 
+ * For the latter, existing users should sign-in using their local application credentials and formally connect to the provider they also wish to authenticate with.
  * @author Keith Donald
  */
 @SuppressWarnings("serial")
@@ -37,7 +38,9 @@ public class ProviderSignInAttempt implements Serializable {
 	 * Name of the session attribute ProviderSignInAttempt instances are indexed under.
 	 */
 	static final String SESSION_ATTRIBUTE = ProviderSignInAttempt.class.getName();
-	
+
+	// TODO: ServiceProviderConnections are not inherently Serializable: this may present a problem in a clustered web environment.
+	// Consider storing a ServiceProviderConnectionData here along with a Provider<ServiceProviderConnectionFactory>.
 	private final ServiceProviderConnection<?> connection;
 	
 	private final Provider<ServiceProviderConnectionRepository> connectionRepositoryProvider;
@@ -47,6 +50,14 @@ public class ProviderSignInAttempt implements Serializable {
 		this.connectionRepositoryProvider = connectionRepositoryProvider;		
 	}
 
+	/**
+	 * Returns a model of the provider user the client attempted to sign-in as.
+	 * This model can be used to pre-populate the application sign-up form with data from the provider user's profile.
+	 */
+	public ServiceProviderUser getUser() {
+		return connection.getUser();
+	}
+	
 	/**
 	 * Connect the new local user to the provider.
 	 */

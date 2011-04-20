@@ -16,8 +16,7 @@
 package org.springframework.social.twitter.connect;
 
 import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
-import org.springframework.social.twitter.TwitterApi;
-import org.springframework.social.twitter.TwitterServiceProvider;
+import org.springframework.social.twitter.api.TwitterApi;
 
 public class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
 

@@ -57,7 +57,7 @@ import org.springframework.web.context.request.WebRequest;
  * @author Roy Clarkson
  */
 @Controller
-@RequestMapping("/connect/")
+@RequestMapping("/connect")
 public class ConnectController  {
 	
 	private String baseCallbackUrl;
@@ -102,7 +102,7 @@ public class ConnectController  {
 	/**
 	 * Render the connect form for the service provider identified by {name} to the member as HTML in their web browser.
 	 */
-	@RequestMapping(value="{providerId}", method=RequestMethod.GET)
+	@RequestMapping(value="/{providerId}", method=RequestMethod.GET)
 	public String connect(@PathVariable String providerId, Model model) {
 		List<ServiceProviderConnection<?>> connections = connectionRepository.findConnectionsToProvider(providerId);
 		if (connections.isEmpty()) {
@@ -117,7 +117,7 @@ public class ConnectController  {
 	 * Process a connect form submission by commencing the process of establishing a connection to the provider on behalf of the member.
 	 * Fetches a new request token from the provider, temporarily stores it in the session, then redirects the member to the provider's site for authorization.
 	 */
-	@RequestMapping(value="{providerId}", method=RequestMethod.POST)
+	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
 	public String connect(@PathVariable String providerId, WebRequest request) {
 		ServiceProviderConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
 		preConnect(connectionFactory, request);
@@ -140,7 +140,7 @@ public class ConnectController  {
 	 * On authorization verification, connects the member's local account to the account they hold at the service provider
 	 * Removes the request token from the session since it is no longer valid after the connection is established.
 	 */
-	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="oauth_token")
+	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="oauth_token")
 	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier", required=false) String verifier, WebRequest request) {
 		OAuth1ServiceProviderConnectionFactory<?> connectionFactory = (OAuth1ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		OAuthToken accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier), null);
@@ -155,7 +155,7 @@ public class ConnectController  {
 	 * Called after the member authorizes the connection, generally done by having he or she click "Allow" in their web browser at the provider's site.
 	 * On authorization verification, connects the member's local account to the account they hold at the service provider.
 	 */
-	@RequestMapping(value="{providerId}", method=RequestMethod.GET, params="code")
+	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
 		OAuth2ServiceProviderConnectionFactory<?> connectionFactory = (OAuth2ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId), null);
@@ -169,7 +169,7 @@ public class ConnectController  {
 	 * Remove all provider connections for a user account.
 	 * The member has decided they no longer wish to use the service provider from this application.
 	 */
-	@RequestMapping(value="{providerId}", method=RequestMethod.DELETE)
+	@RequestMapping(value="/{providerId}", method=RequestMethod.DELETE)
 	public String removeConnections(@PathVariable String providerId) {
 		connectionRepository.removeConnectionsToProvider(providerId);
 		return redirectToProviderConnect(providerId);
@@ -179,7 +179,7 @@ public class ConnectController  {
 	 * Remove a single provider connection associated with a user account.
 	 * The member has decided they no longer wish to use the service provider account from this application.
 	 */
-	@RequestMapping(value="{providerId}/{providerUserId}", method=RequestMethod.DELETE)
+	@RequestMapping(value="/{providerId}/{providerUserId}", method=RequestMethod.DELETE)
 	public String removeConnections(@PathVariable String providerId, @PathVariable String providerUserId) {
 		connectionRepository.removeConnection(new ServiceProviderConnectionKey(providerId, providerUserId));
 		return redirectToProviderConnect(providerId);
@@ -225,7 +225,7 @@ public class ConnectController  {
 	}
 	
 	private String callbackUrl(String providerId) {
-		return baseCallbackUrl + providerId;
+		return baseCallbackUrl + "/" + providerId;
 	}
 
 	private OAuthToken extractCachedRequestToken(WebRequest request) {
