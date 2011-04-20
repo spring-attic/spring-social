@@ -40,6 +40,7 @@ import org.springframework.http.client.ClientHttpResponse;
  *
  * @author Oleg Kalnichevski
  * @author Arjen Poutsma
+ * @author Roy Clarkson
  * @since 3.0
  * @see HttpComponentsClientHttpRequestFactory#createRequest(URI, HttpMethod)
  */

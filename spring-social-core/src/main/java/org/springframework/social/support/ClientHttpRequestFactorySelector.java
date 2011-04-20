@@ -29,10 +29,7 @@ import org.springframework.util.ClassUtils;
 public class ClientHttpRequestFactorySelector {
 	
 	public static ClientHttpRequestFactory getRequestFactory() {
-		if (AndroidAvailable) {
-			return new org.springframework.http.client.HttpComponentsClientHttpRequestFactory();
-		}
-		else if (httpComponentsAvailable) {
+		if (httpComponentsAvailable) {
 			return new HttpComponentsClientHttpRequestFactory();
 		} else {
 			return new SimpleClientHttpRequestFactory();
@@ -40,7 +37,5 @@ public class ClientHttpRequestFactorySelector {
 	}
 	
 	private static boolean httpComponentsAvailable = ClassUtils.isPresent("org.apache.http.client.HttpClient", ClientHttpRequestFactory.class.getClassLoader());
-
-	private static boolean AndroidAvailable = ClassUtils.isPresent("android.R", ClientHttpRequestFactory.class.getClassLoader());
 
 }
