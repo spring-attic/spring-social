@@ -8,14 +8,14 @@ package org.springframework.social.oauth2;
  */
 public enum GrantType {
 	/**
-	 * AuthorizationCode denotes the server-side authorization flow, and is
+	 * AUTHORIZATION_CODE denotes the server-side authorization flow, and is
 	 * associated with the response_type=code parameter value
 	 */
-	AuthorizationCode,
+	AUTHORIZATION_CODE,
 
 	/**
-	 * ImplicitGrant denotes the client-side authorization flow and is
+	 * IMPLICIT_GRANT denotes the client-side authorization flow and is
 	 * associated with the response_type=token parameter value
 	 */
-	ImplicitGrant
+	IMPLICIT_GRANT
 }

@@ -32,10 +32,33 @@ public interface ServiceProviderConnection<S> {
 	ServiceProviderConnectionKey getKey();
 	
 	/**
-	 * Information about the user on the provider's system.
-	 * Exposes the user's id, profileName, profileUrl, pictureUrl, among other common properties.
+	 * A display name or label for this connection.
+	 * Should be suitable for display on a UI and distinguish this connection from others with the same provider.
+	 * Generally the full name or screen name of the connected provider user e.g. "Keith Donald" or "@kdonald".
+	 * May be null if this information is not public or not provided.
+	 * The value of this property may change if the user updates his or her profile.
+	 * @see #sync()
 	 */
-	ServiceProviderUser getUser();
+	public String getDisplayName();
+
+	/**
+	 * The public URL of the connected user's profile at the provider's site.
+	 * A client application may use this value along with the displayName to generate a link to the user's profile on the provider's system.
+	 * May be null if this information is not public or not provided.
+	 * The value of this property may change if the user updates his or her profile.
+	 * @see #sync()
+	 */
+	public String getProfileUrl();
+
+	/**
+	 * A link to a image that visualizes this connection.
+	 * Should visually distinguish this connection from others with the same provider.
+	 * Generally the small/thumbnail version of the connected provider user's profile picture.
+	 * May be null if this information is not public or not provided.
+	 * The value of this property may change if the user updates his or her profile.
+	 * @see #sync()
+	 */
+	public String getImageUrl();
 	
 	/**
 	 * Test this connection.
@@ -59,6 +82,13 @@ public interface ServiceProviderConnection<S> {
 	 * Not supported by all ServiceProviderConnection implementations; if not supported, this method is a no-op.
 	 */
 	void refresh();
+	
+	/**
+	 * Fetch a normalized model of the user's profile on the provider system.
+	 * Capable of exposing the user's name, email, and username.
+	 * What is actually exposed depends on the provider and scope of this connection.
+	 */
+	ServiceProviderUserProfile fetchUserProfile();
 	
 	/**
 	 * Update the user's status on the provider's system.
