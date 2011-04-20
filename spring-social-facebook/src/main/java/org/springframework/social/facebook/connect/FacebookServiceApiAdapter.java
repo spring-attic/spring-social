@@ -16,8 +16,9 @@
 package org.springframework.social.facebook.connect;
 
 import org.springframework.social.BadCredentialsException;
-import org.springframework.social.connect.spi.ServiceApiAdapter;
-import org.springframework.social.connect.spi.ServiceProviderUser;
+import org.springframework.social.connect.ServiceApiAdapter;
+import org.springframework.social.connect.ServiceProviderConnectionValues;
+import org.springframework.social.connect.ServiceProviderUserProfile;
 import org.springframework.social.facebook.api.FacebookApi;
 import org.springframework.social.facebook.api.FacebookProfile;
 
@@ -32,13 +33,17 @@ public class FacebookServiceApiAdapter implements ServiceApiAdapter<FacebookApi>
 		}
 	}
 
-	public ServiceProviderUser getUser(FacebookApi serviceApi) {
+	public ServiceProviderConnectionValues getConnectionValues(FacebookApi serviceApi) {
 		FacebookProfile profile = serviceApi.userOperations().getUserProfile();		
 		String profileUrl = "http://www.facebook.com/#!/profile.php?id=" + profile.getId();
-		String profileImageUrl = "http://graph.facebook.com/" + profile.getId() + "/picture?type=large";
-		return new ServiceProviderUser(profile.getId(), profile.getUsername(), profileUrl, profileImageUrl);
+		String imageUrl = "http://graph.facebook.com/" + profile.getId() + "/picture?type=large";
+		return new ServiceProviderConnectionValues(profile.getId(), profile.getUsername(), profileUrl, imageUrl);
 	}
 
+	public ServiceProviderUserProfile fetchUserProfile(FacebookApi serviceApi) {
+		return new ServiceProviderUserProfile(null, null, null, null, null);
+	}
+	
 	public void updateStatus(FacebookApi serviceApi, String message) {
 		serviceApi.feedOperations().updateStatus(message);
 	}

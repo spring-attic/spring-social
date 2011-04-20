@@ -6,8 +6,6 @@ import static org.junit.Assert.assertSame;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.social.connect.ServiceProviderConnectionFactory;
-import org.springframework.social.connect.support.MapServiceProviderConnectionFactoryRegistry;
-import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
 
@@ -15,7 +13,7 @@ public class MapServiceProviderConnectionFactoryRegistryTest {
 
 	private MapServiceProviderConnectionFactoryRegistry connectionFactoryLocator = new MapServiceProviderConnectionFactoryRegistry();
 
-	private TwitterServiceProviderConnectionFactory twitterConnectionFactory = new TwitterServiceProviderConnectionFactory();
+	private TestTwitterServiceProviderConnectionFactory twitterConnectionFactory = new TestTwitterServiceProviderConnectionFactory();
 	
 	@Before
 	public void setUp() {
@@ -31,50 +29,50 @@ public class MapServiceProviderConnectionFactoryRegistryTest {
 	
 	@Test
 	public void getConnectionFactoryByServiceApi() {
-		ServiceProviderConnectionFactory<TwitterApi> connectionFactory = connectionFactoryLocator.getConnectionFactory(TwitterApi.class);
+		ServiceProviderConnectionFactory<TestTwitterApi> connectionFactory = connectionFactoryLocator.getConnectionFactory(TestTwitterApi.class);
 		assertSame(twitterConnectionFactory, connectionFactory);
 		assertEquals("twitter", connectionFactory.getProviderId());
 	}
 	
 	@Test(expected=IllegalArgumentException.class)
 	public void addDuplicateProviderId() {
-		connectionFactoryLocator.addConnectionFactory(new TwitterServiceProviderConnectionFactory());
+		connectionFactoryLocator.addConnectionFactory(new TestTwitterServiceProviderConnectionFactory());
 	}
 
 	@Test(expected=IllegalArgumentException.class)
 	public void addDuplicateServiceApiType() {
-		connectionFactoryLocator.addConnectionFactory(new Twitter2ServiceProviderConnectionFactory());
+		connectionFactoryLocator.addConnectionFactory(new TestTwitter2ServiceProviderConnectionFactory());
 	}
 	
-	static class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
+	static class TestTwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TestTwitterApi> {
 
-		public TwitterServiceProviderConnectionFactory() {
-			super("twitter", new TwitterServiceProvider(), null);
+		public TestTwitterServiceProviderConnectionFactory() {
+			super("twitter", new TestTwitterServiceProvider(), null);
 		}
 		
 	}
 
-	static class Twitter2ServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
+	static class TestTwitter2ServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TestTwitterApi> {
 
-		public Twitter2ServiceProviderConnectionFactory() {
-			super("twitter2", new TwitterServiceProvider(), null);
+		public TestTwitter2ServiceProviderConnectionFactory() {
+			super("twitter2", new TestTwitterServiceProvider(), null);
 		}
 		
 	}
 	
-	static class TwitterServiceProvider implements OAuth1ServiceProvider<TwitterApi> {
+	static class TestTwitterServiceProvider implements OAuth1ServiceProvider<TestTwitterApi> {
 
 		public OAuth1Operations getOAuthOperations() {
 			return null;
 		}
 
-		public TwitterApi getServiceApi(String accessToken, String secret) {
+		public TestTwitterApi getServiceApi(String accessToken, String secret) {
 			return null;
 		}
 		
 	}
 		
-	interface TwitterApi {
+	interface TestTwitterApi {
 		
 	}
 }

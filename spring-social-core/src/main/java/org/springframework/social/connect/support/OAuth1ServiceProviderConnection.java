@@ -15,12 +15,12 @@
  */
 package org.springframework.social.connect.support;
 
+import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
+import org.springframework.social.connect.ServiceProviderConnectionValues;
 import org.springframework.social.connect.ServiceProviderUserProfile;
-import org.springframework.social.connect.spi.ServiceApiAdapter;
-import org.springframework.social.connect.spi.ServiceProviderUser;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
 
 /**
@@ -39,7 +39,7 @@ public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnec
 	
 	private final ServiceApiAdapter<S> serviceApiAdapter;
 
-	private ServiceProviderUser user;
+	private ServiceProviderConnectionValues connectionValues;
 
 	private String accessToken;
 	
@@ -72,15 +72,15 @@ public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnec
 	 * Creates a new {@link OAuth1ServiceProviderConnection} from the data provided.
 	 * Designed to be called when re-constituting an existing {@link ServiceProviderConnection}, for example, from {@link ServiceProviderConnectionData}.
 	 * @param key the service provider connection key
-	 * @param user the service provider user model
+	 * @param connectionValues the service provider connection values
 	 * @param accessToken the access token
 	 * @param secret the access token secret
 	 * @param serviceProvider the ServiceProvider model
 	 * @param serviceApiAdapter the ServiceApiAdapter for the ServiceProvider.
 	 */
-	public OAuth1ServiceProviderConnection(ServiceProviderConnectionKey key, ServiceProviderUser user, String accessToken, String secret, OAuth1ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
+	public OAuth1ServiceProviderConnection(ServiceProviderConnectionKey key, ServiceProviderConnectionValues connectionValues, String accessToken, String secret, OAuth1ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
 		this.key = key;
-		this.user = user;
+		this.connectionValues = connectionValues;
 		this.serviceProvider = serviceProvider;
 		this.serviceApiAdapter = serviceApiAdapter;
 		initAccessTokens(accessToken, secret);
@@ -94,15 +94,15 @@ public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnec
 	}
 
 	public String getDisplayName() {
-		return getUser().getProfileName();
+		return getConnectionValues().getDisplayName();
 	}
 
 	public String getProfileUrl() {
-		return getUser().getProfileUrl();
+		return getConnectionValues().getProfileUrl();
 	}
 
 	public String getImageUrl() {
-		return getUser().getProfilePictureUrl();
+		return getConnectionValues().getImageUrl();
 	}
 
 	public boolean test() {
@@ -119,7 +119,7 @@ public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnec
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile() {
-		return new ServiceProviderUserProfile(null, null, null, null, null);
+		return serviceApiAdapter.fetchUserProfile(serviceApi);
 	}
 
 	public void updateStatus(String message) {
@@ -128,7 +128,7 @@ public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnec
 
 	public void sync() {
 		synchronized (monitor) {
-			initUser();
+			initConnectionValues();
 		}
 	}
 
@@ -137,7 +137,7 @@ public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnec
 	}
 
 	public ServiceProviderConnectionData createData() {
-		return new ServiceProviderConnectionData(key.getProviderId(), key.getProviderUserId(), user.getProfileName(), user.getProfileUrl(), user.getProfilePictureUrl(), accessToken, secret, null, null);
+		return new ServiceProviderConnectionData(key.getProviderId(), key.getProviderUserId(), connectionValues.getDisplayName(), connectionValues.getProfileUrl(), connectionValues.getImageUrl(), accessToken, secret, null, null);
 	}
 
 	// identity
@@ -168,23 +168,23 @@ public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnec
 	
 	private ServiceProviderConnectionKey createKey(String providerId, String providerUserId) {
 		if (providerUserId == null) {
-			initUser();
-			providerUserId = user.getId();
+			initConnectionValues();
+			providerUserId = connectionValues.getProviderUserId();
 		}
 		return new ServiceProviderConnectionKey(providerId, providerUserId);		
 	}
 
-	private ServiceProviderUser getUser() {
+	private ServiceProviderConnectionValues getConnectionValues() {
 		synchronized (monitor) {
-			if (user == null) {
-				initUser();
+			if (connectionValues == null) {
+				initConnectionValues();
 			}			
-			return user;
+			return connectionValues;
 		}
 	}
 	
-	private void initUser() {
-		user = serviceApiAdapter.getUser(serviceApi);
+	private void initConnectionValues() {
+		connectionValues = serviceApiAdapter.getConnectionValues(serviceApi);
 	}
 
 }

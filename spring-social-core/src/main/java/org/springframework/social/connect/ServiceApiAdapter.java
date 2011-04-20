@@ -13,9 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect.spi;
-
-import org.springframework.social.connect.ServiceProviderConnection;
+package org.springframework.social.connect;
 
 /**
  * An adapter that bridges between the uniform {@link ServiceProviderConnection} model and a specific provider API model.
@@ -32,11 +30,19 @@ public interface ServiceApiAdapter<S> {
 	boolean test(S serviceApi);
 	
 	/**
-	 * Implements {@link ServiceProviderConnection#getUser()} for connections to the given service API.
+	 * Provides values for {@link ServiceProviderConnectionKey#getProviderUserId()}, {@link ServiceProviderConnection#getDisplayName()},
+	 * {@link ServiceProviderConnection#getProfileUrl()}, and {@link ServiceProviderConnection#getImageUrl()} for connections to the given service API.
 	 * @param serviceApi the service API
-	 * @return the uniform service provider user model
+	 * @return the service provider connection values
 	 */
-	ServiceProviderUser getUser(S serviceApi);
+	ServiceProviderConnectionValues getConnectionValues(S serviceApi);
+	
+	/**
+	 * Implements {@link ServiceProviderConnection#fetchUserProfile()} for connections to the given service API.
+	 * @param serviceApi
+	 * @return
+	 */
+	ServiceProviderUserProfile fetchUserProfile(S serviceApi);
 	
 	/**
 	 * Implements {@link ServiceProviderConnection#updateStatus(String)} for connections to the given service API.

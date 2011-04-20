@@ -15,7 +15,7 @@
  */
 package org.springframework.social.util;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
 
