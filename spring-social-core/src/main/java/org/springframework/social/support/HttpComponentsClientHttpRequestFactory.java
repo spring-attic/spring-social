@@ -59,6 +59,8 @@ import org.springframework.util.ClassUtils;
  */
 @SuppressWarnings("deprecation")
 class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory, DisposableBean {
+	
+	private static final boolean VERSION_4_1_AVAILABLE = ClassUtils.hasConstructor(ThreadSafeClientConnManager.class, new Class<?>[]{SchemeRegistry.class});
 
 	private static final int DEFAULT_MAX_TOTAL_CONNECTIONS = 100;
 
@@ -76,7 +78,7 @@ class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory
 		SchemeRegistry schemeRegistry = new SchemeRegistry();
 		
 		// Check for HttpComponents HttpClient 4.1 support
-		if (ClassUtils.hasConstructor(ThreadSafeClientConnManager.class, new Class<?>[]{SchemeRegistry.class})) {
+		if (VERSION_4_1_AVAILABLE) {
 			schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
 			schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
 			ThreadSafeClientConnManager connectionManager = new ThreadSafeClientConnManager(schemeRegistry);
