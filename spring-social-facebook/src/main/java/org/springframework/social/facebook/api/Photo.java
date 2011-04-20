@@ -20,8 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.social.facebook.api.impl.TagList;
-
 
 /**
  * Model class representing a photo.
@@ -44,7 +42,7 @@ public class Photo {
 	
 	private Date updatedTime;
 	
-	private TagList tags;
+	private List<Tag> tags;
 	
 	private Image sourceImage;
 	
@@ -117,7 +115,7 @@ public class Photo {
 	}
 	
 	public List<Tag> getTags() {
-		return tags != null ? tags.getList() : null;
+		return tags;
 	}
 	
 	public static class Image {

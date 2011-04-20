@@ -20,7 +20,7 @@ import org.springframework.social.facebook.api.GraphApi;
 import org.springframework.social.facebook.api.ImageType;
 import org.springframework.social.facebook.api.UserOperations;
 
-public class UserTemplate implements UserOperations {
+class UserTemplate implements UserOperations {
 
 	private final GraphApi graphApi;
 

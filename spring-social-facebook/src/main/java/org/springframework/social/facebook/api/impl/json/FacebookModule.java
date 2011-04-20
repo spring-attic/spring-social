@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
 
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.module.SimpleModule;
@@ -32,6 +32,7 @@ import org.springframework.social.facebook.api.LinkPost;
 import org.springframework.social.facebook.api.Location;
 import org.springframework.social.facebook.api.NotePost;
 import org.springframework.social.facebook.api.Photo;
+import org.springframework.social.facebook.api.Photo.Image;
 import org.springframework.social.facebook.api.PhotoPost;
 import org.springframework.social.facebook.api.Place;
 import org.springframework.social.facebook.api.Post;
@@ -42,8 +43,7 @@ import org.springframework.social.facebook.api.UserLike;
 import org.springframework.social.facebook.api.Video;
 import org.springframework.social.facebook.api.VideoPost;
 import org.springframework.social.facebook.api.WorkEntry;
-import org.springframework.social.facebook.api.Photo.Image;
-import org.springframework.social.facebook.api.impl.PhotoMixin.ImageMixin;
+import org.springframework.social.facebook.api.impl.json.PhotoMixin.ImageMixin;
 
 /**
  * Jackson module for setting up mixin annotations on Facebook model types. This enables the use of Jackson annotations without

@@ -28,7 +28,7 @@ import org.springframework.social.facebook.api.Invitation;
  * @author Craig Walls
  */
 @JsonIgnoreProperties("paging")
-public class InvitationList {
+class InvitationList {
 
 	private final List<Invitation> list;
 

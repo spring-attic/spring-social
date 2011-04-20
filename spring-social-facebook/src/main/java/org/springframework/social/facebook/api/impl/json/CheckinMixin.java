@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,33 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
 
 import java.util.Date;
+import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.springframework.social.facebook.api.Comment;
+import org.springframework.social.facebook.api.Place;
 import org.springframework.social.facebook.api.Reference;
 
 /**
- * Annotated mixin to add Jackson annotations to PhotoPost. 
+ * Annotated mixin to add Jackson annotations to Checkin. 
  * @author Craig Walls
  */
-public abstract class PhotoPostMixin extends PostMixin {
+abstract class CheckinMixin {
 
 	@JsonCreator
-	PhotoPostMixin(
+	CheckinMixin(
 			@JsonProperty("id") String id, 
+			@JsonProperty("place") Place place, 
 			@JsonProperty("from") Reference from, 
-			@JsonProperty("created_time") Date createdTime,
-			@JsonProperty("updated_time") Date updatedTime) {
-		super(id, from, createdTime, updatedTime);
-	}
+			@JsonProperty("application") Reference application, 
+			@JsonProperty("created_time") Date createdTime) {}
 	
-	@JsonProperty("object_id")
-	String photoId;
+	@JsonProperty("message")
+	String message;
+
+	@JsonProperty("comments")
+	@JsonDeserialize(using = CommentListDeserializer.class)
+	List<Comment> comments;
+	
+	@JsonProperty("likes")
+	@JsonDeserialize(using = ReferenceListDeserializer.class)
+	List<Reference> likes;
 
 	@JsonProperty("tags")
-	TagList tags;
+	@JsonDeserialize(using = ReferenceListDeserializer.class)
+	List<Reference> tags;
 
 }

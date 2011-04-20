@@ -26,7 +26,8 @@ import org.springframework.social.facebook.api.UserLike;
  * This helps Jackson know what type to deserialize list data into. 
  * @author Craig Walls
  */
-public class UserLikeList {
+class UserLikeList {
+	
 	private final List<UserLike> list;
 
 	@JsonCreator

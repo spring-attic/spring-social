@@ -13,25 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
 
 import java.io.IOException;
+import java.util.List;
 
+import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
-import org.springframework.social.facebook.api.RsvpStatus;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
+import org.springframework.social.facebook.api.Tag;
 
-/**
- * Deserializer to convert an Invitation's or EventInvitee's "rsvp_status" value to an RsvpStatus. 
- * @author Craig Walls
- */
-class RsvpStatusDeserializer extends JsonDeserializer<RsvpStatus> {
-
+class TagListDeserializer extends JsonDeserializer<List<Tag>> {
+	@SuppressWarnings("unchecked")
 	@Override
-	public RsvpStatus deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-		return RsvpStatus.valueOf(jp.getText().toUpperCase());
+	public List<Tag> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setDeserializationConfig(ctxt.getConfig());
+		jp.setCodec(mapper);
+		if(jp.hasCurrentToken()) {
+			JsonNode dataNode = jp.readValueAsTree().get("data");
+			return (List<Tag>) mapper.readValue(dataNode, new TypeReference<List<Tag>>() {});
+		}
+		
+		return null;
 	}
-	
 }

@@ -13,29 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
 
+import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.springframework.social.facebook.api.Reference;
 import org.springframework.social.facebook.api.Tag;
 
 /**
- * Holder class to hold a typed list of Tags, pulled from the "data" field of the JSON object structure.
- * This helps Jackson know what type to deserialize list data into. 
+ * Annotated mixin to add Jackson annotations to Video. 
  * @author Craig Walls
  */
-class TagList {
-
-	private final List<Tag> list;
+abstract class VideoMixin {
 
 	@JsonCreator
-	public TagList(@JsonProperty("data") List<Tag> list) {
-		this.list = list;
-	}
+	VideoMixin(
+			@JsonProperty("id") String id, 
+			@JsonProperty("from") Reference from, 
+			@JsonProperty("picture") String picture,
+			@JsonProperty("embed_html") String embedHtml,
+			@JsonProperty("icon") String icon, 
+			@JsonProperty("source") String source,
+			@JsonProperty("created_time") Date createdTime, 
+			@JsonProperty("updated_time") Date updatedTime) {}
+	
+	@JsonProperty("tags")
+	@JsonDeserialize(using=TagListDeserializer.class)
+	List<Tag> tags;
+	
+	@JsonProperty("name")
+	String name;
+	
+	@JsonProperty("description")
+	String description;
 
-	public List<Tag> getList() {
-		return list;
-	}
 }

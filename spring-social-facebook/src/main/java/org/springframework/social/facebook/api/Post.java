@@ -18,9 +18,6 @@ package org.springframework.social.facebook.api;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.social.facebook.api.impl.CommentList;
-import org.springframework.social.facebook.api.impl.ReferenceList;
-
 
 
 /**
@@ -37,7 +34,7 @@ public abstract class Post {
 
 	private final Date updatedTime;
 
-	private ReferenceList to;
+	private List<Reference> to;
 	
 	private String message;
 	
@@ -57,9 +54,9 @@ public abstract class Post {
 	
 	private PostType type;
 	
-	private ReferenceList likes;
+	private List<Reference> likes;
 
-	private CommentList comments;
+	private List<Comment> comments;
 
 	public Post(String id, Reference from, Date createdTime, Date updatedTime) {
 		this.id = id;
@@ -76,7 +73,7 @@ public abstract class Post {
 		return from;
 	}
 
-	public ReferenceList getTo() {
+	public List<Reference> getTo() {
 		return to;
 	}
 
@@ -125,11 +122,11 @@ public abstract class Post {
 	}
 	
 	public List<Reference> getLikes() {
-		return likes.getList();
+		return likes;
 	}
 
 	public List<Comment> getComments() {
-		return comments.getList();
+		return comments;
 	}
 
 	public static enum PostType { CHECKIN, LINK, NOTE, PHOTO, STATUS, VIDEO }

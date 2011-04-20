@@ -25,7 +25,7 @@ import org.springframework.social.facebook.api.Reference;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.web.client.RestTemplate;
 
-public class FriendTemplate implements FriendOperations {
+class FriendTemplate implements FriendOperations {
 	
 	private final GraphApi graphApi;
 

@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
@@ -31,14 +32,14 @@ import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.springframework.social.facebook.api.CheckinPost;
+import org.springframework.social.facebook.api.Comment;
 import org.springframework.social.facebook.api.LinkPost;
 import org.springframework.social.facebook.api.NotePost;
 import org.springframework.social.facebook.api.PhotoPost;
-import org.springframework.social.facebook.api.Post;
+import org.springframework.social.facebook.api.Post.PostType;
 import org.springframework.social.facebook.api.Reference;
 import org.springframework.social.facebook.api.StatusPost;
 import org.springframework.social.facebook.api.VideoPost;
-import org.springframework.social.facebook.api.Post.PostType;
 
 /**
  * Annotated mixin to add Jackson annotations to Post.
@@ -54,7 +55,7 @@ import org.springframework.social.facebook.api.Post.PostType;
 				@Type(name="status", value=StatusPost.class),
 				@Type(name="video", value=VideoPost.class)
 				})
-public abstract class PostMixin {
+abstract class PostMixin {
 	
 	@JsonCreator
 	PostMixin(
@@ -64,7 +65,8 @@ public abstract class PostMixin {
 			@JsonProperty("updated_time") Date updatedTime) {}
 
 	@JsonProperty("to")
-	ReferenceList to;
+	@JsonDeserialize(using = ReferenceListDeserializer.class)
+	List<Reference> to;
 	
 	@JsonProperty("message")
 	String message;
@@ -98,10 +100,12 @@ public abstract class PostMixin {
 	PostType type;
 
 	@JsonProperty("likes")
-	ReferenceList likes;
+	@JsonDeserialize(using = ReferenceListDeserializer.class)
+	List<Reference> likes;
 
 	@JsonProperty("comments")
-	CommentList comments;
+	@JsonDeserialize(using = CommentListDeserializer.class)
+	List<Comment> comments;
 
 	private static class TypeDeserializer extends JsonDeserializer<PostType> {
 		@Override

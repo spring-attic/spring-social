@@ -13,35 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
+
+import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
- * Annotated mixin to add Jackson annotations to Location. 
+ * Annotated mixin to add Jackson annotations to Tag. 
  * @author Craig Walls
  */
-public abstract class LocationMixin {
+abstract class TagMixin {
 	
 	@JsonCreator
-	LocationMixin(
-			@JsonProperty("latitude") double latitude, 
-			@JsonProperty("longitude") double longitude) {}
+	TagMixin(
+			@JsonProperty("id") String id, 
+			@JsonProperty("name") String name, 
+			@JsonProperty("x") Integer x, 
+			@JsonProperty("y") Integer y, 
+			@JsonProperty("created_time") Date createdTime) {}
 	
-	@JsonProperty("street")
-	String street;
-
-	@JsonProperty("city")
-	String city;
-
-	@JsonProperty("state")
-	String state;
-
-	@JsonProperty("country")
-	String country;
-
-	@JsonProperty("zip")
-	String zip;
-
 }

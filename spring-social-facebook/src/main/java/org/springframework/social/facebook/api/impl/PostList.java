@@ -28,7 +28,7 @@ import org.springframework.social.facebook.api.Post;
  * @author Craig Walls
  */
 @JsonIgnoreProperties("paging")
-public class PostList {
+class PostList {
 	
 	private final List<Post> list;
 

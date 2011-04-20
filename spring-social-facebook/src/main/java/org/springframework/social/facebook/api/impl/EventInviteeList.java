@@ -26,7 +26,7 @@ import org.springframework.social.facebook.api.EventInvitee;
  * This helps Jackson know what type to deserialize list data into. 
  * @author Craig Walls
  */
-public class EventInviteeList {
+class EventInviteeList {
 
 	private final List<EventInvitee> list;
 

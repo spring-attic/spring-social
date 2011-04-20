@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
+
+import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.api.Reference;
 
 /**
- * Annotated mixin to add Jackson annotations to WorkEntry. 
+ * Annotated mixin to add Jackson annotations to StatusPost. 
  * @author Craig Walls
  */
-public abstract class WorkEntryMixin {
-	
+abstract class StatusPostMixin extends PostMixin {
+
 	@JsonCreator
-	WorkEntryMixin(
-			@JsonProperty("employer") Reference employer, 
-			@JsonProperty("start_date") String startDate, 
-			@JsonProperty("end_date") String endDate) {}
+	StatusPostMixin(
+			@JsonProperty("id") String id, 
+			@JsonProperty("from") Reference from, 
+			@JsonProperty("created_time") Date createdTime,
+			@JsonProperty("updated_time") Date updatedTime) {
+		super(id, from, createdTime, updatedTime);
+	}
 	
 }

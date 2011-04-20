@@ -39,7 +39,7 @@ import org.springframework.social.facebook.api.LinkPost;
  * @author Craig Walls
  */
 @JsonIgnoreProperties("paging")
-public class LinkPostList {
+class LinkPostList {
 
 	private final List<LinkPost> list;
 

@@ -26,7 +26,7 @@ import org.springframework.social.facebook.api.FacebookProfile;
  * This helps Jackson know what type to deserialize list data into. 
  * @author Craig Walls
  */
-public class FacebookProfileList {
+class FacebookProfileList {
 	private final List<FacebookProfile> list;
 
 	@JsonCreator

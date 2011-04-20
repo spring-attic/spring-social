@@ -28,7 +28,7 @@ import org.springframework.social.facebook.api.Video;
  * @author Craig Walls
  */
 @JsonIgnoreProperties("paging")
-public class VideoList {
+class VideoList {
 	
 	private final List<Video> list;
 

@@ -34,7 +34,7 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
  * This helps Jackson know what type to deserialize list data into. 
  * @author Craig Walls
  */
-public class FriendIdList {
+class FriendIdList {
 	
 	private final List<String> list;
 

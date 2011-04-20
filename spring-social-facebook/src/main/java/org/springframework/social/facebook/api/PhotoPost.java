@@ -18,8 +18,6 @@ package org.springframework.social.facebook.api;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.social.facebook.api.impl.TagList;
-
 
 /**
  * Model class representing a Post to a feed announcing a Photo. Note that this is not the Photo itself.
@@ -30,7 +28,7 @@ public class PhotoPost extends Post {
 
 	private String photoId;
 	
-	private TagList tags;
+	private List<Tag> tags;
 	
 	public PhotoPost(String id, Reference from, Date createdTime, Date updatedTime) {
 		super(id, from, createdTime, updatedTime);
@@ -41,7 +39,7 @@ public class PhotoPost extends Post {
 	}
 	
 	public List<Tag> getTags() {
-		return tags.getList();
+		return tags;
 	}
 
 }

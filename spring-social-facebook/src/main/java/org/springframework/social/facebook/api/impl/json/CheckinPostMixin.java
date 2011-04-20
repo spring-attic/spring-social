@@ -13,30 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
 
 import java.util.Date;
+import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.springframework.social.facebook.api.Place;
 import org.springframework.social.facebook.api.Reference;
+import org.springframework.social.facebook.api.Tag;
 
 /**
- * Annotated mixin to add Jackson annotations to NotePost. 
+ * Annotated mixin to add Jackson annotations to CheckinPost. 
  * @author Craig Walls
  */
-public abstract class NotePostMixin extends PostMixin {
+abstract class CheckinPostMixin extends PostMixin {
 
 	@JsonCreator
-	NotePostMixin(
+	CheckinPostMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("from") Reference from, 
 			@JsonProperty("created_time") Date createdTime,
 			@JsonProperty("updated_time") Date updatedTime) {
 		super(id, from, createdTime, updatedTime);
 	}
+
+	@JsonProperty("place")
+	Place place;
 	
-	@JsonProperty("subject")
-	String subject;
-	
+	@JsonProperty("tags")
+	@JsonDeserialize(using=TagListDeserializer.class)
+	List<Tag> tags;
+
 }

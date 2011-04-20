@@ -13,22 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
 
 import java.util.Date;
+import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.springframework.social.facebook.api.Reference;
+import org.springframework.social.facebook.api.Tag;
 
 /**
- * Annotated mixin to add Jackson annotations to StatusPost. 
+ * Annotated mixin to add Jackson annotations to PhotoPost. 
  * @author Craig Walls
  */
-public abstract class StatusPostMixin extends PostMixin {
+abstract class PhotoPostMixin extends PostMixin {
 
 	@JsonCreator
-	StatusPostMixin(
+	PhotoPostMixin(
 			@JsonProperty("id") String id, 
 			@JsonProperty("from") Reference from, 
 			@JsonProperty("created_time") Date createdTime,
@@ -36,4 +39,11 @@ public abstract class StatusPostMixin extends PostMixin {
 		super(id, from, createdTime, updatedTime);
 	}
 	
+	@JsonProperty("object_id")
+	String photoId;
+
+	@JsonProperty("tags")
+	@JsonDeserialize(using=TagListDeserializer.class)
+	List<Tag> tags;
+
 }

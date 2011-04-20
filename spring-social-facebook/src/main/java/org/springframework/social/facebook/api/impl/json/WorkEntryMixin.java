@@ -13,25 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
-
-import java.util.Date;
+package org.springframework.social.facebook.api.impl.json;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.social.facebook.api.Reference;
 
 /**
- * Annotated mixin to add Jackson annotations to Tag. 
+ * Annotated mixin to add Jackson annotations to WorkEntry. 
  * @author Craig Walls
  */
-public abstract class TagMixin {
+abstract class WorkEntryMixin {
 	
 	@JsonCreator
-	TagMixin(
-			@JsonProperty("id") String id, 
-			@JsonProperty("name") String name, 
-			@JsonProperty("x") Integer x, 
-			@JsonProperty("y") Integer y, 
-			@JsonProperty("created_time") Date createdTime) {}
+	WorkEntryMixin(
+			@JsonProperty("employer") Reference employer, 
+			@JsonProperty("start_date") String startDate, 
+			@JsonProperty("end_date") String endDate) {}
 	
 }

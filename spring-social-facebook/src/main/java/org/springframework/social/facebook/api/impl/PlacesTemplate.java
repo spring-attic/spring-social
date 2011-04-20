@@ -23,7 +23,8 @@ import org.springframework.social.facebook.api.PlacesOperations;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class PlacesTemplate implements PlacesOperations {
+class PlacesTemplate implements PlacesOperations {
+	
 	private final GraphApi graphApi;
 
 	public PlacesTemplate(GraphApi graphApi) {

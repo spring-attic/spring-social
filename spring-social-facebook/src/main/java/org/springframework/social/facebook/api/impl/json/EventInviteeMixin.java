@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.api.Reference;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.springframework.social.facebook.api.RsvpStatus;
 
 /**
- * Annotated mixin to add Jackson annotations to EducationEntry. 
+ * Annotated mixin to add Jackson annotations to EventInvitee. 
  * @author Craig Walls
  */
-public abstract class EducationEntryMixin {
-
+abstract class EventInviteeMixin {
+	
 	@JsonCreator
-	EducationEntryMixin(
-			@JsonProperty("school") Reference school, 
-			@JsonProperty("year") Reference year, 
-			@JsonProperty("type") String type) {}
+	EventInviteeMixin(
+			@JsonProperty("id") String id, 
+			@JsonProperty("name") String name, 
+			@JsonProperty("rsvp_status") @JsonDeserialize(using=RsvpStatusDeserializer.class) RsvpStatus rsvpStatus) {}
 	
 }

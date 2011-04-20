@@ -28,7 +28,7 @@ import org.springframework.social.facebook.api.Checkin;
  * @author Craig Walls
  */
 @JsonIgnoreProperties("paging")
-public class CheckinList {
+class CheckinList {
 	
 	private final List<Checkin> list;
 

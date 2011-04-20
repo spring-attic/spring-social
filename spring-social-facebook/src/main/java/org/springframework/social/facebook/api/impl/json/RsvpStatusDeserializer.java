@@ -13,23 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import java.io.IOException;
+
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.DeserializationContext;
+import org.codehaus.jackson.map.JsonDeserializer;
 import org.springframework.social.facebook.api.RsvpStatus;
 
 /**
- * Annotated mixin to add Jackson annotations to EventInvitee. 
+ * Deserializer to convert an Invitation's or EventInvitee's "rsvp_status" value to an RsvpStatus. 
  * @author Craig Walls
  */
-public abstract class EventInviteeMixin {
-	
-	@JsonCreator
-	EventInviteeMixin(
-			@JsonProperty("id") String id, 
-			@JsonProperty("name") String name, 
-			@JsonProperty("rsvp_status") @JsonDeserialize(using=RsvpStatusDeserializer.class) RsvpStatus rsvpStatus) {}
+class RsvpStatusDeserializer extends JsonDeserializer<RsvpStatus> {
+
+	@Override
+	public RsvpStatus deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+		return RsvpStatus.valueOf(jp.getText().toUpperCase());
+	}
 	
 }

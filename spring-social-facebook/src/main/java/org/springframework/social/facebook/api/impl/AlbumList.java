@@ -28,7 +28,7 @@ import org.springframework.social.facebook.api.Album;
  * @author Craig Walls
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AlbumList {
+class AlbumList {
 	
 	private final List<Album> list;
 

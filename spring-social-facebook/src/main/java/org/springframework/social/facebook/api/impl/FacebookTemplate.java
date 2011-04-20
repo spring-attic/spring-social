@@ -39,6 +39,7 @@ import org.springframework.social.facebook.api.LikeOperations;
 import org.springframework.social.facebook.api.MediaOperations;
 import org.springframework.social.facebook.api.PlacesOperations;
 import org.springframework.social.facebook.api.UserOperations;
+import org.springframework.social.facebook.api.impl.json.FacebookModule;
 import org.springframework.social.oauth2.ProtectedResourceClientFactory;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;

@@ -13,33 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
 
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.api.Reference;
 
 /**
- * Annotated mixin to add Jackson annotations to VideoPost. 
+ * Annotated mixin to add Jackson annotations to UserLike. 
  * @author Craig Walls
  */
-public abstract class VideoPostMixin extends PostMixin {
-
+abstract class UserLikeMixin {
+	
 	@JsonCreator
-	VideoPostMixin(
+	UserLikeMixin(
 			@JsonProperty("id") String id, 
-			@JsonProperty("from") Reference from, 
-			@JsonProperty("created_time") Date createdTime,
-			@JsonProperty("updated_time") Date updatedTime) {
-		super(id, from, createdTime, updatedTime);
-	}
-	
-	@JsonProperty("object_id")
-	String videoId;
-	
-	@JsonProperty("tags")
-	TagList tags;
-	
+			@JsonProperty("name") String name, 
+			@JsonProperty("category") String category,
+			@JsonProperty("created_time") Date createdTime) {}
+
 }

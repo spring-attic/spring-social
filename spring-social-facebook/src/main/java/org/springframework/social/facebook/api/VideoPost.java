@@ -18,8 +18,6 @@ package org.springframework.social.facebook.api;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.social.facebook.api.impl.TagList;
-
 
 /**
  * Model class representing a Post announcing a Video to a feed. This is not the Video itself.
@@ -30,7 +28,7 @@ public class VideoPost extends Post {
 	
 	private String videoId;
 	
-	private TagList tags;
+	private List<Tag> tags;
 	
 	public VideoPost(String id, Reference from, Date createdTime, Date updatedTime) {
 		super(id, from, createdTime, updatedTime);
@@ -41,6 +39,6 @@ public class VideoPost extends Post {
 	}
 	
 	public List<Tag> getTags() {
-		return tags.getList();
+		return tags;
 	}
 }

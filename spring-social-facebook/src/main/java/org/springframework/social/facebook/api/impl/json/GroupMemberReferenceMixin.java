@@ -13,38 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
-
-import java.util.Date;
+package org.springframework.social.facebook.api.impl.json;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.api.Reference;
 
 /**
- * Annotated mixin to add Jackson annotations to Video. 
+ * Annotated mixin to add Jackson annotations to GroupMemberReference. 
  * @author Craig Walls
  */
-public abstract class VideoMixin {
+abstract class GroupMemberReferenceMixin {
 
 	@JsonCreator
-	VideoMixin(
+	GroupMemberReferenceMixin(
 			@JsonProperty("id") String id, 
-			@JsonProperty("from") Reference from, 
-			@JsonProperty("picture") String picture,
-			@JsonProperty("embed_html") String embedHtml,
-			@JsonProperty("icon") String icon, 
-			@JsonProperty("source") String source,
-			@JsonProperty("created_time") Date createdTime, 
-			@JsonProperty("updated_time") Date updatedTime) {}
+			@JsonProperty("name") String name,
+			@JsonProperty("administrator") boolean administrator) {}
 	
-	@JsonProperty("tags")
-	TagList tags;
-	
-	@JsonProperty("name")
-	String name;
-	
-	@JsonProperty("description")
-	String description;
-
 }

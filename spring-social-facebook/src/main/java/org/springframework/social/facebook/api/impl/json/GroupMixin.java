@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
 
 import java.io.IOException;
 import java.util.Date;
@@ -26,15 +26,15 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
-import org.springframework.social.facebook.api.Reference;
 import org.springframework.social.facebook.api.Group.Privacy;
+import org.springframework.social.facebook.api.Reference;
 
 /**
  * Annotated mixin to add Jackson annotations to Group. 
  * @author Craig Walls
  */
 @JsonIgnoreProperties("version")
-public abstract class GroupMixin {
+abstract class GroupMixin {
 	
 	@JsonCreator
 	GroupMixin(

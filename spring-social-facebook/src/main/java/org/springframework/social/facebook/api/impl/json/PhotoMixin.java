@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
 
 import java.util.Date;
 import java.util.List;
@@ -21,15 +21,17 @@ import java.util.List;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.api.Reference;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.springframework.social.facebook.api.Photo.Image;
+import org.springframework.social.facebook.api.Reference;
+import org.springframework.social.facebook.api.Tag;
 
 /**
  * Annotated mixin to add Jackson annotations to Photo. 
  * @author Craig Walls
  */
 @JsonIgnoreProperties({"picture", "source", "height", "width"})
-public abstract class PhotoMixin {
+abstract class PhotoMixin {
 
 	@JsonCreator
 	PhotoMixin(
@@ -50,7 +52,8 @@ public abstract class PhotoMixin {
 	Date updatedTime;
 	
 	@JsonProperty("tags")
-	TagList tags;
+	@JsonDeserialize(using=TagListDeserializer.class)
+	List<Tag> tags;
 
 	public static abstract class ImageMixin {
 		@JsonCreator

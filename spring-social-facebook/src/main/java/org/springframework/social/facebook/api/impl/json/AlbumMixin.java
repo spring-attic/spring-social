@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
 
 import java.io.IOException;
 import java.util.Date;
@@ -26,16 +26,16 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
-import org.springframework.social.facebook.api.Reference;
 import org.springframework.social.facebook.api.Album.Privacy;
 import org.springframework.social.facebook.api.Album.Type;
+import org.springframework.social.facebook.api.Reference;
 
 /**
  * Annotated mixin to add Jackson annotations to Album. 
  * @author Craig Walls
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class AlbumMixin {
+abstract class AlbumMixin {
 
 	@JsonCreator
 	AlbumMixin(

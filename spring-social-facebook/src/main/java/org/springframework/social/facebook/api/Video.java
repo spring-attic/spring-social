@@ -18,8 +18,6 @@ package org.springframework.social.facebook.api;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.social.facebook.api.impl.TagList;
-
 
 /**
  * Model class representing a video.
@@ -30,7 +28,7 @@ public class Video {
 	
 	private Reference from;
 	
-	private TagList tags;
+	private List<Tag> tags;
 	
 	private String name;
 	
@@ -68,7 +66,7 @@ public class Video {
 	}
 	
 	public List<Tag> getTags() {
-		return tags.getList();
+		return tags;
 	}
 	
 	public String getName() {

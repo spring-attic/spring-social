@@ -39,7 +39,7 @@ import org.springframework.social.facebook.api.NotePost;
  * @author Craig Walls
  */
 @JsonIgnoreProperties("paging")
-public class NotePostList {
+class NotePostList {
 
 	private final List<NotePost> list;
 

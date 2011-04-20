@@ -26,7 +26,7 @@ import org.springframework.social.facebook.api.Photo;
  * This helps Jackson know what type to deserialize list data into. 
  * @author Craig Walls
  */
-public class PhotoList {
+class PhotoList {
 
 	private final List<Photo> list;
 

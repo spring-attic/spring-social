@@ -24,7 +24,7 @@ import org.springframework.social.facebook.api.GroupMemberReference;
 import org.springframework.social.facebook.api.GroupOperations;
 import org.springframework.social.facebook.api.ImageType;
 
-public class GroupTemplate implements GroupOperations {
+class GroupTemplate implements GroupOperations {
 	
 	private final GraphApi graphApi;
 

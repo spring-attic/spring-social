@@ -18,9 +18,6 @@ package org.springframework.social.facebook.api;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.social.facebook.api.impl.CommentList;
-import org.springframework.social.facebook.api.impl.ReferenceList;
-
 
 /**
  * Model class representing a user checkin on Facebook Places.
@@ -39,11 +36,11 @@ public class Checkin {
 
 	private String message;
 
-	private CommentList comments;
+	private List<Comment> comments;
 
-	private ReferenceList likes;
+	private List<Reference> likes;
 
-	private ReferenceList tags;
+	private List<Reference> tags;
 
 	private Checkin(String id, Place place, Reference from, Reference application, Date createdTime) {
 		this.id = id;
@@ -78,15 +75,15 @@ public class Checkin {
 	}
 
 	public List<Comment> getComments() {
-		return comments.getList();
+		return comments;
 	}
 
 	public List<Reference> getLikes() {
-		return likes.getList();
+		return likes;
 	}
 
 	public List<Reference> getTags() {
-		return tags.getList();
+		return tags;
 	}
 
 }

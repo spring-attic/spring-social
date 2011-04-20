@@ -39,7 +39,7 @@ import org.springframework.social.facebook.api.StatusPost;
  * @author Craig Walls
  */
 @JsonIgnoreProperties("paging")
-public class StatusPostList {
+class StatusPostList {
 
 	private final List<StatusPost> list;
 	

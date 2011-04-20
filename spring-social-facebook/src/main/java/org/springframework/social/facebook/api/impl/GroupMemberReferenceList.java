@@ -26,7 +26,7 @@ import org.springframework.social.facebook.api.GroupMemberReference;
  * This helps Jackson know what type to deserialize list data into. 
  * @author Craig Walls
  */
-public class GroupMemberReferenceList {
+class GroupMemberReferenceList {
 	
 	private final List<GroupMemberReference> list;
 

@@ -13,21 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
+
+import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.springframework.social.facebook.api.RsvpStatus;
 
 /**
- * Annotated mixin to add Jackson annotations to GroupMemberReference. 
+ * Annotated mixin to add Jackson annotations to Invitation. 
  * @author Craig Walls
  */
-public abstract class GroupMemberReferenceMixin {
+abstract class InvitationMixin {
 
 	@JsonCreator
-	GroupMemberReferenceMixin(
-			@JsonProperty("id") String id, 
-			@JsonProperty("name") String name,
-			@JsonProperty("administrator") boolean administrator) {}
+	InvitationMixin(
+			@JsonProperty("id") String eventId, 
+			@JsonProperty("name") String name, 
+			@JsonProperty("start_time") Date startTime, 
+			@JsonProperty("end_time") Date endTime, 
+			@JsonProperty("rsvp_status") @JsonDeserialize(using=RsvpStatusDeserializer.class) RsvpStatus rsvpStatus) {}
+	
+	@JsonProperty("location")
+	String location;
 	
 }

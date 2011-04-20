@@ -27,7 +27,7 @@ import org.springframework.social.facebook.api.StatusPost;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class FeedTemplate implements FeedOperations {
+class FeedTemplate implements FeedOperations {
 
 	private final GraphApi graphApi;
 

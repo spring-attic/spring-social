@@ -13,27 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
-
-import java.util.Date;
+package org.springframework.social.facebook.api.impl.json;
 
 import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.api.Reference;
 
 /**
- * Annotated mixin to add Jackson annotations to Comment. 
+ * Annotated mixin to add Jackson annotations to Reference. 
  * @author Craig Walls
  */
-public abstract class CommentMixin {
+@JsonIgnoreProperties("description")
+abstract class ReferenceMixin {
 
 	@JsonCreator
-	CommentMixin(
+	ReferenceMixin(
 			@JsonProperty("id") String id, 
-			@JsonProperty("from") Reference from, 
-			@JsonProperty("message") String message, 
-			@JsonProperty("created_time") Date createdTime) {}
-	
-	@JsonProperty("likes")
-	int likesCount;
+			@JsonProperty("name") String name) {}
 }

@@ -28,7 +28,7 @@ import org.springframework.social.facebook.api.Reference;
  * @author Craig Walls
  */
 @JsonIgnoreProperties("count")
-public class ReferenceList {
+class ReferenceList {
 	
 	private final List<Reference> list;
 

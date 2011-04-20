@@ -26,7 +26,7 @@ import org.springframework.social.facebook.api.Invitation;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class EventTemplate implements EventOperations {
+class EventTemplate implements EventOperations {
 			
 	private final GraphApi graphApi;
 

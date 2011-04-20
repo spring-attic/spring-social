@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
+package org.springframework.social.facebook.api.impl.json;
 
 import java.util.Date;
 import java.util.List;
@@ -29,7 +29,7 @@ import org.springframework.social.facebook.api.WorkEntry;
  * Annotated mixin to add Jackson annotations to FacebookProfile. 
  * @author Craig Walls
  */
-public abstract class FacebookProfileMixin {
+abstract class FacebookProfileMixin {
 
 	@JsonCreator
 	FacebookProfileMixin(

@@ -18,8 +18,6 @@ package org.springframework.social.facebook.api;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.social.facebook.api.impl.TagList;
-
 
 /**
  * Model class representing a feed Post to announce a Checkin on a user's wall.
@@ -31,7 +29,7 @@ public class CheckinPost extends Post {
 	
 	private Place place;
 	
-	private TagList tags;
+	private List<Tag> tags;
 	
 	public CheckinPost(String id, Reference from, Date createdTime, Date updatedTime) {
 		super(id, from, createdTime, updatedTime);
@@ -42,7 +40,7 @@ public class CheckinPost extends Post {
 	}
 	
 	public List<Tag> getTags() {
-		return tags.getList();
+		return tags;
 	}
 	
 	public String checkinId() {

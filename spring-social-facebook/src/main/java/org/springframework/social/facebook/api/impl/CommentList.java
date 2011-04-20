@@ -28,7 +28,7 @@ import org.springframework.social.facebook.api.Comment;
  * @author Craig Walls
  */
 @JsonIgnoreProperties("count")
-public class CommentList {
+class CommentList {
 	private final List<Comment> list;
 
 	@JsonCreator
