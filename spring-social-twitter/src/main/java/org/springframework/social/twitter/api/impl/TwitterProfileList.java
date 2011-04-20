@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.connect;
+package org.springframework.social.twitter.api.impl;
 
-import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
-import org.springframework.social.twitter.api.TwitterApi;
+import java.util.ArrayList;
 
-public class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
+import org.springframework.social.twitter.api.TwitterProfile;
 
-	public TwitterServiceProviderConnectionFactory(String consumerKey, String consumerSecret) {
-		super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterServiceApiAdapter());
-	}
-	
+/**
+ * Typed list of TwitterProfile. This helps Jackson know which type to deserialize list contents into.
+ * @author Craig Walls
+ */
+@SuppressWarnings("serial")
+class TwitterProfileList extends ArrayList<TwitterProfile> {
 }

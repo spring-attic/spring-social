@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.connect;
+package org.springframework.social.twitter.api;
 
-import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
-import org.springframework.social.twitter.api.TwitterApi;
+import org.springframework.social.OperationNotPermittedException;
 
-public class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
+/**
+ * Exception thrown when a duplicate tweet is posted.
+ * 
+ * @author Craig Walls
+ */
+public class DuplicateTweetException extends OperationNotPermittedException {
+	private static final long serialVersionUID = 1L;
 
-	public TwitterServiceProviderConnectionFactory(String consumerKey, String consumerSecret) {
-		super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterServiceApiAdapter());
+	public DuplicateTweetException(String message) {
+		super(message);
 	}
-	
+
+	public DuplicateTweetException(String message, Throwable cause) {
+		super(message, cause);
+	}
 }

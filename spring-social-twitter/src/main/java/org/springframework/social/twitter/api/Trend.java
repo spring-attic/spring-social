@@ -13,15 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.connect;
+package org.springframework.social.twitter.api;
 
-import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
-import org.springframework.social.twitter.api.TwitterApi;
+/**
+ * Represents a single trending topic.
+ * @author Craig Walls
+ */
+public class Trend {
+	private final String name;
 
-public class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
+	private final String query;
 
-	public TwitterServiceProviderConnectionFactory(String consumerKey, String consumerSecret) {
-		super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterServiceApiAdapter());
+	public Trend(String name, String query) {
+		this.name = name;
+		this.query = query;
 	}
-	
+
+	public String getName() {
+		return name;
+	}
+
+	public String getQuery() {
+		return query;
+	}
+
 }

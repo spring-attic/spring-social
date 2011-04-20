@@ -13,15 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.connect;
+package org.springframework.social.twitter.api.impl;
 
-import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
-import org.springframework.social.twitter.api.TwitterApi;
+import static org.junit.Assert.*;
 
-public class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
+import org.junit.Test;
+import org.springframework.social.twitter.api.impl.TwitterTemplate;
 
-	public TwitterServiceProviderConnectionFactory(String consumerKey, String consumerSecret) {
-		super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterServiceApiAdapter());
-	}
+public class TwitterTemplateTest {
 	
+	@Test
+	public void isAuthorizedForUser() {
+		TwitterTemplate twitter = new TwitterTemplate("API_KEY", "API_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET");
+		assertTrue(twitter.isAuthorizedForUser());
+	}
+
+	@Test
+	public void isAuthorizedForUser_notAuthorized() {
+		TwitterTemplate twitter = new TwitterTemplate();
+		assertFalse(twitter.isAuthorizedForUser());
+	}
+
 }

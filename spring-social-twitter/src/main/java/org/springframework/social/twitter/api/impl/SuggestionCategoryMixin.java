@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.connect;
+package org.springframework.social.twitter.api.impl;
 
-import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
-import org.springframework.social.twitter.api.TwitterApi;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
 
-public class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
-
-	public TwitterServiceProviderConnectionFactory(String consumerKey, String consumerSecret) {
-		super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterServiceApiAdapter());
-	}
-	
+/**
+ * Mixin class for adding Jackson annotations to SuggestionCategory.
+ * @author Craig Walls
+ */
+abstract class SuggestionCategoryMixin {
+	@JsonCreator
+	SuggestionCategoryMixin(
+			@JsonProperty("name") String name, 
+			@JsonProperty("slug") String slug, 
+			@JsonProperty("size") int size) {}
 }

@@ -13,15 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.connect;
+package org.springframework.social.twitter.api.impl;
 
-import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
-import org.springframework.social.twitter.api.TwitterApi;
+import java.util.List;
+import java.util.Map;
 
-public class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.social.twitter.api.Trend;
 
-	public TwitterServiceProviderConnectionFactory(String consumerKey, String consumerSecret) {
-		super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterServiceApiAdapter());
+/**
+ * Holder of a list of weekly trends.
+ * @author Craig Walls
+ */
+@JsonIgnoreProperties(ignoreUnknown=true)
+class WeeklyTrendsList extends AbstractTrendsList {
+
+	@JsonCreator
+	public WeeklyTrendsList(@JsonProperty("trends") Map<String, List<Trend>> trends) {
+		super(trends, WEEKLY_TREND_DATE_FORMAT);
 	}
-	
+
 }

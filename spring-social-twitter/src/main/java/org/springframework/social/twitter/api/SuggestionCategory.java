@@ -13,15 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.connect;
+package org.springframework.social.twitter.api;
 
-import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
-import org.springframework.social.twitter.api.TwitterApi;
+/**
+ * Represents a suggestion category; a category of users that Twitter may suggest that a user follow.
+ * @author Craig Walls
+ */
+public class SuggestionCategory {
+	private final String name;
+	private final String slug;
+	private final int size;
 
-public class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
-
-	public TwitterServiceProviderConnectionFactory(String consumerKey, String consumerSecret) {
-		super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterServiceApiAdapter());
+	public SuggestionCategory(String name, String slug, int size) {
+		this.name = name;
+		this.slug = slug;
+		this.size = size;
 	}
-	
+
+	public String getName() {
+		return name;
+	}
+
+	public String getSlug() {
+		return slug;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
 }

@@ -13,15 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.connect;
+package org.springframework.social.twitter.api;
 
-import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
-import org.springframework.social.twitter.api.TwitterApi;
+import java.util.Date;
+import java.util.List;
 
-public class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
 
-	public TwitterServiceProviderConnectionFactory(String consumerKey, String consumerSecret) {
-		super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterServiceApiAdapter());
+/**
+ * Represents a list of trending topics at a specific point in time.
+ * @author Craig Walls
+ */
+public class Trends {
+	private final Date time;
+	private final List<Trend> trends;
+
+	public Trends(Date time, List<Trend> trends) {
+		this.time = time;
+		this.trends = trends;
 	}
-	
+
+	public Date getTime() {
+		return time;
+	}
+
+	public List<Trend> getTrends() {
+		return trends;
+	}
+
 }

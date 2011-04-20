@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.connect;
+package org.springframework.social.twitter.api.impl;
 
-import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
-import org.springframework.social.twitter.api.TwitterApi;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
-public class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TwitterApi> {
-
-	public TwitterServiceProviderConnectionFactory(String consumerKey, String consumerSecret) {
-		super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterServiceApiAdapter());
-	}
-	
+/**
+ * Mixin class for adding Jackson annotations to Tweet. 
+ * Relies on TweetDeserializer to do actual deserialization, as Tweet JSON structures differ slightly between timeline lists and search results.
+ * @author Craig Walls
+ */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonDeserialize(using = TweetDeserializer.class)
+interface TweetMixin {
 }
