@@ -22,15 +22,15 @@ import org.springframework.util.MultiValueMap;
  * 
  * @author Roy Clarkson
  */
-public class AuthorizationParameters {
+public final class AuthorizationParameters {
 	
-	private String redirectUri;
+	private final String redirectUri;
 	
-	private String scope;
+	private final String scope;
 	
-	private String state;
+	private final String state;
 	
-	private MultiValueMap<String, String> additionalParameters;
+	private final MultiValueMap<String, String> additionalParameters;
 		
 	/**
 	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider
