@@ -15,6 +15,9 @@
  */
 package org.springframework.social.connect;
 
+import org.springframework.social.connect.spi.ServiceApiAdapter;
+import org.springframework.social.connect.spi.ServiceProviderUser;
+
 
 final class NullServiceApiAdapter implements ServiceApiAdapter<Object> {
 

@@ -16,8 +16,8 @@
 package org.springframework.social.facebook.connect;
 
 import org.springframework.social.BadCredentialsException;
-import org.springframework.social.connect.ServiceApiAdapter;
-import org.springframework.social.connect.ServiceProviderUser;
+import org.springframework.social.connect.spi.ServiceApiAdapter;
+import org.springframework.social.connect.spi.ServiceProviderUser;
 import org.springframework.social.facebook.api.FacebookApi;
 import org.springframework.social.facebook.api.FacebookProfile;
 
