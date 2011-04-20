@@ -16,18 +16,19 @@
 package org.springframework.social.connect.oauth2;
 
 import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.GrantType;
+import org.springframework.social.oauth2.AuthenticateParameters;
+import org.springframework.social.oauth2.AuthorizeParameters;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.util.MultiValueMap;
 
 class StubOAuth2Operations implements OAuth2Operations {
 
-	public String buildAuthorizeUrl(String redirectUri, String scope, String state, GrantType grantType, MultiValueMap<String, String> additionalParameters) {
-		return "http://springsource.org/oauth/authorize?scope=" + scope;
+	public String buildAuthorizeUrl(AuthorizeParameters params) {
+		return "http://springsource.org/oauth/authorize?scope=" + params.getScope();
 	}
 	
-	public String buildAuthenticateUrl(String redirectUri, String state, GrantType grantType, MultiValueMap<String, String> additionalParameters) {
-		return buildAuthorizeUrl(redirectUri, null, state, grantType, additionalParameters);
+	public String buildAuthenticateUrl(AuthenticateParameters params) {
+		return buildAuthorizeUrl(new AuthorizeParameters(params));
 	}
 
 	public AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri, MultiValueMap<String, String> additionalParameters) {
