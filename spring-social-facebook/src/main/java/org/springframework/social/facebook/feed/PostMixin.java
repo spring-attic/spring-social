@@ -30,10 +30,10 @@ import org.codehaus.jackson.annotate.JsonTypeInfo.Id;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
-import org.springframework.social.facebook.Reference;
 import org.springframework.social.facebook.comment.CommentList;
 import org.springframework.social.facebook.feed.Post.PostType;
-import org.springframework.social.facebook.json.ReferenceList;
+import org.springframework.social.facebook.shared.Reference;
+import org.springframework.social.facebook.shared.ReferenceList;
 
 /**
  * Annotated mixin to add Jackson annotations to Post.

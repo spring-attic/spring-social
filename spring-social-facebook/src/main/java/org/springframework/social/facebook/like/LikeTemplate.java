@@ -17,7 +17,7 @@ package org.springframework.social.facebook.like;
 
 import java.util.List;
 
-import org.springframework.social.facebook.GraphApi;
+import org.springframework.social.facebook.graph.GraphApi;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 

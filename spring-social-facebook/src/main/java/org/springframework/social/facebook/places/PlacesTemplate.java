@@ -17,12 +17,11 @@ package org.springframework.social.facebook.places;
 
 import java.util.List;
 
-import org.springframework.social.facebook.GraphApi;
+import org.springframework.social.facebook.graph.GraphApi;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 public class PlacesTemplate implements PlacesOperations {
-	
 	private final GraphApi graphApi;
 
 	public PlacesTemplate(GraphApi graphApi) {

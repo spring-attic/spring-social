@@ -19,9 +19,9 @@ import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.Reference;
-import org.springframework.social.facebook.json.TagList;
 import org.springframework.social.facebook.places.Place;
+import org.springframework.social.facebook.shared.Reference;
+import org.springframework.social.facebook.shared.TagList;
 
 /**
  * Annotated mixin to add Jackson annotations to CheckinPost. 

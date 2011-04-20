@@ -17,8 +17,8 @@ package org.springframework.social.facebook.media;
 
 import java.util.List;
 
-import org.springframework.social.facebook.GraphApi;
-import org.springframework.social.facebook.ImageType;
+import org.springframework.social.facebook.graph.GraphApi;
+import org.springframework.social.facebook.graph.ImageType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 

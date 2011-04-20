@@ -18,10 +18,11 @@ package org.springframework.social.facebook.feed;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.social.facebook.Reference;
 import org.springframework.social.facebook.comment.Comment;
 import org.springframework.social.facebook.comment.CommentList;
-import org.springframework.social.facebook.json.ReferenceList;
+import org.springframework.social.facebook.shared.Reference;
+import org.springframework.social.facebook.shared.ReferenceList;
+
 
 
 /**

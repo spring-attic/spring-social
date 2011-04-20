@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.json;
+package org.springframework.social.facebook.user;
 
 import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.user.FacebookProfile;
 
 /**
  * Holder class to hold a typed list of FacebookProfiles, pulled from the "data" field of the JSON object structure.

@@ -35,9 +35,9 @@ import org.springframework.social.facebook.feed.FeedOperations;
 import org.springframework.social.facebook.feed.FeedTemplate;
 import org.springframework.social.facebook.friend.FriendOperations;
 import org.springframework.social.facebook.friend.FriendTemplate;
+import org.springframework.social.facebook.graph.ImageType;
 import org.springframework.social.facebook.group.GroupOperations;
 import org.springframework.social.facebook.group.GroupTemplate;
-import org.springframework.social.facebook.json.FacebookModule;
 import org.springframework.social.facebook.like.LikeOperations;
 import org.springframework.social.facebook.like.LikeTemplate;
 import org.springframework.social.facebook.media.MediaOperations;
@@ -67,7 +67,7 @@ public class FacebookTemplate implements FacebookApi {
 
 	private UserOperations userOperations;
 	
-	private PlacesOperations placesOperations;
+	private PlacesOperations checkinOperations;
 
 	private FriendOperations friendOperations;
 	
@@ -102,7 +102,7 @@ public class FacebookTemplate implements FacebookApi {
 
 		// sub-apis
 		userOperations = new UserTemplate(this);
-		placesOperations = new PlacesTemplate(this);
+		checkinOperations = new PlacesTemplate(this);
 		friendOperations = new FriendTemplate(this, restTemplate);
 		feedOperations = new FeedTemplate(this);
 		commentOperations = new CommentTemplate(this);
@@ -128,8 +128,8 @@ public class FacebookTemplate implements FacebookApi {
 		return userOperations;
 	}
 	
-	public PlacesOperations placesOperations() {
-		return placesOperations;
+	public PlacesOperations checkinOperations() {
+		return checkinOperations;
 	}
 
 	public LikeOperations likeOperations() {

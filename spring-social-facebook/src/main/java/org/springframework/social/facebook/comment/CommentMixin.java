@@ -19,7 +19,7 @@ import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.shared.Reference;
 
 /**
  * Annotated mixin to add Jackson annotations to Comment. 

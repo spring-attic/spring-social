@@ -15,7 +15,7 @@
  */
 package org.springframework.social.facebook.user;
 
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.shared.Reference;
 
 /**
  * Model class representing an entry in a user's education history.

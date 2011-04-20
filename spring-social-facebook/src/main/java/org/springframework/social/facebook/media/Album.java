@@ -17,7 +17,7 @@ package org.springframework.social.facebook.media;
 
 import java.util.Date;
 
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.shared.Reference;
 
 /**
  * Model class representing a Facebook photo album.

@@ -18,7 +18,7 @@ package org.springframework.social.facebook.comment;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.shared.Reference;
 
 /**
  * Model class representing a comment.

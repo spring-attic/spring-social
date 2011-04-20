@@ -17,9 +17,9 @@ package org.springframework.social.facebook.comment;
 
 import java.util.List;
 
-import org.springframework.social.facebook.GraphApi;
-import org.springframework.social.facebook.Reference;
-import org.springframework.social.facebook.json.ReferenceList;
+import org.springframework.social.facebook.graph.GraphApi;
+import org.springframework.social.facebook.shared.Reference;
+import org.springframework.social.facebook.shared.ReferenceList;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 

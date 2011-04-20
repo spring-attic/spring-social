@@ -21,9 +21,9 @@ import java.util.List;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.Reference;
-import org.springframework.social.facebook.json.TagList;
 import org.springframework.social.facebook.media.Photo.Image;
+import org.springframework.social.facebook.shared.Reference;
+import org.springframework.social.facebook.shared.TagList;
 
 /**
  * Annotated mixin to add Jackson annotations to Photo. 

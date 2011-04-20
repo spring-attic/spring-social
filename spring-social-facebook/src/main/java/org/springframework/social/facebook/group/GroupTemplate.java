@@ -17,10 +17,10 @@ package org.springframework.social.facebook.group;
 
 import java.util.List;
 
-import org.springframework.social.facebook.GraphApi;
-import org.springframework.social.facebook.ImageType;
-import org.springframework.social.facebook.json.FacebookProfileList;
+import org.springframework.social.facebook.graph.GraphApi;
+import org.springframework.social.facebook.graph.ImageType;
 import org.springframework.social.facebook.user.FacebookProfile;
+import org.springframework.social.facebook.user.FacebookProfileList;
 
 public class GroupTemplate implements GroupOperations {
 	

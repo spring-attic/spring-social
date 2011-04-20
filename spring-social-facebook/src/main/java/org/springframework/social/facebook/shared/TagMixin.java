@@ -13,33 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook;
+package org.springframework.social.facebook.shared;
+
+import java.util.Date;
+
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
- * A simple reference to another Facebook object without the complete set of object data.
+ * Annotated mixin to add Jackson annotations to Tag. 
  * @author Craig Walls
  */
-public class Reference {
-
-	private final String id;
-
-	private final String name;
-
-	public Reference(String id) {
-		this(id, null);
-	}
-
-	public Reference(String id, String name) {
-		this.id = id;
-		this.name = name;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
+public abstract class TagMixin {
+	
+	@JsonCreator
+	TagMixin(
+			@JsonProperty("id") String id, 
+			@JsonProperty("name") String name, 
+			@JsonProperty("x") Integer x, 
+			@JsonProperty("y") Integer y, 
+			@JsonProperty("created_time") Date createdTime) {}
+	
 }

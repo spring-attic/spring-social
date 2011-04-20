@@ -25,8 +25,8 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
-import org.springframework.social.facebook.Reference;
 import org.springframework.social.facebook.event.Event.Privacy;
+import org.springframework.social.facebook.shared.Reference;
 
 /**
  * Annotated mixin to add Jackson annotations to Event. 

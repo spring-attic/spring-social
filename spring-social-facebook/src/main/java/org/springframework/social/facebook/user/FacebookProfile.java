@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.shared.Reference;
 
 
 /**

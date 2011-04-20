@@ -17,7 +17,7 @@ package org.springframework.social.facebook.friend;
 
 import java.util.List;
 
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.shared.Reference;
 import org.springframework.social.facebook.user.FacebookProfile;
 
 /**

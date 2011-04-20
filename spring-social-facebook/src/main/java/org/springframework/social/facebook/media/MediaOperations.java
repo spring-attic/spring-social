@@ -17,7 +17,7 @@ package org.springframework.social.facebook.media;
 
 import java.util.List;
 
-import org.springframework.social.facebook.ImageType;
+import org.springframework.social.facebook.graph.ImageType;
 
 /**
  * Defines operations for working with albums, photos, and videos.

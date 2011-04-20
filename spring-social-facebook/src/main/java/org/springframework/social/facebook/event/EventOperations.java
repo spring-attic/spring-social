@@ -17,7 +17,7 @@ package org.springframework.social.facebook.event;
 
 import java.util.List;
 
-import org.springframework.social.facebook.ImageType;
+import org.springframework.social.facebook.graph.ImageType;
 
 /**
  * Defines operations for creating and reading event data as well as RSVP'ing to events on behalf of a user.

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.places;
+package org.springframework.social.facebook;
 
 import static org.junit.Assert.*;
 import static org.springframework.http.HttpMethod.*;
@@ -24,19 +24,18 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.social.facebook.AbstractFacebookApiTest;
 import org.springframework.social.facebook.places.Checkin;
 import org.springframework.social.facebook.places.Place;
 
-public class PlacesTemplateTest extends AbstractFacebookApiTest {
+public class CheckinTemplateTest extends AbstractFacebookApiTest {
 
 	@Test
 	public void getCheckins() {
 		mockServer.expect(requestTo("https://graph.facebook.com/me/checkins"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("checkins.json", getClass()), responseHeaders));
-		List<Checkin> checkins = facebook.placesOperations().getCheckins();
+			.andRespond(withResponse(new ClassPathResource("testdata/checkins.json", getClass()), responseHeaders));
+		List<Checkin> checkins = facebook.checkinOperations().getCheckins();
 		assertCheckins(checkins);
 	}
 
@@ -45,8 +44,8 @@ public class PlacesTemplateTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/987654321/checkins"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("checkins.json", getClass()), responseHeaders));
-		List<Checkin> checkins = facebook.placesOperations().getCheckins("987654321");
+			.andRespond(withResponse(new ClassPathResource("testdata/checkins.json", getClass()), responseHeaders));
+		List<Checkin> checkins = facebook.checkinOperations().getCheckins("987654321");
 		assertCheckins(checkins);
 	}
 	
@@ -55,8 +54,8 @@ public class PlacesTemplateTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/10150431253050580"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("checkin.json", getClass()), responseHeaders));
-		Checkin checkin = facebook.placesOperations().getCheckin("10150431253050580");
+			.andRespond(withResponse(new ClassPathResource("testdata/checkin.json", getClass()), responseHeaders));
+		Checkin checkin = facebook.checkinOperations().getCheckin("10150431253050580");
 		assertSingleCheckin(checkin);		
 	}
 	
@@ -67,7 +66,7 @@ public class PlacesTemplateTest extends AbstractFacebookApiTest {
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andExpect(body("place=123456789&coordinates=%7B%22latitude%22%3A%2232.943860253093%22%2C%22longitude%22%3A%22-96.648515652755%22%7D"))
 			.andRespond(withResponse("{\"id\":\"10150431253050580\"}", responseHeaders));
-		assertEquals("10150431253050580", facebook.placesOperations().checkin("123456789", 32.943860253093, -96.648515652755));
+		assertEquals("10150431253050580", facebook.checkinOperations().checkin("123456789", 32.943860253093, -96.648515652755));
 	}
 	
 	@Test
@@ -77,7 +76,7 @@ public class PlacesTemplateTest extends AbstractFacebookApiTest {
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andExpect(body("place=123456789&coordinates=%7B%22latitude%22%3A%2232.943860253093%22%2C%22longitude%22%3A%22-96.648515652755%22%7D&message=My+favorite+place"))
 			.andRespond(withResponse("{\"id\":\"10150431253050580\"}", responseHeaders));
-		assertEquals("10150431253050580", facebook.placesOperations().checkin("123456789", 32.943860253093, -96.648515652755, "My favorite place"));
+		assertEquals("10150431253050580", facebook.checkinOperations().checkin("123456789", 32.943860253093, -96.648515652755, "My favorite place"));
 	}
 
 	@Test
@@ -88,7 +87,7 @@ public class PlacesTemplateTest extends AbstractFacebookApiTest {
 			.andExpect(body("place=123456789&coordinates=%7B%22latitude%22%3A%2232.943860253093%22%2C%22longitude%22%3A%22-96.648515652755%22%7D&message=My+favorite+place&tags=24680%2C13579"))
 			.andRespond(withResponse("{\"id\":\"10150431253050580\"}", responseHeaders));
 		assertEquals("10150431253050580", 
-				facebook.placesOperations().checkin("123456789", 32.943860253093, -96.648515652755, "My favorite place", "24680", "13579"));
+				facebook.checkinOperations().checkin("123456789", 32.943860253093, -96.648515652755, "My favorite place", "24680", "13579"));
 	}
 	
 	private void assertSingleCheckin(Checkin checkin) {

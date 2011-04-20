@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.json;
+package org.springframework.social.facebook;
 
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.module.SimpleModule;
-import org.springframework.social.facebook.Reference;
-import org.springframework.social.facebook.Tag;
 import org.springframework.social.facebook.comment.Comment;
 import org.springframework.social.facebook.comment.CommentMixin;
 import org.springframework.social.facebook.event.Event;
@@ -52,18 +50,23 @@ import org.springframework.social.facebook.media.AlbumMixin;
 import org.springframework.social.facebook.media.Photo;
 import org.springframework.social.facebook.media.PhotoMixin;
 import org.springframework.social.facebook.media.Video;
+import org.springframework.social.facebook.media.VideoMixin;
 import org.springframework.social.facebook.media.Photo.Image;
 import org.springframework.social.facebook.media.PhotoMixin.ImageMixin;
-import org.springframework.social.facebook.media.VideoMixin;
 import org.springframework.social.facebook.places.Checkin;
 import org.springframework.social.facebook.places.CheckinMixin;
 import org.springframework.social.facebook.places.Location;
 import org.springframework.social.facebook.places.LocationMixin;
 import org.springframework.social.facebook.places.Place;
 import org.springframework.social.facebook.places.PlaceMixin;
+import org.springframework.social.facebook.shared.Reference;
+import org.springframework.social.facebook.shared.ReferenceMixin;
+import org.springframework.social.facebook.shared.Tag;
+import org.springframework.social.facebook.shared.TagMixin;
 import org.springframework.social.facebook.user.EducationEntry;
 import org.springframework.social.facebook.user.EducationEntryMixin;
 import org.springframework.social.facebook.user.FacebookProfile;
+import org.springframework.social.facebook.user.FacebookProfileMixin;
 import org.springframework.social.facebook.user.WorkEntry;
 import org.springframework.social.facebook.user.WorkEntryMixin;
 

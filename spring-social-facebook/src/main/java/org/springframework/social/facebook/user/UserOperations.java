@@ -15,7 +15,7 @@
  */
 package org.springframework.social.facebook.user;
 
-import org.springframework.social.facebook.ImageType;
+import org.springframework.social.facebook.graph.ImageType;
 
 
 public interface UserOperations {

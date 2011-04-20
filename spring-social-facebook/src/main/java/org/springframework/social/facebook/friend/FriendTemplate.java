@@ -18,11 +18,11 @@ package org.springframework.social.facebook.friend;
 import java.net.URI;
 import java.util.List;
 
-import org.springframework.social.facebook.GraphApi;
-import org.springframework.social.facebook.Reference;
-import org.springframework.social.facebook.json.FacebookProfileList;
-import org.springframework.social.facebook.json.ReferenceList;
+import org.springframework.social.facebook.graph.GraphApi;
+import org.springframework.social.facebook.shared.Reference;
+import org.springframework.social.facebook.shared.ReferenceList;
 import org.springframework.social.facebook.user.FacebookProfile;
+import org.springframework.social.facebook.user.FacebookProfileList;
 import org.springframework.social.util.URIBuilder;
 import org.springframework.web.client.RestTemplate;
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.json;
+package org.springframework.social.facebook.user;
 
 import java.util.Date;
 import java.util.List;
@@ -21,15 +21,13 @@ import java.util.Locale;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.Reference;
-import org.springframework.social.facebook.user.EducationEntry;
-import org.springframework.social.facebook.user.WorkEntry;
+import org.springframework.social.facebook.shared.Reference;
 
 /**
  * Annotated mixin to add Jackson annotations to FacebookProfile. 
  * @author Craig Walls
  */
-abstract class FacebookProfileMixin {
+public abstract class FacebookProfileMixin {
 
 	@JsonCreator
 	FacebookProfileMixin(

@@ -17,7 +17,7 @@ package org.springframework.social.facebook.comment;
 
 import java.util.List;
 
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.shared.Reference;
 
 /**
  * Defines operations for reading and posting comments to Facebook.

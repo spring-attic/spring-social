@@ -17,8 +17,8 @@ package org.springframework.social.facebook.group;
 
 import java.util.List;
 
-import org.springframework.social.facebook.ImageType;
-import org.springframework.social.facebook.Reference;
+import org.springframework.social.facebook.graph.ImageType;
+import org.springframework.social.facebook.shared.Reference;
 import org.springframework.social.facebook.user.FacebookProfile;
 
 /**

@@ -18,10 +18,11 @@ package org.springframework.social.facebook.feed;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.social.facebook.Reference;
-import org.springframework.social.facebook.Tag;
-import org.springframework.social.facebook.json.TagList;
 import org.springframework.social.facebook.places.Place;
+import org.springframework.social.facebook.shared.Reference;
+import org.springframework.social.facebook.shared.Tag;
+import org.springframework.social.facebook.shared.TagList;
+
 
 /**
  * Model class representing a feed Post to announce a Checkin on a user's wall.
