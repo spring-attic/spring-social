@@ -33,13 +33,11 @@
 		<title>Twitter</title>
         
 		<para>
-			Twitter's social offering is rather simple: Enable users to post whatever they're thinking, 140 characters at a time.
+			From a user's perspective, Twitter's function is rather simple: Enable users to post whatever they're thinking, 140 characters at a time.
+			In contrast, Twitter's API is rather rich, enabling applications to interact with Twitter in ways that may not be obvious from the humble tweet box.
+			Spring Social offers interaction with Twitter's service API through the <interfacename>TwitterApi</interfacename> interface and its implementation, <classname>TwitterTemplate</classname>.			
 		</para>
-		
-		<para>
-			Spring Social's <classname>TwitterTemplate</classname> (which implements <interfacename>TwitterApi</interfacename>) offers several options for applications to integrate with Twitter.
-		</para>
-		
+
 		<para>
 			Creating an instance of <classname>TwitterTemplate</classname> involves invoking its constructor, passing in the application's OAuth credentials and an access token/secret pair authorizing the application to act on a user's behalf. 
 			For example:
@@ -50,7 +48,7 @@ String apiKey = "..."; // The application's API/Consumer key
 String apiSecret = "..."; // The application's API/Consumer secret
 String accessToken = "..."; // The access token granted after OAuth authorization
 String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
-TwitterApi twitter = new TwitterTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]>
+TwitterApi twitterApi = new TwitterTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]>
 		</programlisting>
 		
 		<para>
@@ -58,40 +56,119 @@ TwitterApi twitter = new TwitterTemplate(apiKey, apiSecret, accessToken, accessT
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-TwitterApi twitter = new TwitterTemplate();]]>
+TwitterApi twitterApi = new TwitterTemplate();]]>
 		</programlisting>
 		
 		<para>
 			When constructed with the default constructor, <classname>TwitterTemplate</classname> will allow a few simple operations that do not require authorization, such as searching. 
-			Other operations, such as tweeting will fail with an <classname>AccountNotConnectedException</classname> being thrown.
+			Attempting other operations, such as tweeting will fail with an <classname>IllegalStateException</classname> being thrown.
 		</para>
 		
 		<para>
-			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>TwitterApi</interfacename> by calling the <methodname>getServiceApi()</methodname> method on one of the connections given by <classname>TwitterServiceProvider</classname>'s <methodname>getConnections()</methodname> method. 
+			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>TwitterApi</interfacename> by calling the <methodname>getServiceApi()</methodname> method on a <interfacename>ServiceProviderConnection</interfacename>. 
 			For instance:
 		</para>
-		
+				
 		<programlisting language="java"><![CDATA[
-TwitterApi twitter = twitterProvider.getConnections(accountId).get(0).getServiceApi();]]>
+List<ServiceProviderConnection<TwitterApi>> connections = connectionRepository.finConnectionsToProvider("twitter");
+TwitterApi twitterApi = connections.get(0).getServiceApi();]]>
 		</programlisting>
 		
 		<para>
-			Here, <classname>TwitterServiceProvider</classname> is being asked for a <interfacename>TwitterApi</interfacename> that was created using connection details established previously via the service provider's <methodname>connect()</methodname> method or through <classname>ConnectController</classname>.
+			Here, <interfacename>ServiceProviderConnectionRepository</interfacename> is being asked for all of the connections that the current user has with Twitter.
+			From the first connection, it retrieves a <interfacename>TwitterApi</interfacename> instance that is configured with the connection credentials received when the connection was established.
 		</para>
 		
 		<para>
-			Once you have <interfacename>TwitterApi</interfacename>, you can perform a variety of operations against Twitter.
+			Once you have a <interfacename>TwitterApi</interfacename>, you can perform a several operations against Twitter.
+			<interfacename>TwitterApi</interfacename> is defined as follows:
+		</para>
+		
+		<programlisting language="java"><![CDATA[
+public interface TwitterApi {
+
+    boolean isAuthorizedForUser();
+
+    DirectMessageOperations directMessageOperations();
+	
+    FriendOperations friendOperations();
+
+    ListOperations listOperations();
+
+    SearchOperations searchOperations();
+
+    TimelineOperations timelineOperations();
+
+    UserOperations userOperations();
+
+}]]>
+		</programlisting>		
+		
+		<para>
+			The <methodname>isAuthorizedForUser</methodname> helps determine if the <interfacename>TwitterApi</interfacename> instance has been created with credentials to perform on behalf of a user.
+			It will return true if it is capable of performing operations requiring authorization; false otherwise. 			
+		</para>
+		
+		<para>
+			The remaining six methods return sub-APIs, partitioning the Twitter service API into divisions targeting specific facets of Twitter functionality.
+			These sub-APIs are defined by interfaces described in <xref linkend="table-twitter-sub-apis" />.
+		</para>
+		
+		<table xml:id="table-twitter-sub-apis">
+			<title>TwitterApi's Sub-APIs</title>
+			<tgroup cols="2">
+				<colspec align="left" />
+				<colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="2*"/>
+				<thead>
+					<row>
+						<entry align="center">Sub-API Interface</entry>
+						<entry align="center">Description</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>DirectMessageOperations</entry>
+						<entry>Reading and sending direct messages.</entry>
+					</row>
+					<row>
+						<entry>FriendOperations</entry>
+						<entry>Retrieving a user's list of friends and followers and following/unfollowing users.</entry>
+					</row>
+					<row>
+						<entry>ListOperations</entry>
+						<entry>Maintaining, subscribing to, and unsubscripting from user lists</entry>
+					</row>
+					<row>
+						<entry>SearchOperations</entry>
+						<entry>Searching tweets and viewing search trends</entry>
+					</row>
+					<row>
+						<entry>TimelineOperations</entry>
+						<entry>Reading timelines and posting tweets.</entry>
+					</row>
+					<row>
+						<entry>UserOperations</entry>
+						<entry>Retrieving user profile data.</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
+		
+		<para>
+			What follows is a survey of common tasks you may perform with <interfacename>TwitterApi</interfacename> and its sub-APIs.
+			For complete details on the Spring Social's entire Twitter API binding, refer to the JavaDoc.
 		</para>
 
 		<section id="twitter-getProfile">
 			<title>Retrieving a user's Twitter profile data</title>
 			
 			<para>
-				To get a user's Twitter profile, call the <methodname>getUserProfile()</methodname>:
+				To get a user's Twitter profile, call <interfacename>UserOperations</interfacename>' <methodname>getUserProfile()</methodname>:
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-TwitterProfile profile = twitter.getUserProfile();]]>
+TwitterProfile profile = twitterApi.userOperations().getUserProfile();]]>
 			</programlisting>
 			
 			<para>
@@ -105,15 +182,15 @@ TwitterProfile profile = twitter.getUserProfile();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-TwitterProfile profile = twitter.getUserProfile("habuma");]]>
+TwitterProfile profile = twitterApi.userOperations().getUserProfile("habuma");]]>
 			</programlisting>
 			
 			<para>
-				If all you need is the screen name for the authenticating user, then call <methodname>getProfileId()</methodname>:
+				If all you need is the screen name for the authenticating user, then call <methodname>UserOperations.getScreenName()</methodname>:
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-String profileId = twitter.getProfileId();]]>
+String profileId = twitterApi.userOperations().getScreenName();]]>
 			</programlisting>
 
 		</section>
@@ -122,11 +199,11 @@ String profileId = twitter.getProfileId();]]>
 			<title>Tweeting</title>
 			
 			<para>
-				To post a message to Twitter using <classname>TwitterTemplate</classname> the simplest thing to do is to pass the message to the <methodname>updateStatus()</methodname> method:
+				To post a message to Twitter the simplest thing to do is to pass the message to the <methodname>updateStatus()</methodname> method provided by <interfacename>TimelineOperations</interfacename>:
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-twitter.updateStatus("Spring Social is awesome!")]]>
+twitterApi.timelineOperations().updateStatus("Spring Social is awesome!")]]>
 			</programlisting>
 			
 			<para>
@@ -136,7 +213,7 @@ twitter.updateStatus("Spring Social is awesome!")]]>
 			
 			<programlisting language="java"><![CDATA[
 StatusDetails statusDetails = new StatusDetails().setLocation(51.502f, -0.126f);
-twitter.updateStatus("I'm tweeting from London!", statusDetails)]]>
+twitterApi.timelineOperations().updateStatus("I'm tweeting from London!", statusDetails)]]>
 			</programlisting>
 			
 			<para>
@@ -145,7 +222,7 @@ twitter.updateStatus("I'm tweeting from London!", statusDetails)]]>
 			
 			<programlisting language="java"><![CDATA[
 StatusDetails statusDetails = new StatusDetails().setLocation(51.502f, -0.126f).setDisplayCoordinates(true);
-twitter.updateStatus("I'm tweeting from London!", statusDetails)]]>
+twitterApi.timelineOperations().updateStatus("I'm tweeting from London!", statusDetails)]]>
 			</programlisting>
 			
 			
@@ -155,7 +232,7 @@ twitter.updateStatus("I'm tweeting from London!", statusDetails)]]>
 			
 			<programlisting language="java"><![CDATA[
 long tweetId = tweet.getId();
-twitter.retweet(tweetId);]]>
+twitterApi.timelineOperations().retweet(tweetId);]]>
 			</programlisting>
 			
 			<para>
@@ -183,12 +260,12 @@ twitter.retweet(tweetId);]]>
 			</para>
 			
 			<para>
-				<classname>TwitterTemplate</classname> also supports reading of tweets from one of the available Twitter timelines. 
-				To retrieve the 20 most recent tweets from the public timeline, use the <methodname>getPublicTimeline</methodname> method:
+				<interfacename>TimelineOperations</interfacename> also supports reading of tweets from one of the available Twitter timelines. 
+				To retrieve the 20 most recent tweets from the public timeline, use the <methodname>getPublicTimeline()</methodname> method:
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<Tweet> tweets = twitter.getPublicTimeline();]]>
+List<Tweet> tweets = twitterApi.timelineOperations().getPublicTimeline();]]>
 			</programlisting>
 			
 			<para>
@@ -196,7 +273,7 @@ List<Tweet> tweets = twitter.getPublicTimeline();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<Tweet> tweets = twitter.getHomeTimeline();]]>
+List<Tweet> tweets = twitterApi.timelineOperations().getHomeTimeline();]]>
 			</programlisting>
 			
 			<para>
@@ -204,7 +281,7 @@ List<Tweet> tweets = twitter.getHomeTimeline();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<Tweet> tweets = twitter.getFriendsTimeline();]]>
+List<Tweet> tweets = twitterApi.timelineOperations().getFriendsTimeline();]]>
 			</programlisting>
 			
 			<para>
@@ -212,7 +289,7 @@ List<Tweet> tweets = twitter.getFriendsTimeline();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<Tweet> tweets = twitter.getUserTimeline();]]>
+List<Tweet> tweets = twitterApi.timelineOperations().getUserTimeline();]]>
 			</programlisting>
 			
 			<para>
@@ -220,7 +297,7 @@ List<Tweet> tweets = twitter.getUserTimeline();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<Tweet> tweets = twitter.getUserTimeline("rclarkson");]]>
+List<Tweet> tweets = twitterApi.timelineOperations().getUserTimeline("rclarkson");]]>
 			</programlisting>
 			
 			<para>
@@ -229,16 +306,126 @@ List<Tweet> tweets = twitter.getUserTimeline("rclarkson");]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<Tweet> tweets = twitter.getMentions();]]>
+List<Tweet> tweets = twitterApi.timelineOperations().getMentions();]]>
 			</programlisting>
 			
 		</section>
+
+		<section id="twitter-friends">
+			<title>Friends and Followers</title>
+			
+			<para>
+				A key social concept in Twitter is the ability for one user to "follow" another user.
+				The followed user's tweets will appear in the following user's home and friends timelines.
+				To follow a user on behalf of the authenticating user, call the <interfacename>FriendOperations</interfacename>' <methodname>follow()</methodname> method:
+			</para>
+			
+			<programlisting language="java"><![CDATA[
+twitterApi.friendOperations().follow("habuma");]]>
+			</programlisting>
+
+			<para>
+				Similarly, you may stop following a user using the <methodname>unfollow()</methodname> method:
+			</para>
+
+			<programlisting language="java"><![CDATA[
+twitterApi.friendOperations().unfollow("habuma");]]>
+			</programlisting>
+			
+			<para>
+				If you want to see who a particular user is following, use the <methodname>getFriends()</methodname> method:
+			</para>
+
+			<programlisting language="java"><![CDATA[
+List<TwitterProfile> friends = twitterApi.friendOperations().getFriends("habuma");]]>
+			</programlisting>
+
+			<para>
+				On the other hand, you may be interested in seeing who is following a given user.
+				In that case the <methodname>getFollowers()</methodname> method may be useful:
+			</para>
+
+			<programlisting language="java"><![CDATA[
+List<TwitterProfile> followers = twitterApi.friendOperations().getFollowers("habuma");]]>
+			</programlisting>
+		</section>
+		
+		<section id="twitter-lists">
+			<title>Twitter User Lists</title>
+			
+			<para>
+				In addition to following other users, Twitter provides the ability for users to collect users in lists, regardless of whether or not they are being followed.
+				These lists may be private to the use who created them or may be public for others to read and subscribe to.
+			</para>
+			
+			<para>
+				To create a new list, use <interfacename>ListOperations</interfacename>' <methodname>createList()</methodname> method:
+			</para>
+			
+			<programlisting language="java"><![CDATA[
+UserList familyList = twitterApi.listOperations().createList(
+        "My Family", "Tweets from my immediate family members", false);]]>
+			</programlisting>
+			
+			<para>
+				<methodname>createList()</methodname> takes three parameters and returns a <classname>UserList</classname> object representing the newly created list.
+				The first parameter is the name of the list.
+				The second parameter is a brief description of the list.
+				The final parameter is a boolean indicating whether or not the list is public.
+				Here, false indicates that the list should be private.
+				
+			</para>
+			
+			<para>
+				Once the list is created, you may add members to the list by calling the <methodname>addToList()</methodname> method:
+			</para>
+
+			<programlisting language="java"><![CDATA[
+twitterApi.listOperations().addToList(familyList.getSlug(), "artnames");]]>
+			</programlisting>
+			
+			<para>
+				The first parameter given to <methodname>addToList()</methodname> is the list slug (which is readily available from the <classname>UserList</classname> object).
+				The second parameter is the screen name of a user to add to the list.
+			</para>
+			
+			<para>
+				To remove a member from a list, pass the same parameters to <methodname>removedFromList()</methodname>:
+			</para>
+
+			<programlisting language="java"><![CDATA[
+twitterApi.listOperations().removeFromList(familyList.getSlug(), "artnames");]]>
+			</programlisting>
+
+
+			<para>
+				You can also subscribe to a list on behalf of the authenticating user.
+				Subscribing to a list has the effect of including tweets from the list's members in the user's home timeline.
+				The <methodname>subscribe()</methodname> method is used to subscribe to a list:
+			</para>
+
+			<programlisting language="java"><![CDATA[
+twitterApi.listOperations().subscribe("habuma", "music");]]>
+			</programlisting>			
+			
+			<para>
+				Here, <methodname>subscribe()</methodname> is given the list owner's screen name ("habuma") and the list slug ("music").
+			</para>
+			
+			<para>
+				Similarly, you may unsubscribe from a list with the <methodname>unsubscribe()</methodname> method:
+			</para>
+
+			<programlisting language="java"><![CDATA[
+twitterApi.listOperations().unsubscribe("habuma", "music");]]>
+			</programlisting>			
+		</section>		
 
 		<section id="twitter-search">
 			<title>Searching Twitter</title>
 			
 			<para>
-				<classname>TwitterTemplate</classname> enables you to search the public timeline for tweets containing some text through its <methodname>search()</methodname> method.
+				<interfacename>SearchOperations</interfacename> enables you to search the public timeline for tweets containing some text through its <methodname>search()</methodname> method.
 			</para>
 			
 			<para>
@@ -246,7 +433,7 @@ List<Tweet> tweets = twitter.getMentions();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-SearchResults results = twitter.search("#spring");]]>
+SearchResults results = twitterApi.searchOperations().search("#spring");]]>
 			</programlisting>
 			
 			<para>
@@ -261,7 +448,7 @@ SearchResults results = twitter.search("#spring");]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-SearchResults results = twitter.search("#spring", 2, 10);]]>
+SearchResults results = twitterApi.searchOperations().search("#spring", 2, 10);]]>
 			</programlisting>
 			
 			<para>
@@ -273,7 +460,7 @@ SearchResults results = twitter.search("#spring", 2, 10);]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-SearchResults results = twitter.search("#spring", 2, 10, 145962, 210112);]]>
+SearchResults results = twitterApi.searchOperations().search("#spring", 2, 10, 145962, 210112);]]>
 			</programlisting>
 			
 			<para>
@@ -286,19 +473,19 @@ SearchResults results = twitter.search("#spring", 2, 10, 145962, 210112);]]>
 			
 			<para>
 				In addition to posting tweets to the public timelines, Twitter also supports sending of private messages directly to a given user. 
-				<classname>TwitterTemplate</classname>'s <methodname>sendDirectMessage()</methodname> method can be used to send a direct message to another user:
+				<classname>DirectMessageOperations</classname>' <methodname>sendDirectMessage()</methodname> method can be used to send a direct message to another user:
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-twitter.sendDirectMessage("kdonald", "You going to the Dolphins game?")]]>
+twitterApi.directMessageOperations().sendDirectMessage("kdonald", "You going to the Dolphins game?")]]>
 			</programlisting>
 			
 			<para>
-				<classname>TwitterTemplate</classname> can also be used to read direct messages received by the authenticating user through its <methodname>getDirectMessagesReceived()</methodname> method:
+				<classname>DirectMessageOperations</classname> can also be used to read direct messages received by the authenticating user through its <methodname>getDirectMessagesReceived()</methodname> method:
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<DirectMessage> twitter.getDirectMessagesReceived();]]>
+List<DirectMessage> twitterApi.directMessageOperations().getDirectMessagesReceived();]]>
 			</programlisting>
 			
 			<para>
