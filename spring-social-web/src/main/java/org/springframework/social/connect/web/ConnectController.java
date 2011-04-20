@@ -129,7 +129,7 @@ public class ConnectController  {
 			return "redirect:" + oauth1Ops.buildAuthorizeUrl(requestToken.getValue(), callbackUrl(providerId));
 		} else if (connectionFactory instanceof OAuth2ServiceProviderConnectionFactory) {
 			String scope = request.getParameter("scope");
-			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(new AuthorizationParameters(callbackUrl(providerId), scope, null, GrantType.AUTHORIZATION_CODE, null));
+			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new AuthorizationParameters(callbackUrl(providerId), scope, null, null));
 		} else {
 			return handleConnectToCustomConnectionFactory(connectionFactory, request);
 		}

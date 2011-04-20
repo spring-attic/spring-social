@@ -64,12 +64,12 @@ public class OAuth2Template implements OAuth2Operations {
 		this.restTemplate = createRestTemplate();
 	}
 	
-	public String buildAuthorizeUrl(AuthorizationParameters params) {
-		return buildOAuthUrl(authorizeUrl, params);
+	public String buildAuthorizeUrl(GrantType grantType, AuthorizationParameters parameters) {
+		return buildOAuthUrl(authorizeUrl, grantType, parameters);
 	}
 	
-	public String buildAuthenticateUrl(AuthorizationParameters params) {
-		return authenticateUrl != null ? buildOAuthUrl(authenticateUrl, params) : buildAuthorizeUrl(params);
+	public String buildAuthenticateUrl(GrantType grantType, AuthorizationParameters parameters) {
+		return authenticateUrl != null ? buildOAuthUrl(authenticateUrl, grantType, parameters) : buildAuthorizeUrl(grantType, parameters);
 	}
 
 	public AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters) {
@@ -128,21 +128,21 @@ public class OAuth2Template implements OAuth2Operations {
 	
 	// internal helpers
 
-	private String buildOAuthUrl(String baseOauthUrl, AuthorizationParameters params) {
-		StringBuilder oauthUrl = new StringBuilder(baseOauthUrl).append('&').append("redirect_uri").append('=').append(formEncode(params.getRedirectUri()));
-		if (params.getGrantType() == GrantType.AUTHORIZATION_CODE) {
+	private String buildOAuthUrl(String baseOauthUrl, GrantType grantType, AuthorizationParameters parameters) {
+		StringBuilder oauthUrl = new StringBuilder(baseOauthUrl).append('&').append("redirect_uri").append('=').append(formEncode(parameters.getRedirectUri()));
+		if (grantType == GrantType.AUTHORIZATION_CODE) {
 			oauthUrl.append('&').append("response_type").append('=').append("code");
-		} else if (params.getGrantType() == GrantType.IMPLICIT_GRANT) {
+		} else if (grantType == GrantType.IMPLICIT_GRANT) {
 			oauthUrl.append('&').append("response_type").append('=').append("token");
 		}
-		if (params.getScope() != null) {
-			oauthUrl.append('&').append("scope").append('=').append(formEncode(params.getScope()));
+		if (parameters.getScope() != null) {
+			oauthUrl.append('&').append("scope").append('=').append(formEncode(parameters.getScope()));
 		}
-		if (params.getState() != null) {
-			oauthUrl.append('&').append("state").append('=').append(formEncode(params.getState()));	
+		if (parameters.getState() != null) {
+			oauthUrl.append('&').append("state").append('=').append(formEncode(parameters.getState()));	
 		}
-		if (params.getAdditionalParameters() != null) {
-			for (Iterator<Entry<String, List<String>>> additionalParams = params.getAdditionalParameters().entrySet().iterator(); additionalParams.hasNext();) {
+		if (parameters.getAdditionalParameters() != null) {
+			for (Iterator<Entry<String, List<String>>> additionalParams = parameters.getAdditionalParameters().entrySet().iterator(); additionalParams.hasNext();) {
 				Entry<String, List<String>> param = additionalParams.next();
 				for (Iterator<String> paramValues = param.getValue().iterator(); paramValues.hasNext();) {
 					oauthUrl.append('&').append(param.getKey()).append('=').append(formEncode(paramValues.next()));

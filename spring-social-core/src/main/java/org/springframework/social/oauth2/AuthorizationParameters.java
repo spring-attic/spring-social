@@ -30,59 +30,31 @@ public class AuthorizationParameters {
 	
 	private String state;
 	
-	private GrantType grantType;
-	
 	private MultiValueMap<String, String> additionalParameters;
 		
 	/**
 	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider
 	 * @param scope the permissions the application is seeking with the authorization
 	 * @param state
-	 * @param grantType specifies whether the OAuth flow is "client-side" or "server-side"
 	 * @param additionalParameters additional parameters required by the provider
 	 */
-	public AuthorizationParameters(String redirectUri, String scope, String state, GrantType grantType, MultiValueMap<String, String> additionalParameters) {
+	public AuthorizationParameters(String redirectUri, String scope, String state, MultiValueMap<String, String> additionalParameters) {
 		this.redirectUri = redirectUri;
 		this.scope = scope;
 		this.state = state;
-		this.grantType = grantType;
 		this.additionalParameters = additionalParameters;
 	}
 	
-	public void setRedirectUri(String redirectUri) {
-		this.redirectUri = redirectUri;
-	}
-
 	public String getRedirectUri() {
 		return redirectUri;
-	}
-	
-	public void setScope(String scope) {
-		this.scope = scope;
 	}
 
 	public String getScope() {
 		return scope;
 	}
-	
-	public void setState(String state) {
-		this.state = state;
-	}
 
 	public String getState() {
 		return state;
-	}
-
-	public void setGrantType(GrantType grantType) {
-		this.grantType = grantType;
-	}
-
-	public GrantType getGrantType() {
-		return grantType;
-	}
-
-	public void setAdditionalParameters(MultiValueMap<String, String> additionalParameters) {
-		this.additionalParameters = additionalParameters;
 	}
 
 	public MultiValueMap<String, String> getAdditionalParameters() {

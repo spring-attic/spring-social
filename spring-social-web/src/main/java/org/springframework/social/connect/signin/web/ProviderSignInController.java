@@ -74,7 +74,7 @@ public class ProviderSignInController {
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
 			return "redirect:" + oauth1Ops.buildAuthenticateUrl(requestToken.getValue(), callbackUrl(providerId));
 		} else if (connectionFactory instanceof OAuth2ServiceProviderConnectionFactory) {
-			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthenticateUrl(new AuthorizationParameters(callbackUrl(providerId), null, null, GrantType.AUTHORIZATION_CODE, null));
+			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, new AuthorizationParameters(callbackUrl(providerId), null, null, null));
 		} else {
 			throw new IllegalStateException("Sign in using provider '" + providerId + "' not supported");
 		}
