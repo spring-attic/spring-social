@@ -52,7 +52,7 @@ public class OAuth2ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 
 	/**
 	 * Create a OAuth2-based ServiceProviderConnection from the {@link AccessGrant} returned after {@link #getOAuthOperations() completing the OAuth2 flow}.
-	 * @param accessToken the access token
+	 * @param accessGrant the access grant
 	 * @return the new service provider connection
 	 * @see OAuth2Operations#exchangeForAccess(String, String, org.springframework.util.MultiValueMap)
 	 */

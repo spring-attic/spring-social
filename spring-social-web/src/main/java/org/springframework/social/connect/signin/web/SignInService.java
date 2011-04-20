@@ -24,7 +24,7 @@ public interface SignInService {
 	
 	/**
 	 * Sign in the user with the specified accountId.
-	 * @param accountId the user's account id
+	 * @param localUserId the user's local application user id
 	 */
 	void signIn(String localUserId);
 	
