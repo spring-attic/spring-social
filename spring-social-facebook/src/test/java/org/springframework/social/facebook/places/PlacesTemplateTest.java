@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook;
+package org.springframework.social.facebook.places;
 
 import static org.junit.Assert.*;
 import static org.springframework.http.HttpMethod.*;
@@ -24,17 +24,16 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.social.facebook.places.Checkin;
-import org.springframework.social.facebook.places.Place;
+import org.springframework.social.facebook.AbstractFacebookApiTest;
 
-public class CheckinTemplateTest extends AbstractFacebookApiTest {
+public class PlacesTemplateTest extends AbstractFacebookApiTest {
 
 	@Test
 	public void getCheckins() {
 		mockServer.expect(requestTo("https://graph.facebook.com/me/checkins"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("testdata/checkins.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("checkins.json", getClass()), responseHeaders));
 		List<Checkin> checkins = facebook.placesOperations().getCheckins();
 		assertCheckins(checkins);
 	}
@@ -44,7 +43,7 @@ public class CheckinTemplateTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/987654321/checkins"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("testdata/checkins.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("checkins.json", getClass()), responseHeaders));
 		List<Checkin> checkins = facebook.placesOperations().getCheckins("987654321");
 		assertCheckins(checkins);
 	}
@@ -54,7 +53,7 @@ public class CheckinTemplateTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/10150431253050580"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("testdata/checkin.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("checkin.json", getClass()), responseHeaders));
 		Checkin checkin = facebook.placesOperations().getCheckin("10150431253050580");
 		assertSingleCheckin(checkin);		
 	}
