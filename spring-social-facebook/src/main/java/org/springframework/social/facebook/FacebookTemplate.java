@@ -67,7 +67,7 @@ public class FacebookTemplate implements FacebookApi {
 
 	private UserOperations userOperations;
 	
-	private PlacesOperations checkinOperations;
+	private PlacesOperations placesOperations;
 
 	private FriendOperations friendOperations;
 	
@@ -102,7 +102,7 @@ public class FacebookTemplate implements FacebookApi {
 
 		// sub-apis
 		userOperations = new UserTemplate(this);
-		checkinOperations = new PlacesTemplate(this);
+		placesOperations = new PlacesTemplate(this);
 		friendOperations = new FriendTemplate(this, restTemplate);
 		feedOperations = new FeedTemplate(this);
 		commentOperations = new CommentTemplate(this);
@@ -128,8 +128,8 @@ public class FacebookTemplate implements FacebookApi {
 		return userOperations;
 	}
 	
-	public PlacesOperations checkinOperations() {
-		return checkinOperations;
+	public PlacesOperations placesOperations() {
+		return placesOperations;
 	}
 
 	public LikeOperations likeOperations() {

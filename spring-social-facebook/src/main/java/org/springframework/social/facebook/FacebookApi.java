@@ -43,7 +43,7 @@ public interface FacebookApi extends GraphApi {
 	/**
 	 * API for performing Facebook Places checkin operations.
 	 */
-	PlacesOperations checkinOperations();
+	PlacesOperations placesOperations();
 	
 	/**
 	 * API for performing operations against user likes and interests.
