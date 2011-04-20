@@ -57,6 +57,7 @@ import org.springframework.util.ClassUtils;
  * @author Roy Clarkson
  * @since 3.1
  */
+@SuppressWarnings("deprecation")
 class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory, DisposableBean {
 
 	private static final int DEFAULT_MAX_TOTAL_CONNECTIONS = 100;
@@ -73,25 +74,25 @@ class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory
 	 */
 	public HttpComponentsClientHttpRequestFactory() {
 		SchemeRegistry schemeRegistry = new SchemeRegistry();
-		ThreadSafeClientConnManager connectionManager;
 		
 		// Check for HttpComponents HttpClient 4.1 support
 		if (ClassUtils.hasConstructor(ThreadSafeClientConnManager.class, new Class<?>[]{SchemeRegistry.class})) {
 			schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
 			schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
-			connectionManager = new ThreadSafeClientConnManager(schemeRegistry);
+			ThreadSafeClientConnManager connectionManager = new ThreadSafeClientConnManager(schemeRegistry);
 			connectionManager.setMaxTotal(DEFAULT_MAX_TOTAL_CONNECTIONS);
 			connectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_CONNECTIONS_PER_ROUTE);
+			httpClient = new DefaultHttpClient(connectionManager);
 		} else {
 	        schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
 	        schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
 	        HttpParams params = new BasicHttpParams();
-	        connectionManager = new ThreadSafeClientConnManager(params, schemeRegistry);
+	        ThreadSafeClientConnManager connectionManager = new ThreadSafeClientConnManager(params, schemeRegistry);
 	        ConnManagerParams.setMaxTotalConnections(params, DEFAULT_MAX_TOTAL_CONNECTIONS);
 	        ConnManagerParams.setMaxConnectionsPerRoute(params, new ConnPerRouteBean(DEFAULT_MAX_CONNECTIONS_PER_ROUTE));
+	        httpClient = new DefaultHttpClient(connectionManager, null);
 		}
 
-		httpClient = new DefaultHttpClient(connectionManager);
 		this.setReadTimeout(DEFAULT_READ_TIMEOUT_MILLISECONDS);
 	}
 
