@@ -40,7 +40,9 @@ import org.springframework.util.ClassUtils;
  * @see HttpComponentsClientHttpRequest#execute()
  */
 final class HttpComponentsClientHttpResponse implements ClientHttpResponse {
-
+	
+	private static final boolean VERSION_4_1_AVAILABLE = ClassUtils.hasMethod(EntityUtils.class, "consume", new Class<?>[]{HttpEntity.class});
+	
 	private final HttpResponse httpResponse;
 
 	private HttpHeaders headers;
@@ -71,15 +73,14 @@ final class HttpComponentsClientHttpResponse implements ClientHttpResponse {
 		HttpEntity entity = httpResponse.getEntity();
 		return entity != null ? entity.getContent() : null;
 	}
-
+	
 	@SuppressWarnings("deprecation")
 	public void close() {
 		HttpEntity entity = httpResponse.getEntity();
 		if (entity != null) {
 			try {
 				// Release underlying connection back to the connection manager
-				// Check for HttpComponents HttpClient 4.1 support
-				if (ClassUtils.hasMethod(EntityUtils.class, "consume", new Class<?>[]{HttpEntity.class})) {
+				if (VERSION_4_1_AVAILABLE) {
 					EntityUtils.consume(entity);
 				} else {
 					entity.consumeContent();
