@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.connect;
+package org.springframework.social.facebook.api.impl.json;
 
-import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
-import org.springframework.social.facebook.api.FacebookApi;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.social.facebook.api.Location;
 
-public class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
+/**
+ * Annotated mixin to add Jackson annotations to Place. 
+ * @author Craig Walls
+ */
+abstract class PlaceMixin {
 
-	public FacebookServiceProviderConnectionFactory(String clientId, String clientSecret) {
-		super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookServiceApiAdapter());
-	}
-
+	@JsonCreator
+	PlaceMixin(
+			@JsonProperty("id") String id, 
+			@JsonProperty("name") String name, 
+			@JsonProperty("location") Location location) {}
+	
 }

@@ -13,15 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.connect;
+package org.springframework.social.facebook.api.impl;
 
-import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
-import org.springframework.social.facebook.api.FacebookApi;
+import java.util.List;
 
-public class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.social.facebook.api.Tag;
 
-	public FacebookServiceProviderConnectionFactory(String clientId, String clientSecret) {
-		super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookServiceApiAdapter());
+/**
+ * Holder class to hold a typed list of Tags, pulled from the "data" field of the JSON object structure.
+ * This helps Jackson know what type to deserialize list data into. 
+ * @author Craig Walls
+ */
+class TagList {
+
+	private final List<Tag> list;
+
+	@JsonCreator
+	public TagList(@JsonProperty("data") List<Tag> list) {
+		this.list = list;
 	}
 
+	public List<Tag> getList() {
+		return list;
+	}
 }

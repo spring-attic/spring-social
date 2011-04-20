@@ -13,15 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.connect;
+package org.springframework.social.facebook.api;
 
-import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
-import org.springframework.social.facebook.api.FacebookApi;
 
-public class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
+/**
+ * Model class representing a reference to a group member.
+ * @author Craig Walls
+ */
+public class GroupMemberReference extends Reference {
+	
+	private final boolean administrator;
 
-	public FacebookServiceProviderConnectionFactory(String clientId, String clientSecret) {
-		super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookServiceApiAdapter());
+	public GroupMemberReference(String id, String name, boolean administrator) {
+		super(id, name);
+		this.administrator = administrator;
 	}
 
+	public boolean isAdministrator() {
+		return administrator;
+	}
+	
 }

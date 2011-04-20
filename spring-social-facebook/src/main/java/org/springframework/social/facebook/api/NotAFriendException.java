@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.connect;
+package org.springframework.social.facebook.api;
 
-import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
-import org.springframework.social.facebook.api.FacebookApi;
+import org.springframework.social.SocialException;
 
-public class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
+/**
+ * Exception thrown when attempting an operation that requires a target user to be a friend of the authenticated user.
+ * @author Craig Walls
+ */
+@SuppressWarnings("serial")
+public class NotAFriendException extends SocialException {
 
-	public FacebookServiceProviderConnectionFactory(String clientId, String clientSecret) {
-		super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookServiceApiAdapter());
+	public NotAFriendException(String message) {
+		super(message);
 	}
-
+	
 }

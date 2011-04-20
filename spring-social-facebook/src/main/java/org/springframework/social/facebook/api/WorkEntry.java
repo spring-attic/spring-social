@@ -13,15 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.connect;
+package org.springframework.social.facebook.api;
 
-import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
-import org.springframework.social.facebook.api.FacebookApi;
 
-public class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
+/**
+ * Model class representing an entry in the user's work history.
+ * @author Craig Walls
+ */
+public class WorkEntry {
 
-	public FacebookServiceProviderConnectionFactory(String clientId, String clientSecret) {
-		super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookServiceApiAdapter());
+	private final Reference employer;
+
+	private final String startDate;
+
+	private final String endDate;
+
+	public WorkEntry(Reference employer, String startDate, String endDate) {
+		this.employer = employer;
+		this.startDate = startDate;
+		this.endDate = endDate;
 	}
 
+	public Reference getEmployer() {
+		return employer;
+	}
+
+	public String getStartDate() {
+		return startDate;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
 }

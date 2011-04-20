@@ -13,15 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.connect;
+package org.springframework.social.facebook.api.impl.json;
 
-import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
-import org.springframework.social.facebook.api.FacebookApi;
+import java.util.Date;
 
-public class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.social.facebook.api.Reference;
 
-	public FacebookServiceProviderConnectionFactory(String clientId, String clientSecret) {
-		super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookServiceApiAdapter());
-	}
+/**
+ * Annotated mixin to add Jackson annotations to Comment. 
+ * @author Craig Walls
+ */
+abstract class CommentMixin {
 
+	@JsonCreator
+	CommentMixin(
+			@JsonProperty("id") String id, 
+			@JsonProperty("from") Reference from, 
+			@JsonProperty("message") String message, 
+			@JsonProperty("created_time") Date createdTime) {}
+	
+	@JsonProperty("likes")
+	int likesCount;
 }

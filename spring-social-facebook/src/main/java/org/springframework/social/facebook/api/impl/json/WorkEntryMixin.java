@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.connect;
+package org.springframework.social.facebook.api.impl.json;
 
-import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
-import org.springframework.social.facebook.api.FacebookApi;
+import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.social.facebook.api.Reference;
 
-public class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
-
-	public FacebookServiceProviderConnectionFactory(String clientId, String clientSecret) {
-		super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookServiceApiAdapter());
-	}
-
+/**
+ * Annotated mixin to add Jackson annotations to WorkEntry. 
+ * @author Craig Walls
+ */
+abstract class WorkEntryMixin {
+	
+	@JsonCreator
+	WorkEntryMixin(
+			@JsonProperty("employer") Reference employer, 
+			@JsonProperty("start_date") String startDate, 
+			@JsonProperty("end_date") String endDate) {}
+	
 }

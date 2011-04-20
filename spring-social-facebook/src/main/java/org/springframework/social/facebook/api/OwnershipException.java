@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.connect;
+package org.springframework.social.facebook.api;
 
-import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
-import org.springframework.social.facebook.api.FacebookApi;
+import org.springframework.social.SocialException;
 
-public class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
+// TODO: Consider a better name for this exception
 
-	public FacebookServiceProviderConnectionFactory(String clientId, String clientSecret) {
-		super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookServiceApiAdapter());
+/**
+ * Exception thrown when attempting to perform operation on a resource that must be owned by the authenticated user,
+ * but is not. For example, attempting to delete someone else's friendlist.
+ * @author Craig Walls
+ */
+@SuppressWarnings("serial")
+public class OwnershipException extends SocialException {
+
+	public OwnershipException(String message) {
+		super(message);
 	}
 
 }

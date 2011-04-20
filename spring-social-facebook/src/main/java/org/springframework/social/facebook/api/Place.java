@@ -13,15 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.connect;
+package org.springframework.social.facebook.api;
 
-import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
-import org.springframework.social.facebook.api.FacebookApi;
+/**
+ * Model class representing a place that a user may check into on Facebook Places.
+ * @author Craig Walls
+ */
+public class Place {
 
-public class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
+	private final String id;
 
-	public FacebookServiceProviderConnectionFactory(String clientId, String clientSecret) {
-		super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookServiceApiAdapter());
+	private final String name;
+
+	private final Location location;
+	
+	public Place(String id, String name, Location location) {
+		this.id = id;
+		this.name = name;
+		this.location = location;
 	}
 
+	public String getId() {
+		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+	
 }
