@@ -22,6 +22,7 @@ import java.util.List;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonSubTypes.Type;
@@ -55,6 +56,7 @@ import org.springframework.social.facebook.api.VideoPost;
 				@Type(name="status", value=StatusPost.class),
 				@Type(name="video", value=VideoPost.class)
 				})
+@JsonIgnoreProperties("actions")
 abstract class PostMixin {
 	
 	@JsonCreator

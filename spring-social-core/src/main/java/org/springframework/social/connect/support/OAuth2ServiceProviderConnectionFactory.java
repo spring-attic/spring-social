@@ -15,12 +15,12 @@
  */
 package org.springframework.social.connect.support;
 
-import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionFactory;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
-import org.springframework.social.connect.ServiceProviderUser;
+import org.springframework.social.connect.spi.ServiceApiAdapter;
+import org.springframework.social.connect.spi.ServiceProviderUser;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
@@ -52,7 +52,7 @@ public class OAuth2ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 
 	/**
 	 * Create a OAuth2-based ServiceProviderConnection from the {@link AccessGrant} returned after {@link #getOAuthOperations() completing the OAuth2 flow}.
-	 * @param accessToken the access token
+	 * @param accessGrant the access grant
 	 * @return the new service provider connection
 	 * @see OAuth2Operations#exchangeForAccess(String, String, org.springframework.util.MultiValueMap)
 	 */

@@ -15,8 +15,8 @@
  */
 package org.springframework.social.linkedin.connect;
 
-import org.springframework.social.connect.ServiceApiAdapter;
-import org.springframework.social.connect.ServiceProviderUser;
+import org.springframework.social.connect.spi.ServiceApiAdapter;
+import org.springframework.social.connect.spi.ServiceProviderUser;
 import org.springframework.social.linkedin.LinkedInApi;
 import org.springframework.social.linkedin.LinkedInProfile;
 import org.springframework.web.client.HttpClientErrorException;

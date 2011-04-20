@@ -21,7 +21,7 @@ import javax.inject.Provider;
 
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
-import org.springframework.social.connect.ServiceProviderUser;
+import org.springframework.social.connect.ServiceProviderUserProfile;
 
 /**
  * Models an attempt to sign-in to the application using a provider user identity.
@@ -49,13 +49,13 @@ public class ProviderSignInAttempt implements Serializable {
 		this.connection = connection;
 		this.connectionRepositoryProvider = connectionRepositoryProvider;		
 	}
-
+	
 	/**
-	 * Returns a model of the provider user the client attempted to sign-in as.
-	 * This model can be used to pre-populate the application sign-up form with data from the provider user's profile.
+	 * Get the profile of the provider user that attempted to sign-in.
+	 * Profile fields can be used to pre-populate a local user registration/signup form.
 	 */
-	public ServiceProviderUser getUser() {
-		return connection.getUser();
+	public ServiceProviderUserProfile getUserProfile() {
+		return connection.fetchUserProfile();
 	}
 	
 	/**

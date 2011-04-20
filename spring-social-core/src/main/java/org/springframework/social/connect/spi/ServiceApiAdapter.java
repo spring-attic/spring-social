@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect;
+package org.springframework.social.connect.spi;
+
+import org.springframework.social.connect.ServiceProviderConnection;
 
 /**
  * An adapter that bridges between the uniform {@link ServiceProviderConnection} model and a specific provider API model.

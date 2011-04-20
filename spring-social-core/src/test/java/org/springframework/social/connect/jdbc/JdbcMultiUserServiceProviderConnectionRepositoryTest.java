@@ -23,12 +23,12 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.social.connect.DuplicateServiceProviderConnectionException;
 import org.springframework.social.connect.NoSuchServiceProviderConnectionException;
-import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
-import org.springframework.social.connect.ServiceProviderUser;
+import org.springframework.social.connect.spi.ServiceApiAdapter;
+import org.springframework.social.connect.spi.ServiceProviderUser;
 import org.springframework.social.connect.support.MapServiceProviderConnectionFactoryRegistry;
 import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
 import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
@@ -283,12 +283,12 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 		connectionFactoryRegistry.addConnectionFactory(new TestTwitterServiceProviderConnectionFactory());		
 		insertTwitterConnection();
 		ServiceProviderConnection<TestTwitterApi> twitter = connectionRepository.findConnectionByServiceApi(TestTwitterApi.class);
-		assertEquals("http://twitter.com/kdonald/picture", twitter.getUser().getProfilePictureUrl());
+		assertEquals("http://twitter.com/kdonald/picture", twitter.getImageUrl());
 		twitter.sync();
-		assertEquals("http://twitter.com/kdonald/a_new_picture", twitter.getUser().getProfilePictureUrl());
+		assertEquals("http://twitter.com/kdonald/a_new_picture", twitter.getImageUrl());
 		connectionRepository.updateConnection(twitter);
 		ServiceProviderConnection<TestTwitterApi> twitter2 = connectionRepository.findConnectionByServiceApi(TestTwitterApi.class);
-		assertEquals("http://twitter.com/kdonald/a_new_picture", twitter2.getUser().getProfilePictureUrl());
+		assertEquals("http://twitter.com/kdonald/a_new_picture", twitter2.getImageUrl());
 	}
 	
 	@Test
@@ -333,10 +333,9 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 	private void assertNewConnection(ServiceProviderConnection<TestFacebookApi> connection) {
 		assertEquals("facebook", connection.getKey().getProviderId());
 		assertEquals("9", connection.getKey().getProviderUserId());
-		ServiceProviderUser user = connection.getUser();
-		assertEquals("Keith Donald", user.getProfileName());
-		assertEquals("http://facebook.com/keith.donald", user.getProfileUrl());
-		assertEquals("http://facebook.com/keith.donald/picture", user.getProfilePictureUrl());
+		assertEquals("Keith Donald", connection.getDisplayName());
+		assertEquals("http://facebook.com/keith.donald", connection.getProfileUrl());
+		assertEquals("http://facebook.com/keith.donald/picture", connection.getImageUrl());
 		assertTrue(connection.test());
 		TestFacebookApi api = connection.getServiceApi();
 		assertNotNull(api);
@@ -347,29 +346,27 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 
 	private void assertTwitterConnection(ServiceProviderConnection<TestTwitterApi> twitter) {
 		assertEquals(new ServiceProviderConnectionKey("twitter", "1"), twitter.getKey());
-		assertEquals("@kdonald", twitter.getUser().getProfileName());
-		assertEquals("http://twitter.com/kdonald", twitter.getUser().getProfileUrl());
-		assertEquals("http://twitter.com/kdonald/picture", twitter.getUser().getProfilePictureUrl());
+		assertEquals("@kdonald", twitter.getDisplayName());
+		assertEquals("http://twitter.com/kdonald", twitter.getProfileUrl());
+		assertEquals("http://twitter.com/kdonald/picture", twitter.getImageUrl());
 		TestTwitterApi twitterApi = twitter.getServiceApi();
 		assertEquals("123456789", twitterApi.getAccessToken());		
 		assertEquals("987654321", twitterApi.getSecret());
 		twitter.sync();
-		assertEquals("http://twitter.com/kdonald/a_new_picture", twitter.getUser().getProfilePictureUrl());
+		assertEquals("http://twitter.com/kdonald/a_new_picture", twitter.getImageUrl());
 	}
 
 	private void assertFacebookConnection(ServiceProviderConnection<TestFacebookApi> facebook) {
 		assertEquals(new ServiceProviderConnectionKey("facebook", "9"), facebook.getKey());
-		assertEquals("9", facebook.getUser().getId());
-		assertEquals(null, facebook.getUser().getProfileName());
-		assertEquals(null, facebook.getUser().getProfileUrl());
-		assertEquals(null, facebook.getUser().getProfilePictureUrl());
+		assertEquals(null, facebook.getDisplayName());
+		assertEquals(null, facebook.getProfileUrl());
+		assertEquals(null, facebook.getImageUrl());
 		TestFacebookApi facebookApi = facebook.getServiceApi();
 		assertEquals("234567890", facebookApi.getAccessToken());
 		facebook.sync();
-		assertEquals("9", facebook.getUser().getId());
-		assertEquals("Keith Donald", facebook.getUser().getProfileName());
-		assertEquals("http://facebook.com/keith.donald", facebook.getUser().getProfileUrl());
-		assertEquals("http://facebook.com/keith.donald/picture", facebook.getUser().getProfilePictureUrl());		
+		assertEquals("Keith Donald", facebook.getDisplayName());
+		assertEquals("http://facebook.com/keith.donald", facebook.getProfileUrl());
+		assertEquals("http://facebook.com/keith.donald/picture", facebook.getImageUrl());		
 	}
 	
 	// test facebook provider

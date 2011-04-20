@@ -15,11 +15,12 @@
  */
 package org.springframework.social.connect.support;
 
-import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
-import org.springframework.social.connect.ServiceProviderUser;
+import org.springframework.social.connect.ServiceProviderUserProfile;
+import org.springframework.social.connect.spi.ServiceApiAdapter;
+import org.springframework.social.connect.spi.ServiceProviderUser;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
 
 /**
@@ -92,10 +93,16 @@ public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnec
 		return key;
 	}
 
-	public ServiceProviderUser getUser() {
-		synchronized (monitor) {
-			return user;
-		}
+	public String getDisplayName() {
+		return getUser().getProfileName();
+	}
+
+	public String getProfileUrl() {
+		return getUser().getProfileUrl();
+	}
+
+	public String getImageUrl() {
+		return getUser().getProfilePictureUrl();
 	}
 
 	public boolean test() {
@@ -109,6 +116,10 @@ public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnec
 
 	public void refresh() {
 		// not supported by OAuth 1
+	}
+
+	public ServiceProviderUserProfile fetchUserProfile() {
+		return new ServiceProviderUserProfile(null, null, null, null, null);
 	}
 
 	public void updateStatus(String message) {
@@ -161,6 +172,15 @@ public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnec
 			providerUserId = user.getId();
 		}
 		return new ServiceProviderConnectionKey(providerId, providerUserId);		
+	}
+
+	private ServiceProviderUser getUser() {
+		synchronized (monitor) {
+			if (user == null) {
+				initUser();
+			}			
+			return user;
+		}
 	}
 	
 	private void initUser() {
