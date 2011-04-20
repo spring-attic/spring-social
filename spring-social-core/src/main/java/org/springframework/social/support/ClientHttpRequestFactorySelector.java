@@ -23,6 +23,7 @@ import org.springframework.util.ClassUtils;
  * Chooses a request factory. Picks an Apache HttpComponents HttpClient factory if Apache HttpComponents HttpClient is in the classpath.
  * If not, falls back to SimpleClientHttpRequestFactory.
  * @author Craig Walls
+ * @author Roy Clarkson
  */
 public class ClientHttpRequestFactorySelector {
 	
@@ -31,7 +32,7 @@ public class ClientHttpRequestFactorySelector {
 			return new HttpComponentsClientHttpRequestFactory();
 		} else {
 			return new SimpleClientHttpRequestFactory();
-		}		
+		}
 	}
 	
 	private static boolean httpComponentsAvailable = ClassUtils.isPresent("org.apache.http.client.HttpClient", ClientHttpRequestFactory.class.getClassLoader());

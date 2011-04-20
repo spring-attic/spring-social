@@ -15,10 +15,14 @@
  */
 package org.springframework.social.oauth2;
 
-import static org.junit.Assert.*;
-import static org.springframework.http.HttpMethod.*;
-import static org.springframework.social.test.client.RequestMatchers.*;
-import static org.springframework.social.test.client.ResponseCreators.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.social.test.client.RequestMatchers.body;
+import static org.springframework.social.test.client.RequestMatchers.method;
+import static org.springframework.social.test.client.RequestMatchers.requestTo;
+import static org.springframework.social.test.client.ResponseCreators.withResponse;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +30,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.social.test.client.MockRestServiceServer;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 public class OAuth2TemplateTest {
 	
@@ -40,16 +46,34 @@ public class OAuth2TemplateTest {
 	}
 
 	@Test
-	public void buildAuthorizeUrl() {
-		String expected = "http://www.someprovider.com/oauth/authorize?response_type=code&client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&scope=read%2Cwrite";
-		String actual = oAuth2Template.buildAuthorizeUrl("http://www.someclient.com/connect/foo", "read,write", null);
+	public void buildAuthorizeUrl_codeResponseType() {
+		String expected = "http://www.someprovider.com/oauth/authorize?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=code&scope=read%2Cwrite";
+		String actual = oAuth2Template.buildAuthorizeUrl("http://www.someclient.com/connect/foo", "read,write", null, GrantType.AuthorizationCode, null);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void buildAuthorizeUrl_tokenResponseType() {
+		String expected = "http://www.someprovider.com/oauth/authorize?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=token&scope=read%2Cwrite";
+		String actual = oAuth2Template.buildAuthorizeUrl("http://www.someclient.com/connect/foo", "read,write", null, GrantType.ImplicitGrant, null);
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void buildAuthorizeUrl_noScopeInParameters() {
-		String expected = "http://www.someprovider.com/oauth/authorize?response_type=code&client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo";
-		String actual = oAuth2Template.buildAuthorizeUrl("http://www.someclient.com/connect/foo", null, null);
+		String expected = "http://www.someprovider.com/oauth/authorize?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=code";
+		String actual = oAuth2Template.buildAuthorizeUrl("http://www.someclient.com/connect/foo", null, null, GrantType.AuthorizationCode, null);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void buildAuthorizeUrl_additionalParameters() {
+		String expected = "http://www.someprovider.com/oauth/authorize?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=token&scope=read%2Cwrite&display=touch&anotherparam=somevalue1&anotherparam=somevalue2";
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+		params.add("display", "touch");
+		params.add("anotherparam", "somevalue1");
+		params.add("anotherparam", "somevalue2");
+		String actual = oAuth2Template.buildAuthorizeUrl("http://www.someclient.com/connect/foo", "read,write", null, GrantType.ImplicitGrant, params);
 		assertEquals(expected, actual);
 	}
 

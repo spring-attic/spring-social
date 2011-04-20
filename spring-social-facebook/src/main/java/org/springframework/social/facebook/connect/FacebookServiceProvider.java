@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook;
+package org.springframework.social.facebook.connect;
 
 import org.springframework.social.facebook.api.FacebookApi;
 import org.springframework.social.facebook.api.impl.FacebookTemplate;

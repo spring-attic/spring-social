@@ -25,6 +25,7 @@ import org.apache.http.util.EntityUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link org.springframework.http.client.ClientHttpResponse} implementation that uses
@@ -34,6 +35,7 @@ import org.springframework.http.client.ClientHttpResponse;
  *
  * @author Oleg Kalnichevski
  * @author Arjen Poutsma
+ * @author Roy Clarkson
  * @since 3.0
  * @see HttpComponentsClientHttpRequest#execute()
  */
@@ -70,12 +72,18 @@ final class HttpComponentsClientHttpResponse implements ClientHttpResponse {
 		return entity != null ? entity.getContent() : null;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void close() {
 		HttpEntity entity = httpResponse.getEntity();
 		if (entity != null) {
 			try {
 				// Release underlying connection back to the connection manager
-				EntityUtils.consume(entity);
+				// Check for HttpComponents HttpClient 4.1 support
+				if (ClassUtils.hasMethod(EntityUtils.class, "consume", new Class<?>[]{HttpEntity.class})) {
+					EntityUtils.consume(entity);
+				} else {
+					entity.consumeContent();
+				}
 			}
 			catch (IOException e) {
 				// ignore

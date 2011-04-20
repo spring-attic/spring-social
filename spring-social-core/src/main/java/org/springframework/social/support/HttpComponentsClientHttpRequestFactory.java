@@ -27,18 +27,23 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpTrace;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.conn.params.ConnPerRouteBean;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
+import org.apache.http.params.HttpParams;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link org.springframework.http.client.ClientHttpRequestFactory} implementation that uses
@@ -49,8 +54,10 @@ import org.springframework.util.Assert;
  *
  * @author Oleg Kalnichevski
  * @author Arjen Poutsma
+ * @author Roy Clarkson
  * @since 3.1
  */
+@SuppressWarnings("deprecation")
 class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory, DisposableBean {
 
 	private static final int DEFAULT_MAX_TOTAL_CONNECTIONS = 100;
@@ -67,14 +74,25 @@ class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory
 	 */
 	public HttpComponentsClientHttpRequestFactory() {
 		SchemeRegistry schemeRegistry = new SchemeRegistry();
-		schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
-		schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
+		
+		// Check for HttpComponents HttpClient 4.1 support
+		if (ClassUtils.hasConstructor(ThreadSafeClientConnManager.class, new Class<?>[]{SchemeRegistry.class})) {
+			schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
+			schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
+			ThreadSafeClientConnManager connectionManager = new ThreadSafeClientConnManager(schemeRegistry);
+			connectionManager.setMaxTotal(DEFAULT_MAX_TOTAL_CONNECTIONS);
+			connectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_CONNECTIONS_PER_ROUTE);
+			httpClient = new DefaultHttpClient(connectionManager);
+		} else {
+	        schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+	        schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+	        HttpParams params = new BasicHttpParams();
+	        ThreadSafeClientConnManager connectionManager = new ThreadSafeClientConnManager(params, schemeRegistry);
+	        ConnManagerParams.setMaxTotalConnections(params, DEFAULT_MAX_TOTAL_CONNECTIONS);
+	        ConnManagerParams.setMaxConnectionsPerRoute(params, new ConnPerRouteBean(DEFAULT_MAX_CONNECTIONS_PER_ROUTE));
+	        httpClient = new DefaultHttpClient(connectionManager, null);
+		}
 
-		ThreadSafeClientConnManager connectionManager = new ThreadSafeClientConnManager(schemeRegistry);
-		connectionManager.setMaxTotal(DEFAULT_MAX_TOTAL_CONNECTIONS);
-		connectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_CONNECTIONS_PER_ROUTE);
-
-		httpClient = new DefaultHttpClient(connectionManager);
 		this.setReadTimeout(DEFAULT_READ_TIMEOUT_MILLISECONDS);
 	}
 
