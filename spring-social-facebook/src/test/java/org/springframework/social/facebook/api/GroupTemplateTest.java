@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.group;
+package org.springframework.social.facebook.api;
 
 import static org.junit.Assert.*;
 import static org.springframework.http.HttpMethod.*;
@@ -24,9 +24,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.social.facebook.AbstractFacebookApiTest;
-import org.springframework.social.facebook.api.Group;
-import org.springframework.social.facebook.api.GroupMemberReference;
 
 
 public class GroupTemplateTest extends AbstractFacebookApiTest {
@@ -36,7 +33,7 @@ public class GroupTemplateTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/213106022036379"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("group.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/group.json", getClass()), responseHeaders));
 		
 		Group group = facebook.groupOperations().getGroup("213106022036379");
 		assertEquals("213106022036379", group.getId());
@@ -55,7 +52,7 @@ public class GroupTemplateTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/213106022036379/members"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("group-members.json", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/group-members.json", getClass()), responseHeaders));
 		List<GroupMemberReference> members = facebook.groupOperations().getMembers("213106022036379");
 		assertEquals(3, members.size());
 		assertEquals("100001387295207", members.get(0).getId());

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook;
+package org.springframework.social.facebook.api;
 
 import static org.junit.Assert.*;
 import static org.springframework.http.HttpMethod.*;
@@ -23,11 +23,6 @@ import static org.springframework.social.test.client.ResponseCreators.*;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
-import org.springframework.social.facebook.api.FacebookProfile;
-import org.springframework.social.facebook.api.GraphAPIException;
-import org.springframework.social.facebook.api.InsufficientPermissionException;
-import org.springframework.social.facebook.api.NotAFriendException;
-import org.springframework.social.facebook.api.OwnershipException;
 
 public class ErrorHandlingTest extends AbstractFacebookApiTest {
 

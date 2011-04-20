@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.user;
+package org.springframework.social.facebook.api;
 
 import static org.junit.Assert.*;
 import static org.springframework.http.HttpMethod.*;
@@ -26,10 +26,6 @@ import java.util.Locale;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
-import org.springframework.social.facebook.AbstractFacebookApiTest;
-import org.springframework.social.facebook.api.EducationEntry;
-import org.springframework.social.facebook.api.FacebookProfile;
-import org.springframework.social.facebook.api.WorkEntry;
 
 /**
  * @author Craig Walls
@@ -41,7 +37,7 @@ public class UserTemplateTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/me"))
 				.andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
-				.andRespond(withResponse(new ClassPathResource("full-profile.json", getClass()), responseHeaders));
+				.andRespond(withResponse(new ClassPathResource("testdata/full-profile.json", getClass()), responseHeaders));
 
 		FacebookProfile profile = facebook.userOperations().getUserProfile();
 		assertBasicProfileData(profile);
@@ -105,7 +101,7 @@ public class UserTemplateTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/123456789"))
 				.andExpect(method(GET))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
-				.andRespond(withResponse(new ClassPathResource("minimal-profile.json", getClass()), responseHeaders));
+				.andRespond(withResponse(new ClassPathResource("testdata/minimal-profile.json", getClass()), responseHeaders));
 
 		FacebookProfile profile = facebook.userOperations().getUserProfile("123456789");
 		assertBasicProfileData(profile);
@@ -117,7 +113,7 @@ public class UserTemplateTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/me/picture?type=normal"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("tinyrod.jpg", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/tinyrod.jpg", getClass()), responseHeaders));
 		facebook.userOperations().getUserProfileImage();
 		// TODO: Fix mock server handle binary data so we can test contents (or at least size) of image data.
 		mockServer.verify();
@@ -129,7 +125,7 @@ public class UserTemplateTest extends AbstractFacebookApiTest {
 		mockServer.expect(requestTo("https://graph.facebook.com/1234567/picture?type=normal"))
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse(new ClassPathResource("tinyrod.jpg", getClass()), responseHeaders));
+			.andRespond(withResponse(new ClassPathResource("testdata/tinyrod.jpg", getClass()), responseHeaders));
 		facebook.userOperations().getUserProfileImage("1234567");
 		// TODO: Fix mock server handle binary data so we can test contents (or at least size) of image data.
 		mockServer.verify();
