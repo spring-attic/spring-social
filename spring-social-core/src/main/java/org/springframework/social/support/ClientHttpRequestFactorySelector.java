@@ -17,7 +17,6 @@ package org.springframework.social.support;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.social.support.httpclient.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.ClassUtils;
 
 /**
