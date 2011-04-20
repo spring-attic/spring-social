@@ -33,7 +33,7 @@ import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.AuthorizeParameters;
+import org.springframework.social.oauth2.AuthorizationParameters;
 import org.springframework.social.oauth2.GrantType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -129,7 +129,7 @@ public class ConnectController  {
 			return "redirect:" + oauth1Ops.buildAuthorizeUrl(requestToken.getValue(), callbackUrl(providerId));
 		} else if (connectionFactory instanceof OAuth2ServiceProviderConnectionFactory) {
 			String scope = request.getParameter("scope");
-			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(new AuthorizeParameters(callbackUrl(providerId), scope, null, GrantType.AUTHORIZATION_CODE, null));
+			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(new AuthorizationParameters(callbackUrl(providerId), scope, null, GrantType.AUTHORIZATION_CODE, null));
 		} else {
 			return handleConnectToCustomConnectionFactory(connectionFactory, request);
 		}

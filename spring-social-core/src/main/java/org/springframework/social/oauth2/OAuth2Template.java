@@ -64,12 +64,12 @@ public class OAuth2Template implements OAuth2Operations {
 		this.restTemplate = createRestTemplate();
 	}
 	
-	public String buildAuthorizeUrl(AuthorizeParameters params) {
+	public String buildAuthorizeUrl(AuthorizationParameters params) {
 		return buildOAuthUrl(authorizeUrl, params);
 	}
 	
-	public String buildAuthenticateUrl(AuthenticateParameters params) {
-		return authenticateUrl != null ? buildOAuthUrl(authenticateUrl, new AuthorizeParameters(params)) : buildAuthorizeUrl(new AuthorizeParameters(params));
+	public String buildAuthenticateUrl(AuthorizationParameters params) {
+		return authenticateUrl != null ? buildOAuthUrl(authenticateUrl, params) : buildAuthorizeUrl(params);
 	}
 
 	public AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters) {
@@ -128,7 +128,7 @@ public class OAuth2Template implements OAuth2Operations {
 	
 	// internal helpers
 
-	private String buildOAuthUrl(String baseOauthUrl, AuthorizeParameters params) {
+	private String buildOAuthUrl(String baseOauthUrl, AuthorizationParameters params) {
 		StringBuilder oauthUrl = new StringBuilder(baseOauthUrl).append('&').append("redirect_uri").append('=').append(formEncode(params.getRedirectUri()));
 		if (params.getGrantType() == GrantType.AUTHORIZATION_CODE) {
 			oauthUrl.append('&').append("response_type").append('=').append("code");

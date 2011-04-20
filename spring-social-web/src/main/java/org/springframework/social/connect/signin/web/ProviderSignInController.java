@@ -30,7 +30,7 @@ import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.AuthenticateParameters;
+import org.springframework.social.oauth2.AuthorizationParameters;
 import org.springframework.social.oauth2.GrantType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -74,7 +74,7 @@ public class ProviderSignInController {
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
 			return "redirect:" + oauth1Ops.buildAuthenticateUrl(requestToken.getValue(), callbackUrl(providerId));
 		} else if (connectionFactory instanceof OAuth2ServiceProviderConnectionFactory) {
-			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthenticateUrl(new AuthenticateParameters(callbackUrl(providerId), null, GrantType.AUTHORIZATION_CODE, null));
+			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthenticateUrl(new AuthorizationParameters(callbackUrl(providerId), null, null, GrantType.AUTHORIZATION_CODE, null));
 		} else {
 			throw new IllegalStateException("Sign in using provider '" + providerId + "' not supported");
 		}

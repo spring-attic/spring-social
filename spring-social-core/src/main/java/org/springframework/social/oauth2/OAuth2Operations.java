@@ -30,16 +30,16 @@ public interface OAuth2Operations {
 	 * @param params authorization parameters needed to build the URL
 	 * @return the absolute authorize URL to redirect the user to for authorization
 	 */ 
-	String buildAuthorizeUrl(AuthorizeParameters params);
+	String buildAuthorizeUrl(AuthorizationParameters params);
 
 	/**
 	 * Construct the URL to redirect the user to for authentication.
 	 * The authenticate URL differs from the authorizationUrl slightly in that it does not require the user to authorize the app multiple times.
 	 * This provides a better user experience for "Sign in with Provider" scenarios.
-	 * @param params authentication parameters needed to build the URL 
+	 * @param params authorization parameters needed to build the URL 
 	 * @return the absolute authenticate URL to redirect the user to for authorization
 	 */ 
-	String buildAuthenticateUrl(AuthenticateParameters params);
+	String buildAuthenticateUrl(AuthorizationParameters params);
 	
 	/**
 	 * Exchange the authorization grant for an access grant.

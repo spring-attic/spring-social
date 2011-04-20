@@ -35,8 +35,7 @@ import org.springframework.social.connect.support.OAuth2ServiceProviderConnectio
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.AuthenticateParameters;
-import org.springframework.social.oauth2.AuthorizeParameters;
+import org.springframework.social.oauth2.AuthorizationParameters;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
 import org.springframework.util.LinkedMultiValueMap;
@@ -383,10 +382,10 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 
 		public OAuth2Operations getOAuthOperations() {
 			return new OAuth2Operations() {
-				public String buildAuthorizeUrl(AuthorizeParameters params) {
+				public String buildAuthorizeUrl(AuthorizationParameters params) {
 					return null;
 				}
-				public String buildAuthenticateUrl(AuthenticateParameters params) {
+				public String buildAuthenticateUrl(AuthorizationParameters params) {
 					return null;
 				}
 				public AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri, MultiValueMap<String, String> additionalParameters) {

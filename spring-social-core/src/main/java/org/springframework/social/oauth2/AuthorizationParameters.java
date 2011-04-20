@@ -22,9 +22,17 @@ import org.springframework.util.MultiValueMap;
  * 
  * @author Roy Clarkson
  */
-public class AuthorizeParameters extends AuthenticateParameters {
+public class AuthorizationParameters {
+	
+	private String redirectUri;
 	
 	private String scope;
+	
+	private String state;
+	
+	private GrantType grantType;
+	
+	private MultiValueMap<String, String> additionalParameters;
 		
 	/**
 	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider
@@ -33,16 +41,22 @@ public class AuthorizeParameters extends AuthenticateParameters {
 	 * @param grantType specifies whether the OAuth flow is "client-side" or "server-side"
 	 * @param additionalParameters additional parameters required by the provider
 	 */
-	public AuthorizeParameters(String redirectUri, String scope, String state, GrantType grantType, MultiValueMap<String, String> additionalParameters) {
-		super(redirectUri, state, grantType, additionalParameters);
+	public AuthorizationParameters(String redirectUri, String scope, String state, GrantType grantType, MultiValueMap<String, String> additionalParameters) {
+		this.redirectUri = redirectUri;
 		this.scope = scope;
+		this.state = state;
+		this.grantType = grantType;
+		this.additionalParameters = additionalParameters;
 	}
 	
-	public AuthorizeParameters(AuthenticateParameters params) {
-		super(params.getRedirectUri(), params.getState(), params.getGrantType(), params.getAdditionalParameters());
-		this.scope = null;
+	public void setRedirectUri(String redirectUri) {
+		this.redirectUri = redirectUri;
 	}
 
+	public String getRedirectUri() {
+		return redirectUri;
+	}
+	
 	public void setScope(String scope) {
 		this.scope = scope;
 	}
@@ -51,4 +65,27 @@ public class AuthorizeParameters extends AuthenticateParameters {
 		return scope;
 	}
 	
+	public void setState(String state) {
+		this.state = state;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setGrantType(GrantType grantType) {
+		this.grantType = grantType;
+	}
+
+	public GrantType getGrantType() {
+		return grantType;
+	}
+
+	public void setAdditionalParameters(MultiValueMap<String, String> additionalParameters) {
+		this.additionalParameters = additionalParameters;
+	}
+
+	public MultiValueMap<String, String> getAdditionalParameters() {
+		return additionalParameters;
+	}
 }
