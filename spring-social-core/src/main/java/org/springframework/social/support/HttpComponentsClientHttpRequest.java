@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.support.httpclient;
+package org.springframework.social.support;
 
 import java.io.IOException;
 import java.net.URI;

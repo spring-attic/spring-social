@@ -47,7 +47,7 @@ import org.springframework.social.facebook.places.PlacesTemplate;
 import org.springframework.social.facebook.user.UserOperations;
 import org.springframework.social.facebook.user.UserTemplate;
 import org.springframework.social.oauth2.ProtectedResourceClientFactory;
-import org.springframework.social.util.URIBuilder;
+import org.springframework.social.support.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.ResourceAccessException;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.support.httpclient;
+package org.springframework.social.support;
 
 import java.io.IOException;
 import java.net.URI;
@@ -57,8 +57,7 @@ import org.springframework.util.ClassUtils;
  * @author Roy Clarkson
  * @since 3.1
  */
-@SuppressWarnings("deprecation")
-public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory, DisposableBean {
+class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory, DisposableBean {
 
 	private static final int DEFAULT_MAX_TOTAL_CONNECTIONS = 100;
 

@@ -23,7 +23,7 @@ import org.springframework.social.facebook.shared.Reference;
 import org.springframework.social.facebook.shared.ReferenceList;
 import org.springframework.social.facebook.user.FacebookProfile;
 import org.springframework.social.facebook.user.FacebookProfileList;
-import org.springframework.social.util.URIBuilder;
+import org.springframework.social.support.URIBuilder;
 import org.springframework.web.client.RestTemplate;
 
 public class FriendTemplate implements FriendOperations {

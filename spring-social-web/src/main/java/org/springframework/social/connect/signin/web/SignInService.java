@@ -13,25 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social;
-
-import org.springframework.http.ResponseEntity;
+package org.springframework.social.connect.signin.web;
 
 /**
- * Strategy interface for converting responses from a social network provider
- * into specific instances of {@link SocialException}.
- * 
+ * Strategy interface for authenticating users to an application given their account ID.
+ * An application should provide their own implementation of this interface for use by ProviderSignInControllers.
  * @author Craig Walls
  */
-public interface ResponseStatusCodeTranslator {
+public interface SignInService {
+	
 	/**
-	 * Translate responseEntity into a SocialException
-	 * 
-	 * @param responseEntity
-	 *            The response from the social network provider
-	 * 
-	 * @return the exception translated from the response or <code>null</code>
-	 *         if the response doesn't translate into an error.
+	 * Sign in the user with the specified accountId.
+	 * @param accountId the user's account id
 	 */
-	SocialException translate(ResponseEntity<?> responseEntity);
+	void signIn(String localUserId);
+	
 }
