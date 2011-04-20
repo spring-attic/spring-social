@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 import java.net.URI;
 
 import org.junit.Test;
+import org.springframework.social.support.URIBuilder;
 
 public class URIBuilderTest {
 	

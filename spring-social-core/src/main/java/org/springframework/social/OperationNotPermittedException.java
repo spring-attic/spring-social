@@ -28,8 +28,8 @@ package org.springframework.social;
  * 
  * @author Craig Walls
  */
+@SuppressWarnings("serial")
 public class OperationNotPermittedException extends SocialException {
-	private static final long serialVersionUID = 1L;
 
 	public OperationNotPermittedException(String message) {
 		super(message);

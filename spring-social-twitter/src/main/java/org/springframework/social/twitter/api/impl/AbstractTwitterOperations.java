@@ -19,7 +19,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Map;
 
-import org.springframework.social.util.URIBuilder;
+import org.springframework.social.support.URIBuilder;
 
 class AbstractTwitterOperations {
 	
