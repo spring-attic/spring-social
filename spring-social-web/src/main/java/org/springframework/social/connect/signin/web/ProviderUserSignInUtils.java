@@ -19,13 +19,13 @@ import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.web.context.request.WebRequest;
 
 /**
- * Helper methods that support provider sign-in scenarios.
+ * Helper methods that support provider user sign-in scenarios.
  * @author Keith Donald
  */
 public class ProviderUserSignInUtils {
 	
 	/**
-	 * Get the connection to the provider user account the client attempted to sign-in as.
+	 * Get the connection to the provider user the client attempted to sign-in as.
 	 * Using this connection you may fetch a {@link ServiceProviderConnection#fetchUserProfile() provider user profile} and use that to pre-populate a local user registration/signup form.
 	 * You can also lookup the id of the provider and use that to display a provider-specific user-sign-in-attempt flash message e.g. "Your Facebook Account is not connected to a Local account. Please sign up."
 	 * Returns null if no provider sign-in has been attempted for the current user session.
