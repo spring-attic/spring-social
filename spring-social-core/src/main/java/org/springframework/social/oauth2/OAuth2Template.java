@@ -130,9 +130,9 @@ public class OAuth2Template implements OAuth2Operations {
 
 	private String buildOAuthUrl(String baseOauthUrl, String redirectUri, String scope, String state, GrantType grantType, MultiValueMap<String, String> additionalParameters) {
 		StringBuilder oauthUrl = new StringBuilder(baseOauthUrl).append('&').append("redirect_uri").append('=').append(formEncode(redirectUri));
-		if (grantType == GrantType.AuthorizationCode) {
+		if (grantType == GrantType.AUTHORIZATION_CODE) {
 			oauthUrl.append('&').append("response_type").append('=').append("code");
-		} else if (grantType == GrantType.ImplicitGrant) {
+		} else if (grantType == GrantType.IMPLICIT_GRANT) {
 			oauthUrl.append('&').append("response_type").append('=').append("token");
 		}
 		if (scope != null) {
