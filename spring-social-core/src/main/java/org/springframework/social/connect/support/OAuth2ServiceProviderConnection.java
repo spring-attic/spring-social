@@ -24,6 +24,7 @@ import org.springframework.social.ServiceProvider;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
+import org.springframework.social.connect.ServiceProviderUserProfile;
 import org.springframework.social.connect.spi.ServiceApiAdapter;
 import org.springframework.social.connect.spi.ServiceProviderUser;
 import org.springframework.social.oauth2.AccessGrant;
@@ -137,6 +138,10 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 		}
 	}
 
+	public ServiceProviderUserProfile fetchUserProfile() {
+		return new ServiceProviderUserProfile(null, null, null, null, null);
+	}
+	
 	public void updateStatus(String message) {
 		serviceApiAdapter.updateStatus(getServiceApi(), message);
 	}

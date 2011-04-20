@@ -84,6 +84,13 @@ public interface ServiceProviderConnection<S> {
 	void refresh();
 	
 	/**
+	 * Fetch a normalized model of the user's profile on the provider system.
+	 * Capable of exposing the user's name, email, and username.
+	 * What is actually exposed depends on the provider and scope of this connection.
+	 */
+	ServiceProviderUserProfile fetchUserProfile();
+	
+	/**
 	 * Update the user's status on the provider's system.
 	 * This method is a no-op if a status concept is not supported by the service provider.
 	 * @param message the status message
