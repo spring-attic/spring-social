@@ -25,6 +25,12 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.social.facebook.AbstractFacebookApiTest;
+import org.springframework.social.facebook.api.FacebookLink;
+import org.springframework.social.facebook.api.LinkPost;
+import org.springframework.social.facebook.api.NotePost;
+import org.springframework.social.facebook.api.PhotoPost;
+import org.springframework.social.facebook.api.Post;
+import org.springframework.social.facebook.api.StatusPost;
 
 /**
  * @author Craig Walls

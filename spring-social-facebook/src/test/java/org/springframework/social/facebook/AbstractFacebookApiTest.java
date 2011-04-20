@@ -24,6 +24,7 @@ import java.util.Locale;
 import org.junit.Before;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.social.facebook.api.impl.FacebookTemplate;
 import org.springframework.social.test.client.MockRestServiceServer;
 
 public class AbstractFacebookApiTest {

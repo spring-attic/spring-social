@@ -25,6 +25,9 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.social.facebook.AbstractFacebookApiTest;
+import org.springframework.social.facebook.api.Album;
+import org.springframework.social.facebook.api.Photo;
+import org.springframework.social.facebook.api.Video;
 
 public class MediaTemplateTest extends AbstractFacebookApiTest {
 	@Test

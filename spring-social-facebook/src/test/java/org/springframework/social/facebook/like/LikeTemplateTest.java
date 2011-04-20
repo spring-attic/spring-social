@@ -25,6 +25,7 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.social.facebook.AbstractFacebookApiTest;
+import org.springframework.social.facebook.api.UserLike;
 
 public class LikeTemplateTest extends AbstractFacebookApiTest {
 

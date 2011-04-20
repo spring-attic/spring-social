@@ -15,6 +15,8 @@
  */
 package org.springframework.social.facebook;
 
+import org.springframework.social.facebook.api.FacebookApi;
+import org.springframework.social.facebook.api.impl.FacebookTemplate;
 import org.springframework.social.oauth2.AbstractOAuth2ServiceProvider;
 
 /**

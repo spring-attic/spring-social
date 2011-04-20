@@ -25,6 +25,8 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.social.facebook.AbstractFacebookApiTest;
+import org.springframework.social.facebook.api.Group;
+import org.springframework.social.facebook.api.GroupMemberReference;
 
 
 public class GroupTemplateTest extends AbstractFacebookApiTest {

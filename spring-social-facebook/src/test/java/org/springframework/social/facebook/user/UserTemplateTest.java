@@ -27,6 +27,9 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.social.facebook.AbstractFacebookApiTest;
+import org.springframework.social.facebook.api.EducationEntry;
+import org.springframework.social.facebook.api.FacebookProfile;
+import org.springframework.social.facebook.api.WorkEntry;
 
 /**
  * @author Craig Walls

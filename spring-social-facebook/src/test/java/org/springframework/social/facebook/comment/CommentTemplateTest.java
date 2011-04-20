@@ -25,7 +25,8 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.social.facebook.AbstractFacebookApiTest;
-import org.springframework.social.facebook.shared.Reference;
+import org.springframework.social.facebook.api.Comment;
+import org.springframework.social.facebook.api.Reference;
 
 /**
  * @author Craig Walls
