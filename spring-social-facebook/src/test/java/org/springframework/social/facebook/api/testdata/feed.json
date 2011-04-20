@@ -25,6 +25,16 @@
             "link":"http:\/\/www.facebook.com\/photo.php?fbid=160064377383138&set=a.160064047383171.34994.100001387295207",
             "icon":"http:\/\/b.static.ak.fbcdn.net\/rsrc.php\/v1\/yz\/r\/StEh3RhPvjk.gif",
             "type":"photo",
+	         "actions": [
+	            {
+	               "name": "Comment",
+	               "link": "http://www.facebook.com/100001387295207/posts/160064377383138"
+	            },
+	            {
+	               "name": "Like",
+	               "link": "http://www.facebook.com/100001387295207/posts/160064377383138"
+	            }
+	         ],
             "object_id":"160064377383138",
             "created_time":"2011-03-23T15:36:23+0000",
             "updated_time":"2011-03-23T15:36:23+0000"

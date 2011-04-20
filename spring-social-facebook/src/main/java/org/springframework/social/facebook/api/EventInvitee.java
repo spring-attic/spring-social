@@ -34,7 +34,6 @@ public class EventInvitee {
 
 	/**
 	 * The invitee's user ID.
-	 * @return
 	 */
 	public String getId() {
 		return id;
@@ -42,7 +41,6 @@ public class EventInvitee {
 
 	/**
 	 * The invitee's name.
-	 * @return
 	 */
 	public String getName() {
 		return name;
@@ -50,7 +48,6 @@ public class EventInvitee {
 
 	/**
 	 * The invitee's RSVP status (attending, unsure, not-replied, or declined).
-	 * @return
 	 */
 	public RsvpStatus getRsvpStatus() {
 		return rsvpStatus;
