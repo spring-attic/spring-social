@@ -21,12 +21,12 @@ import java.lang.reflect.Proxy;
 
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.ServiceProvider;
+import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
+import org.springframework.social.connect.ServiceProviderConnectionValues;
 import org.springframework.social.connect.ServiceProviderUserProfile;
-import org.springframework.social.connect.spi.ServiceApiAdapter;
-import org.springframework.social.connect.spi.ServiceProviderUser;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
 
@@ -46,7 +46,7 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 
 	private final ServiceApiAdapter<S> serviceApiAdapter;
 
-	private ServiceProviderUser user;
+	private ServiceProviderConnectionValues connectionValues;
 
 	private String accessToken;
 	
@@ -86,17 +86,17 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 	 * Creates a new {@link OAuth2ServiceProviderConnection} from the data provided.
 	 * Designed to be called when re-constituting an existing {@link ServiceProviderConnection}, for example, from {@link ServiceProviderConnectionData}.
 	 * @param key the connection key
-	 * @param user the service provider user model
+	 * @param connectionValues the service provider connection values
 	 * @param accessToken the access token
 	 * @param refreshToken the refresh token
 	 * @param expireTime the expire time
 	 * @param serviceProvider the service provider model
 	 * @param serviceApiAdapter the service api adapter for the service provider
 	 */
-	public OAuth2ServiceProviderConnection(ServiceProviderConnectionKey key, ServiceProviderUser user, String accessToken, String refreshToken, Long expireTime,
+	public OAuth2ServiceProviderConnection(ServiceProviderConnectionKey key, ServiceProviderConnectionValues connectionValues, String accessToken, String refreshToken, Long expireTime,
 			OAuth2ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
 		this.key = key;
-		this.user = user;
+		this.connectionValues = connectionValues;
 		this.serviceProvider = serviceProvider;
 		this.serviceApiAdapter = serviceApiAdapter;
 		initAccessTokens(accessToken, refreshToken, expireTime);
@@ -109,15 +109,15 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 	}
 
 	public String getDisplayName() {
-		return getUser().getProfileName();
+		return getConnectionValues().getDisplayName();
 	}
 
 	public String getProfileUrl() {
-		return getUser().getProfileUrl();
+		return getConnectionValues().getProfileUrl();
 	}
 
 	public String getImageUrl() {
-		return getUser().getProfilePictureUrl();
+		return getConnectionValues().getImageUrl();
 	}
 	
 	public boolean test() {
@@ -139,7 +139,7 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile() {
-		return new ServiceProviderUserProfile(null, null, null, null, null);
+		return serviceApiAdapter.fetchUserProfile(serviceApi);
 	}
 	
 	public void updateStatus(String message) {
@@ -148,7 +148,7 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 
 	public void sync() {
 		synchronized (monitor) {
-			initUser();
+			initConnectionValues();
 		}
 	}
 
@@ -164,7 +164,7 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 
 	public ServiceProviderConnectionData createData() {
 		synchronized (monitor) {
-			return new ServiceProviderConnectionData(key.getProviderId(), key.getProviderUserId(), user.getProfileName(), user.getProfileUrl(), user.getProfilePictureUrl(), accessToken, null, refreshToken, expireTime);
+			return new ServiceProviderConnectionData(key.getProviderId(), key.getProviderUserId(), connectionValues.getDisplayName(), connectionValues.getProfileUrl(), connectionValues.getImageUrl(), accessToken, null, refreshToken, expireTime);
 		}
 	}
 
@@ -217,23 +217,23 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 
 	private ServiceProviderConnectionKey createKey(String providerId, String providerUserId) {
 		if (providerUserId == null) {
-			initUser();
-			providerUserId = user.getId();
+			initConnectionValues();
+			providerUserId = connectionValues.getProviderUserId();
 		}
 		return new ServiceProviderConnectionKey(providerId, providerUserId);		
 	}
 	
-	private ServiceProviderUser getUser() {
+	private ServiceProviderConnectionValues getConnectionValues() {
 		synchronized (monitor) {
-			if (user == null) {
-				initUser();
+			if (connectionValues == null) {
+				initConnectionValues();
 			}			
-			return user;
+			return connectionValues;
 		}
 	}
 	
-	private void initUser() {
-		user = serviceApiAdapter.getUser(serviceApi);
+	private void initConnectionValues() {
+		connectionValues = serviceApiAdapter.getConnectionValues(serviceApi);
 	}
 
 }

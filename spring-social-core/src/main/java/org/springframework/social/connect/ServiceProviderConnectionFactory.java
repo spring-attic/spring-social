@@ -16,7 +16,6 @@
 package org.springframework.social.connect;
 
 import org.springframework.social.ServiceProvider;
-import org.springframework.social.connect.spi.ServiceApiAdapter;
 
 /**
  * Base abstraction for factories that construct ServiceProviderConnection instances.

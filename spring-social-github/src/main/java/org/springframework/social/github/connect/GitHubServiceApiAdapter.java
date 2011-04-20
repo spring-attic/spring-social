@@ -15,8 +15,9 @@
  */
 package org.springframework.social.github.connect;
 
-import org.springframework.social.connect.spi.ServiceApiAdapter;
-import org.springframework.social.connect.spi.ServiceProviderUser;
+import org.springframework.social.connect.ServiceApiAdapter;
+import org.springframework.social.connect.ServiceProviderConnectionValues;
+import org.springframework.social.connect.ServiceProviderUserProfile;
 import org.springframework.social.github.GitHubApi;
 import org.springframework.social.github.GitHubUserProfile;
 import org.springframework.web.client.HttpClientErrorException;
@@ -30,14 +31,19 @@ public class GitHubServiceApiAdapter implements ServiceApiAdapter<GitHubApi> {
 		} catch (HttpClientErrorException e) {
 			// TODO : Beef up GitHub's error handling and trigger off of a more specific exception
 			return false;
-		}	}
-
-	public ServiceProviderUser getUser(GitHubApi serviceApi) {
-		GitHubUserProfile userProfile = serviceApi.getUserProfile();
-		String profileUrl = "https://github.com/" + userProfile.getId();
-		return new ServiceProviderUser(String.valueOf(userProfile.getId()), userProfile.getUsername(), profileUrl, userProfile.getProfileImageUrl());
+		}
 	}
 
+	public ServiceProviderConnectionValues getConnectionValues(GitHubApi serviceApi) {
+		GitHubUserProfile userProfile = serviceApi.getUserProfile();
+		String profileUrl = "https://github.com/" + userProfile.getId();
+		return new ServiceProviderConnectionValues(String.valueOf(userProfile.getId()), userProfile.getUsername(), profileUrl, userProfile.getProfileImageUrl());
+	}
+
+	public ServiceProviderUserProfile fetchUserProfile(GitHubApi serviceApi) {
+		return new ServiceProviderUserProfile(null, null, null, null, null);
+	}
+	
 	public void updateStatus(GitHubApi serviceApi, String message) {
 		// not supported
 	}

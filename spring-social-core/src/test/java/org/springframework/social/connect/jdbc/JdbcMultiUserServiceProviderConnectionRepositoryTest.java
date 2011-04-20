@@ -23,12 +23,13 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.social.connect.DuplicateServiceProviderConnectionException;
 import org.springframework.social.connect.NoSuchServiceProviderConnectionException;
+import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
-import org.springframework.social.connect.spi.ServiceApiAdapter;
-import org.springframework.social.connect.spi.ServiceProviderUser;
+import org.springframework.social.connect.ServiceProviderConnectionValues;
+import org.springframework.social.connect.ServiceProviderUserProfile;
 import org.springframework.social.connect.support.MapServiceProviderConnectionFactoryRegistry;
 import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
 import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
@@ -428,8 +429,12 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 			return true;
 		}
 
-		public ServiceProviderUser getUser(TestFacebookApi serviceApi) {
-			return new ServiceProviderUser(accountId, name, profileUrl, profilePicture);
+		public ServiceProviderConnectionValues getConnectionValues(TestFacebookApi serviceApi) {
+			return new ServiceProviderConnectionValues(accountId, name, profileUrl, profilePicture);
+		}
+
+		public ServiceProviderUserProfile fetchUserProfile(TestFacebookApi serviceApi) {
+			return new ServiceProviderUserProfile(name, "Keith", "Donald", "keith@interface21.com", "kdonald");
 		}
 
 		public void updateStatus(TestFacebookApi serviceApi, String message) {
@@ -489,10 +494,14 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 			return true;
 		}
 
-		public ServiceProviderUser getUser(TestTwitterApi serviceApi) {
-			return new ServiceProviderUser(accountId, name, profileUrl, profilePicture);
+		public ServiceProviderConnectionValues getConnectionValues(TestTwitterApi serviceApi) {
+			return new ServiceProviderConnectionValues(accountId, name, profileUrl, profilePicture);
 		}
 
+		public ServiceProviderUserProfile fetchUserProfile(TestTwitterApi serviceApi) {
+			return new ServiceProviderUserProfile(name, null, null, null, "kdonald");
+		}
+		
 		public void updateStatus(TestTwitterApi serviceApi, String message) {
 		}
 		
