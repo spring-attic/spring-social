@@ -40,11 +40,29 @@ public class TwitterServiceApiAdapter implements ServiceApiAdapter<TwitterApi> {
 
 	public ServiceProviderUserProfile fetchUserProfile(TwitterApi serviceApi) {
 		TwitterProfile profile = serviceApi.userOperations().getUserProfile();
-		return new ServiceProviderUserProfile(profile.getName(), null, null, null, profile.getScreenName());
+		String name = profile.getName();
+		String[] firstAndLastName = firstAndLastName(name);
+		return new ServiceProviderUserProfile(name, firstAndLastName[0], firstAndLastName[1], null, profile.getScreenName());
 	}
 	
 	public void updateStatus(TwitterApi serviceApi, String message) {
 		serviceApi.timelineOperations().updateStatus(message);	
 	}
+	
+	// internal helpers
+	
+	private String[] firstAndLastName(String name) {
+		if (name == null) {
+			return EMPTY_FIRST_AND_LAST_NAME_ARRAY;
+		}
+		String[] nameParts = name.split("\\s+");
+		if (nameParts.length == 1) {
+			return new String[] { nameParts[0], null };
+		} else {
+			return new String[] { nameParts[0], nameParts[nameParts.length - 1] };
+		}
+	}
+	
+	private String[] EMPTY_FIRST_AND_LAST_NAME_ARRAY = new String[] { null, null };
 
 }
