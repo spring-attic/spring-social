@@ -16,9 +16,7 @@
 package org.springframework.social.facebook.api;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -44,6 +42,8 @@ public class Photo {
 	
 	private List<Tag> tags;
 	
+	private Image oversizedImage;
+	
 	private Image sourceImage;
 	
 	private Image smallImage;
@@ -59,11 +59,14 @@ public class Photo {
 		this.icon = icon;
 		this.createdTime = createdTime;
 		
-		Map<Character, Image> imageMap = extractImages(images);
-		this.tinyImage = imageMap.get('t');
-		this.sourceImage = imageMap.get('n');
-		this.smallImage = imageMap.get('s');
-		this.albumImage = imageMap.get('a');
+		int i=0;
+		if(images.size() == 5) {
+			this.oversizedImage = images.get(i++);
+		}
+		this.sourceImage = images.get(i++);
+		this.albumImage = images.get(i++);
+		this.smallImage = images.get(i++);
+		this.tinyImage = images.get(i++);
 	}
 	
 	public String getId() {
@@ -98,6 +101,13 @@ public class Photo {
 		return updatedTime;
 	}
 
+	/**
+	 * An oversized image. May be null if no oversized image was provided.
+	 */
+	public Image getOversizedImage() {
+		return oversizedImage;
+	}
+	
 	public Image getSourceImage() {
 		return sourceImage;
 	}
@@ -146,14 +156,4 @@ public class Photo {
 		}
 	}
 
-	private Map<Character, Image> extractImages(List<Image> images) {
-		Map<Character, Image> imageMap = new HashMap<Character, Image>();
-		
-		for (Image image : images) {
-			imageMap.put(image.getSource().charAt(image.getSource().length() - 5), image);
-		}
-	
-		return imageMap;
-	}
 }
-
