@@ -6,17 +6,25 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
+import org.h2.Driver;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.ConnectionProperties;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseConfigurer;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -46,6 +54,8 @@ import org.springframework.util.MultiValueMap;
 public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 
 	private EmbeddedDatabase database;
+
+	private boolean testMySqlCompatiblity;
 	
 	private MapServiceProviderConnectionFactoryRegistry connectionFactoryRegistry;
 	
@@ -60,7 +70,11 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 	@Before
 	public void setUp() {
 		EmbeddedDatabaseFactory factory = new EmbeddedDatabaseFactory();
-		factory.setDatabaseType(EmbeddedDatabaseType.H2);
+		if (testMySqlCompatiblity) {
+			factory.setDatabaseConfigurer(new MySqlCompatibleH2DatabaseConfigurer());	
+		} else {
+			factory.setDatabaseType(EmbeddedDatabaseType.H2);			
+		}
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
 		populator.addScript(new ClassPathResource("JdbcServiceProviderConnectionRepositorySchema.sql", getClass()));
 		factory.setDatabasePopulator(populator);
@@ -72,7 +86,7 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 		usersConnectionRepository = new JdbcMultiUserServiceProviderConnectionRepository(database, connectionFactoryRegistry, Encryptors.noOpText());
 		connectionRepository = usersConnectionRepository.createConnectionRepository("1");
 	}
-
+	
 	@After
 	public void tearDown() {
 		if (database != null) {
@@ -506,5 +520,24 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 		}
 		
 	}
+	
+	private static class MySqlCompatibleH2DatabaseConfigurer implements EmbeddedDatabaseConfigurer {
+		public void shutdown(DataSource dataSource, String databaseName) {
+			try {
+				Connection connection = dataSource.getConnection();
+				Statement stmt = connection.createStatement();
+				stmt.execute("SHUTDOWN");
+			}
+			catch (SQLException ex) {
+			}
+		}
+		
+		public void configureConnectionProperties(ConnectionProperties properties, String databaseName) {
+			properties.setDriverClass(Driver.class);
+			properties.setUrl(String.format("jdbc:h2:mem:%s;MODE=MYSQL;DB_CLOSE_DELAY=-1", databaseName));
+			properties.setUsername("sa");
+			properties.setPassword("");
+		}
+	}		
 	
 }
