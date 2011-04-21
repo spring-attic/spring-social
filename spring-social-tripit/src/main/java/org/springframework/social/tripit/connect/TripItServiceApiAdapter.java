@@ -42,11 +42,28 @@ public class TripItServiceApiAdapter implements ServiceApiAdapter<TripItApi> {
 
 	public ServiceProviderUserProfile fetchUserProfile(TripItApi serviceApi) {
 		TripItProfile profile = serviceApi.getUserProfile();
-		return new ServiceProviderUserProfile(profile.getPublicDisplayName(), null, null, profile.getEmailAddress(), profile.getScreenName());
+		String name = profile.getPublicDisplayName();
+		String[] firstAndLastName = firstAndLastName(name);
+		return new ServiceProviderUserProfile(profile.getPublicDisplayName(), firstAndLastName[0], firstAndLastName[1], profile.getEmailAddress(), profile.getScreenName());
 	}
 	
 	public void updateStatus(TripItApi serviceApi, String message) {
 		// not supported
 	}
 
+	// internal helpers
+	
+	private String[] firstAndLastName(String name) {
+		if (name == null) {
+			return EMPTY_FIRST_AND_LAST_NAME_ARRAY;
+		}
+		String[] nameParts = name.split("\\s+");
+		if (nameParts.length == 1) {
+			return new String[] { nameParts[0], null };
+		} else {
+			return new String[] { nameParts[0], nameParts[nameParts.length - 1] };
+		}
+	}
+	
+	private String[] EMPTY_FIRST_AND_LAST_NAME_ARRAY = new String[] { null, null };
 }

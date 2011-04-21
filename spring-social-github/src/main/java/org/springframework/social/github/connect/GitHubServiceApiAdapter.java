@@ -42,11 +42,30 @@ public class GitHubServiceApiAdapter implements ServiceApiAdapter<GitHubApi> {
 
 	public ServiceProviderUserProfile fetchUserProfile(GitHubApi serviceApi) {
 		GitHubUserProfile profile = serviceApi.getUserProfile();
-		return new ServiceProviderUserProfile(profile.getName(), null, null, profile.getEmail(), profile.getUsername());
+		String name = profile.getName();
+		String[] firstAndLastName = firstAndLastName(name);
+		return new ServiceProviderUserProfile(name, firstAndLastName[0], firstAndLastName[1], profile.getEmail(), profile.getUsername());
 	}
 	
 	public void updateStatus(GitHubApi serviceApi, String message) {
 		// not supported
 	}
 
+	
+	// internal helpers
+	
+	private String[] firstAndLastName(String name) {
+		if (name == null) {
+			return EMPTY_FIRST_AND_LAST_NAME_ARRAY;
+		}
+		String[] nameParts = name.split("\\s+");
+		if (nameParts.length == 1) {
+			return new String[] { nameParts[0], null };
+		} else {
+			return new String[] { nameParts[0], nameParts[nameParts.length - 1] };
+		}
+	}
+	
+	private String[] EMPTY_FIRST_AND_LAST_NAME_ARRAY = new String[] { null, null };
+	
 }
