@@ -7,7 +7,17 @@
 		"profile_url" : "user/habuma",
 		"@attributes" : {
 			"ref" : "123456"
-		}
+		},
+        "ProfileEmailAddresses":
+        {
+            "ProfileEmailAddress":
+            {
+                "address":"cwalls@vmware.com",
+                "is_auto_import":"false",
+                "is_confirmed":"true",
+                "is_primary":"true"
+            }
+        }
 	}, 
 	"timestamp" : 123456780
 }

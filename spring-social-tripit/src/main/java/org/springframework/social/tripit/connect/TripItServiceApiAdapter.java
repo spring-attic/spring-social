@@ -41,7 +41,8 @@ public class TripItServiceApiAdapter implements ServiceApiAdapter<TripItApi> {
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile(TripItApi serviceApi) {
-		return new ServiceProviderUserProfile(null, null, null, null, null);
+		TripItProfile profile = serviceApi.getUserProfile();
+		return new ServiceProviderUserProfile(profile.getPublicDisplayName(), null, null, profile.getEmailAddress(), profile.getScreenName());
 	}
 	
 	public void updateStatus(TripItApi serviceApi, String message) {

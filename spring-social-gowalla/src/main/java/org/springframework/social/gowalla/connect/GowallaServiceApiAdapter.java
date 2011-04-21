@@ -42,7 +42,10 @@ public class GowallaServiceApiAdapter implements ServiceApiAdapter<GowallaApi> {
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile(GowallaApi serviceApi) {
-		return new ServiceProviderUserProfile(null, null, null, null, null);
+		GowallaProfile profile = serviceApi.getUserProfile();
+		String fullName = profile.getFirstName() + " " + profile.getLastName();
+		// Gowalla doesn't expose the user email via the API.
+		return new ServiceProviderUserProfile(fullName, profile.getFirstName(), profile.getLastName(), null, profile.getId());
 	}
 	
 	public void updateStatus(GowallaApi serviceApi, String message) {

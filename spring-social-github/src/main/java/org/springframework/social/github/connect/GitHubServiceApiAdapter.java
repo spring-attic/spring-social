@@ -41,7 +41,8 @@ public class GitHubServiceApiAdapter implements ServiceApiAdapter<GitHubApi> {
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile(GitHubApi serviceApi) {
-		return new ServiceProviderUserProfile(null, null, null, null, null);
+		GitHubUserProfile profile = serviceApi.getUserProfile();
+		return new ServiceProviderUserProfile(profile.getName(), null, null, profile.getEmail(), profile.getUsername());
 	}
 	
 	public void updateStatus(GitHubApi serviceApi, String message) {

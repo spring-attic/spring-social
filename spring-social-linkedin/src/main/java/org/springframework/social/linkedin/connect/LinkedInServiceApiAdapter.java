@@ -41,7 +41,10 @@ public class LinkedInServiceApiAdapter implements ServiceApiAdapter<LinkedInApi>
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile(LinkedInApi serviceApi) {
-		return new ServiceProviderUserProfile(null, null, null, null, null);
+		LinkedInProfile profile = serviceApi.getUserProfile();
+		String fullName = profile.getFirstName() + " " + profile.getLastName();
+		// LinkedIn doesn't expose user emails via the API and there is no concept of username
+		return new ServiceProviderUserProfile(fullName, profile.getFirstName(), profile.getLastName(), null, null);
 	}
 	
 	public void updateStatus(LinkedInApi serviceApi, String message) {

@@ -57,6 +57,7 @@ public class TripItTemplateTest {
 		assertEquals("123456", profile.getId());
 		assertEquals("habuma", profile.getScreenName());
 		assertEquals("Craig Walls", profile.getPublicDisplayName());
+		assertEquals("cwalls@vmware.com", profile.getEmailAddress());
 		assertEquals("Plano, TX", profile.getHomeCity());
 		assertEquals("SpringSource", profile.getCompany());
 		assertEquals("http://www.tripit.com/user/habuma", profile.getProfileUrl());

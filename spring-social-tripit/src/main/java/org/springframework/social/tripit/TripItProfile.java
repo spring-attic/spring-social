@@ -25,11 +25,12 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class TripItProfile implements Serializable {
 
-	public TripItProfile(String id, String screenName, String publicDisplayName, String homeCity, String company,
+	public TripItProfile(String id, String screenName, String publicDisplayName, String emailAddress, String homeCity, String company,
 			String profilePath, String profileImageUrl) {
 		this.id = id;
 		this.screenName = screenName;
 		this.publicDisplayName = publicDisplayName;
+		this.emailAddress = emailAddress;
 		this.homeCity = homeCity;
 		this.company = company;
 		this.profilePath = profilePath;
@@ -61,6 +62,15 @@ public class TripItProfile implements Serializable {
 	 */
 	public String getPublicDisplayName() {
 		return publicDisplayName;
+	}
+	
+	/**
+	 * The TripIt user's email address
+	 * 
+	 * @return The TripIt user's email address
+	 */
+	public String getEmailAddress() {
+		return emailAddress;
 	}
 
 	/**
@@ -102,6 +112,7 @@ public class TripItProfile implements Serializable {
 	private final String id;
 	private final String screenName;
 	private final String publicDisplayName;
+	private final String emailAddress;
 	private final String homeCity;
 	private final String company;
 	private final String profilePath;
