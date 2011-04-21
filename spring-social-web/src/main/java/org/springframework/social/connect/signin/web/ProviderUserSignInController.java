@@ -39,9 +39,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
+/**
+ * Spring MVC Controller for handling the provider user sign-in flow.
+ * @author Keith Donald
+ */
 @Controller
 @RequestMapping("/signin")
-public class ProviderSignInController {
+public class ProviderUserSignInController {
 
 	private final ServiceProviderConnectionFactoryLocator connectionFactoryLocator;
 
@@ -56,7 +60,7 @@ public class ProviderSignInController {
 	private String signupUrl = "/signup";
 	
 	@Inject
-	public ProviderSignInController(String applicationUrl, ServiceProviderConnectionFactoryLocator connectionFactoryLocator, MultiUserServiceProviderConnectionRepository usersConnectionRepository,
+	public ProviderUserSignInController(String applicationUrl, ServiceProviderConnectionFactoryLocator connectionFactoryLocator, MultiUserServiceProviderConnectionRepository usersConnectionRepository,
 			Provider<ServiceProviderConnectionRepository> currentUserConnectionRepositoryProvider, SignInService signInService) {
 		this.connectionFactoryLocator = connectionFactoryLocator;
 		this.usersConnectionRepository = usersConnectionRepository;
@@ -111,8 +115,8 @@ public class ProviderSignInController {
 	private String handleSignIn(ServiceProviderConnection<?> connection, WebRequest request) {
 		String localUserId = usersConnectionRepository.findLocalUserIdConnectedTo(connection.getKey());
 		if (localUserId == null) {
-			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, currentUserConnectionRepositoryProvider);
-			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, WebRequest.SCOPE_SESSION);
+			ProviderUserSignInAttempt signInAttempt = new ProviderUserSignInAttempt(connection, currentUserConnectionRepositoryProvider);
+			request.setAttribute(ProviderUserSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, WebRequest.SCOPE_SESSION);
 			return "redirect:" + signupUrl;
 		} else {
 			signIn(localUserId);

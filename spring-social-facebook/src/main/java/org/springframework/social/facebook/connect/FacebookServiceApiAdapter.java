@@ -41,7 +41,7 @@ public class FacebookServiceApiAdapter implements ServiceApiAdapter<FacebookApi>
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile(FacebookApi serviceApi) {
-		FacebookProfile profile = serviceApi.userOperations().getUserProfile();		
+		FacebookProfile profile = serviceApi.userOperations().getUserProfile();
 		return new ServiceProviderUserProfile(profile.getName(), profile.getFirstName(), profile.getLastName(), profile.getEmail(), profile.getUsername());
 	}
 	

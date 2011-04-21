@@ -21,7 +21,6 @@ import javax.inject.Provider;
 
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
-import org.springframework.social.connect.ServiceProviderUserProfile;
 
 /**
  * Models an attempt to sign-in to the application using a provider user identity.
@@ -32,12 +31,12 @@ import org.springframework.social.connect.ServiceProviderUserProfile;
  * @author Keith Donald
  */
 @SuppressWarnings("serial")
-public class ProviderSignInAttempt implements Serializable {
+public class ProviderUserSignInAttempt implements Serializable {
 
 	/**
 	 * Name of the session attribute ProviderSignInAttempt instances are indexed under.
 	 */
-	static final String SESSION_ATTRIBUTE = ProviderSignInAttempt.class.getName();
+	static final String SESSION_ATTRIBUTE = ProviderUserSignInAttempt.class.getName();
 
 	// TODO: ServiceProviderConnections are not inherently Serializable: this may present a problem in a clustered web environment.
 	// Consider storing a ServiceProviderConnectionData here along with a Provider<ServiceProviderConnectionFactory>.
@@ -45,17 +44,18 @@ public class ProviderSignInAttempt implements Serializable {
 	
 	private final Provider<ServiceProviderConnectionRepository> connectionRepositoryProvider;
 		
-	public ProviderSignInAttempt(ServiceProviderConnection<?> connection, Provider<ServiceProviderConnectionRepository> connectionRepositoryProvider) {
+	public ProviderUserSignInAttempt(ServiceProviderConnection<?> connection, Provider<ServiceProviderConnectionRepository> connectionRepositoryProvider) {
 		this.connection = connection;
 		this.connectionRepositoryProvider = connectionRepositoryProvider;		
 	}
 	
 	/**
-	 * Get the profile of the provider user that attempted to sign-in.
-	 * Profile fields can be used to pre-populate a local user registration/signup form.
+	 * Get the connection to the provider user account the client attempted to sign-in as.
+	 * Using this connection you may fetch a {@link ServiceProviderConnection#fetchUserProfile() provider user profile} and use that to pre-populate a local user registration/signup form.
+	 * You can also lookup the id of the provider and use that to display a provider-specific user-sign-in-attempt flash message e.g. "Your Facebook Account is not connected to a Local account. Please sign up."
 	 */
-	public ServiceProviderUserProfile getUserProfile() {
-		return connection.fetchUserProfile();
+	public ServiceProviderConnection<?> getConnection() {
+		return connection;
 	}
 	
 	/**

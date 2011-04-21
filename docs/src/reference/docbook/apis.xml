@@ -513,7 +513,8 @@ FacebookApi facebook = new FacebookTemplate(accessToken);]]>
 		</para>
 
 		<programlisting language="java"><![CDATA[
-FacebookApi facebook = facebookProvider.getConnections(accountId).get(0).getServiceApi();]]>
+List<ServiceProviderConnection<FacebookApi>> connections = connectionRepository.findConnectionsToProvider("facebook");
+FacebookApi facebookApi = connections.get(0).getServiceApi();]]>
 		</programlisting>
 
 		<para>
