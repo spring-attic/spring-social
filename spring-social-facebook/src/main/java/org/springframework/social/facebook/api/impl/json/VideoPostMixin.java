@@ -39,6 +39,9 @@ abstract class VideoPostMixin extends PostMixin {
 		super(id, from, createdTime, updatedTime);
 	}
 	
+	@JsonProperty("source")
+	String source;
+	
 	@JsonProperty("object_id")
 	String videoId;
 	

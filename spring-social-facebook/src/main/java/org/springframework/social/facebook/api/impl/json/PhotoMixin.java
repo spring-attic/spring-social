@@ -30,7 +30,7 @@ import org.springframework.social.facebook.api.Tag;
  * Annotated mixin to add Jackson annotations to Photo. 
  * @author Craig Walls
  */
-@JsonIgnoreProperties({"picture", "source", "height", "width"})
+@JsonIgnoreProperties({"picture", "source", "height", "width", "comments"}) // TODO: Use comments
 abstract class PhotoMixin {
 
 	@JsonCreator

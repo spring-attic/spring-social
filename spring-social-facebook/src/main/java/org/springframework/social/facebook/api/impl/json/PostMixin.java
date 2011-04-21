@@ -56,7 +56,7 @@ import org.springframework.social.facebook.api.VideoPost;
 				@Type(name="status", value=StatusPost.class),
 				@Type(name="video", value=VideoPost.class)
 				})
-@JsonIgnoreProperties("actions")
+@JsonIgnoreProperties({"actions", "privacy", "properties"}) // TODO: accept privacy and maybe properties
 abstract class PostMixin {
 	
 	@JsonCreator

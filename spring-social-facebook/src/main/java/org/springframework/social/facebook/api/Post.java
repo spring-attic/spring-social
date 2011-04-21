@@ -130,4 +130,5 @@ public abstract class Post {
 	}
 
 	public static enum PostType { CHECKIN, LINK, NOTE, PHOTO, STATUS, VIDEO }
+	
 }

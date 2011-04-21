@@ -18,6 +18,7 @@ package org.springframework.social.facebook.api.impl;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.social.facebook.api.Photo;
 
@@ -26,6 +27,7 @@ import org.springframework.social.facebook.api.Photo;
  * This helps Jackson know what type to deserialize list data into. 
  * @author Craig Walls
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 class PhotoList {
 
 	private final List<Photo> list;

@@ -36,4 +36,7 @@ abstract class LinkPostMixin extends PostMixin {
 		super(id, from, createdTime, updatedTime);
 	}
 	
+	@JsonProperty("object_id")
+	String objectId;
+	
 }
