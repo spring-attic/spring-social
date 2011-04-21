@@ -31,14 +31,9 @@ public interface TwitterApi {
 	boolean isAuthorizedForUser();
 	
 	/**
-	 * Returns the portion of the Twitter API containing the user operations.
+	 * Returns the portion of the Twitter API containing the direct message operations.
 	 */
-	UserOperations userOperations();
-
-	/**
-	 * Returns the portion of the Twitter API containing the tweet and timeline operations.
-	 */
-	TimelineOperations timelineOperations();
+	DirectMessageOperations directMessageOperations();
 
 	/**
 	 * Returns the portion of the Twitter API containing the friends and followers operations.
@@ -46,18 +41,23 @@ public interface TwitterApi {
 	FriendOperations friendOperations();
 
 	/**
-	 * Returns the portion of the Twitter API containing the search operations.
-	 */
-	SearchOperations searchOperations();
-
-	/**
-	 * Returns the portion of the Twitter API containing the direct message operations.
-	 */
-	DirectMessageOperations directMessageOperations();
-	
-	/**
 	 * Returns the portion of the Twitter API containing the user list operations.
 	 */
 	ListOperations listOperations();
+
+	/**
+	 * Returns the portion of the Twitter API containing the search operations.
+	 */
+	SearchOperations searchOperations();
+	
+	/**
+	 * Returns the portion of the Twitter API containing the tweet and timeline operations.
+	 */
+	TimelineOperations timelineOperations();
+
+	/**
+	 * Returns the portion of the Twitter API containing the user operations.
+	 */
+	UserOperations userOperations();
 
 }

@@ -27,25 +27,20 @@ import org.springframework.social.facebook.api.impl.FacebookTemplate;
 public interface FacebookApi extends GraphApi {
 	
 	/**
-	 * API for performing operations on Facebook user profiles.
+	 * API for reading and posting comments.
 	 */
-	UserOperations userOperations();
-	
-	/**
-	 * API for performing Facebook Places checkin operations.
-	 */
-	PlacesOperations placesOperations();
-	
-	/**
-	 * API for performing operations against user likes and interests.
-	 */
-	LikeOperations likeOperations();
+	CommentOperations commentOperations();
 
+	/**
+	 * API for performing operations on events.
+	 */
+	EventOperations eventOperations();
+	
 	/**
 	 * API for performing operations on feeds.
 	 */
 	FeedOperations feedOperations();
-	
+
 	/**
 	 * API for performing operations with a user's set of friends.
 	 */
@@ -57,18 +52,23 @@ public interface FacebookApi extends GraphApi {
 	GroupOperations groupOperations();
 
 	/**
-	 * API for reading and posting comments.
+	 * API for performing operations against user likes and interests.
 	 */
-	CommentOperations commentOperations();
-
-	/**
-	 * API for performing operations on events.
-	 */
-	EventOperations eventOperations();
+	LikeOperations likeOperations();
 	
 	/**
 	 * API for performing operations on albums, photos, and videos.
 	 */
 	MediaOperations mediaOperations();
+	
+	/**
+	 * API for performing Facebook Places checkin operations.
+	 */
+	PlacesOperations placesOperations();
+	
+	/**
+	 * API for performing operations on Facebook user profiles.
+	 */
+	UserOperations userOperations();
 	
 }

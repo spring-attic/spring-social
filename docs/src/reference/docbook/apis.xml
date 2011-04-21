@@ -65,13 +65,14 @@ TwitterApi twitterApi = new TwitterTemplate();]]>
 		</para>
 		
 		<para>
-			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>TwitterApi</interfacename> by calling the <methodname>getServiceApi()</methodname> method on a <interfacename>ServiceProviderConnection</interfacename>. 
-			For instance:
-		</para>
-				
+			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>TwitterApi</interfacename> via a <interfacename>ServiceProviderConnection</interfacename>. 
+			For example, the following snippet calls <methodname>getServiceApi()</methodname> on a connection to retrieve a <interfacename>TwitterApi</interfacename>:
+		</para>				
+		
 		<programlisting language="java"><![CDATA[
-List<ServiceProviderConnection<TwitterApi>> connections = connectionRepository.finConnectionsToProvider("twitter");
-TwitterApi twitterApi = connections.get(0).getServiceApi();]]>
+ServiceProviderConnection<TwitterApi> connection = 
+        connectionRepository.findConnectionByServiceApi(TwitterApi);
+TwitterApi twitterApi = connection.getServiceApi();]]>
 		</programlisting>
 		
 		<para>
@@ -513,8 +514,9 @@ FacebookApi facebook = new FacebookTemplate(accessToken);]]>
 		</para>
 
 		<programlisting language="java"><![CDATA[
-List<ServiceProviderConnection<FacebookApi>> connections = connectionRepository.findConnectionsToProvider("facebook");
-FacebookApi facebookApi = connections.get(0).getServiceApi();]]>
+ServiceProviderConnection<FacebookApi> connection = 
+        connectionRepository.findConnectionByServiceApi(FacebookApi);
+FacebookApi facebookApi = connection.getServiceApi();]]>
 		</programlisting>
 
 		<para>
@@ -523,8 +525,94 @@ FacebookApi facebookApi = connections.get(0).getServiceApi();]]>
 		</para>  
 
 		<para>
-			With a <interfacename>FacebookApi</interfacename> in hand, there are several ways you can use it to interact with Facebook on behalf of the user. 
-			These will be covered in the following sections.
+			With a <interfacename>FacebookApi</interfacename> in hand, there are several ways you can use it to interact with Facebook on behalf of the user.
+			Spring Social's Facebook API binding is divided into 9 sub-APIs exposes through the methods of <interfacename>FacebookApi</interfacename>:
+		</para>
+
+			<programlisting language="java"><![CDATA[
+public interface FacebookApi extends GraphApi {
+
+	CommentOperations commentOperations();
+
+	EventOperations eventOperations();
+	
+	FeedOperations feedOperations();
+
+	FriendOperations friendOperations();
+	
+	GroupOperations groupOperations();
+
+	LikeOperations likeOperations();
+	
+	MediaOperations mediaOperations();
+	
+	PlacesOperations placesOperations();
+	
+	UserOperations userOperations();
+	
+}]]>
+			</programlisting>
+
+		<para>
+			The sub-API interfaces returned from <interfacename>FacebookApi</interfacename>'s methods are described in <xref linkend="table-facebook-sub-apis" />.
+		</para>
+
+		<table xml:id="table-facebook-sub-apis">
+			<title>FacebookApi's Sub-APIs</title>
+			<tgroup cols="2">
+				<colspec align="left" />
+				<colspec colnum="1" colname="col1" colwidth="2*"/>
+				<colspec colnum="2" colname="col2" colwidth="2*"/>
+				<thead>
+					<row>
+						<entry align="center">Sub-API Interface</entry>
+						<entry align="center">Description</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>CommentOperations</entry>
+						<entry>Add, delete, and read comments on Facebook objects.</entry>
+					</row>
+					<row>
+						<entry>EventOperations</entry>
+						<entry>Create and maintain events and RSVP to event invitations.</entry>
+					</row>
+					<row>
+						<entry>FeedOperations</entry>
+						<entry>Read and post to a Facebook wall.</entry>
+					</row>
+					<row>
+						<entry>FriendOperations</entry>
+						<entry>Retrieve a user's friends and maintain friend lists.</entry>
+					</row>
+					<row>
+						<entry>GroupOperations</entry>
+						<entry>Retrieve group details and members.</entry>
+					</row>
+					<row>
+						<entry>LikeOperations</entry>
+						<entry>Retrieve a user's interests and likes. Like and unlike objects.</entry>
+					</row>
+					<row>
+						<entry>MediaOperations</entry>
+						<entry>Maintain albums, photos, and videos.</entry>
+					</row>
+					<row>
+						<entry>PlacesOperations</entry>
+						<entry>Checkin to location in Facebook Places and retrieve places a user and their friends have checked into.</entry>
+					</row>
+					<row>
+						<entry>UserOperations</entry>
+						<entry>Retrieve user profile data and profile images.</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
+
+		<para>
+			The following sections will give an overview of common tasks that can be performed via <interfacename>FacebookApi</interfacename> and its sub-APIs.
+			For complete details on all of the operations available, refer to the JavaDoc.
 		</para>
 
 		<section id="facebook-getProfile">
@@ -535,7 +623,7 @@ FacebookApi facebookApi = connections.get(0).getServiceApi();]]>
 			</para>
 
 			<programlisting language="java"><![CDATA[
-FacebookProfile profile = facebook.getUserProfile();]]>
+FacebookProfile profile = facebookApi.userOperations().getUserProfile();]]>
 			</programlisting>
 
 			<para>
@@ -547,7 +635,7 @@ FacebookProfile profile = facebook.getUserProfile();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-String profileId = facebook.getProfileId();]]>
+String profileId = facebookApi.userOperations().getProfileId();]]>
 			</programlisting>
 			
 			<para>
@@ -555,7 +643,7 @@ String profileId = facebook.getProfileId();]]>
 			</para>
 			
 			<programlisting langauge="java"><![CDATA[
-String profileUrl = facebook.getProfileUrl();]]>
+String profileUrl = facebookApi.userOperations().getProfileUrl();]]>
 			</programlisting>
 
 		</section>
@@ -569,7 +657,7 @@ String profileUrl = facebook.getProfileUrl();]]>
 			</para>
 
 			<programlisting language="java"><![CDATA[
-List<String> friendIds = facebook.getFriendIds();]]>
+List<String> friendIds = facebookApi.friendOperations().getFriendIds();]]>
 			</programlisting>
 			
 			<para>
@@ -578,8 +666,16 @@ List<String> friendIds = facebook.getFriendIds();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-FacebookProfile firstFriend = facebook.getUserProfile(friendIds.get(0));]]>
+FacebookProfile firstFriend = facebookApi.userOperations().getUserProfile(friendIds.get(0));]]>
 			</programlisting>
+			
+			<para>
+				Or you can get a list of user's friends as <classname>FacebookProfile</classname>s by calling <methodname>getFriendProfiles()</methodname>:
+			</para>
+			
+			<programlisting language="java"><![CDATA[
+List<FacebookProfile> friends = facebookApi.friendOperations().getFriendProfiles();]]>
+			</programlisting>			
 
 		</section>
 
@@ -591,7 +687,7 @@ FacebookProfile firstFriend = facebook.getUserProfile(friendIds.get(0));]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-facebook.updateStatus("I'm trying out Spring Social!");]]>
+facebookApi.feedOperations().updateStatus("I'm trying out Spring Social!");]]>
 			</programlisting>
 			
 			<para>
@@ -603,7 +699,7 @@ FacebookLink link = new FacebookLink("http://www.springsource.org/spring-social"
         "Spring Social", 
         "The Spring Social Project", 
         "Spring Social is an extension to Spring to enable applications to connect with service providers.");
-facebook.updateStatus("I'm trying out Spring Social!", link);]]>
+facebookApi.feedOperations().updateStatus("I'm trying out Spring Social!", link);]]>
 			</programlisting>
 			
 			<para>
@@ -627,7 +723,7 @@ facebook.updateStatus("I'm trying out Spring Social!", link);]]>
 			<programlisting language="java"><![CDATA[
 MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
 data.set("message", message);
-publish("me", "feed", data);]]>
+facebookApi.publish("me", "feed", data);]]>
 			</programlisting>
 			
 			<para>
@@ -664,7 +760,7 @@ String apiKey = "..."; // The application's API/Consumer key
 String apiSecret = "..."; // The application's API/Consumer secret
 String accessToken = "..."; // The access token granted after OAuth authorization
 String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
-LinkedInApi linkedin = new LinkedInTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]>
+LinkedInApi linkedinApi = new LinkedInTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]>
 		</programlisting>
 		
 		<para>
@@ -673,7 +769,9 @@ LinkedInApi linkedin = new LinkedInTemplate(apiKey, apiSecret, accessToken, acce
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-LinkedInApi linkedin = linkedinProvider.getConnections(accountId).get(0).getServiceApi();]]>
+ServiceProviderConnection<LinkedInApi> connection = 
+        connectionRepository.findConnectionByServiceApi(LinkedInApi);
+LinkedInApi linkedinApi = connection.getServiceApi();]]>
 		</programlisting>
 		
 		<para>
@@ -756,7 +854,7 @@ String apiKey = "..."; // The application's API/Consumer key
 String apiSecret = "..."; // The application's API/Consumer secret
 String accessToken = "..."; // The access token granted after OAuth authorization
 String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
-TripItApi tripit = new TripItTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]>
+TripItApi tripitApi = new TripItTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]>
 		</programlisting>
 		
 		<para>
@@ -764,7 +862,9 @@ TripItApi tripit = new TripItTemplate(apiKey, apiSecret, accessToken, accessToke
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-TripItApi tripit = tripitProvider.getConnections(accountId).get(0).getServiceApi();]]>
+ServiceProviderConnection<TripItApi> connection = 
+        connectionRepository.findConnectionByServiceApi(TripItApi);
+TripItApi tripitApi = connection.getServiceApi();]]>
 		</programlisting>
 		
 		<para>
@@ -845,7 +945,7 @@ List<Trip> trips = tripit.getUpcomingTrips();]]>
 		
 		<programlisting language="java"><![CDATA[
 String accessToken = "f8FX29g..."; // access token received from GitHub after OAuth authorization
-GitHubApi github = new GitHubTemplate(accessToken);]]>
+GitHubApi githubApi = new GitHubTemplate(accessToken);]]>
 		</programlisting>
 		
 		<para>
@@ -853,7 +953,9 @@ GitHubApi github = new GitHubTemplate(accessToken);]]>
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-GitHubApi github = githubProvider.getConnections(accountId).get(0).getServiceApi();]]>
+ServiceProviderConnection<GitHubApi> connection = 
+        connectionRepository.findConnectionByServiceApi(GitHubApi);
+GitHubApi githubApi = connection.getServiceApi();]]>
 		</programlisting>
 		
 		<para>
@@ -927,7 +1029,7 @@ String profileUrl = github.getProfileUrl();]]>
 		
 		<programlisting language="java"><![CDATA[
 String accessToken = "f8FX29g..."; // access token received from Gowalla after OAuth authorization
-GowallaApi gowalla = new GowallaTemplate(accessToken);]]>
+GowallaApi gowallaApi = new GowallaTemplate(accessToken);]]>
 		</programlisting>
 		
 		<para>
@@ -935,7 +1037,9 @@ GowallaApi gowalla = new GowallaTemplate(accessToken);]]>
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-GowallaApi gowalla = gowallaProvider.getConnections(accountId).get(0).getServiceApi();]]>
+ServiceProviderConnection<GowallaApi> connection = 
+        connectionRepository.findConnectionByServiceApi(GowallaApi);
+GowallaApi gowallaApi = connection.getServiceApi();]]>
 		</programlisting>
 		
 		<para>
