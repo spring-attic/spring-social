@@ -31,7 +31,7 @@ import javax.servlet.http.Cookie;
  * Helper class that helps extract data from a Facebook cookie.
  * @author Craig Walls
  */
-class FacebookCookieParser {
+public class FacebookCookieParser {
 
 	/**
 	 * Looks for a Facebook cookie for the given API Key and returns its data as key/value pairs in a Map.
@@ -51,6 +51,8 @@ class FacebookCookieParser {
 		return Collections.<String, String> emptyMap();
 	}
 
+	// internal helpers
+	
 	private static Map<String, String> extractDataFromCookie(String cookieValue) {
 		HashMap<String, String> data = new HashMap<String, String>();
 		String[] fields = cookieValue.split("\\&");
