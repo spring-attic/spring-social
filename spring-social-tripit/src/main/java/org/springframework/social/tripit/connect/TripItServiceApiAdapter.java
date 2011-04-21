@@ -18,8 +18,8 @@ package org.springframework.social.tripit.connect;
 import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderConnectionValues;
 import org.springframework.social.connect.ServiceProviderUserProfile;
-import org.springframework.social.tripit.TripItApi;
-import org.springframework.social.tripit.TripItProfile;
+import org.springframework.social.tripit.api.TripItApi;
+import org.springframework.social.tripit.api.TripItProfile;
 import org.springframework.web.client.HttpClientErrorException;
 
 public class TripItServiceApiAdapter implements ServiceApiAdapter<TripItApi> {

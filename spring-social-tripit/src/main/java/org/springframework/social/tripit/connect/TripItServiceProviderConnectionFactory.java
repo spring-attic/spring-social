@@ -16,8 +16,7 @@
 package org.springframework.social.tripit.connect;
 
 import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
-import org.springframework.social.tripit.TripItApi;
-import org.springframework.social.tripit.TripItServiceProvider;
+import org.springframework.social.tripit.api.TripItApi;
 
 public class TripItServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<TripItApi> {
 

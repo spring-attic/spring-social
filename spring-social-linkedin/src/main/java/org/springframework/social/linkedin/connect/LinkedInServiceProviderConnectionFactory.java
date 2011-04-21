@@ -16,8 +16,7 @@
 package org.springframework.social.linkedin.connect;
 
 import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
-import org.springframework.social.linkedin.LinkedInApi;
-import org.springframework.social.linkedin.LinkedInServiceProvider;
+import org.springframework.social.linkedin.api.LinkedInApi;
 
 public class LinkedInServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<LinkedInApi>{
 

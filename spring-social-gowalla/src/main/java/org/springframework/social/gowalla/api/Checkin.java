@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.gowalla.connect;
+package org.springframework.social.gowalla.api;
 
-import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
-import org.springframework.social.gowalla.api.GowallaApi;
+public class Checkin {
+	private final String name;
+	private final int count;
 
-public class GowallaServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<GowallaApi> {
-
-	public GowallaServiceProviderConnectionFactory(String clientId, String clientSecret) {
-		super("gowalla", new GowallaServiceProvider(clientId, clientSecret), new GowallaServiceApiAdapter());
+	public Checkin(String name, int count) {
+		this.name = name;
+		this.count = count;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public int getCount() {
+		return count;
+	}
 }
