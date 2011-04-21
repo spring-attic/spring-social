@@ -19,7 +19,7 @@ package org.springframework.social.connect;
  * A link to a service provider user.
  * Allows the client application to access or update user information using the provider's API.
  * Exposes a set of operations that are common across all service providers, including
- * the ability to {@link #getUser() access user profile information} and {@link #updateStatus(String) update user status}. 
+ * the ability to {@link #fetchUserProfile() access user profile information} and {@link #updateStatus(String) update user status}. 
  * @author Keith Donald
  * @param <S> a strongly-typed binding to the service provider's API
  */

@@ -93,7 +93,7 @@ public interface ServiceProviderConnectionRepository {
 
 	/**
 	 * Find the ServiceProviderConnection between the current user and the given provider user.
-	 * Returns the equivalent of {@link #findConnectionToProvider(ServiceProviderConnectionKey)}, but uses the serviceApiType as the provider key instead of the providerId.
+	 * Returns the equivalent of {@link #findConnection(ServiceProviderConnectionKey)}, but uses the serviceApiType as the provider key instead of the providerId.
 	 * Useful for direct use by application code to obtain a parameterized ServiceProviderConnection instance.
 	 * @param <S> the service api parameterized type
 	 * @param serviceApiType the service api type e.g. FacebookApi.class or TwitterApi.class

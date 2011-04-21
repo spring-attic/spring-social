@@ -40,7 +40,7 @@ public interface ServiceApiAdapter<S> {
 	/**
 	 * Implements {@link ServiceProviderConnection#fetchUserProfile()} for connections to the given service API.
 	 * @param serviceApi
-	 * @return
+	 * @return the service provider user profile
 	 */
 	ServiceProviderUserProfile fetchUserProfile(S serviceApi);
 	
