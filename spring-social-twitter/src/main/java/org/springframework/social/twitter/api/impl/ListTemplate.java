@@ -45,30 +45,31 @@ class ListTemplate extends AbstractTwitterOperations implements ListOperations {
 		this.userProfileId = userProfileId;
 	}
 
+	public List<UserList> getLists() {
+		requireUserAuthorization();
+		return restTemplate.getForObject(buildUri("lists.json"), UserListList.class).getList();
+	}
+
 	public List<UserList> getLists(long userId) {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri(userId + "/lists.json"), UserListList.class).getList();
+		return restTemplate.getForObject(buildUri("lists.json", Collections.singletonMap("user_id", String.valueOf(userId))), UserListList.class).getList();
 	}
 
 	public List<UserList> getLists(String screenName) {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri(screenName + "/lists.json"), UserListList.class).getList();
+		return restTemplate.getForObject(buildUri("lists.json", Collections.singletonMap("screen_name", screenName)), UserListList.class).getList();
 	}
 
-	public UserList getList(long userId, long listId) {
+	public UserList getList(long listId) {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri(userId + "/lists/" + listId + ".json"), UserList.class);
+		return restTemplate.getForObject(buildUri("lists/show.json", Collections.singletonMap("list_id", String.valueOf(listId))), UserList.class);
 	}
 
-	public UserList getList(String screenName, String listSlug) {
-		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri(screenName + "/lists/" + listSlug + ".json"), UserList.class);
+	public List<Tweet> getListStatuses(long listId) {
+		return restTemplate.getForObject(buildUri("lists/statuses.json", Collections.singletonMap("list_id", String.valueOf(listId))), TweetList.class);
 	}
 
-	public List<Tweet> getListStatuses(long userId, long listId) {
-		return restTemplate.getForObject(buildUri(userId + "/lists/" + listId + "/statuses.json"), TweetList.class);
-	}
-
+	// TODO: Fix to user lists/statuses?screen_name={sn}&slug={slug} once the slug problem is resolved on Twitter
 	public List<Tweet> getListStatuses(String screenName, String listSlug) {
 		return restTemplate.getForObject(buildUri(screenName + "/lists/" + listSlug + "/statuses.json"), TweetList.class);
 	}
@@ -76,18 +77,19 @@ class ListTemplate extends AbstractTwitterOperations implements ListOperations {
 	public UserList createList(String name, String description, boolean isPublic) {	
 		requireUserAuthorization();
 		MultiValueMap<String, Object> request = buildListDataMap(name, description, isPublic);
-		return restTemplate.postForObject(buildUri(userProfileId + "/lists.json"), request, UserList.class);
+		return restTemplate.postForObject(buildUri("lists/create.json"), request, UserList.class);
 	}
 
 	public UserList updateList(long listId, String name, String description, boolean isPublic) {
 		requireUserAuthorization();
 		MultiValueMap<String, Object> request = buildListDataMap(name, description, isPublic);
-		return restTemplate.postForObject(buildUri(userProfileId + "/lists/" + listId + ".json"), request, UserList.class);
+		request.set("list_id", String.valueOf(listId));
+		return restTemplate.postForObject(buildUri("lists/update.json"), request, UserList.class);
 	}
 
 	public void deleteList(long listId) {
 		requireUserAuthorization();
-		restTemplate.delete(buildUri(userProfileId + "/lists/" + listId + ".json"));
+		restTemplate.delete(buildUri("lists/destroy.json", Collections.singletonMap("list_id", String.valueOf(listId))));
 	}
 
 	public List<TwitterProfile> getListMembers(long userId, long listId) {

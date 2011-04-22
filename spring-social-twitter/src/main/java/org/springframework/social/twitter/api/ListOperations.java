@@ -25,6 +25,12 @@ import java.util.List;
 public interface ListOperations {
 
 	/**
+	 * Retrieves user lists for the authenticated user.
+	 * @return a list of {@link UserList}s for the specified user.
+	 */
+	List<UserList> getLists();
+	
+	/**
 	 * Retrieves user lists for a given user.
 	 * @param userId the ID of the Twitter user.
 	 * @return a list of {@link UserList}s for the specified user.
@@ -40,27 +46,17 @@ public interface ListOperations {
 
 	/**
 	 * Retrieves a specific user list.
-	 * @param userId the ID of the Twitter user.
 	 * @param listId the ID of the list to retrieve.
 	 * @return the requested {@link UserList}
 	 */
-	UserList getList(long userId, long listId);
-
-	/**
-	 * Retrieves a specific user list.
-	 * @param screenName the screen name of the Twitter user.
-	 * @param listSlug the list's slug.
-	 * @return the requested {@link UserList}
-	 */
-	UserList getList(String screenName, String listSlug);
+	UserList getList(long listId);
 
 	/**
 	 * Retrieves the timeline tweets for the given user list.
-	 * @param userId the ID of the Twitter user.
 	 * @param listId the ID of the list to retrieve.
 	 * @return a list of {@link Tweet} objects for the items in the user list timeline.
 	 */
-	List<Tweet> getListStatuses(long userId, long listId);
+	List<Tweet> getListStatuses(long listId);
 
 	/**
 	 * Retrieves the timeline tweets for the given user list.
