@@ -40,6 +40,10 @@ class FriendTemplate extends AbstractTwitterOperations implements FriendOperatio
 		this.restTemplate = restTemplate;
 	}
 
+	public List<TwitterProfile> getFriends() {
+		return restTemplate.getForObject(buildUri("statuses/friends.json"), TwitterProfileList.class);
+	}
+
 	public List<TwitterProfile> getFriends(long userId) {
 		return restTemplate.getForObject(buildUri("statuses/friends.json", Collections.singletonMap("user_id", String.valueOf(userId))), TwitterProfileList.class);
 	}
@@ -48,6 +52,10 @@ class FriendTemplate extends AbstractTwitterOperations implements FriendOperatio
 		return restTemplate.getForObject(buildUri("statuses/friends.json", Collections.singletonMap("screen_name", screenName)), TwitterProfileList.class);
 	}
 	
+	public List<Long> getFriendIds() {
+		return restTemplate.getForObject(buildUri("friends/ids.json"), LongList.class);
+	}
+
 	public List<Long> getFriendIds(long userId) {
 		return restTemplate.getForObject(buildUri("friends/ids.json", Collections.singletonMap("user_id", String.valueOf(userId))), LongList.class);
 	}
@@ -56,12 +64,20 @@ class FriendTemplate extends AbstractTwitterOperations implements FriendOperatio
 		return restTemplate.getForObject(buildUri("friends/ids.json", Collections.singletonMap("screen_name", screenName)), LongList.class);
 	}
 
+	public List<TwitterProfile> getFollowers() {
+		return restTemplate.getForObject(buildUri("statuses/followers.json"), TwitterProfileList.class);
+	}
+
 	public List<TwitterProfile> getFollowers(long userId) {
 		return restTemplate.getForObject(buildUri("statuses/followers.json", Collections.singletonMap("user_id", String.valueOf(userId))), TwitterProfileList.class);
 	}
 
 	public List<TwitterProfile> getFollowers(String screenName) {
 		return restTemplate.getForObject(buildUri("statuses/followers.json", Collections.singletonMap("screen_name", screenName)), TwitterProfileList.class);
+	}
+
+	public List<Long> getFollowerIds() {
+		return restTemplate.getForObject(buildUri("followers/ids.json"), LongList.class);
 	}
 
 	public List<Long> getFollowerIds(long userId) {
