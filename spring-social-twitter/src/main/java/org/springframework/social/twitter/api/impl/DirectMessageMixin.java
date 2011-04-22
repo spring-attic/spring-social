@@ -21,6 +21,7 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.springframework.social.twitter.api.TwitterProfile;
 
 /**
  * Mixin class for adding Jackson annotations to DirectMessage.
@@ -32,9 +33,7 @@ abstract class DirectMessageMixin {
 	DirectMessageMixin(
 			@JsonProperty("id") long id, 
 			@JsonProperty("text") String text, 
-			@JsonProperty("sender_id") long senderId, 
-			@JsonProperty("sender_screen_name") String senderScreenName, 
-			@JsonProperty("recipient_id") long recipientId, 
-			@JsonProperty("recipient_screen_name") String recipientScreenName, 
+			@JsonProperty("sender") TwitterProfile sender, 
+			@JsonProperty("recipient") TwitterProfile receipient, 
 			@JsonProperty("created_at") @JsonDeserialize(using=TimelineDateDeserializer.class) Date createdAt) {}
 }

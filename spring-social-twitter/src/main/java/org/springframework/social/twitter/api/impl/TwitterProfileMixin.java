@@ -20,6 +20,7 @@ import java.util.Date;
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
 /**
  * Mixin class for adding Jackson annotations to TwitterProfile.
@@ -36,5 +37,5 @@ abstract class TwitterProfileMixin {
 			@JsonProperty("profile_image_url") String profileImageUrl, 
 			@JsonProperty("description") String description, 
 			@JsonProperty("location") String location, 
-			@JsonProperty("created_date") Date createdDate) {}
+			@JsonProperty("created_at") @JsonDeserialize(using=TimelineDateDeserializer.class) Date createdDate) {}
 }

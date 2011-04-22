@@ -24,19 +24,15 @@ import java.util.Date;
 public class DirectMessage {
 	private final long id;
 	private final String text;
-	private final long senderId;
-	private final String senderScreenName;
-	private final long recipientId;
-	private final String recipientScreenName;
+	private final TwitterProfile sender;
+	private final TwitterProfile recipient;
 	private final Date createdAt;
 
-	public DirectMessage(long id, String text, long senderId, String senderScreenName, long recipientId, String recipientScreenName, Date createdAt) {
+	public DirectMessage(long id, String text, TwitterProfile sender, TwitterProfile recipient, Date createdAt) {
 		this.id = id;
 		this.text = text;
-		this.senderId = senderId;
-		this.senderScreenName = senderScreenName;
-		this.recipientId = recipientId;
-		this.recipientScreenName = recipientScreenName;
+		this.sender = sender;
+		this.recipient = recipient;
 		this.createdAt = createdAt;
 	}
 	
@@ -48,20 +44,12 @@ public class DirectMessage {
 		return text;
 	}
 
-	public long getSenderId() {
-		return senderId;
+	public TwitterProfile getSender() {
+		return sender;
 	}
-
-	public String getSenderScreenName() {
-		return senderScreenName;
-	}
-
-	public long getRecipientId() {
-		return recipientId;
-	}
-
-	public String getRecipientScreenName() {
-		return recipientScreenName;
+	
+	public TwitterProfile getRecipient() {
+		return recipient;
 	}
 
 	public Date getCreatedAt() {
