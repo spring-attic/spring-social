@@ -119,7 +119,7 @@ public class TwitterProfile implements Serializable {
 	 * @return The URL of the user's profile.
 	 */
 	public String getProfileUrl() {
-		return "http://www.twitter.com/" + screenName;
+		return "http://twitter.com/" + screenName;
 	}
 
 	/**

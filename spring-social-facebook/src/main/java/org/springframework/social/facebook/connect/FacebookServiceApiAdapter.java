@@ -35,8 +35,8 @@ public class FacebookServiceApiAdapter implements ServiceApiAdapter<FacebookApi>
 
 	public ServiceProviderConnectionValues getConnectionValues(FacebookApi serviceApi) {
 		FacebookProfile profile = serviceApi.userOperations().getUserProfile();		
-		String profileUrl = "http://www.facebook.com/#!/profile.php?id=" + profile.getId();
-		String imageUrl = "http://graph.facebook.com/" + profile.getId() + "/picture?type=large";
+		String profileUrl = "http://facebook.com/#!/profile.php?id=" + profile.getId();
+		String imageUrl = "http://graph.facebook.com/" + profile.getId() + "/picture";
 		return new ServiceProviderConnectionValues(profile.getId(), profile.getUsername(), profileUrl, imageUrl);
 	}
 

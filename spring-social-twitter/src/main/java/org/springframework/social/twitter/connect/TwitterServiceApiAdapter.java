@@ -35,7 +35,7 @@ public class TwitterServiceApiAdapter implements ServiceApiAdapter<TwitterApi> {
 
 	public ServiceProviderConnectionValues getConnectionValues(TwitterApi serviceApi) {
 		TwitterProfile profile = serviceApi.userOperations().getUserProfile();
-		return new ServiceProviderConnectionValues(Long.toString(profile.getId()), profile.getScreenName(), profile.getProfileUrl(), profile.getProfileImageUrl());
+		return new ServiceProviderConnectionValues(Long.toString(profile.getId()), "@" + profile.getScreenName(), profile.getProfileUrl(), profile.getProfileImageUrl());
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile(TwitterApi serviceApi) {
