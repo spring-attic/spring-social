@@ -30,12 +30,12 @@ public interface ServiceApiAdapter<S> {
 	boolean test(S serviceApi);
 	
 	/**
-	 * Provides values for {@link ServiceProviderConnectionKey#getProviderUserId()}, {@link ServiceProviderConnection#getDisplayName()},
+	 * Sets values for {@link ServiceProviderConnectionKey#getProviderUserId()}, {@link ServiceProviderConnection#getDisplayName()},
 	 * {@link ServiceProviderConnection#getProfileUrl()}, and {@link ServiceProviderConnection#getImageUrl()} for connections to the given service API.
 	 * @param serviceApi the service API
-	 * @return the service provider connection values
+	 * @param values the connection values to set
 	 */
-	ServiceProviderConnectionValues getConnectionValues(S serviceApi);
+	void setConnectionValues(S serviceApi, ServiceProviderConnectionValues values);
 	
 	/**
 	 * Implements {@link ServiceProviderConnection#fetchUserProfile()} for connections to the given service API.

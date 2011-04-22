@@ -18,6 +18,7 @@ package org.springframework.social.tripit.connect;
 import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderConnectionValues;
 import org.springframework.social.connect.ServiceProviderUserProfile;
+import org.springframework.social.connect.ServiceProviderUserProfileBuilder;
 import org.springframework.social.tripit.api.TripItApi;
 import org.springframework.social.tripit.api.TripItProfile;
 import org.springframework.web.client.HttpClientErrorException;
@@ -34,36 +35,21 @@ public class TripItServiceApiAdapter implements ServiceApiAdapter<TripItApi> {
 		}
 	}
 
-	public ServiceProviderConnectionValues getConnectionValues(TripItApi serviceApi) {
-		TripItProfile userProfile = serviceApi.getUserProfile();
-		String profileUrl = serviceApi.getProfileUrl();
-		return new ServiceProviderConnectionValues(userProfile.getId(), userProfile.getScreenName(), profileUrl, userProfile.getProfileImageUrl());
+	public void setConnectionValues(TripItApi serviceApi, ServiceProviderConnectionValues values) {
+		TripItProfile profile = serviceApi.getUserProfile();
+		values.setProviderUserId(profile.getId());
+		values.setDisplayName(profile.getScreenName());
+		values.setProfileUrl(profile.getProfileUrl());
+		values.setImageUrl(profile.getProfileImageUrl());
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile(TripItApi serviceApi) {
 		TripItProfile profile = serviceApi.getUserProfile();
-		String name = profile.getPublicDisplayName();
-		String[] firstAndLastName = firstAndLastName(name);
-		return new ServiceProviderUserProfile(profile.getPublicDisplayName(), firstAndLastName[0], firstAndLastName[1], profile.getEmailAddress(), profile.getScreenName());
+		return new ServiceProviderUserProfileBuilder().setName(profile.getPublicDisplayName()).setEmail(profile.getEmailAddress()).setUsername(profile.getScreenName()).build();
 	}
 	
 	public void updateStatus(TripItApi serviceApi, String message) {
 		// not supported
 	}
 
-	// internal helpers
-	
-	private String[] firstAndLastName(String name) {
-		if (name == null) {
-			return EMPTY_FIRST_AND_LAST_NAME_ARRAY;
-		}
-		String[] nameParts = name.split("\\s+");
-		if (nameParts.length == 1) {
-			return new String[] { nameParts[0], null };
-		} else {
-			return new String[] { nameParts[0], nameParts[nameParts.length - 1] };
-		}
-	}
-	
-	private String[] EMPTY_FIRST_AND_LAST_NAME_ARRAY = new String[] { null, null };
 }

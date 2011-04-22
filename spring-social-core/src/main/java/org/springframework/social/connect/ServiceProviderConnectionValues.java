@@ -17,63 +17,33 @@ package org.springframework.social.connect;
 
 /**
  * A data transfer object used to map {@link ServiceProviderConnection} values from a ServiceProvider API.
- * {@link #getProviderUserId()} maps to {@link ServiceProviderConnectionKey#getProviderUserId()}
- * {@link #getDisplayName()} maps to {@link ServiceProviderConnection#getDisplayName()}
- * {@link #getProfileUrl()} maps to {@link ServiceProviderConnection#getProfileUrl()}
- * {@link #getImageUrl()} maps to {@link ServiceProviderConnection#getImageUrl()}
+ * {@link #setProviderUserId(String)} maps to {@link ServiceProviderConnectionKey#getProviderUserId()}
+ * {@link #setDisplayName(String)} maps to {@link ServiceProviderConnection#getDisplayName()}
+ * {@link #setProfileUrl(String)} maps to {@link ServiceProviderConnection#getProfileUrl()}
+ * {@link #setImageUrl(String)} maps to {@link ServiceProviderConnection#getImageUrl()}
  * @author Keith Donald
- * @see ServiceApiAdapter#getConnectionValues(Object)
+ * @see ServiceApiAdapter#setConnectionValues(ServiceProviderConnectionValues)
  */
-public class ServiceProviderConnectionValues {
-
-	private final String providerUserId;
-	
-	private final String displayName;
-
-	private final String profileUrl;
-	
-	private final String imageUrl;
+public interface ServiceProviderConnectionValues {
 
 	/**
-	 * Creates a new ServiceProviderConnectionValues transfer object.
-	 * @param providerUserId the id of the provider user
-	 * @param displayName the display name for the connection
-	 * @param profileUrl a link to the user's profile
-	 * @param imageUrl a link to a picture visualizing the connection
+	 * Sets value mapped to {@link ServiceProviderConnectionKey#getProviderUserId()}.
 	 */
-	public ServiceProviderConnectionValues(String providerUserId, String displayName, String profileUrl, String imageUrl) {
-		this.providerUserId = providerUserId;
-		this.displayName = displayName;
-		this.profileUrl = profileUrl;
-		this.imageUrl = imageUrl;
-	}
+	public void setProviderUserId(String providerUserId);
 
 	/**
-	 * Value mapped to {@link ServiceProviderConnectionKey#getProviderUserId()}.
+	 * Sets value mapped to {@link ServiceProviderConnection#getDisplayName()}.
 	 */
-	public String getProviderUserId() {
-		return providerUserId;
-	}
-
-	/**
-	 * Value mapped to {@link ServiceProviderConnection#getDisplayName()}.
-	 */
-	public String getDisplayName() {
-		return displayName;
-	}
+	public void setDisplayName(String displayName);
 	
 	/**
-	 * Value mapped to {@link ServiceProviderConnection#getProfileUrl()}
+	 * Sets value mapped to {@link ServiceProviderConnection#getProfileUrl()}
 	 */
-	public String getProfileUrl() {
-		return profileUrl;
-	}
+	public void setProfileUrl(String profileUrl);
 
 	/**
-	 * Value mapped to {@link ServiceProviderConnection#getImageUrl()}
+	 * Sets value mapped to {@link ServiceProviderConnection#getImageUrl()}
 	 */
-	public String getImageUrl() {
-		return imageUrl;
-	}
+	public void setImageUrl(String imageUrl);
 
 }

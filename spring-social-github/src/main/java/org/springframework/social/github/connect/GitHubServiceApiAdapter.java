@@ -18,6 +18,7 @@ package org.springframework.social.github.connect;
 import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderConnectionValues;
 import org.springframework.social.connect.ServiceProviderUserProfile;
+import org.springframework.social.connect.ServiceProviderUserProfileBuilder;
 import org.springframework.social.github.api.GitHubApi;
 import org.springframework.social.github.api.GitHubUserProfile;
 import org.springframework.web.client.HttpClientErrorException;
@@ -34,38 +35,21 @@ public class GitHubServiceApiAdapter implements ServiceApiAdapter<GitHubApi> {
 		}
 	}
 
-	public ServiceProviderConnectionValues getConnectionValues(GitHubApi serviceApi) {
+	public void setConnectionValues(GitHubApi serviceApi, ServiceProviderConnectionValues values) {
 		GitHubUserProfile userProfile = serviceApi.getUserProfile();
-		String profileUrl = "https://github.com/" + userProfile.getId();
-		return new ServiceProviderConnectionValues(String.valueOf(userProfile.getId()), userProfile.getUsername(), profileUrl, userProfile.getProfileImageUrl());
+		values.setProviderUserId(String.valueOf(userProfile.getId()));		
+		values.setDisplayName(userProfile.getUsername());
+		values.setProfileUrl("https://github.com/" + userProfile.getId());
+		values.setImageUrl(userProfile.getProfileImageUrl());
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile(GitHubApi serviceApi) {
 		GitHubUserProfile profile = serviceApi.getUserProfile();
-		String name = profile.getName();
-		String[] firstAndLastName = firstAndLastName(name);
-		return new ServiceProviderUserProfile(name, firstAndLastName[0], firstAndLastName[1], profile.getEmail(), profile.getUsername());
+		return new ServiceProviderUserProfileBuilder().setName(profile.getName()).setEmail(profile.getEmail()).setUsername(profile.getUsername()).build();
 	}
 	
 	public void updateStatus(GitHubApi serviceApi, String message) {
 		// not supported
 	}
-
-	
-	// internal helpers
-	
-	private String[] firstAndLastName(String name) {
-		if (name == null) {
-			return EMPTY_FIRST_AND_LAST_NAME_ARRAY;
-		}
-		String[] nameParts = name.split("\\s+");
-		if (nameParts.length == 1) {
-			return new String[] { nameParts[0], null };
-		} else {
-			return new String[] { nameParts[0], nameParts[nameParts.length - 1] };
-		}
-	}
-	
-	private String[] EMPTY_FIRST_AND_LAST_NAME_ARRAY = new String[] { null, null };
 	
 }

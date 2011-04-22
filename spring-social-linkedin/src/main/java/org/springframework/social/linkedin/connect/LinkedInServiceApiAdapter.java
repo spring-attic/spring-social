@@ -18,6 +18,7 @@ package org.springframework.social.linkedin.connect;
 import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderConnectionValues;
 import org.springframework.social.connect.ServiceProviderUserProfile;
+import org.springframework.social.connect.ServiceProviderUserProfileBuilder;
 import org.springframework.social.linkedin.api.LinkedInApi;
 import org.springframework.social.linkedin.api.LinkedInProfile;
 import org.springframework.web.client.HttpClientErrorException;
@@ -34,17 +35,17 @@ public class LinkedInServiceApiAdapter implements ServiceApiAdapter<LinkedInApi>
 		}
 	}
 
-	public ServiceProviderConnectionValues getConnectionValues(LinkedInApi serviceApi) {
+	public void setConnectionValues(LinkedInApi serviceApi, ServiceProviderConnectionValues values) {
 		LinkedInProfile profile = serviceApi.getUserProfile();
-		String displayName = profile.getFirstName() + " " + profile.getLastName();
-		return new ServiceProviderConnectionValues(profile.getId(), displayName, profile.getPublicProfileUrl(), profile.getProfilePictureUrl());
+		values.setProfileUrl(profile.getId());
+		values.setDisplayName(profile.getFirstName() + " " + profile.getLastName());
+		values.setProfileUrl(profile.getPublicProfileUrl());
+		values.setImageUrl(profile.getProfilePictureUrl());
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile(LinkedInApi serviceApi) {
 		LinkedInProfile profile = serviceApi.getUserProfile();
-		String fullName = profile.getFirstName() + " " + profile.getLastName();
-		// LinkedIn doesn't expose user emails via the API and there is no concept of username
-		return new ServiceProviderUserProfile(fullName, profile.getFirstName(), profile.getLastName(), null, null);
+		return new ServiceProviderUserProfileBuilder().setName(profile.getFirstName() + " " + profile.getLastName()).build();
 	}
 	
 	public void updateStatus(LinkedInApi serviceApi, String message) {

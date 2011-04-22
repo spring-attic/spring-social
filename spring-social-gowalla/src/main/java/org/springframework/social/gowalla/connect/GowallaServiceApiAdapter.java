@@ -18,6 +18,7 @@ package org.springframework.social.gowalla.connect;
 import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderConnectionValues;
 import org.springframework.social.connect.ServiceProviderUserProfile;
+import org.springframework.social.connect.ServiceProviderUserProfileBuilder;
 import org.springframework.social.gowalla.api.GowallaApi;
 import org.springframework.social.gowalla.api.GowallaProfile;
 import org.springframework.web.client.HttpClientErrorException;
@@ -34,18 +35,17 @@ public class GowallaServiceApiAdapter implements ServiceApiAdapter<GowallaApi> {
 		}
 	}
 
-	public ServiceProviderConnectionValues getConnectionValues(GowallaApi serviceApi) {
-		GowallaProfile userProfile = serviceApi.getUserProfile();
-		String displayName = userProfile.getFirstName() + " " + userProfile.getLastName();
-		String profileUrl = serviceApi.getProfileUrl();
-		return new ServiceProviderConnectionValues(userProfile.getId(), displayName, profileUrl, userProfile.getProfileImageUrl());
+	public void setConnectionValues(GowallaApi serviceApi, ServiceProviderConnectionValues values) {
+		GowallaProfile profile = serviceApi.getUserProfile();
+		values.setProviderUserId(profile.getId());
+		values.setDisplayName(profile.getFirstName() + " " + profile.getLastName());
+		values.setProfileUrl(serviceApi.getProfileUrl());
+		values.setImageUrl(profile.getProfileImageUrl());
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile(GowallaApi serviceApi) {
 		GowallaProfile profile = serviceApi.getUserProfile();
-		String fullName = profile.getFirstName() + " " + profile.getLastName();
-		// Gowalla doesn't expose the user email via the API.
-		return new ServiceProviderUserProfile(fullName, profile.getFirstName(), profile.getLastName(), null, profile.getId());
+		return new ServiceProviderUserProfileBuilder().setName(profile.getFirstName() + " " + profile.getLastName()).setUsername(profile.getId()).build();
 	}
 	
 	public void updateStatus(GowallaApi serviceApi, String message) {

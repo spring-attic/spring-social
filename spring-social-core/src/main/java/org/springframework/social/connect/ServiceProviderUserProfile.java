@@ -38,14 +38,6 @@ public class ServiceProviderUserProfile implements Serializable {
 	
 	private final String username;
 
-	public ServiceProviderUserProfile(String name, String firstName, String lastName, String email, String username) {
-		this.name = name;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.username = username;
-	}
-
 	/**
 	 * The user's registered full name e.g. Keith Donald.
 	 * May be null if not exposed/supported by the provider. 
@@ -85,5 +77,15 @@ public class ServiceProviderUserProfile implements Serializable {
 	public String getUsername() {
 		return username;
 	}
+
+	// builder only
 	
+	ServiceProviderUserProfile(String name, String firstName, String lastName, String email, String username) {
+		this.name = name;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.username = username;
+	}
+
 }

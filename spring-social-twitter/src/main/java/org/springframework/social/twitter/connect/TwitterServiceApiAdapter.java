@@ -19,6 +19,7 @@ import org.springframework.social.BadCredentialsException;
 import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderConnectionValues;
 import org.springframework.social.connect.ServiceProviderUserProfile;
+import org.springframework.social.connect.ServiceProviderUserProfileBuilder;
 import org.springframework.social.twitter.api.TwitterApi;
 import org.springframework.social.twitter.api.TwitterProfile;
 
@@ -33,36 +34,21 @@ public class TwitterServiceApiAdapter implements ServiceApiAdapter<TwitterApi> {
 		}
 	}
 
-	public ServiceProviderConnectionValues getConnectionValues(TwitterApi serviceApi) {
+	public void setConnectionValues(TwitterApi serviceApi, ServiceProviderConnectionValues values) {
 		TwitterProfile profile = serviceApi.userOperations().getUserProfile();
-		return new ServiceProviderConnectionValues(Long.toString(profile.getId()), "@" + profile.getScreenName(), profile.getProfileUrl(), profile.getProfileImageUrl());
+		values.setProviderUserId(Long.toString(profile.getId()));
+		values.setDisplayName("@" + profile.getScreenName());
+		values.setProfileUrl(profile.getProfileUrl());
+		values.setImageUrl(profile.getProfileImageUrl());
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile(TwitterApi serviceApi) {
 		TwitterProfile profile = serviceApi.userOperations().getUserProfile();
-		String name = profile.getName();
-		String[] firstAndLastName = firstAndLastName(name);
-		return new ServiceProviderUserProfile(name, firstAndLastName[0], firstAndLastName[1], null, profile.getScreenName());
+		return new ServiceProviderUserProfileBuilder().setFirstName(profile.getName()).setUsername(profile.getScreenName()).build();
 	}
 	
 	public void updateStatus(TwitterApi serviceApi, String message) {
 		serviceApi.timelineOperations().updateStatus(message);	
 	}
 	
-	// internal helpers
-	
-	private String[] firstAndLastName(String name) {
-		if (name == null) {
-			return EMPTY_FIRST_AND_LAST_NAME_ARRAY;
-		}
-		String[] nameParts = name.split("\\s+");
-		if (nameParts.length == 1) {
-			return new String[] { nameParts[0], null };
-		} else {
-			return new String[] { nameParts[0], nameParts[nameParts.length - 1] };
-		}
-	}
-	
-	private String[] EMPTY_FIRST_AND_LAST_NAME_ARRAY = new String[] { null, null };
-
 }

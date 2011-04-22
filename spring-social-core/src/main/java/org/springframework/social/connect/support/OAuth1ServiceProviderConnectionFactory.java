@@ -21,6 +21,7 @@ import org.springframework.social.connect.ServiceProviderConnectionData;
 import org.springframework.social.connect.ServiceProviderConnectionFactory;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.ServiceProviderConnectionValues;
+import org.springframework.social.connect.ServiceProviderUserProfileBuilder;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.oauth1.OAuthToken;
@@ -66,7 +67,7 @@ public class OAuth1ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 	 */
 	public ServiceProviderConnection<S> createConnection(ServiceProviderConnectionData data) {
 		ServiceProviderConnectionKey key = new ServiceProviderConnectionKey(data.getProviderId(), data.getProviderUserId());
-		ServiceProviderConnectionValues user = new ServiceProviderConnectionValues(data.getProviderUserId(), data.getDisplayName(), data.getProfileUrl(), data.getImageUrl());
+		ServiceProviderConnectionValues user = new ServiceProviderUserProfileBuilder().setProviderUserId(data.getProviderUserId()).setDisplayName(data.getDisplayName()).setProfileUrl(data.getProfileUrl()).setImageUrl(data.getImageUrl()).build();
 		return new OAuth1ServiceProviderConnection<S>(key, user, data.getAccessToken(), data.getSecret(), getOAuth1ServiceProvider(), getServiceApiAdapter());
 	}
 

@@ -19,6 +19,7 @@ import org.springframework.social.BadCredentialsException;
 import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderConnectionValues;
 import org.springframework.social.connect.ServiceProviderUserProfile;
+import org.springframework.social.connect.ServiceProviderUserProfileBuilder;
 import org.springframework.social.facebook.api.FacebookApi;
 import org.springframework.social.facebook.api.FacebookProfile;
 
@@ -33,16 +34,18 @@ public class FacebookServiceApiAdapter implements ServiceApiAdapter<FacebookApi>
 		}
 	}
 
-	public ServiceProviderConnectionValues getConnectionValues(FacebookApi serviceApi) {
-		FacebookProfile profile = serviceApi.userOperations().getUserProfile();		
-		String profileUrl = "http://facebook.com/#!/profile.php?id=" + profile.getId();
-		String imageUrl = "http://graph.facebook.com/" + profile.getId() + "/picture";
-		return new ServiceProviderConnectionValues(profile.getId(), profile.getUsername(), profileUrl, imageUrl);
+	public void setConnectionValues(FacebookApi serviceApi, ServiceProviderConnectionValues values) {
+		FacebookProfile profile = serviceApi.userOperations().getUserProfile();
+		values.setProviderUserId(profile.getId());
+		values.setDisplayName(profile.getUsername());
+		values.setProfileUrl("http://facebook.com/#!/profile.php?id=" + profile.getId());
+		values.setImageUrl("http://graph.facebook.com/" + profile.getId() + "/picture");
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile(FacebookApi serviceApi) {
 		FacebookProfile profile = serviceApi.userOperations().getUserProfile();
-		return new ServiceProviderUserProfile(profile.getName(), profile.getFirstName(), profile.getLastName(), profile.getEmail(), profile.getUsername());
+		return new ServiceProviderUserProfileBuilder().setName(profile.getName()).setFirstName(profile.getFirstName()).
+			setLastName(profile.getLastName()).setEmail(profile.getEmail()).setUsername(profile.getUsername()).build();
 	}
 	
 	public void updateStatus(FacebookApi serviceApi, String message) {

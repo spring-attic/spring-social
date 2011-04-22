@@ -23,8 +23,8 @@ final class NullServiceApiAdapter implements ServiceApiAdapter<Object> {
 		return true;
 	}
 
-	public ServiceProviderConnectionValues getConnectionValues(Object serviceApi) {
-		return EMPTY_CONNECTION_VALUES;
+	public void setConnectionValues(Object serviceApi, ServiceProviderConnectionValues connectionValues) {
+		
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile(Object serviceApi) {
@@ -38,8 +38,6 @@ final class NullServiceApiAdapter implements ServiceApiAdapter<Object> {
 	
 	private NullServiceApiAdapter() {}
 	
-	private static final ServiceProviderConnectionValues EMPTY_CONNECTION_VALUES = new ServiceProviderConnectionValues(null, null, null, null);
-
 	private static final ServiceProviderUserProfile EMPTY_USER_PROFILE = new ServiceProviderUserProfile(null, null, null, null, null);
 
 }
