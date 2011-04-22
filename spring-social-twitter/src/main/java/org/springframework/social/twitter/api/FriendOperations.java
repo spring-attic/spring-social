@@ -25,6 +25,12 @@ import java.util.List;
 public interface FriendOperations {
 
 	/**
+	 * Retrieves a list of users that the authenticated user follows.
+	 * @return a list of TwitterProfiles
+	 */
+	List<TwitterProfile> getFriends();
+
+	/**
 	 * Retrieves a list of users that the given user follows.
 	 * @param userId The user's Twitter ID
 	 * @return a list of TwitterProfiles
@@ -37,6 +43,12 @@ public interface FriendOperations {
 	 * @return a list of TwitterProfiles
 	 */
 	List<TwitterProfile> getFriends(String screenName);
+
+	/**
+	 * Retrieves a list of IDs for the Twitter users that the authenticated user follows.
+	 * @return a list of user IDs
+	 */
+	List<Long> getFriendIds();
 
 	/**
 	 * Retrieves a list of IDs for the Twitter users that the given user follows.
@@ -53,6 +65,12 @@ public interface FriendOperations {
 	List<Long> getFriendIds(String screenName);
 
 	/**
+	 * Retrieves a list of users that the authenticated user is being followed by
+	 * @return a list of TwitterProfiles
+	 */
+	List<TwitterProfile> getFollowers();
+
+	/**
 	 * Retrieves a list of users that the given user is being followed by
 	 * @param userId The user's Twitter ID
 	 * @return a list of TwitterProfiles
@@ -66,6 +84,12 @@ public interface FriendOperations {
 	 */
 	List<TwitterProfile> getFollowers(String screenName);
 	
+	/**
+	 * Retrieves a list of IDs for the Twitter users that follow the authenticated user.
+	 * @return a list of user IDs
+	 */
+	List<Long> getFollowerIds();
+
 	/**
 	 * Retrieves a list of IDs for the Twitter users that follow the given user.
 	 * @param userId the user's Twitter ID
