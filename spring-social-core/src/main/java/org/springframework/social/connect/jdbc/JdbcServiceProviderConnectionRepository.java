@@ -40,6 +40,7 @@ import org.springframework.social.connect.ServiceProviderConnectionFactory;
 import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -148,12 +149,13 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 		return (ServiceProviderConnection<S>) findConnection(new ServiceProviderConnectionKey(providerId, providerUserId));
 	}
 
+	@Transactional
 	public void addConnection(ServiceProviderConnection<?> connection) {
 		try {
 			ServiceProviderConnectionData data = connection.createData();
-			jdbcTemplate.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, (select ifnull(max(rank) + 1, 1) from ServiceProviderConnection where localUserId = ? and providerId = ?), ?, ?, ?, ?, ?, ?, ?)",
-					localUserId, data.getProviderId(), data.getProviderUserId(), localUserId, data.getProviderId(), data.getProfileName(), data.getProfileUrl(), data.getProfilePictureUrl(),
-					encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime());
+			int rank = jdbcTemplate.queryForInt("(select ifnull(max(rank) + 1, 1) as rank from ServiceProviderConnection where localUserId = ? and providerId = ?)", localUserId, data.getProviderId());
+			jdbcTemplate.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					localUserId, data.getProviderId(), data.getProviderUserId(), rank, data.getProfileName(), data.getProfileUrl(), data.getProfilePictureUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime());
 		} catch (DuplicateKeyException e) {
 			throw new DuplicateServiceProviderConnectionException(connection.getKey());
 		}
@@ -162,8 +164,7 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 	public void updateConnection(ServiceProviderConnection<?> connection) {
 		ServiceProviderConnectionData data = connection.createData();
 		jdbcTemplate.update("update ServiceProviderConnection set profileName = ?, profileUrl = ?, profilePictureUrl = ?, accessToken = ?, secret = ?, refreshToken = ?, expireTime = ? where localUserId = ? and providerId = ? and providerUserId = ?",
-				data.getProfileName(), data.getProfileUrl(), data.getProfilePictureUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime(),
-				localUserId, data.getProviderId(), data.getProviderUserId());
+				data.getProfileName(), data.getProfileUrl(), data.getProfilePictureUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime(), localUserId, data.getProviderId(), data.getProviderUserId());
 	}
 
 	public void removeConnectionsToProvider(String providerId) {
