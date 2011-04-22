@@ -52,6 +52,14 @@ public interface ListOperations {
 	UserList getList(long listId);
 
 	/**
+	 * Retrieves a specific user list.
+	 * @param screenName the screen name of the list owner.
+	 * @param listSlug the lists's slug
+	 * @return the requested {@link UserList}
+	 */
+	UserList getList(String screenName, String listSlug);
+
+	/**
 	 * Retrieves the timeline tweets for the given user list.
 	 * @param listId the ID of the list to retrieve.
 	 * @return a list of {@link Tweet} objects for the items in the user list timeline.
@@ -93,11 +101,10 @@ public interface ListOperations {
 	
 	/**
 	 * Retrieves a list of Twitter profiles whose users are members of the list.
-	 * @param userId the user ID of the list owner.
 	 * @param listId the ID of the list.
 	 * @return a list of {@link TwitterProfile}
 	 */
-	List<TwitterProfile> getListMembers(long userId, long listId);
+	List<TwitterProfile> getListMembers(long listId);
 
 	/**
 	 * Retrieves a list of Twitter profiles whose users are members of the list.
@@ -117,11 +124,11 @@ public interface ListOperations {
 
 	/**
 	 * Adds one or more new members to a user list.
-	 * @param listSlug the slug of the list.
+	 * @param listId the ID of the list.
 	 * @param newMemberScreenNames one or more profile IDs of the Twitter profiles to add to the list.
 	 * @return the {@link UserList}
 	 */
-	UserList addToList(String listSlug, String... newMemberScreenNames);
+	UserList addToList(long listId, String... newMemberScreenNames);
 
 	/**
 	 * Removes a member from a user list.
@@ -132,18 +139,17 @@ public interface ListOperations {
 
 	/**
 	 * Removes a member from a user list.
-	 * @param listSlug the slug of the list.
+	 * @param listId the ID of the list.
 	 * @param memberScreenName the ID of the member to be removed.
 	 */
-	void removeFromList(String listSlug, String memberScreenName);
+	void removeFromList(long listId, String memberScreenName);
 
 	/**
 	 * Subscribes the authenticating user to a list.
-	 * @param userId the user ID of the list owner.
 	 * @param listId the ID of the list.
 	 * @return the {@link UserList}
 	 */
-	UserList subscribe(long userId, long listId);
+	UserList subscribe(long listId);
 
 	/**
 	 * Subscribes the authenticating user to a list.
@@ -155,17 +161,18 @@ public interface ListOperations {
 
 	/**
 	 * Unsubscribes the authenticating user from a list.
-	 * @param userId the user ID of the list owner.
 	 * @param listId the ID of the list.
+	 * @return the {@link UserList}
 	 */
-	void unsubscribe(long userId, long listId);
+	UserList unsubscribe(long listId);
 
 	/**
 	 * Unsubscribes the authenticating user from a list.
 	 * @param screenName the screen name of the list owner.
 	 * @param listSlug the slug of the list.
+	 * @return the {@link UserList}
 	 */
-	void unsubscribe(String screenName, String listSlug);
+	UserList unsubscribe(String screenName, String listSlug);
 
 	/**
 	 * Retrieves the subscribers to a list.
@@ -213,12 +220,11 @@ public interface ListOperations {
 
 	/**
 	 * Checks to see if a given user is a member of a given list.
-	 * @param userId the user ID of the list's owner
 	 * @param listId the list ID
 	 * @param memberId the user ID to check for membership
 	 * @return true if the user is a member of the list
 	 */
-	boolean isMember(long userId, long listId, long memberId);
+	boolean isMember(long listId, long memberId);
 	
 	/**
 	 * Checks to see if a given user is a member of a given list.
@@ -231,12 +237,11 @@ public interface ListOperations {
 
 	/**
 	 * Checks to see if a given user subscribes to a given list.
-	 * @param userId the user ID of the list's owner
 	 * @param listId the list ID
 	 * @param subscriberId the user ID to check for subscribership
 	 * @return true if the user is a member of the list
 	 */
-	boolean isSubscriber(long userId, long listId, long subscriberId);
+	boolean isSubscriber(long listId, long subscriberId);
 	
 	/**
 	 * Checks to see if a given user subscribes to a given list.

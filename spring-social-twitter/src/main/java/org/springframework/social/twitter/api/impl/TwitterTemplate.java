@@ -61,7 +61,7 @@ public class TwitterTemplate implements TwitterApi {
 
 	private final FriendOperations friendOperations;
 
-	private ListOperations listOperations;
+	private final ListOperations listOperations;
 
 	private final SearchOperations searchOperations;
 
@@ -97,6 +97,7 @@ public class TwitterTemplate implements TwitterApi {
 		this.userOperations = new UserTemplate(restTemplate, isAuthorizedForUser);
 		this.directMessageOperations = new DirectMessageTemplate(restTemplate, isAuthorizedForUser);
 		this.friendOperations = new FriendTemplate(restTemplate, isAuthorizedForUser);
+		this.listOperations = new ListTemplate(restTemplate, isAuthorizedForUser);
 		this.timelineOperations = new TimelineTemplate(restTemplate, isAuthorizedForUser);
 		this.searchOperations = new SearchTemplate(restTemplate, isAuthorizedForUser);
 	}
@@ -114,11 +115,6 @@ public class TwitterTemplate implements TwitterApi {
 	}
 
 	public ListOperations listOperations() {
-		// Lazily create the ListTemplate.
-		// This way when testing we can lookup the profile ID after the mock server has been setup.
-		if(listOperations == null) {
-			listOperations = new ListTemplate(restTemplate, userOperations.getProfileId());
-		}
 		return listOperations;
 	}
 

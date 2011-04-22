@@ -15,9 +15,13 @@
  */
 package org.springframework.social.twitter.api.impl;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.social.twitter.api.ListOperations;
@@ -36,13 +40,10 @@ import org.springframework.web.client.RestTemplate;
 class ListTemplate extends AbstractTwitterOperations implements ListOperations {
 	
 	private final RestTemplate restTemplate;
-
-	private final Long userProfileId;
 					
-	public ListTemplate(RestTemplate restTemplate, Long userProfileId) {
-		super(userProfileId != null);
+	public ListTemplate(RestTemplate restTemplate, boolean isAuthorizedForUser) {
+		super(isAuthorizedForUser);
 		this.restTemplate = restTemplate;
-		this.userProfileId = userProfileId;
 	}
 
 	public List<UserList> getLists() {
@@ -65,13 +66,23 @@ class ListTemplate extends AbstractTwitterOperations implements ListOperations {
 		return restTemplate.getForObject(buildUri("lists/show.json", Collections.singletonMap("list_id", String.valueOf(listId))), UserList.class);
 	}
 
+	public UserList getList(String screenName, String listSlug) {
+		requireUserAuthorization();
+		Map<String, String> parameters = new HashMap<String, String>();
+		parameters.put("owner_screen_name", screenName);
+		parameters.put("slug", listSlug);
+		return restTemplate.getForObject(buildUri("lists/show.json", parameters), UserList.class);
+	}
+
 	public List<Tweet> getListStatuses(long listId) {
 		return restTemplate.getForObject(buildUri("lists/statuses.json", Collections.singletonMap("list_id", String.valueOf(listId))), TweetList.class);
 	}
 
-	// TODO: Fix to user lists/statuses?screen_name={sn}&slug={slug} once the slug problem is resolved on Twitter
 	public List<Tweet> getListStatuses(String screenName, String listSlug) {
-		return restTemplate.getForObject(buildUri(screenName + "/lists/" + listSlug + "/statuses.json"), TweetList.class);
+		Map<String, String> parameters = new TreeMap<String, String>();
+		parameters.put("owner_screen_name", screenName);
+		parameters.put("slug", listSlug);
+		return restTemplate.getForObject(buildUri("lists/statuses.json", parameters), TweetList.class);
 	}
 
 	public UserList createList(String name, String description, boolean isPublic) {	
@@ -92,117 +103,153 @@ class ListTemplate extends AbstractTwitterOperations implements ListOperations {
 		restTemplate.delete(buildUri("lists/destroy.json", Collections.singletonMap("list_id", String.valueOf(listId))));
 	}
 
-	public List<TwitterProfile> getListMembers(long userId, long listId) {
+	public List<TwitterProfile> getListMembers(long listId) {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri(userId + "/" + listId + "/members.json"), TwitterProfileUsersList.class).getList();
+		return restTemplate.getForObject(buildUri("lists/members.json", Collections.singletonMap("list_id", String.valueOf(listId))), TwitterProfileUsersList.class).getList();
 	}
 	
 	public List<TwitterProfile> getListMembers(String screenName, String listSlug) {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri(screenName + "/" + listSlug + "/members.json"), TwitterProfileUsersList.class).getList();
+		Map<String, String> parameters = new TreeMap<String, String>();
+		parameters.put("owner_screen_name", screenName);
+		parameters.put("slug", listSlug);
+		return restTemplate.getForObject(buildUri("lists/members.json", parameters), TwitterProfileUsersList.class).getList();
 	}
 
 	public UserList addToList(long listId, long... newMemberIds) {
 		requireUserAuthorization();
 		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
 		request.set("user_id", ArrayUtils.join(newMemberIds));
-		return restTemplate.postForObject(buildUri(userProfileId + "/" + listId + "/members/create_all.json"), request, UserList.class);
+		request.set("list_id", String.valueOf(listId));
+		return restTemplate.postForObject(buildUri("lists/members/create_all.json"), request, UserList.class);
 	}
 
-	public UserList addToList(String listSlug, String... newMemberScreenNames) {
+	public UserList addToList(long listId, String... newMemberScreenNames) {
 		requireUserAuthorization();
 		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
-		request.set("screen_name", ArrayUtils.join(newMemberScreenNames));		
-		return restTemplate.postForObject(buildUri(userProfileId + "/" + listSlug + "/members/create_all.json"), request, UserList.class);
+		request.set("screen_name", ArrayUtils.join(newMemberScreenNames));
+		request.set("list_id", String.valueOf(listId));
+		return restTemplate.postForObject(buildUri("lists/members/create_all.json"), request, UserList.class);
 	}
 
 	public void removeFromList(long listId, long memberId) {
 		requireUserAuthorization();
-		restTemplate.delete(buildUri(userProfileId + "/" + listId + "/members.json", Collections.singletonMap("id", String.valueOf(memberId))));
+		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
+		request.set("user_id", String.valueOf(memberId)); 
+		request.set("list_id", String.valueOf(listId));
+		restTemplate.postForObject(buildUri("lists/members/destroy.json"), request, String.class);
 	}
 
-	public void removeFromList(String listSlug, String memberScreenName) {
+	public void removeFromList(long listId, String memberScreenName) {
 		requireUserAuthorization();
-		restTemplate.delete(buildUri(userProfileId + "/" + listSlug + "/members.json", Collections.singletonMap("id", String.valueOf(memberScreenName))));
+		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
+		request.set("screen_name", String.valueOf(memberScreenName)); 
+		request.set("list_id", String.valueOf(listId));
+		restTemplate.postForObject(buildUri("lists/members/destroy.json"), request, String.class);
 	}
 
 	public List<TwitterProfile> getListSubscribers(long userId, long listId) {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri(userId + "/" + listId + "/subscribers.json"), TwitterProfileUsersList.class).getList();
+		return restTemplate.getForObject(buildUri("lists/subscribers.json", Collections.singletonMap("list_id", String.valueOf(listId))), TwitterProfileUsersList.class).getList();
 	}
 
 	public List<TwitterProfile> getListSubscribers(String screenName, String listSlug) {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri(screenName + "/" + listSlug + "/subscribers.json"), TwitterProfileUsersList.class).getList();
+		Map<String, String> parameters = new TreeMap<String, String>();
+		parameters.put("owner_screen_name", screenName);
+		parameters.put("slug", listSlug);
+		return restTemplate.getForObject(buildUri("lists/subscribers.json", parameters), TwitterProfileUsersList.class).getList();
 	}
 
-	public UserList subscribe(long ownerId, long listId) {
+	
+	public UserList subscribe(long listId) {
 		requireUserAuthorization();
-		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
-		return restTemplate.postForObject(buildUri(ownerId + "/" + listId + "/subscribers.json"), data, UserList.class);
+		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
+		request.set("list_id", String.valueOf(listId));
+		return restTemplate.postForObject(buildUri("lists/subscribers/create.json"), request, UserList.class);
 	}
 
 	public UserList subscribe(String ownerScreenName, String listSlug) {
 		requireUserAuthorization();
-		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
-		return restTemplate.postForObject(buildUri(ownerScreenName + "/" + listSlug + "/subscribers.json"), data, UserList.class);
+		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
+		request.set("owner_screen_name", ownerScreenName);
+		request.set("slug", listSlug);
+		return restTemplate.postForObject(buildUri("lists/subscribers/create.json"), request, UserList.class);
 	}
 
-	public void unsubscribe(long ownerId, long listId) {
+	public UserList unsubscribe(long listId) {
 		requireUserAuthorization();
-		restTemplate.delete(buildUri(ownerId + "/" + listId + "/subscribers.json"));
+		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
+		request.set("list_id", String.valueOf(listId));
+		return restTemplate.postForObject(buildUri("lists/subscribers/destroy.json"), request, UserList.class);
 	}
 
-	public void unsubscribe(String ownerScreenName, String listSlug) {
+	public UserList unsubscribe(String ownerScreenName, String listSlug) {
 		requireUserAuthorization();
-		restTemplate.delete(buildUri(ownerScreenName + "/" + listSlug + "/subscribers.json"));
+		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
+		request.set("owner_screen_name", ownerScreenName);
+		request.set("slug", listSlug);
+		return restTemplate.postForObject(buildUri("lists/subscribers/destroy.json"), request, UserList.class);
 	}
 
 	public List<UserList> getMemberships(long userId) {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri(userId + "/lists/memberships.json"), UserListList.class).getList();
+		return restTemplate.getForObject(buildUri("lists/memberships.json", Collections.singletonMap("user_id", String.valueOf(userId))), UserListList.class).getList();
 	}
 
 	public List<UserList> getMemberships(String screenName) {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri(screenName + "/lists/memberships.json"), UserListList.class).getList();
+		return restTemplate.getForObject(buildUri("lists/memberships.json", Collections.singletonMap("screen_name", screenName)), UserListList.class).getList();
 	}
 
 	public List<UserList> getSubscriptions(long userId) {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri(userId + "/lists/subscriptions.json"), UserListList.class).getList();
+		return restTemplate.getForObject(buildUri("lists/subscriptions.json", Collections.singletonMap("user_id", String.valueOf(userId))), UserListList.class).getList();
 	}
 
 	public List<UserList> getSubscriptions(String screenName) {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri(screenName + "/lists/subscriptions.json"), UserListList.class).getList();
+		return restTemplate.getForObject(buildUri("lists/subscriptions.json", Collections.singletonMap("screen_name", screenName)), UserListList.class).getList();
 	}
 
-	public boolean isMember(long userId, long listId, long memberId) {
+	public boolean isMember(long listId, long memberId) {
 		requireUserAuthorization();
-		return checkListConnection(userId + "/" + listId + "/members/" + memberId + ".json");
+		Map<String, String> parameters = new TreeMap<String, String>();
+		parameters.put("list_id", String.valueOf(listId));
+		parameters.put("user_id", String.valueOf(memberId));
+		return checkListConnection(buildUri("lists/members/show.json", parameters));
 	}
 
 	public boolean isMember(String screenName, String listSlug, String memberScreenName) {
 		requireUserAuthorization();
-		return checkListConnection(screenName + "/" + listSlug + "/members/" + memberScreenName + ".json");
+		Map<String, String> parameters = new TreeMap<String, String>();
+		parameters.put("owner_screen_name", screenName);
+		parameters.put("slug", listSlug);
+		parameters.put("screen_name", memberScreenName);
+		return checkListConnection(buildUri("lists/members/show.json", parameters));
 	}
 
-	public boolean isSubscriber(long userId, long listId, long subscriberId) {
-		requireUserAuthorization();
-		return checkListConnection(userId + "/" + listId + "/subscribers/" + subscriberId + ".json");
+	public boolean isSubscriber(long listId, long subscriberId) {
+		Map<String, String> parameters = new TreeMap<String, String>();
+		parameters.put("list_id", String.valueOf(listId));
+		parameters.put("user_id", String.valueOf(subscriberId));
+		return checkListConnection(buildUri("lists/subscribers/show.json", parameters));
 	}
 
 	public boolean isSubscriber(String screenName, String listSlug, String subscriberScreenName) {
 		requireUserAuthorization();
-		return checkListConnection(screenName + "/" + listSlug + "/subscribers/" + subscriberScreenName + ".json");
+		Map<String, String> parameters = new TreeMap<String, String>();
+		parameters.put("owner_screen_name", screenName);
+		parameters.put("slug", listSlug);
+		parameters.put("screen_name", subscriberScreenName);
+		return checkListConnection(buildUri("lists/subscribers/show.json", parameters));
 	}
 
 	// private helpers
 
-	private boolean checkListConnection(String path) {
+	private boolean checkListConnection(URI uri) {
 		try {
-			restTemplate.getForObject(buildUri(path), String.class);
+			restTemplate.getForObject(uri, String.class);
 			return true;
 		} catch (HttpClientErrorException e) {
 			if(e.getStatusCode() == HttpStatus.NOT_FOUND) {
@@ -210,6 +257,10 @@ class ListTemplate extends AbstractTwitterOperations implements ListOperations {
 			} 
 			throw e;
 		}
+	}
+
+	private boolean checkListConnection(String path) {
+		return checkListConnection(buildUri(path));
 	}
 
 	private MultiValueMap<String, Object> buildListDataMap(String name,
