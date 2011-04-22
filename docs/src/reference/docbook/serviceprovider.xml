@@ -14,115 +14,143 @@
 		Spring Social's 'Connect' framework provides a clean API for managing service provider connections such as this.
 	</para>
 	<section id="service-providers-base-api">
-		<title>Base API</title>
+		<title>Core API</title>
 		<para>
-			The <interfacename>ServiceProvider&lt;S&gt;</interfacename> interface defines the central API for managing connections to an external service provider such as Facebook:
-			<programlisting language="java"><![CDATA[
-public interface ServiceProvider<S> {
-    
-    String getId();
-    
-    boolean isConnected(Serializable accountId);
-    
-    List<ServiceProviderConnection<S>> getConnections(Serializable accountId);
-
-}]]>
-			</programlisting>
-		</para>
-		<para>
-			The &lt;S&gt; parameterized type represents the Java binding to the ServiceProvider's API.
-			For example, the Facebook ServiceProvider implementation is parameterized as ServiceProvider&lt;FacebookApi&gt;, where FacebookApi is the Java interface that may be used to invoke Facebook's graph API on behalf of a user.
-		</para>
-		<para>
-			Each ServiceProvider is identified by an ID, as returned by the <methodname>getId()</methodname> method.
-			This id is expected to be unique across all ServiceProviders registered with your application.
-		</para>
-		<para>
-			A single local user account can have one-to-many connections established with a ServiceProvider,
-			where each connection represents a link between the local user's account and an external account the user has on the provider's system.
-			<methodname>isConnected()</methodname> checks to see if <emphasis>any</emphasis> connections exist between a user account and the service provider.
-			If there are connections, <methodname>getConnections()</methodname> returns them in rank order.
-		</para>
-		<para>
-			With a reference to a ServiceProviderConnection you can do the following:
+			The <interfacename>ServiceProviderConnection&lt;S&gt;</interfacename> interface models a connection to an external service provider such as Facebook:
 			<programlisting language="java"><![CDATA[
 public interface ServiceProviderConnection<S> {
+    
+    ServiceProviderConnectionKey getKey();
+    
+    String getDisplayName();
+
+    String getProfileUrl();
+
+    String getImageUrl();
+
+    void sync();
+
+    boolean test();
+
+    boolean hasExpired();
+
+    void refresh();
+
+    ServiceProviderUserProfile fetchUserProfile();
+
+    void updateStatus(String message);
 
     S getServiceApi();
 
-    void disconnect();
-	
+    ServiceProviderConnectionData createData();
+
 }]]>
 			</programlisting>
 		</para>
 		<para>
-			<methodname>getServiceApi()</methodname> returns a Java binding to the ServiceProvider's API for the external user account associated with the connection.
-			The API can be used to access and update user data on the provider's system.
+			Each ServiceProviderConnection is uniquely identified by a composite key consisting of a providerId (e.g. 'facebook') and connected providerUserId (e.g. '1255689239', for Keith Donald's Facebook ID).
+			This key tells you what provider user the connection is connected to.
 		</para>
 		<para>
-			<methodname>disconnect()</methodname> may be used to remove the connection with the ServiceProvider, if it is no longer desired.
+			A connection has a number of meta-properties that can be used to render it on a screen, including a displayName, profileUrl, and imageUrl.
+			As an example, the following HTML template snippet could be used to generate a link to the connected user's profile on the provider's site:
+			<programlisting language="xml"><![CDATA[
+<img src="${connection.imageUrl}" /> <a href="${connection.profileUrl}">${connection.displayName}</a>å]]>			
+			</programlisting>
+			The value of these properties may depend on the state of the provider user's profile.
+			In this case, sync() can be used to synchronize these values if the user's profile is updated.
 		</para>
 		<para>
-			To put this framework into action, consider Twitter as an example ServiceProvider.
-			Suppose user 'kdonald' of AcmeApp has three Twitter accounts and has connected with each of them:
+			A connection can be tested to determine if its authorization credentials are valid.
+			If invalid, the connection may have expired or been revoked by the provider.
+			If the connection has expired, a connection may be refreshed to renew its authorization credentials.
+		</para>
+		<para>
+			A connection provides several operations that allow the client application to invoke the ServiceProvider's API in a uniform way.
+			This includes the ability to fetch a model of the user's profile and update the user's status in the provider's system.
+		</para>
+		<para>
+			A connection's parameterized type &lt;S&gt; represents the Java binding to the ServiceProvider's native API.
+			An instance of this API binding can be obtained by calling <code>getServiceApi()</code>.
+			As an example, a Facebook connection instance would be parameterized as ServiceProviderConnection&lt;FacebookApi&gt;.
+			<code>getServiceApi()</code> would return a FacebookApi instance that provides a Java binding to Facebook's graph API for a specific Facebook user.
+		</para>
+		<para>
+			Finally, the internal state of a connection can be captured for transfer between layers of your application by calling <code>createData()</code>.
+			This could be used to persist the connection in a database, or serialize it over the network.
+		</para>
+		<para>
+			To put this model into action, suppose we have a reference to a ServiceProviderConnection&lt;TwitterApi&gt; instance.
+			Suppose the connected user is the Twitter user with screen name 'kdonald'.
 			<orderedlist>
-				<listitem><para>ServiceProvider#getId() would return 'twitter'.</para></listitem>
-				<listitem><para>ServiceProvider#isConnected("kdonald") would return 'true'.</para></listitem>
-				<listitem><para>ServiceProvider#getConnections("kdonald") would return a 'connections' List with three elements, one for each Twitter account.</para></listitem>
-				<listitem><para>connections.get(0) would return the 'connection' to the first Twitter account, and connection.getServiceApi() would return a TwitterApi that can access and update information about that Twitter account.</para></listitem>
-				<listitem><para>connections.get(1) and connections.get(2) would allow AcmeApp to access and update information about the second and third Twitter accounts, respectively.</para></listitem>				
-				<listitem><para>connection.disconnect() can be called to remove a connection, at which the linked Twitter account is no longer accessible to the application.</para></listitem>				
+				<listitem><para>ServiceProviderConnection#getKey() would return ('twitter', '14718006') where '14718006' is @kdonald's Twitter-assigned user id that never changes.</para></listitem>
+				<listitem><para>ServiceProviderConnection#getDisplayName() would return '@kdonald'.</para></listitem>
+				<listitem><para>ServiceProviderConnection#getProfileUrl() would return 'http://twitter.com/kdonald'.</para></listitem>
+				<listitem><para>ServiceProviderConnection#getImageUrl() would return 'http://a0.twimg.com/profile_images/105951287/IMG_5863_2_normal.jpg'.</para></listitem>
+				<listitem><para>ServiceProviderConnection#sync() would synchronize the state of the connection with @kdonald's profile.</para></listitem>				
+				<listitem>
+					<para>
+						ServiceProviderConnection#test() would return true indicating the authorization credentials associated with the Twitter connection are valid.
+						This assumes Twitter has not revoked the AcmeApp client application, and @kdonald has not reset his authorization credentials (Twitter connections do not expire).
+					</para>
+				</listitem>
+				<listitem><para>ServiceProviderConnection#hasExpired() would return false.</para></listitem>
+				<listitem><para>ServiceProviderConnection#refresh() would not do anything since connections to Twitter do not expire.</para></listitem>
+				<listitem><para>ServiceProviderConnection#fetchUserProfile() would make a remote API call to Twitter to get @kdonald's profile data and normalize it into a ServiceProviderUser model.</para></listitem>
+				<listitem><para>ServiceProviderConnection#updateStatus(String) would post a status update to @kdonald's timeline.</para></listitem>
+				<listitem><para>ServiceProviderConnection#getServiceApi() would return a TwitterApi giving the client application access to the full capabilities of Twitter's native API.</para></listitem>
+				<listitem><para>ServiceProviderConnection#createData() would return a ServiceProviderConnectionData that could be serialized and used to restore the connection at a later time.</para></listitem>
 			</orderedlist>
 		</para>
 	</section>
 	<section id="service-providers-establishing-connections">
 		<title>Establishing Connections</title>
 		<para>
-			So far we have discussed how existing connections are managed using the ServiceProvider framework, but we have not yet discussed how new connections are established.
-			The manner in which connections between local user accounts and external provider accounts are established varies based on the authorization protocol used by the ServiceProvider.
+			So far we have discussed how existing connections are modeled, but we have not yet discussed how new connections are established.
+			The manner in which connections between local users and provider users are established varies based on the authorization protocol used by the ServiceProvider.
 			Some service providers use OAuth, others use Basic Auth, others may use something else.
 			Spring Social currently provides native support for OAuth-based service providers, including support for OAuth 1 and OAuth 2.
 			This covers the leading social networks, such as Facebook and Twitter, all of which use OAuth to secure their APIs.
 			Support for other authorization protocols can be added by extending the framework.
 		</para>
 		<para>
-			Because each authorization protocol is different, protocol-specific details are kept out of the base ServiceProvider interface.
-			Sub-interfaces have been defined for each protocol, reflecting a distinct ServiceProvider type.
-			In the following sections, we will discuss each type of ServiceProvider supported by the framework.
+			Each authorization protocol is treated as an implementation detail where protocol-specifics are kept out of the core ServiceProviderConnection API.
+			A ServiceProviderConnectionFactory abstraction encapsulates the construction of connections that use a specific authorization protocol.
+			In the following sections, we will discuss the major ServiceProviderConnectionFactory classes provided by the framework.
 			Each section will also describe the protocol-specific flow required to establish a new connection.
 		</para>
 		<section id="service-providers-oauth2">
 			<title>OAuth2 Service Providers</title>
 			<para>
-				OAuth 2 is rapidly becoming a preferred authorization protocol, and is used by major service providers such as Facebook, Github, Gowalla, and 37signals.
-				In Spring Social, the OAuth2ServiceProvider interface models a service provider based on the OAuth 2 protocol:
-			</para>
-			<programlisting language="java"><![CDATA[
-public interface OAuth2ServiceProvider<S> extends ServiceProvider<S> {
+				OAuth 2 is rapidly becoming a preferred authorization protocol, and is used by major service providers such as Facebook, Github, Foursquare, Gowalla, and 37signals.
+				In Spring Social, a OAuth2ServiceProviderConnectionFactory is used to establish connections with a OAuth2-based service provider:
+				<programlisting language="java"><![CDATA[
+public class OAuth2ServiceProviderConnectionFactory<S> extends ServiceProviderConnectionFactory<S> {
 
-    OAuth2Operations getOAuthOperations();
+    public OAuth2Operations getOAuthOperations();
 
-    ServiceProviderConnection<S> connect(Serializable accountId, AccessGrant accessGrant);
+    public ServiceProviderConnection<S> createConnection(AccessGrant accessGrant);
 
 }]]>
-			</programlisting>
+				</programlisting>
+			</para>
 			<para>
 				<methodname>getOAuthOperations()</methodname> returns an API to use to conduct the authorization flow, or "OAuth Dance", with a service provider.
-				The result of this flow is an <classname>AccessGrant</classname> that can be used to establish a connection with a local user account by calling <methodname>connect</methodname>.
+				The result of this flow is an <classname>AccessGrant</classname> that can be used to establish a connection with a local user account by calling <methodname>createConnection</methodname>.
 				The OAuth2Operations interface is shown below:
 			</para>
 			<programlisting language="java"><![CDATA[
 public interface OAuth2Operations {
 
-    String buildAuthorizeUrl(String redirectUri, String scope);
+    String buildAuthorizeUrl(GrantType grantType, AuthorizationParameters parameters);
 
-    AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri);
+    AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters);
 
 }]]>
 			</programlisting>			
 			<para>
-				Callers are first expected to call buildAuthorizeUrl(String, String) to construct the URL to redirect the user to for connection authorization.
-				Upon user authorization, the authorizationGrant returned by the provider should be exchanged for an AccessGrant.
+				Callers are first expected to call buildAuthorizeUrl(GrantType, AuthorizationParameters) to construct the URL to redirect the user to for connection authorization.
+				Upon user authorization, the authorizationCode returned by the provider should be exchanged for an AccessGrant.
 				The AccessGrant should then used to create a connection.
 				This flow is illustrated below:
 			</para>
@@ -174,41 +202,68 @@ public interface OAuth2Operations {
 					</para>
 				</listitem>
 			</orderedlist>
+			<para>
+			 	The example code below shows use of a FacebookServiceProviderConnectionFactory to create a connection to Facebook using the OAuth2 server-side flow illustrated above.
+				Here, FacebookServiceProviderConnectionFactory is a subclass of OAuth2ServiceProviderConnectionFactory:
+				<programlisting language="java"><![CDATA[
+FacebookServiceProviderConnectionFactory connectionFactory = new FacebookServiceProviderConnectionFactory();
+String authorizeUrl = connectionFactory.getOAuth2Operations().buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE,
+                          new AuthorizationParameters("http://acmeapp.com/callbackUrl"));
+response.sendRedirect(authorizeUrl);
+// when the provider callback is received with the authorizationCode parameter:
+AccessGrant accessGrant = connectionFactory.getOAuth2Operations().exchangeForAccess(authorizationCode);
+ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConnection(accessGrant);]]>
+				</programlisting>
+			</para>
+			<para>
+				The following example illustrates the client-side "implicit" authorization flow also supported by OAuth2.
+				The difference between this flow and the server-side "authorization code" flow above is the provider callback directly contains the access grant (no additional exchange is necessary).
+				This flow is appropriate for clients incapable of keeping the access grant credentials confidential, such as a mobile device or JavaScript-based user agent.
+				<programlisting language="java"><![CDATA[
+FacebookServiceProviderConnectionFactory connectionFactory = new FacebookServiceProviderConnectionFactory();
+String authorizeUrl = connectionFactory.getOAuth2Operations().buildAuthorizeUrl(GrantType.IMPLICIT_GRANT,
+                          new AuthorizationParameters("http://acmeapp.com/callbackUrl"));
+response.sendRedirect(authorizeUrl);
+// when the provider callback is received with the access_token parameter:
+AccessGrant accessGrant = new AccessGrant(accessToken);
+ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConnection(accessGrant);]]>
+				</programlisting>
+			</para>
 		</section>
 		<section id="service-providers-oauth1">
 			<title>OAuth1 Service Providers</title>
 			OAuth 1 is the previous version of the OAuth protocol.
 			It is more complex OAuth 2, and sufficiently different that it is supported separately.
 			Twitter, Linked In, and TripIt are some of the well-known ServiceProviders that use OAuth 1.
-			In Spring Social, the OAuth1ServiceProvider interface models a service provider based on the OAuth 1 protocol:			
+			In Spring Social, the OAuth1ServiceProviderConnectionFactory allows you to create connections to a OAuth1-based Service Provider:			
 			<programlisting language="java"><![CDATA[
-public interface OAuth1ServiceProvider<S> extends ServiceProvider<S> {
+public class OAuth1ServiceProviderConnectionFactory<S> extends ServiceProviderConnectionFactory<S> {
 
-    OAuth1Operations getOAuthOperations();
+    public OAuth1Operations getOAuthOperations();
 
-    ServiceProviderConnection<S> connect(Serializable accountId, OAuthToken accessToken);
+    public ServiceProviderConnection<S> createConnection(OAuthToken accessToken);
 
 }]]>
 			</programlisting>
 			<para>
 				Like a OAuth2-based provider, <methodname>getOAuthOperations()</methodname> returns an API to use to conduct the authorization flow, or "OAuth Dance".
-				The result of the OAuth 1 flow is an <classname>OAuthToken</classname> that can be used to establish a connection with a local user account by calling <methodname>connect</methodname>.
+				The result of the OAuth 1 flow is an <classname>OAuthToken</classname> that can be used to establish a connection with a local user account by calling <methodname>createConnection</methodname>.
 				The OAuth1Operations interface is shown below:				
 			</para>
 			<programlisting language="java"><![CDATA[
 public interface OAuth1Operations {
 
-    OAuthToken fetchNewRequestToken(String callbackUrl);
+    OAuthToken fetchNewRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters);
 
-    String buildAuthorizeUrl(String requestToken);
+    String buildAuthorizeUrl(String requestToken, AuthorizationParameters parameters);
 
-    OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken);
+    OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters);
 
 }]]>
 			</programlisting>			
 			<para>
 				Callers are first expected to call fetchNewRequestToken(String) obtain a temporary token from the ServiceProvider to use during the authorization session.
-				Next, callers should call buildAuthorizeUrl(String) to construct the URL to redirect the user to for connection authorization.
+				Next, callers should call buildAuthorizeUrl(String, AuthorizationParameters) to construct the URL to redirect the user to for connection authorization.
 				Upon user authorization, the authorized request token returned by the provider should be exchanged for an access token.
 				The access token should then used to create a connection.
 				This flow is illustrated below:				

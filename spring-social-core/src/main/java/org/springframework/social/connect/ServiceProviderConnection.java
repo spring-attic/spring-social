@@ -39,7 +39,7 @@ public interface ServiceProviderConnection<S> {
 	 * The value of this property may change if the user updates his or her profile.
 	 * @see #sync()
 	 */
-	public String getDisplayName();
+	String getDisplayName();
 
 	/**
 	 * The public URL of the connected user's profile at the provider's site.
@@ -48,7 +48,7 @@ public interface ServiceProviderConnection<S> {
 	 * The value of this property may change if the user updates his or her profile.
 	 * @see #sync()
 	 */
-	public String getProfileUrl();
+	String getProfileUrl();
 
 	/**
 	 * A link to a image that visualizes this connection.
@@ -58,7 +58,13 @@ public interface ServiceProviderConnection<S> {
 	 * The value of this property may change if the user updates his or her profile.
 	 * @see #sync()
 	 */
-	public String getImageUrl();
+	String getImageUrl();
+
+	/**
+	 * Sync's this connection object with the current state of the external user's profile.
+	 * Triggers locally cached profile fields to update if they have changed on the provider's system. 
+	 */
+	void sync();
 	
 	/**
 	 * Test this connection.
@@ -98,15 +104,9 @@ public interface ServiceProviderConnection<S> {
 	void updateStatus(String message);
 	
 	/**
-	 * Sync's this connection object with the current state of the external user's profile.
-	 * Triggers locally cached profile fields to update if they have changed on the provider's system. 
-	 */
-	void sync();
-	
-	/**
 	 * A Java binding to the Service Provider's native API.
 	 */
-	public S getServiceApi();
+	S getServiceApi();
 
 	/**
 	 * Creates a data transfer object that can be used to persist the state of this connection.
