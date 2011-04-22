@@ -104,7 +104,7 @@ public interface ServiceProviderConnection<S> {
 		</para>
 	</section>
 	<section id="service-providers-establishing-connections">
-		<title>Establishing Connections</title>
+		<title>Establishing connections</title>
 		<para>
 			So far we have discussed how existing connections are modeled, but we have not yet discussed how new connections are established.
 			The manner in which connections between local users and provider users are established varies based on the authorization protocol used by the ServiceProvider.
@@ -120,7 +120,7 @@ public interface ServiceProviderConnection<S> {
 			Each section will also describe the protocol-specific flow required to establish a new connection.
 		</para>
 		<section id="service-providers-oauth2">
-			<title>OAuth2 Service Providers</title>
+			<title>OAuth2 service providers</title>
 			<para>
 				OAuth 2 is rapidly becoming a preferred authorization protocol, and is used by major service providers such as Facebook, Github, Foursquare, Gowalla, and 37signals.
 				In Spring Social, a OAuth2ServiceProviderConnectionFactory is used to establish connections with a OAuth2-based service provider:
@@ -231,7 +231,7 @@ ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConn
 			</para>
 		</section>
 		<section id="service-providers-oauth1">
-			<title>OAuth1 Service Providers</title>
+			<title>OAuth1 service providers</title>
 			OAuth 1 is the previous version of the OAuth protocol.
 			It is more complex OAuth 2, and sufficiently different that it is supported separately.
 			Twitter, Linked In, and TripIt are some of the well-known ServiceProviders that use OAuth 1.
@@ -338,14 +338,15 @@ ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConn
 				</programlisting>
 			</para>
 		</section>
-		<section id="service-providers-persisting-connections">
-			<title>Persisting Connections</title>
-			<para>
-				After a connection has been established, you may wish to persist it for later use.
-				This makes things convenient for the user since the connection can simply be restored from its persistent form and does not need to be established again.
-				Spring Social provides a ServiceProviderConnectionRepository interface for managing the persistence of a user's connections:
-			</para>
-			<programlisting language="java"><![CDATA[
+	</section>
+	<section id="service-providers-persisting-connections">
+		<title>Persisting connections</title>
+		<para>
+			After a connection has been established, you may wish to persist it for later use.
+			This makes things convenient for the user since the connection can simply be restored from its persistent form and does not need to be established again.
+			Spring Social provides a ServiceProviderConnectionRepository interface for managing the persistence of a user's connections:
+		</para>
+		<programlisting language="java"><![CDATA[
 public interface ServiceProviderConnectionRepository {
 
     MultiValueMap<String, ServiceProviderConnection<?>> findConnections();
@@ -356,11 +357,11 @@ public interface ServiceProviderConnectionRepository {
 
     ServiceProviderConnection<?> findConnection(ServiceProviderConnectionKey connectionKey);
 
-    <S> ServiceProviderConnection<S> findConnectionByServiceApi(Class<S> serviceApiType);
-	
-    <S> List<ServiceProviderConnection<S>> findConnectionsByServiceApi(Class<S> serviceApiType);
-	
-    <S> ServiceProviderConnection<S> findConnectionByServiceApiForUser(Class<S> serviceApiType, String providerUserId);	
+    <S> ServiceProviderConnection<S> findPrimaryConnectionToServiceApi(Class<S> serviceApiType);
+
+    <S> ServiceProviderConnection<S> findPrimaryConnectionToServiceApiForUser(Class<S> serviceApiType, String providerUserId);	
+
+    <S> List<ServiceProviderConnection<S>> findConnectionsToServiceApi(Class<S> serviceApiType);
 	
     void addConnection(ServiceProviderConnection<?> connection);
 
@@ -371,16 +372,18 @@ public interface ServiceProviderConnectionRepository {
     void removeConnection(ServiceProviderConnectionKey connectionKey);
 
 }]]>
-			</programlisting>
-			<para>
-				As you can see, this interface provides a number of operations for adding, updating, removing, and finding ServiceProviderConnections.
-				Consult the JavaDoc API of this interface for a full description of these operations.
-				Note that all operations on this repository are scoped relative to a "current user" that has authenticated with your local application.
-			</para>
-			<para>
-				For multi-user environments, Spring Social provides a MultiUserServiceProviderConnectionFactory that provides access to the global store of connections across all users:
-			</para>
-			<programlisting language="java"><![CDATA[
+		</programlisting>
+		<para>
+			As you can see, this interface provides a number of operations for adding, updating, removing, and finding ServiceProviderConnections.
+			Consult the JavaDoc API of this interface for a full description of these operations.
+			Note that all operations on this repository are scoped relative to the "current user" that has authenticated with your local application.
+			For standalone, desktop, or mobile environments that only have one user this distinction isn't important.
+			In a multi-user web application environment, this implies ServiceProviderConnectionRepository instances will be request-scoped.
+		</para>
+		<para>
+			For multi-user environments, Spring Social provides a MultiUserServiceProviderConnectionFactory that provides access to the global store of connections across all users:
+		</para>
+		<programlisting language="java"><![CDATA[
 public interface MultiUserServiceProviderConnectionRepository {
 
     String findLocalUserIdForConnection(ServiceProviderConnectionKey connectionKey);
@@ -390,18 +393,19 @@ public interface MultiUserServiceProviderConnectionRepository {
     ServiceProviderConnectionRepository createConnectionRepository(String localUserId);
 
 }]]>
-			</programlisting>
+		</programlisting>
+		<para>
+			As you can see, this repository acts as a factory for ServiceProviderConnectionRepository instances scoped to a single user, as well as exposes a number of multi-user operations.
+			These operations include the ability to lookup the local userIds associated with connections to support provider user sign-in and "registered friends" scenarios.
+			Consult the JavaDoc API of this interface for a full description.
+		</para>
+		<section id="service-providers-persisting-connections-jdbc">
+			<title>JDBC-based persistence</title>
 			<para>
-				As you can see, this repository acts as a factory for ServiceProviderConnectionRepository instances scoped to a single user, as well as exposes a number of multi-user operations.
-				These operations include the ability to lookup the local userIds associated with connections to support provider user sign-in and show "registered friends" scenarios.
-				Consult the JavaDoc API of this interface for a full description.
+				Spring Social provides a JdbcMultiUserServiceProviderConnectionRepository capable of persisting connections to a RDBMS.
+				The database schema suited to support is defined in JdbcMultiUserServiceProviderConnectionRepository.sql.
+				The implementation also provides support for encrypting authorization credentials so they are not stored in plain-text.
 			</para>
-			<section id="service-providers-persisting-connections-jdbc">
-				<title>JDBC-based Persistence</title>
-				<para>
-					Spring Social ships a JdbcMultiUserServiceProviderConnectionRepository capable of persisting connections to a RDBMS.
-				</para>
-			</section>
 		</section>
 	</section>
 </chapter>
