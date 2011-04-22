@@ -336,7 +336,72 @@ response.sendRedirect(authorizeUrl);
 OAuthToken accessToken = oauth1Operations.exchangeForAccessToken(new AuthorizedRequestToken(oauthToken, oauthVerifier));
 ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConnection(accessToken);]]>
 				</programlisting>
-			</para>			
+			</para>
+		</section>
+		<section id="service-providers-persisting-connections">
+			<title>Persisting Connections</title>
+			<para>
+				After a connection has been established, you may wish to persist it for later use.
+				This makes things convenient for the user since the connection can simply be restored from its persistent form and does not need to be established again.
+				Spring Social provides a ServiceProviderConnectionRepository interface for managing the persistence of a user's connections:
+			</para>
+			<programlisting language="java"><![CDATA[
+public interface ServiceProviderConnectionRepository {
+
+    MultiValueMap<String, ServiceProviderConnection<?>> findConnections();
+	
+    List<ServiceProviderConnection<?>> findConnectionsToProvider(String providerId);
+
+    MultiValueMap<String, ServiceProviderConnection<?>> findConnectionsForUsers(MultiValueMap<String, String> providerUserIds);
+
+    ServiceProviderConnection<?> findConnection(ServiceProviderConnectionKey connectionKey);
+
+    <S> ServiceProviderConnection<S> findConnectionByServiceApi(Class<S> serviceApiType);
+	
+    <S> List<ServiceProviderConnection<S>> findConnectionsByServiceApi(Class<S> serviceApiType);
+	
+    <S> ServiceProviderConnection<S> findConnectionByServiceApiForUser(Class<S> serviceApiType, String providerUserId);	
+	
+    void addConnection(ServiceProviderConnection<?> connection);
+
+    void updateConnection(ServiceProviderConnection<?> connection);
+
+    void removeConnectionsToProvider(String providerId);
+
+    void removeConnection(ServiceProviderConnectionKey connectionKey);
+
+}]]>
+			</programlisting>
+			<para>
+				As you can see, this interface provides a number of operations for adding, updating, removing, and finding ServiceProviderConnections.
+				Consult the JavaDoc API of this interface for a full description of these operations.
+				Note that all operations on this repository are scoped relative to a "current user" that has authenticated with your local application.
+			</para>
+			<para>
+				For multi-user environments, Spring Social provides a MultiUserServiceProviderConnectionFactory that provides access to the global store of connections across all users:
+			</para>
+			<programlisting language="java"><![CDATA[
+public interface MultiUserServiceProviderConnectionRepository {
+
+    String findLocalUserIdForConnection(ServiceProviderConnectionKey connectionKey);
+
+    Set<String> findLocalUserIdsConnectedTo(String providerId, Set<String> providerUserIds);
+
+    ServiceProviderConnectionRepository createConnectionRepository(String localUserId);
+
+}]]>
+			</programlisting>
+			<para>
+				As you can see, this repository acts as a factory for ServiceProviderConnectionRepository instances scoped to a single user, as well as exposes a number of multi-user operations.
+				These operations include the ability to lookup the local userIds associated with connections to support provider user sign-in and show "registered friends" scenarios.
+				Consult the JavaDoc API of this interface for a full description.
+			</para>
+			<section id="service-providers-persisting-connections-jdbc">
+				<title>JDBC-based Persistence</title>
+				<para>
+					Spring Social ships a JdbcMultiUserServiceProviderConnectionRepository capable of persisting connections to a RDBMS.
+				</para>
+			</section>
 		</section>
 	</section>
 </chapter>

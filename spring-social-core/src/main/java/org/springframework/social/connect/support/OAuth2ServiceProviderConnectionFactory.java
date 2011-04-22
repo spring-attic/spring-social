@@ -66,7 +66,7 @@ public class OAuth2ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 	 */
 	public ServiceProviderConnection<S> createConnection(ServiceProviderConnectionData data) {
 		ServiceProviderConnectionKey key = new ServiceProviderConnectionKey(data.getProviderId(), data.getProviderUserId());
-		ServiceProviderConnectionValues user = new ServiceProviderConnectionValues(data.getProviderUserId(), data.getProfileName(), data.getProfileUrl(), data.getProfilePictureUrl());
+		ServiceProviderConnectionValues user = new ServiceProviderConnectionValues(data.getProviderUserId(), data.getDisplayName(), data.getProfileUrl(), data.getImageUrl());
 		return new OAuth2ServiceProviderConnection<S>(key, user, data.getAccessToken(), data.getRefreshToken(), data.getExpireTime(), getOAuth2ServiceProvider(), getServiceApiAdapter());
 	}
 	

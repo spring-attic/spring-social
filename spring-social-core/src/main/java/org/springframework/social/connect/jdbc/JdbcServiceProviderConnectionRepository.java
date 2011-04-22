@@ -154,8 +154,8 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 		try {
 			ServiceProviderConnectionData data = connection.createData();
 			int rank = jdbcTemplate.queryForInt("(select ifnull(max(rank) + 1, 1) as rank from ServiceProviderConnection where localUserId = ? and providerId = ?)", localUserId, data.getProviderId());
-			jdbcTemplate.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-					localUserId, data.getProviderId(), data.getProviderUserId(), rank, data.getProfileName(), data.getProfileUrl(), data.getProfilePictureUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime());
+			jdbcTemplate.update("insert into ServiceProviderConnection (localUserId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+					localUserId, data.getProviderId(), data.getProviderUserId(), rank, data.getDisplayName(), data.getProfileUrl(), data.getImageUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime());
 		} catch (DuplicateKeyException e) {
 			throw new DuplicateServiceProviderConnectionException(connection.getKey());
 		}
@@ -163,8 +163,8 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 	
 	public void updateConnection(ServiceProviderConnection<?> connection) {
 		ServiceProviderConnectionData data = connection.createData();
-		jdbcTemplate.update("update ServiceProviderConnection set profileName = ?, profileUrl = ?, profilePictureUrl = ?, accessToken = ?, secret = ?, refreshToken = ?, expireTime = ? where localUserId = ? and providerId = ? and providerUserId = ?",
-				data.getProfileName(), data.getProfileUrl(), data.getProfilePictureUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime(), localUserId, data.getProviderId(), data.getProviderUserId());
+		jdbcTemplate.update("update ServiceProviderConnection set displayName = ?, profileUrl = ?, imageUrl = ?, accessToken = ?, secret = ?, refreshToken = ?, expireTime = ? where localUserId = ? and providerId = ? and providerUserId = ?",
+				data.getDisplayName(), data.getProfileUrl(), data.getImageUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime(), localUserId, data.getProviderId(), data.getProviderUserId());
 	}
 
 	public void removeConnectionsToProvider(String providerId) {
@@ -177,7 +177,7 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 
 	// internal helpers
 	
-	private final static String SELECT_FROM_SERVICE_PROVIDER_CONNECTION = "select localUserId, providerId, providerUserId, profileName, profileUrl, profilePictureUrl, accessToken, secret, refreshToken, expireTime from ServiceProviderConnection";
+	private final static String SELECT_FROM_SERVICE_PROVIDER_CONNECTION = "select localUserId, providerId, providerUserId, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime from ServiceProviderConnection";
 	
 	
 	private final ServiceProviderConnectionMapper connectionMapper = new ServiceProviderConnectionMapper();
@@ -191,7 +191,7 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 		}
 		
 		private ServiceProviderConnectionData mapConnectionData(ResultSet rs) throws SQLException {
-			return new ServiceProviderConnectionData(rs.getString("providerId"), rs.getString("providerUserId"), rs.getString("profileName"), rs.getString("profileUrl"), rs.getString("profilePictureUrl"),
+			return new ServiceProviderConnectionData(rs.getString("providerId"), rs.getString("providerUserId"), rs.getString("displayName"), rs.getString("profileUrl"), rs.getString("imageUrl"),
 					decrypt(rs.getString("accessToken")), decrypt(rs.getString("secret")), decrypt(rs.getString("refreshToken")), expireTime(rs.getLong("expireTime")));
 		}
 		

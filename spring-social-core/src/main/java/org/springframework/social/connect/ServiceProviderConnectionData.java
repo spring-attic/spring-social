@@ -31,11 +31,11 @@ public class ServiceProviderConnectionData implements Serializable {
 	
 	private String providerUserId;
 	
-	private String profileName;
+	private String displayName;
 	
 	private String profileUrl;
 	
-	private String profilePictureUrl;
+	private String imageUrl;
 	
 	private String accessToken;
 	
@@ -45,12 +45,12 @@ public class ServiceProviderConnectionData implements Serializable {
 	
 	private Long expireTime;
 
-	public ServiceProviderConnectionData(String providerId, String providerUserId, String profileName, String profileUrl, String profilePictureUrl, String accessToken, String secret, String refreshToken, Long expireTime) {
+	public ServiceProviderConnectionData(String providerId, String providerUserId, String displayName, String profileUrl, String imageUrl, String accessToken, String secret, String refreshToken, Long expireTime) {
 		this.providerId = providerId;
 		this.providerUserId = providerUserId;
-		this.profileName = profileName;
+		this.displayName = displayName;
 		this.profileUrl = profileUrl;
-		this.profilePictureUrl = profilePictureUrl;
+		this.imageUrl = imageUrl;
 		this.accessToken = accessToken;
 		this.secret = secret;
 		this.refreshToken = refreshToken;
@@ -72,10 +72,10 @@ public class ServiceProviderConnectionData implements Serializable {
 	}
 
 	/**
-	 * A display name for the provider user's profile.
+	 * A display name for the connection.
 	 */
-	public String getProfileName() {
-		return profileName;
+	public String getDisplayName() {
+		return displayName;
 	}
 
 	/**
@@ -86,10 +86,10 @@ public class ServiceProviderConnectionData implements Serializable {
 	}
 
 	/**
-	 * A link to the provider user's profile picture.
+	 * An image visualizing the connection.
 	 */
-	public String getProfilePictureUrl() {
-		return profilePictureUrl;
+	public String getImageUrl() {
+		return imageUrl;
 	}
 
 	/**
