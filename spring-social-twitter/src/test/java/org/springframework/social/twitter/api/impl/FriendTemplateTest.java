@@ -34,7 +34,7 @@ public class FriendTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void getFriends_currentUser() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/friends.json"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/friends.json?cursor=-1"))
 			.andExpect(method(GET))
 			.andRespond(withResponse(new ClassPathResource("friends-or-followers.json", getClass()), responseHeaders));
 
@@ -46,7 +46,7 @@ public class FriendTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void getFriends_byUserId() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/friends.json?user_id=98765"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/friends.json?cursor=-1&user_id=98765"))
 			.andExpect(method(GET))
 			.andRespond(withResponse(new ClassPathResource("friends-or-followers.json", getClass()), responseHeaders));
 
@@ -58,7 +58,7 @@ public class FriendTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void getFriends_byScreenName() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/friends.json?screen_name=habuma"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/statuses/friends.json?cursor=-1&screen_name=habuma"))
 			.andExpect(method(GET))
 			.andRespond(withResponse(new ClassPathResource("friends-or-followers.json", getClass()), responseHeaders));
 
@@ -70,7 +70,7 @@ public class FriendTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void getFriendIds_currentUser() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/friends/ids.json"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/friends/ids.json?cursor=-1"))
 			.andExpect(method(GET))
 			.andRespond(withResponse(new ClassPathResource("friend-or-follower-ids.json", getClass()), responseHeaders));
 		
@@ -83,7 +83,7 @@ public class FriendTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void getFriendIds_byUserId() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/friends/ids.json?user_id=98765"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/friends/ids.json?cursor=-1&user_id=98765"))
 			.andExpect(method(GET))
 			.andRespond(withResponse(new ClassPathResource("friend-or-follower-ids.json", getClass()), responseHeaders));
 		
@@ -96,7 +96,7 @@ public class FriendTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void getFriendIds_byScreenName() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/friends/ids.json?screen_name=habuma"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/friends/ids.json?cursor=-1&screen_name=habuma"))
 			.andExpect(method(GET))
 			.andRespond(withResponse(new ClassPathResource("friend-or-follower-ids.json", getClass()), responseHeaders));
 		
@@ -109,7 +109,7 @@ public class FriendTemplateTest extends AbstractTwitterApiTest {
 	
 	@Test 
 	public void getFollowers_currentUser() {
-	    mockServer.expect(requestTo("https://api.twitter.com/1/statuses/followers.json"))
+	    mockServer.expect(requestTo("https://api.twitter.com/1/statuses/followers.json?cursor=-1"))
 	        .andExpect(method(GET))
 			.andRespond(withResponse(new ClassPathResource("friends-or-followers.json", getClass()), responseHeaders));
 	    
@@ -121,7 +121,7 @@ public class FriendTemplateTest extends AbstractTwitterApiTest {
 
 	@Test 
 	public void getFollowers_byUserId() {
-	    mockServer.expect(requestTo("https://api.twitter.com/1/statuses/followers.json?user_id=98765"))
+	    mockServer.expect(requestTo("https://api.twitter.com/1/statuses/followers.json?cursor=-1&user_id=98765"))
 	        .andExpect(method(GET))
 			.andRespond(withResponse(new ClassPathResource("friends-or-followers.json", getClass()), responseHeaders));
 	    
@@ -133,7 +133,7 @@ public class FriendTemplateTest extends AbstractTwitterApiTest {
 	
 	@Test 
 	public void getFollowers_byScreenName() {
-	    mockServer.expect(requestTo("https://api.twitter.com/1/statuses/followers.json?screen_name=oizik"))
+	    mockServer.expect(requestTo("https://api.twitter.com/1/statuses/followers.json?cursor=-1&screen_name=oizik"))
 	        .andExpect(method(GET))
 			.andRespond(withResponse(new ClassPathResource("friends-or-followers.json", getClass()), responseHeaders));
 	    
@@ -145,7 +145,7 @@ public class FriendTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void getFollowerIds_currentUser() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/followers/ids.json"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/followers/ids.json?cursor=-1"))
 			.andExpect(method(GET))
 			.andRespond(withResponse(new ClassPathResource("friend-or-follower-ids.json", getClass()), responseHeaders));
 		
@@ -158,7 +158,7 @@ public class FriendTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void getFollowerIds_byUserId() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/followers/ids.json?user_id=98765"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/followers/ids.json?cursor=-1&user_id=98765"))
 			.andExpect(method(GET))
 			.andRespond(withResponse(new ClassPathResource("friend-or-follower-ids.json", getClass()), responseHeaders));
 		
@@ -171,7 +171,7 @@ public class FriendTemplateTest extends AbstractTwitterApiTest {
 
 	@Test
 	public void getFollowerIds_byScreenName() {
-		mockServer.expect(requestTo("https://api.twitter.com/1/followers/ids.json?screen_name=habuma"))
+		mockServer.expect(requestTo("https://api.twitter.com/1/followers/ids.json?cursor=-1&screen_name=habuma"))
 			.andExpect(method(GET))
 			.andRespond(withResponse(new ClassPathResource("friend-or-follower-ids.json", getClass()), responseHeaders));
 		

@@ -17,6 +17,7 @@ package org.springframework.social.twitter.api.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -41,51 +42,67 @@ class FriendTemplate extends AbstractTwitterOperations implements FriendOperatio
 	}
 
 	public List<TwitterProfile> getFriends() {
-		return restTemplate.getForObject(buildUri("statuses/friends.json"), TwitterProfileList.class);
+		return restTemplate.getForObject(buildUri("statuses/friends.json", DEFAULT_CURSOR_PARAMETER_MAP), TwitterProfileUsersList.class).getList();
 	}
 
 	public List<TwitterProfile> getFriends(long userId) {
-		return restTemplate.getForObject(buildUri("statuses/friends.json", Collections.singletonMap("user_id", String.valueOf(userId))), TwitterProfileList.class);
+		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
+		parameters.put("user_id", String.valueOf(userId));
+		return restTemplate.getForObject(buildUri("statuses/friends.json", parameters), TwitterProfileUsersList.class).getList();
 	}
 
 	public List<TwitterProfile> getFriends(String screenName) {
-		return restTemplate.getForObject(buildUri("statuses/friends.json", Collections.singletonMap("screen_name", screenName)), TwitterProfileList.class);
+		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
+		parameters.put("screen_name", screenName);
+		return restTemplate.getForObject(buildUri("statuses/friends.json", parameters), TwitterProfileUsersList.class).getList();
 	}
 	
 	public List<Long> getFriendIds() {
-		return restTemplate.getForObject(buildUri("friends/ids.json"), LongList.class);
+		return restTemplate.getForObject(buildUri("friends/ids.json", DEFAULT_CURSOR_PARAMETER_MAP), LongIdsList.class).getList();
 	}
 
 	public List<Long> getFriendIds(long userId) {
-		return restTemplate.getForObject(buildUri("friends/ids.json", Collections.singletonMap("user_id", String.valueOf(userId))), LongList.class);
+		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
+		parameters.put("user_id", String.valueOf(userId));
+		return restTemplate.getForObject(buildUri("friends/ids.json", parameters), LongIdsList.class).getList();
 	}
 
 	public List<Long> getFriendIds(String screenName) {
-		return restTemplate.getForObject(buildUri("friends/ids.json", Collections.singletonMap("screen_name", screenName)), LongList.class);
+		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
+		parameters.put("screen_name", screenName);
+		return restTemplate.getForObject(buildUri("friends/ids.json", parameters), LongIdsList.class).getList();
 	}
 
 	public List<TwitterProfile> getFollowers() {
-		return restTemplate.getForObject(buildUri("statuses/followers.json"), TwitterProfileList.class);
+		return restTemplate.getForObject(buildUri("statuses/followers.json", DEFAULT_CURSOR_PARAMETER_MAP), TwitterProfileUsersList.class).getList();
 	}
 
 	public List<TwitterProfile> getFollowers(long userId) {
-		return restTemplate.getForObject(buildUri("statuses/followers.json", Collections.singletonMap("user_id", String.valueOf(userId))), TwitterProfileList.class);
+		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
+		parameters.put("user_id", String.valueOf(userId));
+		return restTemplate.getForObject(buildUri("statuses/followers.json", parameters), TwitterProfileUsersList.class).getList();
 	}
 
 	public List<TwitterProfile> getFollowers(String screenName) {
-		return restTemplate.getForObject(buildUri("statuses/followers.json", Collections.singletonMap("screen_name", screenName)), TwitterProfileList.class);
+		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
+		parameters.put("screen_name", screenName);
+		return restTemplate.getForObject(buildUri("statuses/followers.json", parameters), TwitterProfileUsersList.class).getList();
 	}
 
 	public List<Long> getFollowerIds() {
-		return restTemplate.getForObject(buildUri("followers/ids.json"), LongList.class);
+		return restTemplate.getForObject(buildUri("followers/ids.json", DEFAULT_CURSOR_PARAMETER_MAP), LongIdsList.class).getList();
 	}
 
 	public List<Long> getFollowerIds(long userId) {
-		return restTemplate.getForObject(buildUri("followers/ids.json", Collections.singletonMap("user_id", String.valueOf(userId))), LongList.class);
+		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
+		parameters.put("user_id", String.valueOf(userId));
+		return restTemplate.getForObject(buildUri("followers/ids.json", parameters), LongIdsList.class).getList();
 	}
 
 	public List<Long> getFollowerIds(String screenName) {
-		return restTemplate.getForObject(buildUri("followers/ids.json", Collections.singletonMap("screen_name", screenName)), LongList.class);
+		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
+		parameters.put("screen_name", screenName);
+		return restTemplate.getForObject(buildUri("followers/ids.json", parameters), LongIdsList.class).getList();
 	}
 
 	public String follow(long userId) {
@@ -128,6 +145,8 @@ class FriendTemplate extends AbstractTwitterOperations implements FriendOperatio
 	}
 
 	private static final MultiValueMap<String, Object> EMPTY_DATA = new LinkedMultiValueMap<String, Object>();
+	
+	private static final Map<String, String> DEFAULT_CURSOR_PARAMETER_MAP = Collections.singletonMap("cursor", "-1");
 	
 	@SuppressWarnings("serial")
 	private static class LongList extends ArrayList<Long> {}
