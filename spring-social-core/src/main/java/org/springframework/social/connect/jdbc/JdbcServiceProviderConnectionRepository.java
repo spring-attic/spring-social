@@ -128,7 +128,7 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 	}
 
 	@SuppressWarnings("unchecked")
-	public <S> ServiceProviderConnection<S> findConnectionByServiceApi(Class<S> serviceApiType) {
+	public <S> ServiceProviderConnection<S> findPrimaryConnectionToServiceApi(Class<S> serviceApiType) {
 		try {
 			String providerId = getProviderId(serviceApiType);
 			return (ServiceProviderConnection<S>) jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where localUserId = ? and providerId = ? and rank = 1", connectionMapper, localUserId, providerId);
@@ -138,13 +138,13 @@ class JdbcServiceProviderConnectionRepository implements ServiceProviderConnecti
 	}
 
 	@SuppressWarnings("unchecked")
-	public <S> List<ServiceProviderConnection<S>> findConnectionsByServiceApi(Class<S> serviceApiType) {
+	public <S> List<ServiceProviderConnection<S>> findConnectionsToServiceApi(Class<S> serviceApiType) {
 		List<?> connections = findConnectionsToProvider(getProviderId(serviceApiType));
 		return (List<ServiceProviderConnection<S>>) connections;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <S> ServiceProviderConnection<S> findConnectionByServiceApiForUser(Class<S> serviceApiType, String providerUserId) {
+	public <S> ServiceProviderConnection<S> findConnectionToServiceApiForUser(Class<S> serviceApiType, String providerUserId) {
 		String providerId = getProviderId(serviceApiType);
 		return (ServiceProviderConnection<S>) findConnection(new ServiceProviderConnectionKey(providerId, providerUserId));
 	}

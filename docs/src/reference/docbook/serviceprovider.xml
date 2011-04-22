@@ -359,7 +359,7 @@ public interface ServiceProviderConnectionRepository {
 
     <S> ServiceProviderConnection<S> findPrimaryConnectionToServiceApi(Class<S> serviceApiType);
 
-    <S> ServiceProviderConnection<S> findPrimaryConnectionToServiceApiForUser(Class<S> serviceApiType, String providerUserId);	
+    <S> ServiceProviderConnection<S> findConnectionToServiceApiForUser(Class<S> serviceApiType, String providerUserId);	
 
     <S> List<ServiceProviderConnection<S>> findConnectionsToServiceApi(Class<S> serviceApiType);
 	

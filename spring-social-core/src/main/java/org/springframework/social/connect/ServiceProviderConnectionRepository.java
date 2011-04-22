@@ -79,17 +79,7 @@ public interface ServiceProviderConnectionRepository {
 	 * @param serviceApiType the service api type e.g. FacebookApi.class or TwitterApi.class
 	 * @return the service provider connection
 	 */
-	<S> ServiceProviderConnection<S> findConnectionByServiceApi(Class<S> serviceApiType);
-
-	/**
-	 * Find the ServiceProviderConnections for the current user by the given serviceApiType e.g. FacebookApi.class.
-	 * Returns the equivalent of {@link #findConnectionsToProvider(String)}, but uses the serviceApiType as the provider key instead of the providerId.
-	 * Useful for direct use by application code to obtain parameterized ServiceProviderConnection instances e.g. <code>List&lt;ServiceProviderConnection&lt;FacebookApi&gt;&gt;</code>.
-	 * @param <S> the service api parameterized type
-	 * @param serviceApiType the service api type e.g. FacebookApi.class or TwitterApi.class
-	 * @return the service provider connection
-	 */
-	<S> List<ServiceProviderConnection<S>> findConnectionsByServiceApi(Class<S> serviceApiType);
+	<S> ServiceProviderConnection<S> findPrimaryConnectionToServiceApi(Class<S> serviceApiType);
 
 	/**
 	 * Find the ServiceProviderConnection between the current user and the given provider user.
@@ -100,8 +90,18 @@ public interface ServiceProviderConnectionRepository {
 	 * @param providerUserId the provider user e.g. "126500".
 	 * @return the service provider connection
 	 */
-	<S> ServiceProviderConnection<S> findConnectionByServiceApiForUser(Class<S> serviceApiType, String providerUserId);
+	<S> ServiceProviderConnection<S> findConnectionToServiceApiForUser(Class<S> serviceApiType, String providerUserId);
 
+	/**
+	 * Find the ServiceProviderConnections for the current user by the given serviceApiType e.g. FacebookApi.class.
+	 * Returns the equivalent of {@link #findConnectionsToProvider(String)}, but uses the serviceApiType as the provider key instead of the providerId.
+	 * Useful for direct use by application code to obtain parameterized ServiceProviderConnection instances e.g. <code>List&lt;ServiceProviderConnection&lt;FacebookApi&gt;&gt;</code>.
+	 * @param <S> the service api parameterized type
+	 * @param serviceApiType the service api type e.g. FacebookApi.class or TwitterApi.class
+	 * @return the service provider connection
+	 */
+	<S> List<ServiceProviderConnection<S>> findConnectionsToServiceApi(Class<S> serviceApiType);
+	
 	/**
 	 * Add a new connection for the current user to this repository.
 	 * After the connection is added, it can be retrieved later using one of the finders defined by this interface.

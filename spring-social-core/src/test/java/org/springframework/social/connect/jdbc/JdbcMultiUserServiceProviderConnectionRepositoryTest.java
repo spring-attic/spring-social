@@ -76,7 +76,7 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 			factory.setDatabaseType(EmbeddedDatabaseType.H2);			
 		}
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-		populator.addScript(new ClassPathResource("JdbcServiceProviderConnectionRepositorySchema.sql", getClass()));
+		populator.addScript(new ClassPathResource("JdbcMultiUserServiceProviderConnectionRepository.sql", getClass()));
 		factory.setDatabasePopulator(populator);
 		database = factory.getDatabase();
 		dataAccessor = new JdbcTemplate(database);
@@ -211,43 +211,43 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 	}
 
 	@Test
-	public void findConnectionByServiceApi() {
+	public void findPrimaryConnectionToServiceApi() {
 		insertFacebookConnection();
-		assertFacebookConnection(connectionRepository.findConnectionByServiceApi(TestFacebookApi.class));
+		assertFacebookConnection(connectionRepository.findPrimaryConnectionToServiceApi(TestFacebookApi.class));
 	}
 
 	@Test
-	public void findConnectionByServiceApiSelectFromMultipleByRank() {
+	public void findPrimaryConnectionToServiceApiSelectFromMultipleByRank() {
 		insertFacebookConnection2();
 		insertFacebookConnection();
-		assertFacebookConnection(connectionRepository.findConnectionByServiceApi(TestFacebookApi.class));
+		assertFacebookConnection(connectionRepository.findPrimaryConnectionToServiceApi(TestFacebookApi.class));
 	}
 
 	@Test
-	public void findConnectionByServiceApiNoSuchConnection() {
-		assertNull(connectionRepository.findConnectionByServiceApi(TestFacebookApi.class));
+	public void findPrimaryConnectionToServiceApiNoSuchConnection() {
+		assertNull(connectionRepository.findPrimaryConnectionToServiceApi(TestFacebookApi.class));
 	}
 
 	@Test
-	public void findConnectionsByServiceApi() {
+	public void findConnectionsToServiceApi() {
 		insertFacebookConnection();
 		insertFacebookConnection2();
-		List<ServiceProviderConnection<TestFacebookApi>> connections = connectionRepository.findConnectionsByServiceApi(TestFacebookApi.class);
+		List<ServiceProviderConnection<TestFacebookApi>> connections = connectionRepository.findConnectionsToServiceApi(TestFacebookApi.class);
 		assertEquals(2, connections.size());
 		assertFacebookConnection(connections.get(0));
 	}
 	
 	@Test
-	public void findConnectionByServiceApiForUser() {
+	public void findConnectionToServiceApiForUser() {
 		insertFacebookConnection();
 		insertFacebookConnection2();	
-		assertFacebookConnection(connectionRepository.findConnectionByServiceApiForUser(TestFacebookApi.class, "9"));
-		assertEquals("10", connectionRepository.findConnectionByServiceApiForUser(TestFacebookApi.class, "10").getKey().getProviderUserId());
+		assertFacebookConnection(connectionRepository.findConnectionToServiceApiForUser(TestFacebookApi.class, "9"));
+		assertEquals("10", connectionRepository.findConnectionToServiceApiForUser(TestFacebookApi.class, "10").getKey().getProviderUserId());
 	}
 
 	@Test(expected=NoSuchServiceProviderConnectionException.class)
-	public void findConnectionByServiceApiForUserNoSuchConnection() {
-		assertFacebookConnection(connectionRepository.findConnectionByServiceApiForUser(TestFacebookApi.class, "9"));
+	public void findConnectionToServiceApiForUserNoSuchConnection() {
+		assertFacebookConnection(connectionRepository.findConnectionToServiceApiForUser(TestFacebookApi.class, "9"));
 	}
 	
 	@Test
@@ -281,7 +281,7 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 	public void addConnection() {
 		ServiceProviderConnection<TestFacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", null, "987654321", 3600));
 		connectionRepository.addConnection(connection);
-		ServiceProviderConnection<TestFacebookApi> restoredConnection = connectionRepository.findConnectionByServiceApi(TestFacebookApi.class);
+		ServiceProviderConnection<TestFacebookApi> restoredConnection = connectionRepository.findPrimaryConnectionToServiceApi(TestFacebookApi.class);
 		assertEquals(connection, restoredConnection);	
 		assertNewConnection(restoredConnection);
 	}
@@ -297,23 +297,23 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 	public void updateConnectionProfileFields() {
 		connectionFactoryRegistry.addConnectionFactory(new TestTwitterServiceProviderConnectionFactory());		
 		insertTwitterConnection();
-		ServiceProviderConnection<TestTwitterApi> twitter = connectionRepository.findConnectionByServiceApi(TestTwitterApi.class);
+		ServiceProviderConnection<TestTwitterApi> twitter = connectionRepository.findPrimaryConnectionToServiceApi(TestTwitterApi.class);
 		assertEquals("http://twitter.com/kdonald/picture", twitter.getImageUrl());
 		twitter.sync();
 		assertEquals("http://twitter.com/kdonald/a_new_picture", twitter.getImageUrl());
 		connectionRepository.updateConnection(twitter);
-		ServiceProviderConnection<TestTwitterApi> twitter2 = connectionRepository.findConnectionByServiceApi(TestTwitterApi.class);
+		ServiceProviderConnection<TestTwitterApi> twitter2 = connectionRepository.findPrimaryConnectionToServiceApi(TestTwitterApi.class);
 		assertEquals("http://twitter.com/kdonald/a_new_picture", twitter2.getImageUrl());
 	}
 	
 	@Test
 	public void updateConnectionAccessFields() {
 		insertFacebookConnection();
-		ServiceProviderConnection<TestFacebookApi> facebook = connectionRepository.findConnectionByServiceApi(TestFacebookApi.class);
+		ServiceProviderConnection<TestFacebookApi> facebook = connectionRepository.findPrimaryConnectionToServiceApi(TestFacebookApi.class);
 		assertEquals("234567890", facebook.getServiceApi().getAccessToken());
 		facebook.refresh();
 		connectionRepository.updateConnection(facebook);
-		ServiceProviderConnection<TestFacebookApi> facebook2 = connectionRepository.findConnectionByServiceApi(TestFacebookApi.class);
+		ServiceProviderConnection<TestFacebookApi> facebook2 = connectionRepository.findPrimaryConnectionToServiceApi(TestFacebookApi.class);
 		assertEquals("765432109", facebook2.getServiceApi().getAccessToken());
 		ServiceProviderConnectionData data = facebook.createData();
 		assertEquals("654321098", data.getRefreshToken());
