@@ -338,6 +338,35 @@ ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConn
 				</programlisting>
 			</para>
 		</section>
+		<section id="service-providers-establishing-connections-connection-factory-registry">
+			<title>Registering ServiceProviderConnectionFactory instances</title>
+			<para>
+				As you will see in subsequent sections of this reference guide, Spring Social provides infrastructure for establishing connections to one or more providers in a dynamic, self-service manner.
+				For example, one client application may allow users to connect to Facebook, Twitter, and LinkedIn. Another might integrate Github and Pivotal Tracker.
+				To make the set of connectable providers easy to manage and locate, Spring Social provides a registry for centralizing connection factory instances:
+			</para>
+			<programlisting language="java"><![CDATA[
+MapServiceProviderConnectionFactoryRegistry registry = new MapServiceProviderConnectionFactoryRegistry();
+registry.addConnectionFactory(new FacebookServiceProviderConnectionFactory());
+registry.addConnectionFactory(new TwitterServiceProviderConnectionFactory());
+registry.addConnectionFactory(new LinkedInServiceProviderConnectionFactory());]]>	
+			</programlisting>
+			<para>
+				This registry implements a locator interface that other objects can use to lookup connection factories dynamically:
+			</para>
+			<programlisting language="java"><![CDATA[
+public interface ServiceProviderConnectionLocator {
+
+    ServiceProviderConnectionFactory<?> getConnectionFactory(String providerId);
+
+    <S> ServiceProviderConnectionFactory<S> getConnectionFactory(Class<S> serviceApiType);
+	
+    Set<String> registeredProviderIds();
+
+}
+]]>	
+			</programlisting>
+		</section>
 	</section>
 	<section id="service-providers-persisting-connections">
 		<title>Persisting connections</title>
