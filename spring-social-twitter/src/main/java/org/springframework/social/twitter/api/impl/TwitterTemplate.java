@@ -82,8 +82,8 @@ public class TwitterTemplate implements TwitterApi {
 	 * Create a new instance of TwitterTemplate.
 	 * @param apiKey the application's API key
 	 * @param apiSecret the application's API secret
-	 * @param accessToken an access token acquired through OAuth authentication with LinkedIn
-	 * @param accessTokenSecret an access token secret acquired through OAuth authentication with LinkedIn
+	 * @param accessToken an access token acquired through OAuth authentication with Twitter
+	 * @param accessTokenSecret an access token secret acquired through OAuth authentication with Twitter
 	 */
 	public TwitterTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
 		this(ProtectedResourceClientFactory.create(apiKey, apiSecret, accessToken, accessTokenSecret), true);
