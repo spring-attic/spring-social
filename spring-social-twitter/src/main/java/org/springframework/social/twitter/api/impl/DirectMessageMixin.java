@@ -18,6 +18,7 @@ package org.springframework.social.twitter.api.impl;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 
@@ -25,6 +26,7 @@ import org.codehaus.jackson.map.annotate.JsonDeserialize;
  * Mixin class for adding Jackson annotations to DirectMessage.
  * @author Craig Walls
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 abstract class DirectMessageMixin {
 	@JsonCreator
 	DirectMessageMixin(
