@@ -207,11 +207,11 @@ public interface OAuth2Operations {
 				Here, FacebookServiceProviderConnectionFactory is a subclass of OAuth2ServiceProviderConnectionFactory:
 				<programlisting language="java"><![CDATA[
 FacebookServiceProviderConnectionFactory connectionFactory = new FacebookServiceProviderConnectionFactory();
-String authorizeUrl = connectionFactory.getOAuth2Operations().buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE,
-                          new AuthorizationParameters("http://acmeapp.com/callbackUrl"));
+OAuth2Operations oauth2Operations = connectionFactory.getOAuth2Operations();
+String authorizeUrl = oauth2Operations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new AuthorizationParameters(callbackUrl));
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the authorizationCode parameter:
-AccessGrant accessGrant = connectionFactory.getOAuth2Operations().exchangeForAccess(authorizationCode);
+AccessGrant accessGrant = oauth2Operations.exchangeForAccess(authorizationCode, callbackUrl);
 ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConnection(accessGrant);]]>
 				</programlisting>
 			</para>
@@ -221,8 +221,8 @@ ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConn
 				This flow is appropriate for clients incapable of keeping the access grant credentials confidential, such as a mobile device or JavaScript-based user agent.
 				<programlisting language="java"><![CDATA[
 FacebookServiceProviderConnectionFactory connectionFactory = new FacebookServiceProviderConnectionFactory();
-String authorizeUrl = connectionFactory.getOAuth2Operations().buildAuthorizeUrl(GrantType.IMPLICIT_GRANT,
-                          new AuthorizationParameters("http://acmeapp.com/callbackUrl"));
+OAuth2Operations oauth2Operations = connectionFactory.getOAuth2Operations();
+String authorizeUrl = oauth2Operations.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, new AuthorizationParameters(callbackUrl));
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the access_token parameter:
 AccessGrant accessGrant = new AccessGrant(accessToken);
@@ -253,7 +253,7 @@ public class OAuth1ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 			<programlisting language="java"><![CDATA[
 public interface OAuth1Operations {
 
-    OAuthToken fetchNewRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters);
+    OAuthToken fetchRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters);
 
     String buildAuthorizeUrl(String requestToken, AuthorizationParameters parameters);
 
@@ -323,6 +323,20 @@ public interface OAuth1Operations {
 					</para>
 				</listitem>				
 			</orderedlist>
+			<para>
+				The example code below shows use of a FacebookServiceProviderConnectionFactory to create a connection to Facebook using the OAuth2 server-side flow illustrated above.
+				Here, FacebookServiceProviderConnectionFactory is a subclass of OAuth2ServiceProviderConnectionFactory:
+				<programlisting language="java"><![CDATA[
+TwitterServiceProviderConnectionFactory connectionFactory = new TwitterServiceProviderConnectionFactory();
+OAuth1Operations oauth1Operations = connectionFactory.getOAuth1Operations();
+String requestToken = oauth1Operations.fetchRequestToken(callbackUrl);
+String authorizeUrl = oauth1Operations.buildAuthorizeUrl(requestToken, AuthorizationParameters.NONE);
+response.sendRedirect(authorizeUrl);
+// when the provider callback is received with the oauth_token and oauth_verifier parameters:
+OAuthToken accessToken = oauth1Operations.exchangeForAccessToken(new AuthorizedRequestToken(oauthToken, oauthVerifier));
+ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConnection(accessToken);]]>
+				</programlisting>
+			</para>			
 		</section>
 	</section>
 </chapter>
