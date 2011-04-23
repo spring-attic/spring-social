@@ -44,7 +44,7 @@ public class TwitterServiceApiAdapter implements ServiceApiAdapter<TwitterApi> {
 
 	public ServiceProviderUserProfile fetchUserProfile(TwitterApi serviceApi) {
 		TwitterProfile profile = serviceApi.userOperations().getUserProfile();
-		return new ServiceProviderUserProfileBuilder().setFirstName(profile.getName()).setUsername(profile.getScreenName()).build();
+		return new ServiceProviderUserProfileBuilder().setName(profile.getName()).setUsername(profile.getScreenName()).build();
 	}
 	
 	public void updateStatus(TwitterApi serviceApi, String message) {

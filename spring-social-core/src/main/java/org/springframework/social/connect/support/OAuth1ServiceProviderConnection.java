@@ -18,9 +18,6 @@ package org.springframework.social.connect.support;
 import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionData;
-import org.springframework.social.connect.ServiceProviderConnectionKey;
-import org.springframework.social.connect.ServiceProviderConnectionValues;
-import org.springframework.social.connect.ServiceProviderUserProfile;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
 
 /**
@@ -31,130 +28,61 @@ import org.springframework.social.oauth1.OAuth1ServiceProvider;
  * @param <S> the service API type
  * @see OAuth1ServiceProviderConnectionFactory
  */
-public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnection<S> {
-
-	private final ServiceProviderConnectionKey key;
+public class OAuth1ServiceProviderConnection<S> extends AbstractServiceProviderConnection<S> {
 
 	private final OAuth1ServiceProvider<S> serviceProvider;
 	
-	private final ServiceApiAdapter<S> serviceApiAdapter;
-
-	private ServiceProviderConnectionValues connectionValues;
-
 	private String accessToken;
 	
 	private String secret;
 
 	private S serviceApi;
 
-	private final Object monitor = new Object();
-	
 	/**
-	 * Creates a new {@link OAuth1ServiceProviderConnection} from the data provided.
-	 * Designed to be called to create a {@link OAuth1ServiceProviderConnection} after receiving an access token response successfully.
+	 * Creates a new {@link OAuth1ServiceProviderConnection} from a OAuth1 access token response.
+	 * Designed to be called to establish a new {@link OAuth1ServiceProviderConnection} after receiving an access token response successfully.
 	 * The providerUserId may be null in this case: if so, this constructor will try to resolve it using the service API obtained from the {@link OAuth1ServiceProvider}.
 	 * @param providerId the provider id e.g. "twitter"
 	 * @param providerUserId the provider user ID (may be null if not returned as part of the access token response)
 	 * @param accessToken the granted access token
 	 * @param secret the access token secret (OAuth1-specific)
-	 * @param serviceProvider the ServiceProvider model
-	 * @param serviceApiAdapter the ServiceApiAdapter for the ServiceProvider.
+	 * @param serviceProvider the OAuth1-based ServiceProvider
+	 * @param serviceApiAdapter the ServiceApiAdapter for the ServiceProvider
 	 */
 	public OAuth1ServiceProviderConnection(String providerId, String providerUserId, String accessToken, String secret, OAuth1ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
+		super(serviceApiAdapter);
 		this.serviceProvider = serviceProvider;
-		this.serviceApiAdapter = serviceApiAdapter;
 		initAccessTokens(accessToken, secret);
 		initServiceApi();
-		this.key = createKey(providerId, providerUserId);
+		initKey(providerId, providerUserId);
 	}
 
 	/**
 	 * Creates a new {@link OAuth1ServiceProviderConnection} from the data provided.
-	 * Designed to be called when re-constituting an existing {@link ServiceProviderConnection}, for example, from {@link ServiceProviderConnectionData}.
-	 * @param key the service provider connection key
-	 * @param connectionValues the service provider connection values
-	 * @param accessToken the access token
-	 * @param secret the access token secret
-	 * @param serviceProvider the ServiceProvider model
-	 * @param serviceApiAdapter the ServiceApiAdapter for the ServiceProvider.
+	 * Designed to be called when re-constituting an existing {@link ServiceProviderConnection} using {@link ServiceProviderConnectionData}.
+	 * @param data the data holding the state of this service provider connection
+	 * @param serviceProvider the OAuth1-based ServiceProvider
+	 * @param serviceApiAdapter the ServiceApiAdapter for the ServiceProvider
 	 */
-	public OAuth1ServiceProviderConnection(ServiceProviderConnectionKey key, ServiceProviderConnectionValues connectionValues, String accessToken, String secret, OAuth1ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
-		this.key = key;
-		this.connectionValues = connectionValues;
+	public OAuth1ServiceProviderConnection(ServiceProviderConnectionData data, OAuth1ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
+		super(data, serviceApiAdapter);
 		this.serviceProvider = serviceProvider;
-		this.serviceApiAdapter = serviceApiAdapter;
-		initAccessTokens(accessToken, secret);
+		initAccessTokens(data.getAccessToken(), data.getSecret());
 		initServiceApi();
 	}
 
 	// implementing ServiceProviderConnection
 	
-	public ServiceProviderConnectionKey getKey() {
-		return key;
-	}
-
-	public String getDisplayName() {
-		return getConnectionValues().getDisplayName();
-	}
-
-	public String getProfileUrl() {
-		return getConnectionValues().getProfileUrl();
-	}
-
-	public String getImageUrl() {
-		return getConnectionValues().getImageUrl();
-	}
-
-	public boolean test() {
-		return serviceApiAdapter.test(serviceApi);
-	}
-
-	public boolean hasExpired() {
-		// not supported by OAuth 1
-		return false;
-	}
-
-	public void refresh() {
-		// not supported by OAuth 1
-	}
-
-	public ServiceProviderUserProfile fetchUserProfile() {
-		return serviceApiAdapter.fetchUserProfile(serviceApi);
-	}
-
-	public void updateStatus(String message) {
-		serviceApiAdapter.updateStatus(serviceApi, message);
-	}
-
-	public void sync() {
-		synchronized (monitor) {
-			initConnectionValues();
-		}
-	}
-
 	public S getServiceApi() {
 		return serviceApi;
 	}
 
 	public ServiceProviderConnectionData createData() {
-		return new ServiceProviderConnectionData(key.getProviderId(), key.getProviderUserId(), connectionValues.getDisplayName(), connectionValues.getProfileUrl(), connectionValues.getImageUrl(), accessToken, secret, null, null);
+		synchronized (getMonitor()) {
+			return new ServiceProviderConnectionData(getKey().getProviderId(), getKey().getProviderUserId(), getDisplayName(), getProfileUrl(), getImageUrl(), accessToken, secret, null, null);
+		}
 	}
 
-	// identity
-	
-	@SuppressWarnings("rawtypes")
-	public boolean equals(Object o) {
-		if (!(o instanceof OAuth2ServiceProviderConnection)) {
-			return false;
-		}
-		OAuth1ServiceProviderConnection other = (OAuth1ServiceProviderConnection) o;
-		return key.equals(other.key);
-	}
-	
-	public int hashCode() {
-		return key.hashCode();
-	}
-	
 	// internal helpers
 	
 	private void initAccessTokens(String accessToken, String secret) {
@@ -166,25 +94,4 @@ public class OAuth1ServiceProviderConnection<S> implements ServiceProviderConnec
 		serviceApi = serviceProvider.getServiceApi(accessToken, secret);
 	}
 	
-	private ServiceProviderConnectionKey createKey(String providerId, String providerUserId) {
-		if (providerUserId == null) {
-			initConnectionValues();
-			providerUserId = connectionValues.getProviderUserId();
-		}
-		return new ServiceProviderConnectionKey(providerId, providerUserId);		
-	}
-
-	private ServiceProviderConnectionValues getConnectionValues() {
-		synchronized (monitor) {
-			if (connectionValues == null) {
-				initConnectionValues();
-			}			
-			return connectionValues;
-		}
-	}
-	
-	private void initConnectionValues() {
-		connectionValues = serviceApiAdapter.getConnectionValues(serviceApi);
-	}
-
 }

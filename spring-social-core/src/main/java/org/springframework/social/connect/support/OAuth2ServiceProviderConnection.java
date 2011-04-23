@@ -24,9 +24,6 @@ import org.springframework.social.ServiceProvider;
 import org.springframework.social.connect.ServiceApiAdapter;
 import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionData;
-import org.springframework.social.connect.ServiceProviderConnectionKey;
-import org.springframework.social.connect.ServiceProviderConnectionValues;
-import org.springframework.social.connect.ServiceProviderUserProfile;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
 
@@ -38,15 +35,9 @@ import org.springframework.social.oauth2.OAuth2ServiceProvider;
  * @param <S> the service API type
  * @see OAuth2ServiceProviderConnectionFactory
  */
-public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnection<S> {
-
-	private final ServiceProviderConnectionKey key;
+public class OAuth2ServiceProviderConnection<S> extends AbstractServiceProviderConnection<S> {
 
 	private final OAuth2ServiceProvider<S> serviceProvider;
-
-	private final ServiceApiAdapter<S> serviceApiAdapter;
-
-	private ServiceProviderConnectionValues connectionValues;
 
 	private String accessToken;
 	
@@ -58,97 +49,56 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 	
 	private S serviceApiProxy;
 
-	private final Object monitor = new Object();
-
 	/**
-	 * Creates a new {@link OAuth2ServiceProviderConnection} from the data provided.
-	 * Designed to be called to create a {@link OAuth2ServiceProviderConnection} after receiving an access grant successfully.
+	 * Creates a new {@link OAuth2ServiceProviderConnection} from a access grant response.
+	 * Designed to be called to establish a new {@link OAuth2ServiceProviderConnection} after receiving an access grant successfully.
 	 * The providerUserId may be null in this case: if so, this constructor will try to resolve it using the service API obtained from the {@link OAuth2ServiceProvider}.
 	 * @param providerId the provider id e.g. "facebook".
 	 * @param providerUserId the provider user id (may be null if not returned as part of the access grant)
 	 * @param accessToken the granted access token
 	 * @param refreshToken the granted refresh token
 	 * @param expireTime the access token expiration time
-	 * @param serviceProvider the service provider model
-	 * @param serviceApiAdapter the service api adapter for the service provider
+	 * @param serviceProvider the OAuth2-based ServiceProvider
+	 * @param serviceApiAdapter the ServiceApiAdapter for the ServiceProvider
 	 */
 	public OAuth2ServiceProviderConnection(String providerId, String providerUserId, String accessToken, String refreshToken, Long expireTime,
 			OAuth2ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
+		super(serviceApiAdapter);
 		this.serviceProvider = serviceProvider;
-		this.serviceApiAdapter = serviceApiAdapter;
 		initAccessTokens(accessToken, refreshToken, expireTime);
 		initServiceApi();
 		initServiceApiProxy();
-		this.key = createKey(providerId, providerUserId);
+		initKey(providerId, providerUserId);
 	}
 	
 	/**
 	 * Creates a new {@link OAuth2ServiceProviderConnection} from the data provided.
-	 * Designed to be called when re-constituting an existing {@link ServiceProviderConnection}, for example, from {@link ServiceProviderConnectionData}.
-	 * @param key the connection key
-	 * @param connectionValues the service provider connection values
-	 * @param accessToken the access token
-	 * @param refreshToken the refresh token
-	 * @param expireTime the expire time
-	 * @param serviceProvider the service provider model
-	 * @param serviceApiAdapter the service api adapter for the service provider
+	 * Designed to be called when re-constituting an existing {@link ServiceProviderConnection} from {@link ServiceProviderConnectionData}.
+	 * @param data the data holding the state of this service provider connection
+	 * @param serviceProvider the OAuth2-based ServiceProvider
+	 * @param serviceApiAdapter the ServiceApiAdapter for the ServiceProvider
 	 */
-	public OAuth2ServiceProviderConnection(ServiceProviderConnectionKey key, ServiceProviderConnectionValues connectionValues, String accessToken, String refreshToken, Long expireTime,
-			OAuth2ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
-		this.key = key;
-		this.connectionValues = connectionValues;
+	public OAuth2ServiceProviderConnection(ServiceProviderConnectionData data, OAuth2ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
+		super(data, serviceApiAdapter);
 		this.serviceProvider = serviceProvider;
-		this.serviceApiAdapter = serviceApiAdapter;
-		initAccessTokens(accessToken, refreshToken, expireTime);
+		initAccessTokens(data.getAccessToken(), data.getRefreshToken(), data.getExpireTime());
 		initServiceApi();
 		initServiceApiProxy();
 	}
 
-	public ServiceProviderConnectionKey getKey() {
-		return key;
-	}
-
-	public String getDisplayName() {
-		return getConnectionValues().getDisplayName();
-	}
-
-	public String getProfileUrl() {
-		return getConnectionValues().getProfileUrl();
-	}
-
-	public String getImageUrl() {
-		return getConnectionValues().getImageUrl();
-	}
-	
-	public boolean test() {
-		return serviceApiAdapter.test(getServiceApi());
-	}
+	// implementing ServiceProviderConnection
 
 	public boolean hasExpired() {
-		synchronized (monitor) {
+		synchronized (getMonitor()) {
 			return expireTime != null && System.currentTimeMillis() >= expireTime;
 		}
 	}
 
 	public void refresh() {
-		synchronized (monitor) {
+		synchronized (getMonitor()) {
 			AccessGrant accessGrant = serviceProvider.getOAuthOperations().refreshAccess(refreshToken, null, null);
 			initAccessTokens(accessGrant.getAccessToken(), accessGrant.getRefreshToken(), accessGrant.getExpireTime());
 			initServiceApi();
-		}
-	}
-
-	public ServiceProviderUserProfile fetchUserProfile() {
-		return serviceApiAdapter.fetchUserProfile(serviceApi);
-	}
-	
-	public void updateStatus(String message) {
-		serviceApiAdapter.updateStatus(getServiceApi(), message);
-	}
-
-	public void sync() {
-		synchronized (monitor) {
-			initConnectionValues();
 		}
 	}
 
@@ -156,33 +106,18 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 		if (serviceApiProxy != null) {
 			return serviceApiProxy;
 		} else {
-			synchronized (monitor) {
+			synchronized (getMonitor()) {
 				return serviceApi;
 			}
 		}
 	}
 
 	public ServiceProviderConnectionData createData() {
-		synchronized (monitor) {
-			return new ServiceProviderConnectionData(key.getProviderId(), key.getProviderUserId(), connectionValues.getDisplayName(), connectionValues.getProfileUrl(), connectionValues.getImageUrl(), accessToken, null, refreshToken, expireTime);
+		synchronized (getMonitor()) {
+			return new ServiceProviderConnectionData(getKey().getProviderId(), getKey().getProviderUserId(), getDisplayName(), getProfileUrl(), getImageUrl(), accessToken, null, refreshToken, expireTime);
 		}
 	}
 
-	// identity
-
-	@SuppressWarnings("rawtypes")
-	public boolean equals(Object o) {
-		if (!(o instanceof OAuth2ServiceProviderConnection)) {
-			return false;
-		}
-		OAuth2ServiceProviderConnection other = (OAuth2ServiceProviderConnection) o;
-		return key.equals(other.key);
-	}
-	
-	public int hashCode() {
-		return key.hashCode();
-	}
-	
 	// internal helpers
 	
 	private void initAccessTokens(String accessToken, String refreshToken, Long expireTime) {
@@ -206,34 +141,13 @@ public class OAuth2ServiceProviderConnection<S> implements ServiceProviderConnec
 	private class ServiceApiInvocationHandler implements InvocationHandler {
 
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			synchronized (monitor) {
+			synchronized (getMonitor()) {
 				if (OAuth2ServiceProviderConnection.this.hasExpired()) {
 					throw new IllegalStateException("This OAuth2-based ServiceProviderConnection has expired: it is not possible to invoke the service API");
 				}
 				return method.invoke(OAuth2ServiceProviderConnection.this.serviceApi, args);				
 			}
 		}
-	}
-
-	private ServiceProviderConnectionKey createKey(String providerId, String providerUserId) {
-		if (providerUserId == null) {
-			initConnectionValues();
-			providerUserId = connectionValues.getProviderUserId();
-		}
-		return new ServiceProviderConnectionKey(providerId, providerUserId);		
-	}
-	
-	private ServiceProviderConnectionValues getConnectionValues() {
-		synchronized (monitor) {
-			if (connectionValues == null) {
-				initConnectionValues();
-			}			
-			return connectionValues;
-		}
-	}
-	
-	private void initConnectionValues() {
-		connectionValues = serviceApiAdapter.getConnectionValues(serviceApi);
 	}
 
 }

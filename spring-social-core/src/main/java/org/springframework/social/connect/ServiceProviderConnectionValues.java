@@ -16,13 +16,13 @@
 package org.springframework.social.connect;
 
 /**
- * A data transfer object used to map {@link ServiceProviderConnection} values from a ServiceProvider API.
+ * A configuration interface used to set values on a {@link ServiceProviderConnection} from a specific ServiceProvider API.
  * {@link #setProviderUserId(String)} maps to {@link ServiceProviderConnectionKey#getProviderUserId()}
  * {@link #setDisplayName(String)} maps to {@link ServiceProviderConnection#getDisplayName()}
  * {@link #setProfileUrl(String)} maps to {@link ServiceProviderConnection#getProfileUrl()}
  * {@link #setImageUrl(String)} maps to {@link ServiceProviderConnection#getImageUrl()}
  * @author Keith Donald
- * @see ServiceApiAdapter#setConnectionValues(ServiceProviderConnectionValues)
+ * @see ServiceApiAdapter#setConnectionValues(Object, ServiceProviderConnectionValues)
  */
 public interface ServiceProviderConnectionValues {
 

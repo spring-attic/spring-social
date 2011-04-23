@@ -38,6 +38,7 @@ import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
 import org.springframework.social.connect.ServiceProviderConnectionValues;
 import org.springframework.social.connect.ServiceProviderUserProfile;
+import org.springframework.social.connect.ServiceProviderUserProfileBuilder;
 import org.springframework.social.connect.support.MapServiceProviderConnectionFactoryRegistry;
 import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
 import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
@@ -437,18 +438,21 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 		
 		private String profileUrl = "http://facebook.com/keith.donald";
 		
-		private String profilePicture = "http://facebook.com/keith.donald/picture";
+		private String profilePictureUrl = "http://facebook.com/keith.donald/picture";
 		
 		public boolean test(TestFacebookApi serviceApi) {
 			return true;
 		}
 
-		public ServiceProviderConnectionValues getConnectionValues(TestFacebookApi serviceApi) {
-			return new ServiceProviderConnectionValues(accountId, name, profileUrl, profilePicture);
+		public void setConnectionValues(TestFacebookApi serviceApi, ServiceProviderConnectionValues values) {
+			values.setProviderUserId(accountId);
+			values.setDisplayName(name);
+			values.setProfileUrl(profileUrl);
+			values.setImageUrl(profilePictureUrl);
 		}
 
 		public ServiceProviderUserProfile fetchUserProfile(TestFacebookApi serviceApi) {
-			return new ServiceProviderUserProfile(name, "Keith", "Donald", "keith@interface21.com", "kdonald");
+			return new ServiceProviderUserProfileBuilder().setName(name).setEmail("keith@interface21.com").setUsername("Keith.Donald").build();
 		}
 
 		public void updateStatus(TestFacebookApi serviceApi, String message) {
@@ -502,18 +506,21 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 		
 		private String profileUrl = "http://twitter.com/kdonald";
 		
-		private String profilePicture = "http://twitter.com/kdonald/a_new_picture";
+		private String profilePictureUrl = "http://twitter.com/kdonald/a_new_picture";
 		
 		public boolean test(TestTwitterApi serviceApi) {
 			return true;
 		}
 
-		public ServiceProviderConnectionValues getConnectionValues(TestTwitterApi serviceApi) {
-			return new ServiceProviderConnectionValues(accountId, name, profileUrl, profilePicture);
+		public void setConnectionValues(TestTwitterApi serviceApi, ServiceProviderConnectionValues values) {
+			values.setProviderUserId(accountId);
+			values.setDisplayName(name);
+			values.setProfileUrl(profileUrl);
+			values.setImageUrl(profilePictureUrl);
 		}
 
 		public ServiceProviderUserProfile fetchUserProfile(TestTwitterApi serviceApi) {
-			return new ServiceProviderUserProfile(name, null, null, null, "kdonald");
+			return new ServiceProviderUserProfileBuilder().setName(name).setUsername("kdonald").build();			
 		}
 		
 		public void updateStatus(TestTwitterApi serviceApi, String message) {
