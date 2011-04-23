@@ -17,9 +17,10 @@ package org.springframework.social.connect;
 
 /**
  * Builder for constructing a {@link ServiceProviderUserProfile} instance returned by {@link ServiceApiAdapter#fetchUserProfile(Object)}
- * Makes it easy to construct an instance where some of the individual field values may be null.
- * Also will make it easier to add new values in the future without breaking compatibility with existing api adapter implementations.
+ * Makes it easy to construct a profile instance where some of the individual fields may be null.
+ * Also allows new profile fields to be introduced in the future without breaking compatibility with existing {@link ServiceApiAdapter} implementations.
  * @author Keith Donald
+ * @see ServiceProviderUserProfile
  */
 public class ServiceProviderUserProfileBuilder {
 
