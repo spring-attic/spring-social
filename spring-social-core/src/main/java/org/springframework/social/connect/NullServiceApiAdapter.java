@@ -23,7 +23,7 @@ final class NullServiceApiAdapter implements ServiceApiAdapter<Object> {
 		return true;
 	}
 
-	public void setConnectionValues(Object serviceApi, ServiceProviderConnectionValues connectionValues) {
+	public void setConnectionValues(Object serviceApi, ServiceProviderConnectionValues values) {
 		
 	}
 

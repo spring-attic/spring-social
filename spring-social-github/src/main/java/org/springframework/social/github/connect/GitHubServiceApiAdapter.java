@@ -36,11 +36,11 @@ public class GitHubServiceApiAdapter implements ServiceApiAdapter<GitHubApi> {
 	}
 
 	public void setConnectionValues(GitHubApi serviceApi, ServiceProviderConnectionValues values) {
-		GitHubUserProfile userProfile = serviceApi.getUserProfile();
-		values.setProviderUserId(String.valueOf(userProfile.getId()));		
-		values.setDisplayName(userProfile.getUsername());
-		values.setProfileUrl("https://github.com/" + userProfile.getId());
-		values.setImageUrl(userProfile.getProfileImageUrl());
+		GitHubUserProfile profile = serviceApi.getUserProfile();
+		values.setProviderUserId(String.valueOf(profile.getId()));		
+		values.setDisplayName(profile.getUsername());
+		values.setProfileUrl("https://github.com/" + profile.getId());
+		values.setImageUrl(profile.getProfileImageUrl());
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile(GitHubApi serviceApi) {
