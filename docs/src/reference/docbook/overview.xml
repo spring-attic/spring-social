@@ -30,7 +30,7 @@
       <para>With Spring Social, your application can play the part of the service consumer, interacting with a service provider on behalf of its users. The key features of Spring Social are:</para>
       
       <itemizedlist>
-          <listitem><para>A "Connect Framework that handles the core authorization and connection flow with Service Providers.</para></listitem>
+          <listitem><para>A "Connect Framework" that handles the core authorization and connection flow with Service Providers.</para></listitem>
           <listitem><para>A "Connect Controller" that handles the OAuth exchange between a service provider, consumer, and user in a web application environment.</para></listitem>
           <listitem><para>Java bindings to popular service provider APIs including Facebook, Twitter, LinkedIn, TripIt, GitHub, and Gowalla.</para></listitem>
           <listitem><para>A "Signin Controller" that allows users to authenticate with your application by signing in with their Provider accounts, such as their Twitter or Facebook accounts.</para></listitem>

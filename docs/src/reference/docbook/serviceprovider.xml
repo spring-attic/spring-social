@@ -55,10 +55,10 @@ public interface ServiceProviderConnection<S> {
 			A connection has a number of meta-properties that can be used to render it on a screen, including a displayName, profileUrl, and imageUrl.
 			As an example, the following HTML template snippet could be used to generate a link to the connected user's profile on the provider's site:
 			<programlisting language="xml"><![CDATA[
-<img src="${connection.imageUrl}" /> <a href="${connection.profileUrl}">${connection.displayName}</a>å]]>			
+<img src="${connection.imageUrl}" /> <a href="${connection.profileUrl}">${connection.displayName}</a>]]>			
 			</programlisting>
 			The value of these properties may depend on the state of the provider user's profile.
-			In this case, sync() can be used to synchronize these values if the user's profile is updated.
+			In this case, sync() can be called to synchronize these values if the user's profile is updated.
 		</para>
 		<para>
 			A connection can be tested to determine if its authorization credentials are valid.
@@ -363,16 +363,25 @@ public interface ServiceProviderConnectionLocator {
 	
     Set<String> registeredProviderIds();
 
-}
-]]>	
+}]]>	
 			</programlisting>
+			<para>
+				Example usage of a ServiceProviderConnectionFactoryLocator is shown below:
+			</para>
+			<programlisting language="java"><![CDATA[
+// generic lookup by providerId
+ServiceProviderConnectionFactory<?> connectionFactory = locator.getConnectionFactory("facebook");
+
+// typed lookup by service api type
+ServiceProviderConnectionFactory<FacebookApi> connectionFactory = locator.getConnectionFactory(FacebookApi.class);]]>	
+			</programlisting>			
 		</section>
 	</section>
 	<section id="service-providers-persisting-connections">
 		<title>Persisting connections</title>
 		<para>
 			After a connection has been established, you may wish to persist it for later use.
-			This makes things convenient for the user since the connection can simply be restored from its persistent form and does not need to be established again.
+			This makes things convenient for the user since a connection can simply be restored from its persistent form and does not need to be established again.
 			Spring Social provides a ServiceProviderConnectionRepository interface for managing the persistence of a user's connections:
 		</para>
 		<programlisting language="java"><![CDATA[
@@ -431,10 +440,30 @@ public interface MultiUserServiceProviderConnectionRepository {
 		<section id="service-providers-persisting-connections-jdbc">
 			<title>JDBC-based persistence</title>
 			<para>
-				Spring Social provides a JdbcMultiUserServiceProviderConnectionRepository capable of persisting connections to a RDBMS.
-				The database schema suited to support is defined in JdbcMultiUserServiceProviderConnectionRepository.sql.
+				Spring Social provides a JdbcMultiUserServiceProviderConnectionRepository implementation capable of persisting connections to a RDBMS.
+				The database schema designed to back this repository is defined in JdbcMultiUserServiceProviderConnectionRepository.sql.
 				The implementation also provides support for encrypting authorization credentials so they are not stored in plain-text.
 			</para>
+			<para>
+				The example code below demonstrates construction and usage of a JdbcMultiUserServiceProviderConnectionRepository:
+			</para>
+			<programlisting language="java"><![CDATA[
+// JDBC DataSource pointing to the DB where connection data is stored
+DataSource dataSource = ...;
+// locator for factories needed to construct ServiceProviderConnections when restoring from persistent form
+ServiceProviderConnectionFactoryLocator connectionFactoryLocator = ...;
+// encryptor of connection authorization credentials
+TextEncryptor encryptor = ...;
+
+JdbcMultiUserServiceProviderConnectionRepository multiUserRepository =
+    new JdbcMultiUserServiceProviderConnectionRepository(dataSource, connectionFactoryLocator, encryptor);
+
+// create a connection repository for the single-user 'kdonald'
+ServiceProviderConnectionRepository repository = multiUserRepository.createConnectionRepository("kdonald");
+
+// find kdonald's primary Facebook connection
+ServiceProviderConnection<FacebookApi> connection = repository.findPrimeryConnectionToServiceApi(FacebookApi.class);]]>
+			</programlisting>
 		</section>
 	</section>
 </chapter>
