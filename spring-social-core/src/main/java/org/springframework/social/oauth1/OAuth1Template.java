@@ -71,7 +71,7 @@ public class OAuth1Template implements OAuth1Operations {
 	}
 
 	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String authenticateUrl, String accessTokenUrl) {
-		this(consumerKey, consumerSecret, requestTokenUrl, authorizeUrl, accessTokenUrl, authenticateUrl, OAuth1Version.CORE_10_REVISION_A);
+		this(consumerKey, consumerSecret, requestTokenUrl, authorizeUrl, authenticateUrl, accessTokenUrl, OAuth1Version.CORE_10_REVISION_A);
 	}
 	
 	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String authenticateUrl, String accessTokenUrl, OAuth1Version version) {
