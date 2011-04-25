@@ -110,7 +110,7 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET)
 	public String connect(@PathVariable String providerId, Model model) {
-		List<ServiceProviderConnection<?>> connections = currentUserConnectionRepositoryProvider.get().findConnectionsToProvider(providerId);
+		List<ServiceProviderConnection<?>> connections = getConnectionRepository().findConnectionsToProvider(providerId);
 		if (connections.isEmpty()) {
 			return baseViewPath(providerId) + "Connect";
 		} else {
@@ -152,7 +152,7 @@ public class ConnectController  {
 		OAuth1ServiceProviderConnectionFactory<?> connectionFactory = (OAuth1ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		OAuthToken accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier), null);
 		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessToken);
-		currentUserConnectionRepositoryProvider.get().addConnection(connection);	
+		getConnectionRepository().addConnection(connection);	
 		postConnect(connectionFactory, connection, request);
 		return redirectToProviderConnect(providerId);
 	}
@@ -167,7 +167,7 @@ public class ConnectController  {
 		OAuth2ServiceProviderConnectionFactory<?> connectionFactory = (OAuth2ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId), null);
 		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessGrant);
-		currentUserConnectionRepositoryProvider.get().addConnection(connection);
+		getConnectionRepository().addConnection(connection);
 		postConnect(connectionFactory, connection, request);
 		return redirectToProviderConnect(providerId);
 	}
@@ -178,7 +178,7 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.DELETE)
 	public String removeConnections(@PathVariable String providerId) {
-		currentUserConnectionRepositoryProvider.get().removeConnectionsToProvider(providerId);
+		getConnectionRepository().removeConnectionsToProvider(providerId);
 		return redirectToProviderConnect(providerId);
 	}
 
@@ -188,7 +188,7 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="/{providerId}/{providerUserId}", method=RequestMethod.DELETE)
 	public String removeConnections(@PathVariable String providerId, @PathVariable String providerUserId) {
-		currentUserConnectionRepositoryProvider.get().removeConnection(new ServiceProviderConnectionKey(providerId, providerUserId));
+		getConnectionRepository().removeConnection(new ServiceProviderConnectionKey(providerId, providerUserId));
 		return redirectToProviderConnect(providerId);
 	}
 
@@ -239,6 +239,10 @@ public class ConnectController  {
 		OAuthToken requestToken = (OAuthToken) request.getAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		request.removeAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		return requestToken;
+	}
+
+	private ServiceProviderConnectionRepository getConnectionRepository() {
+		return currentUserConnectionRepositoryProvider.get();
 	}
 
 	private String redirectToProviderConnect(String providerId) {
