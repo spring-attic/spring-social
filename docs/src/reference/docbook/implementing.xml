@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="implementing" xmlns:xlink="http://www.w3.org/1999/xlink">
-	<title>Implementing Service Providers</title>
+	<title>Adding support for a service provider</title>
 	<para>
-		The spring-social-core module provides support for implementing your own ServiceProviders.
-		This support consists of convenient base classes for the various ServiceProvider types, such as OAuth1 and OAuth2-based providers.
-		In this section, you will learn how to implement ServiceProviders.
+		Spring Social makes it easy to add support for service providers that are not already supported by the framework.
+		If you review the existing client modules, such as spring-social-twitter and spring-social-facebook, you will discover they are implemented in a consistent manner and they apply a set of well-defined extension points.
+		In this section, you will learn how to add support for new service providers you wish to integrate into your applications.
 	</para>
+	<section id="service-providers-implementing">
+		<title>Process</title>
+		<para>
+			The process of adding client support for a service provider consists of several steps:
+			<orderedlist>
+				<listitem>
+					<para>Create a jar artifact for the code e.g. spring-social-twitter.</para>
+				</listitem>
+				<listitem>
+					<para>Develop or integrate a Java binding to the provider's "Service API" e.g. TwitterApi.</para>
+				</listitem>
+				<listitem>
+					<para>Create a ServiceProvider implementation that allows users to authorize with the provider and obtain Service API instances e.g. TwitterServiceProvider.</para>
+				</listitem>
+				<listitem>
+					<para>Create a ServiceApiAdapter that maps the provider's native Service API onto the uniform ServiceProviderConnection model e.g. TwitterServiceApiAdapter.</para>
+				</listitem>
+				<listitem>
+					<para>Finally, create a ServiceProviderConnectionFactory that wraps the other artifacts up and provides a simple interface for establishing connections e.g. TwitterServiceProviderConnectionFactory</para>
+				</listitem>
+			</orderedlist>
+		</para>
+		<para>
+			The following sections of this chapter walk you through each of the steps with examples.
+		</para>
+	</section>
 	<section id="service-providers-implementing-oauth2">
 		<title>OAuth2 Service Providers</title>
 		<para>
