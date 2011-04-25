@@ -12,25 +12,115 @@
 			The process of adding client support for a service provider consists of several steps:
 			<orderedlist>
 				<listitem>
-					<para>Create a jar artifact for the code e.g. spring-social-twitter.</para>
+					<para>Create a source project for the client code e.g. <code>spring-social-twitter</code>.</para>
 				</listitem>
 				<listitem>
-					<para>Develop or integrate a Java binding to the provider's "Service API" e.g. TwitterApi.</para>
+					<para>Develop or integrate a Java binding to the provider's "Service API" e.g. <code>TwitterApi</code>.</para>
 				</listitem>
 				<listitem>
-					<para>Create a ServiceProvider implementation that allows users to authorize with the provider and obtain Service API instances e.g. TwitterServiceProvider.</para>
+					<para>Create a ServiceProvider implementation that allows users to authorize with the provider and obtain Service API instances e.g. <code>TwitterServiceProvider</code>.</para>
 				</listitem>
 				<listitem>
-					<para>Create a ServiceApiAdapter that maps the provider's native Service API onto the uniform ServiceProviderConnection model e.g. TwitterServiceApiAdapter.</para>
+					<para>Create a ServiceApiAdapter that maps the provider's native Service API onto the uniform ServiceProviderConnection model e.g. <code>TwitterServiceApiAdapter</code>.</para>
 				</listitem>
 				<listitem>
-					<para>Finally, create a ServiceProviderConnectionFactory that wraps the other artifacts up and provides a simple interface for establishing connections e.g. TwitterServiceProviderConnectionFactory</para>
+					<para>Finally, create a ServiceProviderConnectionFactory that wraps the other artifacts up and provides a simple interface for establishing connections e.g. <code>TwitterServiceProviderConnectionFactory</code></para>
 				</listitem>
 			</orderedlist>
 		</para>
 		<para>
 			The following sections of this chapter walk you through each of the steps with examples.
 		</para>
+	</section>
+	<section id="service-providers-implementing-project">
+		<title>Creating a source project for the provider client code</title>
+		<para>
+			A Spring Social provider client is simply a standard Java project that builds a jar artifact e.g. spring-social-twitter.jar.
+			We do recommend the actual code structure follow several packaging guidelines described below.
+			To make this as easy as possible to do, we have also created a template project you may use as a starting point.
+		</para>
+		<section id="service-providers-implementing-project-structure">
+			<title>Code structure recommendations</title>
+			<para>
+				We recommend all code for a new Spring Social client module fall within the <code>org.springframework.social.{providerId}</code> base package,
+				where {providerId} is the unique identifier you assign to the service provider you are adding support for.
+				Consider some of the providers already supported by the framework as examples:
+				<table xml:id="service-providers-implementing-project-structure-examples">
+					<title>Spring Social Client Projects</title>
+					<tgroup cols="3">
+						<colspec align="left" />
+						<colspec colnum="1" colname="col1" colwidth="2*" />
+						<colspec colnum="2" colname="col2" colwidth="2*" />
+						<colspec colnum="3" colname="col3" colwidth="2*" />
+						<thead>
+							<row>
+								<entry align="center">Provider ID</entry>
+								<entry align="center">Artifact Name</entry>
+								<entry align="center">Base Package</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry>facebook</entry>
+								<entry>spring-social-facebook</entry>
+								<entry>org.springframework.social.facebook</entry>
+							</row>					
+							<row>
+								<entry>twitter</entry>
+								<entry>spring-social-twitter</entry>
+								<entry>org.springframework.social.twitter</entry>
+							</row>					
+						</tbody>
+					</tgroup>
+				</table>
+			</para>
+			<para>
+				Within the base package, we recommend the following subpackage structure:
+				<table>
+					<tgroup cols="2">
+						<colspec align="left" />
+						<colspec colnum="1" colname="col1" colwidth="2*" />
+						<colspec colnum="2" colname="col2" colwidth="2*" />
+						<thead>
+							<row>
+								<entry align="center">Subpackage</entry>
+								<entry align="center">Description</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry>api</entry>
+								<entry>Contains the public interface defining the Java binding to the service provider's API.</entry>
+							</row>					
+							<row>
+								<entry>api.impl</entry>
+								<entry>Contains the primary implementation of the Java API binding.</entry>
+							</row>					
+							<row>
+								<entry>connect</entry>
+								<entry>Contains the types necessary to establish connections to the service provider.</entry>
+							</row>					
+						</tbody>					
+					</tgroup>
+				</table>
+			</para>
+			<para>
+				You can see this recommended structure in action by reviewing one of the other client modules such as spring-social-twitter:`
+				<mediaobject>
+					<imageobject role="fo">
+						<imagedata fileref="images/spring-social-twitter-example.png" format="PNG" align="center" />
+					</imageobject>
+					<imageobject role="html">
+						<imagedata fileref="images/spring-social-twitter-example.png" format="PNG" align="center" />
+					</imageobject>
+				</mediaobject>
+			</para>
+			<para>
+				Here, the central service API type, TwitterApi, is located in the api package along with its supporting operations types and data transfer object types.
+				The primary implementation of that interface, TwitterTemplate, is located in the api.impl package (along with other package-private impl types have that been excluded from this view).
+				Finally, the connect package contains the implementation of various connect SPIs that enable connections to the provider to be established and persisted.
+			</para>
+		</section>
 	</section>
 	<section id="service-providers-implementing-oauth2">
 		<title>OAuth2 Service Providers</title>
