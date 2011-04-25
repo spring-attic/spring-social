@@ -15,14 +15,11 @@
  */
 package org.springframework.social.tripit.api.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.oauth1.ProtectedResourceClientFactory;
 import org.springframework.social.tripit.api.Trip;
 import org.springframework.social.tripit.api.TripItApi;
@@ -51,6 +48,7 @@ public class TripItTemplate implements TripItApi {
 	 */
 	public TripItTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
 		this.restTemplate = ProtectedResourceClientFactory.create(apiKey, apiSecret, accessToken, accessTokenSecret);
+		registerTwitterModule(restTemplate);
 	}
 
 	public String getProfileId() {
@@ -61,79 +59,32 @@ public class TripItTemplate implements TripItApi {
 		return getUserProfile().getProfileUrl();
 	}
 
-	@SuppressWarnings("unchecked")
 	public TripItProfile getUserProfile() {
-		Map<String, ?> responseMap = restTemplate.getForObject("https://api.tripit.com/v1/get/profile?format=json",
-				Map.class);
-		Map<String, ?> profileMap = (Map<String, ?>) responseMap.get("Profile");
-		Map<String, String> attributesMap = (Map<String, String>) profileMap.get("@attributes");
-		String id = attributesMap.get("ref");
-		String screenName = String.valueOf(profileMap.get("screen_name"));
-		String publicDisplayName = String.valueOf(profileMap.get("public_display_name"));
-		String homeCity = String.valueOf(profileMap.get("home_city"));
-		String company = String.valueOf(profileMap.get("company"));
-		String profilePath = String.valueOf(profileMap.get("profile_url"));
-		String profileImageUrl = String.valueOf(profileMap.get("photo_url"));
-		String emailAddress = null;
-		Map<String, Object> emailAddressesMap = (Map<String, Object>) profileMap.get("ProfileEmailAddresses");
-		if(emailAddressesMap != null) {
-			Map<String, String> emailAddressMap = (Map<String, String>) emailAddressesMap.get("ProfileEmailAddress");
-			if(emailAddressMap != null) {
-				emailAddress = emailAddressMap.get("address");
-			}
-		}
-		return new TripItProfile(id, screenName, publicDisplayName, emailAddress, homeCity, company, profilePath, profileImageUrl);
+		return restTemplate.getForObject("https://api.tripit.com/v1/get/profile?format=json", TripItProfile.class);
 	}
 
 	public List<Trip> getUpcomingTrips() {
-		@SuppressWarnings("unchecked")
-		Map<String, ?> responseMap = restTemplate.getForObject(
-				"https://api.tripit.com/v1/list/trip/traveler/true/past/false?format=json", Map.class);
-
-		List<Trip> trips = new ArrayList<Trip>();
-		List<Map<String, ?>> tripsList = getTripsList(responseMap);
-		for (Map<String, ?> tripItem : tripsList) {
-			long id = Long.valueOf(String.valueOf(tripItem.get("id")));
-			String displayName = String.valueOf(tripItem.get("display_name"));
-			String primaryLocation = String.valueOf(tripItem.get("primary_location"));
-			Date startDate = parseDate(String.valueOf(tripItem.get("start_date")));
-			Date endDate = parseDate(String.valueOf(tripItem.get("end_date")));
-			String tripPath = String.valueOf(tripItem.get("relative_url"));
-			Trip trip = new Trip(id, displayName, primaryLocation, startDate, endDate, tripPath);
-			trips.add(trip);
-		}
-
-		return trips;
+		return restTemplate.getForObject("https://api.tripit.com/v1/list/trip/traveler/true/past/false?format=json", TripList.class).getList();
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<Map<String, ?>> getTripsList(Map<String, ?> result) {
-		List<Map<String, ?>> trips;
-		Object tripObject = result.get("Trip");
-		if (tripObject instanceof Map) {
-			trips = new ArrayList<Map<String, ?>>();
-			trips.add((Map<String, ?>) tripObject);
-		} else {
-			trips = (List<Map<String, ?>>) tripObject;
-		}
-		return trips;
-	}
-
-	private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-
-	private Date parseDate(String dateString) {
-		try {
-			Date startDate = dateFormatter.parse(dateString);
-			return startDate;
-		} catch (ParseException e) {
-			return null;
-		}
-	}
-	
 	// subclassing hooks
 	
 	protected RestTemplate getRestTemplate() {
 		return restTemplate;
+	}
+
+	// private helper
+	
+	private void registerTwitterModule(RestTemplate restTemplate) {
+		List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
+		for (HttpMessageConverter<?> converter : converters) {
+			if(converter instanceof MappingJacksonHttpMessageConverter) {
+				MappingJacksonHttpMessageConverter jsonConverter = (MappingJacksonHttpMessageConverter) converter;
+				ObjectMapper objectMapper = new ObjectMapper();				
+				objectMapper.registerModule(new TripItModule());
+				jsonConverter.setObjectMapper(objectMapper);
+			}
+		}
 	}
 
 }
