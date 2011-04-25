@@ -23,9 +23,7 @@ import org.springframework.social.oauth2.OAuth2Template;
 public class GitHubServiceProvider extends AbstractOAuth2ServiceProvider<GitHubApi> {
 
 	public GitHubServiceProvider(String clientId, String clientSecret) {
-		super(new OAuth2Template(clientId, clientSecret,
-				"https://github.com/login/oauth/authorize", null,
-				"https://github.com/login/oauth/access_token"));
+		super(new OAuth2Template(clientId, clientSecret, "https://github.com/login/oauth/authorize", "https://github.com/login/oauth/access_token"));
 	}
 
 	public GitHubApi getServiceApi(String accessToken) {

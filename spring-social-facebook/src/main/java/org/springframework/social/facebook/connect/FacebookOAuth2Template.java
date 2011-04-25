@@ -34,8 +34,8 @@ import org.springframework.web.client.RestTemplate;
  */
 public class FacebookOAuth2Template extends OAuth2Template {
 
-	public FacebookOAuth2Template(String clientId, String clientSecret, String authorizeUrl, String accessTokenUrl) {
-		super(clientId, clientSecret, authorizeUrl, null, accessTokenUrl);
+	public FacebookOAuth2Template(String clientId, String clientSecret) {
+		super(clientId, clientSecret, "https://graph.facebook.com/oauth/authorize", "https://graph.facebook.com/oauth/access_token");
 	}
 
 	@Override

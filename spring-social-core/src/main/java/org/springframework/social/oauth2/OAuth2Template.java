@@ -49,6 +49,10 @@ public class OAuth2Template implements OAuth2Operations {
 	private String authenticateUrl;
 	
 	private final RestTemplate restTemplate;
+
+	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String accessTokenUrl) {
+		this(clientId, clientSecret, authorizeUrl, null, accessTokenUrl);
+	}
 	
 	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String authenticateUrl, String accessTokenUrl) {
 		this.clientId = clientId;

@@ -17,7 +17,6 @@ package org.springframework.social.twitter.connect;
 
 import org.springframework.social.oauth1.AbstractOAuth1ServiceProvider;
 import org.springframework.social.oauth1.OAuth1Template;
-import org.springframework.social.oauth1.OAuth1Version;
 import org.springframework.social.twitter.api.TwitterApi;
 import org.springframework.social.twitter.api.impl.TwitterTemplate;
 
@@ -33,8 +32,7 @@ public class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<Twitte
 			"https://api.twitter.com/oauth/request_token",
 			"https://api.twitter.com/oauth/authorize",
 			"https://api.twitter.com/oauth/authenticate",			
-			"https://api.twitter.com/oauth/access_token",
-			OAuth1Version.CORE_10_REVISION_A));
+			"https://api.twitter.com/oauth/access_token"));
 	}
 
 	public TwitterApi getServiceApi(String accessToken, String secret) {

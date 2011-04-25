@@ -62,10 +62,18 @@ public class OAuth1Template implements OAuth1Operations {
 	
 	private final SigningSupport signingUtils;
 
-	/**
-	 * Constructs an OAuth1Template.
-	 * @param version the version of OAuth 1, either 10 or 10a.
-	 */
+	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl) {
+		this(consumerKey, consumerSecret, requestTokenUrl, authorizeUrl, accessTokenUrl, OAuth1Version.CORE_10_REVISION_A);
+	}
+
+	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl, OAuth1Version version) {
+		this(consumerKey, consumerSecret, requestTokenUrl, authorizeUrl, null, accessTokenUrl, version);
+	}
+
+	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String authenticateUrl, String accessTokenUrl) {
+		this(consumerKey, consumerSecret, requestTokenUrl, authorizeUrl, accessTokenUrl, authenticateUrl, OAuth1Version.CORE_10_REVISION_A);
+	}
+	
 	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String authenticateUrl, String accessTokenUrl, OAuth1Version version) {
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
