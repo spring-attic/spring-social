@@ -208,7 +208,7 @@ public interface OAuth2Operations {
 				<programlisting language="java"><![CDATA[
 FacebookServiceProviderConnectionFactory connectionFactory = new FacebookServiceProviderConnectionFactory();
 OAuth2Operations oauth2Operations = connectionFactory.getOAuth2Operations();
-String authorizeUrl = oauth2Operations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new AuthorizationParameters(callbackUrl));
+String authorizeUrl = oauth2Operations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl));
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the authorizationCode parameter:
 AccessGrant accessGrant = oauth2Operations.exchangeForAccess(authorizationCode, callbackUrl);
@@ -222,7 +222,7 @@ ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConn
 				<programlisting language="java"><![CDATA[
 FacebookServiceProviderConnectionFactory connectionFactory = new FacebookServiceProviderConnectionFactory();
 OAuth2Operations oauth2Operations = connectionFactory.getOAuth2Operations();
-String authorizeUrl = oauth2Operations.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, new AuthorizationParameters(callbackUrl));
+String authorizeUrl = oauth2Operations.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, new OAuth2Parameters(callbackUrl));
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the access_token parameter:
 AccessGrant accessGrant = new AccessGrant(accessToken);
@@ -330,7 +330,7 @@ public interface OAuth1Operations {
 TwitterServiceProviderConnectionFactory connectionFactory = new TwitterServiceProviderConnectionFactory();
 OAuth1Operations oauth1Operations = connectionFactory.getOAuth1Operations();
 String requestToken = oauth1Operations.fetchRequestToken(callbackUrl);
-String authorizeUrl = oauth1Operations.buildAuthorizeUrl(requestToken, AuthorizationParameters.NONE);
+String authorizeUrl = oauth1Operations.buildAuthorizeUrl(requestToken, OAuth1Parameters.NONE);
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the oauth_token and oauth_verifier parameters:
 OAuthToken accessToken = oauth1Operations.exchangeForAccessToken(new AuthorizedRequestToken(oauthToken, oauthVerifier));
