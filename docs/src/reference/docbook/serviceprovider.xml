@@ -424,7 +424,7 @@ public interface ServiceProviderConnectionRepository {
 		<programlisting language="java"><![CDATA[
 public interface MultiUserServiceProviderConnectionRepository {
 
-    String findLocalUserIdForConnection(ServiceProviderConnectionKey connectionKey);
+    String findLocalUserIdWithConnection(ServiceProviderConnection connection);
 
     Set<String> findLocalUserIdsConnectedTo(String providerId, Set<String> providerUserIds);
 
