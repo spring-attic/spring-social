@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="serviceprovider" xmlns:xlink="http://www.w3.org/1999/xlink">
-	<title>Service provider 'connect' framework</title>
+	<title>Service Provider 'Connect' Framework</title>
 	<para>
 		The <code>spring-social-core</code> module includes a <emphasis>Service Provider 'Connect' Framework</emphasis> for managing connections to Software-as-a-Service (SaaS) providers such as Facebook and Twitter.
 		This framework allows your application to establish connections between local user accounts and accounts those users have with external service providers.  

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="implementing" xmlns:xlink="http://www.w3.org/1999/xlink">
-	<title>Adding support for a service provider</title>
+	<title>Adding Support for a New Service Provider</title>
 	<para>
 		Spring Social makes it easy to add support for service providers that are not already supported by the framework.
 		If you review the existing client modules, such as spring-social-twitter and spring-social-facebook, you will discover they are implemented in a consistent manner and they apply a set of well-defined extension points.
@@ -123,17 +123,78 @@
 		</section>
 	</section>
 	<section id="service-providers-implementing-api">
-		<title>Developing a Java binding to the provider's Service API</title>
+		<title>Developing a Java binding to the provider's API</title>
 		<para>
 			Spring Social favors the development of strongly-typed Java bindings to external service provider APIs.
 			This provides a simple, domain oriented interface for Java applications to use to consume the API.
 			When adding support for a new service provider, if no suitable Java binding exists you'll need to develop one.
 			If one already exists, such as Twitter4j for example, it is possible to integrate it into the framework. 
 		</para>
-		<section id="service-provider-implementing-api-new">
+		<section id="service-provider-implementing-api-new-designing">
+			<title>Designing a new Java API binding</title>
+			<para>
+				API developers retain full control over the design and implementation of their Java bindings.
+				That said, we offer several design guidelines in an effort to improve overall consistency and quality:
+				<itemizedlist>
+					<listitem>
+						<para>
+							<emphasis>Favor separating the API binding interface from the implementation.</emphasis>
+							This is illustrated in the spring-social-twitter example in the previous section.
+							There, "TwitterApi" is the central API binding type and it is declared in the org.springframework.social.twitter.api package with other public types.
+							"TwitterTemplate" is the primary implementation of this interface and is located in the org.springframework.social.twitter.api.impl subpackage along with other package-private implementation types.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							<emphasis>Favor organizing the API binding hierarchically by RESTful resource.</emphasis>
+							REST-based APIs typically expose access to a number of resources in an hierarchical manner.
+							For example, Twitter's API provides access to "status timelines", "searches", "lists", "direct messages", "friends", and "users".
+							Rather than add all operations across these resources to a single flat "TwitterApi" interface, the TwitterApi interface is organized hierarchically:
+							<programlisting language="java"><![CDATA[
+public interface TwitterApi {
+	
+    DirectMessageOperations directMessageOperations();
+
+    FriendOperations friendOperations();
+
+    ListOperations listOperations();
+
+    SearchOperations searchOperations();
+	
+    TimelineOperations timelineOperations();
+
+    UserOperations userOperations();
+
+}]]></programlisting>
+						</para>
+						<para>
+							DirectMessageOperations, for example, would contain API bindings to Twitter's "direct_messages" resource:
+							<programlisting language="java"><![CDATA[
+public interface DirectMessageOperations {
+
+    List<DirectMessage> getDirectMessagesReceived();
+
+    List<DirectMessage> getDirectMessagesSent();
+
+    void sendDirectMessage(String toScreenName, String text);
+
+    void sendDirectMessage(long toUserId, String text);
+	
+    void deleteDirectMessage(long messageId);
+}]]>
+							</programlisting>
+						</para>
+					</listitem>
+				</itemizedlist>
+			</para>
+		</section>
+		<section id="service-provider-implementing-api-new-implementing">
 			<title>Implementing a new Java API binding</title>
 		</section>
-		<section id="service-provider-implementing-api-integrate">
+		<section id="service-provider-implementing-api-new-testing">
+			<title>Testing a new Java API binding</title>
+		</section>				
+		<section id="service-provider-implementing-api-existing-integrating">
 			<title>Integrating an existing Java API binding</title>
 		</section>		
 	</section>
