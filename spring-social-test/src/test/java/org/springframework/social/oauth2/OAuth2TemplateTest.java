@@ -48,21 +48,21 @@ public class OAuth2TemplateTest {
 	@Test
 	public void buildAuthorizeUrl_codeResponseType() {
 		String expected = "http://www.someprovider.com/oauth/authorize?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=code&scope=read%2Cwrite";
-		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new AuthorizationParameters("http://www.someclient.com/connect/foo", "read,write", null, null));
+		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters("http://www.someclient.com/connect/foo", "read,write", null, null));
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void buildAuthorizeUrl_tokenResponseType() {
 		String expected = "http://www.someprovider.com/oauth/authorize?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=token&scope=read%2Cwrite";
-		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, new AuthorizationParameters("http://www.someclient.com/connect/foo", "read,write", null, null));
+		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, new OAuth2Parameters("http://www.someclient.com/connect/foo", "read,write", null, null));
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void buildAuthorizeUrl_noScopeInParameters() {
 		String expected = "http://www.someprovider.com/oauth/authorize?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=code";
-		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new AuthorizationParameters("http://www.someclient.com/connect/foo", null, null, null));
+		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters("http://www.someclient.com/connect/foo", null, null, null));
 		assertEquals(expected, actual);
 	}
 
@@ -73,7 +73,7 @@ public class OAuth2TemplateTest {
 		params.add("display", "touch");
 		params.add("anotherparam", "somevalue1");
 		params.add("anotherparam", "somevalue2");
-		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, new AuthorizationParameters("http://www.someclient.com/connect/foo", "read,write", null, params));
+		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, new OAuth2Parameters("http://www.someclient.com/connect/foo", "read,write", null, params));
 		assertEquals(expected, actual);
 	}
 

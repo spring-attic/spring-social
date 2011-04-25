@@ -17,20 +17,26 @@ package org.springframework.social.connect.oauth1;
 
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
+import org.springframework.social.oauth1.OAuth1Parameters;
+import org.springframework.social.oauth1.OAuth1Version;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.util.MultiValueMap;
 
 class StubOAuth1Operations implements OAuth1Operations {
 
+	public OAuth1Version getVersion() {
+		return OAuth1Version.CORE_10_REVISION_A;
+	}
+	
 	public OAuthToken fetchRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters) {
 		return new OAuthToken("12345", "23456");
 	}
 
-	public String buildAuthorizeUrl(String requestToken, String callbackUrl) {
+	public String buildAuthorizeUrl(String requestToken, OAuth1Parameters parameters) {
 		return "http://springsource.org/oauth/authorize?request_token=" + requestToken;
 	}
 
-	public String buildAuthenticateUrl(String requestToken, String callbackUrl) {
+	public String buildAuthenticateUrl(String requestToken, OAuth1Parameters parameters) {
 		return "http://springsource.org/oauth/authenticate?request_token=" + requestToken;
 	}
 

@@ -22,7 +22,7 @@ import org.springframework.web.context.request.WebRequest;
  * Helper methods that support provider user sign-in scenarios.
  * @author Keith Donald
  */
-public class ProviderUserSignInUtils {
+public class ProviderSignInUtils {
 	
 	/**
 	 * Get the connection to the provider user the client attempted to sign-in as.
@@ -32,7 +32,7 @@ public class ProviderUserSignInUtils {
 	 * @param request the current web request, used to extract sign-in attempt information from the current user session
 	 */
 	public static ServiceProviderConnection<?> getConnection(WebRequest request) {
-		ProviderUserSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
+		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
 		return signInAttempt != null ? signInAttempt.getConnection() : null;
 	}
 
@@ -45,20 +45,20 @@ public class ProviderUserSignInUtils {
 	 * @param request the current web request, used to extract sign-in attempt information from the current user session
 	 */
 	public static void handlePostSignUp(WebRequest request) {
-		ProviderUserSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
+		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
 		if (signInAttempt != null) {
 			signInAttempt.addConnection();
-			request.removeAttribute(ProviderUserSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+			request.removeAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		}		
 	}
 
 	// internal helpers
 	
-	private ProviderUserSignInUtils() {	
+	private ProviderSignInUtils() {	
 	}
 	
-	private static ProviderUserSignInAttempt getProviderUserSignInAttempt(WebRequest request) {
-		return (ProviderUserSignInAttempt) request.getAttribute(ProviderUserSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+	private static ProviderSignInAttempt getProviderUserSignInAttempt(WebRequest request) {
+		return (ProviderSignInAttempt) request.getAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 	}
 	
 }

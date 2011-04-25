@@ -25,6 +25,13 @@ import org.springframework.util.MultiValueMap;
 public interface OAuth1Operations {
 
 	/**
+	 * The version of OAuth1 implemented by this operations instance.
+	 * @see OAuth1Version#CORE_10
+	 * @see OAuth1Version#CORE_10_REVISION_A
+	 */
+	public OAuth1Version getVersion();
+	
+	/**
 	 * Begin a new authorization flow by fetching a new request token from this service provider.
 	 * The request token should be stored in the user's session up until the authorization callback is made
 	 * and it's time to exchange it for an {@link #exchangeForAccessToken(AuthorizedRequestToken, MultiValueMap) access token}.
@@ -37,20 +44,20 @@ public interface OAuth1Operations {
 	/**
 	 * Construct the URL to redirect the user to for authorization.
 	 * @param requestToken the request token value, to be encoded in the authorize URL.
-	 * @param callbackUrl the URL the provider should redirect to after user authorization. Ignored for OAuth 1.0a providers. 
+	 * @param parameters parameters to pass to the provider in the authorize URL. Should never be null; if there are no parameters to pass, set this argument value to {@link OAuth1Parameters#NONE}.
 	 * @return the absolute authorize URL to redirect the user to for authorization
 	 */
-	String buildAuthorizeUrl(String requestToken, String callbackUrl);
+	String buildAuthorizeUrl(String requestToken, OAuth1Parameters parameters);
 	
 	/**
 	 * Construct the URL to redirect the user to for authentication.
-	 * The authenticate URL differs from the authorizationUrl slightly in that it does not require the user to authorize the app multiple times.
+	 * For some provider, the authenticate URL differs from the authorizationUrl slightly in that it does not require the user to authorize the app multiple times.
 	 * This provides a better user experience for "Sign in with Provider" scenarios.
 	 * @param requestToken the request token value, to be encoded in the authorize URL.
-	 * @param callbackUrl the URL the provider should redirect to, returned once the user has signed in and has authorized the app once. Ignored for OAuth 1.0a providers. 
-	 * @return the absolute authenticate URL to redirect the user to for authorization
+	 * @param parameters parameters to pass to the provider in the authenticate URL. Should never be null; if there are no parameters to pass, set this argument value to {@link OAuth1Parameters#NONE}.
+	 * @return the absolute authenticate URL to redirect the user to for authentication
 	 */
-	String buildAuthenticateUrl(String requestToken, String callbackUrl);
+	String buildAuthenticateUrl(String requestToken, OAuth1Parameters parameters);
 
 	/**
 	 * Exchange the authorized request token for an access token.

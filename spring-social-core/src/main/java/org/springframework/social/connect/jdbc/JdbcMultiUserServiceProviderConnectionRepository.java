@@ -30,6 +30,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.social.connect.MultiUserServiceProviderConnectionRepository;
+import org.springframework.social.connect.ServiceProviderConnection;
 import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
 import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
@@ -53,9 +54,10 @@ public class JdbcMultiUserServiceProviderConnectionRepository implements MultiUs
 		this.textEncryptor = textEncryptor;
 	}
 
-	public String findLocalUserIdConnectedTo(ServiceProviderConnectionKey connectionKey) {
+	public String findLocalUserIdWithConnection(ServiceProviderConnection<?> connection) {
 		try {
-			return jdbcTemplate.queryForObject("select localUserId from ServiceProviderConnection where providerId = ? and providerUserId = ?", String.class, connectionKey.getProviderId(), connectionKey.getProviderUserId());
+			ServiceProviderConnectionKey key = connection.getKey();
+			return jdbcTemplate.queryForObject("select localUserId from ServiceProviderConnection where providerId = ? and providerUserId = ?", String.class, key.getProviderId(), key.getProviderUserId());
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}

@@ -20,6 +20,8 @@ import java.io.Serializable;
 import javax.inject.Provider;
 
 import org.springframework.social.connect.ServiceProviderConnection;
+import org.springframework.social.connect.ServiceProviderConnectionData;
+import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
 
 /**
@@ -31,21 +33,22 @@ import org.springframework.social.connect.ServiceProviderConnectionRepository;
  * @author Keith Donald
  */
 @SuppressWarnings("serial")
-public class ProviderUserSignInAttempt implements Serializable {
+public class ProviderSignInAttempt implements Serializable {
 
 	/**
 	 * Name of the session attribute ProviderSignInAttempt instances are indexed under.
 	 */
-	static final String SESSION_ATTRIBUTE = ProviderUserSignInAttempt.class.getName();
+	static final String SESSION_ATTRIBUTE = ProviderSignInAttempt.class.getName();
 
-	// TODO: ServiceProviderConnections are not inherently Serializable: this may present a problem in a clustered web environment.
-	// Consider storing a ServiceProviderConnectionData here along with a Provider<ServiceProviderConnectionFactory>.
-	private final ServiceProviderConnection<?> connection;
+	private final ServiceProviderConnectionData connectionData;
+	
+	private final Provider<ServiceProviderConnectionFactoryLocator> connectionFactoryLocatorProvider;
 	
 	private final Provider<ServiceProviderConnectionRepository> connectionRepositoryProvider;
 		
-	public ProviderUserSignInAttempt(ServiceProviderConnection<?> connection, Provider<ServiceProviderConnectionRepository> connectionRepositoryProvider) {
-		this.connection = connection;
+	public ProviderSignInAttempt(ServiceProviderConnection<?> connection, Provider<ServiceProviderConnectionFactoryLocator> connectionFactoryLocatorProvider, Provider<ServiceProviderConnectionRepository> connectionRepositoryProvider) {
+		this.connectionData = connection.createData();
+		this.connectionFactoryLocatorProvider = connectionFactoryLocatorProvider;
 		this.connectionRepositoryProvider = connectionRepositoryProvider;		
 	}
 	
@@ -55,14 +58,14 @@ public class ProviderUserSignInAttempt implements Serializable {
 	 * You can also lookup the id of the provider and use that to display a provider-specific user-sign-in-attempt flash message e.g. "Your Facebook Account is not connected to a Local account. Please sign up."
 	 */
 	public ServiceProviderConnection<?> getConnection() {
-		return connection;
+		return connectionFactoryLocatorProvider.get().getConnectionFactory(connectionData.getProviderId()).createConnection(connectionData);
 	}
 	
 	/**
 	 * Connect the new local user to the provider.
 	 */
 	void addConnection() {
-		connectionRepositoryProvider.get().addConnection(connection);
+		connectionRepositoryProvider.get().addConnection(getConnection());
 	}
 
 }

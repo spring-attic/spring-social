@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -31,9 +32,11 @@ import org.springframework.social.connect.support.OAuth1ServiceProviderConnectio
 import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
+import org.springframework.social.oauth1.OAuth1Parameters;
+import org.springframework.social.oauth1.OAuth1Version;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.AuthorizationParameters;
+import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.social.oauth2.GrantType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -67,17 +70,19 @@ public class ConnectController  {
 
 	private ServiceProviderConnectionFactoryLocator connectionFactoryLocator;
 	
-	private ServiceProviderConnectionRepository connectionRepository;
+	private Provider<ServiceProviderConnectionRepository> currentUserConnectionRepositoryProvider;
 	
 	/**
 	 * Constructs a ConnectController.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
+	 * @param connectionFactory locator for {@link ServiceProviderConnectionFactory} instances needed to establish connections
+	 * @param currentUserConnectionRepositoryProvider provider for the current user's {@link ServiceProviderConnectionRepository} needed to persist connections
 	 */
 	@Inject
-	public ConnectController(String applicationUrl, ServiceProviderConnectionFactoryLocator connectionFactoryLocator, ServiceProviderConnectionRepository connectionRepository) {
+	public ConnectController(String applicationUrl, ServiceProviderConnectionFactoryLocator connectionFactoryLocator, Provider<ServiceProviderConnectionRepository> currentUserConnectionRepositoryProvider) {
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 		this.connectionFactoryLocator = connectionFactoryLocator;
-		this.connectionRepository = connectionRepository;
+		this.currentUserConnectionRepositoryProvider = currentUserConnectionRepositoryProvider;
 		this.interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
 	}
 
@@ -105,7 +110,7 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET)
 	public String connect(@PathVariable String providerId, Model model) {
-		List<ServiceProviderConnection<?>> connections = connectionRepository.findConnectionsToProvider(providerId);
+		List<ServiceProviderConnection<?>> connections = currentUserConnectionRepositoryProvider.get().findConnectionsToProvider(providerId);
 		if (connections.isEmpty()) {
 			return baseViewPath(providerId) + "Connect";
 		} else {
@@ -116,7 +121,8 @@ public class ConnectController  {
 
 	/**
 	 * Process a connect form submission by commencing the process of establishing a connection to the provider on behalf of the member.
-	 * Fetches a new request token from the provider, temporarily stores it in the session, then redirects the member to the provider's site for authorization.
+	 * For OAuth1, fetches a new request token from the provider, temporarily stores it in the session, then redirects the member to the provider's site for authorization.
+	 * For OAuth2, redirects the user to the provider's site for authorization.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
 	public String connect(@PathVariable String providerId, WebRequest request) {
@@ -126,10 +132,10 @@ public class ConnectController  {
 			OAuth1Operations oauth1Ops = ((OAuth1ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations();
 			OAuthToken requestToken = oauth1Ops.fetchRequestToken(callbackUrl(providerId), null);
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
-			return "redirect:" + oauth1Ops.buildAuthorizeUrl(requestToken.getValue(), callbackUrl(providerId));
+			return "redirect:" + oauth1Ops.buildAuthorizeUrl(requestToken.getValue(), oauth1Ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(callbackUrl(providerId)) : OAuth1Parameters.NONE);
 		} else if (connectionFactory instanceof OAuth2ServiceProviderConnectionFactory) {
 			String scope = request.getParameter("scope");
-			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new AuthorizationParameters(callbackUrl(providerId), scope, null, null));
+			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId), scope));
 		} else {
 			return handleConnectToCustomConnectionFactory(connectionFactory, request);
 		}
@@ -137,8 +143,8 @@ public class ConnectController  {
 
 	/**
 	 * Process the authorization callback from an OAuth 1 service provider.
-	 * Called after the member authorizes the connection, generally done by having he or she click "Allow" in their web browser at the provider's site.
-	 * On authorization verification, connects the member's local account to the account they hold at the service provider
+	 * Called after the user authorizes the connection, generally done by having he or she click "Allow" in their web browser at the provider's site.
+	 * On authorization verification, connects the user's local account to the account they hold at the service provider
 	 * Removes the request token from the session since it is no longer valid after the connection is established.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="oauth_token")
@@ -146,43 +152,43 @@ public class ConnectController  {
 		OAuth1ServiceProviderConnectionFactory<?> connectionFactory = (OAuth1ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		OAuthToken accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier), null);
 		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessToken);
-		connectionRepository.addConnection(connection);	
+		currentUserConnectionRepositoryProvider.get().addConnection(connection);	
 		postConnect(connectionFactory, connection, request);
 		return redirectToProviderConnect(providerId);
 	}
 
 	/**
 	 * Process the authorization callback from an OAuth 2 service provider.
-	 * Called after the member authorizes the connection, generally done by having he or she click "Allow" in their web browser at the provider's site.
-	 * On authorization verification, connects the member's local account to the account they hold at the service provider.
+	 * Called after the user authorizes the connection, generally done by having he or she click "Allow" in their web browser at the provider's site.
+	 * On authorization verification, connects the user's local account to the account they hold at the service provider.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
 		OAuth2ServiceProviderConnectionFactory<?> connectionFactory = (OAuth2ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId), null);
 		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessGrant);
-		connectionRepository.addConnection(connection);
+		currentUserConnectionRepositoryProvider.get().addConnection(connection);
 		postConnect(connectionFactory, connection, request);
 		return redirectToProviderConnect(providerId);
 	}
 
 	/**
 	 * Remove all provider connections for a user account.
-	 * The member has decided they no longer wish to use the service provider from this application.
+	 * The user has decided they no longer wish to use the service provider from this application.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.DELETE)
 	public String removeConnections(@PathVariable String providerId) {
-		connectionRepository.removeConnectionsToProvider(providerId);
+		currentUserConnectionRepositoryProvider.get().removeConnectionsToProvider(providerId);
 		return redirectToProviderConnect(providerId);
 	}
 
 	/**
 	 * Remove a single provider connection associated with a user account.
-	 * The member has decided they no longer wish to use the service provider account from this application.
+	 * The user has decided they no longer wish to use the service provider account from this application.
 	 */
 	@RequestMapping(value="/{providerId}/{providerUserId}", method=RequestMethod.DELETE)
 	public String removeConnections(@PathVariable String providerId, @PathVariable String providerUserId) {
-		connectionRepository.removeConnection(new ServiceProviderConnectionKey(providerId, providerUserId));
+		currentUserConnectionRepositoryProvider.get().removeConnection(new ServiceProviderConnectionKey(providerId, providerUserId));
 		return redirectToProviderConnect(providerId);
 	}
 

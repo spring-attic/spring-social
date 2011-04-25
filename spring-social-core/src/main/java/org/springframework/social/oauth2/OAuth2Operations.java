@@ -31,7 +31,7 @@ public interface OAuth2Operations {
 	 * @param parameters authorization parameters needed to build the URL
 	 * @return the absolute authorize URL to redirect the user to for authorization
 	 */ 
-	String buildAuthorizeUrl(GrantType grantType, AuthorizationParameters parameters);
+	String buildAuthorizeUrl(GrantType grantType, OAuth2Parameters parameters);
 
 	/**
 	 * Construct the URL to redirect the user to for authentication.
@@ -41,14 +41,14 @@ public interface OAuth2Operations {
 	 * @param parameters authorization parameters needed to build the URL 
 	 * @return the absolute authenticate URL to redirect the user to for authorization
 	 */ 
-	String buildAuthenticateUrl(GrantType grantType, AuthorizationParameters parameters);
+	String buildAuthenticateUrl(GrantType grantType, OAuth2Parameters parameters);
 	
 	/**
-	 * Exchange the authorization grant for an access grant.
-	 * @param authorizationGrant the authorization grant returned by the provider upon user authorization
+	 * Exchange the authorization code for an access grant.
+	 * @param authorizationCode the authorization code returned by the provider upon user authorization
 	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider
 	 */
-	AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri, MultiValueMap<String, String> additionalParameters);
+	AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters);
 
 	/**
 	 * Refreshes a previous access grant.

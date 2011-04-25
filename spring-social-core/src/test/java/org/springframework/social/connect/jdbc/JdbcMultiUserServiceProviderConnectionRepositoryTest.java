@@ -45,7 +45,7 @@ import org.springframework.social.connect.support.OAuth2ServiceProviderConnectio
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.AuthorizationParameters;
+import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
@@ -98,20 +98,21 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 	@Test
 	public void findLocalUserIdConnectedTo() {
 		insertFacebookConnection();
-		String localUserId = usersConnectionRepository.findLocalUserIdConnectedTo(new ServiceProviderConnectionKey("facebook", "9"));
+		String localUserId = usersConnectionRepository.findLocalUserIdWithConnection(connectionRepository.findPrimaryConnectionToServiceApi(TestFacebookApi.class));
 		assertEquals("1", localUserId);
 	}
 	
 	@Test
 	public void findLocalUserIdConnectedToNoSuchConnection() {
-		assertNull(usersConnectionRepository.findLocalUserIdConnectedTo(new ServiceProviderConnectionKey("facebook", "9")));
+		ServiceProviderConnection<TestFacebookApi> connection = connectionFactory.createConnection(new AccessGrant("12345"));
+		assertNull(usersConnectionRepository.findLocalUserIdWithConnection(connection));
 	}
 
 	@Test
 	public void findLocalUserIdMultipleConnectionsToSameProviderUser() {
 		insertFacebookConnection();
 		insertFacebookConnectionSameFacebookUser();
-		assertNull(usersConnectionRepository.findLocalUserIdConnectedTo(new ServiceProviderConnectionKey("facebook", "9")));
+		assertNull(usersConnectionRepository.findLocalUserIdWithConnection(connectionRepository.findPrimaryConnectionToServiceApi(TestFacebookApi.class)));
 	}
 	
 	@Test
@@ -399,10 +400,10 @@ public class JdbcMultiUserServiceProviderConnectionRepositoryTest {
 
 		public OAuth2Operations getOAuthOperations() {
 			return new OAuth2Operations() {
-				public String buildAuthorizeUrl(GrantType grantType, AuthorizationParameters params) {
+				public String buildAuthorizeUrl(GrantType grantType, OAuth2Parameters params) {
 					return null;
 				}
-				public String buildAuthenticateUrl(GrantType grantType, AuthorizationParameters params) {
+				public String buildAuthenticateUrl(GrantType grantType, OAuth2Parameters params) {
 					return null;
 				}
 				public AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri, MultiValueMap<String, String> additionalParameters) {

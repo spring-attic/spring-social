@@ -21,8 +21,10 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -76,6 +78,12 @@ public class OAuth1Template implements OAuth1Operations {
 		this.signingUtils = new SigningSupport();
 	}
 
+	// implementing OAuth1Operations
+	
+	public OAuth1Version getVersion() {
+		return version;
+	}
+	
 	public OAuthToken fetchRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters) {
 		Map<String, String> oauthParameters = new HashMap<String, String>(1, 1);
 		if (version == OAuth1Version.CORE_10_REVISION_A) {
@@ -84,12 +92,12 @@ public class OAuth1Template implements OAuth1Operations {
 		return exchangeForToken(requestTokenUrl, oauthParameters, additionalParameters, null);
 	}
 
-	public String buildAuthorizeUrl(String requestToken, String callbackUrl) {
-		return buildOAuthUrl(authorizeUrl, requestToken, callbackUrl);
+	public String buildAuthorizeUrl(String requestToken, OAuth1Parameters parameters) {
+		return buildAuthUrl(authorizeUrl, requestToken, parameters);
 	}
 	
-	public String buildAuthenticateUrl(String requestToken, String callbackUrl) {
-		return authenticateUrl != null ? buildOAuthUrl(authenticateUrl, requestToken, callbackUrl) : buildAuthorizeUrl(requestToken, callbackUrl);
+	public String buildAuthenticateUrl(String requestToken, OAuth1Parameters parameters) {
+		return authenticateUrl != null ? buildAuthUrl(authenticateUrl, requestToken, parameters) : buildAuthorizeUrl(requestToken, parameters);
 	}
 
 	public OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters) {
@@ -103,10 +111,18 @@ public class OAuth1Template implements OAuth1Operations {
 
 	// subclassing hooks
 
+	protected String getConsumerKey() {
+		return consumerKey;
+	}
+	
 	protected OAuthToken createAccessToken(String accessToken, String secret, MultiValueMap<String, String> body) {
 		return new OAuthToken(accessToken, secret);
 	}
 
+	protected MultiValueMap<String, String> getCustomAuthorizationParameters() {
+		return null;
+	}
+	
 	// internal helpers
 
 	private RestTemplate createRestTemplate() {
@@ -150,12 +166,32 @@ public class OAuth1Template implements OAuth1Operations {
 		return signingUtils.buildAuthorizationHeaderValue(HttpMethod.POST, tokenUrl, oauthParameters, additionalParameters, consumerSecret, tokenSecret);
 	}
 
-	private String buildOAuthUrl(String oauthUrl, String requestToken, String callbackUrl) {
-		StringBuilder authorizeUrl = new StringBuilder(oauthUrl).append('?').append("oauth_token").append('=').append(formEncode(requestToken));
+	private String buildAuthUrl(String baseAuthUrl, String requestToken, OAuth1Parameters parameters) {
+		StringBuilder authUrl = new StringBuilder(baseAuthUrl).append('?').append("oauth_token").append('=').append(formEncode(requestToken));
 		if (version == OAuth1Version.CORE_10) {
-			authorizeUrl.append('&').append("oauth_callback").append("=").append(formEncode(callbackUrl));
+			authUrl.append('&').append("oauth_callback").append("=").append(formEncode(parameters.getCallbackUrl()));
 		}
-		return authorizeUrl.toString();
+		MultiValueMap<String, String> additionalParameters = getAdditionalParameters(parameters.getAdditionalParameters());
+		if (additionalParameters != null) {
+			for (Iterator<Entry<String, List<String>>> additionalParams = parameters.getAdditionalParameters().entrySet().iterator(); additionalParams.hasNext();) {
+				Entry<String, List<String>> param = additionalParams.next();
+				String name = formEncode(param.getKey());
+				for (Iterator<String> values = param.getValue().iterator(); values.hasNext();) {
+					authUrl.append('&').append(name).append('=').append(formEncode(values.next()));
+				}
+			}
+		}		
+		return authUrl.toString();
+	}
+
+	private MultiValueMap<String, String> getAdditionalParameters(MultiValueMap<String, String> clientAdditionalParameters) {
+		MultiValueMap<String, String> additionalParameters = getCustomAuthorizationParameters();
+		if (additionalParameters == null) {
+			return clientAdditionalParameters;
+		} else {
+			additionalParameters.putAll(clientAdditionalParameters);
+			return additionalParameters;
+		}
 	}
 	
 	private String formEncode(String data) {

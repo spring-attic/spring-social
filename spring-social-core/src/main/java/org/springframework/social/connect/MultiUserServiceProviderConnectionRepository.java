@@ -30,9 +30,10 @@ public interface MultiUserServiceProviderConnectionRepository {
 	 * Find the id of the <i>single</i> local user who has a {@link ServiceProviderConnection} with the given key.
 	 * Used to support the ProviderSignIn scenario where the user id returned is used to sign the local application user in using his or her provider account.
 	 * Returns null if there is not exactly one local user connected to the provider user.
-	 * @param connectionKey the key identifying a provider user
+	 * May never return null if this method will implicitly create a local user account from the connection if no such local account already exists.
+	 * @param connection the service provider connection resulting from the provider sign-in attempt
 	 */
-	String findLocalUserIdConnectedTo(ServiceProviderConnectionKey connectionKey);
+	String findLocalUserIdWithConnection(ServiceProviderConnection<?> connection);
 
 	/**
 	 * Find the ids of the local users who are connected to the specific provider user accounts.
