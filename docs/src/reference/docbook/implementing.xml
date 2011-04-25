@@ -122,6 +122,21 @@
 			</para>
 		</section>
 	</section>
+	<section id="service-providers-implementing-api">
+		<title>Developing a Java binding to the provider's Service API</title>
+		<para>
+			Spring Social favors the development of strongly-typed Java bindings to external service provider APIs.
+			This provides a simple, domain oriented interface for Java applications to use to consume the API.
+			When adding support for a new service provider, if no suitable Java binding exists you'll need to develop one.
+			If one already exists, such as Twitter4j for example, it is possible to integrate it into the framework. 
+		</para>
+		<section id="service-provider-implementing-api-new">
+			<title>Implementing a new Java API binding</title>
+		</section>
+		<section id="service-provider-implementing-api-integrate">
+			<title>Integrating an existing Java API binding</title>
+		</section>		
+	</section>
 	<section id="service-providers-implementing-oauth2">
 		<title>OAuth2 Service Providers</title>
 		<para>
