@@ -181,7 +181,7 @@ public class OAuth1Template implements OAuth1Operations {
 		}
 		MultiValueMap<String, String> additionalParameters = getAdditionalParameters(parameters.getAdditionalParameters());
 		if (additionalParameters != null) {
-			for (Iterator<Entry<String, List<String>>> additionalParams = parameters.getAdditionalParameters().entrySet().iterator(); additionalParams.hasNext();) {
+			for (Iterator<Entry<String, List<String>>> additionalParams = additionalParameters.entrySet().iterator(); additionalParams.hasNext();) {
 				Entry<String, List<String>> param = additionalParams.next();
 				String name = formEncode(param.getKey());
 				for (Iterator<String> values = param.getValue().iterator(); values.hasNext();) {
@@ -193,12 +193,14 @@ public class OAuth1Template implements OAuth1Operations {
 	}
 
 	private MultiValueMap<String, String> getAdditionalParameters(MultiValueMap<String, String> clientAdditionalParameters) {
-		MultiValueMap<String, String> additionalParameters = getCustomAuthorizationParameters();
-		if (additionalParameters == null) {
+		MultiValueMap<String, String> customAuthorizeParameters = getCustomAuthorizationParameters();
+		if (customAuthorizeParameters == null) {
 			return clientAdditionalParameters;
 		} else {
-			additionalParameters.putAll(clientAdditionalParameters);
-			return additionalParameters;
+			if(clientAdditionalParameters != null) {
+				customAuthorizeParameters.putAll(clientAdditionalParameters);
+			}
+			return customAuthorizeParameters;
 		}
 	}
 	
