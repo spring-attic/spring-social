@@ -142,7 +142,7 @@ public class OAuth2ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 			<programlisting language="java"><![CDATA[
 public interface OAuth2Operations {
 
-    String buildAuthorizeUrl(GrantType grantType, AuthorizationParameters parameters);
+    String buildAuthorizeUrl(GrantType grantType, OAuth2Parameters parameters);
 
     AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters);
 
@@ -255,7 +255,7 @@ public interface OAuth1Operations {
 
     OAuthToken fetchRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters);
 
-    String buildAuthorizeUrl(String requestToken, AuthorizationParameters parameters);
+    String buildAuthorizeUrl(String requestToken, OAuth1Parameters parameters);
 
     OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters);
 
