@@ -15,12 +15,10 @@
  */
 package org.springframework.social.oauth1;
 
-import static org.junit.Assert.assertEquals;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.social.test.client.RequestMatchers.headerContains;
-import static org.springframework.social.test.client.RequestMatchers.method;
-import static org.springframework.social.test.client.RequestMatchers.requestTo;
-import static org.springframework.social.test.client.ResponseCreators.withResponse;
+import static org.junit.Assert.*;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.social.test.client.RequestMatchers.*;
+import static org.springframework.social.test.client.ResponseCreators.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,6 +26,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.social.test.client.MockRestServiceServer;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 public class OAuth1TemplateTest {
 
@@ -38,6 +38,8 @@ public class OAuth1TemplateTest {
 	private OAuth1Template oauth10a;
 	
 	private OAuth1Template oauth10;
+	
+	private OAuth1Template customOauth10;
 
 	@Before
 	public void setup() {
@@ -46,7 +48,17 @@ public class OAuth1TemplateTest {
 		oauth10 = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
 				"https://www.someprovider.com/oauth/authorize", "https://www.someprovider.com/oauth/authenticate",
 				ACCESS_TOKEN_URL, OAuth1Version.CORE_10);
-	}
+
+		customOauth10 = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
+				"https://www.someprovider.com/oauth/authorize", null, ACCESS_TOKEN_URL, OAuth1Version.CORE_10) {
+			protected MultiValueMap<String,String> getCustomAuthorizationParameters() {
+				System.out.println("CUSTOM PARAMETERS");
+				MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+				parameters.set("custom_parameter", "custom_parameter_value");
+				return parameters;
+			};
+		};
+}
 
 	@Test
 	public void buildAuthorizeUrl() {
@@ -54,6 +66,12 @@ public class OAuth1TemplateTest {
 				oauth10a.buildAuthorizeUrl("request_token", OAuth1Parameters.NONE));
 		assertEquals("https://www.someprovider.com/oauth/authorize?oauth_token=request_token&oauth_callback=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback",
 				oauth10.buildAuthorizeUrl("request_token", new OAuth1Parameters("http://www.someclient.com/oauth/callback")));
+	}
+	
+	@Test
+	public void buildAuthorizeUrl_customAuthorizeParameters() {
+		assertEquals("https://www.someprovider.com/oauth/authorize?oauth_token=request_token&oauth_callback=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback&custom_parameter=custom_parameter_value",
+				customOauth10.buildAuthorizeUrl("request_token", new OAuth1Parameters("http://www.someclient.com/oauth/callback")));
 	}
 
 	@Test
