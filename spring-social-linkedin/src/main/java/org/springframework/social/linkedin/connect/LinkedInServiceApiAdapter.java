@@ -37,7 +37,7 @@ public class LinkedInServiceApiAdapter implements ServiceApiAdapter<LinkedInApi>
 
 	public void setConnectionValues(LinkedInApi serviceApi, ServiceProviderConnectionValues values) {
 		LinkedInProfile profile = serviceApi.getUserProfile();
-		values.setProfileUrl(profile.getId());
+		values.setProviderUserId(profile.getId());
 		values.setDisplayName(profile.getFirstName() + " " + profile.getLastName());
 		values.setProfileUrl(profile.getPublicProfileUrl());
 		values.setImageUrl(profile.getProfilePictureUrl());
