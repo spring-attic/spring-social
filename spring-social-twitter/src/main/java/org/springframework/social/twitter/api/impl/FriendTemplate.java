@@ -15,7 +15,6 @@
  */
 package org.springframework.social.twitter.api.impl;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -148,6 +147,4 @@ class FriendTemplate extends AbstractTwitterOperations implements FriendOperatio
 	
 	private static final Map<String, String> DEFAULT_CURSOR_PARAMETER_MAP = Collections.singletonMap("cursor", "-1");
 	
-	@SuppressWarnings("serial")
-	private static class LongList extends ArrayList<Long> {}
 }

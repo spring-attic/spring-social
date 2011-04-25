@@ -259,10 +259,6 @@ class ListTemplate extends AbstractTwitterOperations implements ListOperations {
 		}
 	}
 
-	private boolean checkListConnection(String path) {
-		return checkListConnection(buildUri(path));
-	}
-
 	private MultiValueMap<String, Object> buildListDataMap(String name,
 			String description, boolean isPublic) {
 		MultiValueMap<String, Object> request = new LinkedMultiValueMap<String, Object>();
