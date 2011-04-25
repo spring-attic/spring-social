@@ -35,7 +35,7 @@
 	<section id="service-providers-implementing-project">
 		<title>Creating a source project for the provider client code</title>
 		<para>
-			A Spring Social provider client is simply a standard Java project that builds a jar artifact e.g. spring-social-twitter.jar.
+			A Spring Social client module is simply a standard Java project that builds a jar artifact e.g. spring-social-twitter.jar.
 			We do recommend the actual code structure follow several packaging guidelines described below.
 			To make this as easy as possible to do, we have also created a template project you may use as a starting point.
 		</para>
@@ -43,7 +43,7 @@
 			<title>Code structure recommendations</title>
 			<para>
 				We recommend all code for a new Spring Social client module fall within the <code>org.springframework.social.{providerId}</code> base package,
-				where {providerId} is the unique identifier you assign to the service provider you are adding support for.
+				where {providerId} is a unique identifier you assign to the service provider you are adding support for.
 				Consider some of the providers already supported by the framework as examples:
 				<table xml:id="service-providers-implementing-project-structure-examples">
 					<title>Spring Social Client Projects</title>
@@ -77,6 +77,7 @@
 			<para>
 				Within the base package, we recommend the following subpackage structure:
 				<table>
+					<title>Module Structure</title>
 					<tgroup cols="2">
 						<colspec align="left" />
 						<colspec colnum="1" colname="col1" colwidth="2*" />
@@ -90,15 +91,15 @@
 						<tbody>
 							<row>
 								<entry>api</entry>
-								<entry>Contains the public interface defining the Java binding to the service provider's API.</entry>
+								<entry>The public interface of the Java API binding.</entry>
 							</row>					
 							<row>
 								<entry>api.impl</entry>
-								<entry>Contains the primary implementation of the Java API binding.</entry>
+								<entry>The primary implementation of the Java API binding.</entry>
 							</row>					
 							<row>
 								<entry>connect</entry>
-								<entry>Contains the types necessary to establish connections to the service provider.</entry>
+								<entry>The types necessary to establish connections to the service provider.</entry>
 							</row>					
 						</tbody>					
 					</tgroup>
@@ -118,7 +119,7 @@
 			<para>
 				Here, the central service API type, TwitterApi, is located in the api package along with its supporting operations types and data transfer object types.
 				The primary implementation of that interface, TwitterTemplate, is located in the api.impl package (along with other package-private impl types have that been excluded from this view).
-				Finally, the connect package contains the implementation of various connect SPIs that enable connections to the provider to be established and persisted.
+				Finally, the connect package contains the implementations of various connect SPIs that enable connections to Twitter to be established and persisted.
 			</para>
 		</section>
 	</section>
@@ -126,8 +127,8 @@
 		<title>Developing a Java binding to the provider's API</title>
 		<para>
 			Spring Social favors the development of strongly-typed Java bindings to external service provider APIs.
-			This provides a simple, domain oriented interface for Java applications to use to consume the API.
-			When adding support for a new service provider, if no suitable Java binding exists you'll need to develop one.
+			This provides a simple, domain-oriented interface for Java applications to use to consume the API.
+			When adding support for a new service provider, if no suitable Java binding already exists you'll need to develop one.
 			If one already exists, such as Twitter4j for example, it is possible to integrate it into the framework. 
 		</para>
 		<section id="service-provider-implementing-api-new-designing">
@@ -168,7 +169,7 @@ public interface TwitterApi {
 }]]></programlisting>
 						</para>
 						<para>
-							DirectMessageOperations, for example, would contain API bindings to Twitter's "direct_messages" resource:
+							DirectMessageOperations, for example, contains API bindings to Twitter's "direct_messages" resource:
 							<programlisting language="java"><![CDATA[
 public interface DirectMessageOperations {
 
@@ -190,6 +191,76 @@ public interface DirectMessageOperations {
 		</section>
 		<section id="service-provider-implementing-api-new-implementing">
 			<title>Implementing a new Java API binding</title>
+			<para>
+				API developers are free to implement their Java API binding with whatever HTTP/REST client they see fit.
+				That said, Spring Social's existing API bindings such as spring-social-twitter all use Spring Framework's RestTemplate in conjunction with the Jackson JSON ObjectMapper.
+				RestTemplate is a popular REST client that provides a uniform object mapping interface across a variety of data exchange formats (JSON, XML, etc).
+				Jackson is the leading Java-based JSON marshalling technology.
+				To help promote consistency across Spring Social's supported bindings, we do recommend you consider these implementation technologies (and please let us know if they do not meet your needs).
+			</para>
+			<para>
+				Spring Social has adopted a convention where each API implementation class is named "{ProviderId}Template" e.g. TwitterTemplate.
+				We favor this convention unless there is a good reason to deviate from it.
+				As discussed in the previous section, we also recommend keeping implementation types separate from the public API types.
+				And we recommend keeping internal implementation details package-private.
+			</para>
+			<para>
+				The way in which an API binding implementation is constructed will vary based on the API's authorization protocol.
+				For APIs secured with OAuth1, the consumerKey, consumerSecret, accessToken, and accessTokenSecret will be required for construction:
+				<programlisting language="java"><![CDATA[
+public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) { ... }]]>
+				</programlisting>				
+			</para>
+			<para>
+				For OAuth2, only the access token should be required:
+				<programlisting language="java"><![CDATA[
+public FacebookTemplate(String accessToken) { ... }]]>
+				</programlisting>
+			</para>
+			<para>
+				Each request made to the API's "resource server" needs to be signed with the OAuth credentials provided during construction.
+				This signing process consists of adding an "Authorization" header to each client request before it is executed.
+				For OAuth1, the process is quite complicated, and is used to support an elaborate request signature verification algorithm between the client and server.
+				For OAuth2, it is a lot simpler, but does still vary across the various drafts of the OAuth2 specification.
+			</para>
+			<para>
+				To encapsulate this complexity, for each authorization protocol Spring Social provides a ProtectedResourceClientFactory you may use to
+				construct a pre-configured RestTemplate instance that performs the request signing for you. For OAuth1:
+				<programlisting language="java"><![CDATA[
+public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+    this.restTemplate = ProtectedResourceClientFactory.create(apiKey, apiSecret, accessToken, accessTokenSecret);
+}]]>			</programlisting>
+			</para>
+			<para>
+				An OAuth2 example:
+				<programlisting language="java"><![CDATA[
+public FacebookTemplate(String accessToken) {
+    this.restTemplate = ProtectedResourceClientFactory.draft10(accessToken);
+}]]>
+				</programlisting>
+			</para>
+			<para>
+				Once the REST client has been configured as shown above, you simply use it to implement your various API bindings.
+				The existing Spring Social client modules all invoke their RestTemplate instances in a standard manner:
+				<programlisting language="java"><![CDATA[
+public TwitterProfile getUserProfile() {
+    return restTemplate.getForObject(buildUri("account/verify_credentials.json"), TwitterProfile.class);
+}]]>
+				</programlisting>
+			</para>
+			<para>
+				A note on RestTemplate usage: we do favor the RestTemplate methods that accept a URI object instead of a uri String.
+				This ensures we always properly encode client data submitted in URI query parameters, such as screen_name below:
+				<programlisting language="java"><![CDATA[
+public TwitterProfile getUserProfile(String screenName) {
+    return restTemplate.getForObject(buildUri("users/show.json", Collections.singletonMap("screen_name", screenName)), TwitterProfile.class);
+}]]>
+				</programlisting>
+			</para>
+			<para>
+				For complete implementation examples, consult the existing API bindings included in Spring Social.
+				spring-social-twitter and spring-social-facebook provide particularly good references.
+			</para>
 		</section>
 		<section id="service-provider-implementing-api-new-testing">
 			<title>Testing a new Java API binding</title>
