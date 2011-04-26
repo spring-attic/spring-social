@@ -27,7 +27,9 @@ import java.io.Serializable;
  */
 @SuppressWarnings("serial")
 public class ServiceProviderUserProfile implements Serializable {
-	
+
+	public static final ServiceProviderUserProfile EMPTY = new ServiceProviderUserProfile(null, null, null, null, null);
+
 	private final String name;
 	
 	private final String firstName;

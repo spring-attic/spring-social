@@ -28,7 +28,7 @@ final class NullServiceApiAdapter implements ServiceApiAdapter<Object> {
 	}
 
 	public ServiceProviderUserProfile fetchUserProfile(Object serviceApi) {
-		return EMPTY_USER_PROFILE;
+		return ServiceProviderUserProfile.EMPTY;
 	}
 
 	public void updateStatus(Object serviceApi, String message) {
@@ -38,6 +38,4 @@ final class NullServiceApiAdapter implements ServiceApiAdapter<Object> {
 	
 	private NullServiceApiAdapter() {}
 	
-	private static final ServiceProviderUserProfile EMPTY_USER_PROFILE = new ServiceProviderUserProfile(null, null, null, null, null);
-
 }

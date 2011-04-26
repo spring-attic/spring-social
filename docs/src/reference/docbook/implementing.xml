@@ -18,7 +18,7 @@
 					<para>Develop or integrate a Java binding to the provider's "Service API" e.g. <code>TwitterApi</code>.</para>
 				</listitem>
 				<listitem>
-					<para>Create a ServiceProvider that allows users to authorize with the remote provider and obtain Service API instances e.g. <code>TwitterServiceProvider</code>.</para>
+					<para>Create a ServiceProvider that allows users to authorize with the remote provider and obtain authorized Service API instances e.g. <code>TwitterServiceProvider</code>.</para>
 				</listitem>
 				<listitem>
 					<para>Create a ServiceApiAdapter that maps the provider's native Service API onto the uniform ServiceProviderConnection model e.g. <code>TwitterServiceApiAdapter</code>.</para>
@@ -265,7 +265,7 @@ public TwitterProfile getUserProfile(String screenName) {
 		<section id="service-provider-implementing-api-new-testing">
 			<title>Testing a new Java API binding</title>
 			<para>
-				As part of the spring-social-test module, Spring Social includes a framework for unit testing API bindings:
+				As part of the spring-social-test module, Spring Social includes a framework for unit testing API bindings.
 				This framework consists of a "MockRestServiceServer" that can be used to mock out API calls to the remote service provider.
 				This allows for the development of independent, performant, automated unit tests that verify client API binding and object mapping behavior.
 			</para>
@@ -333,22 +333,37 @@ private Resource jsonResource(String filename) {
 	</section>
 	<section id="service-providers-implementing-serviceprovider">
 		<title>Creating a ServiceProvider</title>
+		<para>
+			As described in the previous section, a client binding to a secure API such as Facebook or Twitter requires valid user authorization credentials to work.
+			Such credentials are generally obtained by having your application conduct an authorization "dance" or handshake with the service provider.
+			Spring Social provides the ServiceProvider&lt;S&gt; abstraction to handle this "authorization dance".
+			The abstraction also acts as a factory for native Service API (S) instances.
+		</para>
+		<para>
+			Since the authorization dance is protocol-specific, a ServiceProvider specialization exists for each authorization protocol.
+			For example, if you are connecting to a OAuth2-based provider, you would implement OAuth2ServiceProvider.
+			After you've done this, your implementation can be used to conduct the OAuth2 dance and obtain an authorized Service API instance.
+			This is typically done in the context of a ServiceProviderConnectionFactory as part of establishing a new connection to the provider.
+			The following sections describe the implementation steps for each ServiceProvider type.
+		</para>
 		<section id="service-providers-implementing-serviceprovider-oauth2">
 			<title>OAuth2</title>
 			<para>
 				To implement an OAuth2-based ServiceProvider, first extend AbstractOAuth2ServiceProvider.
-				Parameterize &lt;S&gt; to be the Java Binding to the ServiceProvider API.
-				Define a single constructor that accepts an clientId and clientSecret,
-				Finally, implement getServiceApi(String) to return a new API binding instance.
+				Parameterize &lt;S&gt; to be the Java binding to the ServiceProvider's's API.
+				Define a single constructor that accepts an clientId and clientSecret.
+				Finally, implement getServiceApi(String) to return a new Service API instance.
 			</para>
 			<para>
-				See FacebookServiceProvider as an example of an OAuth2-based ServiceProvider:
+				See <code>org.springframework.social.facebook.connect.FacebookServiceProvider</code> as an example OAuth2ServiceProvider:
 			</para>
 			<programlisting language="java"><![CDATA[
 public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<FacebookApi> {
 
     public FacebookServiceProvider(String clientId, String clientSecret) {
-        super(new OAuth2Template(clientId, clientSecret, "https://graph.facebook.com/oauth/authorize", "https://graph.facebook.com/oauth/access_token"));
+        super(new OAuth2Template(clientId, clientSecret,
+           "https://graph.facebook.com/oauth/authorize",
+           "https://graph.facebook.com/oauth/access_token"));
     }
 
     public FacebookApi getServiceApi(String accessToken) {
@@ -358,32 +373,32 @@ public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider
 }]]>
 			</programlisting>
 			<para>
-				In the constructor, you should call super, passing up the configured OAuth2Template, which implements OAuth2Operations.
+				In the constructor, you should call super, passing up the configured OAuth2Template that implements OAuth2Operations.
 				The OAuth2Template will handle the "OAuth dance" with the provider, and should be configured with the provided clientId and clientSecret, along with the provider-specific authorizeUrl and accessTokenUrl.
 			</para>
 			<para>
-				In getServiceApi(String), you should construct your Service API implementation, passing it the access token needed to make requests for protected resources.
+				In getServiceApi(String), you should construct your Service API implementation, passing it the access token needed to make authorized requests for protected resources.
 			</para>
 		</section>
 		<section id="service-providers-implementing-serviceprovider-oauth1">
 			<title>OAuth1</title>
 			<para>
 				To implement an OAuth1-based ServiceProvider, first extend AbstractOAuth1ServiceProvider.
-				Parameterize &lt;S&gt; to be the Java Binding to the ServiceProvider API.
+				Parameterize &lt;S&gt; to be the Java binding to the ServiceProvider's API.
 				Define a single constructor that accepts a consumerKey and consumerSecret.
-				Finally, implement getServiceApi(String, String) to return a new API binding instance.
+				Finally, implement getServiceApi(String, String) to return a new Service API instance.
 			</para>
 			<para>
-				See TwitterServiceProvider as an example of an OAuth1-based ServiceProvider:
+				See <code>org.springframework.social.twitter.connect.TwitterServiceProvider</code> as an example OAuth1ServiceProvider:
 			</para>
 			<programlisting language="java"><![CDATA[
 public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<TwitterApi> {
 
     public TwitterServiceProvider(String consumerKey, String consumerSecret) {
-        super(consumerKey, consumerSecret,  new OAuth1Template(consumerKey, consumerSecret, 
-                "https://twitter.com/oauth/request_token",
-                "https://twitter.com/oauth/authorize",
-                "https://twitter.com/oauth/access_token"));
+        super(consumerKey, consumerSecret, new OAuth1Template(consumerKey, consumerSecret, 
+            "https://twitter.com/oauth/request_token",
+            "https://twitter.com/oauth/authorize",
+            "https://twitter.com/oauth/access_token"));
     }
 
     public TwitterApi getServiceApi(String accessToken, String secret) {
@@ -398,12 +413,75 @@ public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<
 				It should be configured with the provided consumerKey and consumerSecret, along with the provider-specific requestTokenUrl, authorizeUrl, and accessTokenUrl.
 			</para>			
 			<para>
-				In getServiceApi(String, String), you should construct your Service API implementation, passing it the four tokens needed to make requests for protected resources.
+				In getServiceApi(String, String), you should construct your Service API implementation, passing it the four tokens needed to make authorized requests for protected resources.
 			</para>
 		</section>
+		<para>
+			Consult the JavaDoc API of the various service provider types for more information and subclassing options.
+		</para>
 	</section>
 	<section id="service-providers-implementing-serviceapiadapter">
 		<title>Creating a ServiceApiAdapter</title>
+		<para>
+			As discussed in the previous chapter, one of the roles of a ServiceProviderConnection is to provide a common abstraction for a linked user account that is applied across all service providers.
+			The role of the ServiceApiAdapter is to map a provider's native Service API onto this uniform ServiceProviderConnection model.
+			A connection delegates to its adapter to perform operations such as testing the validity of its API credentials, setting metadata values, fetching a user profile, and updating user status:
+			<programlisting language="java"><![CDATA[
+public interface ServiceApiAdapter<S> {
+
+    boolean test(S serviceApi);
+			
+    void setConnectionValues(S serviceApi, ServiceProviderConnectionValues values);
+
+    ServiceProviderUserProfile fetchUserProfile(S serviceApi);
+	
+    void updateStatus(S serviceApi, String message);
+	
+}]]>
+			</programlisting>
+			<para>
+				Consider <code>org.springframework.social.twitter.connect.TwitterServiceApiAdapter</code> as an example implementation:
+			</para>
+			<programlisting language="java"><![CDATA[
+public class TwitterServiceApiAdapter implements ServiceApiAdapter<TwitterApi> {
+
+    public boolean test(TwitterApi serviceApi) {
+        try {
+            serviceApi.userOperations().getUserProfile();
+            return true;
+        } catch (BadCredentialsException e) {
+            return false;
+        }
+    }
+
+    public void setConnectionValues(TwitterApi serviceApi, ServiceProviderConnectionValues values) {
+        TwitterProfile profile = serviceApi.userOperations().getUserProfile();
+        values.setProviderUserId(Long.toString(profile.getId()));
+        values.setDisplayName("@" + profile.getScreenName());
+        values.setProfileUrl(profile.getProfileUrl());
+        values.setImageUrl(profile.getProfileImageUrl());
+    }
+    
+    public ServiceProviderUserProfile fetchUserProfile(TwitterApi serviceApi) {
+        TwitterProfile profile = serviceApi.userOperations().getUserProfile();
+        return new ServiceProviderUserProfileBuilder().setName(profile.getName()).setUsername(profile.getScreenName()).build();
+    }
+    
+    public void updateStatus(TwitterApi serviceApi, String message) {
+        serviceApi.timelineOperations().updateStatus(message);	
+    }
+	
+}]]>
+			</programlisting>
+		</para>
+		<para>
+			As you can see, test(...) returns true if the API instance is functional and false if it is not.
+			setConnectionValues(...) sets the connection's providerUserId, displayName, profileUrl, and imageUrl properties from TwitterProfile data.
+			fetchUserProfile(...) maps a TwitterProfile onto the normalized ServiceProviderUserProfile model.
+			updateStatus(...) update's the user's Twitter status.
+			Consult the JavaDoc for ServiceApiAdapter and ServiceProviderConnection for more information and implementation guidance.
+			We also recommend reviewing the other ServiceApiAdapter implementations for additional examples.
+		</para>
 	</section>
 	<section id="service-providers-implementing-serviceproviderconnectionfactory">
 		<title>Creating a ServiceProviderConnectionFactory</title>

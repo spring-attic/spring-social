@@ -39,6 +39,8 @@ public interface ServiceApiAdapter<S> {
 	
 	/**
 	 * Implements {@link ServiceProviderConnection#fetchUserProfile()} for connections to the given service API.
+	 * Should never return null.
+	 * If the provider's API does not expose user profile data, this method should return {@link ServiceProviderUserProfile#EMPTY}. 
 	 * @param serviceApi
 	 * @return the service provider user profile
 	 * @see ServiceProviderUserProfileBuilder
@@ -47,6 +49,7 @@ public interface ServiceApiAdapter<S> {
 	
 	/**
 	 * Implements {@link ServiceProviderConnection#updateStatus(String)} for connections to the given service API.
+	 * If the provider does not have a status concept calling this method should have no effect.
 	 * @param serviceApi the service API
 	 * @param message the status message
 	 */
