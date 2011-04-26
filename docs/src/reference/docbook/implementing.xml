@@ -7,7 +7,7 @@
 		In this section, you will learn how to add support for new service providers you wish to integrate into your applications.
 	</para>
 	<section id="service-providers-implementing">
-		<title>Process</title>
+		<title>Process overview</title>
 		<para>
 			The process of adding support for a new service provider consists of several steps:
 			<orderedlist>
