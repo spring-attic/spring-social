@@ -7,83 +7,75 @@
 		
 		<para>
 			Once a connection has been established between a user's consumer account and their service provider profile, that connection can be used to authenticate them to the consumer application by asking them to sign in to the service provider. 
-			Spring Social supports such service provider-based authentication with Twitter and Facebook.
+			Spring Social supports such service provider-based authentication with <classname>ProviderSignInController</classname> from the web module.
 		</para>
-	</section>
-  
-	<section xml:id="signin_with_twitter">
-		<title>Sign in with Twitter</title>
-      
+
 		<para>
-			Spring Social's <classname>TwitterSigninController</classname> is a Spring MVC controller that processes the "Sign in with Twitter" flow described at <ulink url="http://dev.twitter.com/pages/sign_in_with_twitter"/>. 
-			Essentially, this process is an OAuth 1 authorization flow, quite similar to the flow that <classname>ConnectController</classname> processes for connecting an account with Twitter. 
-			The key difference is that instead of presenting the user with an authorization page that asks for permission to be granted to the application, the sign in flow presents a simple authentication page that only asks the user to sign in to Twitter.
+			<classname>ProviderSignInController</classname> works very much like <classname>ConnectController</classname> in that it goes through the OAuth flow (either OAuth 1 or OAuth 2, depending on the provider).
+			At the end of process, however, <classname>ProviderSignInController</classname> attempts to find a previously established connection and uses the connected account to authenticate the user to the application.
+			If no previously established connection matches, the flow will be sent to the application's signup page so that the user may register with the application.
 		</para>
-      
+
 		<para>
-			At the end of process, <classname>TwitterSigninController</classname> attempts to find a previously established connection and uses the connected account to authenticate the user to the application.
-		</para>
-		
-		<para>
-			To add "Sign in with Twitter" capability to your Spring application, configure <classname>TwitterSigninController</classname> as a bean in your Spring MVC application:
-		</para>
+			To add provider signin capability to your Spring application, configure <classname>ProviderSignInController</classname> as a bean in your Spring MVC application:
+		</para>		
 		
 		<programlisting language="xml"><![CDATA[
-<bean class="org.springframework.social.twitter.web.TwitterSigninController">
-    <constructor-arg ref="twitterProvider" />
-    <constructor-arg ref="connectionRepository" />
-    <constructor-arg ref="signinService" />
+<bean class="org.springframework.social.connect.signin.web.ProviderSignInController">
     <constructor-arg value="http://localhost:8080/myapplication" />
 </bean>]]>
 		</programlisting>
 		
 		<para>
-			<classname>TwitterSigninController</classname> is constructed with four arguments:
+			Although <classname>ProviderSignInController</classname>'s only constructor takes 5 parameters, it is also annotated with <classname>@Inject</classname>.
+			So, when optimized for autowiring, the <classname>ProviderSignInController</classname> bean only requires a <code><![CDATA[<constructor-arg>]]></code> to specify the application's base URL.
+			<classname>ProviderSignInController</classname> wil use this URL to construct the callback URL used in the authentication flow.
+		</para>
+		
+		<para>
+			When authenticating through an OAuth 1 provider, <classname>ProviderSignInController</classname> supports the following flow:
 		</para>
 		
 		<itemizedlist>
-			<listitem><para>A reference to a <classname>TwitterServiceProvider</classname> bean. <classname>TwitterSigninController</classname> will use this to negotiate the connection with Twitter.</para></listitem>
-			<listitem><para>A reference to a connection repository bean. After signing into Twitter, <classname>TwitterSigninController</classname> will use the connection repository to find an account ID that is connected to the Twitter profile.</para></listitem>
-			<listitem><para>A reference to an implementation of <interfacename>SignInService</interfacename>, used to perform the actual authentication into the application.</para></listitem>
-			<listitem><para>The application's base URL, used to construct a callback URL for the OAuth flow.</para></listitem>
-		</itemizedlist>
-		
-		<para>
-			<classname>TwitterSigninController</classname>'s constructor is annotated with <code>@Inject</code>, so it's not necessary to explicitly wire any of its arguments except for the application URL.
-			Optimizing the configuration for autowiring, the <classname>TwitterSigninController</classname> bean looks like this: 
-		</para>
-		
-		<programlisting language="xml"><![CDATA[
-<bean class="org.springframework.social.twitter.web.TwitterSigninController">
-    <constructor-arg value="http://localhost:8080/myapplication" />
-</bean>]]>
-		</programlisting>
-		
-		<para>
-			<classname>TwitterSigninController</classname> supports the following flow:
-		</para>
-		
-		<itemizedlist>
-			<listitem><para><code>POST /signin/twitter</code> - Initiates the "Sign in with Twitter" flow, fetching a request token from Twitter and redirecting to Twitter's authentication page.</para></listitem>
-			<listitem><para><code>GET /signin/twitter?oauth_token={request token}&amp;oauth_verifier={verifier}</code> - Receives the authentication callback from Twitter, accepting a verification code. Exchanges this verification code along with the request token for an access token. It uses this access token to lookup a connected account and then authenticates to the application through the sign in service. </para>
+			<listitem><para><code>POST /signin/{provider ID}</code> - Initiates the signin flow. This means fetching a request token from the provider and then redirecting to Provider's authentication page.</para></listitem>
+			<listitem><para><code>GET /signin/{provider ID}?oauth_token={request token}&amp;oauth_verifier={verifier}</code> - Receives the authentication callback from the provider, accepting a verification code. Exchanges this verification code along with the request token for an access token. It uses this access token to lookup a connected account and then authenticates to the application through the sign in service. </para>
 				<itemizedlist>
 					<listitem>
 						<para>
-							If the received access token doesn't match any existing connection, <classname>TwitterSigninController</classname> will redirect to a signup URL. 
-							The default signup URL is "/signup" (relative to the application root).
+							If the received access token doesn't match any existing connection, <classname>ProviderSignInController</classname> will redirect to a signup URL. 
+							The signup URL is "/signup" (relative to the application root).
 						</para>
 					</listitem>
 				</itemizedlist>
 			</listitem>
 		</itemizedlist>
-		
+
 		<para>
-			<classname>TwitterSigninController</classname> handles the authentication flow with Twitter, but relies on an implementation of <interfacename>SignInService</interfacename> to perform the actual authentication into the application. <interfacename>SignInService</interfacename> is defined as follows:
+			For OAuth 2 providers, the flow is only slightly different:
+		</para>
+		
+		<itemizedlist>
+			<listitem><para><code>POST /signin/{provider ID}</code> - Initiates the signin flow. Redirects to Provider's authentication page.</para></listitem>
+			<listitem><para><code>GET /signin/{provider ID}?code={verifier}</code> - Receives the authentication callback from the provider, accepting a code. Exchanges this code for an access token. It uses this access token to lookup a connected account and then authenticates to the application through the sign in service. </para>
+				<itemizedlist>
+					<listitem>
+						<para>
+							If the received access token doesn't match any existing connection, <classname>ProviderSignInController</classname> will redirect to a signup URL. 
+							The signup URL is "/signup" (relative to the application root).
+						</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+		</itemizedlist>
+				
+		<para>
+			<classname>ProviderSignInController</classname> handles the authentication flow with a provider, but relies on an implementation of <interfacename>SignInService</interfacename> to perform the actual authentication into the application. 
+			<interfacename>SignInService</interfacename> is defined as follows:
 		</para>
 
 		<programlisting language="java"><![CDATA[
-public interface SignInService<T extends Serializable> {
-    void signIn(T accountId);	
+public interface SignInService {
+    void signIn(String localUserId);
 }]]>
 		</programlisting>
 
@@ -94,22 +86,23 @@ public interface SignInService<T extends Serializable> {
 		</para>
 
 		<programlisting language="java"><![CDATA[
-package org.springframework.social.showcase;
-
-import java.io.Serializable;
+package org.springframework.social.showcase.signin;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.social.web.signin.SignInService;
+import org.springframework.social.connect.signin.web.SignInService;
 
-public class AccountIdAsPrincipalSigninService implements SignInService<Long> {
-    public void signIn(Long accountId) {
-        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(accountId, null, null));
+public class SpringSecuritySigninService implements SignInService {
+    public void signIn(String localUserId) {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(localUserId, null, null));
     }
-}]]>
+}
+]]>
 		</programlisting>
 
 		<para>
-      		The last thing to do is to add a "Sign in with Twitter" button to your application:
+      		The last thing to do is to add a signin button to your application that will kick off the authentication flow with <classname>ProviderSignInController</classname>.
+      		As an example, let's add a "Signin with Twitter" button:
   		</para>
           
 		<programlisting language="xml"><![CDATA[
@@ -136,145 +129,10 @@ public class AccountIdAsPrincipalSigninService implements SignInService<Long> {
 			After signing in, the flow will redirect back to the application to complete the sign in process.
 		</para>
     
-    	<para>
-    		If the user has already signed into Twitter prior to clicking the sign in button, Twitter will redirect the flow back to the application without presenting the user with a sign in page.
-		</para>
-	</section>
-
-	<section xml:id="signin_with_facebook">
-		<title>Sign in with Facebook</title>
-      
-		<para>
-			Spring Social's <classname>FacebookSigninController</classname>, when paired with Facebook's <code><![CDATA[<fb:login-button>]]></code> XFBML tag<footnote><para><ulink url="http://developers.facebook.com/docs/reference/plugins/login/"/></para></footnote>, enables a user to authenticate to an application by first signing into Facebook.
-		</para>
-		
-		<para>
-			Facebook's XFBML tag collection includes <code><![CDATA[<fb:login-button>]]></code>, which displays a login button. 
-			When a user clicks on that button, they will be presented with a Facebook Login dialog that looks similar to this:
-		</para>
-		
-		<mediaobject>
-			<imageobject role="fo">
-				<imagedata fileref="images/sign-in-with-facebook.png" format="PNG" align="center" scale="40"/>
-			</imageobject>
-			<imageobject role="html">
-				<imagedata fileref="images/sign-in-with-facebook.png" format="PNG" align="center" scale="40"/>
-			</imageobject>
-		</mediaobject>
-		
-		<para>
-			After successfully signing into Facebook, a cookie will be written that contains an access token. 
-			If the user has previously established a connection between their account and their Facebook profile, this access token will be the same token that was issued before. 
-			<classname>FacebookSigninController</classname> works by extracting that access token from the cookie and using it to lookup a connected account and authenticate to that account.
-		</para>
-		
-		<para>
-			To enable "Sign in with Facebook" functionality in your application, start by configuring <classname>FacebookSigninController</classname> as a bean in the Spring MVC configuration:
-		</para>
-		
-		<programlisting language="xml"><![CDATA[
-<bean class="org.springframework.social.facebook.web.FacebookSigninController">
-    <constructor-arg ref="facebookProvider" />
-    <constructor-arg ref="connectionRepository" />
-    <constructor-arg ref="signinService" />
-</bean>]]>
-		</programlisting>
-		
-		<para>
-			As with <classname>TwitterSigninController</classname>, <classname>FacebookSigninController</classname> depends on a connection repository to lookup connections and a sign in service to handle the actual application authentication.
-			It also needs a reference to a <classname>FacebookServiceProvider</classname> bean that it will use to negotiate the connection with Facebook.
-		</para>
-
-		<para>
-			<classname>FacebookSigninController</classname>'s constructor is annotated with <code>@Inject</code>, so it is not necessary to explicitly wire these dependencies.
-			The <classname>FacebookSigninController</classname> configuration optimized for autowiring takes a simpler form:
-		</para>
-
-		<programlisting language="xml"><![CDATA[
-<bean class="org.springframework.social.facebook.web.FacebookSigninController"/>]]>
-		</programlisting>
-				
-		<para>
-			However, since Facebook's sign in process is not based on an OAuth 1 flow, <classname>FacebookSigninController</classname> does not need the base URL to create a callback URL from. 
-			Instead, <classname>FacebookSigninController</classname> needs to know the application's Facebook app id and secret that were issued to the application when it was first registered in Facebook. 
-			It uses the app id to find the cookie and the application secret to verify the authenticity of the cookie by calculating and comparing signatures.
-		</para>
-		  
-		<para>
-			With <classname>FacebookSigninController</classname> configured, the next thing to do is to load and initialize Facebook's JavaScript library and XFBML in your application's sign in page.
-			Spring Social provides a convenient JSP tag to handle that work for you.
-			Simply declare the Spring Social Facebook tag library in your JSP:
-		</para>
-		
-		<programlisting language="xml"><![CDATA[
-<%@ taglib uri="http://www.springframework.org/spring-social/facebook/tags" prefix="facebook" %>]]>
-		</programlisting>
-		
-		<para>
-			Then use the <code><![CDATA[<facebook:init>]]></code> tag:
-		</para>
-
-		<programlisting language="xml"><![CDATA[
-<s:eval expression="@facebookProvider.appId" var="appId" />
-<facebook:init appId="${appId}" />]]>
-		</programlisting>
-
-		<para>Note that the tag prefix cannot be "fb", as that would create a conflict between Spring Social's Facebook JSP tag library and Facebook's XFBML tags (which use "fb" as their prefix).</para>
-		
-		<para>
-			The <code><![CDATA[<facebook:init>]]></code> will initialize the Facebook JavaScript library with your application's App ID.
-			This is the appId assigned to your application when you registered it with Facebook.
-			Here the App ID is specified using the Spring Expression Langauge to be the value of the <code>appId</code> property of the bean whose ID is "facebookProvider".
-		</para>
-
-
-		<para>
-			Now that the Facebook JavaScript API is initialized you just need to add the <code><![CDATA[<fb:login-button>]]></code> to the page:
-		</para>
-		
-		<programlisting language="xml"><![CDATA[
-<form id="fb_signin" action="<c:url value="/signin/facebook"/>" method="POST">
-    <div id="fb-root"></div>
-    <p><fb:login-button onlogin="$('#fb_signin').submit();" v="2" length="long">Signin with Facebook</fb:login-button></p>
-</form>]]>
-		</programlisting>
-		
-		<para>
-			Notice that here <code><![CDATA[<fb:login-button>]]></code> is within a form that submits to "/signin/facebook" (the URL that <classname>FacebookSigninController</classname> handles). 
-			Although it's not strictly required that <code><![CDATA[<fb:login-button>]]></code> be within this form, the form itself is necessary to trigger <classname>FacebookSigninController</classname>. 
-			<code><![CDATA[<fb:login-button>]]></code> doesn't directly submit this form, so it doesn't matter whether or not it is in the form.
-		</para>
-		
-		<para>
-			<code><![CDATA[<fb:login-button>]]></code>'s <code>onlogin</code> attribute indicates what action should be taken upon successful Facebook login. 
-			In this case, <code>onlogin</code> is set to use jQuery to submit the form, triggering <classname>FacebookSigninController</classname> to authenticate the user to the application.
-		</para>
 	</section>
 	
 	<section xml:id="signin_signup">
 		<title>Signing up after a failed sign in</title>
 		
-		<para>
-			With both <classname>TwitterSigninController</classname> and <classname>FacebookSigninController</classname>, the flow will redirect to a signup page if no connection can be found for the obtained access token.
-			By default, the signup URL is "/signup", relative to the application root.
-			You can override that default by setting the <code>signupUrl</code> property on the controller.
-			For example, the following configuration of <classname>TwitterSigninController</classname> sets the signup URL to "/newUser":
-		</para>
-		
-		<programlisting language="xml"><![CDATA[
-<bean class="org.springframework.social.twitter.web.TwitterSigninController">
-    <constructor-arg value="http://localhost:8080/myapplication" />
-    <property name="signupUrl" value="/newUser" />
-</bean>]]>
-		</programlisting>
-		
-		<para>
-			After the user has successfully signed up in your application, you can complete the connection between the provider and the newly created account by calling <methodname>ProviderSignInUtils.handleConnectPostSignUp()</methodname>:
-		</para>
-		
-		<programlisting language="java"><![CDATA[
-ProviderSignInUtils.handleConnectPostSignUp(accountId, request);
-]]>
-		</programlisting>
 	</section>	
 </chapter>

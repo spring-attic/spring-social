@@ -160,7 +160,8 @@ public class FacebookProfile implements Serializable {
 	}
 
 	/**
-	 * The user's email address
+	 * The user's email address.
+	 * Available only with "email" permission.
 	 * @return The user's email address
 	 */
 	public String getEmail() {
@@ -292,14 +293,26 @@ public class FacebookProfile implements Serializable {
 		return languages;
 	}
 	
+	/**
+	 * A list of references to sports the user plays
+	 * @return a list of {@link Reference}s to sports the user plays, if available.
+	 */
 	public List<Reference> getSports() {
 		return sports;
 	}
 	
+	/**
+	 * A list of references to the user's favorite sports teams.
+	 * @return a list of {@link Reference}s to sports teams the user is a fan of, if available.
+	 */
 	public List<Reference> getFavoriteTeams() {
 		return favoriteTeams;
 	}
 	
+	/**
+	 * A list of references to the user's favorite athletes.
+	 * @return a list of {@link Reference}s to athletes the user is a fan of, if available.
+	 */
 	public List<Reference> getFavoriteAtheletes() {
 		return favoriteAthletes;
 	}
@@ -324,7 +337,7 @@ public class FacebookProfile implements Serializable {
 
 	/**
 	 * The user's quotations. 
-	 * Available only with "user_about_me" persmission.
+	 * Available only with "user_about_me" permission.
 	 * @return the user's quotations, if available.
 	 */
 	public String getQuotes() {

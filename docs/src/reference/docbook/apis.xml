@@ -627,7 +627,10 @@ FacebookProfile profile = facebookApi.userOperations().getUserProfile();]]>
 			</programlisting>
 
 			<para>
-				The <classname>FacebookProfile</classname> object will contain basic profile information about the authenticating user, including their first and last name, their email address, and their Facebook ID.
+				The <classname>FacebookProfile</classname> object will contain basic profile information about the authenticating user, including their first and last name and their Facebook ID.
+				Depending on what authorization scope has been granted to the application, it may also include additional details about the user such as their email address, birthday, hometown, and religious and political affiliations.
+				For example, <methodname>getBirthday()</methodname> will return the current user's birthday if the application has been granted "user_birthday" permission; null otherwise.
+				Consult the JavaDoc for <classname>FacebookProfile</classname> for details on which permissions are required for each property.
 			</para>
 			
 			<para>
@@ -680,10 +683,10 @@ List<FacebookProfile> friends = facebookApi.friendOperations().getFriendProfiles
 		</section>
 
 		<section id="facebook-status">
-			<title>Posting to a user's wall</title>
+			<title>Posting to and reading feeds</title>
 
 			<para>
-				To post a message to the user's Facebook wall, call the <methodname>updateStatus()</methodname> method, passing in the message to be posted:
+				To post a message to the user's Facebook wall, call <interfacename>FeedOperations</interfacename>' <methodname>updateStatus()</methodname> method, passing in the message to be posted:
 			</para>
 			
 			<programlisting language="java"><![CDATA[
@@ -705,38 +708,43 @@ facebookApi.feedOperations().updateStatus("I'm trying out Spring Social!", link)
 			<para>
 				When constructing the <classname>FacebookLink</classname> object, the first parameter is the link's URL, the second parameter is the name of the link, the third parameter is a caption, and the fourth is a description of the link.
 			</para>
-		</section>
-
-		<section id="facebook-publishing">
-			<title>Publishing to Facebook</title>
 			
 			<para>
-				Facebook's Graph API allows authenticated users to publish data to several of its object types. 
-				<interfacename>FacebookApi</interfacename> enables arbitrary publication via the Graph API with its <methodname>publish()</methodname> method.
-			</para>
-			
-			<para>
-				For example, in the previous section you saw how to post a message to the user's Facebook wall using <methodname>updateStatus()</methodname>. 
-				Alternatively you could have accomplished the same thing using <methodname>publish()</methodname> like this:
+				If you want to read posts from a user's feed, <interfacename>FeedOperations</interfacename> has several methods to choose from.
+				The <methodname>getFeed()</methodname> method retrieves recent posts to a user's wall.
+				When called with no parameters, it retrieves posts from the authenticating user's wall:
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
-data.set("message", message);
-facebookApi.publish("me", "feed", data);]]>
+List<Post> feed = facebookApi.feedOperations().getFeed();]]>
 			</programlisting>
 			
 			<para>
-				The first argument to the <methodname>publish()</methodname> method is the object to publish to--in this case "me" indicates the authenticated user. 
-				The second argument is the connection associated with the object--"feed" indicates that it is the user's Facebook wall. 
-				Finally, the third argument is a <classname>MultiValueMap</classname> containing data to be published. 
-				In this case, it only contains a "message" to be posted to the user's wall.
-			</para> 
+				Or you can read a specific user's wall by passing their Facebook ID to <methodname>getFeed()</methodname>:
+			</para>			
+
+			<programlisting language="java"><![CDATA[
+List<Post> feed = facebookApi.feedOperations().getFeed("habuma");]]>
+			</programlisting>
+
+			<para>
+				In any event, the <methodname>getFeed()</methodname> method returns a list of <classname>Post</classname> objects.
+				The <classname>Post</classname> class has six subtypes to represent different kinds of posts:
+			</para>
+			
+			<itemizedlist>
+				<listitem><para><classname>CheckinPost</classname> - Reports a user's checkin in Facebook Places.</para></listitem>
+				<listitem><para><classname>LinkPost</classname> - Shares a link the user has posted.</para></listitem>
+				<listitem><para><classname>NotePost</classname> - Publicizes a note that the user has written.</para></listitem>
+				<listitem><para><classname>PhotoPost</classname> - Announces a photo that the user has uploaded.</para></listitem>
+				<listitem><para><classname>StatusPost</classname> - A simple status.</para></listitem>
+				<listitem><para><classname>VideoPost</classname> - Announces a video that the user has uploaded.</para></listitem>
+			</itemizedlist>
 			
 			<para>
-				You can read more about what graph API objects and connections Facebook supports for publishing at <ulink url="http://developers.facebook.com/docs/api#editing"/>
-			</para>
-		</section>
+				The <classname>Post</classname>'s <methodname>getType()</methodname> method identifies the type of <classname>Post</classname>.
+			</para>			
+		</section>		
 	</section>
 
 	<section xml:id="section_api_linkedin">
