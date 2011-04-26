@@ -9,7 +9,7 @@
 	<section id="service-providers-implementing">
 		<title>Process</title>
 		<para>
-			The process of adding client support for a service provider consists of several steps:
+			The process of adding support for a new service provider consists of several steps:
 			<orderedlist>
 				<listitem>
 					<para>Create a source project for the client code e.g. <code>spring-social-twitter</code>.</para>
@@ -35,9 +35,8 @@
 	<section id="service-providers-implementing-project">
 		<title>Creating a source project for the provider client code</title>
 		<para>
-			A Spring Social client module is simply a standard Java project that builds a jar artifact e.g. spring-social-twitter.jar.
-			We do recommend the actual code structure follow several packaging guidelines described below.
-			To make this as easy as possible to do, we have also created a template project you may use as a starting point.
+			A Spring Social client module is simply a standard Java project that builds a single jar artifact e.g. spring-social-twitter.jar.
+			We do recommend the actual code structure follow several packaging guidelines that are described below.
 		</para>
 		<section id="service-providers-implementing-project-structure">
 			<title>Code structure recommendations</title>
@@ -46,7 +45,7 @@
 				where {providerId} is a unique identifier you assign to the service provider you are adding support for.
 				Consider some of the providers already supported by the framework as examples:
 				<table xml:id="service-providers-implementing-project-structure-examples">
-					<title>Spring Social Client Projects</title>
+					<title>Spring Social Client Modules</title>
 					<tgroup cols="3">
 						<colspec align="left" />
 						<colspec colnum="1" colname="col1" colwidth="2*" />
@@ -91,11 +90,11 @@
 						<tbody>
 							<row>
 								<entry>api</entry>
-								<entry>The public interface of the Java API binding.</entry>
+								<entry>The public interface that defines the API binding.</entry>
 							</row>					
 							<row>
 								<entry>api.impl</entry>
-								<entry>The primary implementation of the Java API binding.</entry>
+								<entry>The implementation of the API binding.</entry>
 							</row>					
 							<row>
 								<entry>connect</entry>
@@ -106,7 +105,7 @@
 				</table>
 			</para>
 			<para>
-				You can see this recommended structure in action by reviewing one of the other client modules such as spring-social-twitter:`
+				You can see this recommended structure in action by reviewing one of the other client modules such as spring-social-twitter:
 				<mediaobject>
 					<imageobject role="fo">
 						<imagedata fileref="images/spring-social-twitter-example.png" format="PNG" align="center" />
@@ -192,17 +191,18 @@ public interface DirectMessageOperations {
 		<section id="service-provider-implementing-api-new-implementing">
 			<title>Implementing a new Java API binding</title>
 			<para>
-				API developers are free to implement their Java API binding with whatever HTTP/REST client they see fit.
-				That said, Spring Social's existing API bindings such as spring-social-twitter all use Spring Framework's RestTemplate in conjunction with the Jackson JSON ObjectMapper.
+				API developers are free to implement their Java API binding with whatever REST/HTTP client they see fit.
+				That said, Spring Social's existing API bindings such as spring-social-twitter all use Spring Framework's RestTemplate in conjunction with the Jackson JSON ObjectMapper and Apache HttpComponents HTTP client.
 				RestTemplate is a popular REST client that provides a uniform object mapping interface across a variety of data exchange formats (JSON, XML, etc).
 				Jackson is the leading Java-based JSON marshalling technology.
+				Apache HttpComponents has proven to be the most robust HTTP client (if it is not available on the classpath Spring Social will fallback to standard J2SE facilities, however).
 				To help promote consistency across Spring Social's supported bindings, we do recommend you consider these implementation technologies (and please let us know if they do not meet your needs).
 			</para>
 			<para>
 				Spring Social has adopted a convention where each API implementation class is named "{ProviderId}Template" e.g. TwitterTemplate.
 				We favor this convention unless there is a good reason to deviate from it.
-				As discussed in the previous section, we also recommend keeping implementation types separate from the public API types.
-				And we recommend keeping internal implementation details package-private.
+				As discussed in the previous section, we recommend keeping implementation types separate from the public API types.
+				We also recommend keeping internal implementation details package-private.
 			</para>
 			<para>
 				The way in which an API binding implementation is constructed will vary based on the API's authorization protocol.
@@ -240,7 +240,7 @@ public FacebookTemplate(String accessToken) {
 				</programlisting>
 			</para>
 			<para>
-				Once the REST client has been configured as shown above, you simply use it to implement your various API bindings.
+				Once the REST client has been configured as shown above, you simply use it to implement the various API operations.
 				The existing Spring Social client modules all invoke their RestTemplate instances in a standard manner:
 				<programlisting language="java"><![CDATA[
 public TwitterProfile getUserProfile() {
@@ -259,13 +259,13 @@ public TwitterProfile getUserProfile(String screenName) {
 			</para>
 			<para>
 				For complete implementation examples, consult the existing API bindings included in Spring Social.
-				spring-social-twitter and spring-social-facebook provide particularly good references.
+				<code>spring-social-twitter</code> and <code>spring-social-facebook</code> provide particularly good references.
 			</para>
 		</section>
 		<section id="service-provider-implementing-api-new-testing">
 			<title>Testing a new Java API binding</title>
 			<para>
-				Spring Social includes a framework for testing API bindings in the spring-social-test module.
+				As part of the spring-social-test module, Spring Social includes a framework for unit testing API bindings:
 				This framework consists of a "MockRestServiceServer" that can be used to mock out API calls to the remote service provider.
 				This allows for the development of independent, performant, automated unit tests that verify client API binding and object mapping behavior.
 			</para>
@@ -277,11 +277,11 @@ TwitterTemplate twitter = new TwitterTemplate("API_KEY", "API_SECRET", "ACCESS_T
 MockRestServer mockServer = MockRestServiceServer.createServer(twitter.getRestTemplate());]]>
 			</programlisting>
 			<para>
-				Then for each test case record expectations about how the server should be invoked and answer what it should respond with:
+				Then, for each test case, record expectations about how the server should be invoked and answer what it should respond with:
 			</para>
 			<programlisting language="java"><![CDATA[
 @Test
-public void getUserProfile() throws Exception {
+public void getUserProfile() {
     HttpHeaders responseHeaders = new HttpHeaders();
     responseHeaders.setContentType(MediaType.APPLICATION_JSON);
     
@@ -291,7 +291,7 @@ public void getUserProfile() throws Exception {
 
     TwitterProfile profile = twitter.userOperations().getUserProfile();
     assertEquals(161064614, profile.getId());
-    assertEquals("artnames", profile.getScreenName());
+    assertEquals("kdonald", profile.getScreenName());
 }]]>
 			</programlisting>
 			<para>
@@ -308,32 +308,47 @@ private Resource jsonResource(String filename) {
 			<programlisting language="java"><![CDATA[
 {
     "id":161064614,
-    "screen_name":"artnames"
+    "screen_name":"kdonald"
 }]]>
-			</programlisting>			
+			</programlisting>
+			<para>
+				For complete test examples, consult the existing API bindings included in Spring Social.
+				<code>spring-social-twitter</code> and <code>spring-social-facebook</code> provide particularly good references.
+			</para>
 		</section>				
 		<section id="service-provider-implementing-api-existing-integrating">
 			<title>Integrating an existing Java API binding</title>
-		</section>		
+			<para>
+				If you are adding support for a popular service provider, chances are a Java binding to the provider's API may already exist.
+				For example, the Twitter4j library has been around for awhile and provides a complete binding to Twitter's API.
+				Instead of developing your own binding, you may simply wish to integrate what already exists.
+				Spring Social's connect framework has been carefully designed to support this scenario.
+			</para>
+			<para>
+				To integrate an existing API binding, simply note the binding's primary API interface and implementation.
+				For example, in Twitter4j the main API interface is named "Twitter" and instances are constructed by a TwitterFactory.
+				You can always construct such an API instance directly, and you'll see in the following sections how to expose an instance as part of a ServiceProviderConnection.
+			</para>
+		</section>
 	</section>
-	<section id="service-providers-implementing-oauth2">
-		<title>OAuth2 Service Providers</title>
-		<para>
-			To implement an OAuth2-based ServiceProvider, first extend AbstractOAuth2ServiceProvider.
-			Parameterize &lt;S&gt; to be the Java Binding to the ServiceProvider API.
-			Define a single constructor that accepts an clientId and clientSecret,
-			Finally, implement getServiceApi(String) to return a new API instance.
-		</para>
-		<para>
-			See FacebookServiceProvider as an example of an OAuth2-based ServiceProvider:
-		</para>
-		<programlisting language="java"><![CDATA[
+	<section id="service-providers-implementing-serviceprovider">
+		<title>Creating a ServiceProvider implementation</title>
+		<section id="service-providers-implementing-serviceprovider-oauth2">
+			<title>OAuth2</title>
+			<para>
+				To implement an OAuth2-based ServiceProvider, first extend AbstractOAuth2ServiceProvider.
+				Parameterize &lt;S&gt; to be the Java Binding to the ServiceProvider API.
+				Define a single constructor that accepts an clientId and clientSecret,
+				Finally, implement getServiceApi(String) to return a new API binding instance.
+			</para>
+			<para>
+				See FacebookServiceProvider as an example of an OAuth2-based ServiceProvider:
+			</para>
+			<programlisting language="java"><![CDATA[
 public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<FacebookApi> {
 
     public FacebookServiceProvider(String clientId, String clientSecret) {
-        super(new OAuth2Template(clientId, clientSecret,
-            "https://graph.facebook.com/oauth/authorize", 
-            "https://graph.facebook.com/oauth/access_token"));
+        super(new OAuth2Template(clientId, clientSecret, "https://graph.facebook.com/oauth/authorize", "https://graph.facebook.com/oauth/access_token"));
     }
 
     public FacebookApi getServiceApi(String accessToken) {
@@ -341,42 +356,27 @@ public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider
     }
 
 }]]>
-		</programlisting>
-		<para>
-			In the constructor, you should call super, passing up the configured OAuth2Template, which implements OAuth2Operations.
-			The OAuth2Template will handle the "OAuth dance" with the provider, and should be configured with the provided clientId and clientSecret, along with the provider-specific authorizeUrl and accessTokenUrl.
-		</para>
-		<para>
-			In getServiceApi(String), you should construct your Service API implementation, passing it the access token needed to make requests for protected resources.
-			Inside the API implementation, we generally recommend using RestTemplate to make the HTTP calls and add the required Authorization header:
-		</para>
-		<programlisting language="java"><![CDATA[
-public FacebookTemplate(String accessToken) {
-    // creates a RestTemplate that adds the OAuth2-draft10 Authorization header to each request before it is executed
-    restTemplate = ProtectedResourceClientFactory.draft10(accessToken);
-}]]>
-		</programlisting>
-		<para>
-			An example API call with RestTemplate is shown below:
-		</para>
-		<programlisting language="java"><![CDATA[
-public FacebookProfile getUserProfile(String facebookId) {
-    return new FacebookProfile(restTemplate.getForObject("https://graph.facebook.com/{facebookId}", Map.class, facebookId));
-}]]>
-		</programlisting>
-	</section>
-	<section id="service-providers-implementing-oauth1">
-		<title>OAuth1 Service Providers</title>
-		<para>
-			To implement an OAuth1-based ServiceProvider, first extend AbstractOAuth1ServiceProvider.
-			Parameterize &lt;S&gt; to be the Java Binding to the ServiceProvider API.
-			Define a single constructor that accepts a consumerKey and consumerSecret.
-			Finally, implement getServiceApi(String, String) to return a new API instance.
-		</para>
-		<para>
-			See TwitterServiceProvider as an example of an OAuth1-based ServiceProvider:
-		</para>
-		<programlisting language="java"><![CDATA[
+			</programlisting>
+			<para>
+				In the constructor, you should call super, passing up the configured OAuth2Template, which implements OAuth2Operations.
+				The OAuth2Template will handle the "OAuth dance" with the provider, and should be configured with the provided clientId and clientSecret, along with the provider-specific authorizeUrl and accessTokenUrl.
+			</para>
+			<para>
+				In getServiceApi(String), you should construct your Service API implementation, passing it the access token needed to make requests for protected resources.
+			</para>
+		</section>
+		<section id="service-providers-implementing-serviceprovider-oauth1">
+			<title>OAuth1</title>
+			<para>
+				To implement an OAuth1-based ServiceProvider, first extend AbstractOAuth1ServiceProvider.
+				Parameterize &lt;S&gt; to be the Java Binding to the ServiceProvider API.
+				Define a single constructor that accepts a consumerKey and consumerSecret.
+				Finally, implement getServiceApi(String, String) to return a new API binding instance.
+			</para>
+			<para>
+				See TwitterServiceProvider as an example of an OAuth1-based ServiceProvider:
+			</para>
+			<programlisting language="java"><![CDATA[
 public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<TwitterApi> {
 
     public TwitterServiceProvider(String consumerKey, String consumerSecret) {
@@ -391,29 +391,21 @@ public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<
     }
 
 }]]>
-		</programlisting>
-		<para>
-			In the constructor, you should call super, passing up the the consumerKey, secret, and configured OAuth1Template.
-			The OAuth1Template will handle the "OAuth dance" with the provider.
-			It should be configured with the provided consumerKey and consumerSecret, along with the provider-specific requestTokenUrl, authorizeUrl, and accessTokenUrl.
-		</para>			
-		<para>
-			In getServiceApi(String, String), you should construct your Service API implementation, passing it the four tokens needed to make requests for protected resources.
-			Inside the API implementation, we generally recommend using RestTemplate to make the HTTP calls and add the required Authorization header:
-		</para>
-		<programlisting language="java"><![CDATA[
-public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
-    // creates a RestTemplate that adds the OAuth1 Authorization header to each request before it is executed
-    restTemplate = ProtectedResourceClientFactory.create(consumerKey, consumerSecret, accessToken, accessTokenSecret);
-}]]>
-		</programlisting>
-		<para>
-			An example API call with RestTemplate is shown below:
-		</para>
-		<programlisting language="java"><![CDATA[
-public TwitterProfile getUserProfile(String screenName) {
-    return new TwitterProfile(restTemplate.getForObject("https://api.twitter.com/1/users/show.json?screen_name={screenName}", Map.class, screenName));
-}]]>
-		</programlisting>									
+			</programlisting>
+			<para>
+				In the constructor, you should call super, passing up the the consumerKey, secret, and configured OAuth1Template.
+				The OAuth1Template will handle the "OAuth dance" with the provider.
+				It should be configured with the provided consumerKey and consumerSecret, along with the provider-specific requestTokenUrl, authorizeUrl, and accessTokenUrl.
+			</para>			
+			<para>
+				In getServiceApi(String, String), you should construct your Service API implementation, passing it the four tokens needed to make requests for protected resources.
+			</para>
+		</section>
 	</section>
+	<section id="service-providers-implementing-serviceapiadapter">
+		<title>Creating a ServiceApiAdapter</title>
+	</section>
+	<section id="service-providers-implementing-serviceproviderconnectionfactory">
+		<title>Creating a ServiceProviderConnectionFactory</title>
+	</section>		
 </chapter>
