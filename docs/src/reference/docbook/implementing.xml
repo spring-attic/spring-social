@@ -513,7 +513,7 @@ public class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProvi
 }]]>
 			</programlisting>			
 		</section>		
-		<section id="service-providers-implementing-serviceproviderconnectionfactory-oauth2">
+		<section id="service-providers-implementing-serviceproviderconnectionfactory-oauth1">
 			<title>OAuth1</title>
 			<para>
 				Create a subclass of OAuth1ServiceProviderConnectionFactory&lt;S&gt; named {ProviderId}ServiceProviderConnectionFactory and parameterize S to be the Java binding to the service provider's API.
