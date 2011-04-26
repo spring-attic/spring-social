@@ -218,7 +218,7 @@ public FacebookTemplate(String accessToken) { ... }]]>
 				</programlisting>
 			</para>
 			<para>
-				Each request made to the API's "resource server" needs to be signed with the OAuth credentials provided during construction.
+				Each request made to the API's "resource server" needs to be signed with the authorization credentials provided during construction.
 				This signing process consists of adding an "Authorization" header to each client request before it is executed.
 				For OAuth1, the process is quite complicated, and is used to support an elaborate request signature verification algorithm between the client and server.
 				For OAuth2, it is a lot simpler, but does still vary across the various drafts of the OAuth2 specification.
@@ -264,6 +264,53 @@ public TwitterProfile getUserProfile(String screenName) {
 		</section>
 		<section id="service-provider-implementing-api-new-testing">
 			<title>Testing a new Java API binding</title>
+			<para>
+				Spring Social includes a framework for testing API bindings in the spring-social-test module.
+				This framework consists of a "MockRestServiceServer" that can be used to mock out API calls to the remote service provider.
+				This allows for the development of independent, performant, automated unit tests that verify client API binding and object mapping behavior.
+			</para>
+			<para>
+				To use, first create a MockRestServiceServer against the RestTemplate instance used by your API implementation:
+			</para>
+			<programlisting language="java"><![CDATA[
+TwitterTemplate twitter = new TwitterTemplate("API_KEY", "API_SECRET", "ACCESS_TOKEN", "ACCESS_TOKEN_SECRET");
+MockRestServer mockServer = MockRestServiceServer.createServer(twitter.getRestTemplate());]]>
+			</programlisting>
+			<para>
+				Then for each test case record expectations about how the server should be invoked and answer what it should respond with:
+			</para>
+			<programlisting language="java"><![CDATA[
+@Test
+public void getUserProfile() throws Exception {
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+    
+    mockServer.expect(requestTo("https://api.twitter.com/1/account/verify_credentials.json"))
+        .andExpect(method(GET))
+        .andRespond(withResponse(jsonResource("verify-credentials"), responseHeaders));
+
+    TwitterProfile profile = twitter.userOperations().getUserProfile();
+    assertEquals(161064614, profile.getId());
+    assertEquals("artnames", profile.getScreenName());
+}]]>
+			</programlisting>
+			<para>
+				In the example above the response body is written from a verify-credentials.json file located in the same package as the test class:
+			</para>
+			<programlisting language="java"><![CDATA[
+private Resource jsonResource(String filename) {
+    return new ClassPathResource(filename + ".json", getClass());
+}]]>
+			</programlisting>
+			<para>
+				The content of the file should mirror the content the remote service provider would return, allowing the client JSON deserialization behavior to be fully tested:
+			</para>
+			<programlisting language="java"><![CDATA[
+{
+    "id":161064614,
+    "screen_name":"artnames"
+}]]>
+			</programlisting>			
 		</section>				
 		<section id="service-provider-implementing-api-existing-integrating">
 			<title>Integrating an existing Java API binding</title>
