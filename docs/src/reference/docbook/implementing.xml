@@ -228,7 +228,7 @@ public FacebookTemplate(String accessToken) { ... }]]>
 				construct a pre-configured RestTemplate instance that performs the request signing for you. For OAuth1:
 				<programlisting language="java"><![CDATA[
 public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
-    this.restTemplate = ProtectedResourceClientFactory.create(apiKey, apiSecret, accessToken, accessTokenSecret);
+    this.restTemplate = ProtectedResourceClientFactory.create(consumerKey, consumerSecret, accessToken, accessTokenSecret);
 }]]>			</programlisting>
 			</para>
 			<para>
