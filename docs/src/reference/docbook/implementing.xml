@@ -506,7 +506,7 @@ public class TwitterServiceApiAdapter implements ServiceApiAdapter<TwitterApi> {
 				See <code>org.springframework.social.facebook.connect.FacebookServiceProviderConnectionFactory</code> as an example OAuth2ServiceProviderConnectionFactory:
 			</para>
 			<programlisting language="java"><![CDATA[
-public final class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
+public class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
     public FacebookServiceProviderConnectionFactory(String clientId, String clientSecret) {
         super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookServiceApiAdapter());
     }
@@ -524,7 +524,7 @@ public final class FacebookServiceProviderConnectionFactory extends OAuth2Servic
 				See <code>org.springframework.social.twitter.connect.TwitterServiceProviderConnectionFactory</code> as an example OAuth1ServiceProviderConnectionFactory:
 			</para>
 			<programlisting language="java"><![CDATA[
-public final class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<FacebookApi> {
+public class TwitterServiceProviderConnectionFactory extends OAuth1ServiceProviderConnectionFactory<FacebookApi> {
     public TwitterServiceProviderConnectionFactory(String consumerKey, String consumerSecret) {
         super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterServiceApiAdapter());
     }
