@@ -44,11 +44,11 @@
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-String apiKey = "..."; // The application's API/Consumer key
-String apiSecret = "..."; // The application's API/Consumer secret
+String consumerKey = "..."; // The application's consumer key
+String consumerSecret = "..."; // The application's consumer secret
 String accessToken = "..."; // The access token granted after OAuth authorization
 String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
-TwitterApi twitterApi = new TwitterTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]>
+TwitterApi twitterApi = new TwitterTemplate(consumerKey, consumerSecret, accessToken, accessTokenSecret);]]>
 		</programlisting>
 		
 		<para>
@@ -71,7 +71,7 @@ TwitterApi twitterApi = new TwitterTemplate();]]>
 		
 		<programlisting language="java"><![CDATA[
 ServiceProviderConnection<TwitterApi> connection = 
-        connectionRepository.findConnectionByServiceApi(TwitterApi);
+        connectionRepository.findPrimaryConnectionToServiceApi(TwitterApi.class);
 TwitterApi twitterApi = connection.getServiceApi();]]>
 		</programlisting>
 		
@@ -515,7 +515,7 @@ FacebookApi facebook = new FacebookTemplate(accessToken);]]>
 
 		<programlisting language="java"><![CDATA[
 ServiceProviderConnection<FacebookApi> connection = 
-        connectionRepository.findConnectionByServiceApi(FacebookApi);
+        connectionRepository.findPrimaryConnectionToServiceApi(FacebookApi.class);
 FacebookApi facebookApi = connection.getServiceApi();]]>
 		</programlisting>
 
@@ -826,11 +826,11 @@ List<Post> feed = facebookApi.feedOperations().getFeed("habuma");]]>
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-String apiKey = "..."; // The application's API/Consumer key
-String apiSecret = "..."; // The application's API/Consumer secret
+String consumerKey = "..."; // The application's consumer key
+String consumerSecret = "..."; // The application's consumer secret
 String accessToken = "..."; // The access token granted after OAuth authorization
 String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
-LinkedInApi linkedinApi = new LinkedInTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]>
+LinkedInApi linkedinApi = new LinkedInTemplate(consumerKey, consumerSecret, accessToken, accessTokenSecret);]]>
 		</programlisting>
 		
 		<para>
@@ -840,7 +840,7 @@ LinkedInApi linkedinApi = new LinkedInTemplate(apiKey, apiSecret, accessToken, a
 		
 		<programlisting language="java"><![CDATA[
 ServiceProviderConnection<LinkedInApi> connection = 
-        connectionRepository.findConnectionByServiceApi(LinkedInApi);
+        connectionRepository.findPrimaryConnectionToServiceApi(LinkedInApi.class);
 LinkedInApi linkedinApi = connection.getServiceApi();]]>
 		</programlisting>
 		
@@ -920,11 +920,11 @@ List<LinkedInProfile> connections = linkedin.getConnections();]]>
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-String apiKey = "..."; // The application's API/Consumer key
-String apiSecret = "..."; // The application's API/Consumer secret
+String consumerKey = "..."; // The application's consumer key
+String consumerSecret = "..."; // The application's consumer secret
 String accessToken = "..."; // The access token granted after OAuth authorization
 String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
-TripItApi tripitApi = new TripItTemplate(apiKey, apiSecret, accessToken, accessTokenSecret);]]>
+TripItApi tripitApi = new TripItTemplate(consumerKey, consumerSecret, accessToken, accessTokenSecret);]]>
 		</programlisting>
 		
 		<para>
@@ -933,7 +933,7 @@ TripItApi tripitApi = new TripItTemplate(apiKey, apiSecret, accessToken, accessT
 		
 		<programlisting language="java"><![CDATA[
 ServiceProviderConnection<TripItApi> connection = 
-        connectionRepository.findConnectionByServiceApi(TripItApi);
+        connectionRepository.findPrimaryConnectionToServiceApi(TripItApi.class);
 TripItApi tripitApi = connection.getServiceApi();]]>
 		</programlisting>
 		
@@ -1024,7 +1024,7 @@ GitHubApi githubApi = new GitHubTemplate(accessToken);]]>
 		
 		<programlisting language="java"><![CDATA[
 ServiceProviderConnection<GitHubApi> connection = 
-        connectionRepository.findConnectionByServiceApi(GitHubApi);
+        connectionRepository.findPrimaryConnectionToServiceApi(GitHubApi.class);
 GitHubApi githubApi = connection.getServiceApi();]]>
 		</programlisting>
 		
@@ -1108,7 +1108,7 @@ GowallaApi gowallaApi = new GowallaTemplate(accessToken);]]>
 		
 		<programlisting language="java"><![CDATA[
 ServiceProviderConnection<GowallaApi> connection = 
-        connectionRepository.findConnectionByServiceApi(GowallaApi);
+        connectionRepository.findPrimaryConnectionToServiceApi(GowallaApi.class);
 GowallaApi gowallaApi = connection.getServiceApi();]]>
 		</programlisting>
 		
