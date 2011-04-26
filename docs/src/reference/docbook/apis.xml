@@ -656,7 +656,7 @@ String profileUrl = facebookApi.userOperations().getProfileUrl();]]>
 
 			<para>
 				An essential feature of Facebook and other social networks is creating a network of friends or contacts. 
-				You can access the user's list of Facebook friends by calling the <methodname>getFriendIds()</methodname> method:
+				You can access the user's list of Facebook friends by calling the <methodname>getFriendIds()</methodname> method from <interfacename>FriendOperations</interfacename>:
 			</para>
 
 			<programlisting language="java"><![CDATA[
@@ -679,6 +679,68 @@ FacebookProfile firstFriend = facebookApi.userOperations().getUserProfile(friend
 			<programlisting language="java"><![CDATA[
 List<FacebookProfile> friends = facebookApi.friendOperations().getFriendProfiles();]]>
 			</programlisting>			
+
+			<para>
+				Facebook also enables users to organize their friends into friend lists.
+				To retrieve a list of the authenticating user's friend lists, call <methodname>getFriendLists()</methodname> with no arguments: 
+			</para>
+
+			<programlisting language="java"><![CDATA[
+List<Reference> friends = facebookApi.friendOperations().getFriendLists();]]>
+			</programlisting>
+			
+			<para>
+				You can also retrieve a list of friend lists for a specific user by passing the user ID (or an alias) to <methodname>getFriendLists()</methodname>:
+			</para>
+
+			<programlisting language="java"><![CDATA[
+List<Reference> friends = facebookApi.friendOperations().getFriendLists("habuma");]]>
+			</programlisting>
+
+			<para>
+				<methodname>getFriendLists()</methodname> returns a list of <classname>Reference</classname> objects that carry the ID and name of each friend list.
+			</para>
+			
+			<para>
+				To retieve a list of friends who are members of a specific friend list call <methodname>getFriendListMembers()</methodname>, passing in the ID of the friend list:
+			</para>
+			
+			<programlisting language="java"><![CDATA[
+List<Reference> friends = facebookApi.friendOperations().getFriendListMembers("193839228");]]>
+			</programlisting>
+			
+			<para>
+				<interfacename>FriendOperations</interfacename> also support management of friend lists.
+				For example, the <methodname>createFriendList()</methodname> method will create a new friend list for the user:
+			</para>
+			
+			<programlisting language="java"><![CDATA[
+Reference collegeFriends = facebookApi.friendOperations().createFriendList("College Buddies");]]>
+			</programlisting>
+			
+			<para>
+				<methodname>createFriendList()</methodname> returns a <classname>Reference</classname> to the newly created friend list.
+			</para>
+			
+			<para>
+				To add a friend to the friend list, call <methodname>addToFriendList()</methodname>:
+			</para>
+
+			<programlisting language="java"><![CDATA[
+facebookApi.friendOperations().addToFriendList(collegeFriends.getId(), "527631174");]]>
+			</programlisting>
+
+			<para>
+				<methodname>addToFriendList()</methodname> takes two arguments: The ID of the friend list and the ID (or alias) of a friend to add to the list.
+			</para>
+			
+			<para>
+				In a similar fashion, you may remove a friend from a list by calling <methodname>removeFromFriendList()</methodname>:
+			</para>
+
+			<programlisting language="java"><![CDATA[
+facebookApi.friendOperations().removeFromFriendList(collegeFriends.getId(), "527631174");]]>
+			</programlisting>
 
 		</section>
 
