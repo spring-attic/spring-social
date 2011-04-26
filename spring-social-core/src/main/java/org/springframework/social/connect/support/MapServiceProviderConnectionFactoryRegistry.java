@@ -27,6 +27,7 @@ import org.springframework.social.connect.ServiceProviderConnectionFactoryLocato
 /**
  * A Map-based registry for {@link ServiceProviderConnectionFactory service provider connection factories}.
  * Implements {@link ServiceProviderConnectionFactoryLocator} for locating registered factory instances.
+ * Call {@link #addConnectionFactory(ServiceProviderConnectionFactory)} to add to this registry.
  * @author Keith Donald
  */
 public class MapServiceProviderConnectionFactoryRegistry implements ServiceProviderConnectionFactoryLocator {
@@ -34,18 +35,6 @@ public class MapServiceProviderConnectionFactoryRegistry implements ServiceProvi
 	private final Map<String, ServiceProviderConnectionFactory<?>> connectionFactories = new HashMap<String, ServiceProviderConnectionFactory<?>>();
 
 	private final Map<Class<?>, String> serviceApiTypeIndex = new HashMap<Class<?>, String>();
-
-	/**
-	 * Set the group of service provider connection factories registered in this registry.
-	 * JavaBean setter that allows for this object to be more easily configured by tools.
-	 * For programmatic configuration, prefer {@link #addConnectionFactory(ServiceProviderConnectionFactory)}.
-	 * @param connectionFactories the set of connection factories to register
-	 */
-	public void setConnectionFactories(List<ServiceProviderConnectionFactory<?>> connectionFactories) {
-		for (ServiceProviderConnectionFactory<?> connectionFactory : connectionFactories) {
-			addConnectionFactory(connectionFactory);
-		}
-	}
 	
 	/**
 	 * Add a {@link ServiceProviderConnectionFactory} to this registry.
@@ -61,6 +50,18 @@ public class MapServiceProviderConnectionFactoryRegistry implements ServiceProvi
 		}
 		connectionFactories.put(connectionFactory.getProviderId(), connectionFactory);
 		serviceApiTypeIndex.put(serviceApiType, connectionFactory.getProviderId());
+	}
+
+	/**
+	 * Set the group of service provider connection factories registered in this registry.
+	 * JavaBean setter that allows for this object to be more easily configured by tools.
+	 * For programmatic configuration, prefer {@link #addConnectionFactory(ServiceProviderConnectionFactory)}.
+	 * @param connectionFactories the set of connection factories to register
+	 */
+	public void setConnectionFactories(List<ServiceProviderConnectionFactory<?>> connectionFactories) {
+		for (ServiceProviderConnectionFactory<?> connectionFactory : connectionFactories) {
+			addConnectionFactory(connectionFactory);
+		}
 	}
 
 	// implementing ServiceProviderConnectionFactoryLocator

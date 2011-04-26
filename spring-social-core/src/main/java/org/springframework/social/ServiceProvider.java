@@ -22,7 +22,7 @@ package org.springframework.social;
  * Defines a single parameterized type S representing a strongly-typed Java binding to the provider's API that can be obtained and invoked by the application.
  * Does not define any operations since the provider authorization flow needed to construct an authorized API binding is protocol specific, for example, OAuth1 or OAuth2.
  * @author Keith Donald
- * @param <S> the service api type
+ * @param <S> the Service API type
  */
 public interface ServiceProvider<S> {
 

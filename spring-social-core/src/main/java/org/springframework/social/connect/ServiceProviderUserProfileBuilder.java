@@ -35,7 +35,8 @@ public class ServiceProviderUserProfileBuilder {
 	private String username;
 	
 	/**
-	 * Sets the name field.
+	 * Sets the profile name field.
+	 * Note: parses the name string and sets the individual firstName and lastName fields as well.
 	 */
 	public ServiceProviderUserProfileBuilder setName(String name) {
 		this.name = name;
@@ -46,7 +47,7 @@ public class ServiceProviderUserProfileBuilder {
 	}
 
 	/**
-	 * Sets the first name field.
+	 * Sets the profile firstName field.
 	 */
 	public ServiceProviderUserProfileBuilder setFirstName(String firstName) {
 		this.firstName = firstName;
@@ -54,7 +55,7 @@ public class ServiceProviderUserProfileBuilder {
 	}
 
 	/**
-	 * Sets the last name field.
+	 * Sets the profile lastName field.
 	 */
 	public ServiceProviderUserProfileBuilder setLastName(String lastName) {
 		this.lastName = lastName;
@@ -62,7 +63,7 @@ public class ServiceProviderUserProfileBuilder {
 	}
 
 	/**
-	 * Sets the email field.
+	 * Sets the profile email field.
 	 */
 	public ServiceProviderUserProfileBuilder setEmail(String email) {
 		this.email = email;
@@ -70,7 +71,7 @@ public class ServiceProviderUserProfileBuilder {
 	}
 
 	/**
-	 * Sets the username field.
+	 * Sets the profile username field.
 	 */
 	public ServiceProviderUserProfileBuilder setUsername(String username) {
 		this.username = username;
@@ -78,7 +79,8 @@ public class ServiceProviderUserProfileBuilder {
 	}
 
 	/**
-	 * Build the user profile.
+	 * Builds the user profile.
+	 * Call this method after setting all profile field values.
 	 */
 	public ServiceProviderUserProfile build() {
 		return new ServiceProviderUserProfile(name, firstName, lastName, email, username);

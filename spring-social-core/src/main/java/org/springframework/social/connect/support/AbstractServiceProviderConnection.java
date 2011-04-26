@@ -24,7 +24,7 @@ import org.springframework.social.connect.ServiceProviderUserProfile;
 
 /**
  * Base support class for {@link ServiceProviderConnection} implementations.
- * Defines state and behavior that is common across implementations and independent of the authorization protocol.
+ * Defines the state and behavior that is common across connection implementations and independent of any specific authorization protocol.
  * @author Keith Donald
  * @param <S> the service API type
  */

@@ -16,14 +16,9 @@
 package org.springframework.social;
 
 /**
- * <p>
- * Exception class that represents a problem from performing an operation on a
- * social network provider (e.g. Twitter).
- * </p>
- * <p>
- * This exception class is abstract, as it is too generic for actual use. When a
- * SocialException is thrown, it should be one of the more specific subclasses.
- * </p>
+ * Exception class indicating a problem occurred performing an operation against a service provider.
+ * This exception class is abstract, as it is too generic for actual use.
+ * When a SocialException is thrown, it should be one of the more specific subclasses.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")

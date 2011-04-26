@@ -16,10 +16,8 @@
 package org.springframework.social;
 
 /**
- * Indicates a security-related error while performing an operation on a social
- * network provider (For example, updating a Twitter user's status with a bad or 
- * missing access token, for example).
- * 
+ * Indicates a security-related error occurred during the invocation of a service provider API operation.
+ * For example, updating a Twitter user's status with a bad or missing access token.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")

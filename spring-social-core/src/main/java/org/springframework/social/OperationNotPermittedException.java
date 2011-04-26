@@ -16,16 +16,8 @@
 package org.springframework.social;
 
 /**
- * <p>
- * Indicates an HTTP 403 (Forbidden) response from making a call to a social
- * network's API.
- * </p>
- * 
- * <p>
- * In the case of Twitter, this often means that you are attempting to post a
- * duplicate tweet or have reached an update limit.
- * </p>
- * 
+ * Indicates an HTTP 403 (Forbidden) response from making a call to a service provider API.
+ * In the case of Twitter, this often means that you are attempting to post a duplicate tweet or have reached an update limit.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")

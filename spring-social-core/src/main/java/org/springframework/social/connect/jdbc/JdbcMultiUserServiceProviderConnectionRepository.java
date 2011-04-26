@@ -36,7 +36,7 @@ import org.springframework.social.connect.ServiceProviderConnectionKey;
 import org.springframework.social.connect.ServiceProviderConnectionRepository;
 
 /**
- * {@link MultiUserServiceProviderConnectionRepository} that uses the JDBC API persist connection data to a relational database.
+ * {@link MultiUserServiceProviderConnectionRepository} that uses the JDBC API to persist connection data to a relational database.
  * The supporting schema is defined in JdbcMultiUserServiceProviderConnectionRepository.sql.
  * @author Keith Donald
  */

@@ -27,10 +27,10 @@ import java.util.Set;
 public interface MultiUserServiceProviderConnectionRepository {
 
 	/**
-	 * Find the id of the <i>single</i> local user who has a {@link ServiceProviderConnection} with the given key.
-	 * Used to support the ProviderSignIn scenario where the user id returned is used to sign the local application user in using his or her provider account.
+	 * Find the id of the <i>single</i> local user that has the given {@link ServiceProviderConnection}.
+	 * Used to support the ProviderSignIn scenario where the user id returned is used to sign a local application user in using his or her provider account.
 	 * Returns null if there is not exactly one local user connected to the provider user.
-	 * May never return null if this method will implicitly create a local user account from the connection if no such local account already exists.
+	 * May never return null if this method implicitly creates a local user account from the connection if no such local account already exists.
 	 * @param connection the service provider connection resulting from the provider sign-in attempt
 	 */
 	String findLocalUserIdWithConnection(ServiceProviderConnection<?> connection);
@@ -45,6 +45,7 @@ public interface MultiUserServiceProviderConnectionRepository {
 	
 	/**
 	 * Create a single-user {@link ServiceProviderConnectionRepository} instance for the local user assigned the given id.
+	 * All operations on the returned repository instance are relative to the local user.
 	 * @param localUserId the id of the local user account.
 	 * @return the ServiceProviderConnectionRepository, exposing a number of operations for accessing and updating the given local user's provider connections.
 	 */

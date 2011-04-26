@@ -28,6 +28,9 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class ServiceProviderUserProfile implements Serializable {
 
+	/**
+	 * Shared, empty profile that when used indicates no profile data is available (all property values are null).
+	 */
 	public static final ServiceProviderUserProfile EMPTY = new ServiceProviderUserProfile(null, null, null, null, null);
 
 	private final String name;
