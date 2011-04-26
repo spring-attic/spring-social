@@ -18,7 +18,7 @@
 					<para>Develop or integrate a Java binding to the provider's "Service API" e.g. <code>TwitterApi</code>.</para>
 				</listitem>
 				<listitem>
-					<para>Create a ServiceProvider that allows users to authorize with the provider and obtain Service API instances e.g. <code>TwitterServiceProvider</code>.</para>
+					<para>Create a ServiceProvider that allows users to authorize with the remote provider and obtain Service API instances e.g. <code>TwitterServiceProvider</code>.</para>
 				</listitem>
 				<listitem>
 					<para>Create a ServiceApiAdapter that maps the provider's native Service API onto the uniform ServiceProviderConnection model e.g. <code>TwitterServiceApiAdapter</code>.</para>
