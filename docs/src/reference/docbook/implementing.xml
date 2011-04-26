@@ -4,7 +4,7 @@
 	<para>
 		Spring Social makes it easy to add support for service providers that are not already supported by the framework.
 		If you review the existing client modules, such as spring-social-twitter and spring-social-facebook, you will discover they are implemented in a consistent manner and they apply a set of well-defined extension points.
-		In this section, you will learn how to add support for new service providers you wish to integrate into your applications.
+		In this chapter, you will learn how to add support for new service providers you wish to integrate into your applications.
 	</para>
 	<section id="service-providers-implementing">
 		<title>Process overview</title>
