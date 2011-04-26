@@ -29,13 +29,13 @@ import org.springframework.social.connect.ServiceProviderConnectionRepository;
 import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
 import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
-import org.springframework.social.oauth1.OAuth1Parameters;
 import org.springframework.social.oauth1.OAuth1Operations;
+import org.springframework.social.oauth1.OAuth1Parameters;
 import org.springframework.social.oauth1.OAuth1Version;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.social.oauth2.GrantType;
+import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -142,6 +142,15 @@ public class ProviderSignInController {
 		return handleSignIn(connection, request);
 	}
 
+	/**
+	 * Overrides the default URL of the application's signup page ("/signup").
+	 * ProviderSignInController will redirect to this URL if no matching connection can be found after signing into the provider. 
+	 * @param signupUrl the URL of the signup page.
+	 */
+	public void setSignupUrl(String signupUrl) {
+		this.signupUrl = signupUrl; 
+	}
+	
 	// internal helpers
 
 	private ServiceProviderConnectionFactoryLocator getConnectionFactoryLocator() {
