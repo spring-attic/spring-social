@@ -18,7 +18,7 @@ package org.springframework.social.facebook.connect;
 import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
 import org.springframework.social.facebook.api.FacebookApi;
 
-public class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
+public final class FacebookServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<FacebookApi> {
 
 	public FacebookServiceProviderConnectionFactory(String clientId, String clientSecret) {
 		super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookServiceApiAdapter());

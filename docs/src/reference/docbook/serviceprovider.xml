@@ -206,12 +206,12 @@ public interface OAuth2Operations {
 			 	The example code below shows use of a FacebookServiceProviderConnectionFactory to create a connection to Facebook using the OAuth2 server-side flow illustrated above.
 				Here, FacebookServiceProviderConnectionFactory is a subclass of OAuth2ServiceProviderConnectionFactory:
 				<programlisting language="java"><![CDATA[
-FacebookServiceProviderConnectionFactory connectionFactory = new FacebookServiceProviderConnectionFactory();
+FacebookServiceProviderConnectionFactory connectionFactory = new FacebookServiceProviderConnectionFactory("clientId", "clientSecret");
 OAuth2Operations oauth2Operations = connectionFactory.getOAuth2Operations();
-String authorizeUrl = oauth2Operations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl));
+String authorizeUrl = oauth2Operations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters("callbackUrl"));
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the authorizationCode parameter:
-AccessGrant accessGrant = oauth2Operations.exchangeForAccess(authorizationCode, callbackUrl);
+AccessGrant accessGrant = oauth2Operations.exchangeForAccess(authorizationCode, "callbackUrl");
 ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConnection(accessGrant);]]>
 				</programlisting>
 			</para>
@@ -220,9 +220,9 @@ ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConn
 				The difference between this flow and the server-side "authorization code" flow above is the provider callback directly contains the access grant (no additional exchange is necessary).
 				This flow is appropriate for clients incapable of keeping the access grant credentials confidential, such as a mobile device or JavaScript-based user agent.
 				<programlisting language="java"><![CDATA[
-FacebookServiceProviderConnectionFactory connectionFactory = new FacebookServiceProviderConnectionFactory();
+FacebookServiceProviderConnectionFactory connectionFactory = new FacebookServiceProviderConnectionFactory("clientId", "clientSecret");
 OAuth2Operations oauth2Operations = connectionFactory.getOAuth2Operations();
-String authorizeUrl = oauth2Operations.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, new OAuth2Parameters(callbackUrl));
+String authorizeUrl = oauth2Operations.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, new OAuth2Parameters("callbackUrl"));
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the access_token parameter:
 AccessGrant accessGrant = new AccessGrant(accessToken);
@@ -327,14 +327,14 @@ public interface OAuth1Operations {
 				The example code below shows use of a FacebookServiceProviderConnectionFactory to create a connection to Facebook using the OAuth2 server-side flow illustrated above.
 				Here, FacebookServiceProviderConnectionFactory is a subclass of OAuth2ServiceProviderConnectionFactory:
 				<programlisting language="java"><![CDATA[
-TwitterServiceProviderConnectionFactory connectionFactory = new TwitterServiceProviderConnectionFactory();
+TwitterServiceProviderConnectionFactory connectionFactory = new TwitterServiceProviderConnectionFactory("consumerKey", "consumerSecret");
 OAuth1Operations oauth1Operations = connectionFactory.getOAuth1Operations();
-String requestToken = oauth1Operations.fetchRequestToken(callbackUrl);
+String requestToken = oauth1Operations.fetchRequestToken("callbackUrl");
 String authorizeUrl = oauth1Operations.buildAuthorizeUrl(requestToken, OAuth1Parameters.NONE);
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the oauth_token and oauth_verifier parameters:
 OAuthToken accessToken = oauth1Operations.exchangeForAccessToken(new AuthorizedRequestToken(oauthToken, oauthVerifier));
-ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConnection(accessToken);]]>
+ServiceProviderConnection<TwitterApi> connection = connectionFactory.createConnection(accessToken);]]>
 				</programlisting>
 			</para>
 		</section>
@@ -347,9 +347,9 @@ ServiceProviderConnection<FacebookApi> connection = connectionFactory.createConn
 			</para>
 			<programlisting language="java"><![CDATA[
 MapServiceProviderConnectionFactoryRegistry registry = new MapServiceProviderConnectionFactoryRegistry();
-registry.addConnectionFactory(new FacebookServiceProviderConnectionFactory());
-registry.addConnectionFactory(new TwitterServiceProviderConnectionFactory());
-registry.addConnectionFactory(new LinkedInServiceProviderConnectionFactory());]]>	
+registry.addConnectionFactory(new FacebookServiceProviderConnectionFactory("clientId", "clientSecret"));
+registry.addConnectionFactory(new TwitterServiceProviderConnectionFactory("consumerKey", "consumerSecret"));
+registry.addConnectionFactory(new LinkedInServiceProviderConnectionFactory("consumerKey", "consumerSecret"));]]>	
 			</programlisting>
 			<para>
 				This registry implements a locator interface that other objects can use to lookup connection factories dynamically:
@@ -462,7 +462,7 @@ JdbcMultiUserServiceProviderConnectionRepository multiUserRepository =
 ServiceProviderConnectionRepository repository = multiUserRepository.createConnectionRepository("kdonald");
 
 // find kdonald's primary Facebook connection
-ServiceProviderConnection<FacebookApi> connection = repository.findPrimeryConnectionToServiceApi(FacebookApi.class);]]>
+ServiceProviderConnection<FacebookApi> connection = repository.findPrimaryConnectionToServiceApi(FacebookApi.class);]]>
 			</programlisting>
 		</section>
 	</section>
