@@ -84,9 +84,9 @@
 			</para>
 			
 			<itemizedlist>
-				<listitem><para>A <interfacename>ServiceProviderConnectionFactoryLocator</interfacename> to lookup a connection factory used to perform the authentication process with the provider.</para></listitem>
-				<listitem><para>A <interfacename>MultiUserServiceProviderConnectionRepository</interfacename> to find a user whose connection matches the sign in connection.</para></listitem>
-				<listitem><para>A <interfacename>ServiceProviderConnectionRepository</interfacename> used to create a new connection when the user signs up in the application after a failed provider sign in.</para></listitem>
+				<listitem><para>A <interfacename>ConnectionFactoryLocator</interfacename> to lookup a connection factory used to perform the authentication process with the provider.</para></listitem>
+				<listitem><para>A <interfacename>UsersConnectionRepository</interfacename> to find a user whose connection matches the sign in connection.</para></listitem>
+				<listitem><para>A <interfacename>ConnectionRepository</interfacename> used to create a new connection when the user signs up in the application after a failed provider sign in.</para></listitem>
 				<listitem><para>A <interfacename>SignInService</interfacename> to sign the user into the application if a matching connection is found.</para></listitem>
 			</itemizedlist>
 			
@@ -223,7 +223,7 @@ public class SpringSecuritySignInService implements SignInService {
 		<programlisting language="java"><![CDATA[
 @RequestMapping(value="/signup", method=RequestMethod.GET)
 public SignupForm signupForm(WebRequest request) {
-    ServiceProviderConnection<?> connection = ProviderSignInUtils.getConnection(request);
+    Connection<?> connection = ProviderSignInUtils.getConnection(request);
     if (connection != null) {
         return SignupForm.fromProviderUser(connection.fetchUserProfile());
     } else {
@@ -239,7 +239,7 @@ public SignupForm signupForm(WebRequest request) {
 		</para>
 				
 		<programlisting language="java"><![CDATA[
-public static SignupForm fromProviderUser(ServiceProviderUserProfile providerUser) {
+public static SignupForm fromProviderUser(UserProfile providerUser) {
     SignupForm form = new SignupForm();
     form.setFirstName(providerUser.getFirstName());
     form.setLastName(providerUser.getLastName());
@@ -250,12 +250,12 @@ public static SignupForm fromProviderUser(ServiceProviderUserProfile providerUse
 		</programlisting>
 
 		<para>
-			Here, the <classname>SignupForm</classname> is created with the user's first name, last name, username, and email from the <classname>ServiceProviderUserProfile</classname>.
-			In addition, <classname>ServiceProviderUserProfile</classname> also has a <methodname>getName()</methodname> method which will return the user's full name as given by the provider.
+			Here, the <classname>SignupForm</classname> is created with the user's first name, last name, username, and email from the <classname>UserProfile</classname>.
+			In addition, <classname>UserProfile</classname> also has a <methodname>getName()</methodname> method which will return the user's full name as given by the provider.
 		</para>
 		
 		<para>
-			The availability of <classname>ServiceProviderUserProfile</classname>'s properties will depend on the provider.
+			The availability of <classname>UserProfile</classname>'s properties will depend on the provider.
 			Twitter, for example, does not provide a user's email address, so the <methodname>getEmail()</methodname> method will always return null after a sign in attempt with Twitter.
 		</para>
 				

@@ -20,27 +20,27 @@
 		
 		<para>
 			As <classname>ConnectController</classname> directs the connection flow, it depends on a couple of other objects to assist in the creation and persistence of connections.
-			<classname>ConnectController</classname> works with one or more <interfacename>ServiceProviderConnectionFactory</interfacename>s to exchange authorization details with the provider and to create connections.
-			Once a connection has been established, <classname>ConnectController</classname> hands it off to a <interfacename>ServiceProviderConnectionRepository</interfacename> to be persisted. 
+			<classname>ConnectController</classname> works with one or more <interfacename>ConnectionFactory</interfacename>s to exchange authorization details with the provider and to create connections.
+			Once a connection has been established, <classname>ConnectController</classname> hands it off to a <interfacename>ConnectionRepository</interfacename> to be persisted. 
 		</para>
 		
 		<para>
-			Spring Social comes with an implementation of <interfacename>ServiceProviderConnectionFactory</interfacename> for each of the supported service providers:
+			Spring Social comes with an implementation of <interfacename>ConnectionFactory</interfacename> for each of the supported service providers:
 		</para>
 		
 		<itemizedlist>
-			<listitem><para><classname>TwitterServiceProviderConnectionFactory</classname></para></listitem>
-			<listitem><para><classname>FacebookServiceProviderConnectionFactory</classname></para></listitem>
-			<listitem><para><classname>LinkedInServiceProviderConnectionFactory</classname></para></listitem>
-			<listitem><para><classname>TripItServiceProviderConnectionFactory</classname></para></listitem>
-			<listitem><para><classname>GitHubServiceProviderConnectionFactory</classname></para></listitem>
-			<listitem><para><classname>GowallaTwitterServiceProviderConnectionFactory</classname></para></listitem>
+			<listitem><para><classname>TwitterConnectionFactory</classname></para></listitem>
+			<listitem><para><classname>FacebookConnectionFactory</classname></para></listitem>
+			<listitem><para><classname>LinkedInConnectionFactory</classname></para></listitem>
+			<listitem><para><classname>TripItConnectionFactory</classname></para></listitem>
+			<listitem><para><classname>GitHubConnectionFactory</classname></para></listitem>
+			<listitem><para><classname>GowallaConnectionFactory</classname></para></listitem>
 		</itemizedlist>
 		
 		<para>
-			<classname>ConnectController</classname> relies on an implementation of <interfacename>ServiceProviderConnectionFactoryLocator</interfacename> (see <xref linkend="service-providers-establishing-connections-connection-factory-registry"/>) to help it find a connection factory for a specific provider.
-			Spring Social's <classname>MapServiceProviderConnectionFactoryRegistry</classname> is an implementation of <interfacename>ServiceProviderConnectionFactoryLocator</interfacename> that keeps a Map-based registry of connection factories.
-			The following configuration class registers a <classname>MapServiceProviderConnectionFactoryRegistry</classname> with <interfacename>ServiceProviderConnectionFactory</interfacename>s for Twitter, Facebook, and TripIt using Spring's Java configuration style: 		
+			<classname>ConnectController</classname> relies on an implementation of <interfacename>ConnectionFactoryLocator</interfacename> (see <xref linkend="service-providers-establishing-connections-connection-factory-registry"/>) to help it find a connection factory for a specific provider.
+			Spring Social's <classname>ConnectionFactoryRegistry</classname> is an implementation of <interfacename>ConnectionFactoryLocator</interfacename> that keeps a Map-based registry of connection factories.
+			The following configuration class registers a <classname>ConnectionFactoryRegistry</classname> with <interfacename>ConnectionFactory</interfacename>s for Twitter, Facebook, and TripIt using Spring's Java configuration style: 		
 		</para>
 
 		<programlisting language="java"><![CDATA[
@@ -48,18 +48,18 @@ package org.springframework.social.showcase.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.social.connect.ServiceProviderConnectionFactory;
-import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
-import org.springframework.social.connect.support.MapServiceProviderConnectionFactoryRegistry;
+import org.springframework.social.connect.ConnectionFactory;
+import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.social.connect.support.ConnectionFactoryRegistry;
 import org.springframework.social.facebook.api.FacebookApi;
-import org.springframework.social.facebook.connect.FacebookServiceProviderConnectionFactory;
+import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 import org.springframework.social.tripit.api.TripItApi;
-import org.springframework.social.tripit.connect.TripItServiceProviderConnectionFactory;
+import org.springframework.social.tripit.connect.TripItConnectionFactory;
 import org.springframework.social.twitter.api.TwitterApi;
-import org.springframework.social.twitter.connect.TwitterServiceProviderConnectionFactory;
+import org.springframework.social.twitter.connect.TwitterConnectionFactory;
 
 @Configuration
-public class ServiceProviderConnectionFactoryLocatorConfig {
+public class ConnectionFactoryLocatorConfig {
 	
     @Value("${twitter.consumerKey}")
     private String twitterConsumerKey;
@@ -80,14 +80,11 @@ public class ServiceProviderConnectionFactoryLocatorConfig {
     private String tripItConsumerSecret;
 
     @Bean
-    public ServiceProviderConnectionFactoryLocator serviceProviderConnectionFactoryLocator() {
-        MapServiceProviderConnectionFactoryRegistry registry = new MapServiceProviderConnectionFactoryRegistry();
-        registry.addConnectionFactory(
-                new TwitterServiceProviderConnectionFactory(twitterConsumerKey, twitterConsumerSecret));
-        registry.addConnectionFactory(
-                new FacebookServiceProviderConnectionFactory(facebookClientId, facebookClientSecret));
-        registry.addConnectionFactory(
-                new TripItServiceProviderConnectionFactory(tripItConsumerKey, tripItConsumerSecret));
+    public ConnectionFactoryLocator connectionFactoryLocator() {
+        ConnectionFactoryRegistry registry = new ConnectionFactoryRegistry();
+        registry.addConnectionFactory(new TwitterConnectionFactory(twitterConsumerKey, twitterConsumerSecret));
+        registry.addConnectionFactory(new FacebookConnectionFactory(facebookClientId, facebookClientSecret));
+        registry.addConnectionFactory(new TripItConnectionFactory(tripItConsumerKey, tripItConsumerSecret));
         return registry;
     }
 	
@@ -95,51 +92,21 @@ public class ServiceProviderConnectionFactoryLocatorConfig {
 ]]></programlisting>
 
 		<para>
-			Or, if you prefer Spring's XML-based configuration, here's the equivalent <code><![CDATA[<bean>]]></code>configuration:
-		</para>
-
-		<programlisting language="xml"><![CDATA[
-<bean id="serviceProviderConnectionFactoryLocator" 
-      class="org.springframework.social.connect.support.MapServiceProviderConnectionFactoryRegistry">
-    <property name="connectionFactories">
-        <list>
-            <bean class="org.springframework.social.twitter.connect.TwitterServiceProviderConnectionFactory">
-                <constructor-arg value="${twitter.consumerKey}" />
-                <constructor-arg value="${twitter.consumerSecret}" />				
-            </bean>
-            <bean class="org.springframework.social.facebook.connect.FacebookServiceProviderConnectionFactory">
-                <constructor-arg value="${facebook.appId}" />
-                <constructor-arg value="${facebook.appSecret}" />				
-            </bean>
-            <bean class="org.springframework.social.tripit.connect.TripItServiceProviderConnectionFactory">
-                <constructor-arg value="${tripit.consumerKey}" />
-                <constructor-arg value="${tripit.consumerSecret}" />				
-            </bean>
-        </list>
-    </property>
-</bean>]]>
-		</programlisting>	
-		
-		<para>
-			<classname>MapServiceProviderConnectionFactoryRegistry</classname> is given a list of service provider connection factories through its <code>connectionFactories</code> property.
-			As configured here, it registers connection factories for Twitter, Facebook, and TripIt.
-		</para>
-		
-		<para>
-			Each connection factory is configured as an inner-bean and is injected with the consumer key/application ID and secret that were assigned to it when the application was registered with the service provider.
-			Because the consumer key and secret may be different across environments (e.g., test, production, etc) it is recommended that these values be externalized. 
+			Three connection factories--one each for Twitter, Facebook, and TripIt--are registered with <classname>ConnectionFactoryRegistry</classname> via the <methodname>addConnectionFactory()</methodname> method. 
+			Because the consumer key and secret may be different across environments (e.g., test, production, etc) it is recommended that these values be externalized.
+			Therefore, they are wired in with <code>@Value</code> as property placeholder values to be resolved by Spring's property placeholder support.
 		</para>	
 		
 		<para>
-			<classname>ConnectController</classname> will use <interfacename>ServiceProviderConnectionFactory</interfacename>s that it obtains through <classname>MapServiceProviderConnectionFactoryRegistry</classname> to perform the authorization exchange with the provider and ultimately to create a connection.
+			<classname>ConnectController</classname> will use <interfacename>ConnectionFactory</interfacename>s that it obtains through <classname>ConnectionFactoryRegistry</classname> to perform the authorization exchange with the provider and ultimately to create a connection.
 			Once that connection has been created, it must be persisted and associated with the user's local account.
-			For that, <classname>ConnectController</classname> depends on a <interfacename>ServiceProviderConnectionRepository</interfacename>.
+			For that, <classname>ConnectController</classname> depends on a <interfacename>ConnectionRepository</interfacename>.
 		</para>
 		
 		<para>
-			As discussed in <xref linkend="service-providers-persisting-connections"/>, <interfacename>ServiceProviderConnectionRepository</interfacename> defines operations for persisting and restoring connections for a specific user. 
-			Therefore, when configuring a <interfacename>ServiceProviderConnectionRepository</interfacename> bean, it must be scoped such that it can be created on a per-user basis.
-			The following Java-based configuration shows how to configure <interfacename>ServiceProviderConnectionRepository</interfacename> bean in request scope so that it can be created from an authenticated user's principal:
+			As discussed in <xref linkend="service-providers-persisting-connections"/>, <interfacename>ConnectionRepository</interfacename> defines operations for persisting and restoring connections for a specific user. 
+			Therefore, when configuring a <interfacename>ConnectionRepository</interfacename> bean, it must be scoped such that it can be created on a per-user basis.
+			The following Java-based configuration shows how to configure <interfacename>ConnectionRepository</interfacename> bean in request scope so that it can be created from an authenticated user's principal:
 		</para>
 		
 		<programlisting language="java"><![CDATA[
@@ -150,21 +117,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.social.connect.MultiUserServiceProviderConnectionRepository;
-import org.springframework.social.connect.ServiceProviderConnectionRepository;
+import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.social.connect.ConnectionRepository;
 
 @Configuration
-public class ServiceProviderConnectionRepositoryConfig {
+public class ConnectionRepositoryConfig {
 
     @Inject
-    private MultiUserServiceProviderConnectionRepository usersConnectionRepository;
+    private UsersConnectionRepository usersConnectionRepository;
 
     @Bean
     @Scope(value="request")
-    public ServiceProviderConnectionRepository serviceProviderConnectionRepository(
-            @Value("#{request.userPrincipal}") Principal principal) {
+    public ConnectionRepository connectionRepository(@Value("#{request.userPrincipal}") Principal principal) {
         if (principal == null) {
-            throw new IllegalStateException("Unable to get a ServiceProviderConnectionRepository: no user logged in");
+            throw new IllegalStateException("Unable to get a ConnectionRepository: no user logged in");
         }
         return usersConnectionRepository.createConnectionRepository(principal.getName());
     }
@@ -173,13 +139,13 @@ public class ServiceProviderConnectionRepositoryConfig {
 		</programlisting>	
 	
 		<para>
-			The <methodname>serviceProviderConnectionRepository()</methodname> method is injected with a <classname>Principal</classname> (pulled from the request with a Spring Expression Language expression).
-			If the <classname>Principal</classname> is null, the there is no user signed into the application and there's no way to persist connections for the user.
-			However, if the <classname>Principal</classname> is not null, it is passed to the injected <interfacename>MultiUserServiceProviderConnectionRepository</interfacename>'s <methodname>createConnectionRepository()</methodname> method to create a <interfacename>ServiceProviderConnectionRepository</interfacename> relative to the user.
+			The <methodname>connectionRepository()</methodname> method is injected with a <classname>Principal</classname> (pulled from the request with a Spring Expression Language expression).
+			If the <classname>Principal</classname> is null, then there is no user signed into the application and there's no way to persist connections for the user.
+			However, if the <classname>Principal</classname> is not null, it is passed to the injected <interfacename>UsersConnectionRepository</interfacename>'s <methodname>createConnectionRepository()</methodname> method to create a <interfacename>ConnectionRepository</interfacename> relative to the user.
 		</para>	
 		
 		<para>
-			This means that we're also going to need to configure a <interfacename>MultiUserServiceProviderConnectionRepository</interfacename> bean.
+			This means that we're also going to need to configure a <interfacename>UsersConnectionRepository</interfacename> bean.
 			Here's one configured in Spring's Java configuration style:
 		</para>
 		
@@ -190,47 +156,140 @@ import javax.sql.DataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
-import org.springframework.social.connect.MultiUserServiceProviderConnectionRepository;
-import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
-import org.springframework.social.connect.jdbc.JdbcMultiUserServiceProviderConnectionRepository;
+import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.social.connect.jdbc.JdbcUsersConnectionRepository;
 
 @Configuration
-public class MultiUserServiceProviderConnectionRepositoryConfig {
+public class UsersConnectionRepositoryConfig {
 
 	@Bean
-	public MultiUserServiceProviderConnectionRepository usersServiceProviderConnectionRepository(
-			DataSource dataSource, ServiceProviderConnectionFactoryLocator connectionFactoryLocator, 
-			TextEncryptor textEncryptor) {
-		return new JdbcMultiUserServiceProviderConnectionRepository(dataSource, connectionFactoryLocator, textEncryptor);
+	public UsersConnectionRepository usersConnectionRepository(DataSource dataSource, 
+	        ConnectionFactoryLocator connectionFactoryLocator, TextEncryptor textEncryptor) {
+		return new JdbcUsersConnectionRepository(dataSource, connectionFactoryLocator, textEncryptor);
 	}
 	
 }]]>
 		</programlisting>
 
-		
-		
-		<programlisting language="xml"><![CDATA[
-<bean id="usersServiceProviderConnectionRepository" 
-      class="org.springframework.social.connect.jdbc.JdbcMultiUserServiceProviderConnectionRepository">
-    <constructor-arg ref="dataSource" />
-    <constructor-arg ref="serviceProviderConnectionFactoryLocator" />
-    <constructor-arg ref="textEncryptor" />
-</bean>]]>
-		</programlisting>
-		
 		<para>
-			<classname>JdbcMultiUserServiceProviderConnectionRepository</classname> is created with a references to a <interfacename>DataSource</interfacename>, a <interfacename>ServiceProviderConnectionFactoryLocator</interfacename>, and a text encryptor.
+			<classname>JdbcUsersConnectionRepository</classname> is created with a references to a <interfacename>DataSource</interfacename>, a <interfacename>ConnectionFactoryLocator</interfacename>, and a text encryptor.
 			It will use the <interfacename>DataSource</interfacename> to acess the RDBMS when persisting and restoring connections.
-			When restoring connections, it will use the <interfacename>ServiceProviderConnectionFactoryLocator</interfacename> to create the connection instances.
+			When restoring connections, it will use the <interfacename>ConnectionFactoryLocator</interfacename> to create the connection instances.
 		</para>
 		
 		<para>
-			<classname>JdbcMultiUserServiceProviderConnectionRepository</classname> uses a <interfacename>TextEncryptor</interfacename> to encrypt the credentials (e.g., access tokens and secrets) obtained during authorization when writing them to the database.
+			<classname>JdbcUsersConnectionRepository</classname> uses a <interfacename>TextEncryptor</interfacename> to encrypt the credentials (e.g., access tokens and secrets) obtained during authorization when writing them to the database.
 			Spring Security 3.1 makes a few useful text encryptors available via static factory methods in its <classname>Encryptors</classname> class.
-			For example, the following XML configures two text encryptors; a no-op text encryptor and a stronger queryable-text encryptor:
-		</para>				
+			For example, a no-op text encryptor is useful at development time and can be configured like this:
+		</para>		
 		
-		<programlisting language="xml"><![CDATA[
+		
+		<programlisting language="java"><![CDATA[
+package org.springframework.social.showcase.config.security;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.security.crypto.encrypt.TextEncryptor;
+
+@Configuration
+@Profile("dev")
+public class DevEncryptionConfig {
+
+    @Bean
+    public TextEncryptor textEncryptor() {
+        return Encryptors.noOpText();
+    }
+
+}]]>
+		</programlisting>
+
+		<para>
+			Notice that this configuration class is annotated with <code>@Profile("dev")</code>. 
+			Spring 3.1 introduced the profile concept where certain beans will only be created when certain profiles are active. 
+			Here, the <code>@Profile</code> annotation ensures that this <interfacename>TextEncryptor</interfacename> will only be created when "dev" is an active profile. 
+			For production-time purposes, a stronger text encryptor is recommended and can be created when the "production" profile is active:
+		</para>
+
+		<programlisting language="java"><![CDATA[
+package org.springframework.social.showcase.config;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.encrypt.Encryptors;
+import org.springframework.security.crypto.encrypt.TextEncryptor;
+
+@Configuration
+@Profile("production")
+public class ProductionEncryptionConfig {
+
+    @Bean
+    public TextEncryptor textEncryptor(@Value("${security.encryptPassword}") String password,
+            @Value("${security.encryptSalt}") String salt) {
+        return Encryptors.queryableText(password, salt);
+    }
+
+}]]>
+		</programlisting>
+				
+		<section>
+			<title>Configuring connection support in XML</title>
+
+			<para>
+				Up to this point, the connection support configuration has been done using Spring's Java-based configuration style. 
+				But you can configure it in either Java configuration or XML. 
+				Here's the XML equivalent of the <classname>ConnectionFactoryRegistry</classname> configuration: 			
+			</para>
+
+			<programlisting language="xml"><![CDATA[
+<bean id="connectionFactoryLocator" 
+      class="org.springframework.social.connect.support.ConnectionFactoryRegistry">
+    <property name="connectionFactories">
+        <list>
+            <bean class="org.springframework.social.twitter.connect.TwitterConnectionFactory">
+                <constructor-arg value="${twitter.consumerKey}" />
+                <constructor-arg value="${twitter.consumerSecret}" />				
+            </bean>
+            <bean class="org.springframework.social.facebook.connect.FacebookConnectionFactory">
+                <constructor-arg value="${facebook.appId}" />
+                <constructor-arg value="${facebook.appSecret}" />				
+            </bean>
+            <bean class="org.springframework.social.tripit.connect.TripItConnectionFactory">
+                <constructor-arg value="${tripit.consumerKey}" />
+                <constructor-arg value="${tripit.consumerSecret}" />				
+            </bean>
+        </list>
+    </property>
+</bean>]]>
+			</programlisting>	
+
+			<para>
+				This is roughly equivalent to the Java-based configuration of <classname>ConnectionFactoryRegistry</classname> shown before.
+				The only real difference is that the connection factories are injected as a list into the <code>connectionFactories</code> property rather than through the <methodname>addConnectionFactory()</methodname> method.
+			</para>
+
+			<para>
+				Here's an XML equivalent of the <classname>JdbcUsersConnectionRepository</classname> configuration shown before:
+			</para>
+
+			<programlisting language="xml"><![CDATA[
+<bean id="usersConnectionRepository" 
+      class="org.springframework.social.connect.jdbc.JdbcUsersConnectionRepository">
+    <constructor-arg ref="dataSource" />
+    <constructor-arg ref="connectionFactoryLocator" />
+    <constructor-arg ref="textEncryptor" />
+</bean>]]>
+			</programlisting>
+
+			<para>
+				Likewise, here is the equivalent configuration of the <interfacename>TextEncryptor</interfacename> beans:
+			</para>
+
+			<programlisting language="xml"><![CDATA[
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -251,21 +310,25 @@ public class MultiUserServiceProviderConnectionRepositoryConfig {
     </beans>
 
 </beans>]]>
-		</programlisting>
-
-		<para>
-			Notice that these encryptor beans are each configured under different profiles.
-			Spring 3.1 introduced the <emphasis>profile</emphasis> concept where certain beans will only be created when certain profiles are active.
-			Here, the no-op text encryptor bean will only be created when "dev" is an active profile.
-			For production-time purposes, a stronger text encryptor is recommended and can be created when the "production" profile is active.
-		</para>
+			</programlisting>	
+			
+			<para>
+				Just like the Java-based configuration, profiles are used to select which of the text encryptors will be created. 
+			</para>		
+			
+			<para>
+				As for the <interfacename>ConnectionRepository</interfacename> bean configuration, it is a bit more dynamic than can easily be handled in XML configuration.
+				There's no way to check for a null <classname>Principal</classname> and throw an <classname>IllegalStateException</classname> in XML without resorting to some help from Java.
+				Fortunately, you can mix XML configuration with Java configuration in Spring, so it's best to leave the <interfacename>ConnectionRepository</interfacename> bean configuration in Java.
+			</para>
+		</section>
 
 	</section>
 	  
 	<section id="connect-controller">
 		<title>Creating connections with <classname>ConnectController</classname></title>
 		<para>
-			With <classname>ConnectController</classname>'s dependencies configured, <classname>ConnectController</classname> will be able to coordinate the connection process for the service providers whose connection factories are registered with <classname>MapServiceProviderConnectionFactoryRegistry</classname>.
+			With <classname>ConnectController</classname>'s dependencies configured, <classname>ConnectController</classname> will be able to coordinate the connection process for the service providers whose connection factories are registered with <classname>ConnectionFactoryRegistry</classname>.
 			<classname>ConnectController</classname> is a Spring MVC controller and can be configured as a bean in your application's Spring MVC configuration as follows:
 		</para>
 		<programlisting language="java"><![CDATA[
@@ -302,11 +365,11 @@ public class ConnectControllerConfig {
 		</para>
 		<para>
 			<classname>ConnectController</classname> supports authorization flows for either OAuth 1 or OAuth 2, relying on <interfacename>OAuth1Template</interfacename> or <interfacename>OAuth2Template</interfacename> to handle the specifics for each protocol.
-			<classname>ConnectController</classname> will obtain the appropriate OAuth template from one of the provider connection factories registered with <classname>MapServiceProviderConnectionFactoryRegistry</classname>.
-			It will select a specific <classname>ServiceProviderConnectionFactory</classname> to use by matching the connection factory's ID with the URL path.
+			<classname>ConnectController</classname> will obtain the appropriate OAuth template from one of the provider connection factories registered with <classname>ConnectionFactoryRegistry</classname>.
+			It will select a specific <classname>ConnectionFactory</classname> to use by matching the connection factory's ID with the URL path.
 			The path pattern that <classname>ConnectController</classname> handles is "/connect/{providerId}".
-			Therefore, if <classname>ConnectController</classname> is handling a request for "/connect/twitter", then the <interfacename>ServiceProviderConnectionFactory</interfacename> whose <methodname>getProviderId()</methodname> returns "twitter" will be used.
-			(As configured in the previous section, <classname>TwitterServiceProviderConnectionFactory</classname> will be chosen.)
+			Therefore, if <classname>ConnectController</classname> is handling a request for "/connect/twitter", then the <interfacename>ConnectionFactory</interfacename> whose <methodname>getProviderId()</methodname> returns "twitter" will be used.
+			(As configured in the previous section, <classname>TwitterConnectionFactory</classname> will be chosen.)
 		</para>
 		<para>
 			The flow that <classname>ConnectController</classname> follows is slightly different, depending on which authorization protocol is supported by the service provider.
@@ -512,7 +575,7 @@ public class ConnectControllerConfig {
 			</programlisting>
 			<para>
 				When this form is submitted, <classname>ConnectController</classname> will disconnect the user's account from the provider.
-				It does this by calling the <methodname>disconnect()</methodname> method on each of the <interfacename>ServiceProviderConnection</interfacename>s returned by the provider's <methodname>getConnections()</methodname> method. 
+				It does this by calling the <methodname>disconnect()</methodname> method on each of the <interfacename>Connection</interfacename>s returned by the provider's <methodname>getConnections()</methodname> method. 
 			</para>
 		</section>
 	</section>
@@ -530,9 +593,9 @@ public class ConnectControllerConfig {
 		<programlisting language="java"><![CDATA[
 public interface ConnectInterceptor<S> {
 	
-	void preConnect(ServiceProviderConnectionFactory<S> connectionFactory, WebRequest request);
+	void preConnect(ConnectionFactory<S> connectionFactory, WebRequest request);
 
-	void postConnect(ServiceProviderConnection<S> connection, WebRequest request);
+	void postConnect(Connection<S> connection, WebRequest request);
 	
 }]]>
 		</programlisting>
@@ -547,7 +610,7 @@ public interface ConnectInterceptor<S> {
 		<programlisting language="java"><![CDATA[
 package org.springframework.social.showcase.twitter;
 import org.springframework.social.connect.ServiceProvider;
-import org.springframework.social.connect.ServiceProviderConnection;
+import org.springframework.social.connect.Connection;
 import org.springframework.social.twitter.DuplicateTweetException;
 import org.springframework.social.twitter.TwitterApi;
 import org.springframework.social.web.connect.ConnectInterceptor;
@@ -556,11 +619,11 @@ import org.springframework.web.context.request.WebRequest;
 
 public class TweetAfterConnectInterceptor implements ConnectInterceptor<TwitterApi> {
 
-    public void preConnect(ServiceProviderConnectionFactory<TwitterApi> provider, WebRequest request) {
+    public void preConnect(ConnectionFactory<TwitterApi> provider, WebRequest request) {
         // nothing to do
     }
 
-    public void postConnect(ServiceProviderConnection<TwitterApi> connection, WebRequest request) {
+    public void postConnect(Connection<TwitterApi> connection, WebRequest request) {
         connection.updateStatus("I've connected with the Spring Social Showcase!");
     }
 }]]>
