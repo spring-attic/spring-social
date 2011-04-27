@@ -153,8 +153,8 @@ class JdbcConnectionRepository implements ConnectionRepository {
 	public void addConnection(Connection<?> connection) {
 		try {
 			ConnectionData data = connection.createData();
-			int rank = jdbcTemplate.queryForInt("(select ifnull(max(rank) + 1, 1) as rank from ServiceProviderConnection where userId = ? and providerId = ?)", userId, data.getProviderId());
-			jdbcTemplate.update("insert into ServiceProviderConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+			int rank = jdbcTemplate.queryForInt("(select ifnull(max(rank) + 1, 1) as rank from UserConnection where userId = ? and providerId = ?)", userId, data.getProviderId());
+			jdbcTemplate.update("insert into UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					userId, data.getProviderId(), data.getProviderUserId(), rank, data.getDisplayName(), data.getProfileUrl(), data.getImageUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime());
 		} catch (DuplicateKeyException e) {
 			throw new DuplicateConnectionException(connection.getKey());
@@ -163,21 +163,21 @@ class JdbcConnectionRepository implements ConnectionRepository {
 	
 	public void updateConnection(Connection<?> connection) {
 		ConnectionData data = connection.createData();
-		jdbcTemplate.update("update ServiceProviderConnection set displayName = ?, profileUrl = ?, imageUrl = ?, accessToken = ?, secret = ?, refreshToken = ?, expireTime = ? where userId = ? and providerId = ? and providerUserId = ?",
+		jdbcTemplate.update("update UserConnection set displayName = ?, profileUrl = ?, imageUrl = ?, accessToken = ?, secret = ?, refreshToken = ?, expireTime = ? where userId = ? and providerId = ? and providerUserId = ?",
 				data.getDisplayName(), data.getProfileUrl(), data.getImageUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime(), userId, data.getProviderId(), data.getProviderUserId());
 	}
 
 	public void removeConnectionsToProvider(String providerId) {
-		jdbcTemplate.update("delete from ServiceProviderConnection where userId = ? and providerId = ?", userId, providerId);
+		jdbcTemplate.update("delete from UserConnection where userId = ? and providerId = ?", userId, providerId);
 	}
 
 	public void removeConnection(ConnectionKey connectionKey) {
-		jdbcTemplate.update("delete from ServiceProviderConnection where userId = ? and providerId = ? and providerUserId = ?", userId, connectionKey.getProviderId(), connectionKey.getProviderUserId());		
+		jdbcTemplate.update("delete from UserConnection where userId = ? and providerId = ? and providerUserId = ?", userId, connectionKey.getProviderId(), connectionKey.getProviderUserId());		
 	}
 
 	// internal helpers
 	
-	private final static String SELECT_FROM_SERVICE_PROVIDER_CONNECTION = "select userId, providerId, providerUserId, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime from ServiceProviderConnection";
+	private final static String SELECT_FROM_SERVICE_PROVIDER_CONNECTION = "select userId, providerId, providerUserId, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime from UserConnection";
 	
 	
 	private final ServiceProviderConnectionMapper connectionMapper = new ServiceProviderConnectionMapper();

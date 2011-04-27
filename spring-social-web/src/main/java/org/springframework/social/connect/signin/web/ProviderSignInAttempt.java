@@ -46,8 +46,7 @@ public class ProviderSignInAttempt implements Serializable {
 	
 	private final Provider<ConnectionRepository> connectionRepositoryProvider;
 		
-	public ProviderSignInAttempt(Connection<?> connection, Provider<ConnectionFactoryLocator> connectionFactoryLocatorProvider,
-			Provider<ConnectionRepository> connectionRepositoryProvider) {
+	public ProviderSignInAttempt(Connection<?> connection, Provider<ConnectionFactoryLocator> connectionFactoryLocatorProvider, Provider<ConnectionRepository> connectionRepositoryProvider) {
 		this.connectionData = connection.createData();
 		this.connectionFactoryLocatorProvider = connectionFactoryLocatorProvider;
 		this.connectionRepositoryProvider = connectionRepositoryProvider;		

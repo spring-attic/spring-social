@@ -51,7 +51,7 @@ import org.springframework.social.oauth2.OAuth2ServiceProvider;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public class JdbcMultiUserConnectionRepositoryTest {
+public class JdbcUsersConnectionRepositoryTest {
 
 	private EmbeddedDatabase database;
 
@@ -63,7 +63,7 @@ public class JdbcMultiUserConnectionRepositoryTest {
 	
 	private JdbcTemplate dataAccessor;
 
-	private JdbcMultiUserConnectionRepository usersConnectionRepository;
+	private JdbcUsersConnectionRepository usersConnectionRepository;
 
 	private ConnectionRepository connectionRepository;
 
@@ -76,14 +76,14 @@ public class JdbcMultiUserConnectionRepositoryTest {
 			factory.setDatabaseType(EmbeddedDatabaseType.H2);			
 		}
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-		populator.addScript(new ClassPathResource("JdbcMultiUserConnectionRepository.sql", getClass()));
+		populator.addScript(new ClassPathResource("JdbcUsersConnectionRepository.sql", getClass()));
 		factory.setDatabasePopulator(populator);
 		database = factory.getDatabase();
 		dataAccessor = new JdbcTemplate(database);
 		connectionFactoryRegistry = new ConnectionFactoryRegistry();
 		connectionFactory = new TestFacebookConnectionFactory();
 		connectionFactoryRegistry.addConnectionFactory(connectionFactory);
-		usersConnectionRepository = new JdbcMultiUserConnectionRepository(database, connectionFactoryRegistry, Encryptors.noOpText());
+		usersConnectionRepository = new JdbcUsersConnectionRepository(database, connectionFactoryRegistry, Encryptors.noOpText());
 		connectionRepository = usersConnectionRepository.createConnectionRepository("1");
 	}
 	
@@ -255,9 +255,9 @@ public class JdbcMultiUserConnectionRepositoryTest {
 	public void removeConnectionsToProvider() {
 		insertFacebookConnection();
 		insertFacebookConnection2();
-		assertTrue(dataAccessor.queryForObject("select exists (select 1 from ServiceProviderConnection where providerId = 'facebook')", Boolean.class));
+		assertTrue(dataAccessor.queryForObject("select exists (select 1 from UserConnection where providerId = 'facebook')", Boolean.class));
 		connectionRepository.removeConnectionsToProvider("facebook");
-		assertFalse(dataAccessor.queryForObject("select exists (select 1 from ServiceProviderConnection where providerId = 'facebook')", Boolean.class));
+		assertFalse(dataAccessor.queryForObject("select exists (select 1 from UserConnection where providerId = 'facebook')", Boolean.class));
 	}
 	
 	@Test
@@ -268,9 +268,9 @@ public class JdbcMultiUserConnectionRepositoryTest {
 	@Test
 	public void removeConnection() {
 		insertFacebookConnection();
-		assertTrue(dataAccessor.queryForObject("select exists (select 1 from ServiceProviderConnection where providerId = 'facebook')", Boolean.class));
+		assertTrue(dataAccessor.queryForObject("select exists (select 1 from UserConnection where providerId = 'facebook')", Boolean.class));
 		connectionRepository.removeConnection(new ConnectionKey("facebook", "9"));
-		assertFalse(dataAccessor.queryForObject("select exists (select 1 from ServiceProviderConnection where providerId = 'facebook')", Boolean.class));		
+		assertFalse(dataAccessor.queryForObject("select exists (select 1 from UserConnection where providerId = 'facebook')", Boolean.class));		
 	}
 
 	@Test
@@ -322,27 +322,27 @@ public class JdbcMultiUserConnectionRepositoryTest {
 
 		
 	private void insertTwitterConnection() {
-		dataAccessor.update("insert into ServiceProviderConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		dataAccessor.update("insert into UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				"1", "twitter", "1", 1, "@kdonald", "http://twitter.com/kdonald", "http://twitter.com/kdonald/picture", "123456789", "987654321", null, null);
 	}
 	
 	private void insertFacebookConnection() {
-		dataAccessor.update("insert into ServiceProviderConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		dataAccessor.update("insert into UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				"1", "facebook", "9", 1, null, null, null, "234567890", null, "345678901", System.currentTimeMillis() + 3600000);
 	}
 	
 	private void insertFacebookConnection2() {
-		dataAccessor.update("insert into ServiceProviderConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		dataAccessor.update("insert into UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				"1", "facebook", "10", 2, null, null, null, "456789012", null, "56789012", System.currentTimeMillis() + 3600000);
 	}
 
 	private void insertFacebookConnection3() {
-		dataAccessor.update("insert into ServiceProviderConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		dataAccessor.update("insert into UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				"2", "facebook", "11", 2, null, null, null, "456789012", null, "56789012", System.currentTimeMillis() + 3600000);
 	}
 
 	private void insertFacebookConnectionSameFacebookUser() {
-		dataAccessor.update("insert into ServiceProviderConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		dataAccessor.update("insert into UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				"2", "facebook", "9", 1, null, null, null, "234567890", null, "345678901", System.currentTimeMillis() + 3600000);
 	}
 

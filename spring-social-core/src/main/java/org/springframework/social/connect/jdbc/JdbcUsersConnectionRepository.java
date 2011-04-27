@@ -29,18 +29,18 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
-import org.springframework.social.connect.MultiUserConnectionRepository;
+import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.ConnectionKey;
 import org.springframework.social.connect.ConnectionRepository;
 
 /**
- * {@link MultiUserConnectionRepository} that uses the JDBC API to persist connection data to a relational database.
+ * {@link UsersConnectionRepository} that uses the JDBC API to persist connection data to a relational database.
  * The supporting schema is defined in JdbcMultiUserConnectionRepository.sql.
  * @author Keith Donald
  */
-public class JdbcMultiUserConnectionRepository implements MultiUserConnectionRepository {
+public class JdbcUsersConnectionRepository implements UsersConnectionRepository {
 
 	private final JdbcTemplate jdbcTemplate;
 	
@@ -48,7 +48,7 @@ public class JdbcMultiUserConnectionRepository implements MultiUserConnectionRep
 
 	private final TextEncryptor textEncryptor;
 
-	public JdbcMultiUserConnectionRepository(DataSource dataSource, ConnectionFactoryLocator connectionFactoryLocator, TextEncryptor textEncryptor) {
+	public JdbcUsersConnectionRepository(DataSource dataSource, ConnectionFactoryLocator connectionFactoryLocator, TextEncryptor textEncryptor) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.connectionFactoryLocator = connectionFactoryLocator;
 		this.textEncryptor = textEncryptor;
@@ -57,7 +57,7 @@ public class JdbcMultiUserConnectionRepository implements MultiUserConnectionRep
 	public String findUserIdWithConnection(Connection<?> connection) {
 		try {
 			ConnectionKey key = connection.getKey();
-			return jdbcTemplate.queryForObject("select userId from ServiceProviderConnection where providerId = ? and providerUserId = ?", String.class, key.getProviderId(), key.getProviderUserId());
+			return jdbcTemplate.queryForObject("select userId from UserConnection where providerId = ? and providerUserId = ?", String.class, key.getProviderId(), key.getProviderUserId());
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}
@@ -68,7 +68,7 @@ public class JdbcMultiUserConnectionRepository implements MultiUserConnectionRep
 		parameters.addValue("providerId", providerId);
 		parameters.addValue("providerUserIds", providerUserIds);
 		final Set<String> localUserIds = new HashSet<String>();
-		return new NamedParameterJdbcTemplate(jdbcTemplate).query("select userId from ServiceProviderConnection where providerId = :providerId and providerUserId in (:providerUserIds)", parameters,
+		return new NamedParameterJdbcTemplate(jdbcTemplate).query("select userId from UserConnection where providerId = :providerId and providerUserId in (:providerUserIds)", parameters,
 			new ResultSetExtractor<Set<String>>() {
 				public Set<String> extractData(ResultSet rs) throws SQLException, DataAccessException {
 					while (rs.next()) {

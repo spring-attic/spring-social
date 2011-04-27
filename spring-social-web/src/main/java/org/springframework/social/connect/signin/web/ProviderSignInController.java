@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.social.connect.MultiUserConnectionRepository;
+import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -57,9 +57,9 @@ public class ProviderSignInController {
 
 	private final Provider<ConnectionFactoryLocator> connectionFactoryLocatorProvider;
 
-	private final MultiUserConnectionRepository usersConnectionRepository;
+	private final UsersConnectionRepository usersConnectionRepository;
 	
-	private final Provider<ConnectionRepository> currentUserConnectionRepositoryProvider;
+	private final Provider<ConnectionRepository> connectionRepositoryProvider;
 	
 	private final String baseCallbackUrl;
 	
@@ -74,16 +74,16 @@ public class ProviderSignInController {
 	 * A JSR330 Provider is injected here instead of the actual locator object to support the fact {@link ProviderSignInAttempt} objects are session-scoped and thus require a Serializable reference to a {@link ConnectionFactoryLocator}.
 	 * The injected Provider should be Serializable, otherwise {@link NotSerializableException} instances could occur during the provider sign-in flow.
 	 * @param usersConnectionRepository the global store for service provider connections across all local user accounts
-	 * @param currentUserConnectionRepositoryProvider a provider for the current user's {@link ConnectionRepository} instance;
+	 * @param connectionRepositoryProvider a provider for the current user's {@link ConnectionRepository} instance;
 	 * A JSR 330 Provider is injected here instead of the actual repository object because repository instances are request-scoped and resolved based on the currently authenticated user.
 	 * @param signInService an adapter between this controller and the local application's user sign-in system.
 	 */
 	@Inject
-	public ProviderSignInController(String applicationUrl, Provider<ConnectionFactoryLocator> connectionFactoryLocatorProvider, MultiUserConnectionRepository usersConnectionRepository,
-			Provider<ConnectionRepository> currentUserConnectionRepositoryProvider, SignInService signInService) {
+	public ProviderSignInController(String applicationUrl, Provider<ConnectionFactoryLocator> connectionFactoryLocatorProvider, UsersConnectionRepository usersConnectionRepository,
+			Provider<ConnectionRepository> connectionRepositoryProvider, SignInService signInService) {
 		this.connectionFactoryLocatorProvider = connectionFactoryLocatorProvider;
 		this.usersConnectionRepository = usersConnectionRepository;
-		this.currentUserConnectionRepositoryProvider = currentUserConnectionRepositoryProvider;
+		this.connectionRepositoryProvider = connectionRepositoryProvider;
 		this.signInService = signInService;
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 	}
@@ -170,7 +170,7 @@ public class ProviderSignInController {
 	private String handleSignIn(Connection<?> connection, WebRequest request) {
 		String localUserId = usersConnectionRepository.findUserIdWithConnection(connection);
 		if (localUserId == null) {
-			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocatorProvider, currentUserConnectionRepositoryProvider);
+			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocatorProvider, connectionRepositoryProvider);
 			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, WebRequest.SCOPE_SESSION);
 			return "redirect:" + signupUrl;
 		} else {

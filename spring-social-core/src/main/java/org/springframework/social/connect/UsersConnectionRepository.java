@@ -24,7 +24,7 @@ import java.util.Set;
  * @author Keith Donald
  * @see ConnectionRepository
  */
-public interface MultiUserConnectionRepository {
+public interface UsersConnectionRepository {
 
 	/**
 	 * Find the id of the <i>single</i> local user that has the given {@link Connection}.

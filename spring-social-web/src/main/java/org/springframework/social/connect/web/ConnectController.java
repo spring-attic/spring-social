@@ -70,19 +70,19 @@ public class ConnectController  {
 
 	private ConnectionFactoryLocator connectionFactoryLocator;
 	
-	private Provider<ConnectionRepository> currentUserConnectionRepositoryProvider;
+	private Provider<ConnectionRepository> connectionRepositoryProvider;
 	
 	/**
 	 * Constructs a ConnectController.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
 	 * @param connectionFactory locator for {@link ConnectionFactory} instances needed to establish connections
-	 * @param currentUserConnectionRepositoryProvider provider for the current user's {@link ConnectionRepository} needed to persist connections
+	 * @param connectionRepositoryProvider provider for the current user's {@link ConnectionRepository} needed to persist connections
 	 */
 	@Inject
-	public ConnectController(String applicationUrl, ConnectionFactoryLocator connectionFactoryLocator, Provider<ConnectionRepository> currentUserConnectionRepositoryProvider) {
+	public ConnectController(String applicationUrl, ConnectionFactoryLocator connectionFactoryLocator, Provider<ConnectionRepository> connectionRepositoryProvider) {
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 		this.connectionFactoryLocator = connectionFactoryLocator;
-		this.currentUserConnectionRepositoryProvider = currentUserConnectionRepositoryProvider;
+		this.connectionRepositoryProvider = connectionRepositoryProvider;
 		this.interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
 	}
 
@@ -242,7 +242,7 @@ public class ConnectController  {
 	}
 
 	private ConnectionRepository getConnectionRepository() {
-		return currentUserConnectionRepositoryProvider.get();
+		return connectionRepositoryProvider.get();
 	}
 
 	private String redirectToProviderConnect(String providerId) {

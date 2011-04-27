@@ -22,9 +22,9 @@ import org.springframework.util.MultiValueMap;
 /**
  * Data access interface for saving and restoring Connection objects from a persistent store.
  * The view is relative to a specific local user--it's not possible using this interface to access or update connections for multiple local users.
- * If you need that capability, see {@link MultiUserConnectionRepository}.
+ * If you need that capability, see {@link UsersConnectionRepository}.
  * @author Keith Donald
- * @see MultiUserConnectionRepository
+ * @see UsersConnectionRepository
  */
 public interface ConnectionRepository {
 
