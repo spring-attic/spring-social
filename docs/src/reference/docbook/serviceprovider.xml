@@ -149,7 +149,7 @@ public interface OAuth2Operations {
 }]]>
 			</programlisting>			
 			<para>
-				Callers are first expected to call buildAuthorizeUrl(GrantType, AuthorizationParameters) to construct the URL to redirect the user to for connection authorization.
+				Callers are first expected to call buildAuthorizeUrl(GrantType, OAuth2Parameters) to construct the URL to redirect the user to for connection authorization.
 				Upon user authorization, the authorizationCode returned by the provider should be exchanged for an AccessGrant.
 				The AccessGrant should then used to create a connection.
 				This flow is illustrated below:
@@ -185,7 +185,7 @@ public interface OAuth2Operations {
 				</listitem>
 				<listitem>
 					<para>
-						The application exchanges the authorization grant for an access grant.
+						The application exchanges the authorization code for an access grant.
 					</para>
 				</listitem>
 				<listitem>
@@ -263,7 +263,7 @@ public interface OAuth1Operations {
 			</programlisting>			
 			<para>
 				Callers are first expected to call fetchNewRequestToken(String) obtain a temporary token from the ServiceProvider to use during the authorization session.
-				Next, callers should call buildAuthorizeUrl(String, AuthorizationParameters) to construct the URL to redirect the user to for connection authorization.
+				Next, callers should call buildAuthorizeUrl(String, OAuth1Parameters) to construct the URL to redirect the user to for connection authorization.
 				Upon user authorization, the authorized request token returned by the provider should be exchanged for an access token.
 				The access token should then used to create a connection.
 				This flow is illustrated below:				
