@@ -233,7 +233,7 @@ public class JdbcUsersConnectionRepositoryTest {
 	public void findConnectionsToApi() {
 		insertFacebookConnection();
 		insertFacebookConnection2();
-		List<Connection<TestFacebookApi>> connections = connectionRepository.findConnectionsToServiceApi(TestFacebookApi.class);
+		List<Connection<TestFacebookApi>> connections = connectionRepository.findConnectionsToApi(TestFacebookApi.class);
 		assertEquals(2, connections.size());
 		assertFacebookConnection(connections.get(0));
 	}

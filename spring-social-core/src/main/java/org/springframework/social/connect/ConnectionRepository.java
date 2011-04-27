@@ -100,7 +100,7 @@ public interface ConnectionRepository {
 	 * @param apiType the service api type e.g. FacebookApi.class or TwitterApi.class
 	 * @return the connections
 	 */
-	<A> List<Connection<A>> findConnectionsToServiceApi(Class<A> apiType);
+	<A> List<Connection<A>> findConnectionsToApi(Class<A> apiType);
 	
 	/**
 	 * Add a new Connection for the current user to this repository.

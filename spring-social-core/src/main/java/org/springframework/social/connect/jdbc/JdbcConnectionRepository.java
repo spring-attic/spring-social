@@ -138,7 +138,7 @@ class JdbcConnectionRepository implements ConnectionRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <S> List<Connection<S>> findConnectionsToServiceApi(Class<S> serviceApiType) {
+	public <S> List<Connection<S>> findConnectionsToApi(Class<S> serviceApiType) {
 		List<?> connections = findConnectionsToProvider(getProviderId(serviceApiType));
 		return (List<Connection<S>>) connections;
 	}
