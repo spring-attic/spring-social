@@ -43,13 +43,16 @@ class TripitProfileMixin {
 			String screenName = profileNode.get("screen_name").getValueAsText();
 			String publicDisplayName = profileNode.get("public_display_name").getValueAsText();
 			String emailAddress = getEmailAddress(profileNode);
-			String homeCity = profileNode.get("home_city").getValueAsText();
-			String company = profileNode.get("company").getValueAsText();
+			String homeCity = getTextNodeValue(profileNode, "home_city");
+			String company = getTextNodeValue(profileNode, "company");
 			String profilePath = profileNode.get("profile_url").getValueAsText();
-			JsonNode photoUrlNode = profileNode.get("photo_url");
-			String profileImageUrl = photoUrlNode != null ? photoUrlNode.getValueAsText() : null;
+			String profileImageUrl = getTextNodeValue(profileNode, "photo_url");
 			
 			return new TripItProfile(id, screenName, publicDisplayName, emailAddress, homeCity, company, profilePath, profileImageUrl);
+		}
+
+		private String getTextNodeValue(JsonNode parentNode, String nodeName) {
+			return parentNode.has(nodeName) ? parentNode.get(nodeName).getValueAsText() : null;
 		}
 		
 		private String getEmailAddress(JsonNode profileNode) {
