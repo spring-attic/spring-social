@@ -22,9 +22,9 @@ import org.springframework.social.linkedin.api.LinkedInApi;
  * LinkedIn ConnectionFactory implementation.
  * @author Keith Donald
  */
-public class LinkedInServiceProviderConnectionFactory extends OAuth1ConnectionFactory<LinkedInApi>{
+public class LinkedInConnectionFactory extends OAuth1ConnectionFactory<LinkedInApi>{
 
-	public LinkedInServiceProviderConnectionFactory(String consumerKey, String consumerSecret) {
+	public LinkedInConnectionFactory(String consumerKey, String consumerSecret) {
 		super("linkedin", new LinkedInServiceProvider(consumerKey, consumerSecret), new LinkedInApiAdapter());
 	}
 
