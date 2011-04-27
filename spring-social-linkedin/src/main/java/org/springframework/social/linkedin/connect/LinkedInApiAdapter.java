@@ -23,11 +23,15 @@ import org.springframework.social.linkedin.api.LinkedInApi;
 import org.springframework.social.linkedin.api.LinkedInProfile;
 import org.springframework.web.client.HttpClientErrorException;
 
-public class LinkedInServiceApiAdapter implements ApiAdapter<LinkedInApi> {
+/**
+ * LinkedIn ApiAdapter implementation.
+ * @author Keith Donald
+ */
+public class LinkedInApiAdapter implements ApiAdapter<LinkedInApi> {
 
-	public boolean test(LinkedInApi serviceApi) {
+	public boolean test(LinkedInApi api) {
 		try {
-			serviceApi.getUserProfile();
+			api.getUserProfile();
 			return true;
 		} catch (HttpClientErrorException e) {
 			// TODO: Have api throw more specific exception and trigger off of that.
@@ -35,20 +39,20 @@ public class LinkedInServiceApiAdapter implements ApiAdapter<LinkedInApi> {
 		}
 	}
 
-	public void setConnectionValues(LinkedInApi serviceApi, ConnectionValues values) {
-		LinkedInProfile profile = serviceApi.getUserProfile();
+	public void setConnectionValues(LinkedInApi api, ConnectionValues values) {
+		LinkedInProfile profile = api.getUserProfile();
 		values.setProviderUserId(profile.getId());
 		values.setDisplayName(profile.getFirstName() + " " + profile.getLastName());
 		values.setProfileUrl(profile.getPublicProfileUrl());
 		values.setImageUrl(profile.getProfilePictureUrl());
 	}
 
-	public UserProfile fetchUserProfile(LinkedInApi serviceApi) {
-		LinkedInProfile profile = serviceApi.getUserProfile();
+	public UserProfile fetchUserProfile(LinkedInApi api) {
+		LinkedInProfile profile = api.getUserProfile();
 		return new UserProfileBuilder().setName(profile.getFirstName() + " " + profile.getLastName()).build();
 	}
 	
-	public void updateStatus(LinkedInApi serviceApi, String message) {
+	public void updateStatus(LinkedInApi api, String message) {
 		// not supported yet
 	}
 	
