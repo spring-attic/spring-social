@@ -21,26 +21,26 @@ import org.springframework.social.ServiceProvider;
  * Base abstraction for factories that construct ServiceProviderConnection instances.
  * Encapsulates the differences and knowledge of specific connection implementations, for example, the difference between OAuth1 and OAuth2 based connections. 
  * @author Keith Donald
- * @param <S> the connection service API type
+ * @param <A> the connection service API type
  */
-public abstract class ServiceProviderConnectionFactory<S> {
+public abstract class ConnectionFactory<A> {
 
 	private final String providerId;
 	
-	private final ServiceProvider<S> serviceProvider;
+	private final ServiceProvider<A> serviceProvider;
 
-	private final ServiceApiAdapter<S> serviceApiAdapter;
+	private final ApiAdapter<A> serviceApiAdapter;
 	
 	/**
-	 * Creates a new ServiceProviderConnectionFactory.
+	 * Creates a new ConnectionFactory.
 	 * @param providerId the assigned, unique id of the provider this factory creates connections to (used when indexing this factory in a registry)
 	 * @param serviceProvider the model for the ServiceProvider used to conduct the connection authorization/refresh flow and obtain a native service API instance
-	 * @param serviceApiAdapter the adapter that maps common operations exposed by the ServiceProvider's API to the uniform ServiceProviderConnection model
+	 * @param apiAdapter the adapter that maps common operations exposed by the ServiceProvider's API to the uniform ServiceProviderConnection model
 	 */
-	public ServiceProviderConnectionFactory(String providerId, ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
+	public ConnectionFactory(String providerId, ServiceProvider<A> serviceProvider, ApiAdapter<A> apiAdapter) {
 		this.providerId = providerId;
 		this.serviceProvider = serviceProvider;
-		this.serviceApiAdapter = nullSafeServiceApiAdapter(serviceApiAdapter);
+		this.serviceApiAdapter = nullSafeApiAdapter(apiAdapter);
 	}
 
 	// subclassing hooks
@@ -57,29 +57,29 @@ public abstract class ServiceProviderConnectionFactory<S> {
 	/**
 	 * Exposes the ServiceProvider instance to subclasses.
 	 */
-	protected ServiceProvider<S> getServiceProvider() {
+	protected ServiceProvider<A> getServiceProvider() {
 		return serviceProvider;
 	}
 
 	/**
 	 * Exposes the ServiceApiAdapter to subclasses.
 	 */
-	protected ServiceApiAdapter<S> getServiceApiAdapter() {
+	protected ApiAdapter<A> getApiAdapter() {
 		return serviceApiAdapter;
 	}
 
 	// subclassing hooks
 	
-	public abstract ServiceProviderConnection<S> createConnection(ServiceProviderConnectionData data);
+	public abstract Connection<A> createConnection(ConnectionData data);
 	
 	// internal helpers
 	
 	@SuppressWarnings("unchecked")
-	private ServiceApiAdapter<S> nullSafeServiceApiAdapter(ServiceApiAdapter<S> serviceApiAdapter) {
-		if (serviceApiAdapter != null) {
-			return serviceApiAdapter;
+	private ApiAdapter<A> nullSafeApiAdapter(ApiAdapter<A> apiAdapter) {
+		if (apiAdapter != null) {
+			return apiAdapter;
 		}
-		return (ServiceApiAdapter<S>) NullServiceApiAdapter.INSTANCE;
+		return (ApiAdapter<A>) NullApiAdapter.INSTANCE;
 	}
 
 }

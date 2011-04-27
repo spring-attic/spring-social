@@ -15,15 +15,15 @@
  */
 package org.springframework.social.linkedin.connect;
 
-import org.springframework.social.connect.ServiceApiAdapter;
-import org.springframework.social.connect.ServiceProviderConnectionValues;
-import org.springframework.social.connect.ServiceProviderUserProfile;
-import org.springframework.social.connect.ServiceProviderUserProfileBuilder;
+import org.springframework.social.connect.ApiAdapter;
+import org.springframework.social.connect.ConnectionValues;
+import org.springframework.social.connect.UserProfile;
+import org.springframework.social.connect.UserProfileBuilder;
 import org.springframework.social.linkedin.api.LinkedInApi;
 import org.springframework.social.linkedin.api.LinkedInProfile;
 import org.springframework.web.client.HttpClientErrorException;
 
-public class LinkedInServiceApiAdapter implements ServiceApiAdapter<LinkedInApi> {
+public class LinkedInServiceApiAdapter implements ApiAdapter<LinkedInApi> {
 
 	public boolean test(LinkedInApi serviceApi) {
 		try {
@@ -35,7 +35,7 @@ public class LinkedInServiceApiAdapter implements ServiceApiAdapter<LinkedInApi>
 		}
 	}
 
-	public void setConnectionValues(LinkedInApi serviceApi, ServiceProviderConnectionValues values) {
+	public void setConnectionValues(LinkedInApi serviceApi, ConnectionValues values) {
 		LinkedInProfile profile = serviceApi.getUserProfile();
 		values.setProviderUserId(profile.getId());
 		values.setDisplayName(profile.getFirstName() + " " + profile.getLastName());
@@ -43,9 +43,9 @@ public class LinkedInServiceApiAdapter implements ServiceApiAdapter<LinkedInApi>
 		values.setImageUrl(profile.getProfilePictureUrl());
 	}
 
-	public ServiceProviderUserProfile fetchUserProfile(LinkedInApi serviceApi) {
+	public UserProfile fetchUserProfile(LinkedInApi serviceApi) {
 		LinkedInProfile profile = serviceApi.getUserProfile();
-		return new ServiceProviderUserProfileBuilder().setName(profile.getFirstName() + " " + profile.getLastName()).build();
+		return new UserProfileBuilder().setName(profile.getFirstName() + " " + profile.getLastName()).build();
 	}
 	
 	public void updateStatus(LinkedInApi serviceApi, String message) {

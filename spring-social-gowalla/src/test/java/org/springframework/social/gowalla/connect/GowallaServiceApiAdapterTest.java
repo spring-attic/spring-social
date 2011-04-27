@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.social.connect.ServiceProviderUserProfile;
+import org.springframework.social.connect.UserProfile;
 import org.springframework.social.gowalla.api.GowallaApi;
 import org.springframework.social.gowalla.api.GowallaProfile;
 
@@ -32,7 +32,7 @@ public class GowallaServiceApiAdapterTest {
 	@Test
 	public void fetchProfile() {		
 		Mockito.when(serviceApi.getUserProfile()).thenReturn(new GowallaProfile("habuma", "Craig", "Walls", "Plano, TX", 1, 2, "http://s3.amazonaws.com/static.gowalla.com/users/362641-standard.jpg?1294162106"));
-		ServiceProviderUserProfile profile = apiAdapter.fetchUserProfile(serviceApi);
+		UserProfile profile = apiAdapter.fetchUserProfile(serviceApi);
 		assertEquals("Craig Walls", profile.getName());
 		assertEquals("Craig", profile.getFirstName());
 		assertEquals("Walls", profile.getLastName());

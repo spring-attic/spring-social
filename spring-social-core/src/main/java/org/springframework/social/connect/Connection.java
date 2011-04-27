@@ -21,15 +21,15 @@ package org.springframework.social.connect;
  * Exposes a set of operations that are common across all service providers, including
  * the ability to {@link #fetchUserProfile() access user profile information} and {@link #updateStatus(String) update user status}. 
  * @author Keith Donald
- * @param <S> a strongly-typed binding to the service provider's API
+ * @param <A> a strongly-typed binding to the service provider's API
  */
-public interface ServiceProviderConnection<S> {
+public interface Connection<A> {
 
 	/**
-	 * The key identifying this ServiceProviderConnection.
+	 * The key identifying this connection.
 	 * A composite key that consists of the "providerId" plus "providerUserId"; for example, "facebook" and "125660". 
 	 */
-	ServiceProviderConnectionKey getKey();
+	ConnectionKey getKey();
 	
 	/**
 	 * A display name or label for this connection.
@@ -68,7 +68,7 @@ public interface ServiceProviderConnection<S> {
 	
 	/**
 	 * Test this connection.
-	 * If false, indicates calls to the {@link #getServiceApi() serviceApi} will fail.
+	 * If false, indicates calls to the {@link #getApi() api} will fail.
 	 * Used to proactively test authorization credentials such as an API access token before invoking the service API.
 	 */
 	boolean test();
@@ -77,7 +77,7 @@ public interface ServiceProviderConnection<S> {
 	 * Returns true if this connection has expired.
 	 * An expired connection cannot be used; calls to {@link #test()} return false, and any service API invocations fail.
 	 * If expired, you may call {@link #refresh()} to renew the connection.
-	 * Not supported by all ServiceProviderConnection implementations; always returns false if not supported.
+	 * Not supported by all Connection implementations; always returns false if not supported.
 	 */
 	boolean hasExpired();
 
@@ -85,7 +85,7 @@ public interface ServiceProviderConnection<S> {
 	 * Refresh this connection.
 	 * Used to renew an expired connection.
 	 * If the refresh operation is successful, {@link #hasExpired()} returns false.
-	 * Not supported by all ServiceProviderConnection implementations; if not supported, this method is a no-op.
+	 * Not supported by all connection implementations; if not supported, this method is a no-op.
 	 */
 	void refresh();
 	
@@ -94,7 +94,7 @@ public interface ServiceProviderConnection<S> {
 	 * Capable of exposing the user's name, email, and username.
 	 * What is actually exposed depends on the provider and scope of this connection.
 	 */
-	ServiceProviderUserProfile fetchUserProfile();
+	UserProfile fetchUserProfile();
 	
 	/**
 	 * Update the user's status on the provider's system.
@@ -104,14 +104,14 @@ public interface ServiceProviderConnection<S> {
 	void updateStatus(String message);
 	
 	/**
-	 * A Java binding to the Service Provider's native API.
+	 * A Java binding to the service provider's native API.
 	 */
-	S getServiceApi();
+	A getApi();
 
 	/**
 	 * Creates a data transfer object that can be used to persist the state of this connection.
 	 * Used to support the transfer of connection state between layers of the application, such as to the database layer.
 	 */
-	ServiceProviderConnectionData createData();
+	ConnectionData createData();
 
 }

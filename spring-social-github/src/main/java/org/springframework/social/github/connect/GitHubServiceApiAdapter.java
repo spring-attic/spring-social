@@ -15,15 +15,15 @@
  */
 package org.springframework.social.github.connect;
 
-import org.springframework.social.connect.ServiceApiAdapter;
-import org.springframework.social.connect.ServiceProviderConnectionValues;
-import org.springframework.social.connect.ServiceProviderUserProfile;
-import org.springframework.social.connect.ServiceProviderUserProfileBuilder;
+import org.springframework.social.connect.ApiAdapter;
+import org.springframework.social.connect.ConnectionValues;
+import org.springframework.social.connect.UserProfile;
+import org.springframework.social.connect.UserProfileBuilder;
 import org.springframework.social.github.api.GitHubApi;
 import org.springframework.social.github.api.GitHubUserProfile;
 import org.springframework.web.client.HttpClientErrorException;
 
-public class GitHubServiceApiAdapter implements ServiceApiAdapter<GitHubApi> {
+public class GitHubServiceApiAdapter implements ApiAdapter<GitHubApi> {
 
 	public boolean test(GitHubApi serviceApi) {
 		try {
@@ -35,7 +35,7 @@ public class GitHubServiceApiAdapter implements ServiceApiAdapter<GitHubApi> {
 		}
 	}
 
-	public void setConnectionValues(GitHubApi serviceApi, ServiceProviderConnectionValues values) {
+	public void setConnectionValues(GitHubApi serviceApi, ConnectionValues values) {
 		GitHubUserProfile profile = serviceApi.getUserProfile();
 		values.setProviderUserId(String.valueOf(profile.getId()));		
 		values.setDisplayName(profile.getUsername());
@@ -43,9 +43,9 @@ public class GitHubServiceApiAdapter implements ServiceApiAdapter<GitHubApi> {
 		values.setImageUrl(profile.getProfileImageUrl());
 	}
 
-	public ServiceProviderUserProfile fetchUserProfile(GitHubApi serviceApi) {
+	public UserProfile fetchUserProfile(GitHubApi serviceApi) {
 		GitHubUserProfile profile = serviceApi.getUserProfile();
-		return new ServiceProviderUserProfileBuilder().setName(profile.getName()).setEmail(profile.getEmail()).setUsername(profile.getUsername()).build();
+		return new UserProfileBuilder().setName(profile.getName()).setEmail(profile.getEmail()).setUsername(profile.getUsername()).build();
 	}
 	
 	public void updateStatus(GitHubApi serviceApi, String message) {

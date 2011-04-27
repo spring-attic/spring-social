@@ -20,6 +20,7 @@ package org.springframework.social.oauth1;
  * @author Craig Walls
  */
 class MockTimestampGenerator implements SigningSupport.TimestampGenerator {
+	
 	private final long timestamp;
 
 	private final long nonce;

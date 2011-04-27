@@ -15,15 +15,15 @@
  */
 package org.springframework.social.tripit.connect;
 
-import org.springframework.social.connect.ServiceApiAdapter;
-import org.springframework.social.connect.ServiceProviderConnectionValues;
-import org.springframework.social.connect.ServiceProviderUserProfile;
-import org.springframework.social.connect.ServiceProviderUserProfileBuilder;
+import org.springframework.social.connect.ApiAdapter;
+import org.springframework.social.connect.ConnectionValues;
+import org.springframework.social.connect.UserProfile;
+import org.springframework.social.connect.UserProfileBuilder;
 import org.springframework.social.tripit.api.TripItApi;
 import org.springframework.social.tripit.api.TripItProfile;
 import org.springframework.web.client.HttpClientErrorException;
 
-public class TripItServiceApiAdapter implements ServiceApiAdapter<TripItApi> {
+public class TripItServiceApiAdapter implements ApiAdapter<TripItApi> {
 
 	public boolean test(TripItApi serviceApi) {
 		try {
@@ -35,7 +35,7 @@ public class TripItServiceApiAdapter implements ServiceApiAdapter<TripItApi> {
 		}
 	}
 
-	public void setConnectionValues(TripItApi serviceApi, ServiceProviderConnectionValues values) {
+	public void setConnectionValues(TripItApi serviceApi, ConnectionValues values) {
 		TripItProfile profile = serviceApi.getUserProfile();
 		values.setProviderUserId(profile.getId());
 		values.setDisplayName(profile.getScreenName());
@@ -43,9 +43,9 @@ public class TripItServiceApiAdapter implements ServiceApiAdapter<TripItApi> {
 		values.setImageUrl(profile.getProfileImageUrl());
 	}
 
-	public ServiceProviderUserProfile fetchUserProfile(TripItApi serviceApi) {
+	public UserProfile fetchUserProfile(TripItApi serviceApi) {
 		TripItProfile profile = serviceApi.getUserProfile();
-		return new ServiceProviderUserProfileBuilder().setName(profile.getPublicDisplayName()).setEmail(profile.getEmailAddress()).setUsername(profile.getScreenName()).build();
+		return new UserProfileBuilder().setName(profile.getPublicDisplayName()).setEmail(profile.getEmailAddress()).setUsername(profile.getScreenName()).build();
 	}
 	
 	public void updateStatus(TripItApi serviceApi, String message) {

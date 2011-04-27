@@ -13,15 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.twitter.connect;
+package org.springframework.social.connect;
 
-import org.springframework.social.connect.support.OAuth1ConnectionFactory;
-import org.springframework.social.twitter.api.TwitterApi;
+final class NullApiAdapter implements ApiAdapter<Object> {
 
-public class TwitterServiceProviderConnectionFactory extends OAuth1ConnectionFactory<TwitterApi> {
-
-	public TwitterServiceProviderConnectionFactory(String consumerKey, String consumerSecret) {
-		super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterServiceApiAdapter());
+	public static final NullApiAdapter INSTANCE = new NullApiAdapter();
+	
+	public boolean test(Object serviceApi) {
+		return true;
 	}
+
+	public void setConnectionValues(Object api, ConnectionValues values) {
+		
+	}
+
+	public UserProfile fetchUserProfile(Object api) {
+		return UserProfile.EMPTY;
+	}
+
+	public void updateStatus(Object api, String message) {
+	}
+
+	// internal helpers
+	
+	private NullApiAdapter() {}
 	
 }

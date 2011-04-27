@@ -15,24 +15,24 @@
  */
 package org.springframework.social.connect.support;
 
-import org.springframework.social.connect.ServiceApiAdapter;
-import org.springframework.social.connect.ServiceProviderConnection;
-import org.springframework.social.connect.ServiceProviderConnectionData;
-import org.springframework.social.connect.ServiceProviderConnectionKey;
-import org.springframework.social.connect.ServiceProviderConnectionValues;
-import org.springframework.social.connect.ServiceProviderUserProfile;
+import org.springframework.social.connect.ApiAdapter;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.connect.ConnectionKey;
+import org.springframework.social.connect.ConnectionValues;
+import org.springframework.social.connect.UserProfile;
 
 /**
- * Base support class for {@link ServiceProviderConnection} implementations.
+ * Base support class for {@link Connection} implementations.
  * Defines the state and behavior that is common across connection implementations and independent of any specific authorization protocol.
  * @author Keith Donald
- * @param <S> the service API type
+ * @param <A> the service provider's API type
  */
-public abstract class AbstractServiceProviderConnection<S> implements ServiceProviderConnection<S> {
+public abstract class AbstractConnection<A> implements Connection<A> {
 
-	private final ServiceApiAdapter<S> serviceApiAdapter;
+	private final ApiAdapter<A> apiAdapter;
 
-	private ServiceProviderConnectionKey key;
+	private ConnectionKey key;
 
 	private String displayName;
 	
@@ -46,20 +46,20 @@ public abstract class AbstractServiceProviderConnection<S> implements ServicePro
 
 	/**
 	 * Creates a new connection.
-	 * @param serviceApiAdapter the Service API adapter
+	 * @param apiAdapter the Service API adapter
 	 */
-	public AbstractServiceProviderConnection(ServiceApiAdapter<S> serviceApiAdapter) {
-		this.serviceApiAdapter = serviceApiAdapter;
+	public AbstractConnection(ApiAdapter<A> apiAdapter) {
+		this.apiAdapter = apiAdapter;
 	}
 	
 	/**
 	 * Creates a connection from the data provider.
 	 * @param data the connection data
-	 * @param serviceApiAdapter the Service API adapter
+	 * @param apiAdapter the Service API adapter
 	 */
-	public AbstractServiceProviderConnection(ServiceProviderConnectionData data, ServiceApiAdapter<S> serviceApiAdapter) {
-		key = new ServiceProviderConnectionKey(data.getProviderId(), data.getProviderUserId());
-		this.serviceApiAdapter = serviceApiAdapter;
+	public AbstractConnection(ConnectionData data, ApiAdapter<A> apiAdapter) {
+		key = new ConnectionKey(data.getProviderId(), data.getProviderUserId());
+		this.apiAdapter = apiAdapter;
 		displayName = data.getDisplayName();
 		profileUrl = data.getProfileUrl();
 		imageUrl = data.getImageUrl();
@@ -68,7 +68,7 @@ public abstract class AbstractServiceProviderConnection<S> implements ServicePro
 	
 	// implementing ServiceProviderConnection
 	
-	public ServiceProviderConnectionKey getKey() {
+	public ConnectionKey getKey() {
 		return key;
 	}
 
@@ -94,7 +94,7 @@ public abstract class AbstractServiceProviderConnection<S> implements ServicePro
 	}
 
 	public boolean test() {
-		return serviceApiAdapter.test(getServiceApi());
+		return apiAdapter.test(getApi());
 	}
 
 	public boolean hasExpired() {
@@ -105,12 +105,12 @@ public abstract class AbstractServiceProviderConnection<S> implements ServicePro
 		
 	}
 
-	public ServiceProviderUserProfile fetchUserProfile() {
-		return serviceApiAdapter.fetchUserProfile(getServiceApi());
+	public UserProfile fetchUserProfile() {
+		return apiAdapter.fetchUserProfile(getApi());
 	}
 
 	public void updateStatus(String message) {
-		serviceApiAdapter.updateStatus(getServiceApi(), message);
+		apiAdapter.updateStatus(getApi(), message);
 	}
 
 	public void sync() {
@@ -121,9 +121,9 @@ public abstract class AbstractServiceProviderConnection<S> implements ServicePro
 
 	// subclassing hooks
 	
-	public abstract S getServiceApi();
+	public abstract A getApi();
 
-	public abstract ServiceProviderConnectionData createData();
+	public abstract ConnectionData createData();
 
 	/**
 	 * Hook that should be called by subclasses to initialize the key property when establishing a new connection.
@@ -134,7 +134,7 @@ public abstract class AbstractServiceProviderConnection<S> implements ServicePro
 		if (providerUserId == null) {
 			providerUserId = setValues().providerUserId;
 		}
-		key = new ServiceProviderConnectionKey(providerId, providerUserId);		
+		key = new ConnectionKey(providerId, providerUserId);		
 	}
 
 	/**
@@ -148,10 +148,10 @@ public abstract class AbstractServiceProviderConnection<S> implements ServicePro
 	
 	@SuppressWarnings("rawtypes")
 	public boolean equals(Object o) {
-		if (!(o instanceof ServiceProviderConnection)) {
+		if (!(o instanceof Connection)) {
 			return false;
 		}
-		ServiceProviderConnection other = (ServiceProviderConnection) o;
+		Connection other = (Connection) o;
 		return key.equals(other.getKey());
 	}
 	
@@ -169,26 +169,26 @@ public abstract class AbstractServiceProviderConnection<S> implements ServicePro
 	
 	private ServiceProviderConnectionValuesImpl setValues() {
 		ServiceProviderConnectionValuesImpl values = new ServiceProviderConnectionValuesImpl();
-		this.serviceApiAdapter.setConnectionValues(getServiceApi(), values);
+		apiAdapter.setConnectionValues(getApi(), values);
 		return values;
 	}
 	
-	private class ServiceProviderConnectionValuesImpl implements ServiceProviderConnectionValues {
+	private class ServiceProviderConnectionValuesImpl implements ConnectionValues {
 
 		public void setProviderUserId(String providerUserId) {
 			this.providerUserId = providerUserId;
 		}
 		
 		public void setDisplayName(String displayName) {
-			AbstractServiceProviderConnection.this.displayName = displayName;
+			AbstractConnection.this.displayName = displayName;
 		}
 		
 		public void setProfileUrl(String profileUrl) {
-			AbstractServiceProviderConnection.this.profileUrl = profileUrl;
+			AbstractConnection.this.profileUrl = profileUrl;
 		}
 		
 		public void setImageUrl(String imageUrl) {
-			AbstractServiceProviderConnection.this.imageUrl = imageUrl;
+			AbstractConnection.this.imageUrl = imageUrl;
 		}
 
 		private String providerUserId;

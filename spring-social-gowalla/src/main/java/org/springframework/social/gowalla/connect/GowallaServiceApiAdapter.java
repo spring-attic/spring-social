@@ -15,15 +15,15 @@
  */
 package org.springframework.social.gowalla.connect;
 
-import org.springframework.social.connect.ServiceApiAdapter;
-import org.springframework.social.connect.ServiceProviderConnectionValues;
-import org.springframework.social.connect.ServiceProviderUserProfile;
-import org.springframework.social.connect.ServiceProviderUserProfileBuilder;
+import org.springframework.social.connect.ApiAdapter;
+import org.springframework.social.connect.ConnectionValues;
+import org.springframework.social.connect.UserProfile;
+import org.springframework.social.connect.UserProfileBuilder;
 import org.springframework.social.gowalla.api.GowallaApi;
 import org.springframework.social.gowalla.api.GowallaProfile;
 import org.springframework.web.client.HttpClientErrorException;
 
-public class GowallaServiceApiAdapter implements ServiceApiAdapter<GowallaApi> {
+public class GowallaServiceApiAdapter implements ApiAdapter<GowallaApi> {
 
 	public boolean test(GowallaApi serviceApi) {
 		try {
@@ -35,7 +35,7 @@ public class GowallaServiceApiAdapter implements ServiceApiAdapter<GowallaApi> {
 		}
 	}
 
-	public void setConnectionValues(GowallaApi serviceApi, ServiceProviderConnectionValues values) {
+	public void setConnectionValues(GowallaApi serviceApi, ConnectionValues values) {
 		GowallaProfile profile = serviceApi.getUserProfile();
 		values.setProviderUserId(profile.getId());
 		values.setDisplayName(profile.getFirstName() + " " + profile.getLastName());
@@ -43,9 +43,9 @@ public class GowallaServiceApiAdapter implements ServiceApiAdapter<GowallaApi> {
 		values.setImageUrl(profile.getProfileImageUrl());
 	}
 
-	public ServiceProviderUserProfile fetchUserProfile(GowallaApi serviceApi) {
+	public UserProfile fetchUserProfile(GowallaApi serviceApi) {
 		GowallaProfile profile = serviceApi.getUserProfile();
-		return new ServiceProviderUserProfileBuilder().setName(profile.getFirstName() + " " + profile.getLastName()).setUsername(profile.getId()).build();
+		return new UserProfileBuilder().setName(profile.getFirstName() + " " + profile.getLastName()).setUsername(profile.getId()).build();
 	}
 	
 	public void updateStatus(GowallaApi serviceApi, String message) {

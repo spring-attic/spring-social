@@ -1,4 +1,4 @@
-create table ServiceProviderConnection (localUserId varchar not null,
+create table ServiceProviderConnection (userId varchar not null,
 					providerId varchar not null,
 					providerUserId varchar,
 					rank int not null,
@@ -9,5 +9,5 @@ create table ServiceProviderConnection (localUserId varchar not null,
 					secret varchar,
 					refreshToken varchar,
 					expireTime bigint,
-					primary key (localUserId, providerId, providerUserId));
-create unique index ServiceProviderConnectionRank on ServiceProviderConnection(localUserId, providerId, rank);
+					primary key (userId, providerId, providerUserId));
+create unique index ServiceProviderConnectionRank on ServiceProviderConnection(userId, providerId, rank);

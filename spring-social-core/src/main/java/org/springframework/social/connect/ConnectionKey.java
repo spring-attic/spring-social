@@ -21,7 +21,7 @@ package org.springframework.social.connect;
  * Provides the basis for connection equals() and hashCode().
  * @author Keith Donald
  */
-public final class ServiceProviderConnectionKey {
+public final class ConnectionKey {
 	
 	private final String providerId;
 	
@@ -29,10 +29,10 @@ public final class ServiceProviderConnectionKey {
 
 	/**
 	 * Creates a new ServiceProviderConnectionKey.
-	 * @param providerId
-	 * @param providerUserId
+	 * @param providerId the id of the provider e.g. facebook
+	 * @param providerUserId id of the provider user account e.g. '125660'
 	 */
-	public ServiceProviderConnectionKey(String providerId, String providerUserId) {
+	public ConnectionKey(String providerId, String providerUserId) {
 		this.providerId = providerId;
 		this.providerUserId = providerUserId;
 	}
@@ -60,10 +60,10 @@ public final class ServiceProviderConnectionKey {
 	// object identity
 	
 	public boolean equals(Object o) {
-		if (!(o instanceof ServiceProviderConnectionKey)) {
+		if (!(o instanceof ConnectionKey)) {
 			return false;
 		}
-		ServiceProviderConnectionKey other = (ServiceProviderConnectionKey) o;
+		ConnectionKey other = (ConnectionKey) o;
 		boolean sameProvider = providerId.equals(other.providerId);
 		return providerUserId != null ? sameProvider && providerUserId.equals(providerUserId) : sameProvider;
 	}

@@ -26,7 +26,7 @@ public class GitHubServiceProvider extends AbstractOAuth2ServiceProvider<GitHubA
 		super(new OAuth2Template(clientId, clientSecret, "https://github.com/login/oauth/authorize", "https://github.com/login/oauth/access_token"));
 	}
 
-	public GitHubApi getServiceApi(String accessToken) {
+	public GitHubApi getApi(String accessToken) {
 		return new GitHubTemplate(accessToken);
 	} 
 

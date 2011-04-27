@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.social.connect.ServiceProviderUserProfile;
+import org.springframework.social.connect.UserProfile;
 import org.springframework.social.tripit.api.TripItApi;
 import org.springframework.social.tripit.api.TripItProfile;
 
@@ -32,7 +32,7 @@ public class TripItServiceApiAdapterTest {
 	@Test
 	public void fetchProfile() {
 		Mockito.when(serviceApi.getUserProfile()).thenReturn(new TripItProfile("habuma", "habuma", "Craig Walls", "cwalls@vmware.com", "Plano, TX", "SpringSource", "people/habuma", "http://static.tripit.com/uploads/images/0/0/6/006b210269799fa70ff6ae2c0cdb8a41e9c.jpg"));
-		ServiceProviderUserProfile profile = apiAdapter.fetchUserProfile(serviceApi);
+		UserProfile profile = apiAdapter.fetchUserProfile(serviceApi);
 		assertEquals("Craig Walls", profile.getName());
 		assertEquals("Craig", profile.getFirstName());
 		assertEquals("Walls", profile.getLastName());
@@ -43,7 +43,7 @@ public class TripItServiceApiAdapterTest {
 	@Test
 	public void fetchProfileFirstNameOnly() {
 		Mockito.when(serviceApi.getUserProfile()).thenReturn(new TripItProfile("habuma", "habuma", "Craig", "cwalls@vmware.com", "Plano, TX", "SpringSource", "people/habuma", "http://static.tripit.com/uploads/images/0/0/6/006b210269799fa70ff6ae2c0cdb8a41e9c.jpg"));
-		ServiceProviderUserProfile profile = apiAdapter.fetchUserProfile(serviceApi);
+		UserProfile profile = apiAdapter.fetchUserProfile(serviceApi);
 		assertEquals("Craig", profile.getName());
 		assertEquals("Craig", profile.getFirstName());
 		assertNull(profile.getLastName());
@@ -54,7 +54,7 @@ public class TripItServiceApiAdapterTest {
 	@Test
 	public void fetchProfileMiddleName() {
 		Mockito.when(serviceApi.getUserProfile()).thenReturn(new TripItProfile("habuma", "habuma", "Michael Craig Walls", "cwalls@vmware.com", "Plano, TX", "SpringSource", "people/habuma", "http://static.tripit.com/uploads/images/0/0/6/006b210269799fa70ff6ae2c0cdb8a41e9c.jpg"));
-		ServiceProviderUserProfile profile = apiAdapter.fetchUserProfile(serviceApi);
+		UserProfile profile = apiAdapter.fetchUserProfile(serviceApi);
 		assertEquals("Michael Craig Walls", profile.getName());
 		assertEquals("Michael", profile.getFirstName());
 		assertEquals("Walls", profile.getLastName());
@@ -65,7 +65,7 @@ public class TripItServiceApiAdapterTest {
 	@Test
 	public void fetchProfileExtraWhitespace() {
 		Mockito.when(serviceApi.getUserProfile()).thenReturn(new TripItProfile("habuma", "habuma", "Michael    Craig Walls", "cwalls@vmware.com", "Plano, TX", "SpringSource", "people/habuma", "http://static.tripit.com/uploads/images/0/0/6/006b210269799fa70ff6ae2c0cdb8a41e9c.jpg"));
-		ServiceProviderUserProfile profile = apiAdapter.fetchUserProfile(serviceApi);
+		UserProfile profile = apiAdapter.fetchUserProfile(serviceApi);
 		assertEquals("Michael    Craig Walls", profile.getName());
 		assertEquals("Michael", profile.getFirstName());
 		assertEquals("Walls", profile.getLastName());

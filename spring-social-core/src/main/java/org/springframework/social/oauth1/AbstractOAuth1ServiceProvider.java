@@ -17,7 +17,7 @@ package org.springframework.social.oauth1;
 
 /**
  * Base class for ServiceProviders that use the OAuth1 protocol.
- * OAuth1-based ServiceProvider implementors should extend and implement {@link #getServiceApi(String, String)}.
+ * OAuth1-based ServiceProvider implementors should extend and implement {@link #getApi(String, String)}.
  * They should also define a single constructor that accepts the consumerKey/consumerSecret
  * and internally creates and passes up a {@link OAuth1Operations} instance.
  * @author Keith Donald
@@ -49,14 +49,14 @@ public abstract class AbstractOAuth1ServiceProvider<S> implements OAuth1ServiceP
 		return oauth1Operations;
 	}
 	
-	public abstract S getServiceApi(String accessToken, String secret);
+	public abstract S getApi(String accessToken, String secret);
 	
 	// subclassing hooks
 	
 	/**
 	 * The consumer (or client) key assigned to the application by the provider.
 	 * Exposed to subclasses to support constructing service API instances.
-	 * @see #getServiceApi(String, String)
+	 * @see #getApi(String, String)
 	 */
 	protected final String getConsumerKey() {
 		return consumerKey;
@@ -65,7 +65,7 @@ public abstract class AbstractOAuth1ServiceProvider<S> implements OAuth1ServiceP
 	/**
 	 * The consumer (or client) secret assigned to the application by the provider.
 	 * Exposed to subclasses to support constructing service API instances.
-	 * @see #getServiceApi(String, String)
+	 * @see #getApi(String, String)
 	 */
 	protected final String getConsumerSecret() {
 		return consumerSecret;

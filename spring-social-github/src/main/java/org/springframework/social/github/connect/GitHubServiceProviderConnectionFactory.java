@@ -15,10 +15,10 @@
  */
 package org.springframework.social.github.connect;
 
-import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
+import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.github.api.GitHubApi;
 
-public class GitHubServiceProviderConnectionFactory extends OAuth2ServiceProviderConnectionFactory<GitHubApi> {
+public class GitHubServiceProviderConnectionFactory extends OAuth2ConnectionFactory<GitHubApi> {
 
 	public GitHubServiceProviderConnectionFactory(String clientId, String clientSecret) {
 		super("github", new GitHubServiceProvider(clientId, clientSecret), new GitHubServiceApiAdapter());

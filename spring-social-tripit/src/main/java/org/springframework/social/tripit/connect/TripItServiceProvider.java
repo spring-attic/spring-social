@@ -35,7 +35,7 @@ public class TripItServiceProvider extends AbstractOAuth1ServiceProvider<TripItA
 			OAuth1Version.CORE_10));
 	}
 
-	public TripItApi getServiceApi(String accessToken, String secret) {
+	public TripItApi getApi(String accessToken, String secret) {
 		return new TripItTemplate(getConsumerKey(), getConsumerSecret(), accessToken, secret);
 	}
 

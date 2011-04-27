@@ -23,13 +23,13 @@ import javax.inject.Provider;
 
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.social.connect.ServiceProviderConnection;
-import org.springframework.social.connect.ServiceProviderConnectionFactory;
-import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
-import org.springframework.social.connect.ServiceProviderConnectionKey;
-import org.springframework.social.connect.ServiceProviderConnectionRepository;
-import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
-import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionFactory;
+import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.social.connect.ConnectionKey;
+import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.connect.support.OAuth1ConnectionFactory;
+import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuth1Parameters;
@@ -68,18 +68,18 @@ public class ConnectController  {
 	
 	private MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors;
 
-	private ServiceProviderConnectionFactoryLocator connectionFactoryLocator;
+	private ConnectionFactoryLocator connectionFactoryLocator;
 	
-	private Provider<ServiceProviderConnectionRepository> currentUserConnectionRepositoryProvider;
+	private Provider<ConnectionRepository> currentUserConnectionRepositoryProvider;
 	
 	/**
 	 * Constructs a ConnectController.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
-	 * @param connectionFactory locator for {@link ServiceProviderConnectionFactory} instances needed to establish connections
-	 * @param currentUserConnectionRepositoryProvider provider for the current user's {@link ServiceProviderConnectionRepository} needed to persist connections
+	 * @param connectionFactory locator for {@link ConnectionFactory} instances needed to establish connections
+	 * @param currentUserConnectionRepositoryProvider provider for the current user's {@link ConnectionRepository} needed to persist connections
 	 */
 	@Inject
-	public ConnectController(String applicationUrl, ServiceProviderConnectionFactoryLocator connectionFactoryLocator, Provider<ServiceProviderConnectionRepository> currentUserConnectionRepositoryProvider) {
+	public ConnectController(String applicationUrl, ConnectionFactoryLocator connectionFactoryLocator, Provider<ConnectionRepository> currentUserConnectionRepositoryProvider) {
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 		this.connectionFactoryLocator = connectionFactoryLocator;
 		this.currentUserConnectionRepositoryProvider = currentUserConnectionRepositoryProvider;
@@ -110,7 +110,7 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET)
 	public String connect(@PathVariable String providerId, Model model) {
-		List<ServiceProviderConnection<?>> connections = getConnectionRepository().findConnectionsToProvider(providerId);
+		List<Connection<?>> connections = getConnectionRepository().findConnectionsToProvider(providerId);
 		if (connections.isEmpty()) {
 			return baseViewPath(providerId) + "Connect";
 		} else {
@@ -126,16 +126,16 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
 	public String connect(@PathVariable String providerId, WebRequest request) {
-		ServiceProviderConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
+		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
 		preConnect(connectionFactory, request);
-		if (connectionFactory instanceof OAuth1ServiceProviderConnectionFactory) {
-			OAuth1Operations oauth1Ops = ((OAuth1ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations();
+		if (connectionFactory instanceof OAuth1ConnectionFactory) {
+			OAuth1Operations oauth1Ops = ((OAuth1ConnectionFactory<?>) connectionFactory).getOAuthOperations();
 			OAuthToken requestToken = oauth1Ops.fetchRequestToken(callbackUrl(providerId), null);
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
 			return "redirect:" + oauth1Ops.buildAuthorizeUrl(requestToken.getValue(), oauth1Ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(callbackUrl(providerId)) : OAuth1Parameters.NONE);
-		} else if (connectionFactory instanceof OAuth2ServiceProviderConnectionFactory) {
+		} else if (connectionFactory instanceof OAuth2ConnectionFactory) {
 			String scope = request.getParameter("scope");
-			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId), scope));
+			return "redirect:" + ((OAuth2ConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId), scope));
 		} else {
 			return handleConnectToCustomConnectionFactory(connectionFactory, request);
 		}
@@ -149,9 +149,9 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="oauth_token")
 	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier", required=false) String verifier, WebRequest request) {
-		OAuth1ServiceProviderConnectionFactory<?> connectionFactory = (OAuth1ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
+		OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		OAuthToken accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier), null);
-		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessToken);
+		Connection<?> connection = connectionFactory.createConnection(accessToken);
 		getConnectionRepository().addConnection(connection);	
 		postConnect(connectionFactory, connection, request);
 		return redirectToProviderConnect(providerId);
@@ -164,9 +164,9 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
-		OAuth2ServiceProviderConnectionFactory<?> connectionFactory = (OAuth2ServiceProviderConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
+		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId), null);
-		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessGrant);
+		Connection<?> connection = connectionFactory.createConnection(accessGrant);
 		getConnectionRepository().addConnection(connection);
 		postConnect(connectionFactory, connection, request);
 		return redirectToProviderConnect(providerId);
@@ -188,7 +188,7 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="/{providerId}/{providerUserId}", method=RequestMethod.DELETE)
 	public String removeConnections(@PathVariable String providerId, @PathVariable String providerUserId) {
-		getConnectionRepository().removeConnection(new ServiceProviderConnectionKey(providerId, providerUserId));
+		getConnectionRepository().removeConnection(new ConnectionKey(providerId, providerUserId));
 		return redirectToProviderConnect(providerId);
 	}
 
@@ -196,30 +196,30 @@ public class ConnectController  {
 	
 	/**
 	 * Hook method subclasses may override to create connections to providers of custom types other than OAuth1 or OAuth2.
-	 * Default implementation throws an {@link IllegalStateException} indicating the custom {@link ServiceProviderConnectionFactory} is not supported.
+	 * Default implementation throws an {@link IllegalStateException} indicating the custom {@link ConnectionFactory} is not supported.
 	 */
-	protected String handleConnectToCustomConnectionFactory(ServiceProviderConnectionFactory<?> connectionFactory, WebRequest request) {
+	protected String handleConnectToCustomConnectionFactory(ConnectionFactory<?> connectionFactory, WebRequest request) {
 		throw new IllegalStateException("Connections to provider '" + connectionFactory.getProviderId() + "' are not supported");		
 	}
 	
 	// internal helpers
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void preConnect(ServiceProviderConnectionFactory<?> connectionFactory, WebRequest request) {
+	private void preConnect(ConnectionFactory<?> connectionFactory, WebRequest request) {
 		for (ConnectInterceptor interceptor : interceptingConnectionsTo(connectionFactory)) {
 			interceptor.preConnect(connectionFactory, request);
 		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void postConnect(ServiceProviderConnectionFactory<?> connectionFactory, ServiceProviderConnection<?> connection, WebRequest request) {
+	private void postConnect(ConnectionFactory<?> connectionFactory, Connection<?> connection, WebRequest request) {
 		for (ConnectInterceptor interceptor : interceptingConnectionsTo(connectionFactory)) {
 			interceptor.postConnect(connection, request);
 		}
 	}
 
-	private List<ConnectInterceptor<?>> interceptingConnectionsTo(ServiceProviderConnectionFactory<?> connectionFactory) {
-		Class<?> serviceType = GenericTypeResolver.resolveTypeArgument(connectionFactory.getClass(), ServiceProviderConnectionFactory.class);
+	private List<ConnectInterceptor<?>> interceptingConnectionsTo(ConnectionFactory<?> connectionFactory) {
+		Class<?> serviceType = GenericTypeResolver.resolveTypeArgument(connectionFactory.getClass(), ConnectionFactory.class);
 		List<ConnectInterceptor<?>> typedInterceptors = interceptors.get(serviceType);
 		if (typedInterceptors == null) {
 			typedInterceptors = Collections.emptyList();
@@ -241,7 +241,7 @@ public class ConnectController  {
 		return requestToken;
 	}
 
-	private ServiceProviderConnectionRepository getConnectionRepository() {
+	private ConnectionRepository getConnectionRepository() {
 		return currentUserConnectionRepositoryProvider.get();
 	}
 

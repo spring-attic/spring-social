@@ -15,30 +15,30 @@
  */
 package org.springframework.social.connect.support;
 
-import org.springframework.social.connect.ServiceApiAdapter;
-import org.springframework.social.connect.ServiceProviderConnection;
-import org.springframework.social.connect.ServiceProviderConnectionData;
-import org.springframework.social.connect.ServiceProviderConnectionFactory;
+import org.springframework.social.connect.ApiAdapter;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
 import org.springframework.social.oauth1.OAuthToken;
 
 /**
- * Factory for creating OAuth1-based ServiceProviderConnections.
- * May be subclassed to further simplify construction e.g. TwitterServiceProviderConnectionFactory.
+ * Factory for creating OAuth1-based Connections.
+ * May be subclassed to further simplify construction e.g. TwitterConnectionFactory.
  * @author Keith Donald
- * @param <S> the service API type.
+ * @param <A> the service provider's API type.
  */
-public class OAuth1ServiceProviderConnectionFactory<S> extends ServiceProviderConnectionFactory<S> {
+public class OAuth1ConnectionFactory<A> extends ConnectionFactory<A> {
 	
 	/**
-	 * Create a {@link OAuth1ServiceProviderConnectionFactory}.
+	 * Create a {@link OAuth1ConnectionFactory}.
 	 * @param providerId the provider id e.g. "twitter"
 	 * @param serviceProvider the ServiceProvider model for conducting the authorization flow and obtaining a native service API instance.
-	 * @param serviceApiAdapter the ServiceApiAdapter for mapping the provider-specific service API model to the uniform ServiceProviderConnection interface.
+	 * @param apiAdapter the ApiAdapter for mapping the provider-specific service API model to the uniform ServiceProviderConnection interface.
 	 */
-	public OAuth1ServiceProviderConnectionFactory(String providerId, OAuth1ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
-		super(providerId, serviceProvider, serviceApiAdapter);
+	public OAuth1ConnectionFactory(String providerId, OAuth1ServiceProvider<A> serviceProvider, ApiAdapter<A> apiAdapter) {
+		super(providerId, serviceProvider, apiAdapter);
 	}
 
 	/**
@@ -49,21 +49,21 @@ public class OAuth1ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 	}
 
 	/**
-	 * Create a OAuth1-based ServiceProviderConnection from the access token response returned after {@link #getOAuthOperations() completing the OAuth1 flow}.
+	 * Create a OAuth1-based Connection from the access token response returned after {@link #getOAuthOperations() completing the OAuth1 flow}.
 	 * @param accessToken the access token
 	 * @return the new service provider connection
 	 * @see OAuth1Operations#exchangeForAccessToken(org.springframework.social.oauth1.AuthorizedRequestToken, org.springframework.util.MultiValueMap)
 	 */
-	public ServiceProviderConnection<S> createConnection(OAuthToken accessToken) {
+	public Connection<A> createConnection(OAuthToken accessToken) {
 		String providerUserId = extractProviderUserId(accessToken);
-		return new OAuth1ServiceProviderConnection<S>(getProviderId(), providerUserId, accessToken.getValue(), accessToken.getSecret(), getOAuth1ServiceProvider(), getServiceApiAdapter());		
+		return new OAuth1Connection<A>(getProviderId(), providerUserId, accessToken.getValue(), accessToken.getSecret(), getOAuth1ServiceProvider(), getApiAdapter());		
 	}
 	
 	/**
 	 * Create a OAuth1-based ServiceProviderConnection from the connection data.
 	 */
-	public ServiceProviderConnection<S> createConnection(ServiceProviderConnectionData data) {
-		return new OAuth1ServiceProviderConnection<S>(data, getOAuth1ServiceProvider(), getServiceApiAdapter());
+	public Connection<A> createConnection(ConnectionData data) {
+		return new OAuth1Connection<A>(data, getOAuth1ServiceProvider(), getApiAdapter());
 	}
 
 	// subclassing hooks
@@ -79,8 +79,8 @@ public class OAuth1ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 
 	// internal helpers
 	
-	private OAuth1ServiceProvider<S> getOAuth1ServiceProvider() {
-		return (OAuth1ServiceProvider<S>) getServiceProvider();
+	private OAuth1ServiceProvider<A> getOAuth1ServiceProvider() {
+		return (OAuth1ServiceProvider<A>) getServiceProvider();
 	}
 	
 }

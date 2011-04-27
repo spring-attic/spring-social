@@ -21,13 +21,13 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.social.connect.MultiUserServiceProviderConnectionRepository;
-import org.springframework.social.connect.ServiceProviderConnection;
-import org.springframework.social.connect.ServiceProviderConnectionFactory;
-import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
-import org.springframework.social.connect.ServiceProviderConnectionRepository;
-import org.springframework.social.connect.support.OAuth1ServiceProviderConnectionFactory;
-import org.springframework.social.connect.support.OAuth2ServiceProviderConnectionFactory;
+import org.springframework.social.connect.MultiUserConnectionRepository;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionFactory;
+import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.connect.support.OAuth1ConnectionFactory;
+import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuth1Parameters;
@@ -55,11 +55,11 @@ import org.springframework.web.context.request.WebRequest;
 @RequestMapping("/signin")
 public class ProviderSignInController {
 
-	private final Provider<ServiceProviderConnectionFactoryLocator> connectionFactoryLocatorProvider;
+	private final Provider<ConnectionFactoryLocator> connectionFactoryLocatorProvider;
 
-	private final MultiUserServiceProviderConnectionRepository usersConnectionRepository;
+	private final MultiUserConnectionRepository usersConnectionRepository;
 	
-	private final Provider<ServiceProviderConnectionRepository> currentUserConnectionRepositoryProvider;
+	private final Provider<ConnectionRepository> currentUserConnectionRepositoryProvider;
 	
 	private final String baseCallbackUrl;
 	
@@ -70,17 +70,17 @@ public class ProviderSignInController {
 	/**
 	 * Creates a new provider sign-in controller.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the sign-in process.
-	 * @param connectionFactoryLocatorProvider a provider for the locator of {@link ServiceProviderConnectionFactory connection factories} that can be used for sign-in;
-	 * A JSR330 Provider is injected here instead of the actual locator object to support the fact {@link ProviderSignInAttempt} objects are session-scoped and thus require a Serializable reference to a {@link ServiceProviderConnectionFactoryLocator}.
+	 * @param connectionFactoryLocatorProvider a provider for the locator of {@link ConnectionFactory connection factories} that can be used for sign-in;
+	 * A JSR330 Provider is injected here instead of the actual locator object to support the fact {@link ProviderSignInAttempt} objects are session-scoped and thus require a Serializable reference to a {@link ConnectionFactoryLocator}.
 	 * The injected Provider should be Serializable, otherwise {@link NotSerializableException} instances could occur during the provider sign-in flow.
 	 * @param usersConnectionRepository the global store for service provider connections across all local user accounts
-	 * @param currentUserConnectionRepositoryProvider a provider for the current user's {@link ServiceProviderConnectionRepository} instance;
+	 * @param currentUserConnectionRepositoryProvider a provider for the current user's {@link ConnectionRepository} instance;
 	 * A JSR 330 Provider is injected here instead of the actual repository object because repository instances are request-scoped and resolved based on the currently authenticated user.
 	 * @param signInService an adapter between this controller and the local application's user sign-in system.
 	 */
 	@Inject
-	public ProviderSignInController(String applicationUrl, Provider<ServiceProviderConnectionFactoryLocator> connectionFactoryLocatorProvider, MultiUserServiceProviderConnectionRepository usersConnectionRepository,
-			Provider<ServiceProviderConnectionRepository> currentUserConnectionRepositoryProvider, SignInService signInService) {
+	public ProviderSignInController(String applicationUrl, Provider<ConnectionFactoryLocator> connectionFactoryLocatorProvider, MultiUserConnectionRepository usersConnectionRepository,
+			Provider<ConnectionRepository> currentUserConnectionRepositoryProvider, SignInService signInService) {
 		this.connectionFactoryLocatorProvider = connectionFactoryLocatorProvider;
 		this.usersConnectionRepository = usersConnectionRepository;
 		this.currentUserConnectionRepositoryProvider = currentUserConnectionRepositoryProvider;
@@ -95,14 +95,14 @@ public class ProviderSignInController {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
 	public String signin(@PathVariable String providerId, WebRequest request) {
-		ServiceProviderConnectionFactory<?> connectionFactory = getConnectionFactoryLocator().getConnectionFactory(providerId);
-		if (connectionFactory instanceof OAuth1ServiceProviderConnectionFactory) {
-			OAuth1Operations oauth1Ops = ((OAuth1ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations();
+		ConnectionFactory<?> connectionFactory = getConnectionFactoryLocator().getConnectionFactory(providerId);
+		if (connectionFactory instanceof OAuth1ConnectionFactory) {
+			OAuth1Operations oauth1Ops = ((OAuth1ConnectionFactory<?>) connectionFactory).getOAuthOperations();
 			OAuthToken requestToken = oauth1Ops.fetchRequestToken(callbackUrl(providerId), null);
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
 			return "redirect:" + oauth1Ops.buildAuthenticateUrl(requestToken.getValue(), oauth1Ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(callbackUrl(providerId)) : OAuth1Parameters.NONE);
-		} else if (connectionFactory instanceof OAuth2ServiceProviderConnectionFactory) {
-			return "redirect:" + ((OAuth2ServiceProviderConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId)));
+		} else if (connectionFactory instanceof OAuth2ConnectionFactory) {
+			return "redirect:" + ((OAuth2ConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId)));
 		} else {
 			throw new IllegalStateException("Sign in using provider '" + providerId + "' not supported");
 		}
@@ -119,9 +119,9 @@ public class ProviderSignInController {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="oauth_token")
 	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier", required=false) String verifier, WebRequest request) {
-		OAuth1ServiceProviderConnectionFactory<?> connectionFactory = (OAuth1ServiceProviderConnectionFactory<?>) getConnectionFactoryLocator().getConnectionFactory(providerId);
+		OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) getConnectionFactoryLocator().getConnectionFactory(providerId);
 		OAuthToken accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier), null);
-		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessToken);
+		Connection<?> connection = connectionFactory.createConnection(accessToken);
 		return handleSignIn(connection, request);
 	}
 
@@ -136,9 +136,9 @@ public class ProviderSignInController {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
-		OAuth2ServiceProviderConnectionFactory<?> connectionFactory = (OAuth2ServiceProviderConnectionFactory<?>) getConnectionFactoryLocator().getConnectionFactory(providerId);
+		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) getConnectionFactoryLocator().getConnectionFactory(providerId);
 		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId), null);
-		ServiceProviderConnection<?> connection = connectionFactory.createConnection(accessGrant);
+		Connection<?> connection = connectionFactory.createConnection(accessGrant);
 		return handleSignIn(connection, request);
 	}
 
@@ -153,7 +153,7 @@ public class ProviderSignInController {
 	
 	// internal helpers
 
-	private ServiceProviderConnectionFactoryLocator getConnectionFactoryLocator() {
+	private ConnectionFactoryLocator getConnectionFactoryLocator() {
 		return connectionFactoryLocatorProvider.get();
 	}
 	
@@ -167,8 +167,8 @@ public class ProviderSignInController {
 		return requestToken;
 	}
 
-	private String handleSignIn(ServiceProviderConnection<?> connection, WebRequest request) {
-		String localUserId = usersConnectionRepository.findLocalUserIdWithConnection(connection);
+	private String handleSignIn(Connection<?> connection, WebRequest request) {
+		String localUserId = usersConnectionRepository.findUserIdWithConnection(connection);
 		if (localUserId == null) {
 			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocatorProvider, currentUserConnectionRepositoryProvider);
 			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, WebRequest.SCOPE_SESSION);

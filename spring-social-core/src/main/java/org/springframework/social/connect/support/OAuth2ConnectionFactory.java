@@ -15,10 +15,10 @@
  */
 package org.springframework.social.connect.support;
 
-import org.springframework.social.connect.ServiceApiAdapter;
-import org.springframework.social.connect.ServiceProviderConnection;
-import org.springframework.social.connect.ServiceProviderConnectionData;
-import org.springframework.social.connect.ServiceProviderConnectionFactory;
+import org.springframework.social.connect.ApiAdapter;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
@@ -29,15 +29,15 @@ import org.springframework.social.oauth2.OAuth2ServiceProvider;
  * @author Keith Donald
  * @param <S> the service API type.
  */
-public class OAuth2ServiceProviderConnectionFactory<S> extends ServiceProviderConnectionFactory<S> {
+public class OAuth2ConnectionFactory<S> extends ConnectionFactory<S> {
 
 	/**
-	 * Create a {@link OAuth2ServiceProviderConnectionFactory}.
+	 * Create a {@link OAuth2ConnectionFactory}.
 	 * @param providerId the provider id e.g. "facebook"
 	 * @param serviceProvider the ServiceProvider model for conducting the authorization flow and obtaining a native service API instance.
 	 * @param serviceApiAdapter the ServiceApiAdapter for mapping the provider-specific service API model to the uniform ServiceProviderConnection interface.
 	 */
-	public OAuth2ServiceProviderConnectionFactory(String providerId, OAuth2ServiceProvider<S> serviceProvider, ServiceApiAdapter<S> serviceApiAdapter) {
+	public OAuth2ConnectionFactory(String providerId, OAuth2ServiceProvider<S> serviceProvider, ApiAdapter<S> serviceApiAdapter) {
 		super(providerId, serviceProvider, serviceApiAdapter);
 	}
 
@@ -54,16 +54,16 @@ public class OAuth2ServiceProviderConnectionFactory<S> extends ServiceProviderCo
 	 * @return the new service provider connection
 	 * @see OAuth2Operations#exchangeForAccess(String, String, org.springframework.util.MultiValueMap)
 	 */
-	public ServiceProviderConnection<S> createConnection(AccessGrant accessGrant) {
-		return new OAuth2ServiceProviderConnection<S>(getProviderId(), extractProviderUserId(accessGrant), accessGrant.getAccessToken(),
-				accessGrant.getRefreshToken(), accessGrant.getExpireTime(), getOAuth2ServiceProvider(), getServiceApiAdapter());		
+	public Connection<S> createConnection(AccessGrant accessGrant) {
+		return new OAuth2Connection<S>(getProviderId(), extractProviderUserId(accessGrant), accessGrant.getAccessToken(),
+				accessGrant.getRefreshToken(), accessGrant.getExpireTime(), getOAuth2ServiceProvider(), getApiAdapter());		
 	}
 
 	/**
 	 * Create a OAuth2-based ServiceProviderConnection from the connection data.
 	 */
-	public ServiceProviderConnection<S> createConnection(ServiceProviderConnectionData data) {
-		return new OAuth2ServiceProviderConnection<S>(data, getOAuth2ServiceProvider(), getServiceApiAdapter());
+	public Connection<S> createConnection(ConnectionData data) {
+		return new OAuth2Connection<S>(data, getOAuth2ServiceProvider(), getApiAdapter());
 	}
 	
 	// subclassing hooks

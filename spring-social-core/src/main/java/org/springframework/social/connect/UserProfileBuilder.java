@@ -16,13 +16,13 @@
 package org.springframework.social.connect;
 
 /**
- * Builder for constructing a {@link ServiceProviderUserProfile} instance returned by {@link ServiceApiAdapter#fetchUserProfile(Object)}
+ * Builder for constructing a {@link UserProfile} instance returned by {@link ApiAdapter#fetchUserProfile(Object)}
  * Makes it easy to construct a profile instance where some of the individual fields may be null.
- * Also allows new profile fields to be introduced in the future without breaking compatibility with existing {@link ServiceApiAdapter} implementations.
+ * Also allows new profile fields to be introduced in the future without breaking compatibility with existing {@link ApiAdapter} implementations.
  * @author Keith Donald
- * @see ServiceProviderUserProfile
+ * @see UserProfile
  */
-public class ServiceProviderUserProfileBuilder {
+public class UserProfileBuilder {
 
 	private String name;
 	
@@ -38,7 +38,7 @@ public class ServiceProviderUserProfileBuilder {
 	 * Sets the profile name field.
 	 * Note: parses the name string and sets the individual firstName and lastName fields as well.
 	 */
-	public ServiceProviderUserProfileBuilder setName(String name) {
+	public UserProfileBuilder setName(String name) {
 		this.name = name;
 		String[] firstAndLastName = firstAndLastName(this.name);
 		setFirstName(firstAndLastName[0]);
@@ -49,7 +49,7 @@ public class ServiceProviderUserProfileBuilder {
 	/**
 	 * Sets the profile firstName field.
 	 */
-	public ServiceProviderUserProfileBuilder setFirstName(String firstName) {
+	public UserProfileBuilder setFirstName(String firstName) {
 		this.firstName = firstName;
 		return this;
 	}
@@ -57,7 +57,7 @@ public class ServiceProviderUserProfileBuilder {
 	/**
 	 * Sets the profile lastName field.
 	 */
-	public ServiceProviderUserProfileBuilder setLastName(String lastName) {
+	public UserProfileBuilder setLastName(String lastName) {
 		this.lastName = lastName;
 		return this;
 	}
@@ -65,7 +65,7 @@ public class ServiceProviderUserProfileBuilder {
 	/**
 	 * Sets the profile email field.
 	 */
-	public ServiceProviderUserProfileBuilder setEmail(String email) {
+	public UserProfileBuilder setEmail(String email) {
 		this.email = email;
 		return this;		
 	}
@@ -73,7 +73,7 @@ public class ServiceProviderUserProfileBuilder {
 	/**
 	 * Sets the profile username field.
 	 */
-	public ServiceProviderUserProfileBuilder setUsername(String username) {
+	public UserProfileBuilder setUsername(String username) {
 		this.username = username;
 		return this;		
 	}
@@ -82,8 +82,8 @@ public class ServiceProviderUserProfileBuilder {
 	 * Builds the user profile.
 	 * Call this method after setting all profile field values.
 	 */
-	public ServiceProviderUserProfile build() {
-		return new ServiceProviderUserProfile(name, firstName, lastName, email, username);
+	public UserProfile build() {
+		return new UserProfile(name, firstName, lastName, email, username);
 	}
 	
 	// internal helpers

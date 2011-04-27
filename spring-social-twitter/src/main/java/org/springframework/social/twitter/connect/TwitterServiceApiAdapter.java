@@ -16,14 +16,14 @@
 package org.springframework.social.twitter.connect;
 
 import org.springframework.social.BadCredentialsException;
-import org.springframework.social.connect.ServiceApiAdapter;
-import org.springframework.social.connect.ServiceProviderConnectionValues;
-import org.springframework.social.connect.ServiceProviderUserProfile;
-import org.springframework.social.connect.ServiceProviderUserProfileBuilder;
+import org.springframework.social.connect.ApiAdapter;
+import org.springframework.social.connect.ConnectionValues;
+import org.springframework.social.connect.UserProfile;
+import org.springframework.social.connect.UserProfileBuilder;
 import org.springframework.social.twitter.api.TwitterApi;
 import org.springframework.social.twitter.api.TwitterProfile;
 
-public class TwitterServiceApiAdapter implements ServiceApiAdapter<TwitterApi> {
+public class TwitterServiceApiAdapter implements ApiAdapter<TwitterApi> {
 
 	public boolean test(TwitterApi serviceApi) {
 		try {
@@ -34,7 +34,7 @@ public class TwitterServiceApiAdapter implements ServiceApiAdapter<TwitterApi> {
 		}
 	}
 
-	public void setConnectionValues(TwitterApi serviceApi, ServiceProviderConnectionValues values) {
+	public void setConnectionValues(TwitterApi serviceApi, ConnectionValues values) {
 		TwitterProfile profile = serviceApi.userOperations().getUserProfile();
 		values.setProviderUserId(Long.toString(profile.getId()));
 		values.setDisplayName("@" + profile.getScreenName());
@@ -42,9 +42,9 @@ public class TwitterServiceApiAdapter implements ServiceApiAdapter<TwitterApi> {
 		values.setImageUrl(profile.getProfileImageUrl());
 	}
 
-	public ServiceProviderUserProfile fetchUserProfile(TwitterApi serviceApi) {
+	public UserProfile fetchUserProfile(TwitterApi serviceApi) {
 		TwitterProfile profile = serviceApi.userOperations().getUserProfile();
-		return new ServiceProviderUserProfileBuilder().setName(profile.getName()).setUsername(profile.getScreenName()).build();
+		return new UserProfileBuilder().setName(profile.getName()).setUsername(profile.getScreenName()).build();
 	}
 	
 	public void updateStatus(TwitterApi serviceApi, String message) {

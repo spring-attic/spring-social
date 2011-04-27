@@ -34,7 +34,7 @@ public class LinkedInServiceProvider extends AbstractOAuth1ServiceProvider<Linke
 			"https://api.linkedin.com/uas/oauth/accessToken"));
 	}
 
-	public LinkedInApi getServiceApi(String accessToken, String secret) {
+	public LinkedInApi getApi(String accessToken, String secret) {
 		return new LinkedInTemplate(getConsumerKey(), getConsumerSecret(), accessToken, secret);
 	}
 	

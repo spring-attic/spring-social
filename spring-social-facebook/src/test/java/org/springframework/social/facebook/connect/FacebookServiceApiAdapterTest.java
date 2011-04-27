@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.social.connect.ServiceProviderUserProfile;
+import org.springframework.social.connect.UserProfile;
 import org.springframework.social.facebook.api.FacebookApi;
 import org.springframework.social.facebook.api.FacebookProfile;
 import org.springframework.social.facebook.api.UserOperations;
@@ -35,7 +35,7 @@ public class FacebookServiceApiAdapterTest {
 		UserOperations userOperations = Mockito.mock(UserOperations.class);
 		Mockito.when(serviceApi.userOperations()).thenReturn(userOperations);
 		Mockito.when(userOperations.getUserProfile()).thenReturn(new FacebookProfile("12345678", "habuma", "Craig Walls", "Craig", "Walls", null, null));
-		ServiceProviderUserProfile profile = apiAdapter.fetchUserProfile(serviceApi);
+		UserProfile profile = apiAdapter.fetchUserProfile(serviceApi);
 		assertEquals("Craig Walls", profile.getName());
 		assertEquals("Craig", profile.getFirstName());
 		assertEquals("Walls", profile.getLastName());

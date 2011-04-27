@@ -29,7 +29,7 @@ public class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<Faceb
 		super(new FacebookOAuth2Template(clientId, clientSecret));
 	}
 
-	public FacebookApi getServiceApi(String accessToken) {
+	public FacebookApi getApi(String accessToken) {
 		return new FacebookTemplate(accessToken);
 	}
 	

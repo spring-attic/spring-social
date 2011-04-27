@@ -18,30 +18,30 @@ package org.springframework.social.connect;
 import java.util.Set;
 
 /**
- * A ServiceLocator for {@link ServiceProviderConnectionFactory} instances.
+ * A ServiceLocator for {@link ConnectionFactory} instances.
  * Supports lookup by providerId and by serviceApiType.
  * @author Keith Donald
- * @see ServiceProviderConnectionFactory
+ * @see ConnectionFactory
  */
-public interface ServiceProviderConnectionFactoryLocator {
+public interface ConnectionFactoryLocator {
 
 	/**
-	 * Lookup a ServiceProviderConnectionFactory by providerId; for example, "facebook".
+	 * Lookup a ConnectionFactory by providerId; for example, "facebook".
 	 * The returned factory can be used to create connections to the provider.
 	 * Used to support connection creation in a dynamic manner across the set of registered providers.
 	 */
-	ServiceProviderConnectionFactory<?> getConnectionFactory(String providerId);
+	ConnectionFactory<?> getConnectionFactory(String providerId);
 
 	/**
-	 * Lookup a ServiceProviderConnectionFactory by serviceApiType; for example, FacebookApi.class.
+	 * Lookup a ConnectionFactory by apiType; for example, FacebookApi.class.
 	 * The returned factory can be used to create connections to the provider.
 	 * Primarily used in support of connection restoration requested by application code.
-	 * @see ServiceProviderConnectionRepository#findPrimaryConnectionToServiceApi(Class)
+	 * @see ConnectionRepository#findPrimaryConnectionToApi(Class)
 	 */
-	<S> ServiceProviderConnectionFactory<S> getConnectionFactory(Class<S> serviceApiType);
+	<A> ConnectionFactory<A> getConnectionFactory(Class<A> apiType);
 
 	/**
-	 * Returns the set of providerIds for which a {@link ServiceProviderConnectionFactory} is registered; for example, <code>{ "twitter", "facebook", "foursquare" }</code>
+	 * Returns the set of providerIds for which a {@link ConnectionFactory} is registered; for example, <code>{ "twitter", "facebook", "foursquare" }</code>
 	 * Elements in this set can be passed to {@link #getConnectionFactory(String)} to fetch a specific factory instance.
 	 */
 	Set<String> registeredProviderIds();

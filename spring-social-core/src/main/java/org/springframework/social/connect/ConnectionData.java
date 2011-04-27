@@ -18,14 +18,14 @@ package org.springframework.social.connect;
 import java.io.Serializable;
 
 /**
- * A data transfer object that allows the internal state of a ServiceProviderConnection to be persisted and transferred between layers of an application.
+ * A data transfer object that allows the internal state of a Connection to be persisted and transferred between layers of an application.
  * Some fields may be null depending on the specific type of ServiceProviderConnection.
- * For example, an OAuth2ServiceProviderConnection has a null 'secret' field while an OAuth1ServiceProviderConnection has null 'refreshToken' and 'expireTime' fields.
+ * For example, an OAuth2Connection has a null 'secret' field while an OAuth1Connection has null 'refreshToken' and 'expireTime' fields.
  * @author Keith Donald
- * @see ServiceProviderConnection#createData()
+ * @see Connection#createData()
  */
 @SuppressWarnings("serial")
-public class ServiceProviderConnectionData implements Serializable {
+public class ConnectionData implements Serializable {
 	
 	private String providerId;
 	
@@ -45,7 +45,7 @@ public class ServiceProviderConnectionData implements Serializable {
 	
 	private Long expireTime;
 
-	public ServiceProviderConnectionData(String providerId, String providerUserId, String displayName, String profileUrl, String imageUrl, String accessToken, String secret, String refreshToken, Long expireTime) {
+	public ConnectionData(String providerId, String providerUserId, String displayName, String profileUrl, String imageUrl, String accessToken, String secret, String refreshToken, Long expireTime) {
 		this.providerId = providerId;
 		this.providerUserId = providerUserId;
 		this.displayName = displayName;

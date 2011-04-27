@@ -29,58 +29,58 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
-import org.springframework.social.connect.MultiUserServiceProviderConnectionRepository;
-import org.springframework.social.connect.ServiceProviderConnection;
-import org.springframework.social.connect.ServiceProviderConnectionFactoryLocator;
-import org.springframework.social.connect.ServiceProviderConnectionKey;
-import org.springframework.social.connect.ServiceProviderConnectionRepository;
+import org.springframework.social.connect.MultiUserConnectionRepository;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.social.connect.ConnectionKey;
+import org.springframework.social.connect.ConnectionRepository;
 
 /**
- * {@link MultiUserServiceProviderConnectionRepository} that uses the JDBC API to persist connection data to a relational database.
- * The supporting schema is defined in JdbcMultiUserServiceProviderConnectionRepository.sql.
+ * {@link MultiUserConnectionRepository} that uses the JDBC API to persist connection data to a relational database.
+ * The supporting schema is defined in JdbcMultiUserConnectionRepository.sql.
  * @author Keith Donald
  */
-public class JdbcMultiUserServiceProviderConnectionRepository implements MultiUserServiceProviderConnectionRepository {
+public class JdbcMultiUserConnectionRepository implements MultiUserConnectionRepository {
 
 	private final JdbcTemplate jdbcTemplate;
 	
-	private final ServiceProviderConnectionFactoryLocator connectionFactoryLocator;
+	private final ConnectionFactoryLocator connectionFactoryLocator;
 
 	private final TextEncryptor textEncryptor;
 
-	public JdbcMultiUserServiceProviderConnectionRepository(DataSource dataSource, ServiceProviderConnectionFactoryLocator connectionFactoryLocator, TextEncryptor textEncryptor) {
+	public JdbcMultiUserConnectionRepository(DataSource dataSource, ConnectionFactoryLocator connectionFactoryLocator, TextEncryptor textEncryptor) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.connectionFactoryLocator = connectionFactoryLocator;
 		this.textEncryptor = textEncryptor;
 	}
 
-	public String findLocalUserIdWithConnection(ServiceProviderConnection<?> connection) {
+	public String findUserIdWithConnection(Connection<?> connection) {
 		try {
-			ServiceProviderConnectionKey key = connection.getKey();
-			return jdbcTemplate.queryForObject("select localUserId from ServiceProviderConnection where providerId = ? and providerUserId = ?", String.class, key.getProviderId(), key.getProviderUserId());
+			ConnectionKey key = connection.getKey();
+			return jdbcTemplate.queryForObject("select userId from ServiceProviderConnection where providerId = ? and providerUserId = ?", String.class, key.getProviderId(), key.getProviderUserId());
 		} catch (IncorrectResultSizeDataAccessException e) {
 			return null;
 		}
 	}
 
-	public Set<String> findLocalUserIdsConnectedTo(String providerId, Set<String> providerUserIds) {
+	public Set<String> findUserIdsConnectedTo(String providerId, Set<String> providerUserIds) {
 		MapSqlParameterSource parameters = new MapSqlParameterSource();
 		parameters.addValue("providerId", providerId);
 		parameters.addValue("providerUserIds", providerUserIds);
 		final Set<String> localUserIds = new HashSet<String>();
-		return new NamedParameterJdbcTemplate(jdbcTemplate).query("select localUserId from ServiceProviderConnection where providerId = :providerId and providerUserId in (:providerUserIds)", parameters,
+		return new NamedParameterJdbcTemplate(jdbcTemplate).query("select userId from ServiceProviderConnection where providerId = :providerId and providerUserId in (:providerUserIds)", parameters,
 			new ResultSetExtractor<Set<String>>() {
 				public Set<String> extractData(ResultSet rs) throws SQLException, DataAccessException {
 					while (rs.next()) {
-						localUserIds.add(rs.getString("localUserId"));
+						localUserIds.add(rs.getString("userId"));
 					}
 					return localUserIds;
 				}
 			});
 	}
 
-	public ServiceProviderConnectionRepository createConnectionRepository(String localUserId) {
-		return new JdbcServiceProviderConnectionRepository(localUserId, jdbcTemplate, connectionFactoryLocator, textEncryptor);
+	public ConnectionRepository createConnectionRepository(String userId) {
+		return new JdbcConnectionRepository(userId, jdbcTemplate, connectionFactoryLocator, textEncryptor);
 	}
 
 }

@@ -26,7 +26,7 @@ public interface OAuth2ServiceProvider<S> extends ServiceProvider<S> {
 
 	/**
 	 * Get the service interface for carrying out the "OAuth dance" with this provider.
-	 * The result of the OAuth dance is an access token that can be used to obtain a {@link #getServiceApi(String) service API}.
+	 * The result of the OAuth dance is an access token that can be used to obtain a {@link #getApi(String) service API}.
 	 */
 	OAuth2Operations getOAuthOperations();
 
@@ -35,6 +35,6 @@ public interface OAuth2ServiceProvider<S> extends ServiceProvider<S> {
 	 * @param accessToken the API access token
 	 * @return the service API
 	 */
-	S getServiceApi(String accessToken);
+	S getApi(String accessToken);
 
 }

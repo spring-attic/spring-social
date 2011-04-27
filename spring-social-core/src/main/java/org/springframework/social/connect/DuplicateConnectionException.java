@@ -15,27 +15,24 @@
  */
 package org.springframework.social.connect;
 
-final class NullServiceApiAdapter implements ServiceApiAdapter<Object> {
-
-	public static final NullServiceApiAdapter INSTANCE = new NullServiceApiAdapter();
+/**
+ * Thrown by a {@link ConnectionRepository} when attempting to add a ServiceProviderConnection and a connection already exists with the given key.
+ * @author Keith Donald
+ * @see ConnectionRepository#addConnection(ServiceProviderConnection)
+ */
+@SuppressWarnings("serial")
+public final class DuplicateConnectionException extends RuntimeException {
 	
-	public boolean test(Object serviceApi) {
-		return true;
+	private final ConnectionKey connectionKey;
+
+	public DuplicateConnectionException(ConnectionKey connectionKey) {
+		this.connectionKey = connectionKey;
 	}
 
-	public void setConnectionValues(Object serviceApi, ServiceProviderConnectionValues values) {
-		
+	/**
+	 * The connection key that already exists.
+	 */
+	public ConnectionKey getConnectionKey() {
+		return connectionKey;
 	}
-
-	public ServiceProviderUserProfile fetchUserProfile(Object serviceApi) {
-		return ServiceProviderUserProfile.EMPTY;
-	}
-
-	public void updateStatus(Object serviceApi, String message) {
-	}
-
-	// internal helpers
-	
-	private NullServiceApiAdapter() {}
-	
 }

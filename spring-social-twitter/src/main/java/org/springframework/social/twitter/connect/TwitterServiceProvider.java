@@ -35,7 +35,7 @@ public class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<Twitte
 			"https://api.twitter.com/oauth/access_token"));
 	}
 
-	public TwitterApi getServiceApi(String accessToken, String secret) {
+	public TwitterApi getApi(String accessToken, String secret) {
 		return new TwitterTemplate(getConsumerKey(), getConsumerSecret(), accessToken, secret);
 	}
 

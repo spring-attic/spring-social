@@ -20,7 +20,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.ClassUtils;
 
 /**
- * Chooses a request factory. Picks an Apache HttpComponents HttpClient factory if Apache HttpComponents HttpClient is in the classpath.
+ * Chooses a request factory. Picks a HttpComponentsClientRequestFactory factory if Apache HttpComponents HttpClient is in the classpath.
  * If not, falls back to SimpleClientHttpRequestFactory.
  * @author Craig Walls
  * @author Roy Clarkson

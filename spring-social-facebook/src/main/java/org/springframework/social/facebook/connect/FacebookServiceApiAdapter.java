@@ -16,14 +16,14 @@
 package org.springframework.social.facebook.connect;
 
 import org.springframework.social.BadCredentialsException;
-import org.springframework.social.connect.ServiceApiAdapter;
-import org.springframework.social.connect.ServiceProviderConnectionValues;
-import org.springframework.social.connect.ServiceProviderUserProfile;
-import org.springframework.social.connect.ServiceProviderUserProfileBuilder;
+import org.springframework.social.connect.ApiAdapter;
+import org.springframework.social.connect.ConnectionValues;
+import org.springframework.social.connect.UserProfile;
+import org.springframework.social.connect.UserProfileBuilder;
 import org.springframework.social.facebook.api.FacebookApi;
 import org.springframework.social.facebook.api.FacebookProfile;
 
-public class FacebookServiceApiAdapter implements ServiceApiAdapter<FacebookApi> {
+public class FacebookServiceApiAdapter implements ApiAdapter<FacebookApi> {
 
 	public boolean test(FacebookApi serviceApi) {
 		try {
@@ -34,7 +34,7 @@ public class FacebookServiceApiAdapter implements ServiceApiAdapter<FacebookApi>
 		}
 	}
 
-	public void setConnectionValues(FacebookApi serviceApi, ServiceProviderConnectionValues values) {
+	public void setConnectionValues(FacebookApi serviceApi, ConnectionValues values) {
 		FacebookProfile profile = serviceApi.userOperations().getUserProfile();
 		values.setProviderUserId(profile.getId());
 		values.setDisplayName(profile.getUsername());
@@ -42,9 +42,9 @@ public class FacebookServiceApiAdapter implements ServiceApiAdapter<FacebookApi>
 		values.setImageUrl("http://graph.facebook.com/" + profile.getId() + "/picture");
 	}
 
-	public ServiceProviderUserProfile fetchUserProfile(FacebookApi serviceApi) {
+	public UserProfile fetchUserProfile(FacebookApi serviceApi) {
 		FacebookProfile profile = serviceApi.userOperations().getUserProfile();
-		return new ServiceProviderUserProfileBuilder().setName(profile.getName()).setFirstName(profile.getFirstName()).setLastName(profile.getLastName()).
+		return new UserProfileBuilder().setName(profile.getName()).setFirstName(profile.getFirstName()).setLastName(profile.getLastName()).
 			setEmail(profile.getEmail()).setUsername(profile.getUsername()).build();
 	}
 	

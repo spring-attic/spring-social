@@ -26,12 +26,12 @@ import java.io.Serializable;
  * @author Keith Donald
  */
 @SuppressWarnings("serial")
-public class ServiceProviderUserProfile implements Serializable {
+public class UserProfile implements Serializable {
 
 	/**
 	 * Shared, empty profile that when used indicates no profile data is available (all property values are null).
 	 */
-	public static final ServiceProviderUserProfile EMPTY = new ServiceProviderUserProfile(null, null, null, null, null);
+	public static final UserProfile EMPTY = new UserProfile(null, null, null, null, null);
 
 	private final String name;
 	
@@ -85,7 +85,7 @@ public class ServiceProviderUserProfile implements Serializable {
 
 	// builder only
 	
-	ServiceProviderUserProfile(String name, String firstName, String lastName, String email, String username) {
+	UserProfile(String name, String firstName, String lastName, String email, String username) {
 		this.name = name;
 		this.firstName = firstName;
 		this.lastName = lastName;
