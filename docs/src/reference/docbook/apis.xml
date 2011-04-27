@@ -531,23 +531,23 @@ FacebookApi facebookApi = connection.getApi();]]>
 			<programlisting language="java"><![CDATA[
 public interface FacebookApi extends GraphApi {
 
-	CommentOperations commentOperations();
+    CommentOperations commentOperations();
 
-	EventOperations eventOperations();
+    EventOperations eventOperations();
 	
-	FeedOperations feedOperations();
+    FeedOperations feedOperations();
 
-	FriendOperations friendOperations();
+    FriendOperations friendOperations();
 	
-	GroupOperations groupOperations();
+    GroupOperations groupOperations();
 
-	LikeOperations likeOperations();
+    LikeOperations likeOperations();
 	
-	MediaOperations mediaOperations();
+    MediaOperations mediaOperations();
 	
-	PlacesOperations placesOperations();
+    PlacesOperations placesOperations();
 	
-	UserOperations userOperations();
+    UserOperations userOperations();
 	
 }]]>
 			</programlisting>

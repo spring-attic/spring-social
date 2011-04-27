@@ -4,48 +4,42 @@
 
 	<section xml:id="signin_introduction">
 		<title>Introduction</title>
-		
 		<para>
-			In order to ease sign in for their users, many applications allow sign in via a service provider such as Twitter or Facebook.
-			In this authentication pattern, the user signs into (or may already be signed into) the provider.
-			The application then tries to match the sign in connection details with a user who has previously linked their application account with the provider.
-			If a match is found, then the user is automatically signed into the application.
+			In order to ease sign in for their users, many applications allow sign in with a service provider such as Twitter or Facebook.
+			With this authentication technique, the user signs into (or may already be signed into) his or her provider account.
+			The application then tries to match that provider account to a local user account.
+			If a match is found, the user is automatically signed into the application.
 		</para>
-
 		<para>
 			Spring Social supports such service provider-based authentication with <classname>ProviderSignInController</classname> from the <code>spring-social-web</code> module.
 			<classname>ProviderSignInController</classname> works very much like <classname>ConnectController</classname> in that it goes through the OAuth flow (either OAuth 1 or OAuth 2, depending on the provider).
-			Instead of creating a connection at the end of process, however, <classname>ProviderSignInController</classname> attempts to find a previously established connection and uses the connected account to authenticate the user to the application.
+			Instead of creating a connection at the end of process, however, <classname>ProviderSignInController</classname> attempts to find a previously established connection and uses the connected account to authenticate the user with the application.
 			If no previous connection matches, the flow will be sent to the application's sign up page so that the user may register with the application.
 		</para>
 	</section>
 
 	<section xml:id="signin_using">
 		<title>Enabling provider sign in</title>
-
 		<para>
 			To add provider sign in capability to your Spring application, configure <classname>ProviderSignInController</classname> as a bean in your Spring MVC application:
 		</para>		
-		
 		<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.connect.signin.web.ProviderSignInController">
-    <constructor-arg value="${application.url}" />
+    <constructor-arg value="${application.secureUrl}" />
+    <!-- relies on by-type autowiring for the other constructor-args -->    
 </bean>]]>
 		</programlisting>
-
 		<para>
-			The <classname>ProviderSignInController</classname> bean only requires a single <code><![CDATA[<constructor-arg>]]></code> to specify the application's base URL.
+			The <classname>ProviderSignInController</classname> bean requires a single explicit <code><![CDATA[<constructor-arg>]]></code> value to specify the application's base secure URL.
 			<classname>ProviderSignInController</classname> will use this URL to construct the callback URL used in the authentication flow.
 			As with <classname>ConnectController</classname>, it is recommended that the application URL be externalized so that it can vary between deployment environments.
 		</para>
-		
 		<para>
 			When authenticating via an OAuth 2 provider, <classname>ProviderSignInController</classname> supports the following flow:
 		</para>
-		
 		<itemizedlist>
-			<listitem><para><code>POST /signin/{provider ID}</code> - Initiates the sign in flow. Redirects to Provider's authentication page.</para></listitem>
-			<listitem><para><code>GET /signin/{provider ID}?code={verifier}</code> - Receives the authentication callback from the provider, accepting a code. Exchanges this code for an access token. It uses this access token to lookup a connected account and then authenticates to the application through the sign in service. </para>
+			<listitem><para><code>POST /signin/{providerId}</code> - Initiates the sign in flow by redirecting to the provider's authentication endpoint.</para></listitem>
+			<listitem><para><code>GET /signin/{providerId}?code={verifier}</code> - Receives the authentication callback from the provider, accepting a code. Exchanges this code for an access token. It uses this access token to lookup a connected account and then authenticates to the application through the sign in service. </para>
 				<itemizedlist>
 					<listitem>
 						<para>
@@ -56,14 +50,12 @@
 				</itemizedlist>
 			</listitem>
 		</itemizedlist>
-
 		<para>
 			For OAuth 1 providers, the flow is only slightly different:
 		</para>
-		
 		<itemizedlist>
-			<listitem><para><code>POST /signin/{provider ID}</code> - Initiates the sign in flow. This means fetching a request token from the provider and then redirecting to Provider's authentication page.</para></listitem>
-			<listitem><para><code>GET /signin/{provider ID}?oauth_token={request token}&amp;oauth_verifier={verifier}</code> - Receives the authentication callback from the provider, accepting a verification code. Exchanges this verification code along with the request token for an access token. It uses this access token to lookup a connected account and then authenticates to the application through the sign in service. </para>
+			<listitem><para><code>POST /signin/{providerId}</code> - Initiates the sign in flow. This involves fetching a request token from the provider and then redirecting to Provider's authentication endpoint.</para></listitem>
+			<listitem><para><code>GET /signin/{providerId}?oauth_token={request token}&amp;oauth_verifier={verifier}</code> - Receives the authentication callback from the provider, accepting a verification code. Exchanges this verification code along with the request token for an access token. It uses this access token to lookup a connected account and then authenticates to the application through the sign in service. </para>
 				<itemizedlist>
 					<listitem>
 						<para>
@@ -74,77 +66,52 @@
 				</itemizedlist>
 			</listitem>
 		</itemizedlist>
-
 		<section>
 			<title>ProviderSignInController's dependencies</title>
-		
 			<para>
 				As shown above, <classname>ProviderSignInController</classname> can be configured as a Spring bean given only a single constructor argument.
 				Nevertheless, <classname>ProviderSignInController</classname> depends on a handful of other beans to do its job.
 			</para>
-			
 			<itemizedlist>
-				<listitem><para>A <interfacename>ConnectionFactoryLocator</interfacename> to lookup a connection factory used to perform the authentication process with the provider.</para></listitem>
-				<listitem><para>A <interfacename>UsersConnectionRepository</interfacename> to find a user whose connection matches the sign in connection.</para></listitem>
-				<listitem><para>A <interfacename>ConnectionRepository</interfacename> used to create a new connection when the user signs up in the application after a failed provider sign in.</para></listitem>
-				<listitem><para>A <interfacename>SignInService</interfacename> to sign the user into the application if a matching connection is found.</para></listitem>
+				<listitem><para>A <interfacename>ConnectionFactoryLocator</interfacename> to lookup the ConnectionFactory used to create the Connection to the provider.</para></listitem>
+				<listitem><para>A <interfacename>UsersConnectionRepository</interfacename> to find the user that has the connection to the provider user attempting to sign-in.</para></listitem>
+				<listitem><para>A <interfacename>ConnectionRepository</interfacename> to persist a new connection when a new user signs up with the application after a failed sign-in attempt.</para></listitem>
+				<listitem><para>A <interfacename>SignInService</interfacename> to sign a user into the application when a matching connection is found.</para></listitem>
 			</itemizedlist>
-			
-			
 			<para>
 				Because <classname>ProviderSignInController</classname>'s constructor is annotated with <code>@Inject</code>, those dependencies will be given to <classname>ProviderSignInController</classname> via autowiring.
 				You'll still need to make sure they're available as beans in the Spring application context so that they can be autowired.
 			</para>
-			
 			<para>
 				You should have already configured most of these dependencies when setting up connection support (in the previous chapter).
 				The <interfacename>SignInService</interfacename> is exclusively used for provider sign in and so a <interfacename>SignInService</interfacename> bean will need to be added to the configuration.
 				But first, you'll need to write an implementation of the <interfacename>SignInService</interfacename> interface.
 			</para>
-
 			<para>
 				The <interfacename>SignInService</interfacename> interface is defined as follows:
 			</para>
-	
 			<programlisting language="java"><![CDATA[
 public interface SignInService {
     void signIn(String localUserId);
 }]]>
 			</programlisting>
-
 			<para>
 				The <methodname>signIn()</methodname> method takes a single argument which is the local application user's user ID normalized as a <classname>String</classname>.
 				No other credentials are necessary here because by the time this method is called the user will have signed into the provider and their connection with that provider has been used to prove the user's identity.
 				Implementations of this interface should use this user ID to authenticate the user to the application. 
 			</para>
-
 			<para>
 				Different applications will implement security differently, so each application must implement <interfacename>SignInService</interfacename> in a way that fits its unique security scheme.
 				For example, suppose that an application's security is based Spring Security and simply uses a user's account ID as their principal. 
 				In that case, a simple implementation of <interfacename>SignInService</interfacename> might look like this:
 			</para>
-	
 			<programlisting language="java"><![CDATA[
-package org.springframework.social.showcase.signin;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.social.connect.signin.web.SignInService;
-
+@Service
 public class SpringSecuritySignInService implements SignInService {
     public void signIn(String localUserId) {
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(localUserId, null, null));
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(localUserId, null, null));
     }
 }
-]]>
-			</programlisting>
-	
-			<para>
-				Once you've written a <interfacename>SignInService</interfacename> implementation, it must be configured as a bean in the Spring context:
-			</para>
-
-			<programlisting language="xml"><![CDATA[
-<bean class="org.springframework.social.showcase.signin.SpringSecuritySignInService" />
 ]]>
 			</programlisting>
 		</section>
@@ -155,28 +122,23 @@ public class SpringSecuritySignInService implements SignInService {
 				With <classname>ProviderSignInController</classname> and a <interfacename>SignInService</interfacename> configured, the backend support for provider sign in is in place.
 	      		The last thing to do is to add a sign in button to your application that will kick off the authentication flow with <classname>ProviderSignInController</classname>.
 	   		</para>
-	   		
 	   		<para>
 	      		For example, the following HTML snippet adds a "Signin with Twitter" button to a page:
 	  		</para>
-          
 			<programlisting language="xml"><![CDATA[
 <form id="tw_signin" action="<c:url value="/signin/twitter"/>" method="POST">
     <button type="submit"><img src="<c:url value="/resources/social/twitter/sign-in-with-twitter-d.png"/>" />
     </button>
 </form>]]>
 			</programlisting>
-
 			<para>
 				Notice that the path used in the form's <code>action</code> attribute maps to the first step in <classname>ProviderSignInController</classname>'s flow.
 				In this case, the provider is identified as "twitter".
 			</para>
-			
 			<para>
 				Clicking this button will trigger a POST request to "/signin/twitter", kicking off the Twitter sign in flow. 
 				If the user has not yet signed into Twitter, the user will be presented with the following page from Twitter:
 			</para>
-	
 			<mediaobject>
 				<imageobject role="fo">
 					<imagedata fileref="images/sign-in-with-twitter.png" format="PNG" align="center" scale="40"/>
@@ -185,41 +147,34 @@ public class SpringSecuritySignInService implements SignInService {
 					  <imagedata fileref="images/sign-in-with-twitter.png" format="PNG" align="center" scale="40"/>
 				</imageobject>
 			</mediaobject>
-	
 			<para>
 				After signing in, the flow will redirect back to the application to complete the sign in process.
 			</para>
-    
     	</section>
 	</section>
 	
 	<section xml:id="signin_signup">
 		<title>Signing up after a failed sign in</title>
-		
 		<para>
-			If <classname>ProviderSignInController</classname> can't find a connection that matches the one obtained after signing into the provider, it will put the sign in on hold and redirect the user to an application sign up page.
+			If <classname>ProviderSignInController</classname> can't find a local user associated with a provider user attempting to sign-in, it will put the sign-in on hold and redirect the user to an application sign up page.
 			By default, the sign up URL is "/signup", relative to the application root. 
 			You can override that default by setting the <code>signupUrl</code> property on the controller. 
-			For example, the following configuration of <classname>ProviderSignInController</classname> sets the sign up URL to "/newUser": 
+			For example, the following configuration of <classname>ProviderSignInController</classname> sets the sign up URL to "/register": 
 		</para>
-		
 		<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.connect.signin.web.ProviderSignInController">
     <constructor-arg value="${application.url}" />
-    <property name="signupUrl" value="/newUser" />
+    <property name="signupUrl" value="/register" />
 </bean>]]>
 		</programlisting>
-		
 		<para>
 			Before redirecting to the sign up page, <classname>ProviderSignInController</classname> collects some information about the authentication attempt.
 			This information can be used to prepopulate the sign up form and then, after successful registration, to establish a connection between the new account and the provider account.			
 		</para>
-		
 		<para>
 			To prepopulate the sign up form, you can fetch the user profile data from a connection retrieved from <methodname>ProviderSignInUtils.getConnection()</methodname>.
 			For example, consider this Spring MVC controller method that setups up the sign up form with a <classname>SignupForm</classname> to bind to the sign up form:
 		</para>
-		
 		<programlisting language="java"><![CDATA[
 @RequestMapping(value="/signup", method=RequestMethod.GET)
 public SignupForm signupForm(WebRequest request) {
@@ -231,13 +186,11 @@ public SignupForm signupForm(WebRequest request) {
     }
 }]]>
 		</programlisting>
-
 		<para>
 			If <methodname>ProviderSignInUtils.getConnection()</methodname> returns a connection, that means there was a failed provider sign in attempt that can be completed if the user registers to the application.
 			In that case, a <classname>SignupForm</classname> object is created from the user profile data obtained from the connection's <methodname>fetchUserProfile()</methodname> method.
 			Within <methodname>fromProviderUser()</methodname>, the <classname>SignupForm</classname> properties may be set like this:
 		</para>
-				
 		<programlisting language="java"><![CDATA[
 public static SignupForm fromProviderUser(UserProfile providerUser) {
     SignupForm form = new SignupForm();
@@ -248,23 +201,19 @@ public static SignupForm fromProviderUser(UserProfile providerUser) {
     return form;
 }]]>
 		</programlisting>
-
 		<para>
 			Here, the <classname>SignupForm</classname> is created with the user's first name, last name, username, and email from the <classname>UserProfile</classname>.
 			In addition, <classname>UserProfile</classname> also has a <methodname>getName()</methodname> method which will return the user's full name as given by the provider.
 		</para>
-		
 		<para>
 			The availability of <classname>UserProfile</classname>'s properties will depend on the provider.
 			Twitter, for example, does not provide a user's email address, so the <methodname>getEmail()</methodname> method will always return null after a sign in attempt with Twitter.
 		</para>
-				
 		<para>
 			After the user has successfully signed up in your application a connection can be created between the new local user account and their provider account. 
 			To complete the connection call <methodname>ProviderSignInUtils.handlePostSignUp()</methodname>.
 			For example, the following method handles the sign up form submission, creates an account and then calls <methodname>ProviderSignInUtils.handlePostSignUp()</methodname> to complete the connection:
 		</para>
-
 		<programlisting language="java"><![CDATA[
 @RequestMapping(value="/signup", method=RequestMethod.POST)
 public String signup(@Valid SignupForm form, BindingResult formBinding, WebRequest request) {
@@ -279,6 +228,5 @@ public String signup(@Valid SignupForm form, BindingResult formBinding, WebReque
     return null;
 }]]>
 		</programlisting>
-		
 	</section>	
 </chapter>
