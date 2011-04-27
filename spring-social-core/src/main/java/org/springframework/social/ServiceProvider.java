@@ -17,13 +17,13 @@ package org.springframework.social;
 
 /**
  * Top-level marker interface defining a ServiceProvider.
- * A ServiceProvider provides access to a service API that the application can invoke on behalf of a provider user.
+ * A ServiceProvider provides access to a API that the application can invoke on behalf of a provider user.
  * For example, the FacebookServiceProvider could expose a FacebookApi that the application can invoke on behalf of Facebook user "Keith Donald".
- * Defines a single parameterized type S representing a strongly-typed Java binding to the provider's API that can be obtained and invoked by the application.
+ * Defines a single parameterized type A representing a strongly-typed Java binding to the provider's API that can be obtained and invoked by the application.
  * Does not define any operations since the provider authorization flow needed to construct an authorized API binding is protocol specific, for example, OAuth1 or OAuth2.
  * @author Keith Donald
- * @param <S> the Service API type
+ * @param <A> the service provider's API type
  */
-public interface ServiceProvider<S> {
+public interface ServiceProvider<A> {
 
 }

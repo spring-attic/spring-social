@@ -26,7 +26,7 @@ import org.springframework.social.facebook.api.UserOperations;
 
 public class FacebookServiceApiAdapterTest {
 
-	private FacebookServiceApiAdapter apiAdapter = new FacebookServiceApiAdapter();
+	private FacebookApiAdapter apiAdapter = new FacebookApiAdapter();
 	
 	private FacebookApi serviceApi = Mockito.mock(FacebookApi.class);
 	

@@ -20,21 +20,21 @@ import org.springframework.social.ServiceProvider;
 /**
  * A ServiceProvider that uses the OAuth 2.0 protocol.
  * @author Keith Donald
- * @param <S> The service API type
+ * @param <A> The service provider's API type
  */
-public interface OAuth2ServiceProvider<S> extends ServiceProvider<S> {
+public interface OAuth2ServiceProvider<A> extends ServiceProvider<A> {
 
 	/**
 	 * Get the service interface for carrying out the "OAuth dance" with this provider.
-	 * The result of the OAuth dance is an access token that can be used to obtain a {@link #getApi(String) service API}.
+	 * The result of the OAuth dance is an access token that can be used to obtain a {@link #getApi(String) API binding}.
 	 */
 	OAuth2Operations getOAuthOperations();
 
 	/**
 	 * Returns an API interface allowing the client application to access protected resources on behalf of a user.
 	 * @param accessToken the API access token
-	 * @return the service API
+	 * @return a binding to the service provider's API
 	 */
-	S getApi(String accessToken);
+	A getApi(String accessToken);
 
 }
