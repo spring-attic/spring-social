@@ -16,7 +16,7 @@
 	<section id="service-providers-base-api">
 		<title>Core API</title>
 		<para>
-			The <interfacename>Connection&lt;S&gt;</interfacename> interface models a connection to an external service provider such as Facebook:
+			The <interfacename>Connection&lt;A&gt;</interfacename> interface models a connection to an external service provider such as Facebook:
 			<programlisting language="java"><![CDATA[
 public interface Connection<A> {
     
@@ -125,11 +125,11 @@ public interface Connection<A> {
 				OAuth 2 is rapidly becoming a preferred authorization protocol, and is used by major service providers such as Facebook, Github, Foursquare, Gowalla, and 37signals.
 				In Spring Social, a OAuth2ConnectionFactory is used to establish connections with a OAuth2-based service provider:
 				<programlisting language="java"><![CDATA[
-public class OAuth2ConnectionFactory<S> extends ConnectionFactory<S> {
+public class OAuth2ConnectionFactory<A> extends ConnectionFactory<A> {
 
     public OAuth2Operations getOAuthOperations();
 
-    public Connection<S> createConnection(AccessGrant accessGrant);
+    public Connection<A> createConnection(AccessGrant accessGrant);
 
 }]]>
 				</programlisting>
@@ -237,11 +237,11 @@ Connection<FacebookApi> connection = connectionFactory.createConnection(accessGr
 			Twitter, Linked In, and TripIt are some of the well-known ServiceProviders that use OAuth 1.
 			In Spring Social, the OAuth1ConnectionFactory allows you to create connections to a OAuth1-based Service Provider:			
 			<programlisting language="java"><![CDATA[
-public class OAuth1ConnectionFactory<S> extends ConnectionFactory<S> {
+public class OAuth1ConnectionFactory<A> extends ConnectionFactory<A> {
 
     public OAuth1Operations getOAuthOperations();
 
-    public Connection<S> createConnection(OAuthToken accessToken);
+    public Connection<A> createConnection(OAuthToken accessToken);
 
 }]]>
 			</programlisting>
@@ -359,7 +359,7 @@ public interface ConnectionFactoryLocator {
 
     ConnectionFactory<?> getConnectionFactory(String providerId);
 
-    <S> ConnectionFactory<S> getConnectionFactory(Class<S> serviceApiType);
+    <A> ConnectionFactory<A> getConnectionFactory(Class<A> serviceApiType);
 	
     Set<String> registeredProviderIds();
 
@@ -395,11 +395,11 @@ public interface ConnectionRepository {
 
     Connection<?> findConnection(ConnectionKey connectionKey);
 
-    <S> Connection<S> findPrimaryConnectionToApi(Class<S> apiType);
+    <A> Connection<A> findPrimaryConnectionToApi(Class<A> apiType);
 
-    <S> Connection<S> findConnectionToApiForUser(Class<S> apiType, String providerUserId);	
+    <A> Connection<A> findConnectionToApiForUser(Class<A> apiType, String providerUserId);	
 
-    <S> List<Connection<S>> findConnectionsToApi(Class<S> apiType);
+    <A> List<Connection<A>> findConnectionsToApi(Class<A> apiType);
 	
     void addConnection(Connection<?> connection);
 
