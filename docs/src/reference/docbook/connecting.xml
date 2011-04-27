@@ -247,8 +247,7 @@ public class ConnectControllerConfig {
 
     @Bean
     public ConnectController connectController(@Value("${application.secureUrl}") String applicationUrl,
-            ConnectionFactoryLocator connectionFactoryLocator,
-            Provider<ConnectionRepository> connectionRepositoryProvider) {
+            ConnectionFactoryLocator connectionFactoryLocator, Provider<ConnectionRepository> connectionRepositoryProvider) {
         return new ConnectController(applicationUrl, connectionFactoryLocator, connectionRepositoryProvider);
     }
     
@@ -258,7 +257,7 @@ public class ConnectControllerConfig {
 			Or, if you prefer Spring's XML-based configuration, then you can configure <classname>ConnectController</classname> like this:
 		</para>
 		<programlisting language="xml"><![CDATA[
-<bean class="org.springframework.social.web.connect.ConnectController">
+<bean class="org.springframework.social.connect.web.ConnectController">
     <constructor-arg value="${application.secureUrl}" />
     <!-- relies on by-type autowiring for the other constructor-args -->
 </bean>]]>
@@ -531,8 +530,7 @@ public class TweetAfterConnectInterceptor implements ConnectInterceptor<TwitterA
 		<programlisting language="java"><![CDATA[
 @Bean
 public ConnectController connectController(@Value("${application.secureUrl}") applicationUrl,
-        ConnectionFactoryLocator connectionFactoryLocator, 
-        Provider<ConnectionRepository> connectionRepositoryProvider) {
+        ConnectionFactoryLocator connectionFactoryLocator, Provider<ConnectionRepository> connectionRepositoryProvider) {
     ConnectController controller = new ConnectController(applicationUrl, connectionFactoryLocator, connectionRepositoryProvider);
     controller.addInterceptor(new TweetAfterConnectInterceptor());
     return controller;
@@ -540,7 +538,7 @@ public ConnectController connectController(@Value("${application.secureUrl}") ap
 		</programlisting>
 		<para>Or, as configured in XML:</para>
 		<programlisting language="xml"><![CDATA[
-<bean class="org.springframework.social.web.connect.ConnectController">
+<bean class="org.springframework.social.connect.web.ConnectController">
     <constructor-arg value="${application.secureUrl}" />
     <property name="interceptors">
         <list>
