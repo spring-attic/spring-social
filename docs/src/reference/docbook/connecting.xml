@@ -196,13 +196,17 @@ public class ProductionEncryptionConfig {
 				The only casual difference is that the connection factories are injected as a list into the <code>connectionFactories</code> property rather than with the <methodname>addConnectionFactory()</methodname> method.
 			</para>
 			<para>
-				Here's an XML equivalent of the <classname>JdbcUsersConnectionRepository</classname> configuration shown before:
+				Here's an XML equivalent of the <classname>JdbcUsersConnectionRepository</classname> and <classname>ConnectionRepository</classname> configurations shown before:
 			</para>
 			<programlisting language="xml"><![CDATA[
 <bean id="usersConnectionRepository" class="org.springframework.social.connect.jdbc.JdbcUsersConnectionRepository">
     <constructor-arg ref="dataSource" />
     <constructor-arg ref="connectionFactoryLocator" />
     <constructor-arg ref="textEncryptor" />
+</bean>
+
+<bean id="connectionRepository" factory-method="createConnectionRepository" factory-bean="usersConnectionRepository" scope="request">
+    <constructor-arg value="#{request.userPrincipal.name}" />
 </bean>]]>
 			</programlisting>
 			<para>
