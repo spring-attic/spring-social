@@ -19,7 +19,7 @@ import java.util.Set;
 
 /**
  * A ServiceLocator for {@link ConnectionFactory} instances.
- * Supports lookup by providerId and by serviceApiType.
+ * Supports lookup by providerId and by apiType.
  * @author Keith Donald
  * @see ConnectionFactory
  */

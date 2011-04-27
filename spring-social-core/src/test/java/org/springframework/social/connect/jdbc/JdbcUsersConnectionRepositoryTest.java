@@ -440,22 +440,22 @@ public class JdbcUsersConnectionRepositoryTest {
 		
 		private String profilePictureUrl = "http://facebook.com/keith.donald/picture";
 		
-		public boolean test(TestFacebookApi serviceApi) {
+		public boolean test(TestFacebookApi api) {
 			return true;
 		}
 
-		public void setConnectionValues(TestFacebookApi serviceApi, ConnectionValues values) {
+		public void setConnectionValues(TestFacebookApi api, ConnectionValues values) {
 			values.setProviderUserId(accountId);
 			values.setDisplayName(name);
 			values.setProfileUrl(profileUrl);
 			values.setImageUrl(profilePictureUrl);
 		}
 
-		public UserProfile fetchUserProfile(TestFacebookApi serviceApi) {
+		public UserProfile fetchUserProfile(TestFacebookApi api) {
 			return new UserProfileBuilder().setName(name).setEmail("keith@interface21.com").setUsername("Keith.Donald").build();
 		}
 
-		public void updateStatus(TestFacebookApi serviceApi, String message) {
+		public void updateStatus(TestFacebookApi api, String message) {
 			
 		}
 		
@@ -508,22 +508,22 @@ public class JdbcUsersConnectionRepositoryTest {
 		
 		private String profilePictureUrl = "http://twitter.com/kdonald/a_new_picture";
 		
-		public boolean test(TestTwitterApi serviceApi) {
+		public boolean test(TestTwitterApi api) {
 			return true;
 		}
 
-		public void setConnectionValues(TestTwitterApi serviceApi, ConnectionValues values) {
+		public void setConnectionValues(TestTwitterApi api, ConnectionValues values) {
 			values.setProviderUserId(accountId);
 			values.setDisplayName(name);
 			values.setProfileUrl(profileUrl);
 			values.setImageUrl(profilePictureUrl);
 		}
 
-		public UserProfile fetchUserProfile(TestTwitterApi serviceApi) {
+		public UserProfile fetchUserProfile(TestTwitterApi api) {
 			return new UserProfileBuilder().setName(name).setUsername("kdonald").build();			
 		}
 		
-		public void updateStatus(TestTwitterApi serviceApi, String message) {
+		public void updateStatus(TestTwitterApi api, String message) {
 		}
 		
 	}

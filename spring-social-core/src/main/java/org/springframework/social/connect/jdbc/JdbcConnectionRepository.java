@@ -128,9 +128,9 @@ class JdbcConnectionRepository implements ConnectionRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <S> Connection<S> findPrimaryConnectionToApi(Class<S> serviceApiType) {
+	public <S> Connection<S> findPrimaryConnectionToApi(Class<S> apiType) {
 		try {
-			String providerId = getProviderId(serviceApiType);
+			String providerId = getProviderId(apiType);
 			return (Connection<S>) jdbcTemplate.queryForObject(SELECT_FROM_SERVICE_PROVIDER_CONNECTION + " where userId = ? and providerId = ? and rank = 1", connectionMapper, userId, providerId);
 		} catch (EmptyResultDataAccessException e) {
 			return null;
@@ -138,14 +138,14 @@ class JdbcConnectionRepository implements ConnectionRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <S> List<Connection<S>> findConnectionsToApi(Class<S> serviceApiType) {
-		List<?> connections = findConnectionsToProvider(getProviderId(serviceApiType));
+	public <S> List<Connection<S>> findConnectionsToApi(Class<S> apiType) {
+		List<?> connections = findConnectionsToProvider(getProviderId(apiType));
 		return (List<Connection<S>>) connections;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public <S> Connection<S> findConnectionToApiForUser(Class<S> serviceApiType, String providerUserId) {
-		String providerId = getProviderId(serviceApiType);
+	public <S> Connection<S> findConnectionToApiForUser(Class<S> apiType, String providerUserId) {
+		String providerId = getProviderId(apiType);
 		return (Connection<S>) findConnection(new ConnectionKey(providerId, providerUserId));
 	}
 
@@ -205,8 +205,8 @@ class JdbcConnectionRepository implements ConnectionRepository {
 		
 	}
 
-	private <S> String getProviderId(Class<S> serviceApiType) {
-		return connectionFactoryLocator.getConnectionFactory(serviceApiType).getProviderId();
+	private <S> String getProviderId(Class<S> apiType) {
+		return connectionFactoryLocator.getConnectionFactory(apiType).getProviderId();
 	}
 	
 	private String encrypt(String text) {

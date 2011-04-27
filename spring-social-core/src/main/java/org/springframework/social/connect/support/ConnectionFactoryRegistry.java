@@ -75,10 +75,10 @@ public class ConnectionFactoryRegistry implements ConnectionFactoryLocator {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <S> ConnectionFactory<S> getConnectionFactory(Class<S> serviceApiType) {
-		String providerId = apiTypeIndex.get(serviceApiType);
+	public <S> ConnectionFactory<S> getConnectionFactory(Class<S> apiType) {
+		String providerId = apiTypeIndex.get(apiType);
 		if (providerId == null) {
-			throw new IllegalArgumentException("No connection factory for API [" + serviceApiType.getName() + "] is registered");
+			throw new IllegalArgumentException("No connection factory for API [" + apiType.getName() + "] is registered");
 		}
 		return (ConnectionFactory<S>) getConnectionFactory(providerId);
 	}

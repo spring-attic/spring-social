@@ -19,7 +19,7 @@ final class NullApiAdapter implements ApiAdapter<Object> {
 
 	public static final NullApiAdapter INSTANCE = new NullApiAdapter();
 	
-	public boolean test(Object serviceApi) {
+	public boolean test(Object api) {
 		return true;
 	}
 

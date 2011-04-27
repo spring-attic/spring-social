@@ -132,13 +132,13 @@ public class OAuth2Connection<A> extends AbstractConnection<A> {
 	
 	@SuppressWarnings("unchecked")
 	private void initApiProxy() {
-		Class<?> serviceApiType = GenericTypeResolver.resolveTypeArgument(serviceProvider.getClass(), ServiceProvider.class);
-		if (serviceApiType.isInterface()) {
-			apiProxy = (A) Proxy.newProxyInstance(serviceApiType.getClassLoader(), new Class[] { serviceApiType }, new ServiceApiInvocationHandler());
+		Class<?> apiType = GenericTypeResolver.resolveTypeArgument(serviceProvider.getClass(), ServiceProvider.class);
+		if (apiType.isInterface()) {
+			apiProxy = (A) Proxy.newProxyInstance(apiType.getClassLoader(), new Class[] { apiType }, new ApiInvocationHandler());
 		}		
 	}
 	
-	private class ServiceApiInvocationHandler implements InvocationHandler {
+	private class ApiInvocationHandler implements InvocationHandler {
 
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			synchronized (getMonitor()) {
