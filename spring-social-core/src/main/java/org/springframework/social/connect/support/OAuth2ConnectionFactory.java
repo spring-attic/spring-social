@@ -35,10 +35,10 @@ public class OAuth2ConnectionFactory<S> extends ConnectionFactory<S> {
 	 * Create a {@link OAuth2ConnectionFactory}.
 	 * @param providerId the provider id e.g. "facebook"
 	 * @param serviceProvider the ServiceProvider model for conducting the authorization flow and obtaining a native service API instance.
-	 * @param serviceApiAdapter the ServiceApiAdapter for mapping the provider-specific service API model to the uniform ServiceProviderConnection interface.
+	 * @param apiAdapter the ApiAdapter for mapping the provider-specific service API model to the uniform ServiceProviderConnection interface.
 	 */
-	public OAuth2ConnectionFactory(String providerId, OAuth2ServiceProvider<S> serviceProvider, ApiAdapter<S> serviceApiAdapter) {
-		super(providerId, serviceProvider, serviceApiAdapter);
+	public OAuth2ConnectionFactory(String providerId, OAuth2ServiceProvider<S> serviceProvider, ApiAdapter<S> apiAdapter) {
+		super(providerId, serviceProvider, apiAdapter);
 	}
 
 	/**

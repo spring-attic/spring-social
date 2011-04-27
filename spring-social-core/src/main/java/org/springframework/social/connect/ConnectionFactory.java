@@ -29,7 +29,7 @@ public abstract class ConnectionFactory<A> {
 	
 	private final ServiceProvider<A> serviceProvider;
 
-	private final ApiAdapter<A> serviceApiAdapter;
+	private final ApiAdapter<A> apiAdapter;
 	
 	/**
 	 * Creates a new ConnectionFactory.
@@ -40,7 +40,7 @@ public abstract class ConnectionFactory<A> {
 	public ConnectionFactory(String providerId, ServiceProvider<A> serviceProvider, ApiAdapter<A> apiAdapter) {
 		this.providerId = providerId;
 		this.serviceProvider = serviceProvider;
-		this.serviceApiAdapter = nullSafeApiAdapter(apiAdapter);
+		this.apiAdapter = nullSafeApiAdapter(apiAdapter);
 	}
 
 	// subclassing hooks
@@ -62,10 +62,10 @@ public abstract class ConnectionFactory<A> {
 	}
 
 	/**
-	 * Exposes the ServiceApiAdapter to subclasses.
+	 * Exposes the ApiAdapter to subclasses.
 	 */
 	protected ApiAdapter<A> getApiAdapter() {
-		return serviceApiAdapter;
+		return apiAdapter;
 	}
 
 	// subclassing hooks

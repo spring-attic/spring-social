@@ -59,11 +59,11 @@ public class OAuth2Connection<A> extends AbstractConnection<A> {
 	 * @param refreshToken the granted refresh token
 	 * @param expireTime the access token expiration time
 	 * @param serviceProvider the OAuth2-based ServiceProvider
-	 * @param serviceApiAdapter the ApiAdapter for the ServiceProvider
+	 * @param apiAdapter the ApiAdapter for the ServiceProvider
 	 */
 	public OAuth2Connection(String providerId, String providerUserId, String accessToken, String refreshToken, Long expireTime,
-			OAuth2ServiceProvider<A> serviceProvider, ApiAdapter<A> serviceApiAdapter) {
-		super(serviceApiAdapter);
+			OAuth2ServiceProvider<A> serviceProvider, ApiAdapter<A> apiAdapter) {
+		super(apiAdapter);
 		this.serviceProvider = serviceProvider;
 		initAccessTokens(accessToken, refreshToken, expireTime);
 		initApi();
@@ -76,10 +76,10 @@ public class OAuth2Connection<A> extends AbstractConnection<A> {
 	 * Designed to be called when re-constituting an existing {@link Connection} from {@link ConnectionData}.
 	 * @param data the data holding the state of this connection
 	 * @param serviceProvider the OAuth2-based ServiceProvider
-	 * @param serviceApiAdapter the ApiAdapter for the ServiceProvider
+	 * @param apiAdapter the ApiAdapter for the ServiceProvider
 	 */
-	public OAuth2Connection(ConnectionData data, OAuth2ServiceProvider<A> serviceProvider, ApiAdapter<A> serviceApiAdapter) {
-		super(data, serviceApiAdapter);
+	public OAuth2Connection(ConnectionData data, OAuth2ServiceProvider<A> serviceProvider, ApiAdapter<A> apiAdapter) {
+		super(data, apiAdapter);
 		this.serviceProvider = serviceProvider;
 		initAccessTokens(data.getAccessToken(), data.getRefreshToken(), data.getExpireTime());
 		initApi();
