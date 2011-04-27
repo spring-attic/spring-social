@@ -19,8 +19,7 @@ import org.springframework.social.github.api.impl.GitHubTemplate;
 
 /**
  * Interface specifying a basic set of operations for interacting with GitHub.
- * Implemented by {@link GitHubTemplate}. Not often used directly, but a useful
- * option to enhance testability, as it can easily be mocked or stubbed.
+ * Implemented by {@link GitHubTemplate}.
  * 
  * Many of the methods contained in this interface require OAuth authentication
  * with GitHub. When a method's description speaks of the "current user", it is

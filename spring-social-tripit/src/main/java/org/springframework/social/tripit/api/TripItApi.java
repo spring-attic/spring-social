@@ -21,8 +21,7 @@ import org.springframework.social.tripit.api.impl.TripItTemplate;
 
 /**
  * Interface specifying a basic set of operations for interacting with TripIt.
- * Implemented by {@link TripItTemplate}. Not often used directly, but a useful
- * option to enhance testability, as it can easily be mocked or stubbed.
+ * Implemented by {@link TripItTemplate}.
  * 
  * Many of the methods contained in this interface require OAuth authentication
  * with TripIt. When a method's description speaks of the "current user", it is

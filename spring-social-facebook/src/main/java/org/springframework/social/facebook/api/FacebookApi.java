@@ -20,8 +20,7 @@ import org.springframework.social.facebook.api.impl.FacebookTemplate;
 
 /**
  * Interface specifying a basic set of operations for interacting with Facebook.
- * Implemented by {@link FacebookTemplate}. Not often used directly, but a
- * useful option to enhance testability, as it can easily be mocked or stubbed.
+ * Implemented by {@link FacebookTemplate}.
  * @author Craig Walls
  */
 public interface FacebookApi extends GraphApi {

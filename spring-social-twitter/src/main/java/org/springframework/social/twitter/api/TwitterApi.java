@@ -18,8 +18,7 @@ package org.springframework.social.twitter.api;
 
 /**
  * Interface specifying a basic set of operations for interacting with Twitter.
- * Implemented by TwitterTemplate. Not often used directly, but a useful option
- * to enhance testability, as it can easily be mocked or stubbed.
+ * Implemented by TwitterTemplate.
  *
  * @author Craig Walls
  */

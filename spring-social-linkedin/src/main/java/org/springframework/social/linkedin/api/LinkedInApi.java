@@ -22,8 +22,7 @@ import org.springframework.social.linkedin.api.impl.LinkedInTemplate;
 /**
  * <p>
  * Interface specifying a basic set of operations for interacting with LinkedIn.
- * Implemented by {@link LinkedInTemplate}. Not often used directly, but a
- * useful option to enhance testability, as it can easily be mocked or stubbed.
+ * Implemented by {@link LinkedInTemplate}.
  * </p>
  * 
  * <p>

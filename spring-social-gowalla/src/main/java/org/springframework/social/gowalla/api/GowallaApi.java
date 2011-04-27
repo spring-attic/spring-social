@@ -21,8 +21,7 @@ import org.springframework.social.gowalla.api.impl.GowallaTemplate;
 
 /**
  * Interface specifying a basic set of operations for interacting with Gowalla.
- * Implemented by {@link GowallaTemplate}. Not often used directly, but a useful
- * option to enhance testability, as it can easily be mocked or stubbed.
+ * Implemented by {@link GowallaTemplate}.
  * 
  * Many of the methods contained in this interface require OAuth authentication
  * with Gowalla. When a method's description speaks of the "current user", it is
