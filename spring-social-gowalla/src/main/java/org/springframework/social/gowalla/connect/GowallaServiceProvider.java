@@ -20,6 +20,10 @@ import org.springframework.social.gowalla.api.impl.GowallaTemplate;
 import org.springframework.social.oauth2.AbstractOAuth2ServiceProvider;
 import org.springframework.social.oauth2.OAuth2Template;
 
+/**
+ * Gowalla ServiceProvider implementation.
+ * @author Keith Donald
+ */
 public class GowallaServiceProvider extends AbstractOAuth2ServiceProvider<GowallaApi> {
 
 	public GowallaServiceProvider(String clientId, String clientSecret) {
