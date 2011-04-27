@@ -96,7 +96,7 @@ public interface Connection<A> {
 				</listitem>
 				<listitem><para>Connection#hasExpired() would return false.</para></listitem>
 				<listitem><para>Connection#refresh() would not do anything since connections to Twitter do not expire.</para></listitem>
-				<listitem><para>Connection#fetchUserProfile() would make a remote API call to Twitter to get @kdonald's profile data and normalize it into a ServiceProviderUser model.</para></listitem>
+				<listitem><para>Connection#fetchUserProfile() would make a remote API call to Twitter to get @kdonald's profile data and normalize it into a UserProfile model.</para></listitem>
 				<listitem><para>Connection#updateStatus(String) would post a status update to @kdonald's timeline.</para></listitem>
 				<listitem><para>Connection#getApi() would return a TwitterApi giving the client application access to the full capabilities of Twitter's native API.</para></listitem>
 				<listitem><para>Connection#createData() would return ConnectionData that could be serialized and used to restore the connection at a later time.</para></listitem>
