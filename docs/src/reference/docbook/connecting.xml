@@ -34,7 +34,7 @@
 			<listitem><para><classname>GowallaConnectionFactory</classname></para></listitem>
 		</itemizedlist>
 		<para>
-			<classname>ConnectController</classname> relies on an implementation of <interfacename>ConnectionFactoryLocator</interfacename> (see <xref linkend="service-providers-establishing-connections-connection-factory-registry"/>) to help it find a connection factory for a specific provider.
+			<classname>ConnectController</classname> relies on an implementation of <interfacename>ConnectionFactoryLocator</interfacename> (see <xref linkend="service-providers-establishing-connections-connection-factory-registry"/>) to find a connection factory for a specific provider.
 			Spring Social's <classname>ConnectionFactoryRegistry</classname> is an implementation of <interfacename>ConnectionFactoryLocator</interfacename> that keeps a Map-based registry of connection factories.
 			The following class constructs a <classname>ConnectionFactoryRegistry</classname> containing <interfacename>ConnectionFactory</interfacename>s for Twitter, Facebook, and TripIt using Spring's Java configuration style: 		
 		</para>
@@ -72,7 +72,8 @@ public class ConnectionFactoryConfig {
 }
 ]]></programlisting>
 		<para>
-			Here, three connection factories--one each for Twitter, Facebook, and TripIt--are registered with <classname>ConnectionFactoryRegistry</classname> via the <methodname>addConnectionFactory()</methodname> method. 
+			Here, three connection factories--one each for Twitter, Facebook, and TripIt--are registered with <classname>ConnectionFactoryRegistry</classname> via the <methodname>addConnectionFactory()</methodname> method.
+			If we wanted to add support for connecting to other providers, we would simply register their connection factories here.
 			Because consumer keys and secrets may be different across environments (e.g., test, production, etc) it is recommended that these values be externalized.
 			Therefore, they are wired in with <code>@Value</code> as property placeholder values to be resolved by Spring's property placeholder support.
 		</para>	
@@ -124,7 +125,7 @@ public class UsersConnectionRepositoryConfig {
 		<para>
 			<classname>JdbcUsersConnectionRepository</classname> is created with a references to a <interfacename>DataSource</interfacename>, a <interfacename>ConnectionFactoryLocator</interfacename>, and a text encryptor.
 			It will use the <interfacename>DataSource</interfacename> to access the RDBMS when persisting and restoring connections.
-			When restoring connections, it will use the <interfacename>ConnectionFactoryLocator</interfacename> to create the Connection instances from ConnectionData.
+			When restoring connections, it will use the <interfacename>ConnectionFactoryLocator</interfacename> to locate ConnectionFactory instances.
 		</para>
 		<para>
 			<classname>JdbcUsersConnectionRepository</classname> uses a <interfacename>TextEncryptor</interfacename> to encrypt the credentials (e.g., access tokens and secrets) obtained during authorization when writing them to the database.
@@ -170,8 +171,7 @@ public class ProductionEncryptionConfig {
 				Here's the XML equivalent of the <classname>ConnectionFactoryRegistry</classname> configuration: 			
 			</para>
 			<programlisting language="xml"><![CDATA[
-<bean id="connectionFactoryLocator" 
-      class="org.springframework.social.connect.support.ConnectionFactoryRegistry">
+<bean id="connectionFactoryLocator" class="org.springframework.social.connect.support.ConnectionFactoryRegistry">
     <property name="connectionFactories">
         <list>
             <bean class="org.springframework.social.twitter.connect.TwitterConnectionFactory">
@@ -199,8 +199,7 @@ public class ProductionEncryptionConfig {
 				Here's an XML equivalent of the <classname>JdbcUsersConnectionRepository</classname> configuration shown before:
 			</para>
 			<programlisting language="xml"><![CDATA[
-<bean id="usersConnectionRepository"
-      class="org.springframework.social.connect.jdbc.JdbcUsersConnectionRepository">
+<bean id="usersConnectionRepository" class="org.springframework.social.connect.jdbc.JdbcUsersConnectionRepository">
     <constructor-arg ref="dataSource" />
     <constructor-arg ref="connectionFactoryLocator" />
     <constructor-arg ref="textEncryptor" />
@@ -217,13 +216,11 @@ public class ProductionEncryptionConfig {
         http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
     <beans profile="dev">
-        <bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" 
-              factory-method="noOpText" />
+        <bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="noOpText" />
     </beans>
 	
     <beans profile="production">
-        <bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" 
-              factory-method="text">
+        <bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="text">
             <constructor-arg value="${security.encryptPassword}" />
             <constructor-arg value="${security.encryptSalt}" />
         </bean>
@@ -502,9 +499,9 @@ public class ConnectControllerConfig {
 		<programlisting language="java"><![CDATA[
 public interface ConnectInterceptor<A> {
 	
-	void preConnect(ConnectionFactory<A> connectionFactory, WebRequest request);
+    void preConnect(ConnectionFactory<A> connectionFactory, WebRequest request);
 
-	void postConnect(Connection<A> connection, WebRequest request);
+    void postConnect(Connection<A> connection, WebRequest request);
 	
 }]]>
 		</programlisting>
@@ -535,7 +532,7 @@ public class TweetAfterConnectInterceptor implements ConnectInterceptor<TwitterA
 @Bean
 public ConnectController connectController(@Value("${application.secureUrl}") applicationUrl,
         ConnectionFactoryLocator connectionFactoryLocator, 
-		Provider<ConnectionRepository> connectionRepositoryProvider) {
+        Provider<ConnectionRepository> connectionRepositoryProvider) {
     ConnectController controller = new ConnectController(applicationUrl, connectionFactoryLocator, connectionRepositoryProvider);
     controller.addInterceptor(new TweetAfterConnectInterceptor());
     return controller;
