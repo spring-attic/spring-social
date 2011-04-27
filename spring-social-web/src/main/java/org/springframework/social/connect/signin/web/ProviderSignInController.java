@@ -70,11 +70,11 @@ public class ProviderSignInController {
 	/**
 	 * Creates a new provider sign-in controller.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the sign-in process.
-	 * @param connectionFactoryLocatorProvider a provider for the locator of {@link ConnectionFactory connection factories} that can be used for sign-in;
+	 * @param connectionFactoryLocatorProvider the provider of the locator of {@link ConnectionFactory connection factories} that can be used for sign-in;
 	 * A JSR330 Provider is injected here instead of the actual locator object to support the fact {@link ProviderSignInAttempt} objects are session-scoped and thus require a Serializable reference to a {@link ConnectionFactoryLocator}.
 	 * The injected Provider should be Serializable, otherwise {@link NotSerializableException} instances could occur during the provider sign-in flow.
 	 * @param usersConnectionRepository the global store for service provider connections across all local user accounts
-	 * @param connectionRepositoryProvider a provider for the current user's {@link ConnectionRepository} instance;
+	 * @param connectionRepositoryProvider the provider of the current user's {@link ConnectionRepository} instance;
 	 * A JSR 330 Provider is injected here instead of the actual repository object because repository instances are request-scoped and resolved based on the currently authenticated user.
 	 * @param signInService an adapter between this controller and the local application's user sign-in system.
 	 */

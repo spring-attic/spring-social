@@ -75,8 +75,8 @@ public class ConnectController  {
 	/**
 	 * Constructs a ConnectController.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
-	 * @param connectionFactory locator for {@link ConnectionFactory} instances needed to establish connections
-	 * @param connectionRepositoryProvider provider for the current user's {@link ConnectionRepository} needed to persist connections
+	 * @param connectionFactoryLocator the locator for {@link ConnectionFactory} instances needed to establish connections
+	 * @param connectionRepositoryProvider the provider of the current user's {@link ConnectionRepository} needed to persist connections
 	 */
 	@Inject
 	public ConnectController(String applicationUrl, ConnectionFactoryLocator connectionFactoryLocator, Provider<ConnectionRepository> connectionRepositoryProvider) {

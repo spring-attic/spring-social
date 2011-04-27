@@ -22,7 +22,7 @@ package org.springframework.social.connect;
  * {@link #setProfileUrl(String)} maps to {@link Connection#getProfileUrl()}
  * {@link #setImageUrl(String)} maps to {@link Connection#getImageUrl()}
  * @author Keith Donald
- * @see ApiAdapter#setConnectionValues(Object, ServiceProviderConnectionValues)
+ * @see ApiAdapter#setConnectionValues(Object, ConnectionValues)
  */
 public interface ConnectionValues {
 

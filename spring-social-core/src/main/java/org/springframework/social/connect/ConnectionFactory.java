@@ -48,7 +48,7 @@ public abstract class ConnectionFactory<A> {
 	/**
 	 * The unique id of the provider this factory creates connections to.
 	 * Used to index this ServiceProviderConnetionFactory in a registry to support dynamic lookup operations.
-	 * @see ServiceProviderConnectionFactoryLocator#getConnectionFactory(String).
+	 * @see ConnectionFactoryLocator#getConnectionFactory(String).
 	 */
 	public String getProviderId() {
 		return providerId;

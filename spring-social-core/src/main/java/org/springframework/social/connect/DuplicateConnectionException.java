@@ -18,7 +18,7 @@ package org.springframework.social.connect;
 /**
  * Thrown by a {@link ConnectionRepository} when attempting to add a ServiceProviderConnection and a connection already exists with the given key.
  * @author Keith Donald
- * @see ConnectionRepository#addConnection(ServiceProviderConnection)
+ * @see ConnectionRepository#addConnection(Connection)
  */
 @SuppressWarnings("serial")
 public final class DuplicateConnectionException extends RuntimeException {
