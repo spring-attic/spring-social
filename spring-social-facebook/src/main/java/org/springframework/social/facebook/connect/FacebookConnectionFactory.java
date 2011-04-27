@@ -18,6 +18,10 @@ package org.springframework.social.facebook.connect;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.facebook.api.FacebookApi;
 
+/**
+ * Facebook ConnectionFactory implementation.
+ * @author Keith Donald
+ */
 public class FacebookConnectionFactory extends OAuth2ConnectionFactory<FacebookApi> {
 
 	public FacebookConnectionFactory(String clientId, String clientSecret) {

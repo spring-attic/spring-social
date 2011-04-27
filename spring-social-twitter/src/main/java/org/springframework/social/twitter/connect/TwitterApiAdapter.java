@@ -23,32 +23,36 @@ import org.springframework.social.connect.UserProfileBuilder;
 import org.springframework.social.twitter.api.TwitterApi;
 import org.springframework.social.twitter.api.TwitterProfile;
 
-public class TwitterServiceApiAdapter implements ApiAdapter<TwitterApi> {
+/**
+ * Twitter ApiAdapter implementation.
+ * @author Keith Donald
+ */
+public class TwitterApiAdapter implements ApiAdapter<TwitterApi> {
 
-	public boolean test(TwitterApi serviceApi) {
+	public boolean test(TwitterApi api) {
 		try {
-			serviceApi.userOperations().getUserProfile();
+			api.userOperations().getUserProfile();
 			return true;
 		} catch (BadCredentialsException e) {
 			return false;
 		}
 	}
 
-	public void setConnectionValues(TwitterApi serviceApi, ConnectionValues values) {
-		TwitterProfile profile = serviceApi.userOperations().getUserProfile();
+	public void setConnectionValues(TwitterApi api, ConnectionValues values) {
+		TwitterProfile profile = api.userOperations().getUserProfile();
 		values.setProviderUserId(Long.toString(profile.getId()));
 		values.setDisplayName("@" + profile.getScreenName());
 		values.setProfileUrl(profile.getProfileUrl());
 		values.setImageUrl(profile.getProfileImageUrl());
 	}
 
-	public UserProfile fetchUserProfile(TwitterApi serviceApi) {
-		TwitterProfile profile = serviceApi.userOperations().getUserProfile();
+	public UserProfile fetchUserProfile(TwitterApi api) {
+		TwitterProfile profile = api.userOperations().getUserProfile();
 		return new UserProfileBuilder().setName(profile.getName()).setUsername(profile.getScreenName()).build();
 	}
 	
-	public void updateStatus(TwitterApi serviceApi, String message) {
-		serviceApi.timelineOperations().updateStatus(message);	
+	public void updateStatus(TwitterApi api, String message) {
+		api.timelineOperations().updateStatus(message);	
 	}
 	
 }
