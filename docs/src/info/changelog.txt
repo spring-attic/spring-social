@@ -1,3 +1,38 @@
+Spring Social 1.0.0 Milestone 2 (Apr 27, 2011)
+==============================================
+New Features
+   * Many improvements to service provider "connect" framework
+   * New ProviderSignInController for signing into an application by first
+     signing into a provider such as Twitter or Facebook.
+   * A more complete Twitter API binding, including...
+     * Reading, sending, and deleting direct messages
+     * Retrieving a user's friends and followers and (un)following other users
+     * Maintaining and subscribing to lists
+     * Reading daily/weekly/local/current trends
+     * Maintaining saved searches
+     * Search for users
+     * Getting suggestions on who to follow
+   * A more complete Facebook API binding, including...
+     * Reading, posting, and deleting comments
+     * Maintaining events
+     * Retrieving and RSVP'ing to a user's invitations
+     * Reading and posting to feeds
+     * Maintaining friend lists
+     * Retrieving a user's friends
+     * Reading group information and members
+     * Reading a user's interests and likes (e.g. movies, books, music, etc)
+     * Liking and unliking
+     * Retrieving photo albums, photos, and video data
+     * Facebook Places checkins
+   * Updated Spring Social showcase sample
+   * Updated documentation
+
+Bug fixes:
+   * SOCIAL-76: TwitterTemplate converts Cyrillic letters to ?
+   * SOCIAL-118: ServiceProviderConnections API assumes stored connection/key validity
+
+
+
 Spring Social 1.0.0 Milestone 2 (Feb 25, 2011)
 ==============================================
 For release notes see:
