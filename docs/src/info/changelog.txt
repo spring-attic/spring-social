@@ -1,20 +1,6 @@
-Spring Social 1.0.0 Milestone 2 (Apr 27, 2011)
+Spring Social 1.0.0 Milestone 3 (Apr 27, 2011)
 ==============================================
 New Features
-   * The ability to test a connection and refresh an expired connection
-   * The ability to update status across connections in a uniform way
-   * The ability to access user profile data on a connection in a uniform way
-     and use it to pre-populate application registration forms
-   * New query operations for finding connections by provider ID, API binding type,
-     a provider user ID, a combination of provider ID and provider user ID, or
-     a combination of provider ID and API binding type
-   * Enhanced support for extending the framework, including documentation that walks
-     you through the process of adding support for a new service provider
-   * New ProviderSignInController for signing into an application by first
-     signing into a provider such as Twitter or Facebook
-   * Android-ready with the ability to use Android's HttpComponents client when
-     in an Android runtime. Also, see SQLiteConnectionRepository in Spring Android
-     1.0.0.M3 for persisting connections in Android.
    * A more complete Twitter API binding, including...
      * Reading, sending, and deleting direct messages
      * Retrieving a user's friends and followers and (un)following other users
@@ -35,6 +21,17 @@ New Features
      * Liking and unliking
      * Retrieving photo albums, photos, and video data
      * Facebook Places checkins
+   * New ProviderSignInController for signing into an application by first
+     signing into a provider such as Twitter or Facebook
+   * Now supports use in an Android environment and integrated with Spring 
+     Android project as of its 1.0.0.M3 release.
+   * The ability to test a connection and refresh an expired connection
+   * The ability to update status across connections in a uniform way
+   * The ability to access user profile data on a connection in a uniform way
+     and use it to pre-populate application registration forms
+   * New query operations for finding connections in different ways
+   * Enhanced support for extending the framework, including documentation that walks
+     you through the process of adding support for a new service provider
    * Many design and architectural improvements driven by community feedback
    * Updated Spring Social showcase sample
    * Updated documentation
