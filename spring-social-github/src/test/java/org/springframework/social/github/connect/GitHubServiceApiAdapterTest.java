@@ -25,7 +25,7 @@ import org.springframework.social.github.api.GitHubUserProfile;
 
 public class GitHubServiceApiAdapterTest {
 
-	private GitHubServiceApiAdapter apiAdapter = new GitHubServiceApiAdapter();
+	private GitHubApiAdapter apiAdapter = new GitHubApiAdapter();
 	
 	private GitHubApi serviceApi = Mockito.mock(GitHubApi.class);
 	

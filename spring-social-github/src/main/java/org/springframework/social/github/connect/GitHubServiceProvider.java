@@ -20,6 +20,10 @@ import org.springframework.social.github.api.impl.GitHubTemplate;
 import org.springframework.social.oauth2.AbstractOAuth2ServiceProvider;
 import org.springframework.social.oauth2.OAuth2Template;
 
+/**
+ * Github ServiceProvider implementation.
+ * @author Keith Donald
+ */
 public class GitHubServiceProvider extends AbstractOAuth2ServiceProvider<GitHubApi> {
 
 	public GitHubServiceProvider(String clientId, String clientSecret) {
