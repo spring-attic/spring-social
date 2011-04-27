@@ -85,7 +85,7 @@ public class ConnectionFactoryConfig {
 		<para>
 			As discussed in <xref linkend="service-providers-persisting-connections"/>, <interfacename>ConnectionRepository</interfacename> defines operations for persisting and restoring connections for a specific user. 
 			Therefore, when configuring a <interfacename>ConnectionRepository</interfacename> bean, it must be scoped such that it can be created on a per-user basis.
-			The following Java-based configuration shows how to configure <interfacename>ConnectionRepository</interfacename> bean in request scope so that it can be created from an authenticated user's principal:
+			The following Java-based configuration shows how to configure <interfacename>ConnectionRepository</interfacename> bean in request scope for the currently authenticated user:
 		</para>
 		<programlisting language="java"><![CDATA[
 @Configuration
