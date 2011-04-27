@@ -486,7 +486,7 @@ public class TwitterApiAdapter implements ApiAdapter<TwitterApi> {
 	<section id="service-providers-implementing-serviceproviderconnectionfactory">
 		<title>Creating a ConnectionFactory</title>
 		<para>
-			By now, you should have a API binding to the provider's API, a ServiceProvider&lt;A&gt; implementation for conducting the "authorization dance", and an ApiAdapter&lt;A&gt; implementation for mapping onto the uniform Connection model.
+			By now, you should have an API binding to the provider's API, a ServiceProvider&lt;A&gt; implementation for conducting the "authorization dance", and an ApiAdapter&lt;A&gt; implementation for mapping onto the uniform Connection model.
 			The last step in adding support for a new service provider is to create a ConnectionFactory that wraps up these artifacts and provides a simple interface for establishing Connections.
 			After this is done, you may use your connection factory directly, or you may add it to a registry where it can be used by the framework to establish connections in a dynamic, self-service manner.
 		</para>
