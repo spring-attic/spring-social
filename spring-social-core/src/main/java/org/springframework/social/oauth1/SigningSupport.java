@@ -20,7 +20,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -187,21 +186,28 @@ class SigningSupport {
 			Mac mac = Mac.getInstance(HMAC_SHA1_MAC_NAME);
 			SecretKeySpec spec = new SecretKeySpec(key.getBytes(), HMAC_SHA1_MAC_NAME);
 			mac.init(spec);
-			byte[] text = signatureBaseString.getBytes(charset);
+			byte[] text = signatureBaseString.getBytes(UTF8_CHARSET_NAME);
 			byte[] signatureBytes = mac.doFinal(text);
 			signatureBytes = Base64.encodeBase64(signatureBytes);
-			String signature = new String(signatureBytes, charset);
+			String signature = new String(signatureBytes, UTF8_CHARSET_NAME);
 			return signature;
 		} catch (NoSuchAlgorithmException e) {
 			throw new IllegalStateException(e);
 		} catch (InvalidKeyException e) {
 			throw new IllegalStateException(e);
+		} catch (UnsupportedEncodingException shouldntHappen) {
+			throw new IllegalStateException(shouldntHappen);
 		} 
 	}
 
 	private MultiValueMap<String, String> readFormParameters(MediaType bodyType, byte[] bodyBytes) {
 		if (bodyType != null && bodyType.equals(MediaType.APPLICATION_FORM_URLENCODED)) {
-			String body = new String(bodyBytes, charset);
+			String body;
+			try {
+				body = new String(bodyBytes, UTF8_CHARSET_NAME);
+			} catch (UnsupportedEncodingException shouldntHappen) {
+				throw new IllegalStateException(shouldntHappen);
+			}
 			return parseFormParameters(body);
 		} else {
 			return EmptyMultiValueMap.instance();
@@ -287,7 +293,7 @@ class SigningSupport {
 	private static String oauthEncode(String param) {
 		try {
 			// See http://tools.ietf.org/html/rfc5849#section-3.6
-			byte[] bytes = encode(param.getBytes("UTF-8"), UNRESERVED);
+			byte[] bytes = encode(param.getBytes(UTF8_CHARSET_NAME), UNRESERVED);
 			return new String(bytes, "US-ASCII");
 		} catch (Exception shouldntHappen) {
 			throw new IllegalStateException(shouldntHappen);
@@ -318,7 +324,7 @@ class SigningSupport {
 	
 	private static String formDecode(String encoded) {
 		try {
-			return URLDecoder.decode(encoded, "UTF-8");
+			return URLDecoder.decode(encoded, UTF8_CHARSET_NAME);
 		} catch (UnsupportedEncodingException shouldntHappen) {
 			throw new IllegalStateException(shouldntHappen);
 		}
@@ -328,6 +334,6 @@ class SigningSupport {
 
 	private static final String HMAC_SHA1_MAC_NAME = "HmacSHA1";
 
-	private static Charset charset = Charset.forName("UTF-8");
+	private static final String UTF8_CHARSET_NAME = "UTF-8";
 
 }
