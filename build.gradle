@@ -237,5 +237,5 @@ project('docs') {
     apply from: "$buildSrcDir/docs.gradle"
 }
 
-apply from: "$rootDir/gradle/dist.gradle"
-apply from: "${rootDir}/gradle/checks.gradle"
+apply from: "$buildSrcDir/dist.gradle"
+apply from: "$buildSrcDir/checks.gradle"
