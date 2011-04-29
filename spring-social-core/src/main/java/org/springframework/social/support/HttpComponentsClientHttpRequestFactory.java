@@ -68,34 +68,18 @@ class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory
 
 	private static final int DEFAULT_READ_TIMEOUT_MILLISECONDS = (60 * 1000);
 
-	private HttpClient httpClient;
+	private HttpComponentsClientHttpRequestFactoryDelegate delegate;
 
 	/**
 	 * Create a new instance of the {@code HttpComponentsClientHttpRequestFactory} with a default {@link HttpClient} that
 	 * uses a default {@link org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager}
 	 */
 	public HttpComponentsClientHttpRequestFactory() {
-		SchemeRegistry schemeRegistry = new SchemeRegistry();
-		
-		// Check for HttpComponents HttpClient 4.1 support
 		if (VERSION_4_1_AVAILABLE) {
-			schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
-			schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
-			ThreadSafeClientConnManager connectionManager = new ThreadSafeClientConnManager(schemeRegistry);
-			connectionManager.setMaxTotal(DEFAULT_MAX_TOTAL_CONNECTIONS);
-			connectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_CONNECTIONS_PER_ROUTE);
-			httpClient = new DefaultHttpClient(connectionManager);
+			this.delegate = new HttpComponentsClient_4_1_HttpRequestFactory();
 		} else {
-	        schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-	        schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
-	        HttpParams params = new BasicHttpParams();
-	        ThreadSafeClientConnManager connectionManager = new ThreadSafeClientConnManager(params, schemeRegistry);
-	        ConnManagerParams.setMaxTotalConnections(params, DEFAULT_MAX_TOTAL_CONNECTIONS);
-	        ConnManagerParams.setMaxConnectionsPerRoute(params, new ConnPerRouteBean(DEFAULT_MAX_CONNECTIONS_PER_ROUTE));
-	        httpClient = new DefaultHttpClient(connectionManager, null);
+			this.delegate = new HttpComponentsClient_4_0_HttpRequestFactory();
 		}
-
-		this.setReadTimeout(DEFAULT_READ_TIMEOUT_MILLISECONDS);
 	}
 
 	/**
@@ -105,15 +89,18 @@ class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory
 	 * @param httpClient the HttpClient instance to use for this factory
 	 */
 	public HttpComponentsClientHttpRequestFactory(HttpClient httpClient) {
-		Assert.notNull(httpClient, "httpClient must not be null");
-		this.httpClient = httpClient;
+		if (VERSION_4_1_AVAILABLE) {
+			this.delegate = new HttpComponentsClient_4_1_HttpRequestFactory(httpClient);
+		} else {
+			this.delegate = new HttpComponentsClient_4_0_HttpRequestFactory(httpClient);
+		}
 	}
 
 	/**
 	 * Set the {@code HttpClient} used by this factory.
 	 */
 	public void setHttpClient(HttpClient httpClient) {
-		this.httpClient = httpClient;
+		delegate.setHttpClient(httpClient);
 	}
 
 	/**
@@ -123,23 +110,18 @@ class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory
 	 * @see org.apache.commons.httpclient.params.HttpConnectionManagerParams#setSoTimeout(int)
 	 */
 	public void setReadTimeout(int timeout) {
-		if (timeout < 0) {
-			throw new IllegalArgumentException("timeout must be a non-negative value");
-		}
-		getHttpClient().getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, timeout);
+		delegate.setReadTimeout(timeout);
 	}
 
 	/**
 	 * Return the {@code HttpClient} used by this factory.
 	 */
 	public HttpClient getHttpClient() {
-		return this.httpClient;
+		return delegate.getHttpClient();
 	}
 
 	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
-		HttpUriRequest httpRequest = createHttpUriRequest(httpMethod, uri);
-		postProcessHttpRequest(httpRequest);
-		return new HttpComponentsClientHttpRequest(getHttpClient(), httpRequest);
+		return delegate.createRequest(uri, httpMethod);
 	}
 
 	/**
@@ -150,24 +132,7 @@ class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory
 	 * @return the Commons HttpMethodBase object
 	 */
 	protected HttpUriRequest createHttpUriRequest(HttpMethod httpMethod, URI uri) {
-		switch (httpMethod) {
-			case GET:
-				return new HttpGet(uri);
-			case DELETE:
-				return new HttpDelete(uri);
-			case HEAD:
-				return new HttpHead(uri);
-			case OPTIONS:
-				return new HttpOptions(uri);
-			case POST:
-				return new HttpPost(uri);
-			case PUT:
-				return new HttpPut(uri);
-			case TRACE:
-				return new HttpTrace(uri);
-			default:
-				throw new IllegalArgumentException("Invalid HTTP method: " + httpMethod);
-		}
+		return delegate.createHttpUriRequest(httpMethod, uri);
 	}
 
 	/**
@@ -178,6 +143,7 @@ class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory
 	 * @param request the request to process
 	 */
 	protected void postProcessHttpRequest(HttpUriRequest request) {
+		delegate.postProcessHttpRequest(request);
 	}
 
 	/**
@@ -185,6 +151,174 @@ class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory
 	 * ClientConnectionManager}'s connection pool, if any.
 	 */
 	public void destroy() {
-		getHttpClient().getConnectionManager().shutdown();
+		delegate.destroy();
+	}
+
+
+	// internal helpers
+
+	/**
+	 * HttpComponents Client 4.1 implementation
+	 */
+	private static class HttpComponentsClient_4_1_HttpRequestFactory implements HttpComponentsClientHttpRequestFactoryDelegate {
+
+		private HttpClient httpClient;
+
+		public HttpComponentsClient_4_1_HttpRequestFactory() {
+			SchemeRegistry schemeRegistry = new SchemeRegistry();
+			schemeRegistry.register(new Scheme("http", 80, PlainSocketFactory.getSocketFactory()));
+			schemeRegistry.register(new Scheme("https", 443, SSLSocketFactory.getSocketFactory()));
+			ThreadSafeClientConnManager connectionManager = new ThreadSafeClientConnManager(schemeRegistry);
+			connectionManager.setMaxTotal(DEFAULT_MAX_TOTAL_CONNECTIONS);
+			connectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_CONNECTIONS_PER_ROUTE);
+			httpClient = new DefaultHttpClient(connectionManager);
+			this.setReadTimeout(DEFAULT_READ_TIMEOUT_MILLISECONDS);
+		}
+
+		public HttpComponentsClient_4_1_HttpRequestFactory(HttpClient httpClient) {
+			Assert.notNull(httpClient, "httpClient must not be null");
+			this.httpClient = httpClient;
+		}
+
+		public void setHttpClient(HttpClient httpClient) {
+			this.httpClient = httpClient;
+		}
+
+		public void setReadTimeout(int timeout) {
+			if (timeout < 0) {
+				throw new IllegalArgumentException("timeout must be a non-negative value");
+			}
+			getHttpClient().getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, timeout);
+		}
+
+		public HttpClient getHttpClient() {
+			return this.httpClient;
+		}
+
+		public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+			HttpUriRequest httpRequest = createHttpUriRequest(httpMethod, uri);
+			postProcessHttpRequest(httpRequest);
+			return new HttpComponentsClientHttpRequest(getHttpClient(), httpRequest);
+		}
+
+		public HttpUriRequest createHttpUriRequest(HttpMethod httpMethod, URI uri) {
+			switch (httpMethod) {
+				case GET:
+					return new HttpGet(uri);
+				case DELETE:
+					return new HttpDelete(uri);
+				case HEAD:
+					return new HttpHead(uri);
+				case OPTIONS:
+					return new HttpOptions(uri);
+				case POST:
+					return new HttpPost(uri);
+				case PUT:
+					return new HttpPut(uri);
+				case TRACE:
+					return new HttpTrace(uri);
+				default:
+					throw new IllegalArgumentException("Invalid HTTP method: " + httpMethod);
+			}
+		}
+
+		public void postProcessHttpRequest(HttpUriRequest request) {
+		}
+
+		public void destroy() {
+			getHttpClient().getConnectionManager().shutdown();
+		}
+	}
+
+	/**
+	 * HttpComponents Client 4.0 implementation
+	 */
+	private static class HttpComponentsClient_4_0_HttpRequestFactory implements HttpComponentsClientHttpRequestFactoryDelegate {
+
+		private HttpClient httpClient;
+
+		public HttpComponentsClient_4_0_HttpRequestFactory() {
+			SchemeRegistry schemeRegistry = new SchemeRegistry();
+	        schemeRegistry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+	        schemeRegistry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
+	        HttpParams params = new BasicHttpParams();
+	        ThreadSafeClientConnManager connectionManager = new ThreadSafeClientConnManager(params, schemeRegistry);
+	        ConnManagerParams.setMaxTotalConnections(params, DEFAULT_MAX_TOTAL_CONNECTIONS);
+	        ConnManagerParams.setMaxConnectionsPerRoute(params, new ConnPerRouteBean(DEFAULT_MAX_CONNECTIONS_PER_ROUTE));
+	        httpClient = new DefaultHttpClient(connectionManager, null);
+			this.setReadTimeout(DEFAULT_READ_TIMEOUT_MILLISECONDS);
+		}
+
+		public HttpComponentsClient_4_0_HttpRequestFactory(HttpClient httpClient) {
+			Assert.notNull(httpClient, "httpClient must not be null");
+			this.httpClient = httpClient;
+		}
+
+		public void setHttpClient(HttpClient httpClient) {
+			this.httpClient = httpClient;
+		}
+
+		public void setReadTimeout(int timeout) {
+			if (timeout < 0) {
+				throw new IllegalArgumentException("timeout must be a non-negative value");
+			}
+			getHttpClient().getParams().setIntParameter(CoreConnectionPNames.SO_TIMEOUT, timeout);
+		}
+
+		public HttpClient getHttpClient() {
+			return this.httpClient;
+		}
+
+		public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
+			HttpUriRequest httpRequest = createHttpUriRequest(httpMethod, uri);
+			postProcessHttpRequest(httpRequest);
+			return new HttpComponentsClientHttpRequest(getHttpClient(), httpRequest);
+		}
+
+		public HttpUriRequest createHttpUriRequest(HttpMethod httpMethod, URI uri) {
+			switch (httpMethod) {
+				case GET:
+					return new HttpGet(uri);
+				case DELETE:
+					return new HttpDelete(uri);
+				case HEAD:
+					return new HttpHead(uri);
+				case OPTIONS:
+					return new HttpOptions(uri);
+				case POST:
+					return new HttpPost(uri);
+				case PUT:
+					return new HttpPut(uri);
+				case TRACE:
+					return new HttpTrace(uri);
+				default:
+					throw new IllegalArgumentException("Invalid HTTP method: " + httpMethod);
+			}
+		}
+
+		public void postProcessHttpRequest(HttpUriRequest request) {
+		}
+
+		public void destroy() {
+			getHttpClient().getConnectionManager().shutdown();
+		}
+	}
+
+	private interface HttpComponentsClientHttpRequestFactoryDelegate extends ClientHttpRequestFactory, DisposableBean {
+
+		void setHttpClient(HttpClient httpClient);
+
+		void setReadTimeout(int timeout);
+
+		HttpClient getHttpClient();
+
+		ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException;
+
+		HttpUriRequest createHttpUriRequest(HttpMethod httpMethod, URI uri);
+
+		void postProcessHttpRequest(HttpUriRequest request);
+
+		// overrides DisposableBean's destroy() so we don't have to catch the exception here
+		void destroy();
 	}
 }
