@@ -21,8 +21,6 @@ import java.io.InputStream;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.util.EntityUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -43,79 +41,55 @@ import org.springframework.util.ClassUtils;
  */
 final class HttpComponentsClientHttpResponse implements ClientHttpResponse {
 	
-	private static final boolean VERSION_4_1_AVAILABLE = ClassUtils.hasConstructor(ThreadSafeClientConnManager.class, new Class<?>[]{SchemeRegistry.class});
+	private static final boolean VERSION_4_1_AVAILABLE = ClassUtils.hasMethod(EntityUtils.class, "consume", new Class<?>[]{HttpEntity.class});
 
-	private HttpComponentsClientHttpResponseDelegate delegate;
+	private final HttpResponse httpResponse;
+
+	private HttpHeaders headers;
 
 	public HttpComponentsClientHttpResponse(HttpResponse httpResponse) {
-		if (VERSION_4_1_AVAILABLE) {
-			this.delegate = new HttpComponentsClient_4_1_HttpResponse(httpResponse);
-		} else {
-			this.delegate = new HttpComponentsClient_4_0_HttpResponse(httpResponse);
-		}
+		this.httpResponse = httpResponse;
 	}
 
 	public HttpStatus getStatusCode() throws IOException {
-		return delegate.getStatusCode();
+		return HttpStatus.valueOf(httpResponse.getStatusLine().getStatusCode());
 	}
 
 	public String getStatusText() throws IOException {
-		return delegate.getStatusText();
+		return httpResponse.getStatusLine().getReasonPhrase();
 	}
 
 	public HttpHeaders getHeaders() {
-		return delegate.getHeaders();
+		if (headers == null) {
+			headers = new HttpHeaders();
+			for (Header header : httpResponse.getAllHeaders()) {
+				headers.add(header.getName(), header.getValue());
+			}
+		}
+		return headers;
 	}
 
 	public InputStream getBody() throws IOException {
-		return delegate.getBody();
+		HttpEntity entity = httpResponse.getEntity();
+		return entity != null ? entity.getContent() : null;
 	}
 	
 	public void close() {
-		delegate.close();
+		HttpEntity entity = httpResponse.getEntity();
+		// Release underlying connection back to the connection manager
+		if (VERSION_4_1_AVAILABLE) {
+			HttpComponentsClient_4_1.close(entity);
+		} else {
+			HttpComponentsClient_4_0.close(entity);
+		}
 	}
 
 
 	// internal helpers
 
-	/**
-	 * HttpComponents Client 4.1 implementation
-	 */
-	private static class HttpComponentsClient_4_1_HttpResponse implements HttpComponentsClientHttpResponseDelegate {
+	private static class HttpComponentsClient_4_1 {
 
-		private final HttpResponse httpResponse;
-
-		private HttpHeaders headers;
-
-		public HttpComponentsClient_4_1_HttpResponse(HttpResponse httpResponse) {
-			this.httpResponse = httpResponse;
-		}
-
-		public HttpStatus getStatusCode() throws IOException {
-			return HttpStatus.valueOf(httpResponse.getStatusLine().getStatusCode());
-		}
-
-		public String getStatusText() throws IOException {
-			return httpResponse.getStatusLine().getReasonPhrase();
-		}
-
-		public HttpHeaders getHeaders() {
-			if (headers == null) {
-				headers = new HttpHeaders();
-				for (Header header : httpResponse.getAllHeaders()) {
-					headers.add(header.getName(), header.getValue());
-				}
-			}
-			return headers;
-		}
-
-		public InputStream getBody() throws IOException {
-			HttpEntity entity = httpResponse.getEntity();
-			return entity != null ? entity.getContent() : null;
-		}
-
-		public void close() {
-			HttpEntity entity = httpResponse.getEntity();
+		public static void close(HttpEntity entity) {
 			if (entity != null) {
 				try {
 					// Release underlying connection back to the connection manager
@@ -127,46 +101,11 @@ final class HttpComponentsClientHttpResponse implements ClientHttpResponse {
 			}
 		}
 	}
-
-	/**
-	 * HttpComponents Client 4.0 implementation
-	 */
-	private static class HttpComponentsClient_4_0_HttpResponse implements HttpComponentsClientHttpResponseDelegate {
-
-		private final HttpResponse httpResponse;
-
-		private HttpHeaders headers;
-
-		public HttpComponentsClient_4_0_HttpResponse(HttpResponse httpResponse) {
-			this.httpResponse = httpResponse;
-		}
-
-		public HttpStatus getStatusCode() throws IOException {
-			return HttpStatus.valueOf(httpResponse.getStatusLine().getStatusCode());
-		}
-
-		public String getStatusText() throws IOException {
-			return httpResponse.getStatusLine().getReasonPhrase();
-		}
-
-		public HttpHeaders getHeaders() {
-			if (headers == null) {
-				headers = new HttpHeaders();
-				for (Header header : httpResponse.getAllHeaders()) {
-					headers.add(header.getName(), header.getValue());
-				}
-			}
-			return headers;
-		}
-
-		public InputStream getBody() throws IOException {
-			HttpEntity entity = httpResponse.getEntity();
-			return entity != null ? entity.getContent() : null;
-		}
+	
+	private static class HttpComponentsClient_4_0 {
 
 		@SuppressWarnings("deprecation")
-		public void close() {
-			HttpEntity entity = httpResponse.getEntity();
+		public static void close(HttpEntity entity) {
 			if (entity != null) {
 				try {
 					// Release underlying connection back to the connection manager
@@ -179,12 +118,4 @@ final class HttpComponentsClientHttpResponse implements ClientHttpResponse {
 		}
 	}
 
-	private interface HttpComponentsClientHttpResponseDelegate extends ClientHttpResponse {
-
-		HttpHeaders getHeaders();
-
-		InputStream getBody() throws IOException;
-
-		void close();
-	}
 }
