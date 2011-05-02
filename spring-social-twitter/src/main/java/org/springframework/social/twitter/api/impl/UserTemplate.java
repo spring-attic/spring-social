@@ -15,10 +15,7 @@
  */
 package org.springframework.social.twitter.api.impl;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +23,7 @@ import org.springframework.social.twitter.api.ImageSize;
 import org.springframework.social.twitter.api.SuggestionCategory;
 import org.springframework.social.twitter.api.TwitterProfile;
 import org.springframework.social.twitter.api.UserOperations;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -57,11 +55,11 @@ class UserTemplate extends AbstractTwitterOperations implements UserOperations {
 	}
 
 	public TwitterProfile getUserProfile(String screenName) {
-		return restTemplate.getForObject(buildUri("users/show.json", Collections.singletonMap("screen_name", screenName)), TwitterProfile.class);
+		return restTemplate.getForObject(buildUri("users/show.json", "screen_name", screenName), TwitterProfile.class);
 	}
 	
 	public TwitterProfile getUserProfile(long userId) {
-		return restTemplate.getForObject(buildUri("users/show.json", Collections.singletonMap("user_id", String.valueOf(userId))), TwitterProfile.class);
+		return restTemplate.getForObject(buildUri("users/show.json", "user_id", String.valueOf(userId)), TwitterProfile.class);
 	}
 	
 	public byte[] getUserProfileImage(String screenName) {
@@ -69,10 +67,10 @@ class UserTemplate extends AbstractTwitterOperations implements UserOperations {
 	}
 	
 	public byte[] getUserProfileImage(String screenName, ImageSize size) {
-		Map<String, String> params = new HashMap<String, String>();
-		params.put("screen_name", screenName);
-		params.put("size", size.toString().toLowerCase());
-		ResponseEntity<byte[]> response = restTemplate.getForEntity(buildUri("users/profile_image", params), byte[].class);
+		LinkedMultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+		parameters.set("screen_name", screenName);
+		parameters.set("size", size.toString().toLowerCase());
+		ResponseEntity<byte[]> response = restTemplate.getForEntity(buildUri("users/profile_image", parameters), byte[].class);
 		if(response.getStatusCode() == HttpStatus.FOUND) {
 			throw new UnsupportedOperationException("Attempt to fetch image resulted in a redirect which could not be followed. Add Apache HttpComponents HttpClient to the classpath " +
 					"to be able to follow redirects.");
@@ -83,18 +81,18 @@ class UserTemplate extends AbstractTwitterOperations implements UserOperations {
 	public List<TwitterProfile> getUsers(long... userIds) {
 		requireUserAuthorization();
 		String joinedIds = ArrayUtils.join(userIds);
-		return restTemplate.getForObject(buildUri("users/lookup.json", Collections.singletonMap("user_id", joinedIds)), TwitterProfileList.class);
+		return restTemplate.getForObject(buildUri("users/lookup.json", "user_id", joinedIds), TwitterProfileList.class);
 	}
 
 	public List<TwitterProfile> getUsers(String... screenNames) {
 		requireUserAuthorization();
 		String joinedScreenNames = ArrayUtils.join(screenNames);
-		return restTemplate.getForObject(buildUri("users/lookup.json", Collections.singletonMap("screen_name", joinedScreenNames)), TwitterProfileList.class);
+		return restTemplate.getForObject(buildUri("users/lookup.json", "screen_name", joinedScreenNames), TwitterProfileList.class);
 	}
 
 	public List<TwitterProfile> searchForUsers(String query) {
 		requireUserAuthorization();
-		return restTemplate.getForObject(buildUri("users/search.json", Collections.singletonMap("q", query)), TwitterProfileList.class);
+		return restTemplate.getForObject(buildUri("users/search.json", "q", query), TwitterProfileList.class);
 	}
 	
 	public List<SuggestionCategory> getSuggestionCategories() {

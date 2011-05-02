@@ -16,10 +16,10 @@
 package org.springframework.social.twitter.api.impl;
 
 import java.net.URI;
-import java.util.Collections;
-import java.util.Map;
 
 import org.springframework.social.support.URIBuilder;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 class AbstractTwitterOperations {
 	
@@ -36,18 +36,21 @@ class AbstractTwitterOperations {
 	}
 	
 	protected URI buildUri(String path) {
-		return buildUri(path, Collections.<String, String>emptyMap());
+		return buildUri(path, EMPTY_PARAMETERS);
 	}
 	
-	protected URI buildUri(String path, Map<String, String> params) {
-		URIBuilder uriBuilder = URIBuilder.fromUri(API_URL_BASE + path);
-		for (String paramName : params.keySet()) {
-			uriBuilder.queryParam(paramName, String.valueOf(params.get(paramName)));
-		}
-		URI uri = uriBuilder.build();
-		return uri;
+	protected URI buildUri(String path, String parameterName, String parameterValue) {
+		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+		parameters.set(parameterName, parameterValue);
+		return buildUri(path, parameters);
+	}
+	
+	protected URI buildUri(String path, MultiValueMap<String, String> parameters) {
+		return URIBuilder.fromUri(API_URL_BASE + path).queryParams(parameters).build();
 	}
 	
 	private static final String API_URL_BASE = "https://api.twitter.com/1/";
+
+	private static final LinkedMultiValueMap<String, String> EMPTY_PARAMETERS = new LinkedMultiValueMap<String, String>();
 
 }

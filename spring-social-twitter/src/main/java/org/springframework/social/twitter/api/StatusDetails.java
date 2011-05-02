@@ -15,8 +15,10 @@
  */
 package org.springframework.social.twitter.api;
 
-import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * Carries optional metadata pertaining to a Twitter status update.
@@ -73,15 +75,15 @@ public class StatusDetails {
 	 * @return A {@link Map} of parameters to be passed along in the status
 	 *         update post to Twitter.
 	 */
-	public Map<String, Object> toParameterMap() {
-		Map<String, Object> parameterMap = new HashMap<String, Object>();
+	public MultiValueMap<String, Object> toParameterMap() {
+		LinkedMultiValueMap<String, Object> parameterMap = new LinkedMultiValueMap<String, Object>();
 		if (latitude != null && longitude != null) {
-			parameterMap.put("lat", latitude.toString());
-			parameterMap.put("long", longitude.toString());
+			parameterMap.set("lat", latitude.toString());
+			parameterMap.set("long", longitude.toString());
 		}
 
 		if (displayCoordinates) {
-			parameterMap.put("display_coordinates", "true");
+			parameterMap.set("display_coordinates", "true");
 		}
 		return parameterMap;
 	}
