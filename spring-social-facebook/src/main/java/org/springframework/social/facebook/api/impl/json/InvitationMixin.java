@@ -18,6 +18,7 @@ package org.springframework.social.facebook.api.impl.json;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.springframework.social.facebook.api.RsvpStatus;
@@ -26,6 +27,7 @@ import org.springframework.social.facebook.api.RsvpStatus;
  * Annotated mixin to add Jackson annotations to Invitation. 
  * @author Craig Walls
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 abstract class InvitationMixin {
 
 	@JsonCreator

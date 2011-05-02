@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.springframework.social.facebook.api.Comment;
@@ -29,6 +30,7 @@ import org.springframework.social.facebook.api.Reference;
  * Annotated mixin to add Jackson annotations to Checkin. 
  * @author Craig Walls
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 abstract class CheckinMixin {
 
 	@JsonCreator

@@ -33,7 +33,7 @@ import org.springframework.social.facebook.api.Reference;
  * Annotated mixin to add Jackson annotations to Group. 
  * @author Craig Walls
  */
-@JsonIgnoreProperties("version")
+@JsonIgnoreProperties(ignoreUnknown = true)
 abstract class GroupMixin {
 	
 	@JsonCreator

@@ -29,6 +29,8 @@ import org.springframework.social.facebook.api.WorkEntry;
  * Annotated mixin to add Jackson annotations to FacebookProfile. 
  * @author Craig Walls
  */
+// TODO: Ignore unknowns here, once we figure out how to deal with FB errors
+// @JsonIgnoreProperties(ignoreUnknown = true)
 abstract class FacebookProfileMixin {
 
 	@JsonCreator
