@@ -39,11 +39,11 @@
 		</para>
 		<itemizedlist>
 			<listitem><para><code>POST /signin/{providerId}</code> - Initiates the sign in flow by redirecting to the provider's authentication endpoint.</para></listitem>
-			<listitem><para><code>GET /signin/{providerId}?code={verifier}</code> - Receives the authentication callback from the provider, accepting a code. Exchanges this code for an access token. It uses this access token to lookup a connected account and then authenticates to the application through the sign in service. </para>
+			<listitem><para><code>GET /signin/{providerId}?code={verifier}</code> - Receives the authentication callback from the provider, accepting a code. Exchanges this code for an access token. Using this access token, it retrieves the user's provider user ID and uses that to lookup a connected account and then authenticates to the application through the sign in service. </para>
 				<itemizedlist>
 					<listitem>
 						<para>
-							If the received access token doesn't match any existing connection, <classname>ProviderSignInController</classname> will redirect to a sign up URL. 
+							If the provider user ID doesn't match any existing connection, <classname>ProviderSignInController</classname> will redirect to a sign up URL. 
 							The sign up URL is "/signup" (relative to the application root).
 						</para>
 					</listitem>
@@ -55,11 +55,11 @@
 		</para>
 		<itemizedlist>
 			<listitem><para><code>POST /signin/{providerId}</code> - Initiates the sign in flow. This involves fetching a request token from the provider and then redirecting to Provider's authentication endpoint.</para></listitem>
-			<listitem><para><code>GET /signin/{providerId}?oauth_token={request token}&amp;oauth_verifier={verifier}</code> - Receives the authentication callback from the provider, accepting a verification code. Exchanges this verification code along with the request token for an access token. It uses this access token to lookup a connected account and then authenticates to the application through the sign in service. </para>
+			<listitem><para><code>GET /signin/{providerId}?oauth_token={request token}&amp;oauth_verifier={verifier}</code> - Receives the authentication callback from the provider, accepting a verification code. Exchanges this verification code along with the request token for an access token. Using this access token, it retrieves the user's provider user ID and uses that to lookup a connected account and then authenticates to the application through the sign in service. </para>
 				<itemizedlist>
 					<listitem>
 						<para>
-							If the received access token doesn't match any existing connection, <classname>ProviderSignInController</classname> will redirect to a sign up URL. 
+							If the provider user ID doesn't match any existing connection, <classname>ProviderSignInController</classname> will redirect to a sign up URL. 
 							The sign up URL is "/signup" (relative to the application root).
 						</para>
 					</listitem>
