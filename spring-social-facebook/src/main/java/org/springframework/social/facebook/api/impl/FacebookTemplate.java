@@ -38,6 +38,7 @@ import org.springframework.social.facebook.api.ImageType;
 import org.springframework.social.facebook.api.LikeOperations;
 import org.springframework.social.facebook.api.MediaOperations;
 import org.springframework.social.facebook.api.PlacesOperations;
+import org.springframework.social.facebook.api.ThreadOperations;
 import org.springframework.social.facebook.api.UserOperations;
 import org.springframework.social.facebook.api.impl.json.FacebookModule;
 import org.springframework.social.oauth2.ProtectedResourceClientFactory;
@@ -76,6 +77,8 @@ public class FacebookTemplate implements FacebookApi {
 	private EventOperations eventOperations;
 	
 	private MediaOperations mediaOperations;
+	
+	private ThreadOperations threadOperations;
 
 	private FacebookErrorHandler errorHandler;
 
@@ -104,6 +107,7 @@ public class FacebookTemplate implements FacebookApi {
 		eventOperations = new EventTemplate(this);
 		mediaOperations = new MediaTemplate(this);
 		groupOperations = new GroupTemplate(this);
+		threadOperations = new ThreadTemplate(this);
 	}
 
 	private void registerFacebookModule(RestTemplate restTemplate2) {
@@ -152,6 +156,10 @@ public class FacebookTemplate implements FacebookApi {
 	
 	public MediaOperations mediaOperations() {
 		return mediaOperations;
+	}
+	
+	public ThreadOperations threadOperations() {
+		return threadOperations;
 	}
 	
 	// low-level Graph API operations
