@@ -20,8 +20,7 @@ import java.util.List;
 import org.springframework.social.linkedin.api.LinkedInApi;
 import org.springframework.social.linkedin.api.LinkedInConnections;
 import org.springframework.social.linkedin.api.LinkedInProfile;
-import org.springframework.social.oauth1.ProtectedResourceClientFactory;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.social.oauth1.ApiTemplate;
 
 /**
  * This is the central class for interacting with LinkedIn.
@@ -32,21 +31,19 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class LinkedInTemplate implements LinkedInApi {
-
-	private final RestTemplate restTemplate;
+public class LinkedInTemplate extends ApiTemplate implements LinkedInApi {
 
 	/**
 	 * Creates a new LinkedInTemplate given the minimal amount of information needed to sign requests with OAuth 1 credentials.
-	 * @param apiKey the application's API key
-	 * @param apiSecret the application's API secret
+	 * @param consumerKey the application's API key
+	 * @param consumerSecret the application's API secret
 	 * @param accessToken an access token acquired through OAuth authentication with LinkedIn
 	 * @param accessTokenSecret an access token secret acquired through OAuth authentication with LinkedIn
 	 */
-	public LinkedInTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
-		this.restTemplate = ProtectedResourceClientFactory.create(apiKey, apiSecret, accessToken, accessTokenSecret);
+	public LinkedInTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+		super(consumerKey, consumerSecret, accessToken, accessTokenSecret);
 	}
-
+	
 	public String getProfileId() {
 		return getUserProfile().getId();
 	}
@@ -56,18 +53,12 @@ public class LinkedInTemplate implements LinkedInApi {
 	}
 
 	public LinkedInProfile getUserProfile() {
-		return restTemplate.getForObject(GET_CURRENT_USER_INFO, LinkedInProfile.class);
+		return getRestTemplate().getForObject(GET_CURRENT_USER_INFO, LinkedInProfile.class);
 	}
 
 	public List<LinkedInProfile> getConnections() {
-		LinkedInConnections connections = restTemplate.getForObject("https://api.linkedin.com/v1/people/~/connections", LinkedInConnections.class);
+		LinkedInConnections connections = getRestTemplate().getForObject("https://api.linkedin.com/v1/people/~/connections", LinkedInConnections.class);
 		return connections.getConnections();
-	}
-
-	// subclassing hooks
-	
-	protected RestTemplate getRestTemplate() {
-		return restTemplate;
 	}
 
 	static final String GET_CURRENT_USER_INFO = "https://api.linkedin.com/v1/people/~:public";

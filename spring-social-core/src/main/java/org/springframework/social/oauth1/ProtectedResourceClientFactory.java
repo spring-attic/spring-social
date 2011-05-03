@@ -15,6 +15,7 @@
  */
 package org.springframework.social.oauth1;
 
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.util.ClassUtils;
@@ -55,5 +56,21 @@ public class ProtectedResourceClientFactory {
 		return client;
 	}
 
+	/**
+	 * Wraps a given ClientHttpRequestFactory with Spring30OAuth1RequestFactory, if necessary to support OAuth request signing.
+	 * If Spring 3.1 interceptors are available, no wrapping is necessary and the original request factory is returned.
+	 * @param requestFactory the request factory to wrap
+	 * @param consumerKey the consumer key
+	 * @param consumerSecret the consumer secret
+	 * @param accessToken the access token
+	 * @param accessTokenSecret the access token secret
+	 */
+	public static ClientHttpRequestFactory oauthSigningIfNecessary(ClientHttpRequestFactory requestFactory, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+		if(interceptorsSupported) {
+			return requestFactory;
+		}		
+		return new Spring30OAuth1RequestFactory(requestFactory, consumerKey, consumerSecret, accessToken, accessTokenSecret);
+	}
+	
 	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor", ProtectedResourceClientFactory.class.getClassLoader());
 }

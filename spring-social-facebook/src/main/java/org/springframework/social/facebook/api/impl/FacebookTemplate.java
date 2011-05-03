@@ -40,7 +40,7 @@ import org.springframework.social.facebook.api.MediaOperations;
 import org.springframework.social.facebook.api.PlacesOperations;
 import org.springframework.social.facebook.api.UserOperations;
 import org.springframework.social.facebook.api.impl.json.FacebookModule;
-import org.springframework.social.oauth2.ProtectedResourceClientFactory;
+import org.springframework.social.oauth2.ApiTemplate;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -55,9 +55,7 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class FacebookTemplate implements FacebookApi {
-
-	private final RestTemplate restTemplate;
+public class FacebookTemplate extends ApiTemplate.Draft10ApiTemplate implements FacebookApi {
 
 	private UserOperations userOperations;
 	
@@ -77,27 +75,24 @@ public class FacebookTemplate implements FacebookApi {
 	
 	private MediaOperations mediaOperations;
 
-	private FacebookErrorHandler errorHandler;
-
 	/**
 	 * Create a new instance of FacebookTemplate.
 	 * This constructor creates the FacebookTemplate using a given access token.
 	 * @param accessToken An access token given by Facebook after a successful OAuth 2 authentication (or through Facebook's JS library).
 	 */
 	public FacebookTemplate(String accessToken) {
-		this.restTemplate = ProtectedResourceClientFactory.draft10(accessToken);
+		super(accessToken);
 		// Facebook returns JSON data with text/javascript content type
 		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
 		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
-		restTemplate.getMessageConverters().add(json);
-		registerFacebookModule(restTemplate);
-		errorHandler = new FacebookErrorHandler();
-		restTemplate.setErrorHandler(errorHandler);
+		getRestTemplate().getMessageConverters().add(json);
+		registerFacebookJsonModule(getRestTemplate());
+		getRestTemplate().setErrorHandler(new FacebookErrorHandler());
 
 		// sub-apis
 		userOperations = new UserTemplate(this);
 		placesOperations = new PlacesTemplate(this);
-		friendOperations = new FriendTemplate(this, restTemplate);
+		friendOperations = new FriendTemplate(this, getRestTemplate());
 		feedOperations = new FeedTemplate(this);
 		commentOperations = new CommentTemplate(this);
 		likeOperations = new LikeTemplate(this);
@@ -105,19 +100,7 @@ public class FacebookTemplate implements FacebookApi {
 		mediaOperations = new MediaTemplate(this);
 		groupOperations = new GroupTemplate(this);
 	}
-
-	private void registerFacebookModule(RestTemplate restTemplate2) {
-		List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
-		for (HttpMessageConverter<?> converter : converters) {
-			if(converter instanceof MappingJacksonHttpMessageConverter) {
-				MappingJacksonHttpMessageConverter jsonConverter = (MappingJacksonHttpMessageConverter) converter;
-				ObjectMapper objectMapper = new ObjectMapper();				
-				objectMapper.registerModule(new FacebookModule());
-				jsonConverter.setObjectMapper(objectMapper);
-			}
-		}
-	}
-
+	
 	public UserOperations userOperations() {
 		return userOperations;
 	}
@@ -158,7 +141,7 @@ public class FacebookTemplate implements FacebookApi {
 	public <T> T fetchObject(String objectId, Class<T> type) {
 		try {
 			URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
-			return restTemplate.getForObject(uri, type);
+			return getRestTemplate().getForObject(uri, type);
 		} catch (ResourceAccessException e) {
 			// Handle the special case where an unknown alias results in an error returned as a HTTP 200
 			if(e.getCause() instanceof UnrecognizedPropertyException) {
@@ -177,12 +160,12 @@ public class FacebookTemplate implements FacebookApi {
 			String joinedFields = join(fields);
 			uriBuilder.queryParam("fields", joinedFields);
 		}		
-		return restTemplate.getForObject(uriBuilder.build(), type);
+		return getRestTemplate().getForObject(uriBuilder.build(), type);
 	}
 	
 	public byte[] fetchImage(String objectId, String connectionType, ImageType type) {
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType + "?type=" + type.toString().toLowerCase()).build();
-		ResponseEntity<byte[]> response = restTemplate.getForEntity(uri, byte[].class);
+		ResponseEntity<byte[]> response = getRestTemplate().getForEntity(uri, byte[].class);
 		if(response.getStatusCode() == HttpStatus.FOUND) {
 			throw new UnsupportedOperationException("Attempt to fetch image resulted in a redirect which could not be followed. Add Apache HttpComponents HttpClient to the classpath " +
 					"to be able to follow redirects.");
@@ -194,34 +177,41 @@ public class FacebookTemplate implements FacebookApi {
 	public String publish(String objectId, String connectionType, MultiValueMap<String, String> data) {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
-		Map<String, Object> response = restTemplate.postForObject(uri, requestData, Map.class);
+		Map<String, Object> response = getRestTemplate().postForObject(uri, requestData, Map.class);
 		return (String) response.get("id");
 	}
 	
 	public void post(String objectId, String connectionType, MultiValueMap<String, String> data) {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
-		restTemplate.postForObject(uri, requestData, String.class);
+		getRestTemplate().postForObject(uri, requestData, String.class);
 	}
 	
 	public void delete(String objectId) {
 		LinkedMultiValueMap<String, String> deleteRequest = new LinkedMultiValueMap<String, String>();
 		deleteRequest.set("method", "delete");
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
-		restTemplate.postForObject(uri, deleteRequest, String.class);
+		getRestTemplate().postForObject(uri, deleteRequest, String.class);
 	}
 	
 	public void delete(String objectId, String connectionType) {
 		LinkedMultiValueMap<String, String> deleteRequest = new LinkedMultiValueMap<String, String>();
 		deleteRequest.set("method", "delete");
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
-		restTemplate.postForObject(uri, deleteRequest, String.class);
+		getRestTemplate().postForObject(uri, deleteRequest, String.class);
 	}
 
-	// subclassing hooks
-	
-	public RestTemplate getRestTemplate() {
-		return restTemplate;
+	// private helpers
+	private void registerFacebookJsonModule(RestTemplate restTemplate2) {
+		List<HttpMessageConverter<?>> converters = getRestTemplate().getMessageConverters();
+		for (HttpMessageConverter<?> converter : converters) {
+			if(converter instanceof MappingJacksonHttpMessageConverter) {
+				MappingJacksonHttpMessageConverter jsonConverter = (MappingJacksonHttpMessageConverter) converter;
+				ObjectMapper objectMapper = new ObjectMapper();				
+				objectMapper.registerModule(new FacebookModule());
+				jsonConverter.setObjectMapper(objectMapper);
+			}
+		}
 	}
 
 	private String join(String[] strings) {

@@ -15,6 +15,7 @@
  */
 package org.springframework.social.oauth2;
 
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.util.ClassUtils;
@@ -54,6 +55,36 @@ public class ProtectedResourceClientFactory {
 	public static RestTemplate draft8(String accessToken) {
 		return version(accessToken, OAuth2Version.DRAFT_8);		
 	}
+	
+	/**
+	 * Wraps a given ClientHttpRequestFactory with Spring30OAuth2RequestFactory, if necessary to support OAuth 2 request signing.
+	 * If Spring 3.1 interceptors are available, no wrapping is necessary and the original request factory is returned.
+	 * @param requestFactory the request factory to wrap
+	 * @param accessToken the access token
+	 */
+	public static ClientHttpRequestFactory standardOAuthSigningRequestFactoryIfNecessary(ClientHttpRequestFactory requestFactory, String accessToken) {
+		return oauthSigningIfNecessary(requestFactory, accessToken, OAuth2Version.STANDARD);
+	}
+
+	/**
+	 * Wraps a given ClientHttpRequestFactory with Spring30OAuth2RequestFactory, if necessary to support OAuth 2 draft 8 request signing.
+	 * If Spring 3.1 interceptors are available, no wrapping is necessary and the original request factory is returned.
+	 * @param requestFactory the request factory to wrap
+	 * @param accessToken the access token
+	 */
+	public static ClientHttpRequestFactory draft8OAuthSigningRequestFactoryIfNecessary(ClientHttpRequestFactory requestFactory, String accessToken) {
+		return oauthSigningIfNecessary(requestFactory, accessToken, OAuth2Version.DRAFT_8);
+	}
+
+	/**
+	 * Wraps a given ClientHttpRequestFactory with Spring30OAuth2RequestFactory, if necessary to support OAuth 2 draft 10 request signing.
+	 * If Spring 3.1 interceptors are available, no wrapping is necessary and the original request factory is returned.
+	 * @param requestFactory the request factory to wrap
+	 * @param accessToken the access token
+	 */
+	public static ClientHttpRequestFactory draft10OAuthSigningRequestFactoryIfNecessary(ClientHttpRequestFactory requestFactory, String accessToken) {
+		return oauthSigningIfNecessary(requestFactory, accessToken, OAuth2Version.DRAFT_10);
+	}
 
 	// internal helpers
 	
@@ -68,7 +99,14 @@ public class ProtectedResourceClientFactory {
 		}
 		return client;				
 	}
-	
+
+	private static ClientHttpRequestFactory oauthSigningIfNecessary(ClientHttpRequestFactory requestFactory, String accessToken, OAuth2Version version) {
+		if(interceptorsSupported) {
+			return requestFactory;
+		}
+		return new Spring30OAuth2RequestFactory(requestFactory, accessToken, version);
+	}
+
 	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor", ProtectedResourceClientFactory.class.getClassLoader());
 
 }

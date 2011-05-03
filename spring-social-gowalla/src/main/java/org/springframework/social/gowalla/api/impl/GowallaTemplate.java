@@ -25,18 +25,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.social.gowalla.api.Checkin;
 import org.springframework.social.gowalla.api.GowallaApi;
 import org.springframework.social.gowalla.api.GowallaProfile;
-import org.springframework.social.oauth2.ProtectedResourceClientFactory;
+import org.springframework.social.oauth2.ApiTemplate;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * The central class for interacting with the Gowalla API.
  * @author Craig Walls
  */
-public class GowallaTemplate implements GowallaApi {
-
-	private final RestTemplate restTemplate;
+public class GowallaTemplate extends ApiTemplate.Draft8ApiTemplate implements GowallaApi {
 
 	/**
 	 * Constructs a GowallaTemplate with the minimal amount of information
@@ -44,9 +41,9 @@ public class GowallaTemplate implements GowallaApi {
 	 * @param accessToken An access token granted to the application after OAuth authentication.
 	 */
 	public GowallaTemplate(String accessToken) {
-		this.restTemplate = ProtectedResourceClientFactory.draft8(accessToken);
+		super(accessToken);
 	}
-
+	
 	public String getProfileId() {
 		return getUserProfile().getId();
 	}
@@ -57,7 +54,9 @@ public class GowallaTemplate implements GowallaApi {
 
 	public GowallaProfile getUserProfile(String userId) {
 		HttpEntity<?> requestEntity = new HttpEntity<String>(buildBaseHeaders());
-		ResponseEntity<Map> response = restTemplate.exchange(PROFILE_URL, HttpMethod.GET, requestEntity, Map.class, userId);
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> response = getRestTemplate().exchange(PROFILE_URL, HttpMethod.GET, requestEntity, Map.class, userId);
+		@SuppressWarnings("unchecked")
 		Map<String, ?> profileInfo = response.getBody();
 		int pinsCount = Integer.valueOf(String.valueOf(profileInfo.get("pins_count")));
 		int stampsCount = Integer.valueOf(String.valueOf(profileInfo.get("stamps_count")));
@@ -75,19 +74,15 @@ public class GowallaTemplate implements GowallaApi {
 	
 	public List<Checkin> getTopCheckins(String userId) {
 		HttpEntity<?> requestEntity = new HttpEntity<String>(buildBaseHeaders());
-		ResponseEntity<Map> response = restTemplate.exchange(TOP_CHECKINS_URL, HttpMethod.GET, requestEntity, Map.class, userId);
+		@SuppressWarnings("rawtypes")
+		ResponseEntity<Map> response = getRestTemplate().exchange(TOP_CHECKINS_URL, HttpMethod.GET, requestEntity, Map.class, userId);
+		@SuppressWarnings("unchecked")
 		List<Map<String, ?>> checkinsList = (List<Map<String, ?>>) response.getBody().get("top_spots");
 		List<Checkin> checkins = new ArrayList<Checkin>();
 		for (Map<String, ?> checkinMap : checkinsList) {
 			checkins.add(new Checkin((String) checkinMap.get("name"), (Integer) checkinMap.get("user_checkins_count")));
 		}
 		return checkins;
-	}
-
-	// subclassing hooks
-	
-	protected RestTemplate getRestTemplate() {
-		return restTemplate;
 	}
 
 	// internal helpers

@@ -21,8 +21,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.BadCredentialsException;
-import org.springframework.social.oauth1.ProtectedResourceClientFactory;
-import org.springframework.social.support.ClientHttpRequestFactorySelector;
+import org.springframework.social.oauth1.ApiTemplate;
 import org.springframework.social.twitter.api.DirectMessageOperations;
 import org.springframework.social.twitter.api.FriendOperations;
 import org.springframework.social.twitter.api.ListOperations;
@@ -30,7 +29,6 @@ import org.springframework.social.twitter.api.SearchOperations;
 import org.springframework.social.twitter.api.TimelineOperations;
 import org.springframework.social.twitter.api.TwitterApi;
 import org.springframework.social.twitter.api.UserOperations;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * This is the central class for interacting with Twitter.
@@ -49,23 +47,19 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class TwitterTemplate implements TwitterApi {
-
-	private boolean isAuthorizedForUser;
+public class TwitterTemplate extends ApiTemplate implements TwitterApi {
 	
-	private final RestTemplate restTemplate;
+	private TimelineOperations timelineOperations;
 
-	private final TimelineOperations timelineOperations;
+	private UserOperations userOperations;
 
-	private final UserOperations userOperations;
+	private FriendOperations friendOperations;
 
-	private final FriendOperations friendOperations;
+	private ListOperations listOperations;
 
-	private final ListOperations listOperations;
+	private SearchOperations searchOperations;
 
-	private final SearchOperations searchOperations;
-
-	private final DirectMessageOperations directMessageOperations;
+	private DirectMessageOperations directMessageOperations;
 
 	/**
 	 * Create a new instance of TwitterTemplate.
@@ -75,35 +69,24 @@ public class TwitterTemplate implements TwitterApi {
 	 * Those operations requiring authentication will throw {@link BadCredentialsException}.
 	 */
 	public TwitterTemplate() {
-		this(new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory()), false);
+		super();
+		registerTwitterJsonModule();
+		getRestTemplate().setErrorHandler(new TwitterErrorHandler());
+		initSubApis();
 	}
 
 	/**
 	 * Create a new instance of TwitterTemplate.
-	 * @param apiKey the application's API key
-	 * @param apiSecret the application's API secret
+	 * @param consumerKey the application's API key
+	 * @param consumerSecret the application's API secret
 	 * @param accessToken an access token acquired through OAuth authentication with Twitter
 	 * @param accessTokenSecret an access token secret acquired through OAuth authentication with Twitter
 	 */
-	public TwitterTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
-		this(ProtectedResourceClientFactory.create(apiKey, apiSecret, accessToken, accessTokenSecret), true);
-	}
-	
-	private TwitterTemplate(RestTemplate restTemplate, boolean isAuthorizedForUser) {
-		this.restTemplate = restTemplate;
-		this.isAuthorizedForUser = isAuthorizedForUser;
-		registerTwitterModule(restTemplate);
-		restTemplate.setErrorHandler(new TwitterErrorHandler());
-		this.userOperations = new UserTemplate(restTemplate, isAuthorizedForUser);
-		this.directMessageOperations = new DirectMessageTemplate(restTemplate, isAuthorizedForUser);
-		this.friendOperations = new FriendTemplate(restTemplate, isAuthorizedForUser);
-		this.listOperations = new ListTemplate(restTemplate, isAuthorizedForUser);
-		this.timelineOperations = new TimelineTemplate(restTemplate, isAuthorizedForUser);
-		this.searchOperations = new SearchTemplate(restTemplate, isAuthorizedForUser);
-	}
-
-	public boolean isAuthorizedForUser() {
-		return isAuthorizedForUser;
+	public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+		super(consumerKey, consumerSecret, accessToken, accessTokenSecret);
+		registerTwitterJsonModule();
+		getRestTemplate().setErrorHandler(new TwitterErrorHandler());
+		initSubApis();
 	}
 	
 	public TimelineOperations timelineOperations() {
@@ -132,8 +115,8 @@ public class TwitterTemplate implements TwitterApi {
 		
 	// private helper 
 
-	private void registerTwitterModule(RestTemplate restTemplate) {
-		List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
+	private void registerTwitterJsonModule() {
+		List<HttpMessageConverter<?>> converters = getRestTemplate().getMessageConverters();
 		for (HttpMessageConverter<?> converter : converters) {
 			if(converter instanceof MappingJacksonHttpMessageConverter) {
 				MappingJacksonHttpMessageConverter jsonConverter = (MappingJacksonHttpMessageConverter) converter;
@@ -144,10 +127,13 @@ public class TwitterTemplate implements TwitterApi {
 		}
 	}
 	
-	// subclassing hooks
-
-	protected RestTemplate getRestTemplate() {
-		return restTemplate;
+	private void initSubApis() {
+		this.userOperations = new UserTemplate(getRestTemplate(), isAuthorizedForUser());
+		this.directMessageOperations = new DirectMessageTemplate(getRestTemplate(), isAuthorizedForUser());
+		this.friendOperations = new FriendTemplate(getRestTemplate(), isAuthorizedForUser());
+		this.listOperations = new ListTemplate(getRestTemplate(), isAuthorizedForUser());
+		this.timelineOperations = new TimelineTemplate(getRestTemplate(), isAuthorizedForUser());
+		this.searchOperations = new SearchTemplate(getRestTemplate(), isAuthorizedForUser());
 	}
 
 }
