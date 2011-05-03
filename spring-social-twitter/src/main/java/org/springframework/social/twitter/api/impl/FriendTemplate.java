@@ -15,11 +15,8 @@
  */
 package org.springframework.social.twitter.api.impl;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.springframework.social.twitter.api.FriendOperations;
 import org.springframework.social.twitter.api.TwitterProfile;
@@ -41,95 +38,103 @@ class FriendTemplate extends AbstractTwitterOperations implements FriendOperatio
 	}
 
 	public List<TwitterProfile> getFriends() {
-		return restTemplate.getForObject(buildUri("statuses/friends.json", DEFAULT_CURSOR_PARAMETER_MAP), TwitterProfileUsersList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/friends.json", "cursor", "-1"), TwitterProfileUsersList.class).getList();
 	}
 
 	public List<TwitterProfile> getFriends(long userId) {
-		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
-		parameters.put("user_id", String.valueOf(userId));
+		LinkedMultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+		parameters.set("cursor", "-1");
+		parameters.set("user_id", String.valueOf(userId));
 		return restTemplate.getForObject(buildUri("statuses/friends.json", parameters), TwitterProfileUsersList.class).getList();
 	}
 
 	public List<TwitterProfile> getFriends(String screenName) {
-		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
-		parameters.put("screen_name", screenName);
+		LinkedMultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+		parameters.set("cursor", "-1");
+		parameters.set("screen_name", screenName);
 		return restTemplate.getForObject(buildUri("statuses/friends.json", parameters), TwitterProfileUsersList.class).getList();
 	}
 	
 	public List<Long> getFriendIds() {
-		return restTemplate.getForObject(buildUri("friends/ids.json", DEFAULT_CURSOR_PARAMETER_MAP), LongIdsList.class).getList();
+		return restTemplate.getForObject(buildUri("friends/ids.json", "cursor", "-1"), LongIdsList.class).getList();
 	}
 
 	public List<Long> getFriendIds(long userId) {
-		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
-		parameters.put("user_id", String.valueOf(userId));
+		LinkedMultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+		parameters.set("cursor", "-1");
+		parameters.set("user_id", String.valueOf(userId));
 		return restTemplate.getForObject(buildUri("friends/ids.json", parameters), LongIdsList.class).getList();
 	}
 
 	public List<Long> getFriendIds(String screenName) {
-		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
-		parameters.put("screen_name", screenName);
+		LinkedMultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+		parameters.set("cursor", "-1");
+		parameters.set("screen_name", screenName);
 		return restTemplate.getForObject(buildUri("friends/ids.json", parameters), LongIdsList.class).getList();
 	}
 
 	public List<TwitterProfile> getFollowers() {
-		return restTemplate.getForObject(buildUri("statuses/followers.json", DEFAULT_CURSOR_PARAMETER_MAP), TwitterProfileUsersList.class).getList();
+		return restTemplate.getForObject(buildUri("statuses/followers.json", "cursor", "-1"), TwitterProfileUsersList.class).getList();
 	}
 
 	public List<TwitterProfile> getFollowers(long userId) {
-		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
-		parameters.put("user_id", String.valueOf(userId));
+		LinkedMultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+		parameters.set("cursor", "-1");
+		parameters.set("user_id", String.valueOf(userId));
 		return restTemplate.getForObject(buildUri("statuses/followers.json", parameters), TwitterProfileUsersList.class).getList();
 	}
 
 	public List<TwitterProfile> getFollowers(String screenName) {
-		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
-		parameters.put("screen_name", screenName);
+		LinkedMultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+		parameters.set("cursor", "-1");
+		parameters.set("screen_name", screenName);
 		return restTemplate.getForObject(buildUri("statuses/followers.json", parameters), TwitterProfileUsersList.class).getList();
 	}
 
 	public List<Long> getFollowerIds() {
-		return restTemplate.getForObject(buildUri("followers/ids.json", DEFAULT_CURSOR_PARAMETER_MAP), LongIdsList.class).getList();
+		return restTemplate.getForObject(buildUri("followers/ids.json", "cursor", "-1"), LongIdsList.class).getList();
 	}
 
 	public List<Long> getFollowerIds(long userId) {
-		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
-		parameters.put("user_id", String.valueOf(userId));
+		LinkedMultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+		parameters.set("cursor", "-1");
+		parameters.set("user_id", String.valueOf(userId));
 		return restTemplate.getForObject(buildUri("followers/ids.json", parameters), LongIdsList.class).getList();
 	}
 
 	public List<Long> getFollowerIds(String screenName) {
-		Map<String, String> parameters = new HashMap<String, String>(DEFAULT_CURSOR_PARAMETER_MAP);
-		parameters.put("screen_name", screenName);
+		LinkedMultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+		parameters.set("cursor", "-1");
+		parameters.set("screen_name", screenName);
 		return restTemplate.getForObject(buildUri("followers/ids.json", parameters), LongIdsList.class).getList();
 	}
 
 	public String follow(long userId) {
 		requireUserAuthorization();
-		return (String) restTemplate.postForObject(buildUri("friendships/create.json", Collections.singletonMap("user_id", String.valueOf(userId))), EMPTY_DATA, Map.class).get("screen_name");
+		return (String) restTemplate.postForObject(buildUri("friendships/create.json", "user_id", String.valueOf(userId)), EMPTY_DATA, Map.class).get("screen_name");
 	}
 
 	public String follow(String screenName) {
 		requireUserAuthorization();
-		return (String) restTemplate.postForObject(buildUri("friendships/create.json", Collections.singletonMap("screen_name", screenName)), EMPTY_DATA, Map.class).get("screen_name");
+		return (String) restTemplate.postForObject(buildUri("friendships/create.json", "screen_name", screenName), EMPTY_DATA, Map.class).get("screen_name");
 	}
 	
 	public String unfollow(long userId) {
 		requireUserAuthorization();
-		return (String) restTemplate.postForObject(buildUri("friendships/destroy.json", Collections.singletonMap("user_id", String.valueOf(userId))), EMPTY_DATA, Map.class).get("screen_name");
+		return (String) restTemplate.postForObject(buildUri("friendships/destroy.json", "user_id", String.valueOf(userId)), EMPTY_DATA, Map.class).get("screen_name");
 	}
 
 	public String unfollow(String screenName) {
 		requireUserAuthorization();
-		return (String) restTemplate.postForObject(buildUri("friendships/destroy.json", Collections.singletonMap("screen_name", screenName)), EMPTY_DATA, Map.class).get("screen_name");
+		return (String) restTemplate.postForObject(buildUri("friendships/destroy.json", "screen_name", screenName), EMPTY_DATA, Map.class).get("screen_name");
 	}
 	
 	// doesn't require authentication
 	public boolean friendshipExists(String userA, String userB) {
 		requireUserAuthorization();
-		Map<String, String> params = new TreeMap<String, String>();
-		params.put("user_a", userA);
-		params.put("user_b", userB);
+		LinkedMultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+		params.set("user_a", userA);
+		params.set("user_b", userB);
 		return restTemplate.getForObject(buildUri("friendships/exists.json", params), boolean.class);
 	}
 
@@ -144,7 +149,5 @@ class FriendTemplate extends AbstractTwitterOperations implements FriendOperatio
 	}
 
 	private static final MultiValueMap<String, Object> EMPTY_DATA = new LinkedMultiValueMap<String, Object>();
-	
-	private static final Map<String, String> DEFAULT_CURSOR_PARAMETER_MAP = Collections.singletonMap("cursor", "-1");
 	
 }

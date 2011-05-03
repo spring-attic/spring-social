@@ -129,11 +129,11 @@ class SearchTemplate extends AbstractTwitterOperations implements SearchOperatio
 	}
 
 	public Trends getLocalTrends(long whereOnEarthId, boolean excludeHashtags) {
-		Map<String, String> params = new HashMap<String, String>();
+		LinkedMultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
 		if(excludeHashtags) {
-			params.put("exclude", "hashtags");
+			parameters.set("exclude", "hashtags");
 		}
-		return restTemplate.getForObject(buildUri("trends/" + whereOnEarthId + ".json", params), LocalTrendsHolder.class).getTrends();
+		return restTemplate.getForObject(buildUri("trends/" + whereOnEarthId + ".json", parameters), LocalTrendsHolder.class).getTrends();
 	}
 
 	private String makeTrendPath(String basePath, boolean excludeHashtags, String startDate) {

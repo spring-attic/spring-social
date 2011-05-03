@@ -56,7 +56,15 @@ public class URIBuilder {
 		parameters.add(name, value);
 		return this;
 	}
-	
+
+	/**
+	 * Adds a query parameters to the URI
+	 */
+	public URIBuilder queryParams(MultiValueMap<String, String> params) {
+		parameters.putAll(params);
+		return this;
+	}
+
 	/**
 	 * Builds the URI
 	 */

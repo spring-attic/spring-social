@@ -18,12 +18,14 @@ package org.springframework.social.facebook.api.impl.json;
 import java.util.Date;
 
 import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * Annotated mixin to add Jackson annotations to Tag. 
  * @author Craig Walls
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 abstract class TagMixin {
 	
 	@JsonCreator

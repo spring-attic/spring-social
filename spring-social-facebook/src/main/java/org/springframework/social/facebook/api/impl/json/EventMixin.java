@@ -21,6 +21,7 @@ import java.util.Date;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.annotate.JsonCreator;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
@@ -32,6 +33,7 @@ import org.springframework.social.facebook.api.Reference;
  * Annotated mixin to add Jackson annotations to Event. 
  * @author Craig Walls
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 abstract class EventMixin {
 
 	@JsonCreator

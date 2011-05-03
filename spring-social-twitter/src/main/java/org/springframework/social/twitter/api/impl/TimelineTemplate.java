@@ -16,7 +16,6 @@
 package org.springframework.social.twitter.api.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.social.twitter.api.StatusDetails;
@@ -60,11 +59,11 @@ class TimelineTemplate extends AbstractTwitterOperations implements TimelineOper
 	}
 
 	public List<Tweet> getUserTimeline(String screenName) {
-		return restTemplate.getForObject(buildUri("statuses/user_timeline.json", Collections.singletonMap("screen_name", screenName)), TweetList.class);
+		return restTemplate.getForObject(buildUri("statuses/user_timeline.json", "screen_name", screenName), TweetList.class);
 	}
 
 	public List<Tweet> getUserTimeline(long userId) {
-		return restTemplate.getForObject(buildUri("statuses/user_timeline.json", Collections.singletonMap("user_id", String.valueOf(userId))), TweetList.class);
+		return restTemplate.getForObject(buildUri("statuses/user_timeline.json", "user_id", String.valueOf(userId)), TweetList.class);
 	}
 
 	public List<Tweet> getMentions() {
@@ -99,7 +98,7 @@ class TimelineTemplate extends AbstractTwitterOperations implements TimelineOper
 		requireUserAuthorization();
 		MultiValueMap<String, Object> tweetParams = new LinkedMultiValueMap<String, Object>();
 		tweetParams.add("status", message);
-		tweetParams.setAll(details.toParameterMap());
+		tweetParams.putAll(details.toParameterMap());
 		restTemplate.postForObject(buildUri("statuses/update.json"), tweetParams, String.class);
 	}
 

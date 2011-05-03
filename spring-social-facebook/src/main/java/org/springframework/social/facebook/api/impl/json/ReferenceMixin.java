@@ -23,7 +23,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
  * Annotated mixin to add Jackson annotations to Reference. 
  * @author Craig Walls
  */
-@JsonIgnoreProperties({"description", "category"})
+@JsonIgnoreProperties(ignoreUnknown = true)
 abstract class ReferenceMixin {
 
 	@JsonCreator
