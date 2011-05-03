@@ -30,25 +30,15 @@ import org.springframework.social.support.HttpRequestDecorator;
  */
 class OAuth1RequestInterceptor implements ClientHttpRequestInterceptor {
 
-	private final String consumerKey;
-	
-	private final String consumerSecret;
-
-	private final String accessToken;
-	
-	private final String accessTokenSecret;
-	
 	private final SigningSupport signingUtils;
+	private final OAuth1Credentials oauth1Credentials;
 	
 	/**
 	 * Creates an OAuth 1.0 protected resource request interceptor.
 	 * @param accessToken the access token and secret
 	 */
-	public OAuth1RequestInterceptor(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
-		this.consumerKey = consumerKey;
-		this.consumerSecret = consumerSecret;
-		this.accessToken = accessToken;
-		this.accessTokenSecret = accessTokenSecret;
+	public OAuth1RequestInterceptor(OAuth1Credentials oauth1Credentials) {
+		this.oauth1Credentials = oauth1Credentials;
 		this.signingUtils = new SigningSupport();
 	}
 
@@ -61,7 +51,7 @@ class OAuth1RequestInterceptor implements ClientHttpRequestInterceptor {
 	// internal helpers
 	
 	private String getAuthorizationHeaderValue(HttpRequest request, byte[] body) {
-		return signingUtils.buildAuthorizationHeaderValue(request, body, consumerKey, consumerSecret, accessToken, accessTokenSecret);
+		return signingUtils.buildAuthorizationHeaderValue(request, body, oauth1Credentials);
 	}
 	
 }

@@ -23,24 +23,18 @@ import org.springframework.web.client.RestTemplate;
  * Base class for OAuth 1-based provider API templates.
  * @author Craig Walls
  */
-public abstract class ApiTemplate {
-
-	private String consumerKey;
-	
-	private String consumerSecret;
-	
-	private String accessToken;
-	
-	private String accessTokenSecret;
+public abstract class AbstractOAuth1ApiTemplate {
 	
 	private boolean authorizedForUser;
 	
 	private final RestTemplate restTemplate;
+
+	private OAuth1Credentials oAuth1Credentials;
 	
 	/**
 	 * Constructs the API template without user authorization. This is useful for accessing operations on a provider's API that do not require user authorization.
 	 */
-	protected ApiTemplate() {
+	protected AbstractOAuth1ApiTemplate() {
 		restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 	}
 	
@@ -51,13 +45,10 @@ public abstract class ApiTemplate {
 	 * @param accessToken the access token
 	 * @param accessTokenSecret the access token secret
 	 */
-	protected ApiTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
-		this.consumerKey = consumerKey;
-		this.consumerSecret = consumerSecret;
-		this.accessToken = accessToken;
-		this.accessTokenSecret = accessTokenSecret;
+	protected AbstractOAuth1ApiTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+		this.oAuth1Credentials = new OAuth1Credentials(consumerKey, consumerSecret, accessToken, accessTokenSecret);
 		this.authorizedForUser = true;
-		restTemplate = ProtectedResourceClientFactory.create(consumerKey, consumerSecret, accessToken, accessTokenSecret);
+		restTemplate = ProtectedResourceClientFactory.create(oAuth1Credentials);
 	}
 	
 	/**
@@ -66,7 +57,7 @@ public abstract class ApiTemplate {
 	 */
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
 		if(isAuthorizedForUser()) {
-			this.restTemplate.setRequestFactory(ProtectedResourceClientFactory.oauthSigningIfNecessary(requestFactory, consumerKey, consumerSecret, accessToken, accessTokenSecret));
+			this.restTemplate.setRequestFactory(ProtectedResourceClientFactory.oauthSigningIfNecessary(requestFactory, oAuth1Credentials));
 		} else {
 			this.restTemplate.setRequestFactory(requestFactory);
 		}

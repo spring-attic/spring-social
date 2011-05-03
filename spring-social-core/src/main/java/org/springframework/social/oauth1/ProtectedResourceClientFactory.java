@@ -39,19 +39,19 @@ import org.springframework.web.client.RestTemplate;
  * 
  * @author Keith Donald
  */
-public class ProtectedResourceClientFactory {
+class ProtectedResourceClientFactory {
 
 	/**
 	 * Constructs a RestTemplate that adds the OAuth1 Authorization header to each request before it is executed.
 	 */
-	public static RestTemplate create(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+	public static RestTemplate create(OAuth1Credentials oauth1Credentials) {
 		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 		if (interceptorsSupported) {
 			// favored
-			client.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(consumerKey, consumerSecret, accessToken, accessTokenSecret)});
+			client.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(oauth1Credentials)});
 		} else {
 			// 3.0.x compatibility
-			client.setRequestFactory(new Spring30OAuth1RequestFactory(client.getRequestFactory(), consumerKey, consumerSecret, accessToken, accessTokenSecret));
+			client.setRequestFactory(new Spring30OAuth1RequestFactory(client.getRequestFactory(), oauth1Credentials));
 		}
 		return client;
 	}
@@ -65,11 +65,11 @@ public class ProtectedResourceClientFactory {
 	 * @param accessToken the access token
 	 * @param accessTokenSecret the access token secret
 	 */
-	public static ClientHttpRequestFactory oauthSigningIfNecessary(ClientHttpRequestFactory requestFactory, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+	public static ClientHttpRequestFactory oauthSigningIfNecessary(ClientHttpRequestFactory requestFactory, OAuth1Credentials oauth1Credentials) {
 		if(interceptorsSupported) {
 			return requestFactory;
 		}		
-		return new Spring30OAuth1RequestFactory(requestFactory, consumerKey, consumerSecret, accessToken, accessTokenSecret);
+		return new Spring30OAuth1RequestFactory(requestFactory, oauth1Credentials);
 	}
 	
 	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor", ProtectedResourceClientFactory.class.getClassLoader());

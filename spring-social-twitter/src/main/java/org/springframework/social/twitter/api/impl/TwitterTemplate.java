@@ -21,7 +21,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.BadCredentialsException;
-import org.springframework.social.oauth1.ApiTemplate;
+import org.springframework.social.oauth1.AbstractOAuth1ApiTemplate;
 import org.springframework.social.twitter.api.DirectMessageOperations;
 import org.springframework.social.twitter.api.FriendOperations;
 import org.springframework.social.twitter.api.ListOperations;
@@ -47,7 +47,7 @@ import org.springframework.social.twitter.api.UserOperations;
  * </p>
  * @author Craig Walls
  */
-public class TwitterTemplate extends ApiTemplate implements TwitterApi {
+public class TwitterTemplate extends AbstractOAuth1ApiTemplate implements TwitterApi {
 	
 	private TimelineOperations timelineOperations;
 

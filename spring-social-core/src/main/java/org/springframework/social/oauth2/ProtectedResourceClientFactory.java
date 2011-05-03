@@ -27,7 +27,7 @@ import org.springframework.web.client.RestTemplate;
  * Also hides the differences between Spring 3.0.x and 3.1 implementation.
  * @author Keith Donald
  */
-public class ProtectedResourceClientFactory {
+class ProtectedResourceClientFactory {
 
 	/**
 	 * Constructs a RestTemplate that adds the Authorization header using the bearer token style described in the latest draft (draft 12) of the OAuth2 specification:

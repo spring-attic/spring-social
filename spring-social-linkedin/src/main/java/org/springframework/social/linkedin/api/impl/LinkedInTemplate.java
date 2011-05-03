@@ -23,7 +23,7 @@ import org.springframework.http.converter.json.MappingJacksonHttpMessageConverte
 import org.springframework.social.linkedin.api.LinkedInApi;
 import org.springframework.social.linkedin.api.LinkedInConnections;
 import org.springframework.social.linkedin.api.LinkedInProfile;
-import org.springframework.social.oauth1.ApiTemplate;
+import org.springframework.social.oauth1.AbstractOAuth1ApiTemplate;
 
 /**
  * This is the central class for interacting with LinkedIn.
@@ -34,7 +34,7 @@ import org.springframework.social.oauth1.ApiTemplate;
  * </p>
  * @author Craig Walls
  */
-public class LinkedInTemplate extends ApiTemplate implements LinkedInApi {
+public class LinkedInTemplate extends AbstractOAuth1ApiTemplate implements LinkedInApi {
 
 	/**
 	 * Creates a new LinkedInTemplate given the minimal amount of information needed to sign requests with OAuth 1 credentials.

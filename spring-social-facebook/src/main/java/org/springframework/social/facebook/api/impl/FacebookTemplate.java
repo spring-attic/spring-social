@@ -40,7 +40,7 @@ import org.springframework.social.facebook.api.MediaOperations;
 import org.springframework.social.facebook.api.PlacesOperations;
 import org.springframework.social.facebook.api.UserOperations;
 import org.springframework.social.facebook.api.impl.json.FacebookModule;
-import org.springframework.social.oauth2.ApiTemplate;
+import org.springframework.social.oauth2.AbstractOAuth2ApiTemplate;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -55,7 +55,7 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class FacebookTemplate extends ApiTemplate.Draft10ApiTemplate implements FacebookApi {
+public class FacebookTemplate extends AbstractOAuth2ApiTemplate.Draft10ApiTemplate implements FacebookApi {
 
 	private UserOperations userOperations;
 	

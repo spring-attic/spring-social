@@ -73,11 +73,11 @@ class SigningSupport {
 	 * Builds an authorization header from a request.
 	 * Expects that the request's query parameters are form-encoded.
 	 */
-	public String buildAuthorizationHeaderValue(HttpRequest request, byte[] body, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
-		Map<String, String> oauthParameters = commonOAuthParameters(consumerKey);
-		oauthParameters.put("oauth_token", accessToken);
+	public String buildAuthorizationHeaderValue(HttpRequest request, byte[] body, OAuth1Credentials oauth1Credentials) {
+		Map<String, String> oauthParameters = commonOAuthParameters(oauth1Credentials.getConsumerKey());
+		oauthParameters.put("oauth_token", oauth1Credentials.getAccessToken());
 		MultiValueMap<String, String> additionalParameters = union(readFormParameters(request.getHeaders().getContentType(), body), parseFormParameters(request.getURI().getRawQuery()));
-		return buildAuthorizationHeaderValue(request.getMethod(), request.getURI(), oauthParameters, additionalParameters, consumerSecret, accessTokenSecret);
+		return buildAuthorizationHeaderValue(request.getMethod(), request.getURI(), oauthParameters, additionalParameters, oauth1Credentials.getConsumerSecret(), oauth1Credentials.getAccessTokenSecret());
 	}
 	
 	/**
@@ -85,11 +85,11 @@ class SigningSupport {
 	 * Expects that the request's query parameters are form-encoded.
 	 * This method is a Spring 3.0-compatible version of buildAuthorizationHeaderValue(); planned for removal in Spring Social 1.1
 	 */
-	public String spring30buildAuthorizationHeaderValue(ClientHttpRequest request, byte[] body, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
-		Map<String, String> oauthParameters = commonOAuthParameters(consumerKey);
-		oauthParameters.put("oauth_token", accessToken);
+	public String spring30buildAuthorizationHeaderValue(ClientHttpRequest request, byte[] body, OAuth1Credentials oauth1Credentials) {
+		Map<String, String> oauthParameters = commonOAuthParameters(oauth1Credentials.getConsumerKey());
+		oauthParameters.put("oauth_token", oauth1Credentials.getAccessToken());
 		MultiValueMap<String, String> additionalParameters = union(readFormParameters(request.getHeaders().getContentType(), body), parseFormParameters(request.getURI().getRawQuery()));
-		return buildAuthorizationHeaderValue(request.getMethod(), request.getURI(), oauthParameters, additionalParameters, consumerSecret, accessTokenSecret);
+		return buildAuthorizationHeaderValue(request.getMethod(), request.getURI(), oauthParameters, additionalParameters, oauth1Credentials.getConsumerSecret(), oauth1Credentials.getAccessTokenSecret());
 	}
 
 	Map<String, String> commonOAuthParameters(String consumerKey) {

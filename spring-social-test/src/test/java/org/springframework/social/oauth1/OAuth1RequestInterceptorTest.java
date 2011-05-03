@@ -15,8 +15,7 @@
  */
 package org.springframework.social.oauth1;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -34,7 +33,7 @@ public class OAuth1RequestInterceptorTest {
 
 	@Test
 	public void beforeExecution() throws Exception {
-		OAuth1RequestInterceptor interceptor = new OAuth1RequestInterceptor("consumer_key", "consumer_secret", "access_token", "token_secret");
+		OAuth1RequestInterceptor interceptor = new OAuth1RequestInterceptor(new OAuth1Credentials("consumer_key", "consumer_secret", "access_token", "token_secret"));
 		byte[] body = "status=Hello+there".getBytes();
 		MockHttpRequest request = new MockHttpRequest(HttpMethod.POST, "https://api.someprovider.com/status/update");
 		request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
