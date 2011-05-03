@@ -187,6 +187,7 @@ project('spring-social-gowalla') {
 project('spring-social-linkedin') {
     description = 'LinkedIn API'
     dependencies {
+    	compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
         testCompile project(':spring-social-test')
     }

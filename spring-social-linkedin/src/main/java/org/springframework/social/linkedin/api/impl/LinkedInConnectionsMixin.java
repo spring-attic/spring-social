@@ -13,29 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.linkedin.api;
+package org.springframework.social.linkedin.api.impl;
 
 import java.util.List;
 
-/**
- * A model class containing a list of a user's connections on LinkedIn.
- * 
- * @author Craig Walls
- */
-public class LinkedInConnections {
-	
-	private List<LinkedInProfile> connections;
-	
-	public LinkedInConnections(List<LinkedInProfile> connections) {
-		this.connections = connections;
-	}
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.social.linkedin.api.LinkedInProfile;
 
-	/**
-	 * Retrieves the list of connected profiles.
-	 * 
-	 * @return a list of connected profiles
-	 */
-	public List<LinkedInProfile> getConnections() {
-		return connections;
-	}
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class LinkedInConnectionsMixin {
+
+	public LinkedInConnectionsMixin(
+			@JsonProperty("values") List<LinkedInProfile> connections) {}
+
 }

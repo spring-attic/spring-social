@@ -17,6 +17,9 @@ package org.springframework.social.linkedin.api.impl;
 
 import java.util.List;
 
+import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.linkedin.api.LinkedInApi;
 import org.springframework.social.linkedin.api.LinkedInConnections;
 import org.springframework.social.linkedin.api.LinkedInProfile;
@@ -42,6 +45,7 @@ public class LinkedInTemplate extends ApiTemplate implements LinkedInApi {
 	 */
 	public LinkedInTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
 		super(consumerKey, consumerSecret, accessToken, accessTokenSecret);
+		registerLinkedInJsonModule();
 	}
 	
 	public String getProfileId() {
@@ -53,14 +57,26 @@ public class LinkedInTemplate extends ApiTemplate implements LinkedInApi {
 	}
 
 	public LinkedInProfile getUserProfile() {
-		return getRestTemplate().getForObject(GET_CURRENT_USER_INFO, LinkedInProfile.class);
+		return getRestTemplate().getForObject("https://api.linkedin.com/v1/people/~:public?format=json", LinkedInProfile.class);
 	}
 
 	public List<LinkedInProfile> getConnections() {
-		LinkedInConnections connections = getRestTemplate().getForObject("https://api.linkedin.com/v1/people/~/connections", LinkedInConnections.class);
+		LinkedInConnections connections = getRestTemplate().getForObject("https://api.linkedin.com/v1/people/~/connections?format=json", LinkedInConnections.class);
 		return connections.getConnections();
 	}
 
-	static final String GET_CURRENT_USER_INFO = "https://api.linkedin.com/v1/people/~:public";
+	// private helper
+	
+	private void registerLinkedInJsonModule() {
+		List<HttpMessageConverter<?>> converters = getRestTemplate().getMessageConverters();
+		for (HttpMessageConverter<?> converter : converters) {
+			if(converter instanceof MappingJacksonHttpMessageConverter) {
+				MappingJacksonHttpMessageConverter jsonConverter = (MappingJacksonHttpMessageConverter) converter;
+				ObjectMapper objectMapper = new ObjectMapper();				
+				objectMapper.registerModule(new LinkedInModule());
+				jsonConverter.setObjectMapper(objectMapper);
+			}
+		}
+	}
 
 }
