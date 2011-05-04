@@ -93,7 +93,7 @@ configure(javaprojects) {
     // add tasks for finding and publishing .xsd files
     apply from: "$buildSrcDir/schema-publication.gradle"
 
-    commonsCodecVersion = '1.4'
+    commonsCodecVersion = '1.5'
     h2Version = '1.3.153'
 	httpComponentsVersion = '4.1.1'
     jacksonVersion = '1.8.0'
@@ -104,7 +104,7 @@ configure(javaprojects) {
     mockitoVersion = '1.8.5'
     servletApiVersion = '2.5'
     springVersion = '3.1.0.M1'
-    springSecurityVersion = '3.1.0.RC1'
+    springSecurityVersion = '3.1.0.RC2'
 
     sourceSets {
         main {
@@ -145,7 +145,7 @@ project('spring-social-core') {
     dependencies {
         compile ("org.springframework:spring-jdbc:$springVersion") { optional = true }
         compile ("org.springframework:spring-web:$springVersion")
-        compile ("org.springframework.security:spring-security-crypto:$springSecurityVersion") { provided = true }
+        compile ("org.springframework.security:spring-security-core:$springSecurityVersion") { provided = true }
         compile ("commons-codec:commons-codec:$commonsCodecVersion") { optional = true }
         compile ("org.apache.httpcomponents:httpclient:$httpComponentsVersion") { optional = true }
         testCompile "com.h2database:h2:$h2Version"
@@ -155,13 +155,10 @@ project('spring-social-core') {
 project('spring-social-facebook') {
     description = 'Facebook API'
     dependencies {
-        compile "org.springframework:spring-webmvc:$springVersion"
-        compile ("javax.inject:javax.inject:$javaxInjectVersion") { optional = true }
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
         compile ("javax.servlet.jsp:jsp-api:$jspApiVersion") { provided = true }
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
-        compile project(':spring-social-web') { optional = true }
         testCompile project(':spring-social-test')
     }
 }
@@ -205,10 +202,8 @@ project('spring-social-tripit') {
 project('spring-social-twitter') {
     description = 'Twitter API'
     dependencies {
-        compile ("javax.inject:javax.inject:$javaxInjectVersion") { optional = true }
         compile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
         compile project(':spring-social-core')
-        compile project(':spring-social-web') { optional = true }
         testCompile project(':spring-social-test')
     }
 }
