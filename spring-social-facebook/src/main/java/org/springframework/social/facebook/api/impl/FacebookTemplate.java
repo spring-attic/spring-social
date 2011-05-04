@@ -41,6 +41,7 @@ import org.springframework.social.facebook.api.PlacesOperations;
 import org.springframework.social.facebook.api.UserOperations;
 import org.springframework.social.facebook.api.impl.json.FacebookModule;
 import org.springframework.social.oauth2.AbstractOAuth2ApiTemplate;
+import org.springframework.social.oauth2.OAuth2Version;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -55,7 +56,7 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class FacebookTemplate extends AbstractOAuth2ApiTemplate.Draft10ApiTemplate implements FacebookApi {
+public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements FacebookApi {
 
 	private UserOperations userOperations;
 	
@@ -88,7 +89,6 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate.Draft10ApiTempla
 		getRestTemplate().getMessageConverters().add(json);
 		registerFacebookJsonModule(getRestTemplate());
 		getRestTemplate().setErrorHandler(new FacebookErrorHandler());
-
 		// sub-apis
 		userOperations = new UserTemplate(this);
 		placesOperations = new PlacesTemplate(this);
@@ -99,6 +99,11 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate.Draft10ApiTempla
 		eventOperations = new EventTemplate(this);
 		mediaOperations = new MediaTemplate(this);
 		groupOperations = new GroupTemplate(this);
+	}
+
+	@Override
+	protected OAuth2Version getOAuth2Version() {
+		return OAuth2Version.DRAFT_10;
 	}
 	
 	public UserOperations userOperations() {

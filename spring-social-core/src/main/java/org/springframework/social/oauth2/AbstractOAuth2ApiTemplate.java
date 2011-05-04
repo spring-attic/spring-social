@@ -16,6 +16,7 @@
 package org.springframework.social.oauth2;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -29,69 +30,44 @@ public abstract class AbstractOAuth2ApiTemplate {
 	private final RestTemplate restTemplate;
 
 	/**
-	 * Constructs the API template with an access token for performing operations on behalf of a user.
-	 * @param restTemplate the RestTemplate to use when communicating with the provider's REST API
-	 * @param accessToken the access token
+	 * Constructs the API template without user authorization. This is useful for accessing operations on a provider's API that do not require user authorization.
 	 */
-	protected AbstractOAuth2ApiTemplate(RestTemplate restTemplate, String accessToken) {
-		this.restTemplate = restTemplate;
-		this.accessToken = accessToken;
+	protected AbstractOAuth2ApiTemplate() {
+		accessToken = null;
+		restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 	}
 	
 	/**
-	 * Override the default ClientHttpRequestFactory. This is useful when custom configuration of the request factory is required, such as configuring proxy server details.
+	 * Constructs the API template with OAuth credentials necessary to perform operations on behalf of a user.
+	 * @param accessToken the access token
+	 */
+	protected AbstractOAuth2ApiTemplate(String accessToken) {
+		this.accessToken = accessToken;
+		restTemplate = ProtectedResourceClientFactory.create(accessToken, getOAuth2Version());
+	}
+	
+	/**
+	 * Set the ClientHttpRequestFactory. This is useful when custom configuration of the request factory is required, such as configuring proxy server details.
 	 * @param requestFactory the request factory
 	 */
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
-		restTemplate.setRequestFactory(createRequestFactory(requestFactory, accessToken));
+		if (isAuthorizedForUser()) {
+			restTemplate.setRequestFactory(ProtectedResourceClientFactory.addOAuthSigning(requestFactory, accessToken, getOAuth2Version()));
+		} else {
+			restTemplate.setRequestFactory(requestFactory);
+		}
 	}
-
-	protected abstract ClientHttpRequestFactory createRequestFactory(ClientHttpRequestFactory requestFactory, String accessToken);
-
+	
+	public boolean isAuthorizedForUser() {
+		return accessToken != null;
+	}
+	
 	public RestTemplate getRestTemplate() {
 		return restTemplate;
 	}
 	
-	/**
-	 * Base class for OAuth 2-based provider API bindings adhering to the latest OAuth 2 draft specification.
-	 * @author Craig Walls
-	 */
-	public static class StandardApiTemplate extends AbstractOAuth2ApiTemplate {
-
-		public StandardApiTemplate(String accessToken) {
-			super(ProtectedResourceClientFactory.standard(accessToken), accessToken);
-		}
-		
-		protected ClientHttpRequestFactory createRequestFactory(ClientHttpRequestFactory requestFactory, String accessToken) {
-			return ProtectedResourceClientFactory.standardOAuthSigningRequestFactoryIfNecessary(requestFactory, accessToken);
-		}
+	protected OAuth2Version getOAuth2Version() {
+		return OAuth2Version.STANDARD;
 	}
 
-	/**
-	 * Base class for OAuth 2-based provider API bindings adhering to the Draft 8 of the OAuth 2 specification.
-	 * @author Craig Walls
-	 */
-	public static class Draft8ApiTemplate extends AbstractOAuth2ApiTemplate {
-		public Draft8ApiTemplate(String accessToken) {
-			super(ProtectedResourceClientFactory.draft8(accessToken), accessToken);
-		}
-
-		protected ClientHttpRequestFactory createRequestFactory(ClientHttpRequestFactory requestFactory, String accessToken) {
-			return ProtectedResourceClientFactory.draft8OAuthSigningRequestFactoryIfNecessary(requestFactory, accessToken);
-		}
-	}
-	
-	/**
-	 * Base class for OAuth 2-based provider API bindings adhering to the Draft 10 of the OAuth 2 specification.
-	 * @author Craig Walls
-	 */
-	public static class Draft10ApiTemplate extends AbstractOAuth2ApiTemplate {
-		public Draft10ApiTemplate(String accessToken) {
-			super(ProtectedResourceClientFactory.draft10(accessToken), accessToken);
-		}
-
-		protected ClientHttpRequestFactory createRequestFactory(ClientHttpRequestFactory requestFactory, String accessToken) {
-			return ProtectedResourceClientFactory.draft10OAuthSigningRequestFactoryIfNecessary(requestFactory, accessToken);
-		}
-	}
 }

@@ -33,8 +33,8 @@ public abstract class AbstractOAuth1ApiTemplate {
 	 * Constructs the API template without user authorization. This is useful for accessing operations on a provider's API that do not require user authorization.
 	 */
 	protected AbstractOAuth1ApiTemplate() {
-		restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 		credentials = null;
+		restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 	}
 	
 	/**
@@ -55,9 +55,9 @@ public abstract class AbstractOAuth1ApiTemplate {
 	 */
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
 		if (isAuthorizedForUser()) {
-			this.restTemplate.setRequestFactory(ProtectedResourceClientFactory.addOAuthSigning(requestFactory, credentials));
+			restTemplate.setRequestFactory(ProtectedResourceClientFactory.addOAuthSigning(requestFactory, credentials));
 		} else {
-			this.restTemplate.setRequestFactory(requestFactory);
+			restTemplate.setRequestFactory(requestFactory);
 		}
 	}
 	

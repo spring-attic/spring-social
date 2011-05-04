@@ -25,6 +25,7 @@ import java.util.Map;
 import org.springframework.social.github.api.GitHubApi;
 import org.springframework.social.github.api.GitHubUserProfile;
 import org.springframework.social.oauth2.AbstractOAuth2ApiTemplate;
+import org.springframework.social.oauth2.OAuth2Version;
 
 /**
  * <p>
@@ -37,7 +38,7 @@ import org.springframework.social.oauth2.AbstractOAuth2ApiTemplate;
  * </p>
  * @author Craig Walls
  */
-public class GitHubTemplate extends AbstractOAuth2ApiTemplate.Draft8ApiTemplate implements GitHubApi {
+public class GitHubTemplate extends AbstractOAuth2ApiTemplate implements GitHubApi {
 
 	/**
 	 * Constructs a GitHubTemplate with the minimal amount of information
@@ -50,6 +51,11 @@ public class GitHubTemplate extends AbstractOAuth2ApiTemplate.Draft8ApiTemplate 
 	 */
 	public GitHubTemplate(String accessToken) {
 		super(accessToken);
+	}
+
+	@Override
+	protected OAuth2Version getOAuth2Version() {
+		return OAuth2Version.DRAFT_8;
 	}
 
 	public String getProfileId() {
