@@ -24,18 +24,17 @@ import org.springframework.web.client.RestTemplate;
  * @author Craig Walls
  */
 public abstract class AbstractOAuth1ApiTemplate {
-	
-	private boolean authorizedForUser;
-	
+
+	private final OAuth1Credentials credentials;
+
 	private final RestTemplate restTemplate;
 
-	private OAuth1Credentials oAuth1Credentials;
-	
 	/**
 	 * Constructs the API template without user authorization. This is useful for accessing operations on a provider's API that do not require user authorization.
 	 */
 	protected AbstractOAuth1ApiTemplate() {
 		restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
+		credentials = null;
 	}
 	
 	/**
@@ -46,9 +45,8 @@ public abstract class AbstractOAuth1ApiTemplate {
 	 * @param accessTokenSecret the access token secret
 	 */
 	protected AbstractOAuth1ApiTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
-		this.oAuth1Credentials = new OAuth1Credentials(consumerKey, consumerSecret, accessToken, accessTokenSecret);
-		this.authorizedForUser = true;
-		restTemplate = ProtectedResourceClientFactory.create(oAuth1Credentials);
+		credentials = new OAuth1Credentials(consumerKey, consumerSecret, accessToken, accessTokenSecret);
+		restTemplate = ProtectedResourceClientFactory.create(credentials);
 	}
 	
 	/**
@@ -56,15 +54,15 @@ public abstract class AbstractOAuth1ApiTemplate {
 	 * @param requestFactory the request factory
 	 */
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
-		if(isAuthorizedForUser()) {
-			this.restTemplate.setRequestFactory(ProtectedResourceClientFactory.oauthSigningIfNecessary(requestFactory, oAuth1Credentials));
+		if (isAuthorizedForUser()) {
+			this.restTemplate.setRequestFactory(ProtectedResourceClientFactory.addOAuthSigning(requestFactory, credentials));
 		} else {
 			this.restTemplate.setRequestFactory(requestFactory);
 		}
 	}
 	
 	public boolean isAuthorizedForUser() {
-		return authorizedForUser;
+		return credentials != null;
 	}
 	
 	public RestTemplate getRestTemplate() {

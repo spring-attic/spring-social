@@ -44,14 +44,14 @@ class ProtectedResourceClientFactory {
 	/**
 	 * Constructs a RestTemplate that adds the OAuth1 Authorization header to each request before it is executed.
 	 */
-	public static RestTemplate create(OAuth1Credentials oauth1Credentials) {
+	public static RestTemplate create(OAuth1Credentials credentials) {
 		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 		if (interceptorsSupported) {
 			// favored
-			client.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(oauth1Credentials)});
+			client.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(credentials)});
 		} else {
 			// 3.0.x compatibility
-			client.setRequestFactory(new Spring30OAuth1RequestFactory(client.getRequestFactory(), oauth1Credentials));
+			client.setRequestFactory(new Spring30OAuth1RequestFactory(client.getRequestFactory(), credentials));
 		}
 		return client;
 	}
@@ -65,11 +65,11 @@ class ProtectedResourceClientFactory {
 	 * @param accessToken the access token
 	 * @param accessTokenSecret the access token secret
 	 */
-	public static ClientHttpRequestFactory oauthSigningIfNecessary(ClientHttpRequestFactory requestFactory, OAuth1Credentials oauth1Credentials) {
-		if(interceptorsSupported) {
+	public static ClientHttpRequestFactory addOAuthSigning(ClientHttpRequestFactory requestFactory, OAuth1Credentials credentials) {
+		if (interceptorsSupported) {
 			return requestFactory;
 		}		
-		return new Spring30OAuth1RequestFactory(requestFactory, oauth1Credentials);
+		return new Spring30OAuth1RequestFactory(requestFactory, credentials);
 	}
 	
 	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor", ProtectedResourceClientFactory.class.getClassLoader());
