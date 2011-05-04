@@ -57,17 +57,37 @@ public abstract class AbstractOAuth2ApiTemplate {
 			restTemplate.setRequestFactory(requestFactory);
 		}
 	}
-	
+
+	/**
+	 * Returns true if this API binding has been authorized on behalf of a specific user.
+	 * If so, calls to the API are signed with the user's authorization credentials, indicating an application is invoking the API on a user's behalf.
+	 * If not, API calls do not contain any user authorization information.
+	 * Callers can use this status flag to determine if API operations requiring authorization can be invoked.
+	 */
 	public boolean isAuthorizedForUser() {
 		return accessToken != null;
 	}
-	
+
+	/**
+	 * Obtains a reference to the REST client backing this API binding and used to perform API calls.
+	 * Callers may use the RestTemplate to invoke other API operations not yet modeled by the binding interface.
+	 * Callers may also modify the configuration of the RestTemplate to support unit testing the API binding with a mock server in a test environment.
+	 * During construction, subclasses may apply customizations to the RestTemplate needed to invoke a specific API.
+	 * @see RestTemplate#setMessageConverters(java.util.List)
+	 * @see RestTemplate#setErrorHandler(org.springframework.web.client.ResponseErrorHandler)
+	 */
 	public RestTemplate getRestTemplate() {
 		return restTemplate;
 	}
-	
+
+	/**
+	 * Returns the version of OAuth2 the API implements.
+	 * By default, returns {@link OAuth2Version#BEARER} indicating versions of OAuth2 that apply the bearer token scheme.
+	 * Subclasses may override to return another version.
+	 * @see OAuth2Version
+	 */
 	protected OAuth2Version getOAuth2Version() {
-		return OAuth2Version.STANDARD;
+		return OAuth2Version.BEARER;
 	}
 
 }

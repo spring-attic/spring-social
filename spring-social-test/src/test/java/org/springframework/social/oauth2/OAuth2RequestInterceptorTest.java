@@ -31,7 +31,7 @@ public class OAuth2RequestInterceptorTest {
 	
 	@Test
 	public void currentOAuth2SpecInterceptor() throws Exception {
-		OAuth2RequestInterceptor interceptor = new OAuth2RequestInterceptor("access_token", OAuth2Version.STANDARD);
+		OAuth2RequestInterceptor interceptor = new OAuth2RequestInterceptor("access_token", OAuth2Version.BEARER);
 		assertThatInterceptorWritesAuthorizationHeader(interceptor, "BEARER access_token");
 	}
 	
