@@ -72,8 +72,9 @@ public class FriendTemplateTest extends AbstractFacebookApiTest {
 	public void deleteFriendList() {
 		mockServer.expect(requestTo("https://graph.facebook.com/123456"))
 			.andExpect(method(POST))
+			.andExpect(body("method=delete"))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
-			.andRespond(withResponse("method=delete", responseHeaders));
+			.andRespond(withResponse("", responseHeaders));
 		facebook.friendOperations().deleteFriendList("123456");
 		mockServer.verify();
 	}

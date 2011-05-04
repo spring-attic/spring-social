@@ -49,7 +49,6 @@ public class AbstractFacebookApiTest {
 		try {
 			return FB_DATE_FORMAT.parse(dateString);
 		} catch (ParseException e) {
-			System.out.println(e);
 			return null;
 		}
 	}

@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.exc.UnrecognizedPropertyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.facebook.api.CommentOperations;
@@ -32,7 +32,6 @@ import org.springframework.social.facebook.api.EventOperations;
 import org.springframework.social.facebook.api.FacebookApi;
 import org.springframework.social.facebook.api.FeedOperations;
 import org.springframework.social.facebook.api.FriendOperations;
-import org.springframework.social.facebook.api.GraphAPIException;
 import org.springframework.social.facebook.api.GroupOperations;
 import org.springframework.social.facebook.api.ImageType;
 import org.springframework.social.facebook.api.LikeOperations;
@@ -42,10 +41,10 @@ import org.springframework.social.facebook.api.UserOperations;
 import org.springframework.social.facebook.api.impl.json.FacebookModule;
 import org.springframework.social.oauth2.AbstractOAuth2ApiTemplate;
 import org.springframework.social.oauth2.OAuth2Version;
+import org.springframework.social.support.BufferingClientHttpRequestFactory;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -89,6 +88,10 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 		getRestTemplate().getMessageConverters().add(json);
 		registerFacebookJsonModule(getRestTemplate());
 		getRestTemplate().setErrorHandler(new FacebookErrorHandler());
+		
+		// Wrap the request factory with a BufferingClientHttpRequestFactory so that the error handler can do repeat reads on the response.getBody()
+		super.setRequestFactory(new BufferingClientHttpRequestFactory(getRestTemplate().getRequestFactory()));
+		
 		// sub-apis
 		userOperations = new UserTemplate(this);
 		placesOperations = new PlacesTemplate(this);
@@ -99,6 +102,12 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 		eventOperations = new EventTemplate(this);
 		mediaOperations = new MediaTemplate(this);
 		groupOperations = new GroupTemplate(this);
+	}
+	
+	@Override
+	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
+		// Wrap the request factory with a BufferingClientHttpRequestFactory so that the error handler can do repeat reads on the response.getBody()
+		super.setRequestFactory(new BufferingClientHttpRequestFactory(requestFactory));
 	}
 
 	@Override
@@ -144,19 +153,8 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 	
 	// low-level Graph API operations
 	public <T> T fetchObject(String objectId, Class<T> type) {
-		try {
-			URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
-			return getRestTemplate().getForObject(uri, type);
-		} catch (ResourceAccessException e) {
-			// Handle the special case where an unknown alias results in an error returned as a HTTP 200
-			if(e.getCause() instanceof UnrecognizedPropertyException) {
-				UnrecognizedPropertyException jsonException = (UnrecognizedPropertyException) e.getCause();
-				if(jsonException.getUnrecognizedPropertyName().equals("error")) {
-					throw new GraphAPIException("Unknown alias: " + objectId);
-				}
-			}
-			throw new GraphAPIException("Unexpected graph API exception", e.getCause());
-		}
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
+		return getRestTemplate().getForObject(uri, type);
 	}
 		
 	public <T> T fetchConnections(String objectId, String connectionType, Class<T> type, String... fields) {

@@ -95,7 +95,7 @@ public class ErrorHandlingTest extends AbstractFacebookApiTest {
 			facebook.fetchObject("dummyalias", FacebookProfile.class);
 			fail("Expected GraphAPIException when fetching an unknown object alias");
 		} catch (GraphAPIException e) {
-			assertEquals("Unknown alias: dummyalias", e.getMessage());
+			assertEquals("(#803) Some of the aliases you requested do not exist: dummyalias", e.getMessage());
 		}				
 	}
 	
