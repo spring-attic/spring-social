@@ -16,13 +16,11 @@
 package org.springframework.social.facebook.api.impl;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -82,10 +80,6 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 	 */
 	public FacebookTemplate(String accessToken) {
 		super(accessToken);
-		// Facebook returns JSON data with text/javascript content type
-		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
-		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
-		getRestTemplate().getMessageConverters().add(json);
 		registerFacebookJsonModule(getRestTemplate());
 		getRestTemplate().setErrorHandler(new FacebookErrorHandler());
 		
