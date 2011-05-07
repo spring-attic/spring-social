@@ -58,7 +58,7 @@ import org.springframework.util.ClassUtils;
  * @since 3.1
  */
 @SuppressWarnings("deprecation")
-public class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory, DisposableBean {
+class HttpComponentsClientHttpRequestFactory implements ClientHttpRequestFactory, DisposableBean {
 	
 	private static final boolean VERSION_4_1_AVAILABLE = ClassUtils.hasConstructor(ThreadSafeClientConnManager.class, new Class<?>[]{SchemeRegistry.class});
 
