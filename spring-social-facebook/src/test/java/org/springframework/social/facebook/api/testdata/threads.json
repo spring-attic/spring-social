@@ -1,0 +1,29 @@
+{
+    "data":
+    [
+        {
+            "id":"1122334455",
+            "snippet":"Snippet 1",
+            "updated_time":"2011-03-26T14:00:00",
+            "message_count":3,
+            "unread_count":1,
+            "tags":["Maven", "Test"]
+        },
+        {
+            "id":"1122334457",
+            "snippet":"Snippet 2",
+            "updated_time":"2011-04-26T14:00:00",
+            "message_count":3,
+            "unread_count":1,
+            "tags":["Maven", "Test"]
+        },
+        {
+            "id":"1122334467",
+            "snippet":"Snippet 3",
+            "updated_time":"2011-05-26T14:00:00",
+            "message_count":3,
+            "unread_count":1,
+            "tags":[]
+        }
+    ]
+}

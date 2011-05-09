@@ -35,6 +35,7 @@ import org.springframework.social.facebook.api.ImageType;
 import org.springframework.social.facebook.api.LikeOperations;
 import org.springframework.social.facebook.api.MediaOperations;
 import org.springframework.social.facebook.api.PlacesOperations;
+import org.springframework.social.facebook.api.ThreadOperations;
 import org.springframework.social.facebook.api.UserOperations;
 import org.springframework.social.facebook.api.impl.json.FacebookModule;
 import org.springframework.social.oauth2.AbstractOAuth2ApiTemplate;
@@ -72,6 +73,8 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 	private EventOperations eventOperations;
 	
 	private MediaOperations mediaOperations;
+	
+	private ThreadOperations threadOperations;
 
 	/**
 	 * Create a new instance of FacebookTemplate.
@@ -96,6 +99,7 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 		eventOperations = new EventTemplate(this);
 		mediaOperations = new MediaTemplate(this);
 		groupOperations = new GroupTemplate(this);
+		threadOperations = new ThreadTemplate(this);
 	}
 	
 	@Override
@@ -143,6 +147,10 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 	
 	public MediaOperations mediaOperations() {
 		return mediaOperations;
+	}
+	
+	public ThreadOperations threadOperations() {
+		return threadOperations;
 	}
 	
 	// low-level Graph API operations

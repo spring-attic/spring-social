@@ -43,6 +43,7 @@ import org.springframework.social.facebook.api.UserLike;
 import org.springframework.social.facebook.api.Video;
 import org.springframework.social.facebook.api.VideoPost;
 import org.springframework.social.facebook.api.WorkEntry;
+import org.springframework.social.facebook.api.FacebookThread;
 import org.springframework.social.facebook.api.impl.json.PhotoMixin.ImageMixin;
 
 /**
@@ -84,5 +85,6 @@ public class FacebookModule extends SimpleModule {
 		context.setMixInAnnotations(PhotoPost.class, PhotoPostMixin.class);
 		context.setMixInAnnotations(StatusPost.class, StatusPostMixin.class);
 		context.setMixInAnnotations(VideoPost.class, VideoPostMixin.class);
+		context.setMixInAnnotations(FacebookThread.class, ThreadMixin.class);
 	}
 }
