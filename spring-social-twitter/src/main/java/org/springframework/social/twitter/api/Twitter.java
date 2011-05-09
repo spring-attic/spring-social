@@ -22,10 +22,10 @@ package org.springframework.social.twitter.api;
  *
  * @author Craig Walls
  */
-public interface TwitterApi {
+public interface Twitter {
 	
 	/**
-	 * Returns true if the TwitterApi is configured to act on behalf of a user (eg., if it was created with OAuth credentials).
+	 * Returns true if the Twitter API binding is configured to act on behalf of a user (eg., if it was created with OAuth credentials).
 	 */
 	boolean isAuthorizedForUser();
 	

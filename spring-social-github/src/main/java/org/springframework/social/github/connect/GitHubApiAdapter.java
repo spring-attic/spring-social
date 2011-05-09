@@ -19,7 +19,7 @@ import org.springframework.social.connect.ApiAdapter;
 import org.springframework.social.connect.ConnectionValues;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.UserProfileBuilder;
-import org.springframework.social.github.api.GitHubApi;
+import org.springframework.social.github.api.GitHub;
 import org.springframework.social.github.api.GitHubUserProfile;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -27,9 +27,9 @@ import org.springframework.web.client.HttpClientErrorException;
  * Github ApiAdapter implementation.
  * @author Keith Donald
  */
-public class GitHubApiAdapter implements ApiAdapter<GitHubApi> {
+public class GitHubApiAdapter implements ApiAdapter<GitHub> {
 
-	public boolean test(GitHubApi api) {
+	public boolean test(GitHub api) {
 		try {
 			api.getUserProfile();
 			return true;
@@ -39,7 +39,7 @@ public class GitHubApiAdapter implements ApiAdapter<GitHubApi> {
 		}
 	}
 
-	public void setConnectionValues(GitHubApi api, ConnectionValues values) {
+	public void setConnectionValues(GitHub api, ConnectionValues values) {
 		GitHubUserProfile profile = api.getUserProfile();
 		values.setProviderUserId(String.valueOf(profile.getId()));		
 		values.setDisplayName(profile.getUsername());
@@ -47,12 +47,12 @@ public class GitHubApiAdapter implements ApiAdapter<GitHubApi> {
 		values.setImageUrl(profile.getProfileImageUrl());
 	}
 
-	public UserProfile fetchUserProfile(GitHubApi api) {
+	public UserProfile fetchUserProfile(GitHub api) {
 		GitHubUserProfile profile = api.getUserProfile();
 		return new UserProfileBuilder().setName(profile.getName()).setEmail(profile.getEmail()).setUsername(profile.getUsername()).build();
 	}
 	
-	public void updateStatus(GitHubApi api, String message) {
+	public void updateStatus(GitHub api, String message) {
 		// not supported
 	}
 	

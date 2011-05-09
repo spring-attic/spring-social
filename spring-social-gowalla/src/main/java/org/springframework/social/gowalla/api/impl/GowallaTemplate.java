@@ -23,7 +23,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.social.gowalla.api.Checkin;
-import org.springframework.social.gowalla.api.GowallaApi;
+import org.springframework.social.gowalla.api.Gowalla;
 import org.springframework.social.gowalla.api.GowallaProfile;
 import org.springframework.social.oauth2.AbstractOAuth2ApiTemplate;
 import org.springframework.social.oauth2.OAuth2Version;
@@ -34,7 +34,7 @@ import org.springframework.util.MultiValueMap;
  * The central class for interacting with the Gowalla API.
  * @author Craig Walls
  */
-public class GowallaTemplate extends AbstractOAuth2ApiTemplate implements GowallaApi {
+public class GowallaTemplate extends AbstractOAuth2ApiTemplate implements Gowalla {
 
 	/**
 	 * Constructs a GowallaTemplate with the minimal amount of information

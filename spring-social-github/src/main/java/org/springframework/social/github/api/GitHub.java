@@ -27,7 +27,7 @@ import org.springframework.social.github.api.impl.GitHubTemplate;
  * 
  * @author Craig Walls
  */
-public interface GitHubApi {
+public interface GitHub {
 
 	/**
 	 * Retrieves the user's GitHub profile ID.

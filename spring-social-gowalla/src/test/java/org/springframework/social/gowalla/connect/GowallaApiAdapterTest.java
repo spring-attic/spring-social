@@ -20,14 +20,14 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.social.connect.UserProfile;
-import org.springframework.social.gowalla.api.GowallaApi;
+import org.springframework.social.gowalla.api.Gowalla;
 import org.springframework.social.gowalla.api.GowallaProfile;
 
 public class GowallaApiAdapterTest {
 
 	private GowallaApiAdapter apiAdapter = new GowallaApiAdapter();
 	
-	private GowallaApi api = Mockito.mock(GowallaApi.class);
+	private Gowalla api = Mockito.mock(Gowalla.class);
 	
 	@Test
 	public void fetchProfile() {		

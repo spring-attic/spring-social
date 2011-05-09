@@ -20,14 +20,14 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.social.connect.UserProfile;
-import org.springframework.social.tripit.api.TripItApi;
+import org.springframework.social.tripit.api.TripIt;
 import org.springframework.social.tripit.api.TripItProfile;
 
 public class TripItApiAdapterTest {
 
 	private TripItApiAdapter apiAdapter = new TripItApiAdapter();
 	
-	private TripItApi api = Mockito.mock(TripItApi.class);
+	private TripIt api = Mockito.mock(TripIt.class);
 	
 	@Test
 	public void fetchProfile() {

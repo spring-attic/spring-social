@@ -15,7 +15,7 @@
  */
 package org.springframework.social.linkedin.connect;
 
-import org.springframework.social.linkedin.api.LinkedInApi;
+import org.springframework.social.linkedin.api.LinkedIn;
 import org.springframework.social.linkedin.api.impl.LinkedInTemplate;
 import org.springframework.social.oauth1.AbstractOAuth1ServiceProvider;
 import org.springframework.social.oauth1.OAuth1Template;
@@ -24,7 +24,7 @@ import org.springframework.social.oauth1.OAuth1Template;
  * LinkedIn ServiceProvider implementation.
  * @author Keith Donald
  */
-public class LinkedInServiceProvider extends AbstractOAuth1ServiceProvider<LinkedInApi> {
+public class LinkedInServiceProvider extends AbstractOAuth1ServiceProvider<LinkedIn> {
 
 	public LinkedInServiceProvider(String consumerKey, String consumerSecret) {
 		super(consumerKey, consumerSecret, new OAuth1Template(consumerKey, consumerSecret,
@@ -34,7 +34,7 @@ public class LinkedInServiceProvider extends AbstractOAuth1ServiceProvider<Linke
 			"https://api.linkedin.com/uas/oauth/accessToken"));
 	}
 
-	public LinkedInApi getApi(String accessToken, String secret) {
+	public LinkedIn getApi(String accessToken, String secret) {
 		return new LinkedInTemplate(getConsumerKey(), getConsumerSecret(), accessToken, secret);
 	}
 	

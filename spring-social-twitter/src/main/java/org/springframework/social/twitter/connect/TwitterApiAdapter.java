@@ -20,16 +20,16 @@ import org.springframework.social.connect.ApiAdapter;
 import org.springframework.social.connect.ConnectionValues;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.UserProfileBuilder;
-import org.springframework.social.twitter.api.TwitterApi;
+import org.springframework.social.twitter.api.Twitter;
 import org.springframework.social.twitter.api.TwitterProfile;
 
 /**
  * Twitter ApiAdapter implementation.
  * @author Keith Donald
  */
-public class TwitterApiAdapter implements ApiAdapter<TwitterApi> {
+public class TwitterApiAdapter implements ApiAdapter<Twitter> {
 
-	public boolean test(TwitterApi api) {
+	public boolean test(Twitter api) {
 		try {
 			api.userOperations().getUserProfile();
 			return true;
@@ -38,7 +38,7 @@ public class TwitterApiAdapter implements ApiAdapter<TwitterApi> {
 		}
 	}
 
-	public void setConnectionValues(TwitterApi api, ConnectionValues values) {
+	public void setConnectionValues(Twitter api, ConnectionValues values) {
 		TwitterProfile profile = api.userOperations().getUserProfile();
 		values.setProviderUserId(Long.toString(profile.getId()));
 		values.setDisplayName("@" + profile.getScreenName());
@@ -46,12 +46,12 @@ public class TwitterApiAdapter implements ApiAdapter<TwitterApi> {
 		values.setImageUrl(profile.getProfileImageUrl());
 	}
 
-	public UserProfile fetchUserProfile(TwitterApi api) {
+	public UserProfile fetchUserProfile(Twitter api) {
 		TwitterProfile profile = api.userOperations().getUserProfile();
 		return new UserProfileBuilder().setName(profile.getName()).setUsername(profile.getScreenName()).build();
 	}
 	
-	public void updateStatus(TwitterApi api, String message) {
+	public void updateStatus(Twitter api, String message) {
 		api.timelineOperations().updateStatus(message);	
 	}
 	

@@ -15,7 +15,7 @@
 					<para>Create a source project for the client code e.g. <code>spring-social-twitter</code>.</para>
 				</listitem>
 				<listitem>
-					<para>Develop or integrate a Java binding to the provider's API e.g. <code>TwitterApi</code>.</para>
+					<para>Develop or integrate a Java binding to the provider's API e.g. <code>Twitter</code>.</para>
 				</listitem>
 				<listitem>
 					<para>Create a ServiceProvider model that allows users to authorize with the remote provider and obtain authorized  API instances e.g. <code>TwitterServiceProvider</code>.</para>
@@ -116,7 +116,7 @@
 				</mediaobject>
 			</para>
 			<para>
-				Here, the central service API type, TwitterApi, is located in the api package along with its supporting operations types and data transfer object types.
+				Here, the central service API type, Twitter, is located in the api package along with its supporting operations types and data transfer object types.
 				The primary implementation of that interface, TwitterTemplate, is located in the api.impl package (along with other package-private impl types have that been excluded from this view).
 				Finally, the connect package contains the implementations of various connect SPIs that enable connections to Twitter to be established and persisted.
 			</para>
@@ -140,7 +140,7 @@
 						<para>
 							<emphasis>Favor separating the API binding interface from the implementation.</emphasis>
 							This is illustrated in the spring-social-twitter example in the previous section.
-							There, "TwitterApi" is the central API binding type and it is declared in the org.springframework.social.twitter.api package with other public types.
+							There, "Twitter" is the central API binding type and it is declared in the org.springframework.social.twitter.api package with other public types.
 							"TwitterTemplate" is the primary implementation of this interface and is located in the org.springframework.social.twitter.api.impl subpackage along with other package-private implementation types.
 						</para>
 					</listitem>
@@ -149,9 +149,9 @@
 							<emphasis>Favor organizing the API binding hierarchically by RESTful resource.</emphasis>
 							REST-based APIs typically expose access to a number of resources in an hierarchical manner.
 							For example, Twitter's API provides access to "status timelines", "searches", "lists", "direct messages", "friends", and "users".
-							Rather than add all operations across these resources to a single flat "TwitterApi" interface, the TwitterApi interface is organized hierarchically:
+							Rather than add all operations across these resources to a single flat "Twitter" interface, the Twitter interface is organized hierarchically:
 							<programlisting language="java"><![CDATA[
-public interface TwitterApi {
+public interface Twitter {
 	
     DirectMessageOperations directMessageOperations();
 
@@ -358,7 +358,7 @@ private Resource jsonResource(String filename) {
 				See <code>org.springframework.social.facebook.connect.FacebookServiceProvider</code> as an example OAuth2ServiceProvider:
 			</para>
 			<programlisting language="java"><![CDATA[
-public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<FacebookApi> {
+public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<Facebook> {
 
     public FacebookServiceProvider(String clientId, String clientSecret) {
         super(new OAuth2Template(clientId, clientSecret,
@@ -366,7 +366,7 @@ public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider
            "https://graph.facebook.com/oauth/access_token"));
     }
 
-    public FacebookApi geteApi(String accessToken) {
+    public Facebook geteApi(String accessToken) {
         return new FacebookTemplate(accessToken);
     }
 
@@ -392,7 +392,7 @@ public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider
 				See <code>org.springframework.social.twitter.connect.TwitterServiceProvider</code> as an example OAuth1ServiceProvider:
 			</para>
 			<programlisting language="java"><![CDATA[
-public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<TwitterApi> {
+public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<Twitter> {
 
     public TwitterServiceProvider(String consumerKey, String consumerSecret) {
         super(consumerKey, consumerSecret, new OAuth1Template(consumerKey, consumerSecret, 
@@ -401,7 +401,7 @@ public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<
             "https://twitter.com/oauth/access_token"));
     }
 
-    public TwitterApi getApi(String accessToken, String secret) {
+    public Twitter getApi(String accessToken, String secret) {
         return new TwitterTemplate(getConsumerKey(), getConsumerSecret(), accessToken, secret);
     }
 
@@ -443,9 +443,9 @@ public interface ApiAdapter<A> {
 				Consider <code>org.springframework.social.twitter.connect.TwitterApiAdapter</code> as an example implementation:
 			</para>
 			<programlisting language="java"><![CDATA[
-public class TwitterApiAdapter implements ApiAdapter<TwitterApi> {
+public class TwitterApiAdapter implements ApiAdapter<Twitter> {
 
-    public boolean test(TwitterApi api) {
+    public boolean test(Twitter api) {
         try {
             api.userOperations().getUserProfile();
             return true;
@@ -454,7 +454,7 @@ public class TwitterApiAdapter implements ApiAdapter<TwitterApi> {
         }
     }
 
-    public void setConnectionValues(TwitterApi api, ConnectionValues values) {
+    public void setConnectionValues(Twitter api, ConnectionValues values) {
         TwitterProfile profile = api.userOperations().getUserProfile();
         values.setProviderUserId(Long.toString(profile.getId()));
         values.setDisplayName("@" + profile.getScreenName());
@@ -462,12 +462,12 @@ public class TwitterApiAdapter implements ApiAdapter<TwitterApi> {
         values.setImageUrl(profile.getProfileImageUrl());
     }
     
-    public UserProfile fetchUserProfile(TwitterApi api) {
+    public UserProfile fetchUserProfile(Twitter api) {
         TwitterProfile profile = api.userOperations().getUserProfile();
         return new UserProfileBuilder().setName(profile.getName()).setUsername(profile.getScreenName()).build();
     }
     
-    public void updateStatus(TwitterApi api, String message) {
+    public void updateStatus(Twitter api, String message) {
         api.timelineOperations().updateStatus(message);	
     }
 	
@@ -506,7 +506,7 @@ public class TwitterApiAdapter implements ApiAdapter<TwitterApi> {
 				See <code>org.springframework.social.facebook.connect.FacebookConnectionFactory</code> as an example OAuth2ConnectionFactory:
 			</para>
 			<programlisting language="java"><![CDATA[
-public class FacebookConnectionFactory extends OAuth2ConnectionFactory<FacebookApi> {
+public class FacebookConnectionFactory extends OAuth2ConnectionFactory<Facebook> {
     public FacebookConnectionFactory(String clientId, String clientSecret) {
         super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookApiAdapter());
     }
@@ -524,7 +524,7 @@ public class FacebookConnectionFactory extends OAuth2ConnectionFactory<FacebookA
 				See <code>org.springframework.social.twitter.connect.TwitterConnectionFactory</code> as an example OAuth1ConnectionFactory:
 			</para>
 			<programlisting language="java"><![CDATA[
-public class TwitterConnectionFactory extends OAuth1ConnectionFactory<FacebookApi> {
+public class TwitterConnectionFactory extends OAuth1ConnectionFactory<Facebook> {
     public TwitterConnectionFactory(String consumerKey, String consumerSecret) {
         super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterApiAdapter());
     }

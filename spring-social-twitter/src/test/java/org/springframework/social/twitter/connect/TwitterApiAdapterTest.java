@@ -22,7 +22,7 @@ import java.util.Date;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.social.connect.UserProfile;
-import org.springframework.social.twitter.api.TwitterApi;
+import org.springframework.social.twitter.api.Twitter;
 import org.springframework.social.twitter.api.TwitterProfile;
 import org.springframework.social.twitter.api.UserOperations;
 
@@ -30,7 +30,7 @@ public class TwitterApiAdapterTest {
 
 	private TwitterApiAdapter apiAdapter = new TwitterApiAdapter();
 	
-	private TwitterApi api = Mockito.mock(TwitterApi.class);
+	private Twitter api = Mockito.mock(Twitter.class);
 	
 	@Test
 	public void fetchProfile() {

@@ -27,7 +27,7 @@ import org.springframework.social.twitter.api.FriendOperations;
 import org.springframework.social.twitter.api.ListOperations;
 import org.springframework.social.twitter.api.SearchOperations;
 import org.springframework.social.twitter.api.TimelineOperations;
-import org.springframework.social.twitter.api.TwitterApi;
+import org.springframework.social.twitter.api.Twitter;
 import org.springframework.social.twitter.api.UserOperations;
 
 /**
@@ -47,7 +47,7 @@ import org.springframework.social.twitter.api.UserOperations;
  * </p>
  * @author Craig Walls
  */
-public class TwitterTemplate extends AbstractOAuth1ApiTemplate implements TwitterApi {
+public class TwitterTemplate extends AbstractOAuth1ApiTemplate implements Twitter {
 	
 	private TimelineOperations timelineOperations;
 

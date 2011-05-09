@@ -22,7 +22,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.oauth1.AbstractOAuth1ApiTemplate;
 import org.springframework.social.tripit.api.Trip;
-import org.springframework.social.tripit.api.TripItApi;
+import org.springframework.social.tripit.api.TripIt;
 import org.springframework.social.tripit.api.TripItProfile;
 import org.springframework.web.client.RestTemplate;
 
@@ -35,7 +35,7 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class TripItTemplate extends AbstractOAuth1ApiTemplate implements TripItApi {
+public class TripItTemplate extends AbstractOAuth1ApiTemplate implements TripIt {
 
 	/**
 	 * Constructs a TripItTemplate with the minimal amount of information required to sign requests with an OAuth <code>Authorization</code> header.

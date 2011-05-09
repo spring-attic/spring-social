@@ -16,13 +16,13 @@
 package org.springframework.social.gowalla.connect;
 
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
-import org.springframework.social.gowalla.api.GowallaApi;
+import org.springframework.social.gowalla.api.Gowalla;
 
 /**
  * Gowalla ConnectionFactory implementation.
  * @author Keith Donald
  */
-public class GowallaConnectionFactory extends OAuth2ConnectionFactory<GowallaApi> {
+public class GowallaConnectionFactory extends OAuth2ConnectionFactory<Gowalla> {
 
 	public GowallaConnectionFactory(String clientId, String clientSecret) {
 		super("gowalla", new GowallaServiceProvider(clientId, clientSecret), new GowallaApiAdapter());

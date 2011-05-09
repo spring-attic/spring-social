@@ -23,7 +23,7 @@ import org.springframework.social.facebook.api.impl.FacebookTemplate;
  * Implemented by {@link FacebookTemplate}.
  * @author Craig Walls
  */
-public interface FacebookApi extends GraphApi {
+public interface Facebook extends GraphApi {
 	
 	/**
 	 * API for reading and posting comments.

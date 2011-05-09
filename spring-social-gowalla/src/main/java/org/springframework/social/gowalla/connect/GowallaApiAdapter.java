@@ -19,7 +19,7 @@ import org.springframework.social.connect.ApiAdapter;
 import org.springframework.social.connect.ConnectionValues;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.UserProfileBuilder;
-import org.springframework.social.gowalla.api.GowallaApi;
+import org.springframework.social.gowalla.api.Gowalla;
 import org.springframework.social.gowalla.api.GowallaProfile;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -27,9 +27,9 @@ import org.springframework.web.client.HttpClientErrorException;
  * Gowalla ApiAdapter implementation.
  * @author Keith Donald
  */
-public class GowallaApiAdapter implements ApiAdapter<GowallaApi> {
+public class GowallaApiAdapter implements ApiAdapter<Gowalla> {
 
-	public boolean test(GowallaApi api) {
+	public boolean test(Gowalla api) {
 		try {
 			api.getUserProfile();
 			return true;
@@ -39,7 +39,7 @@ public class GowallaApiAdapter implements ApiAdapter<GowallaApi> {
 		}
 	}
 
-	public void setConnectionValues(GowallaApi api, ConnectionValues values) {
+	public void setConnectionValues(Gowalla api, ConnectionValues values) {
 		GowallaProfile profile = api.getUserProfile();
 		values.setProviderUserId(profile.getId());
 		values.setDisplayName(profile.getFirstName() + " " + profile.getLastName());
@@ -47,12 +47,12 @@ public class GowallaApiAdapter implements ApiAdapter<GowallaApi> {
 		values.setImageUrl(profile.getProfileImageUrl());
 	}
 
-	public UserProfile fetchUserProfile(GowallaApi api) {
+	public UserProfile fetchUserProfile(Gowalla api) {
 		GowallaProfile profile = api.getUserProfile();
 		return new UserProfileBuilder().setName(profile.getFirstName() + " " + profile.getLastName()).setUsername(profile.getId()).build();
 	}
 	
-	public void updateStatus(GowallaApi api, String message) {
+	public void updateStatus(Gowalla api, String message) {
 		// not supported
 	}
 

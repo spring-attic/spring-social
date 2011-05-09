@@ -20,7 +20,7 @@ import java.util.List;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
-import org.springframework.social.linkedin.api.LinkedInApi;
+import org.springframework.social.linkedin.api.LinkedIn;
 import org.springframework.social.linkedin.api.LinkedInConnections;
 import org.springframework.social.linkedin.api.LinkedInProfile;
 import org.springframework.social.oauth1.AbstractOAuth1ApiTemplate;
@@ -34,7 +34,7 @@ import org.springframework.social.oauth1.AbstractOAuth1ApiTemplate;
  * </p>
  * @author Craig Walls
  */
-public class LinkedInTemplate extends AbstractOAuth1ApiTemplate implements LinkedInApi {
+public class LinkedInTemplate extends AbstractOAuth1ApiTemplate implements LinkedIn {
 
 	/**
 	 * Creates a new LinkedInTemplate given the minimal amount of information needed to sign requests with OAuth 1 credentials.

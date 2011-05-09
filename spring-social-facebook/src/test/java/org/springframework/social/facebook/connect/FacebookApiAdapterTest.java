@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.social.connect.UserProfile;
-import org.springframework.social.facebook.api.FacebookApi;
+import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.FacebookProfile;
 import org.springframework.social.facebook.api.UserOperations;
 
@@ -28,7 +28,7 @@ public class FacebookApiAdapterTest {
 
 	private FacebookApiAdapter apiAdapter = new FacebookApiAdapter();
 	
-	private FacebookApi api = Mockito.mock(FacebookApi.class);
+	private Facebook api = Mockito.mock(Facebook.class);
 	
 	@Test
 	public void fetchProfile() {		

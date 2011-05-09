@@ -13,28 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.tripit.api;
+package org.springframework.social.linkedin.api;
 
 import java.util.List;
 
-import org.springframework.social.tripit.api.impl.TripItTemplate;
+import org.springframework.social.linkedin.api.impl.LinkedInTemplate;
 
 /**
- * Interface specifying a basic set of operations for interacting with TripIt.
- * Implemented by {@link TripItTemplate}.
+ * <p>
+ * Interface specifying a basic set of operations for interacting with LinkedIn.
+ * Implemented by {@link LinkedInTemplate}.
+ * </p>
  * 
+ * <p>
  * Many of the methods contained in this interface require OAuth authentication
- * with TripIt. When a method's description speaks of the "current user", it is
- * referring to the user for whom the access token has been issued.
+ * with LinkedIn. When a method's description speaks of the "current user", it
+ * is referring to the user for whom the access token has been issued.
+ * </p>
  * 
  * @author Craig Walls
  */
-public interface TripItApi {
-
+public interface LinkedIn {
 	/**
-	 * Retrieves the user's TripIt profile ID.
+	 * Retrieves the user's LinkedIn profile ID.
 	 * 
-	 * @return the user's TripIt profile ID.
+	 * @return the user's LinkedIn profile ID.
 	 */
 	String getProfileId();
 
@@ -46,17 +49,16 @@ public interface TripItApi {
 	String getProfileUrl();
 
 	/**
-	 * Retrieves the current user's TripIt profile details.
+	 * Retrieves the current user's profile details.
 	 * 
 	 * @return the user's profile data.
 	 */
-	TripItProfile getUserProfile();
+	LinkedInProfile getUserProfile();
 
 	/**
-	 * Retrieves a list of upcoming trips for the current user.
+	 * Retrieves the 1st-degree connections from the current user's network.
 	 * 
-	 * @return the user's upcoming trips.
+	 * @return the user's connections
 	 */
-	List<Trip> getUpcomingTrips();
-
+	List<LinkedInProfile> getConnections();
 }

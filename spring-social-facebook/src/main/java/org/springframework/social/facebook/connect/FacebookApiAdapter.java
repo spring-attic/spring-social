@@ -20,16 +20,16 @@ import org.springframework.social.connect.ApiAdapter;
 import org.springframework.social.connect.ConnectionValues;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.UserProfileBuilder;
-import org.springframework.social.facebook.api.FacebookApi;
+import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.FacebookProfile;
 
 /**
  * Facebook API adapter implementation.
  * @author Keith Donald
  */
-public class FacebookApiAdapter implements ApiAdapter<FacebookApi> {
+public class FacebookApiAdapter implements ApiAdapter<Facebook> {
 
-	public boolean test(FacebookApi api) {
+	public boolean test(Facebook api) {
 		try {
 			api.userOperations().getUserProfile();
 			return true;
@@ -38,7 +38,7 @@ public class FacebookApiAdapter implements ApiAdapter<FacebookApi> {
 		}
 	}
 
-	public void setConnectionValues(FacebookApi api, ConnectionValues values) {
+	public void setConnectionValues(Facebook api, ConnectionValues values) {
 		FacebookProfile profile = api.userOperations().getUserProfile();
 		values.setProviderUserId(profile.getId());
 		values.setDisplayName(profile.getUsername());
@@ -46,13 +46,13 @@ public class FacebookApiAdapter implements ApiAdapter<FacebookApi> {
 		values.setImageUrl("http://graph.facebook.com/" + profile.getId() + "/picture");
 	}
 
-	public UserProfile fetchUserProfile(FacebookApi api) {
+	public UserProfile fetchUserProfile(Facebook api) {
 		FacebookProfile profile = api.userOperations().getUserProfile();
 		return new UserProfileBuilder().setName(profile.getName()).setFirstName(profile.getFirstName()).setLastName(profile.getLastName()).
 			setEmail(profile.getEmail()).setUsername(profile.getUsername()).build();
 	}
 	
-	public void updateStatus(FacebookApi api, String message) {
+	public void updateStatus(Facebook api, String message) {
 		api.feedOperations().updateStatus(message);
 	}
 

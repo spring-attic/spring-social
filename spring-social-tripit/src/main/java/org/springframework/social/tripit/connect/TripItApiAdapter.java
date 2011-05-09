@@ -19,7 +19,7 @@ import org.springframework.social.connect.ApiAdapter;
 import org.springframework.social.connect.ConnectionValues;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.UserProfileBuilder;
-import org.springframework.social.tripit.api.TripItApi;
+import org.springframework.social.tripit.api.TripIt;
 import org.springframework.social.tripit.api.TripItProfile;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -27,9 +27,9 @@ import org.springframework.web.client.HttpClientErrorException;
  * TripIt ApiAdapter implementation.
  * @author Keith Donald
  */
-public class TripItApiAdapter implements ApiAdapter<TripItApi> {
+public class TripItApiAdapter implements ApiAdapter<TripIt> {
 
-	public boolean test(TripItApi api) {
+	public boolean test(TripIt api) {
 		try {
 			api.getUserProfile();
 			return true;
@@ -39,7 +39,7 @@ public class TripItApiAdapter implements ApiAdapter<TripItApi> {
 		}
 	}
 
-	public void setConnectionValues(TripItApi api, ConnectionValues values) {
+	public void setConnectionValues(TripIt api, ConnectionValues values) {
 		TripItProfile profile = api.getUserProfile();
 		values.setProviderUserId(profile.getId());
 		values.setDisplayName(profile.getScreenName());
@@ -47,12 +47,12 @@ public class TripItApiAdapter implements ApiAdapter<TripItApi> {
 		values.setImageUrl(profile.getProfileImageUrl());
 	}
 
-	public UserProfile fetchUserProfile(TripItApi api) {
+	public UserProfile fetchUserProfile(TripIt api) {
 		TripItProfile profile = api.getUserProfile();
 		return new UserProfileBuilder().setName(profile.getPublicDisplayName()).setEmail(profile.getEmailAddress()).setUsername(profile.getScreenName()).build();
 	}
 	
-	public void updateStatus(TripItApi api, String message) {
+	public void updateStatus(TripIt api, String message) {
 		// not supported
 	}
 

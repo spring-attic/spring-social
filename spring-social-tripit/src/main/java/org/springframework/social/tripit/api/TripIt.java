@@ -13,28 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.gowalla.api;
+package org.springframework.social.tripit.api;
 
 import java.util.List;
 
-import org.springframework.social.gowalla.api.impl.GowallaTemplate;
+import org.springframework.social.tripit.api.impl.TripItTemplate;
 
 /**
- * Interface specifying a basic set of operations for interacting with Gowalla.
- * Implemented by {@link GowallaTemplate}.
+ * Interface specifying a basic set of operations for interacting with TripIt.
+ * Implemented by {@link TripItTemplate}.
  * 
  * Many of the methods contained in this interface require OAuth authentication
- * with Gowalla. When a method's description speaks of the "current user", it is
+ * with TripIt. When a method's description speaks of the "current user", it is
  * referring to the user for whom the access token has been issued.
  * 
  * @author Craig Walls
  */
-public interface GowallaApi {
+public interface TripIt {
 
 	/**
-	 * Retrieves the user's Gowalla profile ID.
+	 * Retrieves the user's TripIt profile ID.
 	 * 
-	 * @return the user's Gowalla profile ID.
+	 * @return the user's TripIt profile ID.
 	 */
 	String getProfileId();
 
@@ -46,26 +46,17 @@ public interface GowallaApi {
 	String getProfileUrl();
 
 	/**
-	 * Gets the authenticating user's profile data.
+	 * Retrieves the current user's TripIt profile details.
 	 * 
-	 * @return profile information for the authenticating user.
+	 * @return the user's profile data.
 	 */
-	GowallaProfile getUserProfile();
+	TripItProfile getUserProfile();
 
 	/**
-	 * Gets a specific user's profile data.
+	 * Retrieves a list of upcoming trips for the current user.
 	 * 
-	 * @param userId
-	 *            the user ID to retrieve profile data for
-	 * @return profile information for the specified user.
+	 * @return the user's upcoming trips.
 	 */
-	GowallaProfile getUserProfile(String userId);
+	List<Trip> getUpcomingTrips();
 
-	/**
-	 * Retrieves a list of the spots that the user has checked into most.
-	 * 
-	 * @param userId
-	 * @return a list of {@link Checkin}s that the user has visited the most.
-	 */
-	List<Checkin> getTopCheckins(String userId);
 }

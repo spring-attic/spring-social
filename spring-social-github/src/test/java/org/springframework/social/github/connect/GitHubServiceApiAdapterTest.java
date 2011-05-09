@@ -20,14 +20,14 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.social.connect.UserProfile;
-import org.springframework.social.github.api.GitHubApi;
+import org.springframework.social.github.api.GitHub;
 import org.springframework.social.github.api.GitHubUserProfile;
 
 public class GitHubServiceApiAdapterTest {
 
 	private GitHubApiAdapter apiAdapter = new GitHubApiAdapter();
 	
-	private GitHubApi serviceApi = Mockito.mock(GitHubApi.class);
+	private GitHub serviceApi = Mockito.mock(GitHub.class);
 	
 	@Test
 	public void fetchProfile() {		

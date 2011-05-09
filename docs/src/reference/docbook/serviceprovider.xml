@@ -10,7 +10,7 @@
 		To illustrate, consider Facebook as an example ServiceProvider.
 		Suppose your application, AcmeApp, allows users to share content with their Facebook friends.
 		To support this, a connection needs to be established between a user's AcmeApp account and her Facebook account.
-		Once established, a FacebookApi instance can be obtained and used to post content to the user's wall.
+		Once established, a Facebook instance can be obtained and used to post content to the user's wall.
 		Spring Social's 'Connect' framework provides a clean API for managing service provider connections such as this.
 	</para>
 	<section id="service-providers-base-api">
@@ -72,15 +72,15 @@ public interface Connection<A> {
 		<para>
 			A connection's parameterized type &lt;A&gt; represents the Java binding to the ServiceProvider's native API.
 			An instance of this API binding can be obtained by calling <code>getApi()</code>.
-			As an example, a Facebook connection instance would be parameterized as Connection&lt;FacebookApi&gt;.
-			<code>getApi()</code> would return a FacebookApi instance that provides a Java binding to Facebook's graph API for a specific Facebook user.
+			As an example, a Facebook connection instance would be parameterized as Connection&lt;Facebook&gt;.
+			<code>getApi()</code> would return a Facebook instance that provides a Java binding to Facebook's graph API for a specific Facebook user.
 		</para>
 		<para>
 			Finally, the internal state of a connection can be captured for transfer between layers of your application by calling <code>createData()</code>.
 			This could be used to persist the connection in a database, or serialize it over the network.
 		</para>
 		<para>
-			To put this model into action, suppose we have a reference to a Connection&lt;TwitterApi&gt; instance.
+			To put this model into action, suppose we have a reference to a Connection&lt;Twitter&gt; instance.
 			Suppose the connected user is the Twitter user with screen name 'kdonald'.
 			<orderedlist>
 				<listitem><para>Connection#getKey() would return ('twitter', '14718006') where '14718006' is @kdonald's Twitter-assigned user id that never changes.</para></listitem>
@@ -98,7 +98,7 @@ public interface Connection<A> {
 				<listitem><para>Connection#refresh() would not do anything since connections to Twitter do not expire.</para></listitem>
 				<listitem><para>Connection#fetchUserProfile() would make a remote API call to Twitter to get @kdonald's profile data and normalize it into a UserProfile model.</para></listitem>
 				<listitem><para>Connection#updateStatus(String) would post a status update to @kdonald's timeline.</para></listitem>
-				<listitem><para>Connection#getApi() would return a TwitterApi giving the client application access to the full capabilities of Twitter's native API.</para></listitem>
+				<listitem><para>Connection#getApi() would return a Twitter giving the client application access to the full capabilities of Twitter's native API.</para></listitem>
 				<listitem><para>Connection#createData() would return ConnectionData that could be serialized and used to restore the connection at a later time.</para></listitem>
 			</orderedlist>
 		</para>
@@ -212,7 +212,7 @@ String authorizeUrl = oauth2Operations.buildAuthorizeUrl(GrantType.AUTHORIZATION
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the authorizationCode parameter:
 AccessGrant accessGrant = oauth2Operations.exchangeForAccess(authorizationCode, "callbackUrl");
-Connection<FacebookApi> connection = connectionFactory.createConnection(accessGrant);]]>
+Connection<Facebook> connection = connectionFactory.createConnection(accessGrant);]]>
 				</programlisting>
 			</para>
 			<para>
@@ -226,7 +226,7 @@ String authorizeUrl = oauth2Operations.buildAuthorizeUrl(GrantType.IMPLICIT_GRAN
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the access_token parameter:
 AccessGrant accessGrant = new AccessGrant(accessToken);
-Connection<FacebookApi> connection = connectionFactory.createConnection(accessGrant);]]>
+Connection<Facebook> connection = connectionFactory.createConnection(accessGrant);]]>
 				</programlisting>
 			</para>
 		</section>
@@ -334,7 +334,7 @@ String authorizeUrl = oauth1Operations.buildAuthorizeUrl(requestToken, OAuth1Par
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the oauth_token and oauth_verifier parameters:
 OAuthToken accessToken = oauth1Operations.exchangeForAccessToken(new AuthorizedRequestToken(oauthToken, oauthVerifier));
-Connection<TwitterApi> connection = connectionFactory.createConnection(accessToken);]]>
+Connection<Twitter> connection = connectionFactory.createConnection(accessToken);]]>
 				</programlisting>
 			</para>
 		</section>
@@ -373,7 +373,7 @@ public interface ConnectionFactoryLocator {
 ConnectionFactory<?> connectionFactory = locator.getConnectionFactory("facebook");
 
 // typed lookup by service api type
-ConnectionFactory<FacebookApi> connectionFactory = locator.getConnectionFactory(FacebookApi.class);]]>	
+ConnectionFactory<Facebook> connectionFactory = locator.getConnectionFactory(Facebook.class);]]>	
 			</programlisting>			
 		</section>
 	</section>
@@ -462,7 +462,7 @@ UsersConnectionRepository usersConnectionRepository =
 ConnectionRepository repository = usersConnectionRepository.createConnectionRepository("kdonald");
 
 // find kdonald's primary Facebook connection
-Connection<FacebookApi> connection = repository.findPrimaryConnectionToApi(FacebookApi.class);]]>
+Connection<Facebook> connection = repository.findPrimaryConnectionToApi(Facebook.class);]]>
 			</programlisting>
 		</section>
 	</section>
