@@ -211,7 +211,7 @@ project('spring-social-twitter') {
 project('spring-social-web') {
     description = 'Spring Web Integration'
     dependencies {
-        compile ("javax.inject:javax.inject:$javaxInjectVersion") { optional = true }
+        compile ("javax.inject:javax.inject:$javaxInjectVersion")
         compile "org.springframework:spring-web:$springVersion"
         compile project(':spring-social-core')
     }
