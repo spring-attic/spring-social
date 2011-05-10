@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
@@ -102,6 +103,14 @@ public class OAuth2Template implements OAuth2Operations {
 			params.putAll(additionalParameters);
 		}
 		return postForAccessGrant(accessTokenUrl, params);
+	}
+
+	/**
+	 * Set the request factory on the underlying RestTemplate.
+	 * @param requestFactory
+	 */
+	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
+		this.restTemplate.setRequestFactory(requestFactory);
 	}
 
 	// subclassing hooks
