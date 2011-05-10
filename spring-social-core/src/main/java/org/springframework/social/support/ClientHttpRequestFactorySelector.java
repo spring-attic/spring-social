@@ -15,6 +15,13 @@
  */
 package org.springframework.social.support;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.util.Properties;
+
+import org.apache.http.HttpHost;
+import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.ClassUtils;
@@ -28,10 +35,25 @@ import org.springframework.util.ClassUtils;
 public class ClientHttpRequestFactorySelector {
 	
 	public static ClientHttpRequestFactory getRequestFactory() {
+		Properties properties = System.getProperties();
+		String proxyHost = properties.getProperty("http.proxyHost");
+		int proxyPort = properties.containsKey("http.proxyPort") ? Integer.valueOf(properties.getProperty("http.proxyPort")) : 80;
+		
 		if (httpComponentsAvailable) {
-			return new HttpComponentsClientHttpRequestFactory();
+			HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+			if(proxyHost != null) {
+				DefaultHttpClient httpClient = new DefaultHttpClient();
+				HttpHost proxy = new HttpHost(proxyHost, proxyPort);
+				httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+				requestFactory.setHttpClient(httpClient);
+			}			
+			return requestFactory;
 		} else {
-			return new SimpleClientHttpRequestFactory();
+			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+			if(proxyHost != null) {
+				requestFactory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort)));
+			}
+			return requestFactory;
 		}
 	}
 	
