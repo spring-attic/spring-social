@@ -57,6 +57,15 @@ public class ClientHttpRequestFactorySelector {
 		}
 	}
 	
+	/**
+	 * Decorates a request factory to buffer responses so that the responses may be repeatedly read.
+	 * @param requestFactory the request factory to be decorated for buffering
+	 * @return a buffering request factory
+	 */
+	public static ClientHttpRequestFactory decorateForBuffering(ClientHttpRequestFactory requestFactory) {
+		return new BufferingClientHttpRequestFactory(requestFactory);
+	}
+	
 	private static boolean httpComponentsAvailable = ClassUtils.isPresent("org.apache.http.client.HttpClient", ClientHttpRequestFactory.class.getClassLoader());
 
 }
