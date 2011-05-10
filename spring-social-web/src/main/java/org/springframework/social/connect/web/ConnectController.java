@@ -47,6 +47,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * Generic UI controller for managing the account-to-service-provider connection flow.
@@ -125,17 +126,17 @@ public class ConnectController  {
 	 * For OAuth2, redirects the user to the provider's site for authorization.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
-	public String connect(@PathVariable String providerId, WebRequest request) {
+	public RedirectView connect(@PathVariable String providerId, WebRequest request) {
 		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
 		preConnect(connectionFactory, request);
 		if (connectionFactory instanceof OAuth1ConnectionFactory) {
 			OAuth1Operations oauth1Ops = ((OAuth1ConnectionFactory<?>) connectionFactory).getOAuthOperations();
 			OAuthToken requestToken = oauth1Ops.fetchRequestToken(callbackUrl(providerId), null);
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
-			return "redirect:" + oauth1Ops.buildAuthorizeUrl(requestToken.getValue(), oauth1Ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(callbackUrl(providerId)) : OAuth1Parameters.NONE);
+			return new RedirectView(oauth1Ops.buildAuthorizeUrl(requestToken.getValue(), oauth1Ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(callbackUrl(providerId)) : OAuth1Parameters.NONE));
 		} else if (connectionFactory instanceof OAuth2ConnectionFactory) {
 			String scope = request.getParameter("scope");
-			return "redirect:" + ((OAuth2ConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId), scope));
+			return new RedirectView(((OAuth2ConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId), scope)));
 		} else {
 			return handleConnectToCustomConnectionFactory(connectionFactory, request);
 		}
@@ -148,13 +149,13 @@ public class ConnectController  {
 	 * Removes the request token from the session since it is no longer valid after the connection is established.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="oauth_token")
-	public String oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier", required=false) String verifier, WebRequest request) {
+	public RedirectView oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier", required=false) String verifier, WebRequest request) {
 		OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		OAuthToken accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier), null);
 		Connection<?> connection = connectionFactory.createConnection(accessToken);
 		getConnectionRepository().addConnection(connection);	
 		postConnect(connectionFactory, connection, request);
-		return redirectToProviderConnect(providerId);
+		return new RedirectView("/connect/" + providerId, true);
 	}
 
 	/**
@@ -163,13 +164,13 @@ public class ConnectController  {
 	 * On authorization verification, connects the user's local account to the account they hold at the service provider.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
-	public String oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
+	public RedirectView oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
 		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId), null);
 		Connection<?> connection = connectionFactory.createConnection(accessGrant);
 		getConnectionRepository().addConnection(connection);
 		postConnect(connectionFactory, connection, request);
-		return redirectToProviderConnect(providerId);
+		return new RedirectView("/connect/" + providerId, true);
 	}
 
 	/**
@@ -177,9 +178,9 @@ public class ConnectController  {
 	 * The user has decided they no longer wish to use the service provider from this application.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.DELETE)
-	public String removeConnections(@PathVariable String providerId) {
+	public RedirectView removeConnections(@PathVariable String providerId) {
 		getConnectionRepository().removeConnectionsToProvider(providerId);
-		return redirectToProviderConnect(providerId);
+		return new RedirectView("/connect/" + providerId, true);
 	}
 
 	/**
@@ -187,9 +188,9 @@ public class ConnectController  {
 	 * The user has decided they no longer wish to use the service provider account from this application.
 	 */
 	@RequestMapping(value="/{providerId}/{providerUserId}", method=RequestMethod.DELETE)
-	public String removeConnections(@PathVariable String providerId, @PathVariable String providerUserId) {
+	public RedirectView removeConnections(@PathVariable String providerId, @PathVariable String providerUserId) {
 		getConnectionRepository().removeConnection(new ConnectionKey(providerId, providerUserId));
-		return redirectToProviderConnect(providerId);
+		return new RedirectView("/connect/" + providerId, true);
 	}
 
 	// subclassing hooks
@@ -198,7 +199,7 @@ public class ConnectController  {
 	 * Hook method subclasses may override to create connections to providers of custom types other than OAuth1 or OAuth2.
 	 * Default implementation throws an {@link IllegalStateException} indicating the custom {@link ConnectionFactory} is not supported.
 	 */
-	protected String handleConnectToCustomConnectionFactory(ConnectionFactory<?> connectionFactory, WebRequest request) {
+	protected RedirectView handleConnectToCustomConnectionFactory(ConnectionFactory<?> connectionFactory, WebRequest request) {
 		throw new IllegalStateException("Connections to provider '" + connectionFactory.getProviderId() + "' are not supported");		
 	}
 	
@@ -243,10 +244,6 @@ public class ConnectController  {
 
 	private ConnectionRepository getConnectionRepository() {
 		return connectionRepositoryProvider.get();
-	}
-
-	private String redirectToProviderConnect(String providerId) {
-		return "redirect:/connect/" + providerId;
 	}
 
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
