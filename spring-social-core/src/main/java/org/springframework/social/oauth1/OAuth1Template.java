@@ -31,6 +31,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
@@ -117,6 +118,14 @@ public class OAuth1Template implements OAuth1Operations {
 		return exchangeForToken(accessTokenUrl, tokenParameters, additionalParameters, requestToken.getSecret());
 	}
 
+	/**
+	 * Set the request factory on the underlying RestTemplate.
+	 * @param requestFactory
+	 */
+	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
+		this.restTemplate.setRequestFactory(requestFactory);
+	}
+	
 	// subclassing hooks
 
 	protected String getConsumerKey() {
