@@ -39,7 +39,7 @@ import org.springframework.social.facebook.api.UserOperations;
 import org.springframework.social.facebook.api.impl.json.FacebookModule;
 import org.springframework.social.oauth2.AbstractOAuth2ApiTemplate;
 import org.springframework.social.oauth2.OAuth2Version;
-import org.springframework.social.support.BufferingClientHttpRequestFactory;
+import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -84,7 +84,7 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 		getRestTemplate().setErrorHandler(new FacebookErrorHandler());
 		
 		// Wrap the request factory with a BufferingClientHttpRequestFactory so that the error handler can do repeat reads on the response.getBody()
-		super.setRequestFactory(new BufferingClientHttpRequestFactory(getRestTemplate().getRequestFactory()));
+		super.setRequestFactory(ClientHttpRequestFactorySelector.decorateForBuffering(getRestTemplate().getRequestFactory()));
 		
 		// sub-apis
 		userOperations = new UserTemplate(this);
@@ -101,7 +101,7 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 	@Override
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
 		// Wrap the request factory with a BufferingClientHttpRequestFactory so that the error handler can do repeat reads on the response.getBody()
-		super.setRequestFactory(new BufferingClientHttpRequestFactory(requestFactory));
+		super.setRequestFactory(ClientHttpRequestFactorySelector.decorateForBuffering(requestFactory));
 	}
 
 	@Override
