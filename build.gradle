@@ -213,6 +213,7 @@ project('spring-social-web') {
     dependencies {
         compile ("javax.inject:javax.inject:$javaxInjectVersion")
         compile "org.springframework:spring-web:$springVersion"
+        compile "org.springframework:spring-webmvc:$springVersion"
         compile project(':spring-social-core')
     }
 }
