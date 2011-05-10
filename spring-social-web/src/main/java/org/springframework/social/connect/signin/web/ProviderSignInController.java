@@ -103,7 +103,8 @@ public class ProviderSignInController {
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
 			return new RedirectView(oauth1Ops.buildAuthenticateUrl(requestToken.getValue(), oauth1Ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(callbackUrl(providerId)) : OAuth1Parameters.NONE));
 		} else if (connectionFactory instanceof OAuth2ConnectionFactory) {
-			return new RedirectView(((OAuth2ConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId))));
+			String scope = request.getParameter("scope");
+			return new RedirectView(((OAuth2ConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId), scope)));
 		} else {
 			throw new IllegalStateException("Sign in using provider '" + providerId + "' not supported");
 		}
@@ -176,7 +177,7 @@ public class ProviderSignInController {
 			return new RedirectView(signupUrl, true);
 		} else {
 			signIn(localUserId);
-			return new RedirectView("/");
+			return new RedirectView("/", true);
 		}		
 	}
 	
