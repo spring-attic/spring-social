@@ -15,6 +15,8 @@
  */
 package org.springframework.social.facebook.api.impl;
 
+import java.util.List;
+
 import org.springframework.social.facebook.api.FacebookProfile;
 import org.springframework.social.facebook.api.GraphApi;
 import org.springframework.social.facebook.api.ImageType;
@@ -35,7 +37,7 @@ class UserTemplate implements UserOperations {
 	public FacebookProfile getUserProfile(String facebookId) {
 		return graphApi.fetchObject(facebookId, FacebookProfile.class);
 	}
-
+	
 	public byte[] getUserProfileImage() {
 		return getUserProfileImage("me", ImageType.NORMAL);
 	}
@@ -51,4 +53,9 @@ class UserTemplate implements UserOperations {
 	public byte[] getUserProfileImage(String userId, ImageType imageType) {
 		return graphApi.fetchImage(userId, "picture", imageType);
 	}
+
+	public List<String> getUserPermissions() {
+		return graphApi.fetchConnections("me", "permissions", UserPermissionsList.class).getList();
+	}
+
 }

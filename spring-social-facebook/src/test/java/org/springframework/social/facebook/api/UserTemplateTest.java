@@ -131,6 +131,20 @@ public class UserTemplateTest extends AbstractFacebookApiTest {
 		mockServer.verify();
 	}
 	
+	@Test
+	public void getUserPermissions() {
+		mockServer.expect(requestTo("https://graph.facebook.com/me/permissions"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("testdata/user-permissions.json", getClass()), responseHeaders));
+		List<String> permissions = facebook.userOperations().getUserPermissions();
+		assertEquals(4, permissions.size());
+		assertTrue(permissions.contains("status_update"));
+		assertTrue(permissions.contains("offline_access"));
+		assertTrue(permissions.contains("read_stream"));
+		assertTrue(permissions.contains("publish_stream"));
+	}
+	
 	private void assertBasicProfileData(FacebookProfile profile) {
 		assertEquals("123456789", profile.getId());
 		assertEquals("Craig", profile.getFirstName());
