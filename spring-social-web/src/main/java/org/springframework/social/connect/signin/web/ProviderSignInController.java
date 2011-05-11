@@ -35,6 +35,7 @@ import org.springframework.social.oauth1.OAuth1Version;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.GrantType;
+import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,7 +68,7 @@ public class ProviderSignInController {
 	private final SignInService signInService;
 
 	private String signupUrl = "/signup";
-	
+
 	/**
 	 * Creates a new provider sign-in controller.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the sign-in process.
@@ -90,6 +91,15 @@ public class ProviderSignInController {
 	}
 
 	/**
+	 * Overrides the default URL of the application's signup page ("/signup").
+	 * ProviderSignInController will redirect to this URL if no matching connection can be found after signing into the provider. 
+	 * @param signupUrl the URL of the signup page.
+	 */
+	public void setSignupUrl(String signupUrl) {
+		this.signupUrl = signupUrl; 
+	}
+
+	/**
 	 * Process a sign-in form submission by commencing the process of establishing a connection to the provider on behalf of the user.
 	 * For OAuth1, fetches a new request token from the provider, temporarily stores it in the session, then redirects the user to the provider's site for authentication authorization.
 	 * For OAuth2, redirects the user to the provider's site for authentication authorization.
@@ -101,12 +111,14 @@ public class ProviderSignInController {
 			OAuth1Operations oauth1Ops = ((OAuth1ConnectionFactory<?>) connectionFactory).getOAuthOperations();
 			OAuthToken requestToken = oauth1Ops.fetchRequestToken(callbackUrl(providerId), null);
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
-			return new RedirectView(oauth1Ops.buildAuthenticateUrl(requestToken.getValue(), oauth1Ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(callbackUrl(providerId)) : OAuth1Parameters.NONE));
+			String authenticateUrl = oauth1Ops.buildAuthenticateUrl(requestToken.getValue(), oauth1Ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(callbackUrl(providerId)) : OAuth1Parameters.NONE);
+			return new RedirectView(authenticateUrl);
 		} else if (connectionFactory instanceof OAuth2ConnectionFactory) {
-			String scope = request.getParameter("scope");
-			return new RedirectView(((OAuth2ConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId), scope)));
+			OAuth2Operations oauth2Ops = ((OAuth2ConnectionFactory<?>) connectionFactory).getOAuthOperations();
+			String authenticateUrl = oauth2Ops.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId), request.getParameter("scope")));
+			return new RedirectView(authenticateUrl);
 		} else {
-			throw new IllegalStateException("Sign in using provider '" + providerId + "' not supported");
+			return handleSignInWithConnectionFactory(connectionFactory, request);
 		}
 	}
 
@@ -144,13 +156,14 @@ public class ProviderSignInController {
 		return handleSignIn(connection, request);
 	}
 
+	// subclassing hooks
+	
 	/**
-	 * Overrides the default URL of the application's signup page ("/signup").
-	 * ProviderSignInController will redirect to this URL if no matching connection can be found after signing into the provider. 
-	 * @param signupUrl the URL of the signup page.
+	 * Hook method subclasses may override to sign-in with providers of custom types other than OAuth1 or OAuth2.
+	 * Default implementation throws an {@link IllegalStateException} indicating the custom {@link ConnectionFactory} is not supported.
 	 */
-	public void setSignupUrl(String signupUrl) {
-		this.signupUrl = signupUrl; 
+	protected RedirectView handleSignInWithConnectionFactory(ConnectionFactory<?> connectionFactory, WebRequest request) {
+		throw new IllegalStateException("Sign in using provider '" + connectionFactory.getProviderId() + "' not supported");		
 	}
 	
 	// internal helpers
@@ -174,15 +187,19 @@ public class ProviderSignInController {
 		if (localUserId == null) {
 			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocatorProvider, connectionRepositoryProvider);
 			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, WebRequest.SCOPE_SESSION);
-			return new RedirectView(signupUrl, true);
+			return redirect(signupUrl);
 		} else {
 			signIn(localUserId);
-			return new RedirectView("/", true);
+			return redirect("/");
 		}		
 	}
 	
 	private void signIn(String localUserId) {
 		signInService.signIn(localUserId);		
+	}
+	
+	private RedirectView redirect(String url) {
+		return new RedirectView(url, true);
 	}
 	
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
