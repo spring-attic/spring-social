@@ -47,7 +47,7 @@ public abstract class AbstractOAuth2ApiTemplate {
 	}
 	
 	/**
-	 * Set the ClientHttpRequestFactory. This is useful when custom configuration of the request factory is required, such as configuring proxy server details.
+	 * Set the ClientHttpRequestFactory. This is useful when custom configuration of the request factory is required, such as configuring custom SSL details.
 	 * @param requestFactory the request factory
 	 */
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {

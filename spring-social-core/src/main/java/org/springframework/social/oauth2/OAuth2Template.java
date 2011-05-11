@@ -68,7 +68,15 @@ public class OAuth2Template implements OAuth2Operations {
 		this.accessTokenUrl = accessTokenUrl;
 		this.restTemplate = createRestTemplate();
 	}
-	
+
+	/**
+	 * Set the request factory on the underlying RestTemplate.
+	 * This can be used to plug in a different HttpClient to do things like configure custom SSL settings.
+	 */
+	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
+		this.restTemplate.setRequestFactory(requestFactory);
+	}
+
 	public String buildAuthorizeUrl(GrantType grantType, OAuth2Parameters parameters) {
 		return buildAuthUrl(authorizeUrl, grantType, parameters);
 	}
@@ -103,14 +111,6 @@ public class OAuth2Template implements OAuth2Operations {
 			params.putAll(additionalParameters);
 		}
 		return postForAccessGrant(accessTokenUrl, params);
-	}
-
-	/**
-	 * Set the request factory on the underlying RestTemplate.
-	 * @param requestFactory
-	 */
-	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
-		this.restTemplate.setRequestFactory(requestFactory);
 	}
 
 	// subclassing hooks

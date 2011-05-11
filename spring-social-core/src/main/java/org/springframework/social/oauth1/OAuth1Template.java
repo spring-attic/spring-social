@@ -87,6 +87,14 @@ public class OAuth1Template implements OAuth1Operations {
 		this.signingUtils = new SigningSupport();
 	}
 
+	/**
+	 * Set the request factory on the underlying RestTemplate.
+	 * This can be used to plug in a different HttpClient to do things like configure custom SSL settings.
+	 */
+	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
+		restTemplate.setRequestFactory(requestFactory);
+	}
+	
 	// implementing OAuth1Operations
 	
 	public OAuth1Version getVersion() {
@@ -118,14 +126,6 @@ public class OAuth1Template implements OAuth1Operations {
 		return exchangeForToken(accessTokenUrl, tokenParameters, additionalParameters, requestToken.getSecret());
 	}
 
-	/**
-	 * Set the request factory on the underlying RestTemplate.
-	 * @param requestFactory
-	 */
-	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
-		this.restTemplate.setRequestFactory(requestFactory);
-	}
-	
 	// subclassing hooks
 
 	protected String getConsumerKey() {

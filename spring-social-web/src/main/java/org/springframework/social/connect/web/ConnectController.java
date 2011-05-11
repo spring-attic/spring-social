@@ -37,6 +37,7 @@ import org.springframework.social.oauth1.OAuth1Version;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.GrantType;
+import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -133,10 +134,12 @@ public class ConnectController  {
 			OAuth1Operations oauth1Ops = ((OAuth1ConnectionFactory<?>) connectionFactory).getOAuthOperations();
 			OAuthToken requestToken = oauth1Ops.fetchRequestToken(callbackUrl(providerId), null);
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
-			return new RedirectView(oauth1Ops.buildAuthorizeUrl(requestToken.getValue(), oauth1Ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(callbackUrl(providerId)) : OAuth1Parameters.NONE));
+			String authorizeUrl = oauth1Ops.buildAuthorizeUrl(requestToken.getValue(), oauth1Ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(callbackUrl(providerId)) : OAuth1Parameters.NONE);
+			return new RedirectView(authorizeUrl);
 		} else if (connectionFactory instanceof OAuth2ConnectionFactory) {
-			String scope = request.getParameter("scope");
-			return new RedirectView(((OAuth2ConnectionFactory<?>) connectionFactory).getOAuthOperations().buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId), scope)));
+			OAuth2Operations oauth2Ops = ((OAuth2ConnectionFactory<?>) connectionFactory).getOAuthOperations();
+			String authorizeUrl = oauth2Ops.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId), request.getParameter("scope")));
+			return new RedirectView(authorizeUrl);
 		} else {
 			return handleConnectToCustomConnectionFactory(connectionFactory, request);
 		}
@@ -155,7 +158,7 @@ public class ConnectController  {
 		Connection<?> connection = connectionFactory.createConnection(accessToken);
 		getConnectionRepository().addConnection(connection);	
 		postConnect(connectionFactory, connection, request);
-		return new RedirectView("/connect/" + providerId, true);
+		return redirectToProvider(providerId);
 	}
 
 	/**
@@ -170,7 +173,7 @@ public class ConnectController  {
 		Connection<?> connection = connectionFactory.createConnection(accessGrant);
 		getConnectionRepository().addConnection(connection);
 		postConnect(connectionFactory, connection, request);
-		return new RedirectView("/connect/" + providerId, true);
+		return redirectToProvider(providerId);
 	}
 
 	/**
@@ -180,7 +183,7 @@ public class ConnectController  {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.DELETE)
 	public RedirectView removeConnections(@PathVariable String providerId) {
 		getConnectionRepository().removeConnectionsToProvider(providerId);
-		return new RedirectView("/connect/" + providerId, true);
+		return redirectToProvider(providerId);
 	}
 
 	/**
@@ -190,7 +193,7 @@ public class ConnectController  {
 	@RequestMapping(value="/{providerId}/{providerUserId}", method=RequestMethod.DELETE)
 	public RedirectView removeConnections(@PathVariable String providerId, @PathVariable String providerUserId) {
 		getConnectionRepository().removeConnection(new ConnectionKey(providerId, providerUserId));
-		return new RedirectView("/connect/" + providerId, true);
+		return redirectToProvider(providerId);
 	}
 
 	// subclassing hooks
@@ -244,6 +247,10 @@ public class ConnectController  {
 
 	private ConnectionRepository getConnectionRepository() {
 		return connectionRepositoryProvider.get();
+	}
+
+	private RedirectView redirectToProvider(String providerId) {
+		return new RedirectView("/connect/" + providerId, true);
 	}
 
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";

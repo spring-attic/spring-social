@@ -84,7 +84,7 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 		getRestTemplate().setErrorHandler(new FacebookErrorHandler());
 		
 		// Wrap the request factory with a BufferingClientHttpRequestFactory so that the error handler can do repeat reads on the response.getBody()
-		super.setRequestFactory(ClientHttpRequestFactorySelector.decorateForBuffering(getRestTemplate().getRequestFactory()));
+		super.setRequestFactory(ClientHttpRequestFactorySelector.bufferRequests(getRestTemplate().getRequestFactory()));
 		
 		// sub-apis
 		userOperations = new UserTemplate(this);
@@ -101,7 +101,7 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 	@Override
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
 		// Wrap the request factory with a BufferingClientHttpRequestFactory so that the error handler can do repeat reads on the response.getBody()
-		super.setRequestFactory(ClientHttpRequestFactorySelector.decorateForBuffering(requestFactory));
+		super.setRequestFactory(ClientHttpRequestFactorySelector.bufferRequests(requestFactory));
 	}
 
 	@Override
