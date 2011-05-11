@@ -42,7 +42,7 @@ public class ClientHttpRequestFactorySelector {
 			return HttpComponentsClientRequestFactoryCreator.createRequestFactory(proxyHost, proxyPort);
 		} else {
 			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-			if(proxyHost != null) {
+			if (proxyHost != null) {
 				requestFactory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort)));
 			}
 			return requestFactory;
