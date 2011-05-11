@@ -25,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.social.BadCredentialsException;
 import org.springframework.social.facebook.api.CommentOperations;
 import org.springframework.social.facebook.api.EventOperations;
 import org.springframework.social.facebook.api.Facebook;
@@ -75,18 +76,27 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 
 	/**
 	 * Create a new instance of FacebookTemplate.
+	 * This constructor creates a new FacebookTemplate able to perform unauthenticated operations against Facebook's Graph API.
+	 * Some operations do not require OAuth authentication. 
+	 * For example, retrieving a specified user's profile or feed does not require authentication (although the data returned will be limited to what is publicly available). 
+	 * A FacebookTemplate created with this constructor will support those operations.
+	 * Those operations requiring authentication will throw {@link BadCredentialsException}.
+	 */
+	public FacebookTemplate() {
+		initialize();		
+	}
+
+	/**
+	 * Create a new instance of FacebookTemplate.
 	 * This constructor creates the FacebookTemplate using a given access token.
 	 * @param accessToken An access token given by Facebook after a successful OAuth 2 authentication (or through Facebook's JS library).
 	 */
 	public FacebookTemplate(String accessToken) {
 		super(accessToken);
-		registerFacebookJsonModule(getRestTemplate());
-		getRestTemplate().setErrorHandler(new FacebookErrorHandler());
-		
-		// Wrap the request factory with a BufferingClientHttpRequestFactory so that the error handler can do repeat reads on the response.getBody()
-		super.setRequestFactory(ClientHttpRequestFactorySelector.bufferRequests(getRestTemplate().getRequestFactory()));
-		
-		// sub-apis
+		initialize();
+	}
+
+	private void initSubApis() {
 		userOperations = new UserTemplate(this);
 		placesOperations = new PlacesTemplate(this);
 		friendOperations = new FriendTemplate(this, getRestTemplate());
@@ -199,6 +209,14 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 	}
 
 	// private helpers
+	private void initialize() {
+		registerFacebookJsonModule(getRestTemplate());
+		getRestTemplate().setErrorHandler(new FacebookErrorHandler());
+		// Wrap the request factory with a BufferingClientHttpRequestFactory so that the error handler can do repeat reads on the response.getBody()
+		super.setRequestFactory(ClientHttpRequestFactorySelector.bufferRequests(getRestTemplate().getRequestFactory()));
+		initSubApis();
+	}
+		
 	private void registerFacebookJsonModule(RestTemplate restTemplate2) {
 		List<HttpMessageConverter<?>> converters = getRestTemplate().getMessageConverters();
 		for (HttpMessageConverter<?> converter : converters) {
