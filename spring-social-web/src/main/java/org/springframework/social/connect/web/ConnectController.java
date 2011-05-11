@@ -28,6 +28,7 @@ import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.ConnectionKey;
 import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.connect.DuplicateConnectionException;
 import org.springframework.social.connect.support.OAuth1ConnectionFactory;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
@@ -111,7 +112,7 @@ public class ConnectController  {
 	 * Render the connect form for the service provider identified by {name} to the member as HTML in their web browser.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET)
-	public String connect(@PathVariable String providerId, Model model) {
+	public String providerPage(@PathVariable String providerId, Model model) {
 		List<Connection<?>> connections = getConnectionRepository().findConnectionsToProvider(providerId);
 		if (connections.isEmpty()) {
 			return baseViewPath(providerId) + "Connect";
@@ -156,8 +157,7 @@ public class ConnectController  {
 		OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		OAuthToken accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier), null);
 		Connection<?> connection = connectionFactory.createConnection(accessToken);
-		getConnectionRepository().addConnection(connection);	
-		postConnect(connectionFactory, connection, request);
+		addConnection(request, connectionFactory, connection);
 		return redirectToProvider(providerId);
 	}
 
@@ -171,8 +171,7 @@ public class ConnectController  {
 		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId), null);
 		Connection<?> connection = connectionFactory.createConnection(accessGrant);
-		getConnectionRepository().addConnection(connection);
-		postConnect(connectionFactory, connection, request);
+		addConnection(request, connectionFactory, connection);
 		return redirectToProvider(providerId);
 	}
 
@@ -207,6 +206,17 @@ public class ConnectController  {
 	}
 	
 	// internal helpers
+	private void addConnection(WebRequest request, ConnectionFactory<?> connectionFactory, Connection<?> connection) {
+		try {
+			getConnectionRepository().addConnection(connection);	
+			postConnect(connectionFactory, connection, request);
+		} catch (DuplicateConnectionException e) {
+			// TODO: Need to somehow tell provider page that the connection already exists.
+			//       A FlashMap mechanism would be handy here, but would require that the developer setup the FlashMapFilter
+			//       Could put in session and remove in providerPage().
+			//       Could pass along in request parameter to provider page; but that would limiting
+		}
+	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void preConnect(ConnectionFactory<?> connectionFactory, WebRequest request) {
