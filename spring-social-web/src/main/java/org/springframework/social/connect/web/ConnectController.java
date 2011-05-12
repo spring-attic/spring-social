@@ -260,7 +260,7 @@ public class ConnectController  {
 	}
 
 	private RedirectView redirectToProvider(String providerId) {
-		return new RedirectView("/connect/" + providerId, true);
+		return new RedirectView(providerId, true);
 	}
 
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
