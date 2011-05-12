@@ -143,3 +143,9 @@ GRADLE_APP_BASE_NAME=`basename "$0"`
         -Dorg.gradle.wrapper.properties="$WRAPPER_PROPERTIES" \
         $STARTER_MAIN_CLASS \
         "$@"
+
+RETCODE=$?
+
+if [ "$RETCODE" == "1" ] ; then
+       echo "Gradle classes not found -- did you forget to clone --recursive when checking out this repository? See README for more details"
+fi
