@@ -48,7 +48,7 @@ class PlacesTemplate implements PlacesOperations {
 	}
 	
 	public String checkin(String placeId, double latitude, double longitude, String message, String... tags) {
-		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
 		data.set("place", placeId);
 		data.set("coordinates", "{\"latitude\":\"" + latitude+"\",\"longitude\":\"" + longitude + "\"}");
 		if(message != null) {

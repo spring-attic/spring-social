@@ -17,6 +17,10 @@ package org.springframework.social.facebook.api;
 
 import java.util.List;
 
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+
 
 /**
  * Defines operations for working with albums, photos, and videos.
@@ -99,17 +103,51 @@ public interface MediaOperations {
 	byte[] getPhotoImage(String photoId, ImageType imageType);
 	
 	/**
-	 * Retrieves a list of videos for the authenticated user.
+	 * Uploads a photo to an album created specifically for photos uploaded by the application.
+	 * If no album exists for the application, it will be created.
+	 * @param photo A {@link Resource} for the photo data. The given Resource must implement the getFilename() method (such as {@link FileSystemResource} or {@link ClassPathResource}).
+	 * @return the ID of the photo.
+	 */
+	String uploadPhoto(Resource photo);
+	
+	/**
+	 * Uploads a photo to an album created specifically for photos uploaded by the application.
+	 * If no album exists for the application, it will be created.
+	 * @param photo A {@link Resource} for the photo data. The given Resource must implement the getFilename() method (such as {@link FileSystemResource} or {@link ClassPathResource}).
+	 * @param caption A caption describing the photo.
+	 * @return the ID of the photo.
+	 */
+	String uploadPhoto(Resource photo, String caption);
+	
+	/**
+	 * Uploads a photo to a specific album.
+	 * @param albumId the ID of the album to upload the photo to.
+	 * @param photo A {@link Resource} for the photo data. The given Resource must implement the getFilename() method (such as {@link FileSystemResource} or {@link ClassPathResource}).
+	 * @return the ID of the photo.
+	 */
+	String uploadPhoto(String albumId, Resource photo);
+	
+	/**
+	 * Uploads a photo to a specific album.
+	 * @param albumId the ID of the album to upload the photo to.
+	 * @param photo A {@link Resource} for the photo data. The given Resource must implement the getFilename() method (such as {@link FileSystemResource} or {@link ClassPathResource}).
+	 * @param caption A caption describing the photo.
+	 * @return the ID of the photo.
+	 */
+	String uploadPhoto(String albumId, Resource photo, String caption);
+	
+	/**
+	 * Retrieves a list of videos that the authenticated user is tagged in.
 	 * @return a list of {@link Video} belonging to the authenticated user.
 	 */
 	List<Video> getVideos();
 
 	/**
-	 * Retrieves a list of videos for a specified owner.
-	 * @param ownerId the owner of the videos (could be a user, group, etc)
-	 * @return a list of {@link Video} belonging to the specified owner.
+	 * Retrieves a list of videos that a specified user is tagged in.
+	 * @param userId the ID of the user who is tagged in the videos
+	 * @return a list of {@link Video} which the specified user is tagged in.
 	 */
-	List<Video> getVideos(String ownerId);
+	List<Video> getVideos(String userId);
 	
 	/**
 	 * Retrieves data for a specific video.

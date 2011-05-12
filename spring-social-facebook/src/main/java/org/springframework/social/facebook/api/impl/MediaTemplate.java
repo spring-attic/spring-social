@@ -17,6 +17,7 @@ package org.springframework.social.facebook.api.impl;
 
 import java.util.List;
 
+import org.springframework.core.io.Resource;
 import org.springframework.social.facebook.api.Album;
 import org.springframework.social.facebook.api.GraphApi;
 import org.springframework.social.facebook.api.ImageType;
@@ -57,7 +58,7 @@ class MediaTemplate implements MediaOperations {
 	//       You can get those tokens via the /{user}/accounts...but the question is
 	//       how to best design the API to use these.
 	public String createAlbum(String ownerId, String name, String description) {
-		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
 		data.set("name", name);
 		data.set("message", description);
 		return graphApi.publish(ownerId, "albums", data);
@@ -87,12 +88,38 @@ class MediaTemplate implements MediaOperations {
 		return graphApi.fetchImage(photoId, "picture", imageType);
 	}
 
+	public String uploadPhoto(Resource photo) {
+		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
+		parts.set("source", photo);
+		return graphApi.publish("me", "photos", parts);
+	}
+	
+	public String uploadPhoto(Resource photo, String caption) {
+		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
+		parts.set("source", photo);
+		parts.set("message", caption);
+		return graphApi.publish("me", "photos", parts);
+	}
+	
+	public String uploadPhoto(String albumId, Resource photo) {
+		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
+		parts.set("source", photo);
+		return graphApi.publish(albumId, "photos", parts);
+	}
+	
+	public String uploadPhoto(String albumId, Resource photo, String caption) {
+		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
+		parts.set("source", photo);
+		parts.set("message", caption);
+		return graphApi.publish(albumId, "photos", parts);
+	}
+	
 	public List<Video> getVideos() {
 		return getVideos("me");
 	}
 	
-	public List<Video> getVideos(String ownerId) {
-		return graphApi.fetchConnections(ownerId, "videos", VideoList.class).getList();
+	public List<Video> getVideos(String userId) {
+		return graphApi.fetchConnections(userId, "videos", VideoList.class).getList();
 	}
 	
 	public Video getVideo(String videoId) {
@@ -106,4 +133,5 @@ class MediaTemplate implements MediaOperations {
 	public byte[] getVideoImage(String videoId, ImageType imageType) {
 		return graphApi.fetchImage(videoId, "picture", imageType);
 	}
+	
 }

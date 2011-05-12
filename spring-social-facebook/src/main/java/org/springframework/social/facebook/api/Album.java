@@ -101,7 +101,7 @@ public class Album {
 		return updatedTime;
 	}
 
-	public static enum Type { NORMAL, MOBILE, PROFILE }
+	public static enum Type { NORMAL, MOBILE, PROFILE, WALL }
 	
 	public static enum Privacy { EVERYONE, FRIENDS_OF_FRIENDS, FRIENDS, CUSTOM } 
 

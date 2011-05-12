@@ -61,7 +61,7 @@ public interface GraphApi {
 	 * @param data the data to publish to the connection.
 	 * @return the ID of the newly published object.
 	 */
-	String publish(String objectId, String connectionType, MultiValueMap<String, String> data);	
+	String publish(String objectId, String connectionType, MultiValueMap<String, Object> data);	
 
 	/**
 	 * Publishes data to an object's connection. 
