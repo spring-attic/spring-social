@@ -170,4 +170,21 @@ public interface MediaOperations {
 	 * @return an array of bytes containing the video's image.
 	 */
 	byte[] getVideoImage(String videoId, ImageType imageType);
+	
+	/**
+	 * Uploads a video for the authenticated user.
+	 * Note that the video will not be immediately available after uploading, as Facebook performs some post-upload processing on the video.
+	 * @param video A {@link Resource} for the video data. The given Resource must implement the getFilename() method (such as {@link FileSystemResource} or {@link ClassPathResource}).
+	 * @return the ID of the video.
+	 */
+	String uploadVideo(Resource video);
+	
+	/**
+	 * Uploads a video for the authenticated user.
+	 * Note that the video will not be immediately available after uploading, as Facebook performs some post-upload processing on the video.
+	 * @param video A {@link Resource} for the video data. The given Resource must implement the getFilename() method (such as {@link FileSystemResource} or {@link ClassPathResource}).
+	 * @return the ID of the video.
+	 */
+	String uploadVideo(Resource video, String title, String description);
+
 }

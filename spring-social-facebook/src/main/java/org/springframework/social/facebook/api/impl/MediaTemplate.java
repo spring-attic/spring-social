@@ -16,6 +16,7 @@
 package org.springframework.social.facebook.api.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.core.io.Resource;
 import org.springframework.social.facebook.api.Album;
@@ -26,13 +27,17 @@ import org.springframework.social.facebook.api.Photo;
 import org.springframework.social.facebook.api.Video;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 class MediaTemplate implements MediaOperations {
 
 	private final GraphApi graphApi;
+	
+	private final RestTemplate restTemplate;
 
-	public MediaTemplate(GraphApi graphApi) {
+	public MediaTemplate(GraphApi graphApi, RestTemplate restTemplate) {
 		this.graphApi = graphApi;
+		this.restTemplate = restTemplate;
 	}
 
 	public List<Album> getAlbums() {
@@ -134,4 +139,21 @@ class MediaTemplate implements MediaOperations {
 		return graphApi.fetchImage(videoId, "picture", imageType);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public String uploadVideo(Resource video) {
+		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
+		parts.set("file", video);
+		Map<String, Object> response = restTemplate.postForObject("https://graph-video.facebook.com/me/videos", parts, Map.class);
+		return (String) response.get("id");
+	}
+	
+	@SuppressWarnings("unchecked")
+	public String uploadVideo(Resource video, String title, String description) {
+		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
+		parts.set("file", video);
+		parts.set("title", title);
+		parts.set("description", description);
+		Map<String, Object> response = restTemplate.postForObject("https://graph-video.facebook.com/me/videos", parts, Map.class);
+		return (String) response.get("id");
+	}
 }

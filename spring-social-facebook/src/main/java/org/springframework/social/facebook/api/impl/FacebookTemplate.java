@@ -104,7 +104,7 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 		commentOperations = new CommentTemplate(this);
 		likeOperations = new LikeTemplate(this);
 		eventOperations = new EventTemplate(this);
-		mediaOperations = new MediaTemplate(this);
+		mediaOperations = new MediaTemplate(this, getRestTemplate());
 		groupOperations = new GroupTemplate(this);
 	}
 	

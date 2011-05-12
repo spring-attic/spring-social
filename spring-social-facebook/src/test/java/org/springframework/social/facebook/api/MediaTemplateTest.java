@@ -23,6 +23,7 @@ import static org.springframework.social.test.client.ResponseCreators.*;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -107,7 +108,7 @@ public class MediaTemplateTest extends AbstractFacebookApiTest {
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
 		// TODO: Match body content to ensure fields and photo are included
-		Resource photo = new ClassPathResource("testdata/tinyrod.jpg", getClass());
+		Resource photo = getUploadResource("photo.jpg", "PHOTO DATA");
 		String photoId = facebook.mediaOperations().uploadPhoto(photo);
 		assertEquals("12345", photoId);
 	}
@@ -119,7 +120,7 @@ public class MediaTemplateTest extends AbstractFacebookApiTest {
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
 		// TODO: Match body content to ensure fields and photo are included
-		Resource photo = new ClassPathResource("testdata/tinyrod.jpg", getClass());
+		Resource photo = getUploadResource("photo.jpg", "PHOTO DATA");
 		String photoId = facebook.mediaOperations().uploadPhoto(photo, "Some caption");
 		assertEquals("12345", photoId);
 	}
@@ -131,7 +132,7 @@ public class MediaTemplateTest extends AbstractFacebookApiTest {
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
 		// TODO: Match body content to ensure fields and photo are included
-		Resource photo = new ClassPathResource("testdata/tinyrod.jpg", getClass());
+		Resource photo = getUploadResource("photo.jpg", "PHOTO DATA");
 		String photoId = facebook.mediaOperations().uploadPhoto("192837465", photo);
 		assertEquals("12345", photoId);
 	}
@@ -143,7 +144,7 @@ public class MediaTemplateTest extends AbstractFacebookApiTest {
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
 		// TODO: Match body content to ensure fields and photo are included
-		Resource photo = new ClassPathResource("testdata/tinyrod.jpg", getClass());
+		Resource photo = getUploadResource("photo.jpg", "PHOTO DATA");
 		String photoId = facebook.mediaOperations().uploadPhoto("192837465", photo, "Some caption");
 		assertEquals("12345", photoId);
 	}
@@ -176,6 +177,39 @@ public class MediaTemplateTest extends AbstractFacebookApiTest {
 			.andRespond(withResponse(new ClassPathResource("testdata/video.json", getClass()), responseHeaders));
 		Video video = facebook.mediaOperations().getVideo("161500020572907");
 		assertSingleVideo(video);
+	}
+	
+	@Test
+	public void uploadVideo_noTitleOrDescription() {
+		mockServer.expect(requestTo("https://graph-video.facebook.com/me/videos"))
+			.andExpect(method(POST))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
+		// TODO: Match body content to ensure fields and photo are included
+		Resource video = getUploadResource("video.mov", "VIDEO DATA");
+		String photoId = facebook.mediaOperations().uploadVideo(video);
+		assertEquals("12345", photoId);
+	}
+
+	@Test
+	public void uploadVideo_withTitleOrDescription() {
+		mockServer.expect(requestTo("https://graph-video.facebook.com/me/videos"))
+			.andExpect(method(POST))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
+		// TODO: Match body content to ensure fields and photo are included
+		Resource video = getUploadResource("video.mov", "VIDEO DATA");
+		String photoId = facebook.mediaOperations().uploadVideo(video, "title", "description");
+		assertEquals("12345", photoId);
+	}
+
+	private Resource getUploadResource(final String filename, String content) {
+		Resource video = new ByteArrayResource(content.getBytes()) {
+			public String getFilename() throws IllegalStateException {
+				return filename;
+			};
+		};
+		return video;
 	}
 
 	private void assertSingleVideo(Video video) {
