@@ -16,8 +16,10 @@
 package org.springframework.social.facebook.api.impl;
 
 import java.net.URI;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.HttpStatus;
@@ -160,7 +162,13 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
 		return getRestTemplate().getForObject(uri, type);
 	}
-		
+	
+	public <T> T fetchObject(String objectId, Class<T> type, MultiValueMap<String, String> queryParameters) {
+		String query = buildRequestQuery(queryParameters);		
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).queryParams(queryParameters).build();
+		return getRestTemplate().getForObject(uri, type);
+	}
+
 	public <T> T fetchConnections(String objectId, String connectionType, Class<T> type, String... fields) {
 		URIBuilder uriBuilder = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType);
 		if(fields.length > 0) {
@@ -240,4 +248,25 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 		return builder.toString();
 	}
 	
+	private String buildRequestQuery(MultiValueMap<String, String> queryParameters) {
+		StringBuilder queryBuilder = new StringBuilder();
+		if (!queryParameters.isEmpty()) {
+			queryBuilder.append("?");
+		}
+		
+		for (Iterator<Entry<String, List<String>>> entryIt = queryParameters.entrySet().iterator(); entryIt.hasNext(); ) {
+			Entry<String, List<String>> entry = entryIt.next();
+			for (Iterator<String> valueIt = entry.getValue().iterator(); valueIt.hasNext(); ) {
+				queryBuilder.append(entry.getKey() + "=" + valueIt.next());
+				if (valueIt.hasNext()) {
+					queryBuilder.append("&");
+				}
+			}
+			if (entryIt.hasNext()) {
+				queryBuilder.append("&");
+			}			
+		}
+		return queryBuilder.toString();
+	}
+
 }

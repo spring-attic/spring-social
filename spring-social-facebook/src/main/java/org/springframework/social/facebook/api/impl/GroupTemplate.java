@@ -23,6 +23,8 @@ import org.springframework.social.facebook.api.Group;
 import org.springframework.social.facebook.api.GroupMemberReference;
 import org.springframework.social.facebook.api.GroupOperations;
 import org.springframework.social.facebook.api.ImageType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 class GroupTemplate implements GroupOperations {
 	
@@ -52,6 +54,14 @@ class GroupTemplate implements GroupOperations {
 		return graphApi.fetchConnections(groupId, "members", FacebookProfileList.class, FULL_PROFILE_FIELDS).getList();
 	}
 
+	public List<Group> search(String query) {
+		MultiValueMap<String, String> queryMap = new LinkedMultiValueMap<String, String>();
+		queryMap.add("q", query);
+		queryMap.add("type", "group");
+		queryMap.add("fields", "owner,name,description,privacy,icon,updated_time,email,version");
+		return graphApi.fetchObject("search", GroupList.class, queryMap).getList();
+	}	
+	
 	private static final String[] FULL_PROFILE_FIELDS = {"id", "username", "name", "first_name", "last_name", "gender", "locale", "education", "work", "email", "third_party_id", "link", "timezone", "updated_time", "verified", "about", "bio", "birthday", "location", "hometown", "interested_in", "religion", "political", "quotes", "relationship_status", "significant_other", "website"};
 
 }

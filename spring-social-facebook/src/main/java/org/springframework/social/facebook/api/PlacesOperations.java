@@ -68,4 +68,13 @@ public interface PlacesOperations {
 	 */
 	String checkin(String placeId, double latitude, double longitude, String message, String... tags);
 	
+	/**
+	 * Searches for places near a given coordinate.
+	 * @param query the search query (e.g., "Burritos")
+	 * @param latitude the latitude of the point to search near
+	 * @param longitude the longitude of the point to search near
+	 * @param distance the radius to search within (in feet)
+	 * @return a list of {@link Place}s matching the search
+	 */
+	List<Place> search(String query, double latitude, double longitude, long distance);
 }

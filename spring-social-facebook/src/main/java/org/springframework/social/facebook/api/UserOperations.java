@@ -68,4 +68,10 @@ public interface UserOperations {
 	 */
 	List<String> getUserPermissions();
 	
+	/**
+	 * Searches for users.
+	 * @param query the search query (e.g., "Michael Scott")
+	 * @return a list of {@link Reference}s, each representing a user who matched the given query.
+	 */
+	List<Reference> search(String query);
 }

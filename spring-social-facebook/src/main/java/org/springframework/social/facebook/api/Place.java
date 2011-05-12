@@ -26,11 +26,14 @@ public class Place {
 	private final String name;
 
 	private final Location location;
+
+	private final String category;
 	
-	public Place(String id, String name, Location location) {
+	public Place(String id, String name, Location location, String category) {
 		this.id = id;
 		this.name = name;
 		this.location = location;
+		this.category = category;
 	}
 
 	public String getId() {
@@ -43,6 +46,10 @@ public class Place {
 
 	public Location getLocation() {
 		return location;
+	}
+
+	public String getCategory() {
+		return category;
 	}
 	
 }
