@@ -25,7 +25,7 @@ import org.springframework.social.gowalla.api.Gowalla;
 public class GowallaConnectionFactory extends OAuth2ConnectionFactory<Gowalla> {
 
 	public GowallaConnectionFactory(String clientId, String clientSecret) {
-		super("gowalla", new GowallaServiceProvider(clientId, clientSecret), new GowallaApiAdapter());
+		super("gowalla", new GowallaServiceProvider(clientId, clientSecret), new GowallaAdapter());
 	}
 
 }

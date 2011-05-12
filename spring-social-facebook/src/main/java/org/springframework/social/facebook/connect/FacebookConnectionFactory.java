@@ -25,7 +25,7 @@ import org.springframework.social.facebook.api.Facebook;
 public class FacebookConnectionFactory extends OAuth2ConnectionFactory<Facebook> {
 
 	public FacebookConnectionFactory(String clientId, String clientSecret) {
-		super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookApiAdapter());
+		super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookAdapter());
 	}
 
 }

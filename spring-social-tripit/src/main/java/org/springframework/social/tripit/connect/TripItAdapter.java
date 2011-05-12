@@ -13,47 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.github.connect;
+package org.springframework.social.tripit.connect;
 
 import org.springframework.social.connect.ApiAdapter;
 import org.springframework.social.connect.ConnectionValues;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.UserProfileBuilder;
-import org.springframework.social.github.api.GitHub;
-import org.springframework.social.github.api.GitHubUserProfile;
+import org.springframework.social.tripit.api.TripIt;
+import org.springframework.social.tripit.api.TripItProfile;
 import org.springframework.web.client.HttpClientErrorException;
 
 /**
- * Github ApiAdapter implementation.
+ * TripIt ApiAdapter implementation.
  * @author Keith Donald
  */
-public class GitHubApiAdapter implements ApiAdapter<GitHub> {
+public class TripItAdapter implements ApiAdapter<TripIt> {
 
-	public boolean test(GitHub api) {
+	public boolean test(TripIt tripit) {
 		try {
-			api.getUserProfile();
+			tripit.getUserProfile();
 			return true;
-		} catch (HttpClientErrorException e) {
-			// TODO : Beef up GitHub's error handling and trigger off of a more specific exception
+		} catch (HttpClientErrorException e) { 
+			// TODO: Have api throw more specific exception and trigger off of that.
 			return false;
 		}
 	}
 
-	public void setConnectionValues(GitHub api, ConnectionValues values) {
-		GitHubUserProfile profile = api.getUserProfile();
-		values.setProviderUserId(String.valueOf(profile.getId()));		
-		values.setDisplayName(profile.getUsername());
-		values.setProfileUrl("https://github.com/" + profile.getId());
+	public void setConnectionValues(TripIt tripit, ConnectionValues values) {
+		TripItProfile profile = tripit.getUserProfile();
+		values.setProviderUserId(profile.getId());
+		values.setDisplayName(profile.getScreenName());
+		values.setProfileUrl(profile.getProfileUrl());
 		values.setImageUrl(profile.getProfileImageUrl());
 	}
 
-	public UserProfile fetchUserProfile(GitHub api) {
-		GitHubUserProfile profile = api.getUserProfile();
-		return new UserProfileBuilder().setName(profile.getName()).setEmail(profile.getEmail()).setUsername(profile.getUsername()).build();
+	public UserProfile fetchUserProfile(TripIt tripit) {
+		TripItProfile profile = tripit.getUserProfile();
+		return new UserProfileBuilder().setName(profile.getPublicDisplayName()).setEmail(profile.getEmailAddress()).setUsername(profile.getScreenName()).build();
 	}
 	
-	public void updateStatus(GitHub api, String message) {
+	public void updateStatus(TripIt tripit, String message) {
 		// not supported
 	}
-	
+
 }

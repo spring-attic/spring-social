@@ -13,31 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.gowalla.connect;
+package org.springframework.social.linkedin.connect;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.social.connect.UserProfile;
-import org.springframework.social.gowalla.api.Gowalla;
-import org.springframework.social.gowalla.api.GowallaProfile;
+import org.springframework.social.linkedin.api.LinkedIn;
+import org.springframework.social.linkedin.api.LinkedInProfile;
 
-public class GowallaApiAdapterTest {
+public class LinkedInAdapterTest {
 
-	private GowallaApiAdapter apiAdapter = new GowallaApiAdapter();
+	private LinkedInAdapter apiAdapter = new LinkedInAdapter();
 	
-	private Gowalla api = Mockito.mock(Gowalla.class);
+	private LinkedIn linkedin = Mockito.mock(LinkedIn.class);
 	
 	@Test
-	public void fetchProfile() {		
-		Mockito.when(api.getUserProfile()).thenReturn(new GowallaProfile("habuma", "Craig", "Walls", "Plano, TX", 1, 2, "http://s3.amazonaws.com/static.gowalla.com/users/362641-standard.jpg?1294162106"));
-		UserProfile profile = apiAdapter.fetchUserProfile(api);
+	public void fetchProfile() {
+		Mockito.when(linkedin.getUserProfile()).thenReturn(new LinkedInProfile("50A3nOf73z", "Craig", "Walls", "Spring Guy", "Software", "http://www.linkedin.com/in/habuma", "http://www.linkedin.com/profile?viewProfile=&key=3630172&authToken=0IpZ&authType=name&trk=api*a121026*s129482*", "http://media.linkedin.com/mpr/mprx/0_9-Hjc8b0ViE1gGElNtdCcGh0s3pjxbRlNzpCciT05XHD8i2Asq4AM_zAN7yGp8VgcAoi4k1faewD"));
+		UserProfile profile = apiAdapter.fetchUserProfile(linkedin);
 		assertEquals("Craig Walls", profile.getName());
 		assertEquals("Craig", profile.getFirstName());
 		assertEquals("Walls", profile.getLastName());
 		assertNull(profile.getEmail());
-		assertEquals("habuma", profile.getUsername());
+		assertNull(profile.getUsername());
 	}
-	
+
 }

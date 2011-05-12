@@ -25,7 +25,7 @@ import org.springframework.social.github.api.GitHub;
 public class GitHubConnectionFactory extends OAuth2ConnectionFactory<GitHub> {
 
 	public GitHubConnectionFactory(String clientId, String clientSecret) {
-		super("github", new GitHubServiceProvider(clientId, clientSecret), new GitHubApiAdapter());
+		super("github", new GitHubServiceProvider(clientId, clientSecret), new GitHubAdapter());
 	}
 
 }

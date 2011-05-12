@@ -25,7 +25,7 @@ import org.springframework.social.tripit.api.TripIt;
 public class TripItConnectionFactory extends OAuth1ConnectionFactory<TripIt> {
 
 	public TripItConnectionFactory(String consumerKey, String consumerSecret) {
-		super("tripit", new TripItServiceProvider(consumerKey, consumerSecret), new TripItApiAdapter());
+		super("tripit", new TripItServiceProvider(consumerKey, consumerSecret), new TripItAdapter());
 	}
 
 }
