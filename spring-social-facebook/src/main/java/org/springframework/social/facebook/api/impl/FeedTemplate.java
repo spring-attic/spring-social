@@ -87,13 +87,13 @@ class FeedTemplate implements FeedOperations {
 	}
 
 	public String updateStatus(String message) {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
 		map.set("message", message);
 		return graphApi.publish("me", "feed", map);
 	}
 
 	public String postLink(String message, FacebookLink link) {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
 		map.set("link", link.getLink());
 		map.set("name", link.getName());
 		map.set("caption", link.getCaption());

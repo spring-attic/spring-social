@@ -55,7 +55,7 @@ class EventTemplate implements EventOperations {
 	}
 	
 	public String createEvent(String name, String startTime, String endTime) {
-		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
 		data.set("name", name);
 		data.set("start_time", startTime);
 		data.set("end_time", endTime);

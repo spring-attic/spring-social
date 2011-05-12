@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 public class MediaTemplateTest extends AbstractFacebookApiTest {
 	@Test
@@ -96,7 +97,55 @@ public class MediaTemplateTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/photo.json", getClass()), responseHeaders));
-		assertSinglePhoto(facebook.mediaOperations().getPhoto("10150447271355581"));
+		assertSinglePhoto(facebook.mediaOperations().getPhoto("10150447271355581"));		
+	}
+	
+	@Test
+	public void uploadPhoto_noCaption() {
+		mockServer.expect(requestTo("https://graph.facebook.com/me/photos"))
+			.andExpect(method(POST))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
+		// TODO: Match body content to ensure fields and photo are included
+		Resource photo = new ClassPathResource("testdata/tinyrod.jpg", getClass());
+		String photoId = facebook.mediaOperations().uploadPhoto(photo);
+		assertEquals("12345", photoId);
+	}
+
+	@Test
+	public void uploadPhoto_withCaption() {
+		mockServer.expect(requestTo("https://graph.facebook.com/me/photos"))
+			.andExpect(method(POST))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
+		// TODO: Match body content to ensure fields and photo are included
+		Resource photo = new ClassPathResource("testdata/tinyrod.jpg", getClass());
+		String photoId = facebook.mediaOperations().uploadPhoto(photo, "Some caption");
+		assertEquals("12345", photoId);
+	}
+
+	@Test
+	public void uploadPhoto_ToAlbumNoCaption() {
+		mockServer.expect(requestTo("https://graph.facebook.com/192837465/photos"))
+			.andExpect(method(POST))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
+		// TODO: Match body content to ensure fields and photo are included
+		Resource photo = new ClassPathResource("testdata/tinyrod.jpg", getClass());
+		String photoId = facebook.mediaOperations().uploadPhoto("192837465", photo);
+		assertEquals("12345", photoId);
+	}
+
+	@Test
+	public void uploadPhoto_ToAlbumWithCaption() {
+		mockServer.expect(requestTo("https://graph.facebook.com/192837465/photos"))
+			.andExpect(method(POST))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
+		// TODO: Match body content to ensure fields and photo are included
+		Resource photo = new ClassPathResource("testdata/tinyrod.jpg", getClass());
+		String photoId = facebook.mediaOperations().uploadPhoto("192837465", photo, "Some caption");
+		assertEquals("12345", photoId);
 	}
 
 	@Test
@@ -117,21 +166,6 @@ public class MediaTemplateTest extends AbstractFacebookApiTest {
 			.andRespond(withResponse(new ClassPathResource("testdata/videos.json", getClass()), responseHeaders));
 		List<Video> videos = facebook.mediaOperations().getVideos("100001387295207");
 		assertVideos(videos);
-	}
-
-	private void assertVideos(List<Video> videos) {
-		assertEquals(2, videos.size());
-		Video video = videos.get(0);
-		assertEquals("161503963905846", video.getId());
-		assertEquals("100001387295207", video.getFrom().getId());
-		assertEquals("Art Names", video.getFrom().getName());
-		assertEquals("http://vthumb.ak.fbcdn.net/hvthumb-ak-ash2/50903_161504077239168_161503963905846_21174_1003_t.jpg", video.getPicture());
-		assertEquals("<object width=\"400\" height=\"250\" ><param name=\"allowfullscreen\" value=\"true\" /><param name=\"movie\" value=\"http://www.facebook.com/v/161503963905846\" /><embed src=\"http://www.facebook.com/v/161503963905846\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" width=\"400\" height=\"250\"></embed></object>", video.getEmbedHtml());
-		assertEquals("http://b.static.ak.fbcdn.net/rsrc.php/v1/yD/r/DggDhA4z4tO.gif", video.getIcon());
-		assertEquals("http://video.ak.fbcdn.net/cfs-ak-snc6/82226/704/161503963905846_41386.mp4?oh=131db79e0842f1c57940aa274b82d8fe&oe=4D95D900&__gda__=1301666048_11e66cf124ce537194b3f7b6ab86b579", video.getSource());
-		assertEquals(toDate("2011-03-29T20:45:20+0000"), video.getCreatedTime());
-		assertEquals(toDate("2011-03-29T20:45:20+0000"), video.getUpdatedTime());
-		assertSingleVideo(videos.get(1));
 	}
 	
 	@Test
@@ -191,7 +225,6 @@ public class MediaTemplateTest extends AbstractFacebookApiTest {
 		assertEquals(toDate("2011-03-24T21:36:06+0000"), photo.getCreatedTime());
 		assertEquals(toDate("2011-03-24T21:37:43+0000"), photo.getUpdatedTime());
 	}
-	
 
 	private void assertAlbums(List<Album> albums) {
 		assertEquals(3, albums.size());
@@ -236,6 +269,21 @@ public class MediaTemplateTest extends AbstractFacebookApiTest {
 		assertEquals(1, album.getCount());
 		assertEquals(toDate("2011-03-24T21:36:04+0000"), album.getCreatedTime());
 		assertEquals(toDate("2011-03-24T22:00:12+0000"), album.getUpdatedTime());
+	}
+
+	private void assertVideos(List<Video> videos) {
+		assertEquals(2, videos.size());
+		Video video = videos.get(0);
+		assertEquals("161503963905846", video.getId());
+		assertEquals("100001387295207", video.getFrom().getId());
+		assertEquals("Art Names", video.getFrom().getName());
+		assertEquals("http://vthumb.ak.fbcdn.net/hvthumb-ak-ash2/50903_161504077239168_161503963905846_21174_1003_t.jpg", video.getPicture());
+		assertEquals("<object width=\"400\" height=\"250\" ><param name=\"allowfullscreen\" value=\"true\" /><param name=\"movie\" value=\"http://www.facebook.com/v/161503963905846\" /><embed src=\"http://www.facebook.com/v/161503963905846\" type=\"application/x-shockwave-flash\" allowfullscreen=\"true\" width=\"400\" height=\"250\"></embed></object>", video.getEmbedHtml());
+		assertEquals("http://b.static.ak.fbcdn.net/rsrc.php/v1/yD/r/DggDhA4z4tO.gif", video.getIcon());
+		assertEquals("http://video.ak.fbcdn.net/cfs-ak-snc6/82226/704/161503963905846_41386.mp4?oh=131db79e0842f1c57940aa274b82d8fe&oe=4D95D900&__gda__=1301666048_11e66cf124ce537194b3f7b6ab86b579", video.getSource());
+		assertEquals(toDate("2011-03-29T20:45:20+0000"), video.getCreatedTime());
+		assertEquals(toDate("2011-03-29T20:45:20+0000"), video.getUpdatedTime());
+		assertSingleVideo(videos.get(1));
 	}
 
 }
