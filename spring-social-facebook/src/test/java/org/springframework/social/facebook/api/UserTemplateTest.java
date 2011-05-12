@@ -145,6 +145,22 @@ public class UserTemplateTest extends AbstractFacebookApiTest {
 		assertTrue(permissions.contains("publish_stream"));
 	}
 	
+	@Test
+	public void search() {
+		mockServer.expect(requestTo("https://graph.facebook.com/search?q=Michael+Scott&type=user"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("testdata/user-references.json", getClass()), responseHeaders));
+		List<Reference> results = facebook.userOperations().search("Michael Scott");
+		assertEquals(3, results.size());
+		assertEquals("100000737708615", results.get(0).getId());
+		assertEquals("Michael Scott", results.get(0).getName());
+		assertEquals("100000354483321", results.get(1).getId());
+		assertEquals("Michael Scott", results.get(1).getName());
+		assertEquals("1184963857", results.get(2).getId());
+		assertEquals("Michael Scott", results.get(2).getName());
+	}
+	
 	private void assertBasicProfileData(FacebookProfile profile) {
 		assertEquals("123456789", profile.getId());
 		assertEquals("Craig", profile.getFirstName());

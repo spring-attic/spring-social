@@ -97,4 +97,12 @@ class EventTemplate implements EventOperations {
 	public void declineInvitation(String eventId) {
 		graphApi.post(eventId, "declined", new LinkedMultiValueMap<String, String>());
 	}
+	
+	public List<Event> search(String query) {
+		MultiValueMap<String, String> queryMap = new LinkedMultiValueMap<String, String>();
+		queryMap.add("q", query);
+		queryMap.add("type", "event");
+		return graphApi.fetchObject("search", EventList.class, queryMap).getList();
+	}
+	
 }

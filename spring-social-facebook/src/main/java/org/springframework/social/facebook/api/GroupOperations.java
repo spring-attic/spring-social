@@ -59,4 +59,11 @@ public interface GroupOperations {
 	 * @return a list of {@link FacebookProfile}s, one for each member of the group.
 	 */
 	List<FacebookProfile> getMemberProfiles(String groupId);
+	
+	/**
+	 * Search for groups.
+	 * @param query the search query (e.g., "Spring User Group")
+	 * @return a list of {@link Group}s matching the search query
+	 */
+	List<Group> search(String query);
 }
