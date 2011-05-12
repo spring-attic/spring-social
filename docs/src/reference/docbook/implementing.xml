@@ -21,7 +21,7 @@
 					<para>Create a ServiceProvider model that allows users to authorize with the remote provider and obtain authorized  API instances e.g. <code>TwitterServiceProvider</code>.</para>
 				</listitem>
 				<listitem>
-					<para>Create an ApiAdapter that maps the provider's native API onto the uniform Connection model e.g. <code>TwitterApiAdapter</code>.</para>
+					<para>Create an ApiAdapter that maps the provider's native API onto the uniform Connection model e.g. <code>TwitterAdapter</code>.</para>
 				</listitem>
 				<listitem>
 					<para>Finally, create a ConnectionFactory that wraps the other artifacts up and provides a simple interface for establishing connections e.g. <code>TwitterConnectionFactory</code>.</para>
@@ -440,10 +440,10 @@ public interface ApiAdapter<A> {
 }]]>
 			</programlisting>
 			<para>
-				Consider <code>org.springframework.social.twitter.connect.TwitterApiAdapter</code> as an example implementation:
+				Consider <code>org.springframework.social.twitter.connect.TwitterAdapter</code> as an example implementation:
 			</para>
 			<programlisting language="java"><![CDATA[
-public class TwitterApiAdapter implements ApiAdapter<Twitter> {
+public class TwitterAdapter implements ApiAdapter<Twitter> {
 
     public boolean test(Twitter api) {
         try {
@@ -500,7 +500,7 @@ public class TwitterApiAdapter implements ApiAdapter<Twitter> {
 			<para>
 				Create a subclass of OAuth2ConnectionFactory&lt;A&gt; named {ProviderId}ConnectionFactory and parameterize A to be the Java binding to the service provider's API.
 				Define a single constructor that accepts a clientId and clientSecret.
-				Within the constructor call super, passing up the assigned providerId, a new {ProviderId}ServiceProvider instance configured with the clientId/clientSecret, and a new {Provider}ApiAdapter instance. 			
+				Within the constructor call super, passing up the assigned providerId, a new {ProviderId}ServiceProvider instance configured with the clientId/clientSecret, and a new {Provider}Adapter instance. 			
 			</para>
 			<para>
 				See <code>org.springframework.social.facebook.connect.FacebookConnectionFactory</code> as an example OAuth2ConnectionFactory:
@@ -508,7 +508,7 @@ public class TwitterApiAdapter implements ApiAdapter<Twitter> {
 			<programlisting language="java"><![CDATA[
 public class FacebookConnectionFactory extends OAuth2ConnectionFactory<Facebook> {
     public FacebookConnectionFactory(String clientId, String clientSecret) {
-        super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookApiAdapter());
+        super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookAdapter());
     }
 }]]>
 			</programlisting>			
@@ -518,7 +518,7 @@ public class FacebookConnectionFactory extends OAuth2ConnectionFactory<Facebook>
 			<para>
 				Create a subclass of OAuth1ConnectionFactory&lt;A&gt; named {ProviderId}ConnectionFactory and parameterize A to be the Java binding to the service provider's API.
 				Define a single constructor that accepts a consumerKey and consumerSecret.
-				Within the constructor call super, passing up the assigned providerId, a new {ProviderId}ServiceProvider instance configured with the consumerKey/consumerSecret, and a new {Provider}ApiAdapter instance. 			
+				Within the constructor call super, passing up the assigned providerId, a new {ProviderId}ServiceProvider instance configured with the consumerKey/consumerSecret, and a new {Provider}Adapter instance. 			
 			</para>
 			<para>
 				See <code>org.springframework.social.twitter.connect.TwitterConnectionFactory</code> as an example OAuth1ConnectionFactory:
@@ -526,7 +526,7 @@ public class FacebookConnectionFactory extends OAuth2ConnectionFactory<Facebook>
 			<programlisting language="java"><![CDATA[
 public class TwitterConnectionFactory extends OAuth1ConnectionFactory<Facebook> {
     public TwitterConnectionFactory(String consumerKey, String consumerSecret) {
-        super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterApiAdapter());
+        super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterAdapter());
     }
 }]]>
 			</programlisting>

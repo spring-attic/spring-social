@@ -13,47 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.tripit.connect;
+package org.springframework.social.linkedin.connect;
 
 import org.springframework.social.connect.ApiAdapter;
 import org.springframework.social.connect.ConnectionValues;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.UserProfileBuilder;
-import org.springframework.social.tripit.api.TripIt;
-import org.springframework.social.tripit.api.TripItProfile;
+import org.springframework.social.linkedin.api.LinkedIn;
+import org.springframework.social.linkedin.api.LinkedInProfile;
 import org.springframework.web.client.HttpClientErrorException;
 
 /**
- * TripIt ApiAdapter implementation.
+ * LinkedIn ApiAdapter implementation.
  * @author Keith Donald
  */
-public class TripItApiAdapter implements ApiAdapter<TripIt> {
+public class LinkedInAdapter implements ApiAdapter<LinkedIn> {
 
-	public boolean test(TripIt api) {
+	public boolean test(LinkedIn linkedin) {
 		try {
-			api.getUserProfile();
+			linkedin.getUserProfile();
 			return true;
-		} catch (HttpClientErrorException e) { 
+		} catch (HttpClientErrorException e) {
 			// TODO: Have api throw more specific exception and trigger off of that.
 			return false;
 		}
 	}
 
-	public void setConnectionValues(TripIt api, ConnectionValues values) {
-		TripItProfile profile = api.getUserProfile();
+	public void setConnectionValues(LinkedIn linkedin, ConnectionValues values) {
+		LinkedInProfile profile = linkedin.getUserProfile();
 		values.setProviderUserId(profile.getId());
-		values.setDisplayName(profile.getScreenName());
-		values.setProfileUrl(profile.getProfileUrl());
-		values.setImageUrl(profile.getProfileImageUrl());
+		values.setDisplayName(profile.getFirstName() + " " + profile.getLastName());
+		values.setProfileUrl(profile.getPublicProfileUrl());
+		values.setImageUrl(profile.getProfilePictureUrl());
 	}
 
-	public UserProfile fetchUserProfile(TripIt api) {
-		TripItProfile profile = api.getUserProfile();
-		return new UserProfileBuilder().setName(profile.getPublicDisplayName()).setEmail(profile.getEmailAddress()).setUsername(profile.getScreenName()).build();
+	public UserProfile fetchUserProfile(LinkedIn linkedin) {
+		LinkedInProfile profile = linkedin.getUserProfile();
+		return new UserProfileBuilder().setName(profile.getFirstName() + " " + profile.getLastName()).build();
 	}
 	
-	public void updateStatus(TripIt api, String message) {
-		// not supported
+	public void updateStatus(LinkedIn linkedin, String message) {
+		// not supported yet
 	}
-
+	
 }
