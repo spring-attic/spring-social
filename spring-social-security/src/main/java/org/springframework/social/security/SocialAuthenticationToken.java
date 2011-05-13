@@ -46,10 +46,8 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 	/**
 	 * new unauthenticated token
 	 * 
-	 * @param providerId
-	 *            {@link ServiceProvider} id
-	 * @param providerAccountId
-	 *            user's account id at the {@link ServiceProvider}
+	 * @param connection
+	 *            connection data
 	 * @param providerAccountData
 	 *            optional extra account data
 	 */
@@ -77,7 +75,13 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 	/**
 	 * new authenticated token using authorities from provided {@link UserDetails}
 	 * 
-	 * @see SocialAuthenticationToken#SocialAuthenticationToken(String, UserDetails, Map, Collection)
+	 * @param providerId
+	 *            {@link ServiceProvider} id
+	 * @param details
+	 *            user details, typically as returned by
+	 *            {@link SocialUserDetailsService}
+	 * @param providerAccountData
+	 *            optional extra account data
 	 */
 	public SocialAuthenticationToken(final String providerId, final UserDetails details,
 			final Map<String, String> providerAccountData) {
