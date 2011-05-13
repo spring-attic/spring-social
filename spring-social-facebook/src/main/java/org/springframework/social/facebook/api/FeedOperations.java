@@ -131,4 +131,33 @@ public interface FeedOperations {
 	 */
 	void deleteFeedEntry(String id);
 
+	/**
+	 * Searches Facebook's public feed.
+	 * @param query the search query (e.g., "Dr Seuss")
+	 * @return a list of {@link Post}s that match the search query
+	 */
+	List<Post> searchPublicFeed(String query);
+
+	/**
+	 * Searches the authenticated user's home feed.
+	 * @param query the search query (e.g., "Dr Seuss")
+	 * @return a list of {@link Post}s that match the search query
+	 */
+	List<Post> searchHomeFeed(String query);
+	
+	/**
+	 * Searches the authenticated user's feed.
+	 * @param query the search query (e.g., "football")
+	 * @return a list of {@link Post}s that match the search query
+	 */
+	List<Post> searchUserFeed(String query);
+	
+	/**
+	 * Searches a specified user's feed.
+	 * @param userId the ID of the user whose feed is to be searched
+	 * @param query the search query (e.g., "football")
+	 * @return a list of {@link Post}s that match the search query
+	 */
+	List<Post> searchUserFeed(String userId, String query);
+	
 }
