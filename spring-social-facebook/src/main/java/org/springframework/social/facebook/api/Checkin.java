@@ -26,7 +26,7 @@ import java.util.List;
 public class Checkin {
 	private String id;
 
-	private Place place;
+	private Page place;
 
 	private Reference from;
 
@@ -42,7 +42,7 @@ public class Checkin {
 
 	private List<Reference> tags;
 
-	private Checkin(String id, Place place, Reference from, Reference application, Date createdTime) {
+	private Checkin(String id, Page place, Reference from, Reference application, Date createdTime) {
 		this.id = id;
 		this.place = place;
 		this.from = from;
@@ -54,7 +54,7 @@ public class Checkin {
 		return id;
 	}
 
-	public Place getPlace() {
+	public Page getPlace() {
 		return place;
 	}
 

@@ -16,40 +16,16 @@
 package org.springframework.social.facebook.api;
 
 /**
- * Model class representing a place that a user may check into on Facebook Places.
+ * Interface defining operations that can be performed on a Facebook pages.
  * @author Craig Walls
  */
-public class Place {
-
-	private final String id;
-
-	private final String name;
-
-	private final Location location;
-
-	private final String category;
+public interface PageOperations {
 	
-	public Place(String id, String name, Location location, String category) {
-		this.id = id;
-		this.name = name;
-		this.location = location;
-		this.category = category;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public Location getLocation() {
-		return location;
-	}
-
-	public String getCategory() {
-		return category;
-	}
+	/**
+	 * Retrieves data for a page.
+	 * @param pageId the page ID.
+	 * @return a {@link Page}
+	 */
+	Page getPage(String pageId);
 	
 }

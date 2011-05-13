@@ -13,25 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl.json;
+package org.springframework.social.facebook.api.impl;
+
+import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.api.Location;
+import org.springframework.social.facebook.api.Page;
 
 /**
- * Annotated mixin to add Jackson annotations to Place. 
+ * Holder class to hold a typed list of Pages, pulled from the "data" field of the JSON object structure.
+ * This helps Jackson know what type to deserialize list data into. 
  * @author Craig Walls
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-abstract class PlaceMixin {
+class PageList {
+
+	private final List<Page> list;
 
 	@JsonCreator
-	PlaceMixin(
-			@JsonProperty("id") String id, 
-			@JsonProperty("name") String name, 
-			@JsonProperty("location") Location location,
-			@JsonProperty("category") String category) {}
+	public PageList(@JsonProperty("data") List<Page> list) {
+		this.list = list;
+	}
+
+	public List<Page> getList() {
+		return list;
+	}
 	
 }

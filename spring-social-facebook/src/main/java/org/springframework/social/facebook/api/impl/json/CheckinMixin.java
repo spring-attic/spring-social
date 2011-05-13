@@ -23,7 +23,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
 import org.springframework.social.facebook.api.Comment;
-import org.springframework.social.facebook.api.Place;
+import org.springframework.social.facebook.api.Page;
 import org.springframework.social.facebook.api.Reference;
 
 /**
@@ -36,7 +36,7 @@ abstract class CheckinMixin {
 	@JsonCreator
 	CheckinMixin(
 			@JsonProperty("id") String id, 
-			@JsonProperty("place") Place place, 
+			@JsonProperty("place") Page place, 
 			@JsonProperty("from") Reference from, 
 			@JsonProperty("application") Reference application, 
 			@JsonProperty("created_time") Date createdTime) {}

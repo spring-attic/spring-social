@@ -94,7 +94,7 @@ public class PlacesTemplateTest extends AbstractFacebookApiTest {
 			.andExpect(method(GET))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse(new ClassPathResource("testdata/places-list.json", getClass()), responseHeaders));
-		List<Place> places = facebook.placesOperations().search("coffee", 33.050278, -96.745833, 5280);
+		List<Page> places = facebook.placesOperations().search("coffee", 33.050278, -96.745833, 5280);
 		assertEquals(2, places.size());
 		assertEquals("117723491586638", places.get(0).getId());
 		assertEquals("True Brew Coffee & Espresso Service", places.get(0).getName());
@@ -122,7 +122,7 @@ public class PlacesTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("10150431253050580", checkin.getId());
 		assertEquals("738140579", checkin.getFrom().getId());
 		assertEquals("Craig Walls", checkin.getFrom().getName());
-		Place place1 = checkin.getPlace();
+		Page place1 = checkin.getPlace();
 		assertEquals("117372064948189", place1.getId());
 		assertEquals("Freebirds World Burrito", place1.getName());
 		assertEquals("238 W Campbell Rd", place1.getLocation().getStreet());
@@ -148,7 +148,7 @@ public class PlacesTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("738140579", checkin2.getTags().get(0).getId());
 		assertEquals("Craig Walls", checkin2.getTags().get(0).getName());
 		assertEquals("With my favorite people! ;-)", checkin2.getMessage());
-		Place place2 = checkin2.getPlace();
+		Page place2 = checkin2.getPlace();
 		assertEquals("150366431753543", place2.getId());
 		assertEquals("Somewhere", place2.getName());
 		assertEquals(35.0231428, place2.getLocation().getLatitude(), 0.0001);
