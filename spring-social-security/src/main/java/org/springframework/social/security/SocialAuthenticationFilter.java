@@ -187,6 +187,9 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 				String userId = userIdExtractor.extractUserId(auth);
 				Object principal = token.getPrincipal();
 				if (userId != null && principal instanceof ConnectionData) {
+					// TODO check for existing connection
+					// TODO optionally disallow more than one connection for providerUserId
+					
 					Connection<?> connection = authService.getConnectionFactory().createConnection(
 							(ConnectionData) principal);
 					connection.sync();
