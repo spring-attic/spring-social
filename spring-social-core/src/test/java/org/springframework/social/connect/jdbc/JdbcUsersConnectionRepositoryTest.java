@@ -87,7 +87,7 @@ public class JdbcUsersConnectionRepositoryTest {
 			factory.setDatabaseType(EmbeddedDatabaseType.H2);			
 		}
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-		populator.addScript(new ClassPathResource("JdbcUsersConnectionRepository.sql", getClass()));
+		populator.addScript(new ClassPathResource(getSchemaSql(), getClass()));
 		factory.setDatabasePopulator(populator);
 		database = factory.getDatabase();
 		dataAccessor = new JdbcTemplate(database);
@@ -95,6 +95,9 @@ public class JdbcUsersConnectionRepositoryTest {
 		connectionFactory = new TestFacebookConnectionFactory();
 		connectionFactoryRegistry.addConnectionFactory(connectionFactory);
 		usersConnectionRepository = new JdbcUsersConnectionRepository(database, connectionFactoryRegistry, Encryptors.noOpText());
+		if (!getTablePrefix().equals("")) {
+			usersConnectionRepository.setTablePrefix(getTablePrefix());
+		}
 		connectionRepository = usersConnectionRepository.createConnectionRepository("1");
 	}
 	
@@ -266,9 +269,9 @@ public class JdbcUsersConnectionRepositoryTest {
 	public void removeConnectionsToProvider() {
 		insertFacebookConnection();
 		insertFacebookConnection2();
-		assertTrue(dataAccessor.queryForObject("select exists (select 1 from UserConnection where providerId = 'facebook')", Boolean.class));
+		assertTrue(dataAccessor.queryForObject("select exists (select 1 from " + getTablePrefix() + "UserConnection where providerId = 'facebook')", Boolean.class));
 		connectionRepository.removeConnectionsToProvider("facebook");
-		assertFalse(dataAccessor.queryForObject("select exists (select 1 from UserConnection where providerId = 'facebook')", Boolean.class));
+		assertFalse(dataAccessor.queryForObject("select exists (select 1 from " + getTablePrefix() + "UserConnection where providerId = 'facebook')", Boolean.class));
 	}
 	
 	@Test
@@ -279,9 +282,9 @@ public class JdbcUsersConnectionRepositoryTest {
 	@Test
 	public void removeConnection() {
 		insertFacebookConnection();
-		assertTrue(dataAccessor.queryForObject("select exists (select 1 from UserConnection where providerId = 'facebook')", Boolean.class));
+		assertTrue(dataAccessor.queryForObject("select exists (select 1 from " + getTablePrefix() + "UserConnection where providerId = 'facebook')", Boolean.class));
 		connectionRepository.removeConnection(new ConnectionKey("facebook", "9"));
-		assertFalse(dataAccessor.queryForObject("select exists (select 1 from UserConnection where providerId = 'facebook')", Boolean.class));		
+		assertFalse(dataAccessor.queryForObject("select exists (select 1 from " + getTablePrefix() + "UserConnection where providerId = 'facebook')", Boolean.class));		
 	}
 
 	@Test
@@ -331,29 +334,38 @@ public class JdbcUsersConnectionRepositoryTest {
 		assertEquals("654321098", data.getRefreshToken());
 	}
 
+	// subclassing hooks
+	
+	protected String getTablePrefix() {
+		return "";
+	}
+	
+	protected String getSchemaSql() {
+		return "JdbcUsersConnectionRepository.sql";
+	}
 		
 	private void insertTwitterConnection() {
-		dataAccessor.update("insert into UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		dataAccessor.update("insert into " + getTablePrefix() + "UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				"1", "twitter", "1", 1, "@kdonald", "http://twitter.com/kdonald", "http://twitter.com/kdonald/picture", "123456789", "987654321", null, null);
 	}
 	
 	private void insertFacebookConnection() {
-		dataAccessor.update("insert into UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		dataAccessor.update("insert into " + getTablePrefix() + "UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				"1", "facebook", "9", 1, null, null, null, "234567890", null, "345678901", System.currentTimeMillis() + 3600000);
 	}
 	
 	private void insertFacebookConnection2() {
-		dataAccessor.update("insert into UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		dataAccessor.update("insert into " + getTablePrefix() + "UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				"1", "facebook", "10", 2, null, null, null, "456789012", null, "56789012", System.currentTimeMillis() + 3600000);
 	}
 
 	private void insertFacebookConnection3() {
-		dataAccessor.update("insert into UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		dataAccessor.update("insert into " + getTablePrefix() + "UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				"2", "facebook", "11", 2, null, null, null, "456789012", null, "56789012", System.currentTimeMillis() + 3600000);
 	}
 
 	private void insertFacebookConnectionSameFacebookUser() {
-		dataAccessor.update("insert into UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		dataAccessor.update("insert into " + getTablePrefix() + "UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 				"2", "facebook", "9", 1, null, null, null, "234567890", null, "345678901", System.currentTimeMillis() + 3600000);
 	}
 
