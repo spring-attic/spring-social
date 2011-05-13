@@ -13,32 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl;
-
-import java.util.List;
+package org.springframework.social.facebook.api.impl.json;
 
 import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.api.Place;
+import org.springframework.social.facebook.api.Location;
 
 /**
- * Holder class to hold a typed list of Places, pulled from the "data" field of the JSON object structure.
- * This helps Jackson know what type to deserialize list data into. 
+ * Annotated mixin to add Jackson annotations to Page. 
  * @author Craig Walls
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-class PlaceList {
-
-	private final List<Place> list;
+abstract class PageMixin {
 
 	@JsonCreator
-	public PlaceList(@JsonProperty("data") List<Place> list) {
-		this.list = list;
-	}
+	PageMixin(
+			@JsonProperty("id") String id, 
+			@JsonProperty("name") String name, 
+			@JsonProperty("link") String location,
+			@JsonProperty("category") String category) {}
 
-	public List<Place> getList() {
-		return list;
-	}
+	@JsonProperty("description")
+	String description;
 	
+	@JsonProperty("location")
+	Location location;
+
+	@JsonProperty("website")
+	String website;
+	
+	@JsonProperty("picture")
+	String picture;
+	
+	@JsonProperty("phone")
+	String phone;
+
+	@JsonProperty("affiliation")
+	String affiliation;
+	
+	@JsonProperty("company_overview")
+	String companyOverview;
+
+	@JsonProperty("fan_count")
+	int fanCount;
+
+	@JsonProperty("likes")
+	int likes;
+	
+	@JsonProperty("checkins")
+	int checkins;
 }

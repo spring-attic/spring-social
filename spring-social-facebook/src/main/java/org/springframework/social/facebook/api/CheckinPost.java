@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class CheckinPost extends Post {
 	
-	private Place place;
+	private Page place;
 	
 	private List<Tag> tags;
 	
@@ -35,7 +35,7 @@ public class CheckinPost extends Post {
 		super(id, from, createdTime, updatedTime);
 	}
 
-	public Place getPlace() {
+	public Page getPlace() {
 		return place;
 	}
 	
