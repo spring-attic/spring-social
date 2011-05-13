@@ -164,17 +164,21 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 	}
 	
 	public <T> T fetchObject(String objectId, Class<T> type, MultiValueMap<String, String> queryParameters) {
-		String query = buildRequestQuery(queryParameters);		
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).queryParams(queryParameters).build();
 		return getRestTemplate().getForObject(uri, type);
 	}
 
 	public <T> T fetchConnections(String objectId, String connectionType, Class<T> type, String... fields) {
-		URIBuilder uriBuilder = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType);
+		MultiValueMap<String, String> queryParameters = new LinkedMultiValueMap<String, String>();
 		if(fields.length > 0) {
 			String joinedFields = join(fields);
-			uriBuilder.queryParam("fields", joinedFields);
+			queryParameters.set("fields", joinedFields);
 		}		
+		return fetchConnections(objectId, connectionType, type, queryParameters);
+	}
+	
+	public <T> T fetchConnections(String objectId, String connectionType, Class<T> type, MultiValueMap<String, String> queryParameters) {
+		URIBuilder uriBuilder = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).queryParams(queryParameters);
 		return getRestTemplate().getForObject(uriBuilder.build(), type);
 	}
 	

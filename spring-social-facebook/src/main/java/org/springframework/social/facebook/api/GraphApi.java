@@ -55,6 +55,17 @@ public interface GraphApi {
 	<T> T fetchConnections(String objectId, String connectionType, Class<T> type, String... fields);
 
 	/**
+	 * Fetches connections, extracting them into a Java type via the given {@link ResponseExtractor}.
+	 * Requires appropriate permission to fetch the object connection.
+	 * @param objectId the ID of the object to retrieve the connections for.
+	 * @param connectionType the connection type.
+	 * @param type the Java type to fetch
+	 * @param queryParameters query parameters to include in the request
+	 * @return a list of Java objects representing the Facebook objects in the connections.
+	 */
+	<T> T fetchConnections(String objectId, String connectionType, Class<T> type, MultiValueMap<String, String> queryParameters);
+
+	/**
 	 * Fetches an image as an array of bytes.
 	 * @param objectId the object ID
 	 * @param connectionType the connection type
