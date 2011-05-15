@@ -15,14 +15,10 @@
  */
 package org.springframework.social.oauth2;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.social.test.client.RequestMatchers.body;
-import static org.springframework.social.test.client.RequestMatchers.method;
-import static org.springframework.social.test.client.RequestMatchers.requestTo;
-import static org.springframework.social.test.client.ResponseCreators.withResponse;
+import static org.junit.Assert.*;
+import static org.springframework.http.HttpMethod.*;
+import static org.springframework.social.test.client.RequestMatchers.*;
+import static org.springframework.social.test.client.ResponseCreators.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,40 +31,41 @@ import org.springframework.util.MultiValueMap;
 
 public class OAuth2TemplateTest {
 	
+	private static final String AUTHORIZE_URL = "http://www.someprovider.com/oauth/authorize";
+
 	private static final String ACCESS_TOKEN_URL = "http://www.someprovider.com/oauth/accessToken";
 
 	private OAuth2Template oAuth2Template;
 	
 	@Before
 	public void setup() {
-		String authorizeUrl = "http://www.someprovider.com/oauth/authorize";
-		oAuth2Template = new OAuth2Template("client_id", "client_secret", authorizeUrl, null, ACCESS_TOKEN_URL);
+		oAuth2Template = new OAuth2Template("client_id", "client_secret", AUTHORIZE_URL, null, ACCESS_TOKEN_URL);
 	}
 
 	@Test
 	public void buildAuthorizeUrl_codeResponseType() {
-		String expected = "http://www.someprovider.com/oauth/authorize?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=code&scope=read%2Cwrite";
+		String expected = AUTHORIZE_URL + "?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=code&scope=read%2Cwrite";
 		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters("http://www.someclient.com/connect/foo", "read,write", null, null));
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void buildAuthorizeUrl_tokenResponseType() {
-		String expected = "http://www.someprovider.com/oauth/authorize?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=token&scope=read%2Cwrite";
+		String expected = AUTHORIZE_URL + "?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=token&scope=read%2Cwrite";
 		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, new OAuth2Parameters("http://www.someclient.com/connect/foo", "read,write", null, null));
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void buildAuthorizeUrl_noScopeInParameters() {
-		String expected = "http://www.someprovider.com/oauth/authorize?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=code";
+		String expected = AUTHORIZE_URL + "?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=code";
 		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters("http://www.someclient.com/connect/foo", null, null, null));
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void buildAuthorizeUrl_additionalParameters() {
-		String expected = "http://www.someprovider.com/oauth/authorize?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=token&scope=read%2Cwrite&display=touch&anotherparam=somevalue1&anotherparam=somevalue2";
+		String expected = AUTHORIZE_URL + "?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=token&scope=read%2Cwrite&display=touch&anotherparam=somevalue1&anotherparam=somevalue2";
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 		params.add("display", "touch");
 		params.add("anotherparam", "somevalue1");
@@ -128,6 +125,36 @@ public class OAuth2TemplateTest {
 		assertNull(accessGrant.getExpireTime());
 		assertNull(accessGrant.getScope());
 	}
+	
+	// parameter assertion tests
+
+	@Test(expected = IllegalArgumentException.class)
+	public void construct_nullClientId() {
+		new OAuth2Template(null, "secret", AUTHORIZE_URL, ACCESS_TOKEN_URL);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void construct_nullClientSecret() {
+		new OAuth2Template("id", null, AUTHORIZE_URL, ACCESS_TOKEN_URL);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void construct_nullAuthorizeUrl() {
+		new OAuth2Template("id", "secret", null, ACCESS_TOKEN_URL);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void construct_nullAccessTokenUrl() {
+		new OAuth2Template("id", "secret", AUTHORIZE_URL, null);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void setRequestFactory_null() {
+		oAuth2Template.setRequestFactory(null);
+	}
+
+
+	// private helpers
 	
 	private AccessGrant getAccessGrant(MediaType responseContentType, String responseFile) {
 		HttpHeaders responseHeaders = new HttpHeaders();

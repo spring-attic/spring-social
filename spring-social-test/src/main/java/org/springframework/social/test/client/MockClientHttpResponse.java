@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * Mock implementation of {@link ClientHttpResponse}.
@@ -32,7 +33,8 @@ import org.springframework.http.client.ClientHttpResponse;
  * @author Craig Walls
  */
 public class MockClientHttpResponse implements ClientHttpResponse {
-	private final InputStream body;
+	private InputStream bodyStream;
+	private byte[] body;
 	private final HttpHeaders headers;
 	private final HttpStatus statusCode;
 	private final String statusText;
@@ -41,15 +43,18 @@ public class MockClientHttpResponse implements ClientHttpResponse {
 		this(stringToInputStream(body), headers, statusCode, statusText);
 	}
 
-	public MockClientHttpResponse(InputStream body, HttpHeaders headers, HttpStatus statusCode, String statusText) {
-		this.body = body;
+	public MockClientHttpResponse(InputStream bodyStream, HttpHeaders headers, HttpStatus statusCode, String statusText) {
+		this.bodyStream = bodyStream;
 		this.headers = headers;
 		this.statusCode = statusCode;
 		this.statusText = statusText;
 	}
 
 	public InputStream getBody() throws IOException {
-		return body;
+		if (body == null) {
+			body = FileCopyUtils.copyToByteArray(bodyStream);
+		}
+		return new ByteArrayInputStream(body);
 	}
 
 	public HttpHeaders getHeaders() {

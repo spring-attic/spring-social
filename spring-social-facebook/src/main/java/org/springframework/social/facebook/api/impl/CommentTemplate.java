@@ -41,7 +41,7 @@ class CommentTemplate implements CommentOperations {
 	}
 
 	public String addComment(String objectId, String message) {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
 		map.set("message", message);
 		return graphApi.publish(objectId, "comments", map);
 	}

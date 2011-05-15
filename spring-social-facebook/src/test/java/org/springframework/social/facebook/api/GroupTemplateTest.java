@@ -65,4 +65,41 @@ public class GroupTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("Chuck Wagon", members.get(2).getName());
 		assertTrue(members.get(2).isAdministrator());
 	}
+	
+	@Test
+	public void search() {
+		mockServer.expect(requestTo("https://graph.facebook.com/search?q=Spring+User+Group&type=group&fields=owner%2Cname%2Cdescription%2Cprivacy%2Cicon%2Cupdated_time%2Cemail%2Cversion"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("testdata/group-list.json", getClass()), responseHeaders));
+		List<Group> results = facebook.groupOperations().search("Spring User Group");
+		assertEquals(3, results.size());
+		assertEquals("108286519250791", results.get(0).getId());
+		assertEquals("Spring User Group - Mauritius", results.get(0).getName());
+		assertEquals("Spring User Group - Mauritius has for purpose to propagate the use Spring Framework within Mauritius.", results.get(0).getDescription());
+		assertEquals("108286519250791@groups.facebook.com", results.get(0).getEmail());
+		assertEquals("680947045", results.get(0).getOwner().getId());
+		assertEquals("Javed Mandary", results.get(0).getOwner().getName());
+		assertEquals("http://b.static.ak.fbcdn.net/rsrc.php/v1/y_/r/CbwcMZjMUbR.png", results.get(0).getIcon());
+		assertEquals(Group.Privacy.OPEN, results.get(0).getPrivacy());
+		assertEquals(toDate("2011-03-05T10:01:31+0000"), results.get(0).getUpdatedTime());
+		assertEquals("120726277961844", results.get(1).getId());
+		assertEquals("Atlanta Spring User Group", results.get(1).getName());
+		assertEquals("ASUG is the first user group created to support the growing Spring community in the Atlanta area.", results.get(1).getDescription());
+		assertNull(results.get(1).getEmail());
+		assertEquals("25500170", results.get(1).getOwner().getId());
+		assertEquals("Kate Clark", results.get(1).getOwner().getName());
+		assertEquals("http://b.static.ak.fbcdn.net/rsrc.php/v1/y_/r/CbwcMZjMUbR.png", results.get(1).getIcon());
+		assertEquals(Group.Privacy.OPEN, results.get(1).getPrivacy());
+		assertEquals(toDate("2010-05-20T21:46:07+0000"), results.get(1).getUpdatedTime());
+		assertEquals("114934361850206", results.get(2).getId());
+		assertEquals("Martimes Java User Group", results.get(2).getName());
+		assertEquals("The Maritime Area Java Users\u2019 Group was founded in December of 2009 by Ron Smith and Senan Almosawie of Mariner.", results.get(2).getDescription());
+		assertNull(results.get(2).getEmail());
+		assertEquals("709242026", results.get(2).getOwner().getId());
+		assertEquals("Jay Logelin", results.get(2).getOwner().getName());
+		assertEquals("http://b.static.ak.fbcdn.net/rsrc.php/v1/y_/r/CbwcMZjMUbR.png", results.get(2).getIcon());
+		assertEquals(Group.Privacy.OPEN, results.get(2).getPrivacy());
+		assertEquals(toDate("2010-04-01T01:16:44+0000"), results.get(2).getUpdatedTime());
+	}	
 }

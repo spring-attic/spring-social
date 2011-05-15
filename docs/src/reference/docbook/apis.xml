@@ -35,7 +35,7 @@
 		<para>
 			From a user's perspective, Twitter's function is rather simple: Enable users to post whatever they're thinking, 140 characters at a time.
 			In contrast, Twitter's API is rather rich, enabling applications to interact with Twitter in ways that may not be obvious from the humble tweet box.
-			Spring Social offers interaction with Twitter's service API through the <interfacename>TwitterApi</interfacename> interface and its implementation, <classname>TwitterTemplate</classname>.			
+			Spring Social offers interaction with Twitter's service API through the <interfacename>Twitter</interfacename> interface and its implementation, <classname>TwitterTemplate</classname>.			
 		</para>
 
 		<para>
@@ -48,7 +48,7 @@ String consumerKey = "..."; // The application's consumer key
 String consumerSecret = "..."; // The application's consumer secret
 String accessToken = "..."; // The access token granted after OAuth authorization
 String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
-TwitterApi twitterApi = new TwitterTemplate(consumerKey, consumerSecret, accessToken, accessTokenSecret);]]>
+Twitter twitter = new TwitterTemplate(consumerKey, consumerSecret, accessToken, accessTokenSecret);]]>
 		</programlisting>
 		
 		<para>
@@ -56,7 +56,7 @@ TwitterApi twitterApi = new TwitterTemplate(consumerKey, consumerSecret, accessT
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-TwitterApi twitterApi = new TwitterTemplate();]]>
+Twitter twitter = new TwitterTemplate();]]>
 		</programlisting>
 		
 		<para>
@@ -65,27 +65,27 @@ TwitterApi twitterApi = new TwitterTemplate();]]>
 		</para>
 		
 		<para>
-			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>TwitterApi</interfacename> via a <interfacename>Connection</interfacename>. 
-			For example, the following snippet calls <methodname>getApi()</methodname> on a connection to retrieve a <interfacename>TwitterApi</interfacename>:
+			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>Twitter</interfacename> via a <interfacename>Connection</interfacename>. 
+			For example, the following snippet calls <methodname>getApi()</methodname> on a connection to retrieve a <interfacename>Twitter</interfacename>:
 		</para>				
 		
 		<programlisting language="java"><![CDATA[
-Connection<TwitterApi> connection = connectionRepository.findPrimaryConnectionToApi(TwitterApi.class);
-TwitterApi twitterApi = connection.getApi();]]>
+Connection<Twitter> connection = connectionRepository.findPrimaryConnectionToApi(Twitter.class);
+Twitter twitter = connection.getApi();]]>
 		</programlisting>
 		
 		<para>
 			Here, <interfacename>ConnectionRepository</interfacename> is being asked for the primary connections that the current user has with Twitter.
-			From that connection, it retrieves a <interfacename>TwitterApi</interfacename> instance that is configured with the connection details received when the connection was first established.
+			From that connection, it retrieves a <interfacename>Twitter</interfacename> instance that is configured with the connection details received when the connection was first established.
 		</para>
 		
 		<para>
-			Once you have a <interfacename>TwitterApi</interfacename>, you can perform a several operations against Twitter.
-			<interfacename>TwitterApi</interfacename> is defined as follows:
+			Once you have a <interfacename>Twitter</interfacename>, you can perform a several operations against Twitter.
+			<interfacename>Twitter</interfacename> is defined as follows:
 		</para>
 		
 		<programlisting language="java"><![CDATA[
-public interface TwitterApi {
+public interface Twitter {
 
     boolean isAuthorizedForUser();
 
@@ -105,7 +105,7 @@ public interface TwitterApi {
 		</programlisting>		
 		
 		<para>
-			The <methodname>isAuthorizedForUser</methodname> helps determine if the <interfacename>TwitterApi</interfacename> instance has been created with credentials to perform on behalf of a user.
+			The <methodname>isAuthorizedForUser</methodname> helps determine if the <interfacename>Twitter</interfacename> instance has been created with credentials to perform on behalf of a user.
 			It will return true if it is capable of performing operations requiring authorization; false otherwise. 			
 		</para>
 		
@@ -115,7 +115,7 @@ public interface TwitterApi {
 		</para>
 		
 		<table xml:id="table-twitter-sub-apis">
-			<title>TwitterApi's Sub-APIs</title>
+			<title>Twitter's Sub-APIs</title>
 			<tgroup cols="2">
 				<colspec align="left" />
 				<colspec colnum="1" colname="col1" colwidth="2*"/>
@@ -156,7 +156,7 @@ public interface TwitterApi {
 		</table>
 		
 		<para>
-			What follows is a survey of common tasks you may perform with <interfacename>TwitterApi</interfacename> and its sub-APIs.
+			What follows is a survey of common tasks you may perform with <interfacename>Twitter</interfacename> and its sub-APIs.
 			For complete details on the Spring Social's entire Twitter API binding, refer to the JavaDoc.
 		</para>
 
@@ -168,7 +168,7 @@ public interface TwitterApi {
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-TwitterProfile profile = twitterApi.userOperations().getUserProfile();]]>
+TwitterProfile profile = twitter.userOperations().getUserProfile();]]>
 			</programlisting>
 			
 			<para>
@@ -182,7 +182,7 @@ TwitterProfile profile = twitterApi.userOperations().getUserProfile();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-TwitterProfile profile = twitterApi.userOperations().getUserProfile("habuma");]]>
+TwitterProfile profile = twitter.userOperations().getUserProfile("habuma");]]>
 			</programlisting>
 			
 			<para>
@@ -190,7 +190,7 @@ TwitterProfile profile = twitterApi.userOperations().getUserProfile("habuma");]]
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-String profileId = twitterApi.userOperations().getScreenName();]]>
+String profileId = twitter.userOperations().getScreenName();]]>
 			</programlisting>
 
 		</section>
@@ -203,7 +203,7 @@ String profileId = twitterApi.userOperations().getScreenName();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-twitterApi.timelineOperations().updateStatus("Spring Social is awesome!")]]>
+twitter.timelineOperations().updateStatus("Spring Social is awesome!")]]>
 			</programlisting>
 			
 			<para>
@@ -213,7 +213,7 @@ twitterApi.timelineOperations().updateStatus("Spring Social is awesome!")]]>
 			
 			<programlisting language="java"><![CDATA[
 StatusDetails statusDetails = new StatusDetails().setLocation(51.502f, -0.126f);
-twitterApi.timelineOperations().updateStatus("I'm tweeting from London!", statusDetails)]]>
+twitter.timelineOperations().updateStatus("I'm tweeting from London!", statusDetails)]]>
 			</programlisting>
 			
 			<para>
@@ -222,7 +222,7 @@ twitterApi.timelineOperations().updateStatus("I'm tweeting from London!", status
 			
 			<programlisting language="java"><![CDATA[
 StatusDetails statusDetails = new StatusDetails().setLocation(51.502f, -0.126f).setDisplayCoordinates(true);
-twitterApi.timelineOperations().updateStatus("I'm tweeting from London!", statusDetails)]]>
+twitter.timelineOperations().updateStatus("I'm tweeting from London!", statusDetails)]]>
 			</programlisting>
 			
 			
@@ -232,7 +232,7 @@ twitterApi.timelineOperations().updateStatus("I'm tweeting from London!", status
 			
 			<programlisting language="java"><![CDATA[
 long tweetId = tweet.getId();
-twitterApi.timelineOperations().retweet(tweetId);]]>
+twitter.timelineOperations().retweet(tweetId);]]>
 			</programlisting>
 			
 			<para>
@@ -265,7 +265,7 @@ twitterApi.timelineOperations().retweet(tweetId);]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<Tweet> tweets = twitterApi.timelineOperations().getPublicTimeline();]]>
+List<Tweet> tweets = twitter.timelineOperations().getPublicTimeline();]]>
 			</programlisting>
 			
 			<para>
@@ -273,7 +273,7 @@ List<Tweet> tweets = twitterApi.timelineOperations().getPublicTimeline();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<Tweet> tweets = twitterApi.timelineOperations().getHomeTimeline();]]>
+List<Tweet> tweets = twitter.timelineOperations().getHomeTimeline();]]>
 			</programlisting>
 			
 			<para>
@@ -281,7 +281,7 @@ List<Tweet> tweets = twitterApi.timelineOperations().getHomeTimeline();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<Tweet> tweets = twitterApi.timelineOperations().getFriendsTimeline();]]>
+List<Tweet> tweets = twitter.timelineOperations().getFriendsTimeline();]]>
 			</programlisting>
 			
 			<para>
@@ -289,7 +289,7 @@ List<Tweet> tweets = twitterApi.timelineOperations().getFriendsTimeline();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<Tweet> tweets = twitterApi.timelineOperations().getUserTimeline();]]>
+List<Tweet> tweets = twitter.timelineOperations().getUserTimeline();]]>
 			</programlisting>
 			
 			<para>
@@ -297,7 +297,7 @@ List<Tweet> tweets = twitterApi.timelineOperations().getUserTimeline();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<Tweet> tweets = twitterApi.timelineOperations().getUserTimeline("rclarkson");]]>
+List<Tweet> tweets = twitter.timelineOperations().getUserTimeline("rclarkson");]]>
 			</programlisting>
 			
 			<para>
@@ -306,7 +306,7 @@ List<Tweet> tweets = twitterApi.timelineOperations().getUserTimeline("rclarkson"
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<Tweet> tweets = twitterApi.timelineOperations().getMentions();]]>
+List<Tweet> tweets = twitter.timelineOperations().getMentions();]]>
 			</programlisting>
 			
 		</section>
@@ -321,7 +321,7 @@ List<Tweet> tweets = twitterApi.timelineOperations().getMentions();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-twitterApi.friendOperations().follow("habuma");]]>
+twitter.friendOperations().follow("habuma");]]>
 			</programlisting>
 
 			<para>
@@ -329,7 +329,7 @@ twitterApi.friendOperations().follow("habuma");]]>
 			</para>
 
 			<programlisting language="java"><![CDATA[
-twitterApi.friendOperations().unfollow("habuma");]]>
+twitter.friendOperations().unfollow("habuma");]]>
 			</programlisting>
 			
 			<para>
@@ -337,7 +337,7 @@ twitterApi.friendOperations().unfollow("habuma");]]>
 			</para>
 
 			<programlisting language="java"><![CDATA[
-List<TwitterProfile> friends = twitterApi.friendOperations().getFriends("habuma");]]>
+List<TwitterProfile> friends = twitter.friendOperations().getFriends("habuma");]]>
 			</programlisting>
 
 			<para>
@@ -346,7 +346,7 @@ List<TwitterProfile> friends = twitterApi.friendOperations().getFriends("habuma"
 			</para>
 
 			<programlisting language="java"><![CDATA[
-List<TwitterProfile> followers = twitterApi.friendOperations().getFollowers("habuma");]]>
+List<TwitterProfile> followers = twitter.friendOperations().getFollowers("habuma");]]>
 			</programlisting>
 		</section>
 		
@@ -363,7 +363,7 @@ List<TwitterProfile> followers = twitterApi.friendOperations().getFollowers("hab
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-UserList familyList = twitterApi.listOperations().createList(
+UserList familyList = twitter.listOperations().createList(
         "My Family", "Tweets from my immediate family members", false);]]>
 			</programlisting>
 			
@@ -381,7 +381,7 @@ UserList familyList = twitterApi.listOperations().createList(
 			</para>
 
 			<programlisting language="java"><![CDATA[
-twitterApi.listOperations().addToList(familyList.getSlug(), "artnames");]]>
+twitter.listOperations().addToList(familyList.getSlug(), "artnames");]]>
 			</programlisting>
 			
 			<para>
@@ -394,7 +394,7 @@ twitterApi.listOperations().addToList(familyList.getSlug(), "artnames");]]>
 			</para>
 
 			<programlisting language="java"><![CDATA[
-twitterApi.listOperations().removeFromList(familyList.getSlug(), "artnames");]]>
+twitter.listOperations().removeFromList(familyList.getSlug(), "artnames");]]>
 			</programlisting>
 
 
@@ -405,7 +405,7 @@ twitterApi.listOperations().removeFromList(familyList.getSlug(), "artnames");]]>
 			</para>
 
 			<programlisting language="java"><![CDATA[
-twitterApi.listOperations().subscribe("habuma", "music");]]>
+twitter.listOperations().subscribe("habuma", "music");]]>
 			</programlisting>			
 			
 			<para>
@@ -417,7 +417,7 @@ twitterApi.listOperations().subscribe("habuma", "music");]]>
 			</para>
 
 			<programlisting language="java"><![CDATA[
-twitterApi.listOperations().unsubscribe("habuma", "music");]]>
+twitter.listOperations().unsubscribe("habuma", "music");]]>
 			</programlisting>			
 		</section>		
 
@@ -433,7 +433,7 @@ twitterApi.listOperations().unsubscribe("habuma", "music");]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-SearchResults results = twitterApi.searchOperations().search("#spring");]]>
+SearchResults results = twitter.searchOperations().search("#spring");]]>
 			</programlisting>
 			
 			<para>
@@ -448,7 +448,7 @@ SearchResults results = twitterApi.searchOperations().search("#spring");]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-SearchResults results = twitterApi.searchOperations().search("#spring", 2, 10);]]>
+SearchResults results = twitter.searchOperations().search("#spring", 2, 10);]]>
 			</programlisting>
 			
 			<para>
@@ -460,7 +460,7 @@ SearchResults results = twitterApi.searchOperations().search("#spring", 2, 10);]
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-SearchResults results = twitterApi.searchOperations().search("#spring", 2, 10, 145962, 210112);]]>
+SearchResults results = twitter.searchOperations().search("#spring", 2, 10, 145962, 210112);]]>
 			</programlisting>
 			
 			<para>
@@ -477,7 +477,7 @@ SearchResults results = twitterApi.searchOperations().search("#spring", 2, 10, 1
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-twitterApi.directMessageOperations().sendDirectMessage("kdonald", "You going to the Dolphins game?")]]>
+twitter.directMessageOperations().sendDirectMessage("kdonald", "You going to the Dolphins game?")]]>
 			</programlisting>
 			
 			<para>
@@ -485,7 +485,7 @@ twitterApi.directMessageOperations().sendDirectMessage("kdonald", "You going to 
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<DirectMessage> twitterApi.directMessageOperations().getDirectMessagesReceived();]]>
+List<DirectMessage> twitter.directMessageOperations().getDirectMessagesReceived();]]>
 			</programlisting>
 			
 			<para>
@@ -499,37 +499,37 @@ List<DirectMessage> twitterApi.directMessageOperations().getDirectMessagesReceiv
 		<title>Facebook</title>
 
 		<para>
-			Spring Social's <interfacename>FacebookApi</interfacename> and its implementation, <classname>FacebookTemplate</classname> provide the operations needed to interact with Facebook on behalf of a user.
+			Spring Social's <interfacename>Facebook</interfacename> and its implementation, <classname>FacebookTemplate</classname> provide the operations needed to interact with Facebook on behalf of a user.
 			Creating an instance of <classname>FacebookTemplate</classname> is as simple as constructing it by passing in an authorized access token to the constructor:
 		</para>
 
 		<programlisting language="java"><![CDATA[
 String accessToken = "f8FX29g..."; // access token received from Facebook after OAuth authorization
-FacebookApi facebook = new FacebookTemplate(accessToken);]]>
+Facebook facebook = new FacebookTemplate(accessToken);]]>
       </programlisting>
 
 		<para>
-			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>FacebookApi</interfacename> via a <interfacename>Connection</interfacename>. 
-			For example, the following snippet calls <methodname>getApi()</methodname> on a connection to retrieve a <interfacename>FacebookApi</interfacename>:
+			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>Facebook</interfacename> via a <interfacename>Connection</interfacename>. 
+			For example, the following snippet calls <methodname>getApi()</methodname> on a connection to retrieve a <interfacename>Facebook</interfacename>:
 		</para>				
 		
 		<programlisting language="java"><![CDATA[
-Connection<FacebookApi> connection = connectionRepository.findPrimaryConnectionToApi(FacebookApi.class);
-FacebookApi facebookApi = connection.getApi();]]>
+Connection<Facebook> connection = connectionRepository.findPrimaryConnectionToApi(Facebook.class);
+Facebook facebook = connection.getApi();]]>
 		</programlisting>
 		
 		<para>
 			Here, <interfacename>ConnectionRepository</interfacename> is being asked for the primary connections that the current user has with Facebook.
-			From that connection, it retrieves a <interfacename>FacebookApi</interfacename> instance that is configured with the connection details received when the connection was first established.
+			From that connection, it retrieves a <interfacename>Facebook</interfacename> instance that is configured with the connection details received when the connection was first established.
 		</para>
 
 		<para>
-			With a <interfacename>FacebookApi</interfacename> in hand, there are several ways you can use it to interact with Facebook on behalf of the user.
-			Spring Social's Facebook API binding is divided into 9 sub-APIs exposes through the methods of <interfacename>FacebookApi</interfacename>:
+			With a <interfacename>Facebook</interfacename> in hand, there are several ways you can use it to interact with Facebook on behalf of the user.
+			Spring Social's Facebook API binding is divided into 9 sub-APIs exposes through the methods of <interfacename>Facebook</interfacename>:
 		</para>
 
 			<programlisting language="java"><![CDATA[
-public interface FacebookApi extends GraphApi {
+public interface Facebook extends GraphApi {
 
     CommentOperations commentOperations();
 
@@ -553,11 +553,11 @@ public interface FacebookApi extends GraphApi {
 			</programlisting>
 
 		<para>
-			The sub-API interfaces returned from <interfacename>FacebookApi</interfacename>'s methods are described in <xref linkend="table-facebook-sub-apis" />.
+			The sub-API interfaces returned from <interfacename>Facebook</interfacename>'s methods are described in <xref linkend="table-facebook-sub-apis" />.
 		</para>
 
 		<table xml:id="table-facebook-sub-apis">
-			<title>FacebookApi's Sub-APIs</title>
+			<title>Facebook's Sub-APIs</title>
 			<tgroup cols="2">
 				<colspec align="left" />
 				<colspec colnum="1" colname="col1" colwidth="2*"/>
@@ -610,7 +610,7 @@ public interface FacebookApi extends GraphApi {
 		</table>
 
 		<para>
-			The following sections will give an overview of common tasks that can be performed via <interfacename>FacebookApi</interfacename> and its sub-APIs.
+			The following sections will give an overview of common tasks that can be performed via <interfacename>Facebook</interfacename> and its sub-APIs.
 			For complete details on all of the operations available, refer to the JavaDoc.
 		</para>
 
@@ -618,11 +618,11 @@ public interface FacebookApi extends GraphApi {
 			<title>Retrieving a user's profile data</title>
 
 			<para>
-				You can retrieve a user's Facebook profile data using <interfacename>FacebookApi</interfacename>' <methodname>getUserProfile()</methodname> method:
+				You can retrieve a user's Facebook profile data using <interfacename>Facebook</interfacename>' <methodname>getUserProfile()</methodname> method:
 			</para>
 
 			<programlisting language="java"><![CDATA[
-FacebookProfile profile = facebookApi.userOperations().getUserProfile();]]>
+FacebookProfile profile = facebook.userOperations().getUserProfile();]]>
 			</programlisting>
 
 			<para>
@@ -637,7 +637,7 @@ FacebookProfile profile = facebookApi.userOperations().getUserProfile();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-String profileId = facebookApi.userOperations().getProfileId();]]>
+String profileId = facebook.userOperations().getProfileId();]]>
 			</programlisting>
 			
 			<para>
@@ -645,7 +645,7 @@ String profileId = facebookApi.userOperations().getProfileId();]]>
 			</para>
 			
 			<programlisting langauge="java"><![CDATA[
-String profileUrl = facebookApi.userOperations().getProfileUrl();]]>
+String profileUrl = facebook.userOperations().getProfileUrl();]]>
 			</programlisting>
 
 		</section>
@@ -659,7 +659,7 @@ String profileUrl = facebookApi.userOperations().getProfileUrl();]]>
 			</para>
 
 			<programlisting language="java"><![CDATA[
-List<String> friendIds = facebookApi.friendOperations().getFriendIds();]]>
+List<String> friendIds = facebook.friendOperations().getFriendIds();]]>
 			</programlisting>
 			
 			<para>
@@ -668,7 +668,7 @@ List<String> friendIds = facebookApi.friendOperations().getFriendIds();]]>
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-FacebookProfile firstFriend = facebookApi.userOperations().getUserProfile(friendIds.get(0));]]>
+FacebookProfile firstFriend = facebook.userOperations().getUserProfile(friendIds.get(0));]]>
 			</programlisting>
 			
 			<para>
@@ -676,7 +676,7 @@ FacebookProfile firstFriend = facebookApi.userOperations().getUserProfile(friend
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<FacebookProfile> friends = facebookApi.friendOperations().getFriendProfiles();]]>
+List<FacebookProfile> friends = facebook.friendOperations().getFriendProfiles();]]>
 			</programlisting>			
 
 			<para>
@@ -685,7 +685,7 @@ List<FacebookProfile> friends = facebookApi.friendOperations().getFriendProfiles
 			</para>
 
 			<programlisting language="java"><![CDATA[
-List<Reference> friends = facebookApi.friendOperations().getFriendLists();]]>
+List<Reference> friends = facebook.friendOperations().getFriendLists();]]>
 			</programlisting>
 			
 			<para>
@@ -693,7 +693,7 @@ List<Reference> friends = facebookApi.friendOperations().getFriendLists();]]>
 			</para>
 
 			<programlisting language="java"><![CDATA[
-List<Reference> friends = facebookApi.friendOperations().getFriendLists("habuma");]]>
+List<Reference> friends = facebook.friendOperations().getFriendLists("habuma");]]>
 			</programlisting>
 
 			<para>
@@ -705,7 +705,7 @@ List<Reference> friends = facebookApi.friendOperations().getFriendLists("habuma"
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<Reference> friends = facebookApi.friendOperations().getFriendListMembers("193839228");]]>
+List<Reference> friends = facebook.friendOperations().getFriendListMembers("193839228");]]>
 			</programlisting>
 			
 			<para>
@@ -714,7 +714,7 @@ List<Reference> friends = facebookApi.friendOperations().getFriendListMembers("1
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-Reference collegeFriends = facebookApi.friendOperations().createFriendList("College Buddies");]]>
+Reference collegeFriends = facebook.friendOperations().createFriendList("College Buddies");]]>
 			</programlisting>
 			
 			<para>
@@ -726,7 +726,7 @@ Reference collegeFriends = facebookApi.friendOperations().createFriendList("Coll
 			</para>
 
 			<programlisting language="java"><![CDATA[
-facebookApi.friendOperations().addToFriendList(collegeFriends.getId(), "527631174");]]>
+facebook.friendOperations().addToFriendList(collegeFriends.getId(), "527631174");]]>
 			</programlisting>
 
 			<para>
@@ -738,7 +738,7 @@ facebookApi.friendOperations().addToFriendList(collegeFriends.getId(), "52763117
 			</para>
 
 			<programlisting language="java"><![CDATA[
-facebookApi.friendOperations().removeFromFriendList(collegeFriends.getId(), "527631174");]]>
+facebook.friendOperations().removeFromFriendList(collegeFriends.getId(), "527631174");]]>
 			</programlisting>
 
 		</section>
@@ -751,7 +751,7 @@ facebookApi.friendOperations().removeFromFriendList(collegeFriends.getId(), "527
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-facebookApi.feedOperations().updateStatus("I'm trying out Spring Social!");]]>
+facebook.feedOperations().updateStatus("I'm trying out Spring Social!");]]>
 			</programlisting>
 			
 			<para>
@@ -763,7 +763,7 @@ FacebookLink link = new FacebookLink("http://www.springsource.org/spring-social"
         "Spring Social", 
         "The Spring Social Project", 
         "Spring Social is an extension to Spring to enable applications to connect with service providers.");
-facebookApi.feedOperations().updateStatus("I'm trying out Spring Social!", link);]]>
+facebook.feedOperations().updateStatus("I'm trying out Spring Social!", link);]]>
 			</programlisting>
 			
 			<para>
@@ -777,7 +777,7 @@ facebookApi.feedOperations().updateStatus("I'm trying out Spring Social!", link)
 			</para>
 			
 			<programlisting language="java"><![CDATA[
-List<Post> feed = facebookApi.feedOperations().getFeed();]]>
+List<Post> feed = facebook.feedOperations().getFeed();]]>
 			</programlisting>
 			
 			<para>
@@ -785,7 +785,7 @@ List<Post> feed = facebookApi.feedOperations().getFeed();]]>
 			</para>			
 
 			<programlisting language="java"><![CDATA[
-List<Post> feed = facebookApi.feedOperations().getFeed("habuma");]]>
+List<Post> feed = facebook.feedOperations().getFeed("habuma");]]>
 			</programlisting>
 
 			<para>
@@ -817,7 +817,7 @@ List<Post> feed = facebookApi.feedOperations().getFeed("habuma");]]>
 		</para>
 		
 		<para>
-			Spring Social offers integration with LinkedIn via <interfacename>LinkedInApi</interfacename> and its implementation, <classname>LinkedInTemplate</classname>.
+			Spring Social offers integration with LinkedIn via <interfacename>LinkedIn</interfacename> and its implementation, <classname>LinkedInTemplate</classname>.
 		</para>
 		
 		<para>
@@ -829,26 +829,26 @@ String consumerKey = "..."; // The application's consumer key
 String consumerSecret = "..."; // The application's consumer secret
 String accessToken = "..."; // The access token granted after OAuth authorization
 String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
-LinkedInApi linkedinApi = new LinkedInTemplate(consumerKey, consumerSecret, accessToken, accessTokenSecret);]]>
+LinkedIn linkedin = new LinkedInTemplate(consumerKey, consumerSecret, accessToken, accessTokenSecret);]]>
 		</programlisting>
 		
 		<para>
-			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>LinkedInApi</interfacename> via a <interfacename>Connection</interfacename>. 
-			For example, the following snippet calls <methodname>getApi()</methodname> on a connection to retrieve a <interfacename>LinkedInApi</interfacename>:
+			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>LinkedIn</interfacename> via a <interfacename>Connection</interfacename>. 
+			For example, the following snippet calls <methodname>getApi()</methodname> on a connection to retrieve a <interfacename>LinkedIn</interfacename>:
 		</para>				
 		
 		<programlisting language="java"><![CDATA[
-Connection<LinkedInApi> connection = connectionRepository.findPrimaryConnectionToApi(LinkedInApi.class);
-LinkedInApi linkedinApi = connection.getApi();]]>
+Connection<LinkedIn> connection = connectionRepository.findPrimaryConnectionToApi(LinkedIn.class);
+LinkedIn linkedin = connection.getApi();]]>
 		</programlisting>
 		
 		<para>
 			Here, <interfacename>ConnectionRepository</interfacename> is being asked for the primary connections that the current user has with LinkedIn.
-			From that connection, it retrieves a <interfacename>LinkedInApi</interfacename> instance that is configured with the connection details received when the connection was first established.
+			From that connection, it retrieves a <interfacename>LinkedIn</interfacename> instance that is configured with the connection details received when the connection was first established.
 		</para>
 		
 		<para>
-			Once you have a <interfacename>LinkedInApi</interfacename> you can use it to interact with LinkedIn on behalf of the user who the access token was granted for.
+			Once you have a <interfacename>LinkedIn</interfacename> you can use it to interact with LinkedIn on behalf of the user who the access token was granted for.
 		</para>
 
 		<section id="linkedin-getProfile">
@@ -911,7 +911,7 @@ List<LinkedInProfile> connections = linkedin.getConnections();]]>
 		</para>
 		
 		<para>
-			Using Spring Social's <interfacename>TripItApi</interfacename> and its implementation, <classname>TripItTemplate</classname>, you can develop applications that integrate a user's travel information and network.
+			Using Spring Social's <interfacename>TripIt</interfacename> and its implementation, <classname>TripItTemplate</classname>, you can develop applications that integrate a user's travel information and network.
 		</para>
 		
 		<para>
@@ -923,33 +923,33 @@ String consumerKey = "..."; // The application's consumer key
 String consumerSecret = "..."; // The application's consumer secret
 String accessToken = "..."; // The access token granted after OAuth authorization
 String accessTokenSecret = "..."; // The access token secret granted after OAuth authorization
-TripItApi tripitApi = new TripItTemplate(consumerKey, consumerSecret, accessToken, accessTokenSecret);]]>
+TripIt tripit = new TripItTemplate(consumerKey, consumerSecret, accessToken, accessTokenSecret);]]>
 		</programlisting>
 		
 		<para>
-			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>TripItApi</interfacename> via a <interfacename>Connection</interfacename>. 
-			For example, the following snippet calls <methodname>getApi()</methodname> on a connection to retrieve a <interfacename>TripItApi</interfacename>:
+			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>TripIt</interfacename> via a <interfacename>Connection</interfacename>. 
+			For example, the following snippet calls <methodname>getApi()</methodname> on a connection to retrieve a <interfacename>TripIt</interfacename>:
 		</para>				
 		
 		<programlisting language="java"><![CDATA[
-Connection<TripItApi> connection = connectionRepository.findPrimaryConnectionToApi(TripItApi.class);
-TripItApi tripitApi = connection.getApi();]]>
+Connection<TripIt> connection = connectionRepository.findPrimaryConnectionToApi(TripIt.class);
+TripIt tripit = connection.getApi();]]>
 		</programlisting>
 		
 		<para>
 			Here, <interfacename>ConnectionRepository</interfacename> is being asked for the primary connections that the current user has with TripIt.
-			From that connection, it retrieves a <interfacename>TripItApi</interfacename> instance that is configured with the connection details received when the connection was first established.
+			From that connection, it retrieves a <interfacename>TripIt</interfacename> instance that is configured with the connection details received when the connection was first established.
 		</para>
 				
 		<para>
-			In either event, once you have a <interfacename>TripItApi</interfacename>, you can use it to retrieve a user's profile and travel data from TripIt.
+			In either event, once you have a <interfacename>TripIt</interfacename>, you can use it to retrieve a user's profile and travel data from TripIt.
 		</para>
 
 		<section id="tripit-getProfile">
 			<title>Retrieving a user's TripIt profile data</title>
 			
 			<para>
-				<interfacename>TripItApi</interfacename>' <methodname>getUserProfile()</methodname> method is useful for retrieving the authenticated user's TripIt profile data. 
+				<interfacename>TripIt</interfacename>' <methodname>getUserProfile()</methodname> method is useful for retrieving the authenticated user's TripIt profile data. 
 				For example:
 			</para>
 			
@@ -1006,7 +1006,7 @@ List<Trip> trips = tripit.getUpcomingTrips();]]>
 		</para>
 		
 		<para>
-			Spring Social's <interfacename>GitHubApi</interfacename> and its implementation, <classname>GitHubTemplate</classname>, offer integration with GitHub's social platform.
+			Spring Social's <interfacename>GitHub</interfacename> and its implementation, <classname>GitHubTemplate</classname>, offer integration with GitHub's social platform.
 		</para>
 		
 		<para>
@@ -1015,26 +1015,26 @@ List<Trip> trips = tripit.getUpcomingTrips();]]>
 		
 		<programlisting language="java"><![CDATA[
 String accessToken = "f8FX29g..."; // access token received from GitHub after OAuth authorization
-GitHubApi githubApi = new GitHubTemplate(accessToken);]]>
+GitHub github = new GitHubTemplate(accessToken);]]>
 		</programlisting>
 		
 		<para>
-			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>GitHubApi</interfacename> via a <interfacename>Connection</interfacename>. 
-			For example, the following snippet calls <methodname>getApi()</methodname> on a connection to retrieve a <interfacename>GitHubApi</interfacename>:
+			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>GitHub</interfacename> via a <interfacename>Connection</interfacename>. 
+			For example, the following snippet calls <methodname>getApi()</methodname> on a connection to retrieve a <interfacename>GitHub</interfacename>:
 		</para>				
 		
 		<programlisting language="java"><![CDATA[
-Connection<GitHubApi> connection = connectionRepository.findPrimaryConnectionToApi(GitHubApi.class);
-GitHubApi githubApi = connection.getApi();]]>
+Connection<GitHub> connection = connectionRepository.findPrimaryConnectionToApi(GitHub.class);
+GitHub github = connection.getApi();]]>
 		</programlisting>
 		
 		<para>
 			Here, <interfacename>ConnectionRepository</interfacename> is being asked for the primary connections that the current user has with GitHub.
-			From that connection, it retrieves a <interfacename>GitHubApi</interfacename> instance that is configured with the connection details received when the connection was first established.
+			From that connection, it retrieves a <interfacename>GitHub</interfacename> instance that is configured with the connection details received when the connection was first established.
 		</para>
 		
 		<para>
-			With a <interfacename>GitHubApi</interfacename> in hand, there are a handful of operations it provides to interact with GitHub on behalf of the user. 
+			With a <interfacename>GitHub</interfacename> in hand, there are a handful of operations it provides to interact with GitHub on behalf of the user. 
 			These will be covered in the following sections.
 		</para>
 
@@ -1042,7 +1042,7 @@ GitHubApi githubApi = connection.getApi();]]>
 			<title>Retrieving a GitHub user's profile</title>
 
 			<para>
-				To get the currently authenticated user's GitHub profile data, call <interfacename>GitHubApi</interfacename>'s <methodname>getUserProfile()</methodname> method:
+				To get the currently authenticated user's GitHub profile data, call <interfacename>GitHub</interfacename>'s <methodname>getUserProfile()</methodname> method:
 			</para>
 			
 			<programlisting language="java"><![CDATA[
@@ -1090,7 +1090,7 @@ String profileUrl = github.getProfileUrl();]]>
 		</para>
 		
 		<para>
-			Spring Social supports interaction with Gowalla through the <interfacename>GowallaApi</interfacename> interface and its implementation, <classname>GowallaTemplate</classname>.
+			Spring Social supports interaction with Gowalla through the <interfacename>Gowalla</interfacename> interface and its implementation, <classname>GowallaTemplate</classname>.
 		</para>
 		
 		<para>
@@ -1099,26 +1099,26 @@ String profileUrl = github.getProfileUrl();]]>
 		
 		<programlisting language="java"><![CDATA[
 String accessToken = "f8FX29g..."; // access token received from Gowalla after OAuth authorization
-GowallaApi gowallaApi = new GowallaTemplate(accessToken);]]>
+Gowalla gowalla = new GowallaTemplate(accessToken);]]>
 		</programlisting>
 		
 		<para>
-			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>GowallaApi</interfacename> via a <interfacename>Connection</interfacename>. 
-			For example, the following snippet calls <methodname>getApi()</methodname> on a connection to retrieve a <interfacename>GowallaApi</interfacename>:
+			If you are using Spring Social's service provider framework, as described in <xref linkend="serviceprovider"/>, you can get an instance of <interfacename>Gowalla</interfacename> via a <interfacename>Connection</interfacename>. 
+			For example, the following snippet calls <methodname>getApi()</methodname> on a connection to retrieve a <interfacename>Gowalla</interfacename>:
 		</para>				
 		
 		<programlisting language="java"><![CDATA[
-Connection<GowallaApi> connection = connectionRepository.findPrimaryConnectionToApi(GowallaApi.class);
-GowallaApi gowallaApi = connection.getApi();]]>
+Connection<Gowalla> connection = connectionRepository.findPrimaryConnectionToApi(Gowalla.class);
+Gowalla gowalla = connection.getApi();]]>
 		</programlisting>
 		
 		<para>
 			Here, <interfacename>ConnectionRepository</interfacename> is being asked for the primary connections that the current user has with Gowalla.
-			From that connection, it retrieves a <interfacename>GowallaApi</interfacename> instance that is configured with the connection details received when the connection was first established.
+			From that connection, it retrieves a <interfacename>Gowalla</interfacename> instance that is configured with the connection details received when the connection was first established.
 		</para>
 		
 		<para>
-			With a <interfacename>GowallaApi</interfacename> in hand, there are a handful of operations it provides to interact with Gowalla on behalf of the user. 
+			With a <interfacename>Gowalla</interfacename> in hand, there are a handful of operations it provides to interact with Gowalla on behalf of the user. 
 			These will be covered in the following sections.
 		</para>
 
@@ -1168,7 +1168,7 @@ String profileUrl = gowalla.getProfileUrl();]]>
 			<title>Getting a user's checkins</title>
 			
 			<para>
-				<interfacename>GowallaApi</interfacename> also allows you to learn about the user's favorite checkin spots. 
+				<interfacename>Gowalla</interfacename> also allows you to learn about the user's favorite checkin spots. 
 				The <methodname>getTopCheckins()</methodname> method will provide a list of the top 10 places that the user has visited:
 			</para>
 			

@@ -15,6 +15,7 @@
  */
 package org.springframework.social.oauth1;
 
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.util.ClassUtils;
@@ -38,22 +39,38 @@ import org.springframework.web.client.RestTemplate;
  * 
  * @author Keith Donald
  */
-public class ProtectedResourceClientFactory {
+class ProtectedResourceClientFactory {
 
 	/**
 	 * Constructs a RestTemplate that adds the OAuth1 Authorization header to each request before it is executed.
 	 */
-	public static RestTemplate create(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+	public static RestTemplate create(OAuth1Credentials credentials) {
 		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 		if (interceptorsSupported) {
 			// favored
-			client.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(consumerKey, consumerSecret, accessToken, accessTokenSecret)});
+			client.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth1RequestInterceptor(credentials)});
 		} else {
 			// 3.0.x compatibility
-			client.setRequestFactory(new Spring30OAuth1RequestFactory(client.getRequestFactory(), consumerKey, consumerSecret, accessToken, accessTokenSecret));
+			client.setRequestFactory(new Spring30OAuth1RequestFactory(client.getRequestFactory(), credentials));
 		}
 		return client;
 	}
 
+	/**
+	 * Wraps a given ClientHttpRequestFactory with Spring30OAuth1RequestFactory, if necessary to support OAuth request signing.
+	 * If Spring 3.1 interceptors are available, no wrapping is necessary and the original request factory is returned.
+	 * @param requestFactory the request factory to wrap
+	 * @param consumerKey the consumer key
+	 * @param consumerSecret the consumer secret
+	 * @param accessToken the access token
+	 * @param accessTokenSecret the access token secret
+	 */
+	public static ClientHttpRequestFactory addOAuthSigning(ClientHttpRequestFactory requestFactory, OAuth1Credentials credentials) {
+		if (interceptorsSupported) {
+			return requestFactory;
+		}		
+		return new Spring30OAuth1RequestFactory(requestFactory, credentials);
+	}
+	
 	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor", ProtectedResourceClientFactory.class.getClassLoader());
 }

@@ -20,9 +20,9 @@ package org.springframework.social.oauth2;
  * @author Keith Donald
  * @author Craig Walls
  */
-enum OAuth2Version {
+public enum OAuth2Version {
 
-	STANDARD {
+	BEARER {
 		public String getAuthorizationHeaderValue(String accessToken) {
 			return "BEARER " + accessToken;
 		}		

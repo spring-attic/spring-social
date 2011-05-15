@@ -15,7 +15,7 @@
  */
 package org.springframework.social.oauth1;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.net.URI;
 import java.util.Map;
@@ -56,7 +56,7 @@ public class SigningSupportTest {
 			.queryParam("a2", "r b").build();
 		HttpRequest request = new SimpleClientHttpRequestFactory().createRequest(uri, HttpMethod.POST);
 		request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		String authorizationHeader = signingUtils.buildAuthorizationHeaderValue(request, "c2&a3=2+q".getBytes(), "9djdj82h48djs9d2", "consumer_secret", "kkk9d7dh3k39sjv7", "token_secret");
+		String authorizationHeader = signingUtils.buildAuthorizationHeaderValue(request, "c2&a3=2+q".getBytes(), new OAuth1Credentials("9djdj82h48djs9d2", "consumer_secret", "kkk9d7dh3k39sjv7", "token_secret"));
 		assertAuthorizationHeader(authorizationHeader, "qz6HT3AG1Z9J%2BP99O4HeMtClGeY%3D");
 	}
 	
@@ -68,7 +68,7 @@ public class SigningSupportTest {
 			.queryParam("a2", "r b").build();
 		ClientHttpRequest request = new SimpleClientHttpRequestFactory().createRequest(uri, HttpMethod.POST);
 		request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		String authorizationHeader = signingUtils.spring30buildAuthorizationHeaderValue(request, "c2&a3=2+q".getBytes(), "9djdj82h48djs9d2", "consumer_secret", "kkk9d7dh3k39sjv7", "token_secret");
+		String authorizationHeader = signingUtils.spring30buildAuthorizationHeaderValue(request, "c2&a3=2+q".getBytes(), new OAuth1Credentials("9djdj82h48djs9d2", "consumer_secret", "kkk9d7dh3k39sjv7", "token_secret"));
 		assertAuthorizationHeader(authorizationHeader, "qz6HT3AG1Z9J%2BP99O4HeMtClGeY%3D");
 	}
 

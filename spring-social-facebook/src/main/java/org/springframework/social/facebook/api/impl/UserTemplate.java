@@ -15,10 +15,15 @@
  */
 package org.springframework.social.facebook.api.impl;
 
+import java.util.List;
+
 import org.springframework.social.facebook.api.FacebookProfile;
 import org.springframework.social.facebook.api.GraphApi;
 import org.springframework.social.facebook.api.ImageType;
+import org.springframework.social.facebook.api.Reference;
 import org.springframework.social.facebook.api.UserOperations;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 class UserTemplate implements UserOperations {
 
@@ -35,7 +40,7 @@ class UserTemplate implements UserOperations {
 	public FacebookProfile getUserProfile(String facebookId) {
 		return graphApi.fetchObject(facebookId, FacebookProfile.class);
 	}
-
+	
 	public byte[] getUserProfileImage() {
 		return getUserProfileImage("me", ImageType.NORMAL);
 	}
@@ -51,4 +56,16 @@ class UserTemplate implements UserOperations {
 	public byte[] getUserProfileImage(String userId, ImageType imageType) {
 		return graphApi.fetchImage(userId, "picture", imageType);
 	}
+
+	public List<String> getUserPermissions() {
+		return graphApi.fetchConnections("me", "permissions", UserPermissionsList.class).getList();
+	}
+
+	public List<Reference> search(String query) {
+		MultiValueMap<String, String> queryMap = new LinkedMultiValueMap<String, String>();
+		queryMap.add("q", query);
+		queryMap.add("type", "user");
+		return graphApi.fetchObject("search", ReferenceList.class, queryMap).getList();
+	}
+
 }

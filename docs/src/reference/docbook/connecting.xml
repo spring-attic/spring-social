@@ -517,7 +517,7 @@ public interface ConnectInterceptor<A> {
 			To accomplish that, you might write the following connection interceptor:
 		</para>
 		<programlisting language="java"><![CDATA[
-public class TweetAfterConnectInterceptor implements ConnectInterceptor<TwitterApi> {
+public class TweetAfterConnectInterceptor implements ConnectInterceptor<Twitter> {
 
     public void preConnect(ConnectionFactory<TwitterApi> provider, WebRequest request) {
         // nothing to do

@@ -16,36 +16,38 @@
 package org.springframework.social.facebook.api.impl;
 
 import java.net.URI;
-import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.exc.UnrecognizedPropertyException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.social.BadCredentialsException;
 import org.springframework.social.facebook.api.CommentOperations;
 import org.springframework.social.facebook.api.EventOperations;
-import org.springframework.social.facebook.api.FacebookApi;
+import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.FeedOperations;
 import org.springframework.social.facebook.api.FriendOperations;
-import org.springframework.social.facebook.api.GraphAPIException;
 import org.springframework.social.facebook.api.GroupOperations;
 import org.springframework.social.facebook.api.ImageType;
 import org.springframework.social.facebook.api.LikeOperations;
 import org.springframework.social.facebook.api.MediaOperations;
+import org.springframework.social.facebook.api.PageOperations;
 import org.springframework.social.facebook.api.PlacesOperations;
 import org.springframework.social.facebook.api.ThreadOperations;
 import org.springframework.social.facebook.api.UserOperations;
 import org.springframework.social.facebook.api.impl.json.FacebookModule;
-import org.springframework.social.oauth2.ProtectedResourceClientFactory;
+import org.springframework.social.oauth2.AbstractOAuth2ApiTemplate;
+import org.springframework.social.oauth2.OAuth2Version;
+import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -56,9 +58,7 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class FacebookTemplate implements FacebookApi {
-
-	private final RestTemplate restTemplate;
+public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Facebook {
 
 	private UserOperations userOperations;
 	
@@ -79,8 +79,20 @@ public class FacebookTemplate implements FacebookApi {
 	private MediaOperations mediaOperations;
 	
 	private ThreadOperations threadOperations;
+	
+	private PageOperations pageOperations;
 
-	private FacebookErrorHandler errorHandler;
+	/**
+	 * Create a new instance of FacebookTemplate.
+	 * This constructor creates a new FacebookTemplate able to perform unauthenticated operations against Facebook's Graph API.
+	 * Some operations do not require OAuth authentication. 
+	 * For example, retrieving a specified user's profile or feed does not require authentication (although the data returned will be limited to what is publicly available). 
+	 * A FacebookTemplate created with this constructor will support those operations.
+	 * Those operations requiring authentication will throw {@link BadCredentialsException}.
+	 */
+	public FacebookTemplate() {
+		initialize();		
+	}
 
 	/**
 	 * Create a new instance of FacebookTemplate.
@@ -88,40 +100,35 @@ public class FacebookTemplate implements FacebookApi {
 	 * @param accessToken An access token given by Facebook after a successful OAuth 2 authentication (or through Facebook's JS library).
 	 */
 	public FacebookTemplate(String accessToken) {
-		this.restTemplate = ProtectedResourceClientFactory.draft10(accessToken);
-		// Facebook returns JSON data with text/javascript content type
-		MappingJacksonHttpMessageConverter json = new MappingJacksonHttpMessageConverter();
-		json.setSupportedMediaTypes(Arrays.asList(new MediaType("text", "javascript")));
-		restTemplate.getMessageConverters().add(json);
-		registerFacebookModule(restTemplate);
-		errorHandler = new FacebookErrorHandler();
-		restTemplate.setErrorHandler(errorHandler);
+		super(accessToken);
+		initialize();
+	}
 
-		// sub-apis
+	private void initSubApis() {
 		userOperations = new UserTemplate(this);
 		placesOperations = new PlacesTemplate(this);
-		friendOperations = new FriendTemplate(this, restTemplate);
+		friendOperations = new FriendTemplate(this, getRestTemplate());
 		feedOperations = new FeedTemplate(this);
 		commentOperations = new CommentTemplate(this);
 		likeOperations = new LikeTemplate(this);
 		eventOperations = new EventTemplate(this);
-		mediaOperations = new MediaTemplate(this);
+		mediaOperations = new MediaTemplate(this, getRestTemplate());
 		groupOperations = new GroupTemplate(this);
 		threadOperations = new ThreadTemplate(this);
+		pageOperations = new PageTemplate(this);
+	}
+	
+	@Override
+	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
+		// Wrap the request factory with a BufferingClientHttpRequestFactory so that the error handler can do repeat reads on the response.getBody()
+		super.setRequestFactory(ClientHttpRequestFactorySelector.bufferRequests(requestFactory));
 	}
 
-	private void registerFacebookModule(RestTemplate restTemplate2) {
-		List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
-		for (HttpMessageConverter<?> converter : converters) {
-			if(converter instanceof MappingJacksonHttpMessageConverter) {
-				MappingJacksonHttpMessageConverter jsonConverter = (MappingJacksonHttpMessageConverter) converter;
-				ObjectMapper objectMapper = new ObjectMapper();				
-				objectMapper.registerModule(new FacebookModule());
-				jsonConverter.setObjectMapper(objectMapper);
-			}
-		}
+	@Override
+	protected OAuth2Version getOAuth2Version() {
+		return OAuth2Version.DRAFT_10;
 	}
-
+	
 	public UserOperations userOperations() {
 		return userOperations;
 	}
@@ -162,35 +169,38 @@ public class FacebookTemplate implements FacebookApi {
 		return threadOperations;
 	}
 	
+	public PageOperations pageOperations() {
+		return pageOperations;
+	}
+	
 	// low-level Graph API operations
 	public <T> T fetchObject(String objectId, Class<T> type) {
-		try {
-			URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
-			return restTemplate.getForObject(uri, type);
-		} catch (ResourceAccessException e) {
-			// Handle the special case where an unknown alias results in an error returned as a HTTP 200
-			if(e.getCause() instanceof UnrecognizedPropertyException) {
-				UnrecognizedPropertyException jsonException = (UnrecognizedPropertyException) e.getCause();
-				if(jsonException.getUnrecognizedPropertyName().equals("error")) {
-					throw new GraphAPIException("Unknown alias: " + objectId);
-				}
-			}
-			throw new GraphAPIException("Unexpected graph API exception", e.getCause());
-		}
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
+		return getRestTemplate().getForObject(uri, type);
 	}
-		
+	
+	public <T> T fetchObject(String objectId, Class<T> type, MultiValueMap<String, String> queryParameters) {
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).queryParams(queryParameters).build();
+		return getRestTemplate().getForObject(uri, type);
+	}
+
 	public <T> T fetchConnections(String objectId, String connectionType, Class<T> type, String... fields) {
-		URIBuilder uriBuilder = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType);
+		MultiValueMap<String, String> queryParameters = new LinkedMultiValueMap<String, String>();
 		if(fields.length > 0) {
 			String joinedFields = join(fields);
-			uriBuilder.queryParam("fields", joinedFields);
+			queryParameters.set("fields", joinedFields);
 		}		
-		return restTemplate.getForObject(uriBuilder.build(), type);
+		return fetchConnections(objectId, connectionType, type, queryParameters);
+	}
+	
+	public <T> T fetchConnections(String objectId, String connectionType, Class<T> type, MultiValueMap<String, String> queryParameters) {
+		URIBuilder uriBuilder = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).queryParams(queryParameters);
+		return getRestTemplate().getForObject(uriBuilder.build(), type);
 	}
 	
 	public byte[] fetchImage(String objectId, String connectionType, ImageType type) {
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType + "?type=" + type.toString().toLowerCase()).build();
-		ResponseEntity<byte[]> response = restTemplate.getForEntity(uri, byte[].class);
+		ResponseEntity<byte[]> response = getRestTemplate().getForEntity(uri, byte[].class);
 		if(response.getStatusCode() == HttpStatus.FOUND) {
 			throw new UnsupportedOperationException("Attempt to fetch image resulted in a redirect which could not be followed. Add Apache HttpComponents HttpClient to the classpath " +
 					"to be able to follow redirects.");
@@ -199,37 +209,52 @@ public class FacebookTemplate implements FacebookApi {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public String publish(String objectId, String connectionType, MultiValueMap<String, String> data) {
-		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
+	public String publish(String objectId, String connectionType, MultiValueMap<String, Object> data) {
+		MultiValueMap<String, Object> requestData = new LinkedMultiValueMap<String, Object>(data);
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
-		Map<String, Object> response = restTemplate.postForObject(uri, requestData, Map.class);
+		Map<String, Object> response = getRestTemplate().postForObject(uri, requestData, Map.class);
 		return (String) response.get("id");
 	}
 	
 	public void post(String objectId, String connectionType, MultiValueMap<String, String> data) {
 		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
-		restTemplate.postForObject(uri, requestData, String.class);
+		getRestTemplate().postForObject(uri, requestData, String.class);
 	}
 	
 	public void delete(String objectId) {
 		LinkedMultiValueMap<String, String> deleteRequest = new LinkedMultiValueMap<String, String>();
 		deleteRequest.set("method", "delete");
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
-		restTemplate.postForObject(uri, deleteRequest, String.class);
+		getRestTemplate().postForObject(uri, deleteRequest, String.class);
 	}
 	
 	public void delete(String objectId, String connectionType) {
 		LinkedMultiValueMap<String, String> deleteRequest = new LinkedMultiValueMap<String, String>();
 		deleteRequest.set("method", "delete");
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
-		restTemplate.postForObject(uri, deleteRequest, String.class);
+		getRestTemplate().postForObject(uri, deleteRequest, String.class);
 	}
 
-	// subclassing hooks
-	
-	public RestTemplate getRestTemplate() {
-		return restTemplate;
+	// private helpers
+	private void initialize() {
+		registerFacebookJsonModule(getRestTemplate());
+		getRestTemplate().setErrorHandler(new FacebookErrorHandler());
+		// Wrap the request factory with a BufferingClientHttpRequestFactory so that the error handler can do repeat reads on the response.getBody()
+		super.setRequestFactory(ClientHttpRequestFactorySelector.bufferRequests(getRestTemplate().getRequestFactory()));
+		initSubApis();
+	}
+		
+	private void registerFacebookJsonModule(RestTemplate restTemplate2) {
+		List<HttpMessageConverter<?>> converters = getRestTemplate().getMessageConverters();
+		for (HttpMessageConverter<?> converter : converters) {
+			if(converter instanceof MappingJacksonHttpMessageConverter) {
+				MappingJacksonHttpMessageConverter jsonConverter = (MappingJacksonHttpMessageConverter) converter;
+				ObjectMapper objectMapper = new ObjectMapper();				
+				objectMapper.registerModule(new FacebookModule());
+				jsonConverter.setObjectMapper(objectMapper);
+			}
+		}
 	}
 
 	private String join(String[] strings) {
@@ -243,4 +268,25 @@ public class FacebookTemplate implements FacebookApi {
 		return builder.toString();
 	}
 	
+	private String buildRequestQuery(MultiValueMap<String, String> queryParameters) {
+		StringBuilder queryBuilder = new StringBuilder();
+		if (!queryParameters.isEmpty()) {
+			queryBuilder.append("?");
+		}
+		
+		for (Iterator<Entry<String, List<String>>> entryIt = queryParameters.entrySet().iterator(); entryIt.hasNext(); ) {
+			Entry<String, List<String>> entry = entryIt.next();
+			for (Iterator<String> valueIt = entry.getValue().iterator(); valueIt.hasNext(); ) {
+				queryBuilder.append(entry.getKey() + "=" + valueIt.next());
+				if (valueIt.hasNext()) {
+					queryBuilder.append("&");
+				}
+			}
+			if (entryIt.hasNext()) {
+				queryBuilder.append("&");
+			}			
+		}
+		return queryBuilder.toString();
+	}
+
 }

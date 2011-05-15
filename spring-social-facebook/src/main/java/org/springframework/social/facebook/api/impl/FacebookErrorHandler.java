@@ -15,7 +15,9 @@
  */
 package org.springframework.social.facebook.api.impl;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonFactory;
@@ -53,6 +55,12 @@ class FacebookErrorHandler extends DefaultResponseErrorHandler {
 
 		handleFacebookError(errorDetails);
 	}
+	
+	@Override 
+	public boolean hasError(ClientHttpResponse response) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(response.getBody()));
+		return super.hasError(response) || (reader.ready() && reader.readLine().startsWith("{\"error\":"));
+	}
 
 	/**
 	 * Examines the error data returned from Facebook and throws the most applicable exception.
@@ -74,6 +82,8 @@ class FacebookErrorHandler extends DefaultResponseErrorHandler {
 			throw new OwnershipException(message);
 		} else if(message.contains("Some of the aliases you requested do not exist")) {
 			throw new GraphAPIException(message);
+		} else if(message.contains("An active access token must be used to query information about the current user.")) {
+			throw new BadCredentialsException(message);
 		}
 		
 	}

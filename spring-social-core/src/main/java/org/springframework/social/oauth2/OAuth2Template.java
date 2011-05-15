@@ -23,10 +23,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
+import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -55,6 +57,10 @@ public class OAuth2Template implements OAuth2Operations {
 	}
 	
 	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String authenticateUrl, String accessTokenUrl) {
+		Assert.notNull(clientId, "The clientId property cannot be null");
+		Assert.notNull(clientSecret, "The clientSecret property cannot be null");
+		Assert.notNull(authorizeUrl, "The authorizeUrl property cannot be null");
+		Assert.notNull(accessTokenUrl, "The accessTokenUrl property cannot be null");
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
 		String clientInfo = "?client_id=" + formEncode(clientId);
@@ -67,7 +73,16 @@ public class OAuth2Template implements OAuth2Operations {
 		this.accessTokenUrl = accessTokenUrl;
 		this.restTemplate = createRestTemplate();
 	}
-	
+
+	/**
+	 * Set the request factory on the underlying RestTemplate.
+	 * This can be used to plug in a different HttpClient to do things like configure custom SSL settings.
+	 */
+	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
+		Assert.notNull(requestFactory, "The requestFactory property cannot be null");
+		this.restTemplate.setRequestFactory(requestFactory);
+	}
+
 	public String buildAuthorizeUrl(GrantType grantType, OAuth2Parameters parameters) {
 		return buildAuthUrl(authorizeUrl, grantType, parameters);
 	}

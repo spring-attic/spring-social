@@ -17,11 +17,13 @@ package org.springframework.social.linkedin.api.impl;
 
 import java.util.List;
 
-import org.springframework.social.linkedin.api.LinkedInApi;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.social.linkedin.api.LinkedIn;
 import org.springframework.social.linkedin.api.LinkedInConnections;
 import org.springframework.social.linkedin.api.LinkedInProfile;
-import org.springframework.social.oauth1.ProtectedResourceClientFactory;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.social.oauth1.AbstractOAuth1ApiTemplate;
 
 /**
  * This is the central class for interacting with LinkedIn.
@@ -32,21 +34,20 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class LinkedInTemplate implements LinkedInApi {
-
-	private final RestTemplate restTemplate;
+public class LinkedInTemplate extends AbstractOAuth1ApiTemplate implements LinkedIn {
 
 	/**
 	 * Creates a new LinkedInTemplate given the minimal amount of information needed to sign requests with OAuth 1 credentials.
-	 * @param apiKey the application's API key
-	 * @param apiSecret the application's API secret
+	 * @param consumerKey the application's API key
+	 * @param consumerSecret the application's API secret
 	 * @param accessToken an access token acquired through OAuth authentication with LinkedIn
 	 * @param accessTokenSecret an access token secret acquired through OAuth authentication with LinkedIn
 	 */
-	public LinkedInTemplate(String apiKey, String apiSecret, String accessToken, String accessTokenSecret) {
-		this.restTemplate = ProtectedResourceClientFactory.create(apiKey, apiSecret, accessToken, accessTokenSecret);
+	public LinkedInTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+		super(consumerKey, consumerSecret, accessToken, accessTokenSecret);
+		registerLinkedInJsonModule();
 	}
-
+	
 	public String getProfileId() {
 		return getUserProfile().getId();
 	}
@@ -56,20 +57,26 @@ public class LinkedInTemplate implements LinkedInApi {
 	}
 
 	public LinkedInProfile getUserProfile() {
-		return restTemplate.getForObject(GET_CURRENT_USER_INFO, LinkedInProfile.class);
+		return getRestTemplate().getForObject("https://api.linkedin.com/v1/people/~:public?format=json", LinkedInProfile.class);
 	}
 
 	public List<LinkedInProfile> getConnections() {
-		LinkedInConnections connections = restTemplate.getForObject("https://api.linkedin.com/v1/people/~/connections", LinkedInConnections.class);
+		LinkedInConnections connections = getRestTemplate().getForObject("https://api.linkedin.com/v1/people/~/connections?format=json", LinkedInConnections.class);
 		return connections.getConnections();
 	}
 
-	// subclassing hooks
+	// private helper
 	
-	protected RestTemplate getRestTemplate() {
-		return restTemplate;
+	private void registerLinkedInJsonModule() {
+		List<HttpMessageConverter<?>> converters = getRestTemplate().getMessageConverters();
+		for (HttpMessageConverter<?> converter : converters) {
+			if(converter instanceof MappingJacksonHttpMessageConverter) {
+				MappingJacksonHttpMessageConverter jsonConverter = (MappingJacksonHttpMessageConverter) converter;
+				ObjectMapper objectMapper = new ObjectMapper();				
+				objectMapper.registerModule(new LinkedInModule());
+				jsonConverter.setObjectMapper(objectMapper);
+			}
+		}
 	}
-
-	static final String GET_CURRENT_USER_INFO = "https://api.linkedin.com/v1/people/~:public";
 
 }

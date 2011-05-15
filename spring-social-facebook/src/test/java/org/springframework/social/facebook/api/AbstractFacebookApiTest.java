@@ -39,7 +39,7 @@ public class AbstractFacebookApiTest {
 		facebook = new FacebookTemplate(ACCESS_TOKEN);
 		mockServer = MockRestServiceServer.createServer(facebook.getRestTemplate());
 		responseHeaders = new HttpHeaders();
-		responseHeaders.setContentType(new MediaType("text", "javascript"));
+		responseHeaders.setContentType(new MediaType("application", "json"));
 	}
 
 
@@ -49,7 +49,6 @@ public class AbstractFacebookApiTest {
 		try {
 			return FB_DATE_FORMAT.parse(dateString);
 		} catch (ParseException e) {
-			System.out.println(e);
 			return null;
 		}
 	}

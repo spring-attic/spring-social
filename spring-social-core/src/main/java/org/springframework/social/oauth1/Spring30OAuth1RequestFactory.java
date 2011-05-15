@@ -35,25 +35,16 @@ import org.springframework.http.client.ClientHttpResponse;
 class Spring30OAuth1RequestFactory implements ClientHttpRequestFactory {
 	
 	private final ClientHttpRequestFactory delegate;
-	
-	private final String consumerKey;
-	
-	private final String consumerSecret;
-	
-	private final String accessToken;
-	
-	private final String accessTokenSecret;
 
-	public Spring30OAuth1RequestFactory(ClientHttpRequestFactory delegate, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+	private final OAuth1Credentials oauth1Credentials;
+
+	public Spring30OAuth1RequestFactory(ClientHttpRequestFactory delegate, OAuth1Credentials oauth1Credentials) {
 		this.delegate = delegate;
-		this.consumerKey = consumerKey;
-		this.consumerSecret = consumerSecret;
-		this.accessToken = accessToken;
-		this.accessTokenSecret = accessTokenSecret;
+		this.oauth1Credentials = oauth1Credentials;
 	}
 
 	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {
-		return new OAuth1SigningRequest(delegate.createRequest(uri, httpMethod), consumerKey, consumerSecret, accessToken, accessTokenSecret);
+		return new OAuth1SigningRequest(delegate.createRequest(uri, httpMethod), oauth1Credentials);
 	}	
 
 	private static class OAuth1SigningRequest implements ClientHttpRequest {
@@ -61,30 +52,21 @@ class Spring30OAuth1RequestFactory implements ClientHttpRequestFactory {
 		private final ClientHttpRequest delegate;
 		
 		private ByteArrayOutputStream bodyOutputStream;
-		
-		private final String consumerKey;
-		
-		private final String consumerSecret;
-		
-		private final String accessToken;
-		
-		private final String accessTokenSecret;
-		
+				
 		private final SigningSupport signingUtils;
 
-		public OAuth1SigningRequest(ClientHttpRequest delegate, String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+		private final OAuth1Credentials oauth1Credentials;
+
+		public OAuth1SigningRequest(ClientHttpRequest delegate, OAuth1Credentials oauth1Credentials) {
 			this.delegate = delegate;
-			this.consumerKey = consumerKey;
-			this.consumerSecret = consumerSecret;
-			this.accessToken = accessToken;
-			this.accessTokenSecret = accessTokenSecret;
+			this.oauth1Credentials = oauth1Credentials;
 			this.bodyOutputStream = new ByteArrayOutputStream();
 			this.signingUtils = new SigningSupport();
 		}
 
 		public ClientHttpResponse execute() throws IOException {
 			byte[] bufferedOutput = bodyOutputStream.toByteArray();
-			String authorizationHeader = signingUtils.spring30buildAuthorizationHeaderValue(this, bufferedOutput, consumerKey, consumerSecret, accessToken, accessTokenSecret);
+			String authorizationHeader = signingUtils.spring30buildAuthorizationHeaderValue(this, bufferedOutput, oauth1Credentials);
 			delegate.getBody().write(bufferedOutput);
 			delegate.getHeaders().set("Authorization", authorizationHeader);
 			return delegate.execute();

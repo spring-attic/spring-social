@@ -17,18 +17,18 @@ package org.springframework.social.linkedin.api;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * A model class containing a list of a user's connections on LinkedIn.
  * 
  * @author Craig Walls
  */
-@XmlRootElement(name = "connections")
 public class LinkedInConnections {
-	@XmlElement(name = "person")
-	List<LinkedInProfile> connections;
+	
+	private List<LinkedInProfile> connections;
+	
+	public LinkedInConnections(List<LinkedInProfile> connections) {
+		this.connections = connections;
+	}
 
 	/**
 	 * Retrieves the list of connected profiles.

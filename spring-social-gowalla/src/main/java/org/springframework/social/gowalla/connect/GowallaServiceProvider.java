@@ -15,7 +15,7 @@
  */
 package org.springframework.social.gowalla.connect;
 
-import org.springframework.social.gowalla.api.GowallaApi;
+import org.springframework.social.gowalla.api.Gowalla;
 import org.springframework.social.gowalla.api.impl.GowallaTemplate;
 import org.springframework.social.oauth2.AbstractOAuth2ServiceProvider;
 import org.springframework.social.oauth2.OAuth2Template;
@@ -24,13 +24,13 @@ import org.springframework.social.oauth2.OAuth2Template;
  * Gowalla ServiceProvider implementation.
  * @author Keith Donald
  */
-public class GowallaServiceProvider extends AbstractOAuth2ServiceProvider<GowallaApi> {
+public class GowallaServiceProvider extends AbstractOAuth2ServiceProvider<Gowalla> {
 
 	public GowallaServiceProvider(String clientId, String clientSecret) {
 		super(new OAuth2Template(clientId, clientSecret, "https://gowalla.com/api/oauth/new", "https://gowalla.com/api/oauth/token"));
 	}
 
-	public GowallaApi getApi(String accessToken) {
+	public Gowalla getApi(String accessToken) {
 		return new GowallaTemplate(accessToken);
 	}
 	

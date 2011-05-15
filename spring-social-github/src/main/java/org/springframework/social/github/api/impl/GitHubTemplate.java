@@ -22,10 +22,10 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.social.github.api.GitHubApi;
+import org.springframework.social.github.api.GitHub;
 import org.springframework.social.github.api.GitHubUserProfile;
-import org.springframework.social.oauth2.ProtectedResourceClientFactory;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.social.oauth2.AbstractOAuth2ApiTemplate;
+import org.springframework.social.oauth2.OAuth2Version;
 
 /**
  * <p>
@@ -38,9 +38,7 @@ import org.springframework.web.client.RestTemplate;
  * </p>
  * @author Craig Walls
  */
-public class GitHubTemplate implements GitHubApi {
-
-	private final RestTemplate restTemplate;
+public class GitHubTemplate extends AbstractOAuth2ApiTemplate implements GitHub {
 
 	/**
 	 * Constructs a GitHubTemplate with the minimal amount of information
@@ -52,7 +50,12 @@ public class GitHubTemplate implements GitHubApi {
 	 *            authentication.
 	 */
 	public GitHubTemplate(String accessToken) {
-		this.restTemplate = ProtectedResourceClientFactory.draft8(accessToken);
+		super(accessToken);
+	}
+
+	@Override
+	protected OAuth2Version getOAuth2Version() {
+		return OAuth2Version.DRAFT_8;
 	}
 
 	public String getProfileId() {
@@ -61,7 +64,7 @@ public class GitHubTemplate implements GitHubApi {
 
 	@SuppressWarnings("unchecked")
 	public GitHubUserProfile getUserProfile() {
-		Map<String, ?> result = restTemplate.getForObject(PROFILE_URL, Map.class);
+		Map<String, ?> result = getRestTemplate().getForObject(PROFILE_URL, Map.class);
 		Map<String, ?> user = (Map<String, String>) result.get("user");
 		Long gitHubId = Long.valueOf(String.valueOf(user.get("id")));
 		String username = String.valueOf(user.get("login"));
@@ -78,12 +81,6 @@ public class GitHubTemplate implements GitHubApi {
 
 	public String getProfileUrl() {
 		return "https://github.com/" + getProfileId();
-	}
-	
-	// subclassing hooks
-	
-	protected RestTemplate getRestTemplate() {
-		return restTemplate;
 	}
 	
 	// internal helpers

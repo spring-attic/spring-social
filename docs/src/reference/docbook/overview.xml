@@ -109,9 +109,9 @@
 	  
     <programlisting language="xml"><![CDATA[
 <dependency>
-<groupId>org.springframework.social</groupId>
-<artifactId>spring-social-web</artifactId>
-<version>${org.springframework.social-version}</version>
+  <groupId>org.springframework.social</groupId>
+  <artifactId>spring-social-web</artifactId>
+  <version>${org.springframework.social-version}</version>
 </dependency>]]>
 	  </programlisting>
       	  
@@ -136,6 +136,120 @@
   <name>Spring Maven Snapshot Repository</name>
   <url>http://maven.springframework.org/snapshot</url>
 </repository>]]>
-		</programlisting>	  
+		</programlisting>
+		
+		<section id="overview-dependencies">
+			<title>Dependencies</title>
+			
+			<para>
+				In addition to Spring Social itself, there are a few additional dependencies you may need to add to your project's build.
+			</para>
+			
+			<section id="overview-dependencies-spring">
+				<title>Spring Framework</title>
+				<para>
+					Spring Social depends on the Spring Framework's web module for its REST client support using <classname>RestTemplate</classname>.
+					If Spring 3.1 is available, Spring Social will take advantage of some new features in Spring 3.1.
+					However, Spring Social does not depend on these new features and will work with Spring 3.0.3 or higher.
+				</para>
+				
+				<para>
+					If you want to use Spring Social with Spring 3.0.3 or higher, you'll need to explicitly add the spring-web dependency to your build, specifying the version:
+				</para>
+				
+			    <programlisting language="xml"><![CDATA[
+<dependency>
+  <groupId>org.springframework</groupId>
+  <artifactId>spring-web</artifactId>
+  <version>3.0.5.RELEASE</version>
+</dependency>]]>
+	  			</programlisting>
+	  			
+	  			<para>
+	  				Maven's dependency management favors "nearest" dependencies, so your project's dependency on a specific version of spring-web will override Spring Social's dependency on the 3.1 version.
+  				</para>
+  				
+  				<para>
+	  				Gradle, on the other hand, favors the newest dependency.
+	  				If you're using Gradle to build your project, you'll need to also set the dependency's <code>force</code> property to <code>true</code> to force Gradle to resolve your chosen version of Spring:
+	  			</para>
+
+			    <programlisting language="java"><![CDATA[
+dependencies { 
+	compile ("org.springframework.social:spring-social-core:1.0.0.M3")
+	compile ("org.springframework:spring-web:3.0.3.RELEASE") { force=true }
+}]]>
+	  			</programlisting>
+
+			</section>
+
+			<section id="overview-dependencies-springsecurity">
+				<title>Spring Security</title>
+
+				<para>
+					If you're using Spring Social's JDBC-based connection repository, it will require a <interfacename>TextEncryptor</interfacename> from Spring Security 3.1.0 to encrypt connection data as it is persisted.
+					For that, you'll need to add the core module from Spring Security 3.1.0 to your project build:
+				</para>
+
+		    	<programlisting language="xml"><![CDATA[
+<dependency>
+  <groupId>org.springframework.security</groupId>
+  <artifactId>spring-security-core</artifactId>
+  <version>3.1.0.RC2</version>
+</dependency>]]>
+	  			</programlisting>
+
+  			</section>
+
+			<section id="overview-dependencies-commonscodec">
+				<title>Commons Codec</title>
+
+				<para>
+					When using Spring Social to integrate with OAuth 1-based providers, you'll need to add the Commons Codec library to your project:
+				</para>
+			
+		    	<programlisting language="xml"><![CDATA[
+<dependency>
+  <groupId>commons-codec</groupId>
+  <artifactId>commons-codec</artifactId>
+  <version>1.5</version>
+</dependency>]]>
+	  			</programlisting>
+	  			
+  			</section>
+
+			<section id="overview-dependencies-httpcomponents">
+				<title>Apache HttpComponents</title>
+				
+				<para>
+					Spring Social has an optional dependency on Apache's HttpComponents HttpClient as the basis for creating requests when communicating with a service provider.
+					If the HttpComponents HttpClient library is present, it will favor it. 
+					Otherwise, it will fall back on standard Java facilities for request creation.
+				</para>
+
+		    	<programlisting language="xml"><![CDATA[
+<dependency>
+  <groupId>org.apache.httpcomponents</groupId>
+  <artifactId>httpclient</artifactId>
+  <version>4.1.1</version>
+</dependency>]]>
+	  			</programlisting>
+								
+				<para>
+					Although shown here to depende on version 4.1.1 of the HttpClient library, Spring Social can also with with 4.0.X versions of HttpClient.
+				</para>
+			</section>
+
+			<section id="overview-dependencies-jackson">
+				<title>Jackson JSON Processor</title>
+
+				<para>
+					Spring Social's API binding implementations rely on the Jackson JSON processor to deserialize JSON responses into Java model objects.
+					Each of the provider modules transitively depend on Jackson 1.8.0, so there's nothing special to do to add Jackson to your project's Maven or Gradle build. 
+				</para>
+
+  			</section>
+
+		</section>	  
   </section>
 </chapter>

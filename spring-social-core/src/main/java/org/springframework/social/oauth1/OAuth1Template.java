@@ -31,9 +31,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
+import org.springframework.util.Assert;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriUtils;
@@ -75,6 +77,11 @@ public class OAuth1Template implements OAuth1Operations {
 	}
 	
 	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String authenticateUrl, String accessTokenUrl, OAuth1Version version) {
+		Assert.notNull(consumerKey, "The consumerKey property cannot be null");
+		Assert.notNull(consumerSecret, "The consumerSecret property cannot be null");
+		Assert.notNull(requestTokenUrl, "The requestTokenUrl property cannot be null");
+		Assert.notNull(authorizeUrl, "The authorizeUrl property cannot be null");
+		Assert.notNull(accessTokenUrl, "The accessTokenUrl property cannot be null");
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
 		this.requestTokenUrl = encodeTokenUri(requestTokenUrl);
@@ -86,6 +93,15 @@ public class OAuth1Template implements OAuth1Operations {
 		this.signingUtils = new SigningSupport();
 	}
 
+	/**
+	 * Set the request factory on the underlying RestTemplate.
+	 * This can be used to plug in a different HttpClient to do things like configure custom SSL settings.
+	 */
+	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
+		Assert.notNull(requestFactory, "The requestFactory property cannot be null");
+		restTemplate.setRequestFactory(requestFactory);
+	}
+	
 	// implementing OAuth1Operations
 	
 	public OAuth1Version getVersion() {
