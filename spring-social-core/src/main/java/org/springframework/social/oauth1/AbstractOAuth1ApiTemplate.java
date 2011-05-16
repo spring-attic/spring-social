@@ -15,7 +15,15 @@
  */
 package org.springframework.social.oauth1;
 
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.web.client.RestTemplate;
 
@@ -35,8 +43,9 @@ public abstract class AbstractOAuth1ApiTemplate {
 	protected AbstractOAuth1ApiTemplate() {
 		credentials = null;
 		restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
+		restTemplate.setMessageConverters(getMessageConverters());
 	}
-	
+
 	/**
 	 * Constructs the API template with OAuth credentials necessary to perform operations on behalf of a user.
 	 * @param consumerKey the application's consumer key
@@ -47,6 +56,7 @@ public abstract class AbstractOAuth1ApiTemplate {
 	protected AbstractOAuth1ApiTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
 		credentials = new OAuth1Credentials(consumerKey, consumerSecret, accessToken, accessTokenSecret);
 		restTemplate = ProtectedResourceClientFactory.create(credentials);
+		restTemplate.setMessageConverters(getMessageConverters());
 	}
 	
 	/**
@@ -83,4 +93,22 @@ public abstract class AbstractOAuth1ApiTemplate {
 		return restTemplate;
 	}
 
+	// subclassing hooks
+	
+	/**
+	 * Returns a list of {@link HttpMessageConverter}s to be used by the internal {@link RestTemplate}.
+	 * By default, this includes a {@link StringHttpMessageConverter}, a {@link MappingJacksonHttpMessageConverter}, and a {@link FormHttpMessageConverter}.
+	 * The {@link FormHttpMessageConverter} is set to use "UTF-8" character encoding.
+	 * Override this method to add additional message converters or to replace the default list of message converters.
+	 */
+	protected List<HttpMessageConverter<?>> getMessageConverters() {
+		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
+		messageConverters.add(new StringHttpMessageConverter());
+		FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
+		formHttpMessageConverter.setCharset(Charset.forName("UTF-8"));
+		messageConverters.add(formHttpMessageConverter);
+		messageConverters.add(new MappingJacksonHttpMessageConverter());
+		return messageConverters;
+	}
+	
 }
