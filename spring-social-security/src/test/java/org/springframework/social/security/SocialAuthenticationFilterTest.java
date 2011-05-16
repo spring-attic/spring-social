@@ -16,13 +16,19 @@
 
 package org.springframework.social.security;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,13 +43,13 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.NullRememberMeServices;
+import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactory;
+import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.UsersConnectionRepository;
-import org.springframework.social.security.SocialAuthenticationFilter;
-import org.springframework.social.security.SocialAuthenticationToken;
-import org.springframework.social.security.UserIdExtractor;
 import org.springframework.social.security.provider.SocialAuthenticationService;
 import org.springframework.social.security.provider.SocialAuthenticationService.AuthenticationMode;
+import org.springframework.social.security.provider.SocialAuthenticationService.ConnectionCardinality;
 import org.springframework.social.security.test.DummyConnection;
 
 public class SocialAuthenticationFilterTest {
@@ -78,6 +84,7 @@ public class SocialAuthenticationFilterTest {
 
 			SocialAuthenticationService<Object> authServiceImplicit = mock(SocialAuthenticationService.class);
 			when(authServiceImplicit.getAuthenticationMode()).thenReturn(AuthenticationMode.IMPLICIT);
+			when(authServiceImplicit.getConnectionCardinality()).thenReturn(ConnectionCardinality.ONE_TO_ONE);
 			when(authServiceImplicit.getAuthToken(AuthenticationMode.IMPLICIT, env.req, env.res)).thenReturn(env.auth);
 			when(authServiceImplicit.getConnectionFactory()).thenReturn(factory);
 			env.filter.addAuthService(authServiceImplicit);
@@ -134,6 +141,7 @@ public class SocialAuthenticationFilterTest {
 
 		SocialAuthenticationService<Object> authService = mock(SocialAuthenticationService.class);
 		when(authService.getAuthenticationMode()).thenReturn(AuthenticationMode.EXPLICIT);
+		when(authService.getConnectionCardinality()).thenReturn(ConnectionCardinality.ONE_TO_ONE);
 		when(authService.getConnectionFactory()).thenReturn(factory);
 		when(authService.getAuthToken(AuthenticationMode.EXPLICIT, env.req, env.res)).thenReturn(env.auth);
 		env.filter.addAuthService(authService);
@@ -146,6 +154,50 @@ public class SocialAuthenticationFilterTest {
 
 		assertNotNull(SecurityContextHolder.getContext().getAuthentication());
 
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void addConnection() {
+		SocialAuthenticationFilter filter = new SocialAuthenticationFilter();
+		UsersConnectionRepository usersConnectionRepository = mock(UsersConnectionRepository.class);
+		filter.setUsersConnectionRepository(usersConnectionRepository);
+
+		SocialAuthenticationService<Object> authService = mock(SocialAuthenticationService.class);
+		ConnectionRepository connectionRepository = mock(ConnectionRepository.class);
+		ConnectionFactory<Object> connectionFactory = mock(ConnectionFactory.class);
+		
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		ConnectionData data = new ConnectionData("dummyprovider", "1234", null, null, null, null, null, null, null);
+		String userId = "joe";
+		
+		DummyConnection<Object> connection = DummyConnection.dummy(data.getProviderId(), userId);
+		
+		when(usersConnectionRepository.findUserIdsConnectedTo(data.getProviderId(), set(data.getProviderUserId()))).thenReturn(empty(String.class));
+		when(usersConnectionRepository.createConnectionRepository(userId)).thenReturn(connectionRepository);
+		
+		when(authService.getConnectionCardinality()).thenReturn(ConnectionCardinality.ONE_TO_ONE);
+		when(authService.getConnectionFactory()).thenReturn(connectionFactory);
+		when(authService.getConnectionAddedRedirectUrl(request, connection)).thenReturn("/redirect");
+		
+		when(connectionFactory.createConnection(data)).thenReturn(connection);
+		
+		try {
+			filter.addConnection(authService, request, userId, data);
+			fail();
+		} catch (SocialAuthenticationRedirectException e) {
+			assertEquals("/redirect", e.getRedirectUrl());
+		}
+
+		verify(connectionRepository).addConnection(connection);
+	}
+	
+	private static <T> Set<T> empty(Class<T> cls) {
+		return Collections.emptySet();
+	}
+	
+	private static <T> Set<T> set(T ... o) {
+		return Collections.unmodifiableSet(new HashSet<T>(Arrays.asList(o)));
 	}
 
 	private static class FilterTestEnv {
