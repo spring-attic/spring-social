@@ -18,8 +18,10 @@ package org.springframework.social.security;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -44,6 +46,7 @@ import org.springframework.security.web.authentication.session.NullAuthenticated
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.security.provider.SocialAuthenticationService;
 import org.springframework.social.security.provider.SocialAuthenticationService.AuthenticationMode;
@@ -180,6 +183,9 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		if (token != null) {
 			Authentication auth = getAuthentication();
 			if (auth == null || !auth.isAuthenticated()) {
+				if (!authService.getConnectionCardinality().isAuthenticatePossible()) {
+					return null;
+				}
 				token.setDetails(getAuthDetailsSource().buildDetails(request));
 				return getAuthManager().authenticate(token);
 			} else {
@@ -187,22 +193,45 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 				String userId = userIdExtractor.extractUserId(auth);
 				Object principal = token.getPrincipal();
 				if (userId != null && principal instanceof ConnectionData) {
-					// TODO check for existing connection
-					// TODO optionally disallow more than one connection for providerUserId
-					
-					Connection<?> connection = authService.getConnectionFactory().createConnection(
-							(ConnectionData) principal);
-					connection.sync();
-					usersConnectionRepository.createConnectionRepository(userId).addConnection(connection);
-
-					throw new SocialAuthenticationRedirectException(authService.getConnectionAddedRedirectUrl(request,
-							connection));
+					return addConnection(authService, request, userId, (ConnectionData) principal);
 				}
-				return null;
 			}
 		}
 
 		return null;
+	}
+
+	protected Authentication addConnection(final SocialAuthenticationService<?> authService,
+			final HttpServletRequest request, String userId, final ConnectionData data) {
+
+		HashSet<String> userIdSet = new HashSet<String>();
+		userIdSet.add(data.getProviderUserId());
+		Set<String> connectedUserIds = usersConnectionRepository
+				.findUserIdsConnectedTo(data.getProviderId(), userIdSet);
+		if (connectedUserIds.contains(userId)) {
+			// already connected
+			return null;
+		} else if (!authService.getConnectionCardinality().isMultiUserId() && !connectedUserIds.isEmpty()) {
+			return null;
+		}
+
+		ConnectionRepository repo = usersConnectionRepository.createConnectionRepository(userId);
+
+		if (!authService.getConnectionCardinality().isMultiProviderUserId()) {
+			List<Connection<?>> connections = repo.findConnectionsToProvider(data.getProviderId());
+			if (!connections.isEmpty()) {
+				// TODO maybe throw an exception to allow UI feedback?
+				return null;
+			}
+
+		}
+
+		// add new connection
+		Connection<?> connection = authService.getConnectionFactory().createConnection(data);
+		connection.sync();
+		repo.addConnection(connection);
+		throw new SocialAuthenticationRedirectException(authService.getConnectionAddedRedirectUrl(request, connection));
+
 	}
 
 	protected String getRequestedProviderId(HttpServletRequest request) {

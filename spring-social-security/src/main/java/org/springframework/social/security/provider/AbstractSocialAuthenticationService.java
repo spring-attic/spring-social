@@ -9,7 +9,8 @@ import org.springframework.util.Assert;
 public abstract class AbstractSocialAuthenticationService<S> implements SocialAuthenticationService<S>,
 		InitializingBean {
 
-	private AuthenticationMode authenticationMode;
+	private AuthenticationMode authenticationMode = null;
+	private ConnectionCardinality connectionCardinality = ConnectionCardinality.ONE_TO_ONE;
 	private String connectionAddedRedirectUrl = "/";
 
 	public void afterPropertiesSet() throws Exception {
@@ -22,6 +23,17 @@ public abstract class AbstractSocialAuthenticationService<S> implements SocialAu
 
 	public final AuthenticationMode getAuthenticationMode() {
 		return authenticationMode;
+	}
+
+	public ConnectionCardinality getConnectionCardinality() {
+		return connectionCardinality;
+	}
+
+	public void setConnectionCardinality(ConnectionCardinality connectionCardinality) {
+		if (connectionCardinality == null) {
+			throw new NullPointerException("connectionCardinality");
+		}
+		this.connectionCardinality = connectionCardinality;
 	}
 
 	public String getConnectionAddedRedirectUrl(HttpServletRequest request, Connection<?> connection) {

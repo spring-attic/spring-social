@@ -38,12 +38,67 @@ public interface SocialAuthenticationService<S> {
 		EXPLICIT, IMPLICIT;
 	}
 
+	public enum ConnectionCardinality {
+		/**
+		 * only one connected providerUserId per userId and vice versa
+		 */
+		ONE_TO_ONE(false, false),
+
+		/**
+		 * many connected providerUserIds per userId, but only one userId per
+		 * providerUserId
+		 */
+		ONE_TO_MANY(false, true),
+
+		/**
+		 * only one providerUserId per userId, but many userIds per
+		 * providerUserId. Authentication of users not possible
+		 */
+		MANY_TO_ONE(true, false),
+
+		/**
+		 * no restrictions. Authentication of users not possible
+		 */
+		MANY_TO_MANY(true, true);
+		
+		private final boolean multiUserId;
+		private final boolean multiProviderUserId;
+
+		private ConnectionCardinality(boolean multiUserId, boolean multiProviderUserId) {
+			this.multiUserId = multiUserId;
+			this.multiProviderUserId = multiProviderUserId;
+		}
+
+		/**
+		 * allow many userIds per providerUserId. If true, authentication is not possible
+		 */
+		public boolean isMultiUserId() {
+			return multiUserId;
+		}
+
+		/**
+		 * allow many providerUserIds per userId
+		 */
+		public boolean isMultiProviderUserId() {
+			return multiProviderUserId;
+		}
+
+		public boolean isAuthenticatePossible() {
+			return !isMultiUserId();
+		}
+	}
+
 	/**
 	 * @return supported {@link AuthenticationMode} or <code>null</code> for
 	 *         both
 	 */
 	AuthenticationMode getAuthenticationMode();
 
+	/**
+	 * @return {@link ConnectionCardinality} for connections to this provider
+	 */
+	ConnectionCardinality getConnectionCardinality();
+	
 	/**
 	 * @return {@link ConnectionFactory} used for authentication
 	 */
