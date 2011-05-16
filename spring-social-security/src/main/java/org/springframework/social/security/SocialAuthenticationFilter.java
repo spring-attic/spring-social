@@ -17,10 +17,8 @@
 package org.springframework.social.security;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.FilterChain;
@@ -51,13 +49,12 @@ import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.security.provider.SocialAuthenticationService;
 import org.springframework.social.security.provider.SocialAuthenticationService.AuthenticationMode;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 public class SocialAuthenticationFilter extends GenericFilterBean {
 
 	private AuthenticationManager authManager;
-	private Map<String, SocialAuthenticationService<?>> authServices = new HashMap<String, SocialAuthenticationService<?>>();
+	private SocialAuthenticationServiceLocator authServiceLocator;
 	private AuthenticationDetailsSource<HttpServletRequest, ?> authDetailsSource = new WebAuthenticationDetailsSource();
 	private ApplicationEventPublisher eventPublisher;
 	private RememberMeServices rememberMeServices = null;
@@ -79,6 +76,7 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		Assert.notNull(getAuthManager(), "authManager must be set");
 		Assert.notNull(getUserIdExtractor(), "userIdExtractor must be set");
 		Assert.notNull(getUsersConnectionRepository(), "usersConnectionRepository must be set");
+		Assert.notNull(getAuthServiceLocator(), "authServiceLocator must be configured");
 	}
 
 	public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain)
@@ -118,7 +116,9 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 	protected Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response)
 			throws AuthenticationException, IOException, ServletException, SocialAuthenticationRedirectException {
 
-		if (CollectionUtils.isEmpty(authServices)) {
+		Set<String> authProviders = authServiceLocator.registeredAuthenticationProviderIds();
+		
+		if (authProviders.isEmpty()) {
 			return null;
 		}
 
@@ -126,8 +126,8 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 
 		if (explicitAuthProviderId != null) {
 			// auth explicitly required
-			SocialAuthenticationService<?> authService = authServices.get(explicitAuthProviderId);
-			if (authService == null || authService.getAuthenticationMode() == AuthenticationMode.IMPLICIT) {
+			SocialAuthenticationService<?> authService = authServiceLocator.getAuthenticationService(explicitAuthProviderId);
+			if (authService.getAuthenticationMode() == AuthenticationMode.IMPLICIT) {
 				// unknown service id
 				return null;
 			}
@@ -137,9 +137,11 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 
 			Authentication auth = null;
 			AuthenticationException authEx = null;
-			for (final SocialAuthenticationService<?> authService : authServices.values()) {
+			for (final String authProvider : authProviders) {
 
-				if (authService.getAuthenticationMode() == AuthenticationMode.EXPLICIT) {
+				SocialAuthenticationService<?> authService = authServiceLocator.getAuthenticationService(authProvider);
+				
+				if (authService .getAuthenticationMode() == AuthenticationMode.EXPLICIT) {
 					continue;
 				}
 
@@ -339,17 +341,6 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		getRememberMeServices().loginFail(request, response);
 	}
 
-	public void setAuthServices(final List<SocialAuthenticationService<?>> authServices) {
-		this.authServices = new HashMap<String, SocialAuthenticationService<?>>();
-		for (SocialAuthenticationService<?> authService : authServices) {
-			addAuthService(authService);
-		}
-	}
-
-	public void addAuthService(SocialAuthenticationService<?> authService) {
-		authServices.put(authService.getConnectionFactory().getProviderId(), authService);
-	}
-
 	public AuthenticationDetailsSource<HttpServletRequest, ?> getAuthDetailsSource() {
 		return authDetailsSource;
 	}
@@ -425,4 +416,12 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		this.usersConnectionRepository = usersConnectionRepository;
 	}
 
+	public SocialAuthenticationServiceLocator getAuthServiceLocator() {
+		return authServiceLocator;
+	}
+
+	public void setAuthServiceLocator(SocialAuthenticationServiceLocator authServiceLocator) {
+		this.authServiceLocator = authServiceLocator;
+	}
+	
 }

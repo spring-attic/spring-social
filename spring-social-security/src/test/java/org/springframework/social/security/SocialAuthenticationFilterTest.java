@@ -51,6 +51,7 @@ import org.springframework.social.security.provider.SocialAuthenticationService;
 import org.springframework.social.security.provider.SocialAuthenticationService.AuthenticationMode;
 import org.springframework.social.security.provider.SocialAuthenticationService.ConnectionCardinality;
 import org.springframework.social.security.test.DummyConnection;
+import org.springframework.social.security.test.MockConnectionFactory;
 
 public class SocialAuthenticationFilterTest {
 
@@ -67,7 +68,7 @@ public class SocialAuthenticationFilterTest {
 		FilterTestEnv env = new FilterTestEnv("GET", "/something");
 
 		{
-			ConnectionFactory<Object> factory = mock(ConnectionFactory.class);
+			ConnectionFactory<Object> factory = mock(MockConnectionFactory.class);
 			when(factory.getProviderId()).thenReturn("mockExplicit");
 
 			SocialAuthenticationService<Object> authServiceExplicit = mock(SocialAuthenticationService.class);
@@ -75,19 +76,19 @@ public class SocialAuthenticationFilterTest {
 			when(authServiceExplicit.getAuthToken(AuthenticationMode.EXPLICIT, env.req, env.res)).thenThrow(
 					new RuntimeException("unexpected call"));
 			when(authServiceExplicit.getConnectionFactory()).thenReturn(factory);
-			env.filter.addAuthService(authServiceExplicit);
+			env.addAuthService(authServiceExplicit);
 		}
 
 		{
-			ConnectionFactory<Object> factory = mock(ConnectionFactory.class);
+			ConnectionFactory<String> factory = mock(MockConnectionFactory.StringFactory.class);
 			when(factory.getProviderId()).thenReturn("mockImplicit");
 
-			SocialAuthenticationService<Object> authServiceImplicit = mock(SocialAuthenticationService.class);
+			SocialAuthenticationService<String> authServiceImplicit = mock(SocialAuthenticationService.class);
 			when(authServiceImplicit.getAuthenticationMode()).thenReturn(AuthenticationMode.IMPLICIT);
 			when(authServiceImplicit.getConnectionCardinality()).thenReturn(ConnectionCardinality.ONE_TO_ONE);
 			when(authServiceImplicit.getAuthToken(AuthenticationMode.IMPLICIT, env.req, env.res)).thenReturn(env.auth);
 			when(authServiceImplicit.getConnectionFactory()).thenReturn(factory);
-			env.filter.addAuthService(authServiceImplicit);
+			env.addAuthService(authServiceImplicit);
 		}
 
 		when(env.filter.getAuthManager().authenticate(env.auth)).thenReturn(env.authSuccess);
@@ -107,7 +108,7 @@ public class SocialAuthenticationFilterTest {
 		FilterTestEnv env = new FilterTestEnv("GET", "/something");
 
 		{
-			ConnectionFactory<Object> provider = mock(ConnectionFactory.class);
+			ConnectionFactory<Object> provider = mock(MockConnectionFactory.class);
 			when(provider.getProviderId()).thenReturn("mock");
 
 			SocialAuthenticationService<Object> authServiceExplicit = mock(SocialAuthenticationService.class);
@@ -115,7 +116,7 @@ public class SocialAuthenticationFilterTest {
 			when(authServiceExplicit.getAuthToken(AuthenticationMode.EXPLICIT, env.req, env.res)).thenThrow(
 					new RuntimeException("unexpected call"));
 			when(authServiceExplicit.getConnectionFactory()).thenReturn(provider);
-			env.filter.addAuthService(authServiceExplicit);
+			env.addAuthService(authServiceExplicit);
 		}
 
 		when(env.filter.getAuthManager().authenticate(env.auth)).thenReturn(env.authSuccess);
@@ -135,7 +136,7 @@ public class SocialAuthenticationFilterTest {
 		FilterTestEnv env = new FilterTestEnv("GET", "/auth");
 		env.filter.setFilterProcessesUrl(env.req.getRequestURI());
 
-		ConnectionFactory<Object> factory = mock(ConnectionFactory.class);
+		ConnectionFactory<Object> factory = mock(MockConnectionFactory.class);
 		when(factory.getProviderId()).thenReturn("mock");
 		env.req.setRequestURI(env.req.getRequestURI() + "/" + factory.getProviderId());
 
@@ -144,7 +145,7 @@ public class SocialAuthenticationFilterTest {
 		when(authService.getConnectionCardinality()).thenReturn(ConnectionCardinality.ONE_TO_ONE);
 		when(authService.getConnectionFactory()).thenReturn(factory);
 		when(authService.getAuthToken(AuthenticationMode.EXPLICIT, env.req, env.res)).thenReturn(env.auth);
-		env.filter.addAuthService(authService);
+		env.addAuthService(authService);
 
 		when(env.filter.getAuthManager().authenticate(env.auth)).thenReturn(env.authSuccess);
 
@@ -162,10 +163,10 @@ public class SocialAuthenticationFilterTest {
 		SocialAuthenticationFilter filter = new SocialAuthenticationFilter();
 		UsersConnectionRepository usersConnectionRepository = mock(UsersConnectionRepository.class);
 		filter.setUsersConnectionRepository(usersConnectionRepository);
-
+		
 		SocialAuthenticationService<Object> authService = mock(SocialAuthenticationService.class);
 		ConnectionRepository connectionRepository = mock(ConnectionRepository.class);
-		ConnectionFactory<Object> connectionFactory = mock(ConnectionFactory.class);
+		ConnectionFactory<Object> connectionFactory = mock(MockConnectionFactory.class);
 		
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		ConnectionData data = new ConnectionData("dummyprovider", "1234", null, null, null, null, null, null, null);
@@ -220,6 +221,7 @@ public class SocialAuthenticationFilterTest {
 			filter = new SocialAuthenticationFilter();
 			filter.setServletContext(context);
 			filter.setRememberMeServices(new NullRememberMeServices());
+			filter.setAuthServiceLocator(new SocialAuthenticationServiceRegistry());
 			filter.setAuthManager(mock(AuthenticationManager.class));
 			filter.setUserIdExtractor(mock(UserIdExtractor.class));
 			filter.setUsersConnectionRepository(mock(UsersConnectionRepository.class));
@@ -231,6 +233,10 @@ public class SocialAuthenticationFilterTest {
 			authSuccess = new SocialAuthenticationToken("mock", user, null, authorities);
 		}
 
+		private void addAuthService(SocialAuthenticationService<?> authenticationService) {
+			((SocialAuthenticationServiceRegistry)filter.getAuthServiceLocator()).addAuthenticationService(authenticationService);
+		}
+		
 		private void doFilter() throws Exception {
 
 			filter.init(config);
