@@ -13,37 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.tripit.connect;
+package org.springframework.social.github.connect;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.social.connect.UserProfile;
-import org.springframework.social.tripit.api.TripIt;
-import org.springframework.social.tripit.api.TripItProfile;
+import org.springframework.social.github.api.GitHub;
+import org.springframework.social.github.api.GitHubUserProfile;
 
-public class TripItApiAdapterTest {
+public class GitHubAdapterTest {
 
-	private TripItApiAdapter apiAdapter = new TripItApiAdapter();
+	private GitHubAdapter apiAdapter = new GitHubAdapter();
 	
-	private TripIt api = Mockito.mock(TripIt.class);
+	private GitHub github = Mockito.mock(GitHub.class);
 	
 	@Test
-	public void fetchProfile() {
-		Mockito.when(api.getUserProfile()).thenReturn(new TripItProfile("habuma", "habuma", "Craig Walls", "cwalls@vmware.com", "Plano, TX", "SpringSource", "people/habuma", "http://static.tripit.com/uploads/images/0/0/6/006b210269799fa70ff6ae2c0cdb8a41e9c.jpg"));
-		UserProfile profile = apiAdapter.fetchUserProfile(api);
+	public void fetchProfile() {		
+		Mockito.when(github.getUserProfile()).thenReturn(new GitHubUserProfile(123456L, "habuma", "Craig Walls", "Plano, TX", "SpringSource", null, "cwalls@vmware.com", null, null));
+		UserProfile profile = apiAdapter.fetchUserProfile(github);
 		assertEquals("Craig Walls", profile.getName());
 		assertEquals("Craig", profile.getFirstName());
 		assertEquals("Walls", profile.getLastName());
 		assertEquals("cwalls@vmware.com", profile.getEmail());
 		assertEquals("habuma", profile.getUsername());
 	}
-
+	
 	@Test
 	public void fetchProfileFirstNameOnly() {
-		Mockito.when(api.getUserProfile()).thenReturn(new TripItProfile("habuma", "habuma", "Craig", "cwalls@vmware.com", "Plano, TX", "SpringSource", "people/habuma", "http://static.tripit.com/uploads/images/0/0/6/006b210269799fa70ff6ae2c0cdb8a41e9c.jpg"));
-		UserProfile profile = apiAdapter.fetchUserProfile(api);
+		Mockito.when(github.getUserProfile()).thenReturn(new GitHubUserProfile(123456L, "habuma", "Craig", "Plano, TX", "SpringSource", null, "cwalls@vmware.com", null, null));
+		UserProfile profile = apiAdapter.fetchUserProfile(github);
 		assertEquals("Craig", profile.getName());
 		assertEquals("Craig", profile.getFirstName());
 		assertNull(profile.getLastName());
@@ -53,8 +53,8 @@ public class TripItApiAdapterTest {
 
 	@Test
 	public void fetchProfileMiddleName() {
-		Mockito.when(api.getUserProfile()).thenReturn(new TripItProfile("habuma", "habuma", "Michael Craig Walls", "cwalls@vmware.com", "Plano, TX", "SpringSource", "people/habuma", "http://static.tripit.com/uploads/images/0/0/6/006b210269799fa70ff6ae2c0cdb8a41e9c.jpg"));
-		UserProfile profile = apiAdapter.fetchUserProfile(api);
+		Mockito.when(github.getUserProfile()).thenReturn(new GitHubUserProfile(123456L, "habuma", "Michael Craig Walls", "Plano, TX", "SpringSource", null, "cwalls@vmware.com", null, null));
+		UserProfile profile = apiAdapter.fetchUserProfile(github);
 		assertEquals("Michael Craig Walls", profile.getName());
 		assertEquals("Michael", profile.getFirstName());
 		assertEquals("Walls", profile.getLastName());
@@ -64,13 +64,13 @@ public class TripItApiAdapterTest {
 	
 	@Test
 	public void fetchProfileExtraWhitespace() {
-		Mockito.when(api.getUserProfile()).thenReturn(new TripItProfile("habuma", "habuma", "Michael    Craig Walls", "cwalls@vmware.com", "Plano, TX", "SpringSource", "people/habuma", "http://static.tripit.com/uploads/images/0/0/6/006b210269799fa70ff6ae2c0cdb8a41e9c.jpg"));
-		UserProfile profile = apiAdapter.fetchUserProfile(api);
+		Mockito.when(github.getUserProfile()).thenReturn(new GitHubUserProfile(123456L, "habuma", "Michael    Craig Walls", "Plano, TX", "SpringSource", null, "cwalls@vmware.com", null, null));
+		UserProfile profile = apiAdapter.fetchUserProfile(github);
 		assertEquals("Michael    Craig Walls", profile.getName());
 		assertEquals("Michael", profile.getFirstName());
 		assertEquals("Walls", profile.getLastName());
 		assertEquals("cwalls@vmware.com", profile.getEmail());
 		assertEquals("habuma", profile.getUsername());
 	}
-	
+
 }

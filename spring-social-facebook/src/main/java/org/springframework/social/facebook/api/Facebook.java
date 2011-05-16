@@ -61,6 +61,11 @@ public interface Facebook extends GraphApi {
 	MediaOperations mediaOperations();
 	
 	/**
+	 * API for working with Facebook pages.
+	 */
+	PageOperations pageOperations();
+	
+	/**
 	 * API for performing Facebook Places checkin operations.
 	 */
 	PlacesOperations placesOperations();

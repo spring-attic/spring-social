@@ -24,36 +24,36 @@ import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.FacebookProfile;
 
 /**
- * Facebook API adapter implementation.
+ * Facebook ApiAdapter implementation.
  * @author Keith Donald
  */
-public class FacebookApiAdapter implements ApiAdapter<Facebook> {
+public class FacebookAdapter implements ApiAdapter<Facebook> {
 
-	public boolean test(Facebook api) {
+	public boolean test(Facebook facebook) {
 		try {
-			api.userOperations().getUserProfile();
+			facebook.userOperations().getUserProfile();
 			return true;
 		} catch (BadCredentialsException e) {
 			return false;
 		}
 	}
 
-	public void setConnectionValues(Facebook api, ConnectionValues values) {
-		FacebookProfile profile = api.userOperations().getUserProfile();
+	public void setConnectionValues(Facebook facebook, ConnectionValues values) {
+		FacebookProfile profile = facebook.userOperations().getUserProfile();
 		values.setProviderUserId(profile.getId());
 		values.setDisplayName(profile.getUsername());
 		values.setProfileUrl("http://facebook.com/#!/profile.php?id=" + profile.getId());
 		values.setImageUrl("http://graph.facebook.com/" + profile.getId() + "/picture");
 	}
 
-	public UserProfile fetchUserProfile(Facebook api) {
-		FacebookProfile profile = api.userOperations().getUserProfile();
+	public UserProfile fetchUserProfile(Facebook facebook) {
+		FacebookProfile profile = facebook.userOperations().getUserProfile();
 		return new UserProfileBuilder().setName(profile.getName()).setFirstName(profile.getFirstName()).setLastName(profile.getLastName()).
 			setEmail(profile.getEmail()).setUsername(profile.getUsername()).build();
 	}
 	
-	public void updateStatus(Facebook api, String message) {
-		api.feedOperations().updateStatus(message);
+	public void updateStatus(Facebook facebook, String message) {
+		facebook.feedOperations().updateStatus(message);
 	}
 
 }

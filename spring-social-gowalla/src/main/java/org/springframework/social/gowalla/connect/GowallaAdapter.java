@@ -27,11 +27,11 @@ import org.springframework.web.client.HttpClientErrorException;
  * Gowalla ApiAdapter implementation.
  * @author Keith Donald
  */
-public class GowallaApiAdapter implements ApiAdapter<Gowalla> {
+public class GowallaAdapter implements ApiAdapter<Gowalla> {
 
-	public boolean test(Gowalla api) {
+	public boolean test(Gowalla gowalla) {
 		try {
-			api.getUserProfile();
+			gowalla.getUserProfile();
 			return true;
 		} catch (HttpClientErrorException e) {
 			// TODO : Beef up Gowalla's error handling and trigger off of a more specific exception
@@ -39,20 +39,20 @@ public class GowallaApiAdapter implements ApiAdapter<Gowalla> {
 		}
 	}
 
-	public void setConnectionValues(Gowalla api, ConnectionValues values) {
-		GowallaProfile profile = api.getUserProfile();
+	public void setConnectionValues(Gowalla gowalla, ConnectionValues values) {
+		GowallaProfile profile = gowalla.getUserProfile();
 		values.setProviderUserId(profile.getId());
 		values.setDisplayName(profile.getFirstName() + " " + profile.getLastName());
-		values.setProfileUrl(api.getProfileUrl());
+		values.setProfileUrl(gowalla.getProfileUrl());
 		values.setImageUrl(profile.getProfileImageUrl());
 	}
 
-	public UserProfile fetchUserProfile(Gowalla api) {
-		GowallaProfile profile = api.getUserProfile();
+	public UserProfile fetchUserProfile(Gowalla gowalla) {
+		GowallaProfile profile = gowalla.getUserProfile();
 		return new UserProfileBuilder().setName(profile.getFirstName() + " " + profile.getLastName()).setUsername(profile.getId()).build();
 	}
 	
-	public void updateStatus(Gowalla api, String message) {
+	public void updateStatus(Gowalla gowalla, String message) {
 		// not supported
 	}
 

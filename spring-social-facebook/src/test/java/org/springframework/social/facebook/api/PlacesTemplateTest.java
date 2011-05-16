@@ -88,11 +88,41 @@ public class PlacesTemplateTest extends AbstractFacebookApiTest {
 				facebook.placesOperations().checkin("123456789", 32.943860253093, -96.648515652755, "My favorite place", "24680", "13579"));
 	}
 	
+	@Test
+	public void search() {
+		mockServer.expect(requestTo("https://graph.facebook.com/search?q=coffee&type=place&center=33.050278%2C-96.745833&distance=5280"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("testdata/places-list.json", getClass()), responseHeaders));
+		List<Page> places = facebook.placesOperations().search("coffee", 33.050278, -96.745833, 5280);
+		assertEquals(2, places.size());
+		assertEquals("117723491586638", places.get(0).getId());
+		assertEquals("True Brew Coffee & Espresso Service", places.get(0).getName());
+		assertEquals("Local business", places.get(0).getCategory());
+		assertEquals("542 Haggard St", places.get(0).getLocation().getStreet());
+		assertEquals("Plano", places.get(0).getLocation().getCity());
+		assertEquals("TX", places.get(0).getLocation().getState());
+		assertEquals("United States", places.get(0).getLocation().getCountry());
+		assertEquals("75074-5529", places.get(0).getLocation().getZip());
+		assertEquals(33.026239, places.get(0).getLocation().getLatitude(), 0.00001);
+		assertEquals(-96.707089, places.get(0).getLocation().getLongitude(), 0.00001);
+		assertEquals("169020919798274", places.get(1).getId());
+		assertEquals("Starbucks Coffee", places.get(1).getName());
+		assertEquals("Local business", places.get(1).getCategory());
+		assertNull(places.get(1).getLocation().getStreet());
+		assertEquals("Plano", places.get(1).getLocation().getCity());
+		assertEquals("TX", places.get(1).getLocation().getState());
+		assertEquals("United States", places.get(1).getLocation().getCountry());
+		assertNull(places.get(1).getLocation().getZip());
+		assertEquals(33.027734, places.get(1).getLocation().getLatitude(), 0.00001);
+		assertEquals(-96.795133, places.get(1).getLocation().getLongitude(), 0.00001);		
+	}
+	
 	private void assertSingleCheckin(Checkin checkin) {
 		assertEquals("10150431253050580", checkin.getId());
 		assertEquals("738140579", checkin.getFrom().getId());
 		assertEquals("Craig Walls", checkin.getFrom().getName());
-		Place place1 = checkin.getPlace();
+		Page place1 = checkin.getPlace();
 		assertEquals("117372064948189", place1.getId());
 		assertEquals("Freebirds World Burrito", place1.getName());
 		assertEquals("238 W Campbell Rd", place1.getLocation().getStreet());
@@ -118,7 +148,7 @@ public class PlacesTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("738140579", checkin2.getTags().get(0).getId());
 		assertEquals("Craig Walls", checkin2.getTags().get(0).getName());
 		assertEquals("With my favorite people! ;-)", checkin2.getMessage());
-		Place place2 = checkin2.getPlace();
+		Page place2 = checkin2.getPlace();
 		assertEquals("150366431753543", place2.getId());
 		assertEquals("Somewhere", place2.getName());
 		assertEquals(35.0231428, place2.getLocation().getLatitude(), 0.0001);

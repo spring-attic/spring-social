@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.api.impl.json;
+package org.springframework.social.facebook.api.impl;
 
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.social.facebook.api.Location;
+import org.springframework.social.facebook.api.GraphApi;
+import org.springframework.social.facebook.api.Page;
+import org.springframework.social.facebook.api.PageOperations;
 
-/**
- * Annotated mixin to add Jackson annotations to Place. 
- * @author Craig Walls
- */
-@JsonIgnoreProperties(ignoreUnknown = true)
-abstract class PlaceMixin {
+class PageTemplate implements PageOperations {
 
-	@JsonCreator
-	PlaceMixin(
-			@JsonProperty("id") String id, 
-			@JsonProperty("name") String name, 
-			@JsonProperty("location") Location location) {}
-	
+	private final GraphApi graphApi;
+
+	public PageTemplate(GraphApi graphApi) {
+		this.graphApi = graphApi;
+	}
+
+	public Page getPage(String pageId) {
+		return graphApi.fetchObject(pageId, Page.class);
+	}
+
 }

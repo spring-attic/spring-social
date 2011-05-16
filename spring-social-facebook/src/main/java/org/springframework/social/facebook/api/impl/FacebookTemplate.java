@@ -16,8 +16,10 @@
 package org.springframework.social.facebook.api.impl;
 
 import java.net.URI;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.social.BadCredentialsException;
 import org.springframework.social.facebook.api.CommentOperations;
 import org.springframework.social.facebook.api.EventOperations;
 import org.springframework.social.facebook.api.Facebook;
@@ -34,12 +37,13 @@ import org.springframework.social.facebook.api.GroupOperations;
 import org.springframework.social.facebook.api.ImageType;
 import org.springframework.social.facebook.api.LikeOperations;
 import org.springframework.social.facebook.api.MediaOperations;
+import org.springframework.social.facebook.api.PageOperations;
 import org.springframework.social.facebook.api.PlacesOperations;
 import org.springframework.social.facebook.api.UserOperations;
 import org.springframework.social.facebook.api.impl.json.FacebookModule;
 import org.springframework.social.oauth2.AbstractOAuth2ApiTemplate;
 import org.springframework.social.oauth2.OAuth2Version;
-import org.springframework.social.support.BufferingClientHttpRequestFactory;
+import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -72,6 +76,20 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 	private EventOperations eventOperations;
 	
 	private MediaOperations mediaOperations;
+	
+	private PageOperations pageOperations;
+
+	/**
+	 * Create a new instance of FacebookTemplate.
+	 * This constructor creates a new FacebookTemplate able to perform unauthenticated operations against Facebook's Graph API.
+	 * Some operations do not require OAuth authentication. 
+	 * For example, retrieving a specified user's profile or feed does not require authentication (although the data returned will be limited to what is publicly available). 
+	 * A FacebookTemplate created with this constructor will support those operations.
+	 * Those operations requiring authentication will throw {@link BadCredentialsException}.
+	 */
+	public FacebookTemplate() {
+		initialize();		
+	}
 
 	/**
 	 * Create a new instance of FacebookTemplate.
@@ -80,13 +98,10 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 	 */
 	public FacebookTemplate(String accessToken) {
 		super(accessToken);
-		registerFacebookJsonModule(getRestTemplate());
-		getRestTemplate().setErrorHandler(new FacebookErrorHandler());
-		
-		// Wrap the request factory with a BufferingClientHttpRequestFactory so that the error handler can do repeat reads on the response.getBody()
-		super.setRequestFactory(new BufferingClientHttpRequestFactory(getRestTemplate().getRequestFactory()));
-		
-		// sub-apis
+		initialize();
+	}
+
+	private void initSubApis() {
 		userOperations = new UserTemplate(this);
 		placesOperations = new PlacesTemplate(this);
 		friendOperations = new FriendTemplate(this, getRestTemplate());
@@ -94,14 +109,15 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 		commentOperations = new CommentTemplate(this);
 		likeOperations = new LikeTemplate(this);
 		eventOperations = new EventTemplate(this);
-		mediaOperations = new MediaTemplate(this);
+		mediaOperations = new MediaTemplate(this, getRestTemplate());
 		groupOperations = new GroupTemplate(this);
+		pageOperations = new PageTemplate(this);
 	}
 	
 	@Override
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
 		// Wrap the request factory with a BufferingClientHttpRequestFactory so that the error handler can do repeat reads on the response.getBody()
-		super.setRequestFactory(new BufferingClientHttpRequestFactory(requestFactory));
+		super.setRequestFactory(ClientHttpRequestFactorySelector.bufferRequests(requestFactory));
 	}
 
 	@Override
@@ -145,18 +161,32 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 		return mediaOperations;
 	}
 	
+	public PageOperations pageOperations() {
+		return pageOperations;
+	}
+	
 	// low-level Graph API operations
 	public <T> T fetchObject(String objectId, Class<T> type) {
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).build();
 		return getRestTemplate().getForObject(uri, type);
 	}
-		
+	
+	public <T> T fetchObject(String objectId, Class<T> type, MultiValueMap<String, String> queryParameters) {
+		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId).queryParams(queryParameters).build();
+		return getRestTemplate().getForObject(uri, type);
+	}
+
 	public <T> T fetchConnections(String objectId, String connectionType, Class<T> type, String... fields) {
-		URIBuilder uriBuilder = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType);
+		MultiValueMap<String, String> queryParameters = new LinkedMultiValueMap<String, String>();
 		if(fields.length > 0) {
 			String joinedFields = join(fields);
-			uriBuilder.queryParam("fields", joinedFields);
+			queryParameters.set("fields", joinedFields);
 		}		
+		return fetchConnections(objectId, connectionType, type, queryParameters);
+	}
+	
+	public <T> T fetchConnections(String objectId, String connectionType, Class<T> type, MultiValueMap<String, String> queryParameters) {
+		URIBuilder uriBuilder = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).queryParams(queryParameters);
 		return getRestTemplate().getForObject(uriBuilder.build(), type);
 	}
 	
@@ -171,8 +201,8 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 	}
 	
 	@SuppressWarnings("unchecked")
-	public String publish(String objectId, String connectionType, MultiValueMap<String, String> data) {
-		MultiValueMap<String, String> requestData = new LinkedMultiValueMap<String, String>(data);
+	public String publish(String objectId, String connectionType, MultiValueMap<String, Object> data) {
+		MultiValueMap<String, Object> requestData = new LinkedMultiValueMap<String, Object>(data);
 		URI uri = URIBuilder.fromUri(GRAPH_API_URL + objectId + "/" + connectionType).build();
 		Map<String, Object> response = getRestTemplate().postForObject(uri, requestData, Map.class);
 		return (String) response.get("id");
@@ -199,6 +229,14 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 	}
 
 	// private helpers
+	private void initialize() {
+		registerFacebookJsonModule(getRestTemplate());
+		getRestTemplate().setErrorHandler(new FacebookErrorHandler());
+		// Wrap the request factory with a BufferingClientHttpRequestFactory so that the error handler can do repeat reads on the response.getBody()
+		super.setRequestFactory(ClientHttpRequestFactorySelector.bufferRequests(getRestTemplate().getRequestFactory()));
+		initSubApis();
+	}
+		
 	private void registerFacebookJsonModule(RestTemplate restTemplate2) {
 		List<HttpMessageConverter<?>> converters = getRestTemplate().getMessageConverters();
 		for (HttpMessageConverter<?> converter : converters) {
@@ -222,4 +260,25 @@ public class FacebookTemplate extends AbstractOAuth2ApiTemplate implements Faceb
 		return builder.toString();
 	}
 	
+	private String buildRequestQuery(MultiValueMap<String, String> queryParameters) {
+		StringBuilder queryBuilder = new StringBuilder();
+		if (!queryParameters.isEmpty()) {
+			queryBuilder.append("?");
+		}
+		
+		for (Iterator<Entry<String, List<String>>> entryIt = queryParameters.entrySet().iterator(); entryIt.hasNext(); ) {
+			Entry<String, List<String>> entry = entryIt.next();
+			for (Iterator<String> valueIt = entry.getValue().iterator(); valueIt.hasNext(); ) {
+				queryBuilder.append(entry.getKey() + "=" + valueIt.next());
+				if (valueIt.hasNext()) {
+					queryBuilder.append("&");
+				}
+			}
+			if (entryIt.hasNext()) {
+				queryBuilder.append("&");
+			}			
+		}
+		return queryBuilder.toString();
+	}
+
 }

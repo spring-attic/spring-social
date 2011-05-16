@@ -171,6 +171,22 @@ public class EventTemplateTest extends AbstractFacebookApiTest {
 		mockServer.verify();
 	}
 	
+	@Test
+	public void search() {
+		mockServer.expect(requestTo("https://graph.facebook.com/search?q=Spring+User+Group&type=event"))
+			.andExpect(method(GET))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse(new ClassPathResource("testdata/event-list.json", getClass()), responseHeaders));
+		List<Event> results = facebook.eventOperations().search("Spring User Group");
+		assertEquals(1, results.size());
+		assertEquals("196119297091135", results.get(0).getId());
+		assertEquals("FLUG (Florida Local Users Group) Spring User Conference", results.get(0).getName());
+		assertEquals("Radisson Resort at the Port", results.get(0).getLocation());
+		assertEquals(toDate("2011-06-01T08:00:00+0000"), results.get(0).getStartTime());
+		assertEquals(toDate("2011-06-03T16:00:00+0000"), results.get(0).getEndTime());
+	}
+
+	
 	private void assertInvitee(EventInvitee invitee, String id, String name, RsvpStatus rsvpStatus) {
 		assertEquals(id, invitee.getId());
 		assertEquals(name, invitee.getName());

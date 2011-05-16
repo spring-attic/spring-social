@@ -33,6 +33,10 @@ public class OAuth1TemplateTest {
 
 	private static final String ACCESS_TOKEN_URL = "http://www.someprovider.com/oauth/accessToken";
 	
+	private static final String AUTHENTICATE_URL = "https://www.someprovider.com/oauth/authenticate";
+
+	private static final String AUTHORIZE_URL = "https://www.someprovider.com/oauth/authorize";
+
 	private static final String REQUEST_TOKEN_URL = "https://www.someprovider.com/oauth/requestToken";
 	
 	private OAuth1Template oauth10a;
@@ -43,14 +47,11 @@ public class OAuth1TemplateTest {
 
 	@Before
 	public void setup() {
-		oauth10a = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
-				"https://www.someprovider.com/oauth/authorize", null, ACCESS_TOKEN_URL, OAuth1Version.CORE_10_REVISION_A);
-		oauth10 = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
-				"https://www.someprovider.com/oauth/authorize", "https://www.someprovider.com/oauth/authenticate",
-				ACCESS_TOKEN_URL, OAuth1Version.CORE_10);
+		oauth10a = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL, AUTHORIZE_URL, null, ACCESS_TOKEN_URL, OAuth1Version.CORE_10_REVISION_A);
+		oauth10 = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL, AUTHORIZE_URL, AUTHENTICATE_URL, ACCESS_TOKEN_URL, OAuth1Version.CORE_10);
 
 		customOauth10 = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
-				"https://www.someprovider.com/oauth/authorize", null, ACCESS_TOKEN_URL, OAuth1Version.CORE_10) {
+				AUTHORIZE_URL, null, ACCESS_TOKEN_URL, OAuth1Version.CORE_10) {
 			protected MultiValueMap<String,String> getCustomAuthorizationParameters() {
 				MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
 				parameters.set("custom_parameter", "custom_parameter_value");
@@ -61,15 +62,15 @@ public class OAuth1TemplateTest {
 
 	@Test
 	public void buildAuthorizeUrl() {
-		assertEquals("https://www.someprovider.com/oauth/authorize?oauth_token=request_token",
+		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token",
 				oauth10a.buildAuthorizeUrl("request_token", OAuth1Parameters.NONE));
-		assertEquals("https://www.someprovider.com/oauth/authorize?oauth_token=request_token&oauth_callback=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback",
+		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token&oauth_callback=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback",
 				oauth10.buildAuthorizeUrl("request_token", new OAuth1Parameters("http://www.someclient.com/oauth/callback")));
 	}
 	
 	@Test
 	public void buildAuthorizeUrl_customAuthorizeParameters() {
-		assertEquals("https://www.someprovider.com/oauth/authorize?oauth_token=request_token&oauth_callback=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback&custom_parameter=custom_parameter_value",
+		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token&oauth_callback=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback&custom_parameter=custom_parameter_value",
 				customOauth10.buildAuthorizeUrl("request_token", new OAuth1Parameters("http://www.someclient.com/oauth/callback")));
 	}
 
@@ -79,7 +80,7 @@ public class OAuth1TemplateTest {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		mockServer
-				.expect(requestTo("https://www.someprovider.com/oauth/requestToken"))
+				.expect(requestTo(REQUEST_TOKEN_URL))
 				.andExpect(method(POST))
 				.andExpect(
 						headerContains("Authorization",
@@ -103,7 +104,7 @@ public class OAuth1TemplateTest {
 		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauth10.getRestTemplate());
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		mockServer.expect(requestTo("https://www.someprovider.com/oauth/requestToken"))
+		mockServer.expect(requestTo(REQUEST_TOKEN_URL))
 				.andExpect(method(POST))
 				.andExpect(headerContains("Authorization", "oauth_version=\"1.0\""))
 				.andExpect(headerContains("Authorization", "oauth_signature_method=\"HMAC-SHA1\""))
@@ -124,7 +125,7 @@ public class OAuth1TemplateTest {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		mockServer
-				.expect(requestTo("http://www.someprovider.com/oauth/accessToken"))
+				.expect(requestTo(ACCESS_TOKEN_URL))
 				.andExpect(method(POST))
 				.andExpect(headerContains("Authorization", "oauth_version=\"1.0\""))
 				.andExpect(headerContains("Authorization", "oauth_signature_method=\"HMAC-SHA1\""))
@@ -148,7 +149,7 @@ public class OAuth1TemplateTest {
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		mockServer
-				.expect(requestTo("http://www.someprovider.com/oauth/accessToken"))
+				.expect(requestTo(ACCESS_TOKEN_URL))
 				.andExpect(method(POST))
 				.andExpect(headerContains("Authorization", "oauth_version=\"1.0\""))
 				.andExpect(headerContains("Authorization", "oauth_signature_method=\"HMAC-SHA1\""))
@@ -164,4 +165,37 @@ public class OAuth1TemplateTest {
 		assertEquals("9876543210", accessToken.getValue());
 		assertEquals("ponmlkjihgfedcba", accessToken.getSecret());
 	}
+	
+	// parameter assertion tests
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void construct_nullConsumerKey() {
+		new OAuth1Template(null, "secret", REQUEST_TOKEN_URL, AUTHORIZE_URL, ACCESS_TOKEN_URL);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void construct_nullConsumerSecret() {
+		new OAuth1Template("key", null, REQUEST_TOKEN_URL, AUTHORIZE_URL, ACCESS_TOKEN_URL);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void construct_nullRequestTokenUrl() {
+		new OAuth1Template("key", "secret", null, AUTHORIZE_URL, ACCESS_TOKEN_URL);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void construct_nullAuthorizeUrl() {
+		new OAuth1Template("key", "secret", REQUEST_TOKEN_URL, null, ACCESS_TOKEN_URL);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void construct_nullAcessTokenUrl() {
+		new OAuth1Template("key", "secret", REQUEST_TOKEN_URL, AUTHORIZE_URL, null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void setRequestFactory_null() {
+		oauth10a.setRequestFactory(null);
+	}
+
 }

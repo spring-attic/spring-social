@@ -16,6 +16,7 @@
 package org.springframework.social.connect.support;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
@@ -24,6 +25,7 @@ import org.springframework.social.ServiceProvider;
 import org.springframework.social.connect.ApiAdapter;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.connect.ConnectionExpiredException;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
 
@@ -142,10 +144,14 @@ public class OAuth2Connection<A> extends AbstractConnection<A> {
 
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			synchronized (getMonitor()) {
-				if (OAuth2Connection.this.hasExpired()) {
-					throw new IllegalStateException("This OAuth2Connection has expired: it is not possible to invoke the service provider's API");
+				if (hasExpired()) {
+					throw new ConnectionExpiredException(getKey());
 				}
-				return method.invoke(OAuth2Connection.this.api, args);				
+				try {
+					return method.invoke(OAuth2Connection.this.api, args);
+				} catch (InvocationTargetException e) {
+					throw e.getTargetException();
+				}
 			}
 		}
 	}

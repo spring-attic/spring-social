@@ -82,6 +82,8 @@ class FacebookErrorHandler extends DefaultResponseErrorHandler {
 			throw new OwnershipException(message);
 		} else if(message.contains("Some of the aliases you requested do not exist")) {
 			throw new GraphAPIException(message);
+		} else if(message.contains("An active access token must be used to query information about the current user.")) {
+			throw new BadCredentialsException(message);
 		}
 		
 	}

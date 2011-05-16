@@ -15,6 +15,8 @@
  */
 package org.springframework.social.facebook.api;
 
+import java.util.List;
+
 
 
 public interface UserOperations {
@@ -60,4 +62,16 @@ public interface UserOperations {
 	 */
 	byte[] getUserProfileImage(String userId, ImageType imageType);
 
+	/**
+	 * Retrieves a list of permissions that the application has been granted for the authenticated user.
+	 * @return the permissions granted for the user.
+	 */
+	List<String> getUserPermissions();
+	
+	/**
+	 * Searches for users.
+	 * @param query the search query (e.g., "Michael Scott")
+	 * @return a list of {@link Reference}s, each representing a user who matched the given query.
+	 */
+	List<Reference> search(String query);
 }

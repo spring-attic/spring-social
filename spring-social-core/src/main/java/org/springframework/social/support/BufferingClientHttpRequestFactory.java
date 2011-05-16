@@ -31,7 +31,7 @@ import org.springframework.http.client.ClientHttpResponse;
  * @author Arjen Poutsma
  * @since 3.1
  */
-public class BufferingClientHttpRequestFactory extends AbstractClientHttpRequestFactoryWrapper {
+class BufferingClientHttpRequestFactory extends AbstractClientHttpRequestFactoryWrapper {
 
 	public BufferingClientHttpRequestFactory(ClientHttpRequestFactory requestFactory) {
 		super(requestFactory);

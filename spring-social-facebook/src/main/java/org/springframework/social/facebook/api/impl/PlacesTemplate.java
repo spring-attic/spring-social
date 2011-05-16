@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.springframework.social.facebook.api.Checkin;
 import org.springframework.social.facebook.api.GraphApi;
+import org.springframework.social.facebook.api.Page;
 import org.springframework.social.facebook.api.PlacesOperations;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -48,7 +49,7 @@ class PlacesTemplate implements PlacesOperations {
 	}
 	
 	public String checkin(String placeId, double latitude, double longitude, String message, String... tags) {
-		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
 		data.set("place", placeId);
 		data.set("coordinates", "{\"latitude\":\"" + latitude+"\",\"longitude\":\"" + longitude + "\"}");
 		if(message != null) {
@@ -64,4 +65,14 @@ class PlacesTemplate implements PlacesOperations {
 		}
 		return graphApi.publish("me", "checkins", data);
 	}
+	
+	public List<Page> search(String query, double latitude, double longitude, long distance) {
+		MultiValueMap<String, String> queryMap = new LinkedMultiValueMap<String, String>();
+		queryMap.add("q", query);
+		queryMap.add("type", "place");
+		queryMap.add("center", latitude + "," + longitude);
+		queryMap.add("distance", String.valueOf(distance));
+		return graphApi.fetchObject("search", PageList.class, queryMap).getList();
+	}
+
 }

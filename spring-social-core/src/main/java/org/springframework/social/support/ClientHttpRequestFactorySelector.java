@@ -15,6 +15,13 @@
  */
 package org.springframework.social.support;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.util.Properties;
+
+import org.apache.http.HttpHost;
+import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.ClassUtils;
@@ -28,13 +35,42 @@ import org.springframework.util.ClassUtils;
 public class ClientHttpRequestFactorySelector {
 	
 	public static ClientHttpRequestFactory getRequestFactory() {
-		if (httpComponentsAvailable) {
-			return new HttpComponentsClientHttpRequestFactory();
+		Properties properties = System.getProperties();
+		String proxyHost = properties.getProperty("http.proxyHost");
+		int proxyPort = properties.containsKey("http.proxyPort") ? Integer.valueOf(properties.getProperty("http.proxyPort")) : 80;
+		if (HTTP_COMPONENTS_AVAILABLE) {
+			return HttpComponentsClientRequestFactoryCreator.createRequestFactory(proxyHost, proxyPort);
 		} else {
-			return new SimpleClientHttpRequestFactory();
+			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+			if (proxyHost != null) {
+				requestFactory.setProxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort)));
+			}
+			return requestFactory;
 		}
 	}
 	
-	private static boolean httpComponentsAvailable = ClassUtils.isPresent("org.apache.http.client.HttpClient", ClientHttpRequestFactory.class.getClassLoader());
+	/**
+	 * Decorates a request factory to buffer responses so that the responses may be repeatedly read.
+	 * @param requestFactory the request factory to be decorated for buffering
+	 * @return a buffering request factory
+	 */
+	public static ClientHttpRequestFactory bufferRequests(ClientHttpRequestFactory requestFactory) {
+		return new BufferingClientHttpRequestFactory(requestFactory);
+	}
+	
+	private static boolean HTTP_COMPONENTS_AVAILABLE = ClassUtils.isPresent("org.apache.http.client.HttpClient", ClientHttpRequestFactory.class.getClassLoader());
 
+	private static class HttpComponentsClientRequestFactoryCreator {
+		
+		public static ClientHttpRequestFactory createRequestFactory(String proxyHost, int proxyPort) {
+			HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+			if (proxyHost != null) {
+				DefaultHttpClient httpClient = new DefaultHttpClient();
+				HttpHost proxy = new HttpHost(proxyHost, proxyPort);
+				httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+				requestFactory.setHttpClient(httpClient);
+			}			
+			return requestFactory;			
+		}
+	}
 }

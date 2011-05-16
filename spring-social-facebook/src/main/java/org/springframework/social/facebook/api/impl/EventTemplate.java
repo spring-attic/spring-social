@@ -55,7 +55,7 @@ class EventTemplate implements EventOperations {
 	}
 	
 	public String createEvent(String name, String startTime, String endTime) {
-		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
 		data.set("name", name);
 		data.set("start_time", startTime);
 		data.set("end_time", endTime);
@@ -97,4 +97,12 @@ class EventTemplate implements EventOperations {
 	public void declineInvitation(String eventId) {
 		graphApi.post(eventId, "declined", new LinkedMultiValueMap<String, String>());
 	}
+	
+	public List<Event> search(String query) {
+		MultiValueMap<String, String> queryMap = new LinkedMultiValueMap<String, String>();
+		queryMap.add("q", query);
+		queryMap.add("type", "event");
+		return graphApi.fetchObject("search", EventList.class, queryMap).getList();
+	}
+	
 }

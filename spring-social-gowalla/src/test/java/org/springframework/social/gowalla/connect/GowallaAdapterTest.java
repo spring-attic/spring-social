@@ -13,29 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.facebook.connect;
+package org.springframework.social.gowalla.connect;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.social.connect.UserProfile;
-import org.springframework.social.facebook.api.Facebook;
-import org.springframework.social.facebook.api.FacebookProfile;
-import org.springframework.social.facebook.api.UserOperations;
+import org.springframework.social.gowalla.api.Gowalla;
+import org.springframework.social.gowalla.api.GowallaProfile;
 
-public class FacebookApiAdapterTest {
+public class GowallaAdapterTest {
 
-	private FacebookApiAdapter apiAdapter = new FacebookApiAdapter();
+	private GowallaAdapter apiAdapter = new GowallaAdapter();
 	
-	private Facebook api = Mockito.mock(Facebook.class);
+	private Gowalla gowalla = Mockito.mock(Gowalla.class);
 	
 	@Test
 	public void fetchProfile() {		
-		UserOperations userOperations = Mockito.mock(UserOperations.class);
-		Mockito.when(api.userOperations()).thenReturn(userOperations);
-		Mockito.when(userOperations.getUserProfile()).thenReturn(new FacebookProfile("12345678", "habuma", "Craig Walls", "Craig", "Walls", null, null));
-		UserProfile profile = apiAdapter.fetchUserProfile(api);
+		Mockito.when(gowalla.getUserProfile()).thenReturn(new GowallaProfile("habuma", "Craig", "Walls", "Plano, TX", 1, 2, "http://s3.amazonaws.com/static.gowalla.com/users/362641-standard.jpg?1294162106"));
+		UserProfile profile = apiAdapter.fetchUserProfile(gowalla);
 		assertEquals("Craig Walls", profile.getName());
 		assertEquals("Craig", profile.getFirstName());
 		assertEquals("Walls", profile.getLastName());

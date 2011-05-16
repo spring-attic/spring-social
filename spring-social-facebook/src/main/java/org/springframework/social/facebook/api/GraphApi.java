@@ -34,6 +34,16 @@ public interface GraphApi {
 	<T> T fetchObject(String objectId, Class<T> type);
 
 	/**
+	 * Fetches an object, extracting it into the type via the given {@link ResponseExtractor}.
+	 * Requires appropriate permission to fetch the object.
+	 * @param objectId the Facebook object's ID
+	 * @param type the Java type to fetch
+	 * @param queryParameters query parameters to include in the request
+	 * @return an Java object representing the requested Facebook object.
+	 */
+	<T> T fetchObject(String objectId, Class<T> type, MultiValueMap<String, String> queryParameters);
+
+	/**
 	 * Fetches connections, extracting them into a Java type via the given {@link ResponseExtractor}.
 	 * Requires appropriate permission to fetch the object connection.
 	 * @param objectId the ID of the object to retrieve the connections for.
@@ -43,6 +53,17 @@ public interface GraphApi {
 	 * @return a list of Java objects representing the Facebook objects in the connections.
 	 */
 	<T> T fetchConnections(String objectId, String connectionType, Class<T> type, String... fields);
+
+	/**
+	 * Fetches connections, extracting them into a Java type via the given {@link ResponseExtractor}.
+	 * Requires appropriate permission to fetch the object connection.
+	 * @param objectId the ID of the object to retrieve the connections for.
+	 * @param connectionType the connection type.
+	 * @param type the Java type to fetch
+	 * @param queryParameters query parameters to include in the request
+	 * @return a list of Java objects representing the Facebook objects in the connections.
+	 */
+	<T> T fetchConnections(String objectId, String connectionType, Class<T> type, MultiValueMap<String, String> queryParameters);
 
 	/**
 	 * Fetches an image as an array of bytes.
@@ -61,7 +82,7 @@ public interface GraphApi {
 	 * @param data the data to publish to the connection.
 	 * @return the ID of the newly published object.
 	 */
-	String publish(String objectId, String connectionType, MultiValueMap<String, String> data);	
+	String publish(String objectId, String connectionType, MultiValueMap<String, Object> data);	
 
 	/**
 	 * Publishes data to an object's connection. 

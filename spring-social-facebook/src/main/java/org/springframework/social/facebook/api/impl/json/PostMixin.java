@@ -112,6 +112,7 @@ abstract class PostMixin {
 	private static class TypeDeserializer extends JsonDeserializer<PostType> {
 		@Override
 		public PostType deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+			System.out.println(jp.getText().toUpperCase());
 			return PostType.valueOf(jp.getText().toUpperCase());
 		}
 	}

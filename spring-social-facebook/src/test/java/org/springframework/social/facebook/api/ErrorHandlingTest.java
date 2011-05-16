@@ -23,6 +23,9 @@ import static org.springframework.social.test.client.ResponseCreators.*;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
+import org.springframework.social.BadCredentialsException;
+import org.springframework.social.facebook.api.impl.FacebookTemplate;
+import org.springframework.social.test.client.MockRestServiceServer;
 
 public class ErrorHandlingTest extends AbstractFacebookApiTest {
 
@@ -97,6 +100,21 @@ public class ErrorHandlingTest extends AbstractFacebookApiTest {
 		} catch (GraphAPIException e) {
 			assertEquals("(#803) Some of the aliases you requested do not exist: dummyalias", e.getMessage());
 		}				
+	}
+	
+	@Test
+	public void currentUser_noAccessToken() {
+		FacebookTemplate facebook = new FacebookTemplate(); // use anonymous FacebookTemplate in this test
+		MockRestServiceServer mockServer = MockRestServiceServer.createServer(facebook.getRestTemplate());
+		try {
+			mockServer.expect(requestTo("https://graph.facebook.com/me"))
+				.andExpect(method(GET))
+				.andRespond(withResponse(new ClassPathResource("testdata/error-current-user-no-token.json", getClass()), responseHeaders, HttpStatus.BAD_REQUEST, ""));
+			facebook.userOperations().getUserProfile();
+			fail("Expected BadCredentialsException when fetching an unknown object alias");
+		} catch (BadCredentialsException e) {
+			assertEquals("An active access token must be used to query information about the current user.", e.getMessage());
+		}						
 	}
 	
 }

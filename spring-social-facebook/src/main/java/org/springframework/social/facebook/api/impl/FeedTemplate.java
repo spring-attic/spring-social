@@ -87,13 +87,13 @@ class FeedTemplate implements FeedOperations {
 	}
 
 	public String updateStatus(String message) {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
 		map.set("message", message);
 		return graphApi.publish("me", "feed", map);
 	}
 
 	public String postLink(String message, FacebookLink link) {
-		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+		MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
 		map.set("link", link.getLink());
 		map.set("name", link.getName());
 		map.set("caption", link.getCaption());
@@ -106,4 +106,27 @@ class FeedTemplate implements FeedOperations {
 		graphApi.delete(id);
 	}
 
+	public List<Post> searchPublicFeed(String query) {
+		MultiValueMap<String, String> queryParameters = new LinkedMultiValueMap<String, String>();
+		queryParameters.add("q", query);
+		queryParameters.add("type", "post");
+		return graphApi.fetchObject("search", PostList.class, queryParameters).getList();
+	}
+	
+	public List<Post> searchHomeFeed(String query) {
+		MultiValueMap<String, String> queryParameters = new LinkedMultiValueMap<String, String>();
+		queryParameters.add("q", query);
+		return graphApi.fetchConnections("me", "home", PostList.class, queryParameters).getList();
+	}
+	
+	public List<Post> searchUserFeed(String query) {
+		return searchUserFeed("me", query);
+	}
+	
+	public List<Post> searchUserFeed(String userId, String query) {
+		MultiValueMap<String, String> queryParameters = new LinkedMultiValueMap<String, String>();
+		queryParameters.add("q", query);
+		return graphApi.fetchConnections(userId, "feed", PostList.class, queryParameters).getList();
+	}
+	
 }

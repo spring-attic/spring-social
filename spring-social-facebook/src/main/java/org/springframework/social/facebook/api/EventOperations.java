@@ -143,4 +143,10 @@ public interface EventOperations {
 	 */
 	void declineInvitation(String eventId);
 
+	/**
+	 * Search for events.
+	 * @param query the search query (e.g., "Spring User Group")
+	 * @return a list of {@link Event}s matching the search query
+	 */
+	List<Event> search(String query);
 }

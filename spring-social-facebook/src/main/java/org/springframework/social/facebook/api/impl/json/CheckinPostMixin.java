@@ -22,7 +22,7 @@ import org.codehaus.jackson.annotate.JsonCreator;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonDeserialize;
-import org.springframework.social.facebook.api.Place;
+import org.springframework.social.facebook.api.Page;
 import org.springframework.social.facebook.api.Reference;
 import org.springframework.social.facebook.api.Tag;
 
@@ -43,7 +43,7 @@ abstract class CheckinPostMixin extends PostMixin {
 	}
 
 	@JsonProperty("place")
-	Place place;
+	Page place;
 	
 	@JsonProperty("tags")
 	@JsonDeserialize(using=TagListDeserializer.class)
