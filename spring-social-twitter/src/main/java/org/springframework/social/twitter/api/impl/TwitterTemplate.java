@@ -22,6 +22,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.BadCredentialsException;
 import org.springframework.social.oauth1.AbstractOAuth1ApiTemplate;
+import org.springframework.social.twitter.api.BlockOperations;
 import org.springframework.social.twitter.api.DirectMessageOperations;
 import org.springframework.social.twitter.api.FriendOperations;
 import org.springframework.social.twitter.api.ListOperations;
@@ -60,6 +61,8 @@ public class TwitterTemplate extends AbstractOAuth1ApiTemplate implements Twitte
 	private SearchOperations searchOperations;
 
 	private DirectMessageOperations directMessageOperations;
+	
+	private BlockOperations blockOperations;
 
 	/**
 	 * Create a new instance of TwitterTemplate.
@@ -112,6 +115,10 @@ public class TwitterTemplate extends AbstractOAuth1ApiTemplate implements Twitte
 	public UserOperations userOperations() {
 		return userOperations;
 	}
+	
+	public BlockOperations blockOperations() {
+		return blockOperations;
+	}
 		
 	// private helper 
 
@@ -134,6 +141,7 @@ public class TwitterTemplate extends AbstractOAuth1ApiTemplate implements Twitte
 		this.listOperations = new ListTemplate(getRestTemplate(), isAuthorizedForUser());
 		this.timelineOperations = new TimelineTemplate(getRestTemplate(), isAuthorizedForUser());
 		this.searchOperations = new SearchTemplate(getRestTemplate(), isAuthorizedForUser());
+		this.blockOperations = new BlockTemplate(getRestTemplate(), isAuthorizedForUser());
 	}
 
 }
