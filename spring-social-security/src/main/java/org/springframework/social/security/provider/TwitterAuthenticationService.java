@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-rootProject.name = 'spring-social'
+package org.springframework.social.security.provider;
 
-include 'docs'
-include 'spring-social-core'
-include 'spring-social-facebook'
-include 'spring-social-github'
-include 'spring-social-gowalla'
-include 'spring-social-linkedin'
-include 'spring-social-tripit'
-include 'spring-social-twitter'
-include 'spring-social-web'
-include 'spring-social-security'
-include 'spring-social-test'
+import org.springframework.social.connect.support.OAuth1ConnectionFactory;
+import org.springframework.social.twitter.api.Twitter;
+
+public class TwitterAuthenticationService extends OAuth1AuthenticationService<Twitter> {
+
+	public TwitterAuthenticationService() {
+		super();
+	}
+
+	public TwitterAuthenticationService(OAuth1ConnectionFactory<Twitter> connectionFactory) {
+		super(connectionFactory);
+	}
+}
