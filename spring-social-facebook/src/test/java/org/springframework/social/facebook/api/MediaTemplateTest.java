@@ -102,50 +102,50 @@ public class MediaTemplateTest extends AbstractFacebookApiTest {
 	}
 	
 	@Test
-	public void uploadPhoto_noCaption() {
+	public void postPhoto_noCaption() {
 		mockServer.expect(requestTo("https://graph.facebook.com/me/photos"))
 			.andExpect(method(POST))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
 		// TODO: Match body content to ensure fields and photo are included
 		Resource photo = getUploadResource("photo.jpg", "PHOTO DATA");
-		String photoId = facebook.mediaOperations().uploadPhoto(photo);
+		String photoId = facebook.mediaOperations().postPhoto(photo);
 		assertEquals("12345", photoId);
 	}
 
 	@Test
-	public void uploadPhoto_withCaption() {
+	public void postPhoto_withCaption() {
 		mockServer.expect(requestTo("https://graph.facebook.com/me/photos"))
 			.andExpect(method(POST))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
 		// TODO: Match body content to ensure fields and photo are included
 		Resource photo = getUploadResource("photo.jpg", "PHOTO DATA");
-		String photoId = facebook.mediaOperations().uploadPhoto(photo, "Some caption");
+		String photoId = facebook.mediaOperations().postPhoto(photo, "Some caption");
 		assertEquals("12345", photoId);
 	}
 
 	@Test
-	public void uploadPhoto_ToAlbumNoCaption() {
+	public void postPhoto_ToAlbumNoCaption() {
 		mockServer.expect(requestTo("https://graph.facebook.com/192837465/photos"))
 			.andExpect(method(POST))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
 		// TODO: Match body content to ensure fields and photo are included
 		Resource photo = getUploadResource("photo.jpg", "PHOTO DATA");
-		String photoId = facebook.mediaOperations().uploadPhoto("192837465", photo);
+		String photoId = facebook.mediaOperations().postPhoto("192837465", photo);
 		assertEquals("12345", photoId);
 	}
 
 	@Test
-	public void uploadPhoto_ToAlbumWithCaption() {
+	public void postPhoto_ToAlbumWithCaption() {
 		mockServer.expect(requestTo("https://graph.facebook.com/192837465/photos"))
 			.andExpect(method(POST))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
 		// TODO: Match body content to ensure fields and photo are included
 		Resource photo = getUploadResource("photo.jpg", "PHOTO DATA");
-		String photoId = facebook.mediaOperations().uploadPhoto("192837465", photo, "Some caption");
+		String photoId = facebook.mediaOperations().postPhoto("192837465", photo, "Some caption");
 		assertEquals("12345", photoId);
 	}
 
@@ -180,26 +180,26 @@ public class MediaTemplateTest extends AbstractFacebookApiTest {
 	}
 	
 	@Test
-	public void uploadVideo_noTitleOrDescription() {
+	public void postVideo_noTitleOrDescription() {
 		mockServer.expect(requestTo("https://graph-video.facebook.com/me/videos"))
 			.andExpect(method(POST))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
 		// TODO: Match body content to ensure fields and photo are included
 		Resource video = getUploadResource("video.mov", "VIDEO DATA");
-		String photoId = facebook.mediaOperations().uploadVideo(video);
+		String photoId = facebook.mediaOperations().postVideo(video);
 		assertEquals("12345", photoId);
 	}
 
 	@Test
-	public void uploadVideo_withTitleOrDescription() {
+	public void postVideo_withTitleOrDescription() {
 		mockServer.expect(requestTo("https://graph-video.facebook.com/me/videos"))
 			.andExpect(method(POST))
 			.andExpect(header("Authorization", "OAuth someAccessToken"))
 			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
 		// TODO: Match body content to ensure fields and photo are included
 		Resource video = getUploadResource("video.mov", "VIDEO DATA");
-		String photoId = facebook.mediaOperations().uploadVideo(video, "title", "description");
+		String photoId = facebook.mediaOperations().postVideo(video, "title", "description");
 		assertEquals("12345", photoId);
 	}
 

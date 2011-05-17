@@ -220,14 +220,38 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 	}
 
 	@Test
-	public void updateStatus_withLink() throws Exception {
+	public void post_message() throws Exception {
+		String requestBody = "message=Hello+Facebook+World";
+		mockServer.expect(requestTo("https://graph.facebook.com/123456789/feed"))
+				.andExpect(method(POST))
+				.andExpect(header("Authorization", "OAuth someAccessToken"))
+				.andExpect(body(requestBody))
+				.andRespond(withResponse("{\"id\":\"123456_78901234\"}", responseHeaders));
+		assertEquals("123456_78901234", facebook.feedOperations().post("123456789", "Hello Facebook World"));
+		mockServer.verify();
+	}
+
+	@Test
+	public void post_link() throws Exception {
 		String requestBody = "link=someLink&name=some+name&caption=some+caption&description=some+description&message=Hello+Facebook+World";
 		mockServer.expect(requestTo("https://graph.facebook.com/me/feed")).andExpect(method(POST))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andExpect(body(requestBody))
 				.andRespond(withResponse("{\"id\":\"123456_78901234\"}", responseHeaders));
 		FacebookLink link = new FacebookLink("someLink", "some name", "some caption", "some description");
-		assertEquals("123456_78901234", facebook.feedOperations().postLink("Hello Facebook World", link));
+		assertEquals("123456_78901234", facebook.feedOperations().post("Hello Facebook World", link));
+		mockServer.verify();
+	}
+
+	@Test
+	public void post_link_toAnotherFeed() throws Exception {
+		String requestBody = "link=someLink&name=some+name&caption=some+caption&description=some+description&message=Hello+Facebook+World";
+		mockServer.expect(requestTo("https://graph.facebook.com/123456789/feed")).andExpect(method(POST))
+				.andExpect(header("Authorization", "OAuth someAccessToken"))
+				.andExpect(body(requestBody))
+				.andRespond(withResponse("{\"id\":\"123456_78901234\"}", responseHeaders));
+		FacebookLink link = new FacebookLink("someLink", "some name", "some caption", "some description");
+		assertEquals("123456_78901234", facebook.feedOperations().post("123456789", "Hello Facebook World", link));
 		mockServer.verify();
 	}
 
