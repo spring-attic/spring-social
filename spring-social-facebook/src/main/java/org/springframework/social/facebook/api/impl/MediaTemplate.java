@@ -93,26 +93,26 @@ class MediaTemplate implements MediaOperations {
 		return graphApi.fetchImage(photoId, "picture", imageType);
 	}
 
-	public String uploadPhoto(Resource photo) {
+	public String postPhoto(Resource photo) {
 		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
 		parts.set("source", photo);
 		return graphApi.publish("me", "photos", parts);
 	}
 	
-	public String uploadPhoto(Resource photo, String caption) {
+	public String postPhoto(Resource photo, String caption) {
 		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
 		parts.set("source", photo);
 		parts.set("message", caption);
 		return graphApi.publish("me", "photos", parts);
 	}
 	
-	public String uploadPhoto(String albumId, Resource photo) {
+	public String postPhoto(String albumId, Resource photo) {
 		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
 		parts.set("source", photo);
 		return graphApi.publish(albumId, "photos", parts);
 	}
 	
-	public String uploadPhoto(String albumId, Resource photo, String caption) {
+	public String postPhoto(String albumId, Resource photo, String caption) {
 		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
 		parts.set("source", photo);
 		parts.set("message", caption);
@@ -140,7 +140,7 @@ class MediaTemplate implements MediaOperations {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public String uploadVideo(Resource video) {
+	public String postVideo(Resource video) {
 		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
 		parts.set("file", video);
 		Map<String, Object> response = restTemplate.postForObject("https://graph-video.facebook.com/me/videos", parts, Map.class);
@@ -148,7 +148,7 @@ class MediaTemplate implements MediaOperations {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public String uploadVideo(Resource video, String title, String description) {
+	public String postVideo(Resource video, String title, String description) {
 		MultiValueMap<String, Object> parts = new LinkedMultiValueMap<String, Object>();
 		parts.set("file", video);
 		parts.set("title", title);

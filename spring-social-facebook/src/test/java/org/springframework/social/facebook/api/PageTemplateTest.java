@@ -21,7 +21,10 @@ import static org.springframework.social.test.client.RequestMatchers.*;
 import static org.springframework.social.test.client.ResponseCreators.*;
 
 import org.junit.Test;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.social.BadCredentialsException;
 
 /**
  * @author Craig Walls
@@ -99,4 +102,95 @@ public class PageTemplateTest extends AbstractFacebookApiTest {
 		assertEquals("http://www.facebook.com/apps/application.php?id=140372495981006", page.getLink());
 		assertEquals("The social destination for Spring application developers.", page.getDescription());
 	}
+	
+	@Test
+	public void isPageAdmin() {
+		expectFetchAccounts();
+		assertFalse(facebook.pageOperations().isPageAdmin("2468013579"));
+		assertTrue(facebook.pageOperations().isPageAdmin("987654321"));
+	}
+	
+	@Test
+	public void post_message() throws Exception {
+		expectFetchAccounts();
+		String requestBody = "message=Hello+Facebook+World&access_token=pageAccessToken";
+		mockServer.expect(requestTo("https://graph.facebook.com/987654321/feed"))
+				.andExpect(method(POST))
+				.andExpect(header("Authorization", "OAuth someAccessToken"))
+				.andExpect(body(requestBody))
+				.andRespond(withResponse("{\"id\":\"123456_78901234\"}", responseHeaders));
+		assertEquals("123456_78901234", facebook.pageOperations().post("987654321", "Hello Facebook World"));
+		mockServer.verify();
+	}
+
+	@Test(expected = BadCredentialsException.class)
+	public void post_message_notAdmin() throws Exception {
+		expectFetchAccounts();
+		facebook.pageOperations().post("2468013579", "Hello Facebook World");
+	}
+	
+	@Test
+	public void post_link() throws Exception {
+		expectFetchAccounts();
+		String requestBody = "link=someLink&name=some+name&caption=some+caption&description=some+description&message=Hello+Facebook+World&access_token=pageAccessToken";
+		mockServer.expect(requestTo("https://graph.facebook.com/987654321/feed")).andExpect(method(POST))
+				.andExpect(header("Authorization", "OAuth someAccessToken"))
+				.andExpect(body(requestBody))
+				.andRespond(withResponse("{\"id\":\"123456_78901234\"}", responseHeaders));
+		FacebookLink link = new FacebookLink("someLink", "some name", "some caption", "some description");
+		assertEquals("123456_78901234", facebook.pageOperations().post("987654321", "Hello Facebook World", link));
+		mockServer.verify();
+	}
+
+	@Test(expected = BadCredentialsException.class)
+	public void post_link_notAdmin() throws Exception {
+		expectFetchAccounts();
+		FacebookLink link = new FacebookLink("someLink", "some name", "some caption", "some description");
+		facebook.pageOperations().post("2468013579", "Hello Facebook World", link);
+	}
+	
+	@Test
+	public void postPhoto_noCaption() {
+		expectFetchAccounts();
+		mockServer.expect(requestTo("https://graph.facebook.com/192837465/photos"))
+			.andExpect(method(POST))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
+		// TODO: Match body content to ensure fields and photo are included
+		Resource photo = getUploadResource("photo.jpg", "PHOTO DATA");
+		String photoId = facebook.pageOperations().postPhoto("987654321", "192837465", photo);
+		assertEquals("12345", photoId);
+	}
+
+	@Test
+	public void postPhoto_withCaption() {
+		expectFetchAccounts();
+		mockServer.expect(requestTo("https://graph.facebook.com/192837465/photos"))
+			.andExpect(method(POST))
+			.andExpect(header("Authorization", "OAuth someAccessToken"))
+			.andRespond(withResponse("{\"id\":\"12345\"}", responseHeaders));
+		// TODO: Match body content to ensure fields and photo are included
+		Resource photo = getUploadResource("photo.jpg", "PHOTO DATA");
+		String photoId = facebook.pageOperations().postPhoto("987654321", "192837465", photo, "Some caption");
+		assertEquals("12345", photoId);
+	}
+	
+	// private helpers
+	
+	private void expectFetchAccounts() {
+		mockServer.expect(requestTo("https://graph.facebook.com/me/accounts"))
+				.andExpect(method(GET))
+				.andExpect(header("Authorization", "OAuth someAccessToken"))
+                .andRespond(withResponse(new ClassPathResource("testdata/accounts.json", getClass()), responseHeaders));
+	}
+
+	private Resource getUploadResource(final String filename, String content) {
+		Resource video = new ByteArrayResource(content.getBytes()) {
+			public String getFilename() throws IllegalStateException {
+				return filename;
+			};
+		};
+		return video;
+	}
+
 }

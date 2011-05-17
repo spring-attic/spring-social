@@ -103,21 +103,21 @@ public interface MediaOperations {
 	byte[] getPhotoImage(String photoId, ImageType imageType);
 	
 	/**
-	 * Uploads a photo to an album created specifically for photos uploaded by the application.
+	 * Uploads a photo to an album created specifically for the application.
 	 * If no album exists for the application, it will be created.
 	 * @param photo A {@link Resource} for the photo data. The given Resource must implement the getFilename() method (such as {@link FileSystemResource} or {@link ClassPathResource}).
 	 * @return the ID of the photo.
 	 */
-	String uploadPhoto(Resource photo);
+	String postPhoto(Resource photo);
 	
 	/**
-	 * Uploads a photo to an album created specifically for photos uploaded by the application.
+	 * Uploads a photo to an album created specifically for the application.
 	 * If no album exists for the application, it will be created.
 	 * @param photo A {@link Resource} for the photo data. The given Resource must implement the getFilename() method (such as {@link FileSystemResource} or {@link ClassPathResource}).
 	 * @param caption A caption describing the photo.
 	 * @return the ID of the photo.
 	 */
-	String uploadPhoto(Resource photo, String caption);
+	String postPhoto(Resource photo, String caption);
 	
 	/**
 	 * Uploads a photo to a specific album.
@@ -125,7 +125,7 @@ public interface MediaOperations {
 	 * @param photo A {@link Resource} for the photo data. The given Resource must implement the getFilename() method (such as {@link FileSystemResource} or {@link ClassPathResource}).
 	 * @return the ID of the photo.
 	 */
-	String uploadPhoto(String albumId, Resource photo);
+	String postPhoto(String albumId, Resource photo);
 	
 	/**
 	 * Uploads a photo to a specific album.
@@ -134,7 +134,7 @@ public interface MediaOperations {
 	 * @param caption A caption describing the photo.
 	 * @return the ID of the photo.
 	 */
-	String uploadPhoto(String albumId, Resource photo, String caption);
+	String postPhoto(String albumId, Resource photo, String caption);
 	
 	/**
 	 * Retrieves a list of videos that the authenticated user is tagged in.
@@ -177,7 +177,7 @@ public interface MediaOperations {
 	 * @param video A {@link Resource} for the video data. The given Resource must implement the getFilename() method (such as {@link FileSystemResource} or {@link ClassPathResource}).
 	 * @return the ID of the video.
 	 */
-	String uploadVideo(Resource video);
+	String postVideo(Resource video);
 	
 	/**
 	 * Uploads a video for the authenticated user.
@@ -185,6 +185,6 @@ public interface MediaOperations {
 	 * @param video A {@link Resource} for the video data. The given Resource must implement the getFilename() method (such as {@link FileSystemResource} or {@link ClassPathResource}).
 	 * @return the ID of the video.
 	 */
-	String uploadVideo(Resource video, String title, String description);
+	String postVideo(Resource video, String title, String description);
 
 }

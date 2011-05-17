@@ -123,7 +123,23 @@ public interface FeedOperations {
 	 * @param message a message to send with the link.
 	 * @return the ID of the new feed entry.
 	 */
-	String postLink(String message, FacebookLink link);
+	String post(String message, FacebookLink link);
+
+	/**
+	 * Posts a message to a feed.
+	 * @param ownerId the feed owner ID. Could be a user ID or a page ID.
+	 * @param message the message to post.
+	 * @return the id of the new feed entry.
+	 */
+	String post(String ownerId, String message);
+	
+	/**
+	 * Posts a link to a feed.
+	 * @param ownerId the feed owner ID. Could be a user ID or a page ID.
+	 * @param message a message to send with the link.
+	 * @return the ID of the new feed entry.
+	 */
+	String post(String ownerId, String message, FacebookLink link);
 
 	/**
 	 * Deletes a feed entry

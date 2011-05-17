@@ -70,7 +70,6 @@ class FacebookErrorHandler extends DefaultResponseErrorHandler {
 		// Can't trust the type to be useful. It's often OAuthException, even for things not OAuth-related.
 		// Can rely only on the message (which itself isn't very consistent).
 		String message = errorDetails.get("message");
-		 
 		if(message.contains("Requires extended permission")) {
 			String requiredPermission = message.split(": ")[1];
 			throw new InsufficientPermissionException(message, requiredPermission);
