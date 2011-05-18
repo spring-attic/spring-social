@@ -139,7 +139,8 @@ public class SocialAuthenticationFilterTest {
 
 		FilterTestEnv env = new FilterTestEnv("GET", "/auth");
 		env.filter.setFilterProcessesUrl(env.req.getRequestURI());
-
+		env.filter.setPostLoginUrl("/success");
+		
 		ConnectionFactory<Object> factory = mock(MockConnectionFactory.class);
 		when(factory.getProviderId()).thenReturn("mock");
 		env.req.setRequestURI(env.req.getRequestURI() + "/" + factory.getProviderId());
@@ -158,7 +159,8 @@ public class SocialAuthenticationFilterTest {
 		env.doFilter();
 
 		assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-
+		
+		assertEquals("/success", env.res.getRedirectedUrl());
 	}
 
 	@SuppressWarnings("unchecked")
