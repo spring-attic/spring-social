@@ -17,9 +17,11 @@
 package org.springframework.social.security;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,12 +39,14 @@ import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.NullRememberMeServices;
+import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionRepository;
@@ -183,14 +187,23 @@ public class SocialAuthenticationFilterTest {
 		
 		when(connectionFactory.createConnection(data)).thenReturn(connection);
 		
-		try {
-			filter.addConnection(authService, request, userId, data);
-			fail();
-		} catch (SocialAuthenticationRedirectException e) {
-			assertEquals("/redirect", e.getRedirectUrl());
-		}
-
+		Connection<?> addedConnection = filter.addConnection(authService, userId, data);
+		assertNotNull(addedConnection);
+		assertSame(connection, addedConnection);
+		
 		verify(connectionRepository).addConnection(connection);
+	}
+	
+	@Test
+	public void addSignInAttempt() {
+		MockHttpSession session = new MockHttpSession();
+		assertTrue(SocialAuthenticationFilter.addSignInAttempt(session, data("A", "a")));
+		assertFalse(SocialAuthenticationFilter.addSignInAttempt(session, data("A", "a")));
+		assertTrue(SocialAuthenticationFilter.addSignInAttempt(session, data("A", "b")));
+		assertTrue(SocialAuthenticationFilter.addSignInAttempt(session, data("B", "a")));
+		assertEquals(3, SocialAuthenticationFilter.getSignInAttempts(session).size());
+		SocialAuthenticationFilter.clearSignInAttempts(session);
+		assertEquals(0, SocialAuthenticationFilter.getSignInAttempts(session).size());
 	}
 	
 	private static <T> Set<T> empty(Class<T> cls) {
@@ -201,6 +214,10 @@ public class SocialAuthenticationFilterTest {
 		return Collections.unmodifiableSet(new HashSet<T>(Arrays.asList(o)));
 	}
 
+	private static ConnectionData data(String providerId, String providerUserId) {
+		return new ConnectionData(providerId, providerUserId, null, null, null, null, null, null, null);
+	}
+	
 	private static class FilterTestEnv {
 		private final SocialAuthenticationFilter filter;
 
