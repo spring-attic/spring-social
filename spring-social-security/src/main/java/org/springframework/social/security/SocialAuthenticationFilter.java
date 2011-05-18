@@ -17,6 +17,8 @@
 package org.springframework.social.security;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,10 +29,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -59,8 +63,9 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 	private ApplicationEventPublisher eventPublisher;
 	private RememberMeServices rememberMeServices = null;
 
-	private String filterProcessesUrl = "/j_spring_social_security_check";
-
+	private String filterProcessesUrl = "/auth";
+	private String signupUrl = "/signup";
+	
 	private SessionAuthenticationStrategy sessionStrategy = new NullAuthenticatedSessionStrategy();
 
 	private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
@@ -68,6 +73,38 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 
 	private UsersConnectionRepository usersConnectionRepository;
 
+	/**
+	 * testing only
+	 * 
+	 * @param session may be null
+	 * @param data may be null
+	 * @return true if new attempt was added to session
+	 */
+	static boolean addSignInAttempt(HttpSession session, ConnectionData data) {
+		return session == null || data == null ? null : SignInAttempts.add(session, data);
+	}
+	
+	/**
+	 * @param session may be null
+	 * @return list of ConnectionData for sign-in attempts using unknown connections
+	 */
+	public static List<ConnectionData> getSignInAttempts(HttpSession session) {
+		if (session == null) {
+			return new ArrayList<ConnectionData>(0);
+		}
+		return new ArrayList<ConnectionData>(SignInAttempts.get(session));
+	}
+	
+	/**
+	 * clear list of sign-in attempts (after registration)
+	 * @param session may be null
+	 */
+	public static void clearSignInAttempts(HttpSession session) {
+		if (session != null) {
+			SignInAttempts.clear(session);
+		}
+	}
+	
 	public SocialAuthenticationFilter() {
 	}
 
@@ -183,19 +220,38 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 
 		final SocialAuthenticationToken token = authService.getAuthToken(authMode, request, response);
 		if (token != null) {
+			Assert.isInstanceOf(ConnectionData.class, token.getPrincipal(), "unexpected principle type");
+			
 			Authentication auth = getAuthentication();
 			if (auth == null || !auth.isAuthenticated()) {
 				if (!authService.getConnectionCardinality().isAuthenticatePossible()) {
 					return null;
 				}
 				token.setDetails(getAuthDetailsSource().buildDetails(request));
-				return getAuthManager().authenticate(token);
+				try {
+					return getAuthManager().authenticate(token);
+				} catch (BadCredentialsException e) {
+					// connection unknown, register new user?
+					if (getSignupUrl() == null) {
+						throw e;
+					} else {
+						// store ConnectionData in session and redirect to register page
+						if (SignInAttempts.add(request.getSession(), (ConnectionData) token.getPrincipal())) {
+							throw new SocialAuthenticationRedirectException(getSignupUrl());
+						}
+					}
+				}
 			} else {
 				// already authenticated - add connection instead
 				String userId = userIdExtractor.extractUserId(auth);
 				Object principal = token.getPrincipal();
 				if (userId != null && principal instanceof ConnectionData) {
-					return addConnection(authService, request, userId, (ConnectionData) principal);
+					Connection<?> connection = addConnection(authService, userId, (ConnectionData) principal);
+					if(connection != null) {
+						throw new SocialAuthenticationRedirectException(authService.getConnectionAddedRedirectUrl(request, connection));
+					} else {
+						return null;
+					}
 				}
 			}
 		}
@@ -203,8 +259,7 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		return null;
 	}
 
-	protected Authentication addConnection(final SocialAuthenticationService<?> authService,
-			final HttpServletRequest request, String userId, final ConnectionData data) {
+	protected Connection<?> addConnection(final SocialAuthenticationService<?> authService, String userId, final ConnectionData data) {
 
 		HashSet<String> userIdSet = new HashSet<String>();
 		userIdSet.add(data.getProviderUserId());
@@ -232,8 +287,7 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		Connection<?> connection = authService.getConnectionFactory().createConnection(data);
 		connection.sync();
 		repo.addConnection(connection);
-		throw new SocialAuthenticationRedirectException(authService.getConnectionAddedRedirectUrl(request, connection));
-
+		return connection;
 	}
 
 	protected String getRequestedProviderId(HttpServletRequest request) {
@@ -376,6 +430,14 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		this.filterProcessesUrl = filterProcessesUrl;
 	}
 
+	public String getSignupUrl() {
+		return signupUrl;
+	}
+
+	public void setSignupUrl(String signupUrl) {
+		this.signupUrl = signupUrl;
+	}
+
 	public RememberMeServices getRememberMeServices() {
 		return rememberMeServices;
 	}
@@ -423,5 +485,60 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 	public void setAuthServiceLocator(SocialAuthenticationServiceLocator authServiceLocator) {
 		this.authServiceLocator = authServiceLocator;
 	}
-	
+
+	private static class SignInAttempts {
+		
+		private static final String ATTR_SIGN_IN_ATTEMPT = SignInAttempts.class.getName();
+		
+		private List<ConnectionData> attempts = new ArrayList<ConnectionData>(1);
+		
+		private static boolean add(HttpSession session, ConnectionData data) {
+			SignInAttempts signInAttempts = (SignInAttempts) session.getAttribute(ATTR_SIGN_IN_ATTEMPT);
+			if (signInAttempts == null) {
+				session.setAttribute(ATTR_SIGN_IN_ATTEMPT, signInAttempts = new SignInAttempts()); 
+			}
+			return signInAttempts.addAttempt(data);
+		}
+		
+		/**
+		 * @return unmodifiable list
+		 */
+		private static List<ConnectionData> get(HttpSession session) {
+			SignInAttempts signInAttempts = (SignInAttempts) session.getAttribute(ATTR_SIGN_IN_ATTEMPT);
+			if(signInAttempts == null) {
+				return Collections.emptyList();
+			} else {
+				return signInAttempts.getAttempts();
+			}
+		}
+
+		private static void clear(HttpSession session) {
+			session.removeAttribute(ATTR_SIGN_IN_ATTEMPT);
+		}
+		
+		private SignInAttempts() {
+		}
+		
+		private boolean addAttempt(ConnectionData data) {
+			if (!contains(data.getProviderId(), data.getProviderUserId())) {
+				attempts.add(data);
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+		private boolean contains(String providerId, String providerUserId) {
+			for (ConnectionData attempt : attempts) {
+				if (providerId.equals(attempt.getProviderId()) && providerUserId.equals(attempt.getProviderUserId())) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private List<ConnectionData> getAttempts() {
+			return Collections.unmodifiableList(attempts);
+		}
+	}
 }
