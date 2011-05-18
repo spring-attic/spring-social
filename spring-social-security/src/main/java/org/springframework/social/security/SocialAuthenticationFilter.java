@@ -39,6 +39,7 @@ import org.springframework.security.authentication.event.InteractiveAuthenticati
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.AbstractAuthenticationTargetUrlRequestHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.RememberMeServices;
@@ -69,6 +70,7 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 	private SessionAuthenticationStrategy sessionStrategy = new NullAuthenticatedSessionStrategy();
 
 	private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+	
 	private UserIdExtractor userIdExtractor;
 
 	private UsersConnectionRepository usersConnectionRepository;
@@ -116,14 +118,14 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		Assert.notNull(getAuthServiceLocator(), "authServiceLocator must be configured");
 	}
 
-	public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain)
+	public final void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain)
 			throws IOException, ServletException {
-
-		// only authenticate previously unauthenticated sessions
-
-		final HttpServletRequest request = (HttpServletRequest) req;
-		final HttpServletResponse response = (HttpServletResponse) res;
-
+		doFilter((HttpServletRequest) req, (HttpServletResponse) res, chain);
+	}
+	
+	public void doFilter(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain)
+			throws IOException, ServletException {
+		
 		try {
 			final Authentication auth = attemptAuthentication(request, response);
 
@@ -145,8 +147,8 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 			return;
 		}
 
-		if (!res.isCommitted()) {
-			chain.doFilter(req, res);
+		if (!response.isCommitted()) {
+			chain.doFilter(request, response);
 		}
 	}
 
@@ -371,7 +373,10 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 			eventPublisher.publishEvent(new InteractiveAuthenticationSuccessEvent(authResult, this.getClass()));
 		}
 
-		getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
+		if (getRequestedProviderId(request) != null) {
+			// only redirect explicit auth
+			getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
+		}
 	}
 
 	/**
@@ -438,6 +443,16 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		this.signupUrl = signupUrl;
 	}
 
+	public void setPostLoginUrl(String postLoginUrl) {
+		AuthenticationSuccessHandler successHandler = getSuccessHandler();
+		if (successHandler instanceof AbstractAuthenticationTargetUrlRequestHandler) {
+			AbstractAuthenticationTargetUrlRequestHandler h = (AbstractAuthenticationTargetUrlRequestHandler) successHandler;
+			h.setDefaultTargetUrl(postLoginUrl);
+		} else {
+			throw new IllegalStateException("can't set postLoginUrl on unknown successHandler, type is " + successHandler.getClass().getName());
+		}
+	}
+
 	public RememberMeServices getRememberMeServices() {
 		return rememberMeServices;
 	}
@@ -451,6 +466,9 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 	}
 
 	public void setSuccessHandler(AuthenticationSuccessHandler successHandler) {
+		if (successHandler == null) {
+			throw new NullPointerException("successHandler");
+		}
 		this.successHandler = successHandler;
 	}
 
