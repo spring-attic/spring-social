@@ -90,11 +90,11 @@ class FeedTemplate implements FeedOperations {
 		return post("me", message);
 	}
 
-	public String post(String message, FacebookLink link) {
-		return post("me", message, link);
+	public String postLink(String message, FacebookLink link) {
+		return postLink("me", message, link);
 	}
 	
-	public String post(String ownerId, String message, FacebookLink link) {
+	public String postLink(String ownerId, String message, FacebookLink link) {
 		MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
 		map.set("link", link.getLink());
 		map.set("name", link.getName());

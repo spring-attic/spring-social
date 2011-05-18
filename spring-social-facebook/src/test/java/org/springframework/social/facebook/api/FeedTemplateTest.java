@@ -239,7 +239,7 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 				.andExpect(body(requestBody))
 				.andRespond(withResponse("{\"id\":\"123456_78901234\"}", responseHeaders));
 		FacebookLink link = new FacebookLink("someLink", "some name", "some caption", "some description");
-		assertEquals("123456_78901234", facebook.feedOperations().post("Hello Facebook World", link));
+		assertEquals("123456_78901234", facebook.feedOperations().postLink("Hello Facebook World", link));
 		mockServer.verify();
 	}
 
@@ -251,7 +251,7 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 				.andExpect(body(requestBody))
 				.andRespond(withResponse("{\"id\":\"123456_78901234\"}", responseHeaders));
 		FacebookLink link = new FacebookLink("someLink", "some name", "some caption", "some description");
-		assertEquals("123456_78901234", facebook.feedOperations().post("123456789", "Hello Facebook World", link));
+		assertEquals("123456_78901234", facebook.feedOperations().postLink("123456789", "Hello Facebook World", link));
 		mockServer.verify();
 	}
 

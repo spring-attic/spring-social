@@ -53,7 +53,7 @@ public interface PageOperations {
 	/**
 	 * Posts a link to the page's feed as a page administrator.
 	 * Requires that the application is granted "manage_pages" permission and that the authenticated user be an administrator of the page.
-	 * To post a link to the page's feed as the authenticated user, use {@link FeedOperations#post(String, String, FacebookLink)} instead.
+	 * To post a link to the page's feed as the authenticated user, use {@link FeedOperations#postLink(String, String, FacebookLink)} instead.
 	 * @param pageId the page ID
 	 * @param message a message to send with the link.
 	 * @param link the link details
