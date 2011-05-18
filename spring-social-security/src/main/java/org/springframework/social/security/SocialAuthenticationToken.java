@@ -61,6 +61,9 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 		if (connection.getProviderId() == null) {
 			throw new NullPointerException("connection.providerId");
 		}
+		if (connection.getExpireTime() != null && connection.getExpireTime() < System.currentTimeMillis()) {
+			throw new IllegalArgumentException("connection.expireTime < currentTime");
+		}
 		
 		this.providerId = connection.getProviderId();
 		this.principle = connection;
