@@ -17,6 +17,7 @@ package org.springframework.social.facebook.api.impl.json;
 
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.module.SimpleModule;
+import org.springframework.social.facebook.api.Account;
 import org.springframework.social.facebook.api.Album;
 import org.springframework.social.facebook.api.Checkin;
 import org.springframework.social.facebook.api.CheckinPost;
@@ -31,10 +32,10 @@ import org.springframework.social.facebook.api.Invitation;
 import org.springframework.social.facebook.api.LinkPost;
 import org.springframework.social.facebook.api.Location;
 import org.springframework.social.facebook.api.NotePost;
+import org.springframework.social.facebook.api.Page;
 import org.springframework.social.facebook.api.Photo;
 import org.springframework.social.facebook.api.Photo.Image;
 import org.springframework.social.facebook.api.PhotoPost;
-import org.springframework.social.facebook.api.Page;
 import org.springframework.social.facebook.api.Post;
 import org.springframework.social.facebook.api.Reference;
 import org.springframework.social.facebook.api.StatusPost;
@@ -84,5 +85,6 @@ public class FacebookModule extends SimpleModule {
 		context.setMixInAnnotations(PhotoPost.class, PhotoPostMixin.class);
 		context.setMixInAnnotations(StatusPost.class, StatusPostMixin.class);
 		context.setMixInAnnotations(VideoPost.class, VideoPostMixin.class);
+		context.setMixInAnnotations(Account.class, AccountMixin.class);
 	}
 }

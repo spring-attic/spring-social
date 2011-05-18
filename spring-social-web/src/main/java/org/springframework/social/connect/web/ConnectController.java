@@ -112,7 +112,8 @@ public class ConnectController  {
 	 * Render the connect form for the service provider identified by {name} to the member as HTML in their web browser.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET)
-	public String providerPage(@PathVariable String providerId, Model model) {
+	public String providerPage(@PathVariable String providerId, WebRequest request, Model model) {
+		handleDuplicateConnectionException(request, model);
 		List<Connection<?>> connections = getConnectionRepository().findConnectionsToProvider(providerId);
 		if (connections.isEmpty()) {
 			return baseViewPath(providerId) + "Connect";
@@ -211,10 +212,7 @@ public class ConnectController  {
 			getConnectionRepository().addConnection(connection);	
 			postConnect(connectionFactory, connection, request);
 		} catch (DuplicateConnectionException e) {
-			// TODO: Need to somehow tell provider page that the connection already exists.
-			//       A FlashMap mechanism would be handy here, but would require that the developer setup the FlashMapFilter
-			//       Could put in session and remove in providerPage().
-			//       Could pass along in request parameter to provider page; but that would limiting
+			request.setAttribute(DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE, e, WebRequest.SCOPE_SESSION);
 		}
 	}
 
@@ -254,6 +252,14 @@ public class ConnectController  {
 		request.removeAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
 		return requestToken;
 	}
+	
+	private void handleDuplicateConnectionException(WebRequest request, Model model) {
+		DuplicateConnectionException exception = (DuplicateConnectionException) request.getAttribute(DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+		request.removeAttribute(DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+		if(exception != null) {
+			model.addAttribute(DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE, Boolean.TRUE);
+		}
+	}
 
 	private ConnectionRepository getConnectionRepository() {
 		return connectionRepositoryProvider.get();
@@ -264,5 +270,7 @@ public class ConnectController  {
 	}
 
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
+
+	private static final String DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE = "_duplicateConnectionException";
 
 }
