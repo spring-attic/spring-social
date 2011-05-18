@@ -69,6 +69,8 @@ public class ProviderSignInController {
 
 	private String signupUrl = "/signup";
 
+	private String postLoginUrl = "/";
+
 	/**
 	 * Creates a new provider sign-in controller.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the sign-in process.
@@ -97,6 +99,15 @@ public class ProviderSignInController {
 	 */
 	public void setSignupUrl(String signupUrl) {
 		this.signupUrl = signupUrl; 
+	}
+
+	/**
+	 * Overrides the URL of the application's post-login page - this defaults to "/".
+	 * ProviderSignInController will redirect to this URL after signing into the provider has been successful.
+	 * @param postLoginUrl the URL of the post-login page.
+	 */
+	public void setPostLoginUrl(String postLoginUrl) {
+		this.postLoginUrl = postLoginUrl;
 	}
 
 	/**
@@ -190,14 +201,14 @@ public class ProviderSignInController {
 			return redirect(signupUrl);
 		} else {
 			signIn(localUserId);
-			return redirect("/");
-		}		
+			return redirect(postLoginUrl);
+		}
 	}
-	
+
 	private void signIn(String localUserId) {
 		signInService.signIn(localUserId);		
 	}
-	
+
 	private RedirectView redirect(String url) {
 		return new RedirectView(url, true);
 	}
