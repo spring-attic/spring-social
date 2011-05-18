@@ -16,7 +16,7 @@
 package org.springframework.social.connect.signin.web;
 
 import org.springframework.social.connect.Connection;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.RequestAttributes;
 
 /**
  * Helper methods that support provider user sign-in scenarios.
@@ -48,7 +48,7 @@ public class ProviderSignInUtils {
 		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
 		if (signInAttempt != null) {
 			signInAttempt.addConnection();
-			request.removeAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+			request.removeAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
 		}		
 	}
 
@@ -58,7 +58,7 @@ public class ProviderSignInUtils {
 	}
 	
 	private static ProviderSignInAttempt getProviderUserSignInAttempt(RequestAttributes request) {
-		return (ProviderSignInAttempt) request.getAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+		return (ProviderSignInAttempt) request.getAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
 	}
 	
 }
