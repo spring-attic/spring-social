@@ -64,30 +64,6 @@
               <entry>Spring Social's <classname>ConnectController</classname> which uses the Connect Framework to manage connections in a web application environment.</entry>
             </row>
             <row>
-              <entry>spring-social-facebook</entry>
-              <entry>Spring Social's Facebook API binding</entry>
-            </row>
-            <row>
-              <entry>spring-social-twitter</entry>
-              <entry>Spring Social's Twitter API binding.</entry>
-            </row>
-            <row>
-              <entry>spring-social-linkedin</entry>
-              <entry>Spring Social's LinkedIn API binding.</entry>
-            </row>
-            <row>
-              <entry>spring-social-github</entry>
-              <entry>Spring Social's GitHub API binding.</entry>
-            </row>
-            <row>
-              <entry>spring-social-gowalla</entry>
-              <entry>Spring Social's Gowalla API binding.</entry>
-            </row>
-            <row>
-              <entry>spring-social-tripit</entry>
-              <entry>Spring Social's TripIt API binding.</entry>
-            </row>
-            <row>
               <entry>spring-social-test</entry>
               <entry>Support for testing Connect implementations and API bindings.</entry>
             </row>
@@ -148,13 +124,16 @@
 			<section id="overview-dependencies-spring">
 				<title>Spring Framework</title>
 				<para>
-					Spring Social depends on the Spring Framework's web module for its REST client support using <classname>RestTemplate</classname>.
+					Spring Social requires <ulink url="http://www.springsource.org/documentation">Spring Framework</ulink> 3.0.3 and above.
+					Specifically, Spring Social uses <classname>RestTemplate</classname> and related REST client support from Spring's web module.
+				</para>
+				<para>
 					If Spring 3.1 is available, Spring Social will take advantage of some new features in Spring 3.1.
 					However, Spring Social does not depend on these new features and will work with Spring 3.0.3 or higher.
 				</para>
 				
 				<para>
-					If you want to use Spring Social with Spring 3.0.3 or higher, you'll need to explicitly add the spring-web dependency to your build, specifying the version:
+					If you want to use Spring Social with Spring 3.0.X, you'll need to explicitly add the spring-web dependency to your build, specifying the version:
 				</para>
 				
 			    <programlisting language="xml"><![CDATA[
@@ -187,7 +166,7 @@ dependencies {
 				<title>Spring Security</title>
 
 				<para>
-					If you're using Spring Social's JDBC-based connection repository, it will require a <interfacename>TextEncryptor</interfacename> from Spring Security 3.1.0 to encrypt connection data as it is persisted.
+					If you're using Spring Social's JDBC-based connection repository, it will require a <interfacename>TextEncryptor</interfacename> from <ulink url="http://static.springsource.org/spring-security/site/">Spring Security</ulink> 3.1.0 to encrypt connection data as it is persisted.
 					For that, you'll need to add the core module from Spring Security 3.1.0 to your project build:
 				</para>
 
@@ -205,7 +184,8 @@ dependencies {
 				<title>Commons Codec</title>
 
 				<para>
-					When using Spring Social to integrate with OAuth 1-based providers, you'll need to add the Commons Codec library to your project:
+					Spring Social depends on the <ulink url="http://commons.apache.org/codec/">Commons Codec</ulink> library when encoding OAuth 1 request signatures.
+					If you use Spring Social to connect with OAuth 1-based providers, you'll need to add Commons Codec to your project:
 				</para>
 			
 		    	<programlisting language="xml"><![CDATA[
@@ -216,13 +196,16 @@ dependencies {
 </dependency>]]>
 	  			</programlisting>
 	  			
+				<para>
+					Commons Codec is not required if your application only connects with OAuth 2 providers.
+				</para>
   			</section>
 
 			<section id="overview-dependencies-httpcomponents">
 				<title>Apache HttpComponents</title>
 				
 				<para>
-					Spring Social has an optional dependency on Apache's HttpComponents HttpClient as the basis for creating requests when communicating with a service provider.
+					Spring Social has an optional dependency on Apache's <ulink url="http://hc.apache.org/httpcomponents-client-ga/">HttpComponents HttpClient</ulink> as the basis for creating requests when communicating with a service provider.
 					If the HttpComponents HttpClient library is present, it will favor it. 
 					Otherwise, it will fall back on standard Java facilities for request creation.
 				</para>
@@ -244,12 +227,75 @@ dependencies {
 				<title>Jackson JSON Processor</title>
 
 				<para>
-					Spring Social's API binding implementations rely on the Jackson JSON processor to deserialize JSON responses into Java model objects.
+					Spring Social's API binding implementations rely on the <ulink url="http://jackson.codehaus.org/">Jackson JSON Processor</ulink> to deserialize JSON responses into Java model objects.
 					Each of the provider modules transitively depend on Jackson 1.8.0, so there's nothing special to do to add Jackson to your project's Maven or Gradle build. 
 				</para>
 
   			</section>
-
 		</section>	  
+
+		<section id="overview-provider-modules">
+			<title>Provider modules</title>
+			
+			<para>
+				In addition to the modules that make up Spring Social, there are also several provider-specific modules that provide connectivity with popular SaaS providers.
+				These provider modules are listed in <xref linkend="table-spring-social-provider-modules"/>.
+			</para>
+			
+			<table xml:id="table-spring-social-provider-modules">
+				<title>Spring Social Modules</title>
+				<tgroup cols="2">
+					<colspec align="left" />
+					<colspec colnum="1" colname="col1" colwidth="2*"/>
+					<colspec colnum="2" colname="col2" colwidth="2*"/>
+					<thead>
+						<row>
+							<entry align="center">Name</entry>
+							<entry align="center">Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+						  <entry>spring-social-facebook</entry>
+						  <entry>Spring Social's Facebook API binding</entry>
+						</row>
+						<row>
+						  <entry>spring-social-twitter</entry>
+						  <entry>Spring Social's Twitter API binding.</entry>
+						</row>
+						<row>
+						  <entry>spring-social-linkedin</entry>
+						  <entry>Spring Social's LinkedIn API binding.</entry>
+						</row>
+						<row>
+						  <entry>spring-social-github</entry>
+						  <entry>Spring Social's GitHub API binding.</entry>
+						</row>
+						<row>
+						  <entry>spring-social-gowalla</entry>
+						  <entry>Spring Social's Gowalla API binding.</entry>
+						</row>
+						<row>
+						  <entry>spring-social-tripit</entry>
+						  <entry>Spring Social's TripIt API binding.</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+	
+			<para>
+				All of these modules are optional, depending on the connectivity needs of your application.
+				For instance, if your application will connect with Facebook, you'll want to add the Facebook module to your project:
+			</para>
+
+	    	<programlisting language="xml"><![CDATA[
+<dependency>
+  <groupId>org.springframework.social</groupId>
+  <artifactId>spring-social-facebook</artifactId>
+  <version>${springSocialFacebookVersion}</version>
+</dependency>]]>
+  			</programlisting>	
+  			
+		</section>
   </section>
 </chapter>
