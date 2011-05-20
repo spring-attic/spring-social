@@ -41,7 +41,7 @@ class OAuth2RequestInterceptor implements ClientHttpRequestInterceptor {
 	
 	public ClientHttpResponse intercept(final HttpRequest request, final byte[] body, ClientHttpRequestExecution execution) throws IOException {
 		HttpRequest protectedResourceRequest = new HttpRequestDecorator(request);
-		protectedResourceRequest.getHeaders().add("Authorization", oauth2Version.getAuthorizationHeaderValue(accessToken));
+		protectedResourceRequest.getHeaders().set("Authorization", oauth2Version.getAuthorizationHeaderValue(accessToken));
 		return execution.execute(protectedResourceRequest, body);
 	}
 
