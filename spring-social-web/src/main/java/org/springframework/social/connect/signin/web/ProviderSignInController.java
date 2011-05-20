@@ -70,6 +70,10 @@ public class ProviderSignInController {
 	private String signupUrl = "/signup";
 
 	private String postLoginUrl = "/";
+	
+	private final boolean absoluteCallback;
+	
+	private final String trailingChar;
 
 	/**
 	 * Creates a new provider sign-in controller.
@@ -90,6 +94,8 @@ public class ProviderSignInController {
 		this.connectionRepositoryProvider = connectionRepositoryProvider;
 		this.signInService = signInService;
 		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
+		this.absoluteCallback = applicationUrl.matches("(?i)https?://.*");
+		this.trailingChar = (!absoluteCallback && applicationUrl.indexOf("/") == 0) ? "" : "/";
 	}
 
 	/**
@@ -120,13 +126,13 @@ public class ProviderSignInController {
 		ConnectionFactory<?> connectionFactory = getConnectionFactoryLocator().getConnectionFactory(providerId);
 		if (connectionFactory instanceof OAuth1ConnectionFactory) {
 			OAuth1Operations oauth1Ops = ((OAuth1ConnectionFactory<?>) connectionFactory).getOAuthOperations();
-			OAuthToken requestToken = oauth1Ops.fetchRequestToken(callbackUrl(providerId), null);
+			OAuthToken requestToken = oauth1Ops.fetchRequestToken(callbackUrl(providerId, request), null);
 			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
-			String authenticateUrl = oauth1Ops.buildAuthenticateUrl(requestToken.getValue(), oauth1Ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(callbackUrl(providerId)) : OAuth1Parameters.NONE);
+			String authenticateUrl = oauth1Ops.buildAuthenticateUrl(requestToken.getValue(), oauth1Ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(callbackUrl(providerId, request)) : OAuth1Parameters.NONE);
 			return new RedirectView(authenticateUrl);
 		} else if (connectionFactory instanceof OAuth2ConnectionFactory) {
 			OAuth2Operations oauth2Ops = ((OAuth2ConnectionFactory<?>) connectionFactory).getOAuthOperations();
-			String authenticateUrl = oauth2Ops.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId), request.getParameter("scope")));
+			String authenticateUrl = oauth2Ops.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId, request), request.getParameter("scope")));
 			return new RedirectView(authenticateUrl);
 		} else {
 			return handleSignInWithConnectionFactory(connectionFactory, request);
@@ -162,7 +168,7 @@ public class ProviderSignInController {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public RedirectView oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
 		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) getConnectionFactoryLocator().getConnectionFactory(providerId);
-		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId), null);
+		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId, request), null);
 		Connection<?> connection = connectionFactory.createConnection(accessGrant);
 		return handleSignIn(connection, request);
 	}
@@ -183,8 +189,10 @@ public class ProviderSignInController {
 		return connectionFactoryLocatorProvider.get();
 	}
 	
-	private String callbackUrl(String providerId) {
-		return baseCallbackUrl + "/" + providerId;
+	protected String callbackUrl(String providerId, WebRequest request) {
+		if (absoluteCallback) return baseCallbackUrl + "/" + providerId;
+		String proto = request.isSecure() ? "https://" : "http://";
+		return proto + request.getHeader("Host") + trailingChar + baseCallbackUrl + "/" + providerId;
 	}
 	
 	private OAuthToken extractCachedRequestToken(WebRequest request) {
