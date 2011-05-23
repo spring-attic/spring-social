@@ -16,7 +16,7 @@
 package org.springframework.social.connect.signin.web;
 
 import org.springframework.social.connect.Connection;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.RequestAttributes;
 
 /**
  * Helper methods that support provider user sign-in scenarios.
@@ -29,9 +29,9 @@ public class ProviderSignInUtils {
 	 * Using this connection you may fetch a {@link Connection#fetchUserProfile() provider user profile} and use that to pre-populate a local user registration/signup form.
 	 * You can also lookup the id of the provider and use that to display a provider-specific user-sign-in-attempt flash message e.g. "Your Facebook Account is not connected to a Local account. Please sign up."
 	 * Returns null if no provider sign-in has been attempted for the current user session.
-	 * @param request the current web request, used to extract sign-in attempt information from the current user session
+	 * @param request the current request attributes, used to extract sign-in attempt information from the current user session
 	 */
-	public static Connection<?> getConnection(WebRequest request) {
+	public static Connection<?> getConnection(RequestAttributes request) {
 		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
 		return signInAttempt != null ? signInAttempt.getConnection() : null;
 	}
@@ -42,13 +42,13 @@ public class ProviderSignInUtils {
 	 * In this context, the user did not yet have a local account but attempted to sign-in using one of his or her existing provider accounts.
 	 * Ensures provider sign-in attempt session context is cleaned up.
 	 * Does nothing if no provider sign-in was attempted for the current user session (is safe to call in that case).
-	 * @param request the current web request, used to extract sign-in attempt information from the current user session
+	 * @param request the current request attributes, used to extract sign-in attempt information from the current user session
 	 */
-	public static void handlePostSignUp(WebRequest request) {
+	public static void handlePostSignUp(RequestAttributes request) {
 		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
 		if (signInAttempt != null) {
 			signInAttempt.addConnection();
-			request.removeAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+			request.removeAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
 		}		
 	}
 
@@ -57,8 +57,8 @@ public class ProviderSignInUtils {
 	private ProviderSignInUtils() {	
 	}
 	
-	private static ProviderSignInAttempt getProviderUserSignInAttempt(WebRequest request) {
-		return (ProviderSignInAttempt) request.getAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+	private static ProviderSignInAttempt getProviderUserSignInAttempt(RequestAttributes request) {
+		return (ProviderSignInAttempt) request.getAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
 	}
 	
 }
