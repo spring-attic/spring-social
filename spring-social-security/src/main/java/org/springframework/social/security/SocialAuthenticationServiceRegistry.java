@@ -51,8 +51,8 @@ public class SocialAuthenticationServiceRegistry extends ConnectionFactoryRegist
 	 * configured by tools. For programmatic configuration, prefer
 	 * {@link #addAuthenticationService(SocialAuthenticationService)}.
 	 * 
-	 * @param connectionFactories
-	 *            the set of connection factories to register
+	 * @param authenticationServices
+	 *            the set of authentication services to register
 	 */
 	public void setAuthenticationServices(Iterable<SocialAuthenticationService<?>> authenticationServices) {
 		for (SocialAuthenticationService<?> authenticationService : authenticationServices) {

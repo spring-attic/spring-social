@@ -117,8 +117,7 @@ public interface SocialAuthenticationService<S> {
 	 * @return new unauthenticated token or null
 	 * @throws SocialAuthenticationRedirectException
 	 *             if social auth requires a redirect, e.g. OAuth
-	 * @see SocialAuthenticationToken#SocialAuthenticationToken(String, String,
-	 *      Object)
+	 * @see SocialAuthenticationToken#SocialAuthenticationToken(org.springframework.social.connect.ConnectionData, java.util.Map)
 	 */
 	SocialAuthenticationToken getAuthToken(AuthenticationMode authMode, HttpServletRequest request,
 			HttpServletResponse response) throws SocialAuthenticationRedirectException;
