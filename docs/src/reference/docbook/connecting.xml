@@ -23,15 +23,15 @@
 			Once a connection has been established, <classname>ConnectController</classname> hands it off to a <interfacename>ConnectionRepository</interfacename> to be persisted. 
 		</para>
 		<para>
-			Spring Social comes with an implementation of <interfacename>ConnectionFactory</interfacename> for each of the supported service providers:
+			Each of the Spring Social provider modules comes with an implementation of <interfacename>ConnectionFactory</interfacename> for that module's provider:
 		</para>
 		<itemizedlist>
-			<listitem><para><classname>TwitterConnectionFactory</classname></para></listitem>
-			<listitem><para><classname>FacebookConnectionFactory</classname></para></listitem>
-			<listitem><para><classname>LinkedInConnectionFactory</classname></para></listitem>
-			<listitem><para><classname>TripItConnectionFactory</classname></para></listitem>
-			<listitem><para><classname>GitHubConnectionFactory</classname></para></listitem>
-			<listitem><para><classname>GowallaConnectionFactory</classname></para></listitem>
+			<listitem><para>Spring Social Twitter: <classname>TwitterConnectionFactory</classname></para></listitem>
+			<listitem><para>Spring Social Facebook: <classname>FacebookConnectionFactory</classname></para></listitem>
+			<listitem><para>Spring Social LinkedIn: <classname>LinkedInConnectionFactory</classname></para></listitem>
+			<listitem><para>Spring Social TripIt: <classname>TripItConnectionFactory</classname></para></listitem>
+			<listitem><para>Spring Social GitHub: <classname>GitHubConnectionFactory</classname></para></listitem>
+			<listitem><para>Spring Social Gowalla: <classname>GowallaConnectionFactory</classname></para></listitem>
 		</itemizedlist>
 		<para>
 			<classname>ConnectController</classname> relies on an implementation of <interfacename>ConnectionFactoryLocator</interfacename> (see <xref linkend="service-providers-establishing-connections-connection-factory-registry"/>) to find a connection factory for a specific provider.
@@ -349,7 +349,7 @@ public class ConnectControllerConfig {
       			When <classname>ConnectController</classname> handles the request, it will redirect the browser to the provider's authorization page. 
       			In the case of an OAuth 1 provider, it will first fetch a request token from the provider and pass it along as a parameter to the authorization page. 
       			Request tokens aren't used in OAuth 2, however, so instead it passes the application's client ID and redirect URI as parameters to the authorization page.
-      		</para>
+      		</para> 
       		<para>
       			For example, Twitter's authorization URL has the following pattern:
       		</para>

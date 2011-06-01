@@ -228,7 +228,7 @@ dependencies {
 
 				<para>
 					Spring Social's API binding implementations rely on the <ulink url="http://jackson.codehaus.org/">Jackson JSON Processor</ulink> to deserialize JSON responses into Java model objects.
-					Each of the provider modules transitively depend on Jackson 1.8.0, so there's nothing special to do to add Jackson to your project's Maven or Gradle build. 
+					Each of the provider modules transitively depend on Jackson 1.8.1, so there's nothing special to do to add Jackson to your project's Maven or Gradle build. 
 				</para>
 
   			</section>
@@ -296,6 +296,10 @@ dependencies {
 </dependency>]]>
   			</programlisting>	
   			
+  			<para>
+  				Note that each of the provider modules will evolve and release on a different schedule than Spring Social.
+  				Consequently, the version numbers for any given provider module may not align with Spring Social or any other provider module.
+  			</para>
 		</section>
   </section>
 </chapter>
