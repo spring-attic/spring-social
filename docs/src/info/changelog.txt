@@ -1,3 +1,43 @@
+Spring Social 1.0.0 Release Candidate 1 (June 6, 2011)
+======================================================
+Notable
+   * Extracted provider-specific modules to separate projects
+   * Renamed {Provider}Api interfaces to {Provider}.java
+     (e.g. TwitterApi is now Twitter)
+
+New Features
+   * Enabled use of Spring Social behind a proxy
+   * Facebook API binding:
+     * Photo and video upload
+     * Facebook search
+     * Facebook pages
+   * Twitter API binding:
+     * Block API
+     * Notifications API
+     * Geo API
+
+Bug Fixes
+   * SOCIAL-152: Spring Social depends upon some Spring 3.1M1 (or unreleased
+        3.0.6) classes.
+   * SOCIAL-148: LinkedInTemplate not working on Android because of 
+        javax.xml.bind.annotation.XmlRootElement dependency
+   * SOCIAL-145: Deserialization error on WorkEntry when entry contains location,
+        position, or description.
+   * SOCIAL-158: javax.Inject dependency is marked optional on spring-social-web
+        and it is required
+   * SOCIAL-133: RestTemplate not injected into OAuth2Template
+   * SOCIAL-168: Servlet path must be configurable in the redirect URL generation 
+        of ConnectController
+   * SOCIAL-170: Wrong character set when Spring Social is used with Spring 3.0.x
+   * SOCIAL-142: DuplicateKeyException not handled properly when attempting to
+        insert a connection that already exists
+   * SOCIAL-102: ConnectController should handle ConnectionAlreadyExistsException
+        more gracefully
+   * SOCIAL-174: Facebook feed deserialization fails when a post comments field
+        doesn't have data
+   * SOCIAL-173: TwitterErrorHandler and FacebookErrorHandler should not fail on
+        non-JSON error bodies.
+
 Spring Social 1.0.0 Milestone 3 (Apr 27, 2011)
 ==============================================
 New Features
