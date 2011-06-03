@@ -135,14 +135,32 @@ public class OAuth1Template implements OAuth1Operations {
 
 	// subclassing hooks
 
+	/**
+	 * Exposes the consumer key to be read by subclasses.
+	 * This may be useful when overriding {@link #getCustomAuthorizationParameters()} and the consumer key is required in the authorization request.
+	 */
 	protected String getConsumerKey() {
 		return consumerKey;
 	}
 	
-	protected OAuthToken createAccessToken(String accessToken, String secret, MultiValueMap<String, String> body) {
+	/**
+	 * Creates an {@link OAuthToken} given the response from the access token exchange with the provider.
+	 * May be overridden to create a custom {@link OAuthToken}.
+	 * @param accessToken the access token value received from the provider.
+	 * @param secret the access token secret received from the provider.
+	 * @param response all parameters from the response received in the access token exchange.
+	 * @return an {@link OAuthToken}
+	 */
+	protected OAuthToken createAccessToken(String accessToken, String secret, MultiValueMap<String, String> response) {
+		// Doesn't make much sense given that OAuthToken is final
+		// Impossible to create a custom OAuthToken, even though that's what this hook is for
 		return new OAuthToken(accessToken, secret);
 	}
 
+	/**
+	 * Returns a map of custom authorization parameters.
+	 * May be overridden to return any provider-specific parameters that must be passed in the request to the authorization URL.
+	 */
 	protected MultiValueMap<String, String> getCustomAuthorizationParameters() {
 		return null;
 	}

@@ -121,6 +121,12 @@ public class OAuth2Template implements OAuth2Operations {
 
 	// subclassing hooks
 	
+	/**
+	 * Creates the {@link RestTemplate} used to communicate with the provider's OAuth 2 API.
+	 * This implementation creates a RestTemplate with a minimal set of HTTP message converters ({@link FormHttpMessageConverter} and {@link MappingJacksonHttpMessageConverter}).
+	 * May be overridden to customize how the RestTemplate is created.
+	 * For example, if the provider returns data in some format other than JSON for form-encoded, you might override to register an appropriate message converter. 
+	 */
 	protected RestTemplate createRestTemplate() {
 		RestTemplate restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>(2);
@@ -130,12 +136,31 @@ public class OAuth2Template implements OAuth2Operations {
 		return restTemplate;
 	}
 
+	/**
+	 * Posts the request for an access grant to the provider.
+	 * May be overridden to customize the access grant request or processing of the response (e.g., to accomodate provider-specific, non-standard parameters).
+	 * @param accessTokenUrl the URL of the provider's access token endpoint.
+	 * @param parameters the parameters to post to the access token endpoint.
+	 * @return the access grant.
+	 */
 	@SuppressWarnings("unchecked")
 	protected AccessGrant postForAccessGrant(String accessTokenUrl, MultiValueMap<String, String> parameters) {
 		return extractAccessGrant(restTemplate.postForObject(accessTokenUrl, parameters, Map.class));
 	}
 	
-	protected AccessGrant createAccessGrant(String accessToken, String scope, String refreshToken, Integer expiresIn, Map<String, Object> result) {
+	/**
+	 * Creates an {@link AccessGrant} given the response from the access token exchange with the provider.
+	 * May be overridden to produce a custom AccessGrant with provider-specific details. 
+	 * @param accessToken the access token value received from the provider
+	 * @param scope the scope of the access token
+	 * @param refreshToken a refresh token value received from the provider
+	 * @param expiresIn the time (in seconds) remaining before the access token expires.
+	 * @param response all parameters from the response received in the access token exchange.
+	 * @return an {@link AccessGrant}
+	 */
+	protected AccessGrant createAccessGrant(String accessToken, String scope, String refreshToken, Integer expiresIn, Map<String, Object> response) {
+		// Doesn't make much sense given that AccessGrant is final
+		// Impossible to create a custom AccessGrant, even though that's what this hook is for
 		return new AccessGrant(accessToken, scope, refreshToken, expiresIn);
 	}
 		
