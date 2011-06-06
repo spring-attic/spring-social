@@ -14,6 +14,27 @@ git submodule init
 git submodule update
 
 -------------------------------------------------------------------------------
+Note that this project no longer contains SaaS provider-specific connectivity
+and API bindings. Each of the provider-specific modules is now in its own project.
+This will enable those modules to progress and release on a separate schedule
+than Spring Social and be able to react more quickly to changes in the provider's
+API without the need to wait for a Spring Social release.
+
+The SaaS provider-specific projects can be cloned from the following GitHub
+URLs:
+
+Twitter: git://github.com/SpringSource/spring-social-twitter.git
+Facebook: git://github.com/SpringSource/spring-social-facebook.git
+LinkedIn: git://github.com/SpringSource/spring-social-linkedin.git
+TripIt: git://github.com/SpringSource/spring-social-tripit.git
+GitHub: git://github.com/SpringSource/spring-social-github.git
+Gowalla: git://github.com/SpringSource/spring-social-gowalla.git
+
+Each of these projects uses the same build submodule as Spring Social. Thus,
+you'll need to either clone them with the --recursive switch or init/update the
+submodule as described above from Spring Social.
+
+-------------------------------------------------------------------------------
 To generate Eclipse metadata (.classpath and .project files), do the following:
 
  ./gradlew eclipse
