@@ -36,7 +36,7 @@
 		<para>
 			<classname>ConnectController</classname> relies on an implementation of <interfacename>ConnectionFactoryLocator</interfacename> (see <xref linkend="service-providers-establishing-connections-connection-factory-registry"/>) to find a connection factory for a specific provider.
 			Spring Social's <classname>ConnectionFactoryRegistry</classname> is an implementation of <interfacename>ConnectionFactoryLocator</interfacename> that keeps a Map-based registry of connection factories.
-			The following class constructs a <classname>ConnectionFactoryRegistry</classname> containing <interfacename>ConnectionFactory</interfacename>s for Twitter, Facebook, and TripIt using Spring's Java configuration style: 		
+			The following class constructs a <classname>ConnectionFactoryRegistry</classname> containing <interfacename>ConnectionFactory</interfacename>s for Twitter and Facebook using Spring's Java configuration style: 		
 		</para>
 		<programlisting language="java"><![CDATA[
 @Configuration
@@ -47,7 +47,6 @@ public class ConnectionFactoryConfig {
         ConnectionFactoryRegistry registry = new ConnectionFactoryRegistry();
         registry.addConnectionFactory(new TwitterConnectionFactory(twitterConsumerKey, twitterConsumerSecret));
         registry.addConnectionFactory(new FacebookConnectionFactory(facebookClientId, facebookClientSecret));
-        registry.addConnectionFactory(new TripItConnectionFactory(tripItConsumerKey, tripItConsumerSecret));
         return registry;
     }
 
@@ -63,16 +62,10 @@ public class ConnectionFactoryConfig {
     @Value("${facebook.clientSecret}")
     private String facebookClientSecret;
 
-    @Value("${tripit.consumerKey}")
-    private String tripItConsumerKey;
-	
-    @Value("${tripit.consumerSecret}")
-    private String tripItConsumerSecret;
-	
 }
 ]]></programlisting>
 		<para>
-			Here, three connection factories--one each for Twitter, Facebook, and TripIt--are registered with <classname>ConnectionFactoryRegistry</classname> via the <methodname>addConnectionFactory()</methodname> method.
+			Here, three connection factories--one each for Twitter and Facebook--are registered with <classname>ConnectionFactoryRegistry</classname> via the <methodname>addConnectionFactory()</methodname> method.
 			If we wanted to add support for connecting to other providers, we would simply register their connection factories here.
 			Because consumer keys and secrets may be different across environments (e.g., test, production, etc) it is recommended that these values be externalized.
 			Therefore, they are wired in with <code>@Value</code> as property placeholder values to be resolved by Spring's property placeholder support.
@@ -181,10 +174,6 @@ public class ProductionEncryptionConfig {
             <bean class="org.springframework.social.facebook.connect.FacebookConnectionFactory">
                 <constructor-arg value="${facebook.appId}" />
                 <constructor-arg value="${facebook.appSecret}" />				
-            </bean>
-            <bean class="org.springframework.social.tripit.connect.TripItConnectionFactory">
-                <constructor-arg value="${tripit.consumerKey}" />
-                <constructor-arg value="${tripit.consumerSecret}" />				
             </bean>
         </list>
     </property>

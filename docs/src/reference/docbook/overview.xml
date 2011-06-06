@@ -32,9 +32,12 @@
       <itemizedlist>
           <listitem><para>A "Connect Framework" that handles the core authorization and connection flow with service providers.</para></listitem>
           <listitem><para>A "Connect Controller" that handles the OAuth exchange between a service provider, consumer, and user in a web application environment.</para></listitem>
-          <listitem><para>Java bindings to popular service provider APIs including Facebook, Twitter, LinkedIn, TripIt, GitHub, and Gowalla.</para></listitem>
           <listitem><para>A "Signin Controller" that allows users to authenticate with your application by signing in with their Provider accounts, such as their Twitter or Facebook accounts.</para></listitem>
       </itemizedlist>
+      
+      <para>
+      	In addition, there are a handful of provider-specific modules that extend Spring Social to enable integration with popular SaaS providers, including Facebook and Twitter.
+      </para>
   </section>
   
   <section id="overview-howtoget">
@@ -91,10 +94,13 @@
 </dependency>]]>
 	  </programlisting>
       	  
-	  <para>The remaining modules are elective, depending on which of the supported service providers you intend for your application to interact with. For example, you'll only need the GitHub module if your application needs to invoke the Github API:</para>
+		<para>
+			The remaining modules are elective, depending on which of the supported service providers you intend for your application to interact with. 
+			For example, you'll only need the Twitter module if your application needs to connect with Twitter and invoke the Twitter API.
+		</para>
 	  
 		<para>
-			If you are developing against a milestone version, such as 1.0.0.M3, you will need to add the following repository in order to resolve the artifact:
+			If you are developing against a milestone or release candidate version, such as 1.0.0.RC1, you will need to add the following repository in order to resolve the artifact:
 		</para>
 		<programlisting language="xml"><![CDATA[
 <repository>
@@ -124,16 +130,16 @@
 			<section id="overview-dependencies-spring">
 				<title>Spring Framework</title>
 				<para>
-					Spring Social requires <ulink url="http://www.springsource.org/documentation">Spring Framework</ulink> 3.0.3 and above.
+					Spring Social requires <ulink url="http://www.springsource.org/documentation">Spring Framework</ulink> 3.0.5 and above.
 					Specifically, Spring Social uses <classname>RestTemplate</classname> and related REST client support from Spring's web module.
 				</para>
 				<para>
 					If Spring 3.1 is available, Spring Social will take advantage of some new features in Spring 3.1.
-					However, Spring Social does not depend on these new features and will work with Spring 3.0.3 or higher.
+					However, Spring Social does not depend on these new features and will work with Spring 3.0.5 or higher.
 				</para>
 				
 				<para>
-					If you want to use Spring Social with Spring 3.0.X, you'll need to explicitly add the spring-web dependency to your build, specifying the version:
+					If you want to use Spring Social with Spring 3.0.5, you'll need to explicitly add the spring-web dependency to your build, specifying the version:
 				</para>
 				
 			    <programlisting language="xml"><![CDATA[
@@ -155,8 +161,8 @@
 
 			    <programlisting language="java"><![CDATA[
 dependencies { 
-	compile ("org.springframework.social:spring-social-core:1.0.0.M3")
-	compile ("org.springframework:spring-web:3.0.3.RELEASE") { force=true }
+	compile ("org.springframework.social:spring-social-core:1.0.0.RC1")
+	compile ("org.springframework:spring-web:3.0.5.RELEASE") { force=true }
 }]]>
 	  			</programlisting>
 
@@ -238,46 +244,54 @@ dependencies {
 			<title>Provider modules</title>
 			
 			<para>
-				In addition to the modules that make up Spring Social, there are also several provider-specific modules that provide connectivity with popular SaaS providers.
+				In addition to the modules that make up Spring Social, there are also several provider-specific modules that provide connectivity and API bindings for popular SaaS providers.
 				These provider modules are listed in <xref linkend="table-spring-social-provider-modules"/>.
 			</para>
 			
 			<table xml:id="table-spring-social-provider-modules">
-				<title>Spring Social Modules</title>
-				<tgroup cols="2">
+				<title>Spring Social Provider Modules</title>
+				<tgroup cols="3">
 					<colspec align="left" />
 					<colspec colnum="1" colname="col1" colwidth="2*"/>
 					<colspec colnum="2" colname="col2" colwidth="2*"/>
+					<colspec colnum="3" colname="col3" colwidth="2*"/>
 					<thead>
 						<row>
 							<entry align="center">Name</entry>
-							<entry align="center">Description</entry>
+							<entry align="center">Maven group ID</entry>
+							<entry align="center">Maven artifact ID</entry>
 						</row>
 					</thead>
 					<tbody>
 						<row>
+						  <entry><ulink url="http://static.springsource.org/spring-social-facebook/docs/1.0.x/reference/html/">Spring Social Facebook</ulink></entry>
+						  <entry>org.springframework.social</entry>
 						  <entry>spring-social-facebook</entry>
-						  <entry>Spring Social's Facebook API binding</entry>
 						</row>
 						<row>
+						  <entry><ulink url="http://static.springsource.org/spring-social-twitter/docs/1.0.x/reference/html/">Spring Social Twitter</ulink></entry>
+						  <entry>org.springframework.social</entry>
 						  <entry>spring-social-twitter</entry>
-						  <entry>Spring Social's Twitter API binding.</entry>
 						</row>
 						<row>
+						  <entry><ulink url="http://static.springsource.org/spring-social-linkedin/docs/1.0.x/reference/html/">Spring Social LinkedIn</ulink></entry>
+						  <entry>org.springframework.social</entry>
 						  <entry>spring-social-linkedin</entry>
-						  <entry>Spring Social's LinkedIn API binding.</entry>
 						</row>
 						<row>
-						  <entry>spring-social-github</entry>
-						  <entry>Spring Social's GitHub API binding.</entry>
-						</row>
-						<row>
-						  <entry>spring-social-gowalla</entry>
-						  <entry>Spring Social's Gowalla API binding.</entry>
-						</row>
-						<row>
+						  <entry><ulink url="http://static.springsource.org/spring-social-tripit/docs/1.0.x/reference/html/">Spring Social TripIt</ulink></entry>
+						  <entry>org.springframework.social</entry>
 						  <entry>spring-social-tripit</entry>
-						  <entry>Spring Social's TripIt API binding.</entry>
+						</row>
+						<row>
+						  <entry><ulink url="http://static.springsource.org/spring-social-github/docs/1.0.x/reference/html/">Spring Social GitHub</ulink></entry>
+						  <entry>org.springframework.social</entry>
+						  <entry>spring-social-github</entry>
+						</row>
+						<row>
+						  <entry><ulink url="http://static.springsource.org/spring-social-gowalla/docs/1.0.x/reference/html/">Spring Social Gowalla</ulink></entry>
+						  <entry>org.springframework.social</entry>
+						  <entry>spring-social-gowalla</entry>
 						</row>
 					</tbody>
 				</tgroup>
@@ -297,8 +311,12 @@ dependencies {
   			</programlisting>	
   			
   			<para>
-  				Note that each of the provider modules will evolve and release on a different schedule than Spring Social.
+  				Note that each of the provider modules will progress and release on a different schedule than Spring Social.
   				Consequently, the version numbers for any given provider module may not align with Spring Social or any other provider module.
+  			</para>
+  			
+  			<para>
+  				Refer to each provider module's reference documentation for details on connectivity and the API binding.
   			</para>
 		</section>
   </section>
