@@ -95,7 +95,7 @@ configure(javaprojects) {
 
     commonsCodecVersion = '1.5'
     h2Version = '1.3.155'
-	httpComponentsVersion = '4.1.1'
+    httpComponentsVersion = '4.1.1'
     jacksonVersion = '1.8.1'
     javaxInjectVersion = '1'
     junitVersion = '4.8.2'

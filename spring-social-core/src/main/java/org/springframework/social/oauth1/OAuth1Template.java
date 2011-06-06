@@ -144,20 +144,6 @@ public class OAuth1Template implements OAuth1Operations {
 	}
 	
 	/**
-	 * Creates an {@link OAuthToken} given the response from the access token exchange with the provider.
-	 * May be overridden to create a custom {@link OAuthToken}.
-	 * @param accessToken the access token value received from the provider.
-	 * @param secret the access token secret received from the provider.
-	 * @param response all parameters from the response received in the access token exchange.
-	 * @return an {@link OAuthToken}
-	 */
-	protected OAuthToken createAccessToken(String accessToken, String secret, MultiValueMap<String, String> response) {
-		// Doesn't make much sense given that OAuthToken is final
-		// Impossible to create a custom OAuthToken, even though that's what this hook is for
-		return new OAuthToken(accessToken, secret);
-	}
-
-	/**
 	 * Returns a map of custom authorization parameters.
 	 * May be overridden to return any provider-specific parameters that must be passed in the request to the authorization URL.
 	 */
@@ -196,7 +182,7 @@ public class OAuth1Template implements OAuth1Operations {
 		headers.add("Authorization", buildAuthorizationHeaderValue(tokenUrl, tokenParameters, additionalParameters, tokenSecret));
 		ResponseEntity<MultiValueMap> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, new HttpEntity<MultiValueMap<String, String>>(additionalParameters, headers), MultiValueMap.class);
 		MultiValueMap<String, String> body = response.getBody();
-		return createAccessToken(body.getFirst("oauth_token"), body.getFirst("oauth_token_secret"), body);
+		return new OAuthToken(body.getFirst("oauth_token"), body.getFirst("oauth_token_secret"));
 	}
 
 	private String buildAuthorizationHeaderValue(URI tokenUrl, Map<String, String> tokenParameters, MultiValueMap<String, String> additionalParameters, String tokenSecret) {

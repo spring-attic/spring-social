@@ -147,22 +147,6 @@ public class OAuth2Template implements OAuth2Operations {
 	protected AccessGrant postForAccessGrant(String accessTokenUrl, MultiValueMap<String, String> parameters) {
 		return extractAccessGrant(restTemplate.postForObject(accessTokenUrl, parameters, Map.class));
 	}
-	
-	/**
-	 * Creates an {@link AccessGrant} given the response from the access token exchange with the provider.
-	 * May be overridden to produce a custom AccessGrant with provider-specific details. 
-	 * @param accessToken the access token value received from the provider
-	 * @param scope the scope of the access token
-	 * @param refreshToken a refresh token value received from the provider
-	 * @param expiresIn the time (in seconds) remaining before the access token expires.
-	 * @param response all parameters from the response received in the access token exchange.
-	 * @return an {@link AccessGrant}
-	 */
-	protected AccessGrant createAccessGrant(String accessToken, String scope, String refreshToken, Integer expiresIn, Map<String, Object> response) {
-		// Doesn't make much sense given that AccessGrant is final
-		// Impossible to create a custom AccessGrant, even though that's what this hook is for
-		return new AccessGrant(accessToken, scope, refreshToken, expiresIn);
-	}
 		
 	// testing hooks
 	
@@ -208,7 +192,7 @@ public class OAuth2Template implements OAuth2Operations {
 	}
 	
 	private AccessGrant extractAccessGrant(Map<String, Object> result) {
-		return createAccessGrant((String) result.get("access_token"), (String) result.get("scope"), (String) result.get("refresh_token"), (Integer) result.get("expires_in"), result);
+		return new AccessGrant((String) result.get("access_token"), (String) result.get("scope"), (String) result.get("refresh_token"), (Integer) result.get("expires_in"));
 	}
 	
 }
