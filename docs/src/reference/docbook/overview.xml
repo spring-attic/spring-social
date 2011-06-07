@@ -225,7 +225,7 @@ dependencies {
 	  			</programlisting>
 								
 				<para>
-					Although shown here to depende on version 4.1.1 of the HttpClient library, Spring Social can also with with 4.0.X versions of HttpClient.
+					Although shown here to depend on version 4.1.1 of the HttpClient library, Spring Social can also with with 4.0.X versions of HttpClient.
 				</para>
 			</section>
 
