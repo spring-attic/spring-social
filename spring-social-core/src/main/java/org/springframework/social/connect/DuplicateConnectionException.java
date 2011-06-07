@@ -16,7 +16,7 @@
 package org.springframework.social.connect;
 
 /**
- * Thrown by a {@link ConnectionRepository} when attempting to add a ServiceProviderConnection and a connection already exists with the given key.
+ * Thrown by a {@link ConnectionRepository} when attempting to add a {@link Connection} and a connection already exists with the given key.
  * @author Keith Donald
  * @see ConnectionRepository#addConnection(Connection)
  */

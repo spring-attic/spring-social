@@ -66,7 +66,7 @@ public abstract class AbstractConnection<A> implements Connection<A> {
 		valuesInitialized = true;
 	}
 	
-	// implementing ServiceProviderConnection
+	// implementing Connection
 	
 	public ConnectionKey getKey() {
 		return key;

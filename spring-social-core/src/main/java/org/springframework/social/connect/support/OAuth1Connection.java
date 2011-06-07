@@ -71,7 +71,7 @@ public class OAuth1Connection<A> extends AbstractConnection<A> {
 		initApi();
 	}
 
-	// implementing ServiceProviderConnection
+	// implementing Connection
 	
 	public A getApi() {
 		return api;

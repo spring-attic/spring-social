@@ -24,8 +24,8 @@ import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
 
 /**
- * Factory for creating OAuth2-based ServiceProviderConnections.
- * May be subclassed to further simplify construction e.g. FacebookServiceProviderConnectionFactory.
+ * Factory for creating OAuth2-based {@link Connection}s.
+ * May be subclassed to further simplify construction e.g. FacebookConnectionFactory.
  * @author Keith Donald
  * @param <S> the service API type.
  */
@@ -35,7 +35,7 @@ public class OAuth2ConnectionFactory<S> extends ConnectionFactory<S> {
 	 * Create a {@link OAuth2ConnectionFactory}.
 	 * @param providerId the provider id e.g. "facebook"
 	 * @param serviceProvider the ServiceProvider model for conducting the authorization flow and obtaining a native service API instance.
-	 * @param apiAdapter the ApiAdapter for mapping the provider-specific service API model to the uniform ServiceProviderConnection interface.
+	 * @param apiAdapter the ApiAdapter for mapping the provider-specific service API model to the uniform {@link Connection} interface.
 	 */
 	public OAuth2ConnectionFactory(String providerId, OAuth2ServiceProvider<S> serviceProvider, ApiAdapter<S> apiAdapter) {
 		super(providerId, serviceProvider, apiAdapter);
@@ -49,7 +49,7 @@ public class OAuth2ConnectionFactory<S> extends ConnectionFactory<S> {
 	}
 
 	/**
-	 * Create a OAuth2-based ServiceProviderConnection from the {@link AccessGrant} returned after {@link #getOAuthOperations() completing the OAuth2 flow}.
+	 * Create a OAuth2-based {@link Connection} from the {@link AccessGrant} returned after {@link #getOAuthOperations() completing the OAuth2 flow}.
 	 * @param accessGrant the access grant
 	 * @return the new service provider connection
 	 * @see OAuth2Operations#exchangeForAccess(String, String, org.springframework.util.MultiValueMap)
@@ -60,7 +60,7 @@ public class OAuth2ConnectionFactory<S> extends ConnectionFactory<S> {
 	}
 
 	/**
-	 * Create a OAuth2-based ServiceProviderConnection from the connection data.
+	 * Create a OAuth2-based {@link Connection} from the connection data.
 	 */
 	public Connection<S> createConnection(ConnectionData data) {
 		return new OAuth2Connection<S>(data, getOAuth2ServiceProvider(), getApiAdapter());

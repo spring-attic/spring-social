@@ -31,7 +31,7 @@ public interface ConnectionRepository {
 	/**
 	 * Find a map of all Connections for the current user.
 	 * The returned map contains an entry for each provider the user is connected to.
-	 * The key for each entry is the providerId, and the value is the list of ServiceProviderConnections that exist between the user and that provider.
+	 * The key for each entry is the providerId, and the value is the list of {@link Connection}s that exist between the user and that provider.
 	 * For example, if the user is connected once to Facebook and twice to Twitter, the returned map would contain two entries with the following structure:
 	 * <pre>
 	 * { 

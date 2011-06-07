@@ -17,10 +17,13 @@ package org.springframework.social.connect;
 
 import java.io.Serializable;
 
+import org.springframework.social.connect.support.OAuth1Connection;
+import org.springframework.social.connect.support.OAuth2Connection;
+
 /**
  * A data transfer object that allows the internal state of a Connection to be persisted and transferred between layers of an application.
- * Some fields may be null depending on the specific type of ServiceProviderConnection.
- * For example, an OAuth2Connection has a null 'secret' field while an OAuth1Connection has null 'refreshToken' and 'expireTime' fields.
+ * Some fields may be null depending on the specific type of {@link Connection}.
+ * For example, an {@link OAuth2Connection} has a null 'secret' field while an {@link OAuth1Connection} has null 'refreshToken' and 'expireTime' fields.
  * @author Keith Donald
  * @see Connection#createData()
  */
