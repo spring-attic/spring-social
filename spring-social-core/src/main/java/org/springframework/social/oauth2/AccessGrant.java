@@ -22,7 +22,7 @@ import java.io.Serializable;
  * @author Keith Donald
  */
 @SuppressWarnings("serial")
-public final class AccessGrant implements Serializable {
+public class AccessGrant implements Serializable {
 
 	private final String accessToken;
 
