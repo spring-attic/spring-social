@@ -67,13 +67,13 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/connect")
 public class ConnectController  {
 	
-	private String baseCallbackUrl;
+	private final ConnectionFactoryLocator connectionFactoryLocator;
 	
-	private MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors;
+	private final Provider<ConnectionRepository> connectionRepositoryProvider;
 
-	private ConnectionFactoryLocator connectionFactoryLocator;
-	
-	private Provider<ConnectionRepository> connectionRepositoryProvider;
+	private final MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
+
+	private final String controllerCallbackUrl;
 	
 	/**
 	 * Constructs a ConnectController.
@@ -83,10 +83,9 @@ public class ConnectController  {
 	 */
 	@Inject
 	public ConnectController(String applicationUrl, ConnectionFactoryLocator connectionFactoryLocator, Provider<ConnectionRepository> connectionRepositoryProvider) {
-		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 		this.connectionFactoryLocator = connectionFactoryLocator;
 		this.connectionRepositoryProvider = connectionRepositoryProvider;
-		this.interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
+		this.controllerCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 	}
 
 	/**
@@ -109,11 +108,11 @@ public class ConnectController  {
 	}
 
 	/**
-	 * Render the connect form for the service provider identified by {name} to the member as HTML in their web browser.
+	 * Render the status of the connections to the service provider to the user as HTML in their web browser.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET)
-	public String providerPage(@PathVariable String providerId, WebRequest request, Model model) {
-		handleDuplicateConnectionException(request, model);
+	public String connectionStatus(@PathVariable String providerId, WebRequest request, Model model) {
+		processFlash(request, model);
 		List<Connection<?>> connections = getConnectionRepository().findConnectionsToProvider(providerId);
 		if (connections.isEmpty()) {
 			return baseViewPath(providerId) + "Connect";
@@ -133,17 +132,11 @@ public class ConnectController  {
 		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
 		preConnect(connectionFactory, request);
 		if (connectionFactory instanceof OAuth1ConnectionFactory) {
-			OAuth1Operations oauth1Ops = ((OAuth1ConnectionFactory<?>) connectionFactory).getOAuthOperations();
-			OAuthToken requestToken = oauth1Ops.fetchRequestToken(callbackUrl(providerId), null);
-			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
-			String authorizeUrl = oauth1Ops.buildAuthorizeUrl(requestToken.getValue(), oauth1Ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(callbackUrl(providerId)) : OAuth1Parameters.NONE);
-			return new RedirectView(authorizeUrl);
+			return new RedirectView(oauth1Url((OAuth1ConnectionFactory<?>) connectionFactory, request));
 		} else if (connectionFactory instanceof OAuth2ConnectionFactory) {
-			OAuth2Operations oauth2Ops = ((OAuth2ConnectionFactory<?>) connectionFactory).getOAuthOperations();
-			String authorizeUrl = oauth2Ops.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId), request.getParameter("scope")));
-			return new RedirectView(authorizeUrl);
+			return new RedirectView(oauth2Url((OAuth2ConnectionFactory<?>) connectionFactory, request));
 		} else {
-			return handleConnectToCustomConnectionFactory(connectionFactory, request);
+			return new RedirectView(customAuthUrl(connectionFactory, request));
 		}
 	}
 
@@ -159,7 +152,7 @@ public class ConnectController  {
 		OAuthToken accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier), null);
 		Connection<?> connection = connectionFactory.createConnection(accessToken);
 		addConnection(request, connectionFactory, connection);
-		return redirectToProvider(providerId);
+		return connectionStatusRedirect(providerId);
 	}
 
 	/**
@@ -170,10 +163,10 @@ public class ConnectController  {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public RedirectView oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
 		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
-		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId), null);
+		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId, request), null);
 		Connection<?> connection = connectionFactory.createConnection(accessGrant);
 		addConnection(request, connectionFactory, connection);
-		return redirectToProvider(providerId);
+		return connectionStatusRedirect(providerId);
 	}
 
 	/**
@@ -183,7 +176,7 @@ public class ConnectController  {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.DELETE)
 	public RedirectView removeConnections(@PathVariable String providerId) {
 		getConnectionRepository().removeConnectionsToProvider(providerId);
-		return redirectToProvider(providerId);
+		return connectionStatusRedirect(providerId);
 	}
 
 	/**
@@ -193,29 +186,68 @@ public class ConnectController  {
 	@RequestMapping(value="/{providerId}/{providerUserId}", method=RequestMethod.DELETE)
 	public RedirectView removeConnections(@PathVariable String providerId, @PathVariable String providerUserId) {
 		getConnectionRepository().removeConnection(new ConnectionKey(providerId, providerUserId));
-		return redirectToProvider(providerId);
+		return connectionStatusRedirect(providerId);
 	}
 
 	// subclassing hooks
 	
 	/**
 	 * Hook method subclasses may override to create connections to providers of custom types other than OAuth1 or OAuth2.
-	 * Default implementation throws an {@link IllegalStateException} indicating the custom {@link ConnectionFactory} is not supported.
+	 * Default implementation throws an {@link UnsupportedOperationException} indicating the custom {@link ConnectionFactory} is not supported.
 	 */
-	protected RedirectView handleConnectToCustomConnectionFactory(ConnectionFactory<?> connectionFactory, WebRequest request) {
-		throw new IllegalStateException("Connections to provider '" + connectionFactory.getProviderId() + "' are not supported");		
+	protected String customAuthUrl(ConnectionFactory<?> connectionFactory, WebRequest request) {
+		throw new UnsupportedOperationException("Connections to provider '" + connectionFactory.getProviderId() + "' are not supported");		
 	}
 	
 	// internal helpers
+
+	private String baseViewPath(String providerId) {
+		return "connect/" + providerId;		
+	}
+	
+	private String oauth1Url(OAuth1ConnectionFactory<?> connectionFactory, WebRequest request) {
+		OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
+		OAuthToken requestToken;
+		String authorizeUrl;
+		if (oauthOperations.getVersion() == OAuth1Version.CORE_10_REVISION_A) {
+			requestToken = oauthOperations.fetchRequestToken(callbackUrl(connectionFactory.getProviderId(), request), null);				
+			authorizeUrl = oauthOperations.buildAuthorizeUrl(requestToken.getValue(), OAuth1Parameters.NONE);
+		} else {
+			requestToken = oauthOperations.fetchRequestToken(null, null);				
+			authorizeUrl = oauthOperations.buildAuthorizeUrl(requestToken.getValue(), new OAuth1Parameters(callbackUrl(connectionFactory.getProviderId(), request)));
+		}
+		request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
+		return authorizeUrl;
+	}
+
+	private String oauth2Url(OAuth2ConnectionFactory<?> connectionFactory, WebRequest request) {
+		OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
+		return oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(connectionFactory.getProviderId(), request), request.getParameter("scope")));
+	}
+
+	private String callbackUrl(String providerId, WebRequest request) {
+		return controllerCallbackUrl + "/" + providerId;
+	}
+
+	private OAuthToken extractCachedRequestToken(WebRequest request) {
+		OAuthToken requestToken = (OAuthToken) request.getAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+		request.removeAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
+		return requestToken;
+	}
+	
 	private void addConnection(WebRequest request, ConnectionFactory<?> connectionFactory, Connection<?> connection) {
 		try {
-			getConnectionRepository().addConnection(connection);	
+			getConnectionRepository().addConnection(connection);
 			postConnect(connectionFactory, connection, request);
 		} catch (DuplicateConnectionException e) {
 			request.setAttribute(DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE, e, WebRequest.SCOPE_SESSION);
 		}
 	}
 
+	private ConnectionRepository getConnectionRepository() {
+		return connectionRepositoryProvider.get();
+	}
+	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void preConnect(ConnectionFactory<?> connectionFactory, WebRequest request) {
 		for (ConnectInterceptor interceptor : interceptingConnectionsTo(connectionFactory)) {
@@ -239,38 +271,20 @@ public class ConnectController  {
 		return typedInterceptors;
 	}
 	
-	private String baseViewPath(String providerId) {
-		return "connect/" + providerId;		
-	}
-	
-	private String callbackUrl(String providerId) {
-		return baseCallbackUrl + "/" + providerId;
-	}
-
-	private OAuthToken extractCachedRequestToken(WebRequest request) {
-		OAuthToken requestToken = (OAuthToken) request.getAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
-		request.removeAttribute(OAUTH_TOKEN_ATTRIBUTE, WebRequest.SCOPE_SESSION);
-		return requestToken;
-	}
-	
-	private void handleDuplicateConnectionException(WebRequest request, Model model) {
+	private void processFlash(WebRequest request, Model model) {
 		DuplicateConnectionException exception = (DuplicateConnectionException) request.getAttribute(DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
-		request.removeAttribute(DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE, WebRequest.SCOPE_SESSION);
-		if(exception != null) {
+		if (exception != null) {
 			model.addAttribute(DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE, Boolean.TRUE);
+			request.removeAttribute(DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE, WebRequest.SCOPE_SESSION);			
 		}
 	}
 
-	private ConnectionRepository getConnectionRepository() {
-		return connectionRepositoryProvider.get();
-	}
-
-	private RedirectView redirectToProvider(String providerId) {
+	private RedirectView connectionStatusRedirect(String providerId) {
 		return new RedirectView(providerId, true);
 	}
 
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
 
-	private static final String DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE = "_duplicateConnectionException";
+	private static final String DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE = "social_duplicateConnection";
 
 }

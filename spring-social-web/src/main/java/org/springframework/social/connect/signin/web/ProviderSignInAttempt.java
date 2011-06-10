@@ -23,6 +23,7 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.connect.DuplicateConnectionException;
 
 /**
  * Models an attempt to sign-in to the application using a provider user identity.
@@ -63,6 +64,7 @@ public class ProviderSignInAttempt implements Serializable {
 	
 	/**
 	 * Connect the new local user to the provider.
+	 * @throws DuplicateConnectionException if the user already has this connection
 	 */
 	void addConnection() {
 		connectionRepositoryProvider.get().addConnection(getConnection());

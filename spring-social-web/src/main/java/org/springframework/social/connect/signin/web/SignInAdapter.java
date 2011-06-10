@@ -16,16 +16,16 @@
 package org.springframework.social.connect.signin.web;
 
 /**
- * Strategy interface for authenticating users to an application given their account ID.
- * An application should provide their own implementation of this interface for use by ProviderSignInControllers.
+ * Adapter that bridges between a {@link ProviderSignInController} and a application-specific user sign-in service.
+ * Invoked at the end of a provider sign-in attempt to sign-in the local user account associated with the provider user account.
  * @author Craig Walls
  */
-public interface SignInService {
+public interface SignInAdapter {
 	
 	/**
-	 * Sign in the user with the specified accountId.
-	 * @param localUserId the user's local application user id
+	 * Complete a provider sign-in attempt by signing in the local user account with the specified id.
+	 * @param userId the local user id
 	 */
-	void signIn(String localUserId);
+	void signIn(String userId);
 	
 }

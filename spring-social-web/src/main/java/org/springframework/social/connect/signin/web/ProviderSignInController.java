@@ -63,14 +63,14 @@ public class ProviderSignInController {
 	
 	private final Provider<ConnectionRepository> connectionRepositoryProvider;
 	
-	private final String baseCallbackUrl;
+	private final SignInAdapter signInAdapter;
+
+	private String signUpUrl = "/signup";
+
+	private String postSignInUrl = "/";
+
+	private final String controllerCallbackUrl;
 	
-	private final SignInService signInService;
-
-	private String signupUrl = "/signup";
-
-	private String postLoginUrl = "/";
-
 	/**
 	 * Creates a new provider sign-in controller.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the sign-in process.
@@ -80,34 +80,34 @@ public class ProviderSignInController {
 	 * @param usersConnectionRepository the global store for service provider connections across all local user accounts
 	 * @param connectionRepositoryProvider the provider of the current user's {@link ConnectionRepository} instance;
 	 * A JSR 330 Provider is injected here instead of the actual repository object because repository instances are request-scoped and resolved based on the currently authenticated user.
-	 * @param signInService an adapter between this controller and the local application's user sign-in system.
+	 * @param signInAdapter an adapter between this controller and the local application's user sign-in system.
 	 */
 	@Inject
 	public ProviderSignInController(String applicationUrl, Provider<ConnectionFactoryLocator> connectionFactoryLocatorProvider, UsersConnectionRepository usersConnectionRepository,
-			Provider<ConnectionRepository> connectionRepositoryProvider, SignInService signInService) {
+			Provider<ConnectionRepository> connectionRepositoryProvider, SignInAdapter signInAdapter) {
 		this.connectionFactoryLocatorProvider = connectionFactoryLocatorProvider;
 		this.usersConnectionRepository = usersConnectionRepository;
 		this.connectionRepositoryProvider = connectionRepositoryProvider;
-		this.signInService = signInService;
-		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
+		this.signInAdapter = signInAdapter;
+		this.controllerCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 	}
 
 	/**
-	 * Overrides the default URL of the application's signup page ("/signup").
-	 * ProviderSignInController will redirect to this URL if no matching connection can be found after signing into the provider. 
-	 * @param signupUrl the URL of the signup page.
+	 * Sets the URL to redirect the user to if no local user account can be mapped when signing in using a provider.
+	 * Defaults to "/signup". 
+	 * @param signUpUrl the URL of the sign up page.
 	 */
-	public void setSignupUrl(String signupUrl) {
-		this.signupUrl = signupUrl; 
+	public void setSignUpUrl(String signUpUrl) {
+		this.signUpUrl = signUpUrl; 
 	}
 
 	/**
-	 * Overrides the URL of the application's post-login page - this defaults to "/".
-	 * ProviderSignInController will redirect to this URL after signing into the provider has been successful.
-	 * @param postLoginUrl the URL of the post-login page.
+ 	 * Sets the URL to redirect the user to after signing in using a provider.
+ 	 * Defaults to "/".
+	 * @param postSignInUrl the postSignIn URL
 	 */
-	public void setPostLoginUrl(String postLoginUrl) {
-		this.postLoginUrl = postLoginUrl;
+	public void setPostSignInUrl(String postSignInUrl) {
+		this.postSignInUrl = postSignInUrl;
 	}
 
 	/**
@@ -116,20 +116,14 @@ public class ProviderSignInController {
 	 * For OAuth2, redirects the user to the provider's site for authentication authorization.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
-	public RedirectView signin(@PathVariable String providerId, WebRequest request) {
+	public RedirectView signIn(@PathVariable String providerId, WebRequest request) {
 		ConnectionFactory<?> connectionFactory = getConnectionFactoryLocator().getConnectionFactory(providerId);
 		if (connectionFactory instanceof OAuth1ConnectionFactory) {
-			OAuth1Operations oauth1Ops = ((OAuth1ConnectionFactory<?>) connectionFactory).getOAuthOperations();
-			OAuthToken requestToken = oauth1Ops.fetchRequestToken(callbackUrl(providerId), null);
-			request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
-			String authenticateUrl = oauth1Ops.buildAuthenticateUrl(requestToken.getValue(), oauth1Ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(callbackUrl(providerId)) : OAuth1Parameters.NONE);
-			return new RedirectView(authenticateUrl);
+			return new RedirectView(oauth1Url((OAuth1ConnectionFactory<?>) connectionFactory, request));
 		} else if (connectionFactory instanceof OAuth2ConnectionFactory) {
-			OAuth2Operations oauth2Ops = ((OAuth2ConnectionFactory<?>) connectionFactory).getOAuthOperations();
-			String authenticateUrl = oauth2Ops.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(providerId), request.getParameter("scope")));
-			return new RedirectView(authenticateUrl);
+			return new RedirectView(oauth2Url((OAuth2ConnectionFactory<?>) connectionFactory, request));
 		} else {
-			return handleSignInWithConnectionFactory(connectionFactory, request);
+			return new RedirectView(customAuthUrl(connectionFactory, request));
 		}
 	}
 
@@ -137,7 +131,7 @@ public class ProviderSignInController {
 	 * Process the authentication callback from an OAuth 1 service provider.
 	 * Called after the member authorizes the authentication, generally done once by having he or she click "Allow" in their web browser at the provider's site.
 	 * Handles the provider sign-in callback by first determining if a local user account is associated with the connected provider account.
-	 * If so, signs the local user in by delegating to {@link SignInService#signIn(String)}.
+	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String)}.
 	 * If not, redirects the user to a signup page to create a new account with {@link ProviderSignInAttempt} context exposed in the HttpSession.
 	 * @see ProviderSignInAttempt
 	 * @see ProviderSignInUtils 
@@ -154,7 +148,7 @@ public class ProviderSignInController {
 	 * Process the authentication callback from an OAuth 2 service provider.
 	 * Called after the user authorizes the authentication, generally done once by having he or she click "Allow" in their web browser at the provider's site.
 	 * Handles the provider sign-in callback by first determining if a local user account is associated with the connected provider account.
-	 * If so, signs the local user in by delegating to {@link SignInService#signIn(String)}.
+	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String)}.
 	 * If not, redirects the user to a signup page to create a new account with {@link ProviderSignInAttempt} context exposed in the HttpSession.
 	 * @see ProviderSignInAttempt
 	 * @see ProviderSignInUtils 
@@ -162,7 +156,7 @@ public class ProviderSignInController {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public RedirectView oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
 		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) getConnectionFactoryLocator().getConnectionFactory(providerId);
-		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId), null);
+		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId, request), null);
 		Connection<?> connection = connectionFactory.createConnection(accessGrant);
 		return handleSignIn(connection, request);
 	}
@@ -171,10 +165,10 @@ public class ProviderSignInController {
 	
 	/**
 	 * Hook method subclasses may override to sign-in with providers of custom types other than OAuth1 or OAuth2.
-	 * Default implementation throws an {@link IllegalStateException} indicating the custom {@link ConnectionFactory} is not supported.
+	 * Default implementation throws an {@link UnsupportedOperationException} indicating the custom {@link ConnectionFactory} is not supported.
 	 */
-	protected RedirectView handleSignInWithConnectionFactory(ConnectionFactory<?> connectionFactory, WebRequest request) {
-		throw new IllegalStateException("Sign in using provider '" + connectionFactory.getProviderId() + "' not supported");		
+	protected String customAuthUrl(ConnectionFactory<?> connectionFactory, WebRequest request) {
+		throw new UnsupportedOperationException("Sign in using provider '" + connectionFactory.getProviderId() + "' not supported");		
 	}
 	
 	// internal helpers
@@ -182,9 +176,30 @@ public class ProviderSignInController {
 	private ConnectionFactoryLocator getConnectionFactoryLocator() {
 		return connectionFactoryLocatorProvider.get();
 	}
-	
-	private String callbackUrl(String providerId) {
-		return baseCallbackUrl + "/" + providerId;
+
+	private String oauth1Url(OAuth1ConnectionFactory<?> connectionFactory, WebRequest request) {
+		OAuth1Operations oauth1Ops = ((OAuth1ConnectionFactory<?>) connectionFactory).getOAuthOperations();
+		OAuthToken requestToken;
+		String authenticateUrl;
+		if (oauth1Ops.getVersion() == OAuth1Version.CORE_10_REVISION_A) {
+			requestToken = oauth1Ops.fetchRequestToken(callbackUrl(connectionFactory.getProviderId(), request), null);				
+			authenticateUrl = oauth1Ops.buildAuthenticateUrl(requestToken.getValue(), OAuth1Parameters.NONE);
+		} else {
+			requestToken = oauth1Ops.fetchRequestToken(null, null);				
+			authenticateUrl = oauth1Ops.buildAuthenticateUrl(requestToken.getValue(), new OAuth1Parameters(callbackUrl(connectionFactory.getProviderId(), request)));
+		}
+		request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, WebRequest.SCOPE_SESSION);
+		return authenticateUrl;
+	}
+
+	private String oauth2Url(OAuth2ConnectionFactory<?> connectionFactory, WebRequest request) {
+		OAuth2Operations oauth2Ops = ((OAuth2ConnectionFactory<?>) connectionFactory).getOAuthOperations();
+		String authenticateUrl = oauth2Ops.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(callbackUrl(connectionFactory.getProviderId(), request), request.getParameter("scope")));
+		return authenticateUrl;
+	}
+
+	private String callbackUrl(String providerId, WebRequest request) {
+		return controllerCallbackUrl + "/" + providerId;
 	}
 	
 	private OAuthToken extractCachedRequestToken(WebRequest request) {
@@ -198,15 +213,11 @@ public class ProviderSignInController {
 		if (localUserId == null) {
 			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocatorProvider, connectionRepositoryProvider);
 			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, WebRequest.SCOPE_SESSION);
-			return redirect(signupUrl);
+			return redirect(signUpUrl);
 		} else {
-			signIn(localUserId);
-			return redirect(postLoginUrl);
+			signInAdapter.signIn(localUserId);		
+			return redirect(postSignInUrl);
 		}
-	}
-
-	private void signIn(String localUserId) {
-		signInService.signIn(localUserId);		
 	}
 
 	private RedirectView redirect(String url) {
