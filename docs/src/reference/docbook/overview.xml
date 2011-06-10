@@ -1,50 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="overview"
     xmlns:xlink="http://www.w3.org/1999/xlink">
-  <title>Spring Social Overview</title>
 
-  <section id="overview-introduction">
-    <title>Introduction</title>
-    <para>The Spring Social project enables your applications to establish Connections with Software-as-a-Service (SaaS) Providers such as Facebook and Twitter to invoke APIs on behalf of Users.</para>
-  </section>
+	<title>Spring Social Overview</title>
+	
+	<section id="overview-introduction">
+		<title>Introduction</title>
+		<para>The Spring Social project enables your applications to establish Connections with Software-as-a-Service (SaaS) Providers such as Facebook and Twitter to invoke APIs on behalf of Users.</para>
+	</section>
+	<section id="overview-social">
+		<title>Socializing applications</title>
+		<para>
+			The phrase "social networking" often refers to efforts aimed at bringing people together.
+			In the software world, those efforts take the form of online social networks such as Facebook, Twitter, and LinkedIn.
+			Roughly half a billion of this world's internet users have flocked to these services to keep frequent contact with family, friends, and colleagues.
+		</para>
+		<para>
+			Under the surface, however, these services are just software applications that gather, store, and process information.
+			Just like so many applications written before, these social networks have users who sign in and perform some activity offered by the service.
+		</para>
+		<para>
+			What makes these applications a little different than traditional applications is that the data that they collect represent some facet of their users' lives.
+			What's more, these applications are more than willing to share that data with other applications, as long as the user gives permission to do so.
+			This means that although these social networks are great at bringing people together, as software services they also excel at bringing applications together.
+		</para>
+		<para>
+			To illustrate, imagine that Paul is a member of an online movie club.
+			A function of the movie club application is to recommend movies for its members to watch and to let its members maintain a list of movies that they have seen and those that they plan to see.
+			When Paul sees a movie, he signs into the movie club site, checks the movie off of his viewing list, and indicates if he liked the movie or not.
+			Based on his responses, the movie club application can tailor future recommendations for Paul to see.
+		</para>
+		<para>
+			On its own, the movie club provides great value to Paul, as it helps him choose movies to watch.
+			But Paul is also a Facebook user. And many of Paul's Facebook friends also enjoy a good movie now and then.
+			If Paul were able to connect his movie club account with his Facebook profile, the movie club application could offer him a richer experience.
+			Perhaps when he sees a movie, the application could post a message on his Facebook wall indicating so.
+			Or when offering suggestions, the movie club could factor in the movies that his Facebook friends liked.
+		</para>
+		<para>
+			Social integration is a three-way conversation between a service provider, a service consumer, and a user who holds an account on both the provider and consumer.
+			All interactions between the consumer and the service provider are scoped to the context of the user's profile on the service provider.
+		</para>
+		<para>
+			In the narrative above, Facebook is the service provider, the movie club application is the service consumer, and Paul is the user of both.
+			The movie club application may interact with Facebook on behalf of Paul, accessing whatever Facebook data and functionality that Paul permits, including retrieving Paul's friends and posting messages to his wall.
+		</para>
+		<para>
+			From the user's perspective, both applications provide some valuable functionality.
+			But by connecting the user's account on the consumer application with his account on the provider application, the user brings together two applications that can now offer the user more value than they could individually.
+		</para>
+		<para>
+			With Spring Social, your application can play the part of the service consumer, interacting with a service provider on behalf of its users. The key features of Spring Social are:
+		</para>
+		<itemizedlist>
+			<listitem><para>A "Connect Framework" that handles the core authorization and connection flow with service providers.</para></listitem>
+			<listitem><para>A "Connect Controller" that handles the OAuth exchange between a service provider, consumer, and user in a web application environment.</para></listitem>
+			<listitem><para>A "Signin Controller" that allows users to authenticate with your application by signing in with their Provider accounts, such as their Twitter or Facebook accounts.</para></listitem>
+		</itemizedlist>
+		<para>
+			In addition, there are a handful of provider-specific modules that extend Spring Social to enable integration with popular SaaS providers, including Facebook and Twitter.
+		</para>
+	</section>
   
-  <section id="overview-social">
-      <title>Socializing applications</title>
-      
-      <para>The phrase "social networking" often refers to efforts aimed at bringing people together. In the software world, those efforts take the form of online social networks such as Facebook, Twitter, and LinkedIn. Roughly half a billion of this world's internet users have flocked to these services to keep frequent contact with family, friends, and colleagues.</para>
-      
-      <para>Under the surface, however, these services are just software applications that gather, store, and process information. Just like so many applications written before, these social networks have users who sign in and perform some activity offered by the service.</para>
-      
-      <para>What makes these applications a little different than traditional applications is that the data that they collect represent some facet of their users' lives. What's more, these applications are more than willing to share that data with other applications, as long as the user gives permission to do so. This means that although these social networks are great at bringing people together, as software services they also excel at bringing applications together.</para>
-
-      <para>To illustrate, imagine that Paul is a member of an online movie club. A function of the movie club application is to recommend movies for its members to watch and to let its members maintain a list of movies that they have seen and those that they plan to see. When Paul sees a movie, he signs into the movie club site, checks the movie off of his viewing list, and indicates if he liked the movie or not. Based on his responses, the movie club application can tailor future recommendations for Paul to see.</para>
-      
-      <para>On its own, the movie club provides great value to Paul, as it helps him choose movies to watch. But Paul is also a Facebook user. And many of Paul's Facebook friends also enjoy a good movie now and then. If Paul were able to connect his movie club account with his Facebook profile, the movie club application could offer him a richer experience. Perhaps when he sees a movie, the application could post a message on his Facebook wall indicating so. Or when offering suggestions, the movie club could factor in the movies that his Facebook friends liked.</para>
-      
-      <para>Social integration is a three-way conversation between a service provider, a service consumer, and a user who holds an account on both the provider and consumer. All interactions between the consumer and the service provider are scoped to the context of the user's profile on the service provider.</para>
-          
-      <para>In the narrative above, Facebook is the service provider, the movie club application is the service consumer, and Paul is the user of both. The movie club application may interact with Facebook on behalf of Paul, accessing whatever Facebook data and functionality that Paul permits, including seeing Paul's list of friends and posting messages to his Facebook wall.</para>
-      
-      <para>From the user's perspective, both applications provide some valuable functionality. But by connecting the user's account on the consumer application with his account on the provider application, the user brings together two applications that can now offer the user more value than they could individually.</para>
-      
-      <para>With Spring Social, your application can play the part of the service consumer, interacting with a service provider on behalf of its users. The key features of Spring Social are:</para>
-      
-      <itemizedlist>
-          <listitem><para>A "Connect Framework" that handles the core authorization and connection flow with service providers.</para></listitem>
-          <listitem><para>A "Connect Controller" that handles the OAuth exchange between a service provider, consumer, and user in a web application environment.</para></listitem>
-          <listitem><para>A "Signin Controller" that allows users to authenticate with your application by signing in with their Provider accounts, such as their Twitter or Facebook accounts.</para></listitem>
-      </itemizedlist>
-      
-      <para>
-      	In addition, there are a handful of provider-specific modules that extend Spring Social to enable integration with popular SaaS providers, including Facebook and Twitter.
-      </para>
-  </section>
-  
-  <section id="overview-howtoget">
-      <title>How to get</title>
-
-      <para>Spring Social is divided into the modules described in <xref linkend="table-spring-social-modules"/>.</para>
-      
+	<section id="overview-howtoget">
+		<title>How to get</title>
+		<para>
+			The core Spring Social project consists of the modules described in <xref linkend="table-spring-social-modules"/>.
+		</para>
       <table xml:id="table-spring-social-modules">
         <title>Spring Social Modules</title>
         <tgroup cols="2">
@@ -73,40 +95,44 @@
           </tbody>
         </tgroup>
       </table>
-      
-      <para>Which of these modules your application needs will largely depend on what facets of Spring Social you intend to use. At very minimum, you'll need the core module in your application's classpath:</para>
-      
-      <programlisting language="xml"><![CDATA[
-<dependency>
-  <groupId>org.springframework.social</groupId>
-  <artifactId>spring-social-core</artifactId>
-  <version>${org.springframework.social-version}</version>
-</dependency>]]>
-	  </programlisting>
-	  	  
-	  <para>To let Spring Social handle the back-and-forth authorization handshake between a web application and a service provider, you'll need the web module:</para>
-	  
-    <programlisting language="xml"><![CDATA[
-<dependency>
-  <groupId>org.springframework.social</groupId>
-  <artifactId>spring-social-web</artifactId>
-  <version>${org.springframework.social-version}</version>
-</dependency>]]>
-	  </programlisting>
-      	  
 		<para>
-			The remaining modules are elective, depending on which of the supported service providers you intend for your application to interact with. 
-			For example, you'll only need the Twitter module if your application needs to connect with Twitter and invoke the Twitter API.
+			Which of these modules your application needs will largely depend on what facets of Spring Social you intend to use. At very minimum, you'll need the core module in your application's classpath:
 		</para>
-	  
+		<programlisting language="xml"><![CDATA[
+<dependency>
+    <groupId>org.springframework.social</groupId>
+    <artifactId>spring-social-core</artifactId>
+    <version>${spring-social.version}</version>
+</dependency>]]>
+		</programlisting>
+		<para>
+			To let Spring Social handle the back-and-forth authorization handshake between your web application and a service provider, you'll need the web module:
+		</para>
+		<programlisting language="xml"><![CDATA[
+<dependency>
+    <groupId>org.springframework.social</groupId>
+    <artifactId>spring-social-web</artifactId>
+    <version>${spring-social.version}</version>
+</dependency>]]>
+		</programlisting>
+		<para>
+			If you're developing your own provider module and API binding, you'll need the test module to test it:
+		</para>
+		<programlisting language="xml"><![CDATA[
+<dependency>
+    <groupId>org.springframework.social</groupId>
+    <artifactId>spring-social-test</artifactId>
+    <version>${spring-social.version}</version>
+</dependency>]]>
+		</programlisting>
 		<para>
 			If you are developing against a milestone or release candidate version, such as 1.0.0.RC1, you will need to add the following repository in order to resolve the artifact:
 		</para>
 		<programlisting language="xml"><![CDATA[
 <repository>
-  <id>org.springframework.maven.milestone</id>
-  <name>Spring Maven Milestone Repository</name>
-  <url>http://maven.springframework.org/milestone</url>
+    <id>org.springframework.maven.milestone</id>
+    <name>Spring Maven Milestone Repository</name>
+    <url>http://maven.springframework.org/milestone</url>
 </repository>]]>
 		</programlisting>		
 		<para>
@@ -114,140 +140,17 @@
 		</para>
 		<programlisting language="xml"><![CDATA[
 <repository>
-  <id>org.springframework.maven.snapshot</id>
-  <name>Spring Maven Snapshot Repository</name>
-  <url>http://maven.springframework.org/snapshot</url>
+    <id>org.springframework.maven.snapshot</id>
+    <name>Spring Maven Snapshot Repository</name>
+    <url>http://maven.springframework.org/snapshot</url>
 </repository>]]>
 		</programlisting>
-		
-		<section id="overview-dependencies">
-			<title>Dependencies</title>
-			
-			<para>
-				In addition to Spring Social itself, there are a few additional dependencies you may need to add to your project's build.
-			</para>
-			
-			<section id="overview-dependencies-spring">
-				<title>Spring Framework</title>
-				<para>
-					Spring Social requires <ulink url="http://www.springsource.org/documentation">Spring Framework</ulink> 3.0.5 and above.
-					Specifically, Spring Social uses <classname>RestTemplate</classname> and related REST client support from Spring's web module.
-				</para>
-				<para>
-					If Spring 3.1 is available, Spring Social will take advantage of some new features in Spring 3.1.
-					However, Spring Social does not depend on these new features and will work with Spring 3.0.5 or higher.
-				</para>
-				
-				<para>
-					If you want to use Spring Social with Spring 3.0.5, you'll need to explicitly add the spring-web dependency to your build, specifying the version:
-				</para>
-				
-			    <programlisting language="xml"><![CDATA[
-<dependency>
-  <groupId>org.springframework</groupId>
-  <artifactId>spring-web</artifactId>
-  <version>3.0.5.RELEASE</version>
-</dependency>]]>
-	  			</programlisting>
-	  			
-	  			<para>
-	  				Maven's dependency management favors "nearest" dependencies, so your project's dependency on a specific version of spring-web will override Spring Social's dependency on the 3.1 version.
-  				</para>
-  				
-  				<para>
-	  				Gradle, on the other hand, favors the newest dependency.
-	  				If you're using Gradle to build your project, you'll need to also set the dependency's <code>force</code> property to <code>true</code> to force Gradle to resolve your chosen version of Spring:
-	  			</para>
-
-			    <programlisting language="java"><![CDATA[
-dependencies { 
-	compile ("org.springframework.social:spring-social-core:1.0.0.RC1")
-	compile ("org.springframework:spring-web:3.0.5.RELEASE") { force=true }
-}]]>
-	  			</programlisting>
-
-			</section>
-
-			<section id="overview-dependencies-springsecurity">
-				<title>Spring Security</title>
-
-				<para>
-					If you're using Spring Social's JDBC-based connection repository, it will require a <interfacename>TextEncryptor</interfacename> from <ulink url="http://static.springsource.org/spring-security/site/">Spring Security</ulink> 3.1.0 to encrypt connection data as it is persisted.
-					For that, you'll need to add the core module from Spring Security 3.1.0 to your project build:
-				</para>
-
-		    	<programlisting language="xml"><![CDATA[
-<dependency>
-  <groupId>org.springframework.security</groupId>
-  <artifactId>spring-security-core</artifactId>
-  <version>3.1.0.RC2</version>
-</dependency>]]>
-	  			</programlisting>
-
-  			</section>
-
-			<section id="overview-dependencies-commonscodec">
-				<title>Commons Codec</title>
-
-				<para>
-					Spring Social depends on the <ulink url="http://commons.apache.org/codec/">Commons Codec</ulink> library when encoding OAuth 1 request signatures.
-					If you use Spring Social to connect with OAuth 1-based providers, you'll need to add Commons Codec to your project:
-				</para>
-			
-		    	<programlisting language="xml"><![CDATA[
-<dependency>
-  <groupId>commons-codec</groupId>
-  <artifactId>commons-codec</artifactId>
-  <version>1.5</version>
-</dependency>]]>
-	  			</programlisting>
-	  			
-				<para>
-					Commons Codec is not required if your application only connects with OAuth 2 providers.
-				</para>
-  			</section>
-
-			<section id="overview-dependencies-httpcomponents">
-				<title>Apache HttpComponents</title>
-				
-				<para>
-					Spring Social has an optional dependency on Apache's <ulink url="http://hc.apache.org/httpcomponents-client-ga/">HttpComponents HttpClient</ulink> as the basis for creating requests when communicating with a service provider.
-					If the HttpComponents HttpClient library is present, it will favor it. 
-					Otherwise, it will fall back on standard Java facilities for request creation.
-				</para>
-
-		    	<programlisting language="xml"><![CDATA[
-<dependency>
-  <groupId>org.apache.httpcomponents</groupId>
-  <artifactId>httpclient</artifactId>
-  <version>4.1.1</version>
-</dependency>]]>
-	  			</programlisting>
-								
-				<para>
-					Although shown here to depend on version 4.1.1 of the HttpClient library, Spring Social can also with with 4.0.X versions of HttpClient.
-				</para>
-			</section>
-
-			<section id="overview-dependencies-jackson">
-				<title>Jackson JSON Processor</title>
-
-				<para>
-					Spring Social's API binding implementations rely on the <ulink url="http://jackson.codehaus.org/">Jackson JSON Processor</ulink> to deserialize JSON responses into Java model objects.
-					Each of the provider modules transitively depend on Jackson 1.8.1, so there's nothing special to do to add Jackson to your project's Maven or Gradle build. 
-				</para>
-
-  			</section>
-		</section>	  
-
 		<section id="overview-provider-modules">
 			<title>Provider modules</title>
-			
 			<para>
-				In addition to the modules that make up Spring Social, there are also several provider-specific modules that provide connectivity and API bindings for popular SaaS providers.
+				In addition to modules that make up the core Spring Social project, there are a number of provider modules that are released separately that provide connectivity and API bindings to popular SaaS providers.
 				These provider modules are listed in <xref linkend="table-spring-social-provider-modules"/>.
 			</para>
-			
 			<table xml:id="table-spring-social-provider-modules">
 				<title>Spring Social Provider Modules</title>
 				<tgroup cols="3">
@@ -296,28 +199,114 @@ dependencies {
 					</tbody>
 				</tgroup>
 			</table>
-	
 			<para>
 				All of these modules are optional, depending on the connectivity needs of your application.
 				For instance, if your application will connect with Facebook, you'll want to add the Facebook module to your project:
 			</para>
-
 	    	<programlisting language="xml"><![CDATA[
 <dependency>
-  <groupId>org.springframework.social</groupId>
-  <artifactId>spring-social-facebook</artifactId>
-  <version>${springSocialFacebookVersion}</version>
+    <groupId>org.springframework.social</groupId>
+    <artifactId>spring-social-facebook</artifactId>
+    <version>${spring-social-facebook.version}</version>
 </dependency>]]>
-  			</programlisting>	
-  			
-  			<para>
-  				Note that each of the provider modules will progress and release on a different schedule than Spring Social.
-  				Consequently, the version numbers for any given provider module may not align with Spring Social or any other provider module.
-  			</para>
-  			
-  			<para>
-  				Refer to each provider module's reference documentation for details on connectivity and the API binding.
-  			</para>
+			</programlisting>	
+	 		<para>
+	 			Note that each of the provider modules will progress and release on a different schedule than Spring Social.
+	 			Consequently, the version numbers for any given provider module may not align with Spring Social or any other provider module.
+	 		</para>
+	 		<para>
+	 			Refer to each provider module's reference documentation for details on connectivity and the API binding.
+	 		</para>
+		</section>				
+	</section>
+	
+	<section id="overview-dependencies">
+		<title>Dependencies</title>
+		<para>
+			Spring Social depends on a few things to run. Most dependencies are optional and an effort has been made to keep the required dependencies to a minimum.
+			The project dependencies are described in this section.
+		</para>
+		<section id="overview-dependencies-java">
+			<title>Java</title>
+			<para>
+				Spring Social requires Java 1.5 or greater.
+			</para>
 		</section>
-  </section>
+		<section id="overview-dependencies-javaee">
+			<title>Java Servlet API</title>
+			<para>
+				The Spring Social web support requires Java Servlet 2.5 or greater (Tomcat 6+).
+			</para>
+		</section>
+		<section id="overview-dependencies-spring">
+			<title>Spring Framework</title>
+			<para>
+				Spring Social depends on RestTemplate provided by the core <ulink url="http://www.springsource.org/documentation">Spring Framework</ulink> in the spring-web module.
+				It requires Spring Framework version 3.0.5 or above.
+				Spring Framework 3.1 is recommended to take advantage of several RestTemplate improvements.
+			</para>
+			<para>
+				If you are using Spring Social with Spring Framework 3.0.5, make sure you explicitly add the spring-web dependency to your build:
+			</para>
+			<programlisting language="xml"><![CDATA[
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-web</artifactId>
+    <version>3.0.5.RELEASE</version>
+</dependency>]]>
+			</programlisting>
+			<para>
+				Maven's dependency management favors "nearest" dependencies, so your project's definition of the spring-web dependency will override Spring Social's transitive dependency on the recommended 3.1 version.
+			</para>
+			<para>
+				Gradle, on the other hand, favors the newest dependency.
+				If you're using Gradle to build your project, you'll need to also set the dependency's <code>force</code> property to <code>true</code> to force Gradle to resolve your chosen version of Spring:
+			</para>
+			<programlisting language="java"><![CDATA[
+dependencies { 
+    compile ("org.springframework.social:spring-social-core:1.0.0.RC1")
+    compile ("org.springframework:spring-web:3.0.5.RELEASE") { force=true }
+}]]>
+			</programlisting>
+		</section>			
+		<section id="overview-dependencies-springsecurity">
+			<title>Spring Security Crypto</title>
+			<para>
+				If you're using a ConnectionRepository implementation, <interfacename>TextEncryptor</interfacename> from <ulink url="http://static.springsource.org/spring-security/site">Spring Security 3.1</ulink> is required to encrypt connection data as it is persisted. 
+			 	In that case, if you're not already using Spring Security you'll need to add the standalone crypto module to your project build:
+			</para>
+		    <programlisting language="xml"><![CDATA[
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-crypto</artifactId>
+    <version>3.1.0.RC3</version>
+</dependency>]]>
+	  		</programlisting>
+  		</section>
+		<section id="overview-dependencies-httpcomponents">
+			<title>Apache HttpComponents</title>
+			<para>
+				Spring Social has an optional dependency on <ulink url="http://hc.apache.org/httpcomponents-client-ga">Apache HttpComponents</ulink>.
+				If the HttpComponents HttpClient library is present, it will use it as the HTTP client (which is generally recommended).
+				Otherwise, it will fall back on standard J2SE facilities.
+			</para>
+		    <programlisting language="xml"><![CDATA[
+<dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpclient</artifactId>
+    <version>4.1.1</version>
+</dependency>]]>
+	  		</programlisting>
+			<para>
+				Although shown here to depend on version 4.1.1 of the HttpClient library, Spring Social can also with with 4.0.X versions of HttpClient.
+			</para>
+		</section>
+		<section id="overview-dependencies-jackson">
+			<title>Jackson JSON Processor</title>
+			<para>
+				Spring Social's provider API bindings rely on the <ulink url="http://jackson.codehaus.org/">Jackson JSON Processor</ulink> to map JSON responses to Java objects.
+				Each binding, such as Facebook or Twitter, transitively depends on Jackson 1.8.1, so there's nothing special to do to add Jackson to your project's Maven or Gradle build. 
+			</para>
+  		</section>
+	</section>				
 </chapter>
