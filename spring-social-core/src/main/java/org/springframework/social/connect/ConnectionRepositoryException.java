@@ -15,25 +15,21 @@
  */
 package org.springframework.social.connect;
 
+import org.springframework.social.SocialException;
+
 /**
- * Thrown by a {@link ConnectionRepository} when attempting to add a {@link Connection} and a connection already exists with the given key.
+ * Base exception class for {@link ConnectionRepository} failures.
  * @author Keith Donald
- * @see ConnectionRepository#addConnection(Connection)
  */
 @SuppressWarnings("serial")
-public final class DuplicateConnectionException extends ConnectionRepositoryException {
+public abstract class ConnectionRepositoryException extends SocialException {
+
+	public ConnectionRepositoryException(String message) {
+		super(message);
+	}
+
+	public ConnectionRepositoryException(String message, Throwable cause) {
+		super(message, cause);
+	}
 	
-	private final ConnectionKey connectionKey;
-
-	public DuplicateConnectionException(ConnectionKey connectionKey) {
-		super("The connection with key " + connectionKey + " already exists");
-		this.connectionKey = connectionKey;
-	}
-
-	/**
-	 * The connection key that already exists.
-	 */
-	public ConnectionKey getConnectionKey() {
-		return connectionKey;
-	}
 }

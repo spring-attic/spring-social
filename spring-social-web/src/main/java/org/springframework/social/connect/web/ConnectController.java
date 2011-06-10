@@ -113,7 +113,7 @@ public class ConnectController  {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET)
 	public String connectionStatus(@PathVariable String providerId, WebRequest request, Model model) {
 		processFlash(request, model);
-		List<Connection<?>> connections = getConnectionRepository().findConnectionsToProvider(providerId);
+		List<Connection<?>> connections = getConnectionRepository().findConnections(providerId);
 		if (connections.isEmpty()) {
 			return baseViewPath(providerId) + "Connect";
 		} else {
@@ -175,7 +175,7 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.DELETE)
 	public RedirectView removeConnections(@PathVariable String providerId) {
-		getConnectionRepository().removeConnectionsToProvider(providerId);
+		getConnectionRepository().removeConnections(providerId);
 		return connectionStatusRedirect(providerId);
 	}
 

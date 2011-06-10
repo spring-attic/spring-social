@@ -29,7 +29,7 @@ import org.springframework.util.MultiValueMap;
 public interface ConnectionRepository {
 
 	/**
-	 * Find a map of all Connections for the current user.
+	 * Find all connections the current user has across all providers.
 	 * The returned map contains an entry for each provider the user is connected to.
 	 * The key for each entry is the providerId, and the value is the list of {@link Connection}s that exist between the user and that provider.
 	 * For example, if the user is connected once to Facebook and twice to Twitter, the returned map would contain two entries with the following structure:
@@ -42,18 +42,43 @@ public interface ConnectionRepository {
 	 * The returned map is sorted by providerId and entry values are ordered by rank.
 	 * Returns an empty map if the user has no connections.
 	 */
-	MultiValueMap<String, Connection<?>> findConnections();
+	MultiValueMap<String, Connection<?>> findAllConnections();
 
 	/**
-	 * Find the Connections the current user has to the provider registered by the given id.
+	 * Returns true if the current user is connected to the provider by the given id e.g. 'facebook'.
+	 * @param providerId the provider id
+	 * @return true if yes, false otherwise
+	 */
+	public boolean isConnected(String providerId);
+	
+	/**
+	 * Returns true if the current user is connected to the provider of the given API type e.g. Facebook.class.
+	 * Useful as a strongly-typed alternative to {@link #isConnected(String))}.
+	 * @param apiType the apiType e.g. Facebook
+	 * @return true if yes, false otherwise
+	 */
+	public boolean isConnected(Class<?> apiType);
+	
+	/**
+	 * Find the connections the current user has to the provider registered by the given id e.g. 'facebook'.
 	 * The returned list is ordered by connection rank.
 	 * Returns an empty list if the user has no connections to the provider.
 	 * @param providerId the provider id e.g. "facebook"
 	 */
-	List<Connection<?>> findConnectionsToProvider(String providerId);
+	List<Connection<?>> findConnections(String providerId);
 
 	/**
-	 * Find the Connections the current user has to the given provider users.
+	 * Find the connections the current user has to the provider of the given API e.g. Facebook.class.
+	 * Returns the equivalent of {@link #findConnections(String)}, but uses the apiType as the provider key instead of the providerId.
+	 * Useful for direct use by application code to obtain parameterized Connection instances e.g. <code>List&lt;Connection&lt;Facebook&gt;&gt;</code>.
+	 * @param <A> the API parameterized type
+	 * @param apiType the service API type e.g. Facebook.class or Twitter.class
+	 * @return the connections
+	 */
+	<A> List<Connection<A>> findConnections(Class<A> apiType);
+	
+	/**
+	 * Find the connections the current user has to the given provider users.
 	 * The providerUsers parameter accepts a map containing an entry for each provider the caller is interested in.
 	 * The key for each entry is the providerId e.g. "facebook", and the value is a list of provider user ids to fetch connections to e.g. ("126500", "34521", "127243").
 	 * The returned map has the same structure and order, except the provider userId values have been replaced by Connection instances.
@@ -61,10 +86,10 @@ public interface ConnectionRepository {
 	 * @param providerUserIds the provider users map
 	 * @return the provider user connection map 
 	 */
-	MultiValueMap<String, Connection<?>> findConnectionsForUsers(MultiValueMap<String, String> providerUserIds);
+	MultiValueMap<String, Connection<?>> findConnectionsToUsers(MultiValueMap<String, String> providerUserIds);
 	
 	/**
-	 * Find a single Connection for the current user by its key, which consists of the providerId + providerUserId.
+	 * Find a connection for the current user by its key, which consists of the providerId + providerUserId.
 	 * @param connectionKey the service provider connection key
 	 * @return the service provider connection
 	 * @throws NoSuchConnectionException if no such connection exists for the current user
@@ -72,39 +97,31 @@ public interface ConnectionRepository {
 	Connection<?> findConnection(ConnectionKey connectionKey);
 
 	/**
-	 * Find a single Connection for the current user by its apiType e.g. FacebookApi.class.
-	 * If the user has multiple connections to the provider associated with the given apiType, this method returns the one with the top rank (or priority).
-	 * Useful for direct use by application code to obtain a parameterized Connection instance.
-	 * @param <A> the service api parameterized type
-	 * @param apiType the service api type e.g. FacebookApi.class or TwitterApi.class
-	 * @return the connection
-	 */
-	<A> Connection<A> findPrimaryConnectionToApi(Class<A> apiType);
-
-	/**
-	 * Find the Connection between the current user and the given provider user.
+	 * Find the connection between the current user and the given provider user.
 	 * Returns the equivalent of {@link #findConnection(ConnectionKey)}, but uses the apiType as the provider key instead of the providerId.
 	 * Useful for direct use by application code to obtain a parameterized Connection instance.
 	 * @param <A> the api parameterized type
-	 * @param apiType the service api type e.g. FacebookApi.class or TwitterApi.class
+	 * @param apiType the service type e.g. Facebook.class or Twitter.class
 	 * @param providerUserId the provider user e.g. "126500".
 	 * @return the connection
+	 * @throws NoSuchConnectionException if the user is not connected to the provider 
 	 */
-	<A> Connection<A> findConnectionToApiForUser(Class<A> apiType, String providerUserId);
+	<A> Connection<A> findConnection(Class<A> apiType, String providerUserId);
 
 	/**
-	 * Find the Connections for the current user by the given apiType e.g. FacebookApi.class.
-	 * Returns the equivalent of {@link #findConnectionsToProvider(String)}, but uses the apiType as the provider key instead of the providerId.
-	 * Useful for direct use by application code to obtain parameterized Connection instances e.g. <code>List&lt;Connection&lt;FacebookApi&gt;&gt;</code>.
-	 * @param <A> the api parameterized type
-	 * @param apiType the service api type e.g. FacebookApi.class or TwitterApi.class
-	 * @return the connections
+	 * Find the "primary" connection the current user has to the provider of the given API e.g. Facebook.class.
+	 * If the user has multiple connections to the provider associated with the given apiType, this method returns the one with the top rank (or priority).
+	 * Useful for direct use by application code to obtain a parameterized Connection instance.
+	 * @param <A> the service api parameterized type
+	 * @param apiType the service type e.g. Facebook.class or Twitter.class
+	 * @return the primary connection
+	 * @throws NotConnectedException if the user is not connected to the provider of the API
 	 */
-	<A> List<Connection<A>> findConnectionsToApi(Class<A> apiType);
-	
+	<A> Connection<A> findPrimaryConnection(Class<A> apiType);
+
 	/**
-	 * Add a new Connection for the current user to this repository.
-	 * After the connection is added, it can be retrieved later using one of the finders defined by this interface.
+	 * Add a new connection to this repository for the current user.
+	 * After the connection is added, it can be retrieved later using one of the finders defined in this interface.
 	 * @param connection connection
 	 * @throws DuplicateConnectionException if the user already has this connection
 	 */
@@ -122,7 +139,7 @@ public interface ConnectionRepository {
 	 * Does nothing if no provider connections exist.
 	 * @param providerId the provider id e.g. "facebook"
 	 */
-	void removeConnectionsToProvider(String providerId);
+	void removeConnections(String providerId);
 
 	/**
 	 * Remove a single Connection for the current user from this repository.

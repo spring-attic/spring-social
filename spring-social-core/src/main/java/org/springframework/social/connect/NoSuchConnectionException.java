@@ -21,11 +21,12 @@ package org.springframework.social.connect;
  * @see ConnectionRepository#findConnection(ConnectionKey)
  */
 @SuppressWarnings("serial")
-public final class NoSuchConnectionException extends RuntimeException {
+public final class NoSuchConnectionException extends ConnectionRepositoryException {
 	
 	private final ConnectionKey connectionKey;
 
 	public NoSuchConnectionException(ConnectionKey connectionKey) {
+		super("No such connection exists with key "+ connectionKey);
 		this.connectionKey = connectionKey;
 	}
 
