@@ -146,17 +146,17 @@ class JdbcConnectionRepository implements ConnectionRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <S> Connection<S> findConnection(Class<S> apiType, String providerUserId) {
+	public <A> Connection<A> findConnection(Class<A> apiType, String providerUserId) {
 		String providerId = getProviderId(apiType);
-		return (Connection<S>) findConnection(new ConnectionKey(providerId, providerUserId));
+		return (Connection<A>) findConnection(new ConnectionKey(providerId, providerUserId));
 	}
 
 
 	@SuppressWarnings("unchecked")
-	public <S> Connection<S> findPrimaryConnection(Class<S> apiType) {
+	public <A> Connection<A> findPrimaryConnection(Class<A> apiType) {
 		String providerId = getProviderId(apiType);
 		try {
-			return (Connection<S>) jdbcTemplate.queryForObject(selectFromUserConnection() + " where userId = ? and providerId = ? and rank = 1", connectionMapper, userId, providerId);
+			return (Connection<A>) jdbcTemplate.queryForObject(selectFromUserConnection() + " where userId = ? and providerId = ? and rank = 1", connectionMapper, userId, providerId);
 		} catch (EmptyResultDataAccessException e) {
 			throw new NotConnectedException(providerId);
 		}
@@ -220,7 +220,7 @@ class JdbcConnectionRepository implements ConnectionRepository {
 		
 	}
 
-	private <S> String getProviderId(Class<S> apiType) {
+	private <A> String getProviderId(Class<A> apiType) {
 		return connectionFactoryLocator.getConnectionFactory(apiType).getProviderId();
 	}
 	

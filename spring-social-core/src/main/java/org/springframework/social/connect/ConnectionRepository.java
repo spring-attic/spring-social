@@ -64,6 +64,7 @@ public interface ConnectionRepository {
 	 * The returned list is ordered by connection rank.
 	 * Returns an empty list if the user has no connections to the provider.
 	 * @param providerId the provider id e.g. "facebook"
+	 * @return the connections the user has to the provider, or an empty list if none
 	 */
 	List<Connection<?>> findConnections(String providerId);
 
@@ -72,8 +73,8 @@ public interface ConnectionRepository {
 	 * Returns the equivalent of {@link #findConnections(String)}, but uses the apiType as the provider key instead of the providerId.
 	 * Useful for direct use by application code to obtain parameterized Connection instances e.g. <code>List&lt;Connection&lt;Facebook&gt;&gt;</code>.
 	 * @param <A> the API parameterized type
-	 * @param apiType the service API type e.g. Facebook.class or Twitter.class
-	 * @return the connections
+	 * @param apiType the API type e.g. Facebook.class or Twitter.class
+	 * @return the connections the user has to the provider of the API, or an empty list if none
 	 */
 	<A> List<Connection<A>> findConnections(Class<A> apiType);
 	
@@ -91,7 +92,7 @@ public interface ConnectionRepository {
 	/**
 	 * Find a connection for the current user by its key, which consists of the providerId + providerUserId.
 	 * @param connectionKey the service provider connection key
-	 * @return the service provider connection
+	 * @return the connection
 	 * @throws NoSuchConnectionException if no such connection exists for the current user
 	 */
 	Connection<?> findConnection(ConnectionKey connectionKey);
@@ -100,8 +101,8 @@ public interface ConnectionRepository {
 	 * Find the connection between the current user and the given provider user.
 	 * Returns the equivalent of {@link #findConnection(ConnectionKey)}, but uses the apiType as the provider key instead of the providerId.
 	 * Useful for direct use by application code to obtain a parameterized Connection instance.
-	 * @param <A> the api parameterized type
-	 * @param apiType the service type e.g. Facebook.class or Twitter.class
+	 * @param <A> the API parameterized type
+	 * @param apiType the API type e.g. Facebook.class or Twitter.class
 	 * @param providerUserId the provider user e.g. "126500".
 	 * @return the connection
 	 * @throws NoSuchConnectionException if the user is not connected to the provider 
@@ -112,8 +113,8 @@ public interface ConnectionRepository {
 	 * Find the "primary" connection the current user has to the provider of the given API e.g. Facebook.class.
 	 * If the user has multiple connections to the provider associated with the given apiType, this method returns the one with the top rank (or priority).
 	 * Useful for direct use by application code to obtain a parameterized Connection instance.
-	 * @param <A> the service api parameterized type
-	 * @param apiType the service type e.g. Facebook.class or Twitter.class
+	 * @param <A> the API parameterized type
+	 * @param apiType the API type e.g. Facebook.class or Twitter.class
 	 * @return the primary connection
 	 * @throws NotConnectedException if the user is not connected to the provider of the API
 	 */
@@ -122,7 +123,7 @@ public interface ConnectionRepository {
 	/**
 	 * Add a new connection to this repository for the current user.
 	 * After the connection is added, it can be retrieved later using one of the finders defined in this interface.
-	 * @param connection connection
+	 * @param connection the new connection to add to this repository
 	 * @throws DuplicateConnectionException if the user already has this connection
 	 */
 	void addConnection(Connection<?> connection);
@@ -130,14 +131,14 @@ public interface ConnectionRepository {
 	/**
 	 * Update a Connection already added to this repository.
 	 * Merges the field values of the given connection object with the values stored in the repository.
-	 * @param connection the connection
+	 * @param connection the existing connection to update in this repository
 	 */
 	void updateConnection(Connection<?> connection);
 	
 	/**
 	 * Remove all Connections between the current user and the provider from this repository.
 	 * Does nothing if no provider connections exist.
-	 * @param providerId the provider id e.g. "facebook"
+	 * @param providerId the provider id e.g. 'facebook'
 	 */
 	void removeConnections(String providerId);
 
