@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.oauth1;
+package org.springframework.social.oauth2;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -24,38 +24,36 @@ import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.social.ApiBinding;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * Base class for OAuth 1-based provider API templates.
+ * Base class for OAuth 2-based provider API bindings.
  * @author Craig Walls
  */
-public abstract class AbstractOAuth1ApiTemplate {
+public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 
-	private final OAuth1Credentials credentials;
+	private final String accessToken;
 
 	private final RestTemplate restTemplate;
 
 	/**
 	 * Constructs the API template without user authorization. This is useful for accessing operations on a provider's API that do not require user authorization.
 	 */
-	protected AbstractOAuth1ApiTemplate() {
-		credentials = null;
+	protected AbstractOAuth2ApiBinding() {
+		accessToken = null;
 		restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 		restTemplate.setMessageConverters(getMessageConverters());
 	}
-
+	
 	/**
 	 * Constructs the API template with OAuth credentials necessary to perform operations on behalf of a user.
-	 * @param consumerKey the application's consumer key
-	 * @param consumerSecret the application's consumer secret
 	 * @param accessToken the access token
-	 * @param accessTokenSecret the access token secret
 	 */
-	protected AbstractOAuth1ApiTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
-		credentials = new OAuth1Credentials(consumerKey, consumerSecret, accessToken, accessTokenSecret);
-		restTemplate = ProtectedResourceClientFactory.create(credentials);
+	protected AbstractOAuth2ApiBinding(String accessToken) {
+		this.accessToken = accessToken;
+		restTemplate = ProtectedResourceClientFactory.create(accessToken, getOAuth2Version());
 		restTemplate.setMessageConverters(getMessageConverters());
 	}
 	
@@ -64,22 +62,20 @@ public abstract class AbstractOAuth1ApiTemplate {
 	 * @param requestFactory the request factory
 	 */
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
-		if (isAuthorizedForUser()) {
-			restTemplate.setRequestFactory(ProtectedResourceClientFactory.addOAuthSigning(requestFactory, credentials));
+		if (isAuthorized()) {
+			restTemplate.setRequestFactory(ProtectedResourceClientFactory.addOAuthSigning(requestFactory, accessToken, getOAuth2Version()));
 		} else {
 			restTemplate.setRequestFactory(requestFactory);
 		}
 	}
+
+	// implementing ApiBinding
 	
-	/**
-	 * Returns true if this API binding has been authorized on behalf of a specific user.
-	 * If so, calls to the API are signed with the user's authorization credentials, indicating an application is invoking the API on a user's behalf.
-	 * If not, API calls do not contain any user authorization information.
-	 * Callers can use this status flag to determine if API operations requiring authorization can be invoked.
-	 */
-	public boolean isAuthorizedForUser() {
-		return credentials != null;
+	public boolean isAuthorized() {
+		return accessToken != null;
 	}
+	
+	// public implementation operations
 	
 	/**
 	 * Obtains a reference to the REST client backing this API binding and used to perform API calls.
@@ -94,7 +90,17 @@ public abstract class AbstractOAuth1ApiTemplate {
 	}
 
 	// subclassing hooks
-	
+
+	/**
+	 * Returns the version of OAuth2 the API implements.
+	 * By default, returns {@link OAuth2Version#BEARER} indicating versions of OAuth2 that apply the bearer token scheme.
+	 * Subclasses may override to return another version.
+	 * @see OAuth2Version
+	 */
+	protected OAuth2Version getOAuth2Version() {
+		return OAuth2Version.BEARER;
+	}
+
 	/**
 	 * Returns a list of {@link HttpMessageConverter}s to be used by the internal {@link RestTemplate}.
 	 * By default, this includes a {@link StringHttpMessageConverter}, a {@link MappingJacksonHttpMessageConverter}, and a {@link FormHttpMessageConverter}.

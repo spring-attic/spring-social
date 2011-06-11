@@ -151,7 +151,7 @@
 							For example, Twitter's API provides access to "status timelines", "searches", "lists", "direct messages", "friends", and "users".
 							Rather than add all operations across these resources to a single flat "Twitter" interface, the Twitter interface is organized hierarchically:
 							<programlisting language="java"><![CDATA[
-public interface Twitter {
+public interface Twitter extends ApiBinding {
 	
     DirectMessageOperations directMessageOperations();
 
@@ -227,7 +227,7 @@ public FacebookTemplate(String accessToken) { ... }]]>
 				To encapsulate this complexity, for each authorization protocol Spring Social provides a ApiTemplate base class you may extend from to
 				construct a pre-configured RestTemplate instance that performs the request signing for you. For OAuth1:
 				<programlisting language="java"><![CDATA[
-public class TwitterTemplate extends AbstractOAuth1ApiTemplate {
+public class TwitterTemplate extends AbstractOAuth1ApiBinding {
     public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
         super(consumerKey, consumerSecret, accessToken, accessTokenSecret);
     }
@@ -236,7 +236,7 @@ public class TwitterTemplate extends AbstractOAuth1ApiTemplate {
 			<para>
 				An OAuth2 example:
 				<programlisting language="java"><![CDATA[
-public class FacebookTemplate extends AbstractOAuth2ApiTemplate {
+public class FacebookTemplate extends AbstractOAuth2ApiBinding {
     public FacebookTemplate(String accessToken) {
         super(accessToken);
     }
