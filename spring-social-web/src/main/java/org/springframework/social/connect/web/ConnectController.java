@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -69,7 +68,7 @@ public class ConnectController  {
 	
 	private final ConnectionFactoryLocator connectionFactoryLocator;
 	
-	private final Provider<ConnectionRepository> connectionRepositoryProvider;
+	private final ConnectionRepository connectionRepository;
 
 	private final MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
 
@@ -82,9 +81,9 @@ public class ConnectController  {
 	 * @param connectionRepositoryProvider the provider of the current user's {@link ConnectionRepository} needed to persist connections
 	 */
 	@Inject
-	public ConnectController(String applicationUrl, ConnectionFactoryLocator connectionFactoryLocator, Provider<ConnectionRepository> connectionRepositoryProvider) {
+	public ConnectController(String applicationUrl, ConnectionFactoryLocator connectionFactoryLocator, ConnectionRepository connectionRepository) {
 		this.connectionFactoryLocator = connectionFactoryLocator;
-		this.connectionRepositoryProvider = connectionRepositoryProvider;
+		this.connectionRepository = connectionRepository;
 		this.controllerCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 	}
 
@@ -113,7 +112,7 @@ public class ConnectController  {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET)
 	public String connectionStatus(@PathVariable String providerId, WebRequest request, Model model) {
 		processFlash(request, model);
-		List<Connection<?>> connections = getConnectionRepository().findConnections(providerId);
+		List<Connection<?>> connections = connectionRepository.findConnections(providerId);
 		if (connections.isEmpty()) {
 			return baseViewPath(providerId) + "Connect";
 		} else {
@@ -175,7 +174,7 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.DELETE)
 	public RedirectView removeConnections(@PathVariable String providerId) {
-		getConnectionRepository().removeConnections(providerId);
+		connectionRepository.removeConnections(providerId);
 		return connectionStatusRedirect(providerId);
 	}
 
@@ -185,7 +184,7 @@ public class ConnectController  {
 	 */
 	@RequestMapping(value="/{providerId}/{providerUserId}", method=RequestMethod.DELETE)
 	public RedirectView removeConnections(@PathVariable String providerId, @PathVariable String providerUserId) {
-		getConnectionRepository().removeConnection(new ConnectionKey(providerId, providerUserId));
+		connectionRepository.removeConnection(new ConnectionKey(providerId, providerUserId));
 		return connectionStatusRedirect(providerId);
 	}
 
@@ -237,17 +236,13 @@ public class ConnectController  {
 	
 	private void addConnection(WebRequest request, ConnectionFactory<?> connectionFactory, Connection<?> connection) {
 		try {
-			getConnectionRepository().addConnection(connection);
+			connectionRepository.addConnection(connection);
 			postConnect(connectionFactory, connection, request);
 		} catch (DuplicateConnectionException e) {
 			request.setAttribute(DUPLICATE_CONNECTION_EXCEPTION_ATTRIBUTE, e, WebRequest.SCOPE_SESSION);
 		}
 	}
 
-	private ConnectionRepository getConnectionRepository() {
-		return connectionRepositoryProvider.get();
-	}
-	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void preConnect(ConnectionFactory<?> connectionFactory, WebRequest request) {
 		for (ConnectInterceptor interceptor : interceptingConnectionsTo(connectionFactory)) {
