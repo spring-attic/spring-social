@@ -53,7 +53,7 @@ public interface ConnectionRepository {
 	
 	/**
 	 * Returns true if the current user is connected to the provider of the given API type e.g. Facebook.class.
-	 * Useful as a strongly-typed alternative to {@link #isConnected(String))}.
+	 * Useful as a strongly-typed alternative to {@link #isConnected(String)}.
 	 * @param apiType the apiType e.g. Facebook
 	 * @return true if yes, false otherwise
 	 */

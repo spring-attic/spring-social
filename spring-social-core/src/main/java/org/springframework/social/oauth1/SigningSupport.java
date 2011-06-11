@@ -36,11 +36,11 @@ import java.util.Set;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.codec.binary.Base64;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequest;
+import org.springframework.security.crypto.codec.Base64;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -188,7 +188,7 @@ class SigningSupport {
 			mac.init(spec);
 			byte[] text = signatureBaseString.getBytes(UTF8_CHARSET_NAME);
 			byte[] signatureBytes = mac.doFinal(text);
-			signatureBytes = Base64.encodeBase64(signatureBytes);
+			signatureBytes = Base64.encode(signatureBytes);
 			String signature = new String(signatureBytes, UTF8_CHARSET_NAME);
 			return signature;
 		} catch (NoSuchAlgorithmException e) {
