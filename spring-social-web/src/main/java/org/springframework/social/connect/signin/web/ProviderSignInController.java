@@ -71,10 +71,12 @@ public class ProviderSignInController {
 	/**
 	 * Creates a new provider sign-in controller.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the sign-in process.
-	 * @param connectionFactoryLocator the locator of {@link ConnectionFactory connection factories} that can be used for sign-in; should be a serializable proxy to a singleton bean.
-	 * This is because {@link ProviderSignInAttempt} objects are session-scoped and thus require a Serializable reference.
+	 * @param connectionFactoryLocator the locator of {@link ConnectionFactory connection factories} used to support provider sign-in.
+	 * Note: this reference should be a serializable proxy to a singleton-scoped target instance.
+	 * This is recommended because {@link ProviderSignInAttempt} are session-scoped objects that hold ConnectionFactoryLocator references.
+	 * If these references cannot be serialized, NotSerializableExceptions can occur at runtime.
 	 * @param usersConnectionRepository the global store for service provider connections across all local user accounts
-	 * @param connectionRepository the current user's {@link ConnectionRepository} instance; must be a serializable proxy to a request-scoped bean.
+	 * @param connectionRepository the current user's {@link ConnectionRepository} instance; the reference must be a serializable proxy to a request-scoped target instance.
 	 */
 	@Inject
 	public ProviderSignInController(String applicationUrl, ConnectionFactoryLocator connectionFactoryLocator, UsersConnectionRepository usersConnectionRepository,
