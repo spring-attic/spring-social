@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,18 @@
 package org.springframework.social;
 
 /**
- * Indicates a security-related error occurred during the invocation of a service provider API operation.
- * For example, updating a Twitter user's status with a bad or missing access token.
+ * Indicates that the requested provider API resource could not be found.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class BadCredentialsException extends ProviderApiException {
-
-	public BadCredentialsException(String message) {
+public class ResourceNotFoundException extends ProviderApiException {
+	
+	public ResourceNotFoundException(String message) {
 		super(message);
 	}
 
-	public BadCredentialsException(String message, Throwable cause) {
+	public ResourceNotFoundException(String message, Throwable cause) {
 		super(message, cause);
 	}
-
+	
 }

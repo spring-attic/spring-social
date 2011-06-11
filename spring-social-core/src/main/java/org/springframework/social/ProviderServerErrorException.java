@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,17 @@
 package org.springframework.social;
 
 /**
- * Indicates a security-related error occurred during the invocation of a service provider API operation.
- * For example, updating a Twitter user's status with a bad or missing access token.
+ * Indicates that an error occurred on the provider's server.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class BadCredentialsException extends ProviderApiException {
+public class ProviderServerErrorException extends ProviderApiException {
 
-	public BadCredentialsException(String message) {
+	public ProviderServerErrorException(String message) {
 		super(message);
 	}
 
-	public BadCredentialsException(String message, Throwable cause) {
+	public ProviderServerErrorException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
