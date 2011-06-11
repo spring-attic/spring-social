@@ -15,10 +15,7 @@
  */
 package org.springframework.social.connect.signin.web;
 
-import java.io.NotSerializableException;
-
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.social.connect.Connection;
@@ -57,11 +54,11 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/signin")
 public class ProviderSignInController {
 
-	private final Provider<ConnectionFactoryLocator> connectionFactoryLocatorProvider;
+	private final ConnectionFactoryLocator connectionFactoryLocator;
 
 	private final UsersConnectionRepository usersConnectionRepository;
 	
-	private final Provider<ConnectionRepository> connectionRepositoryProvider;
+	private final ConnectionRepository connectionRepository;
 	
 	private final SignInAdapter signInAdapter;
 
@@ -74,20 +71,17 @@ public class ProviderSignInController {
 	/**
 	 * Creates a new provider sign-in controller.
 	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the sign-in process.
-	 * @param connectionFactoryLocatorProvider the provider of the locator of {@link ConnectionFactory connection factories} that can be used for sign-in;
-	 * A JSR330 Provider is injected here instead of the actual locator object to support the fact {@link ProviderSignInAttempt} objects are session-scoped and thus require a Serializable reference to a {@link ConnectionFactoryLocator}.
-	 * The injected Provider should be Serializable, otherwise {@link NotSerializableException} instances could occur during the provider sign-in flow.
+	 * @param connectionFactoryLocator the locator of {@link ConnectionFactory connection factories} that can be used for sign-in; should be a serializable proxy to a singleton bean.
+	 * This is because {@link ProviderSignInAttempt} objects are session-scoped and thus require a Serializable reference.
 	 * @param usersConnectionRepository the global store for service provider connections across all local user accounts
-	 * @param connectionRepositoryProvider the provider of the current user's {@link ConnectionRepository} instance;
-	 * A JSR 330 Provider is injected here instead of the actual repository object because repository instances are request-scoped and resolved based on the currently authenticated user.
-	 * @param signInAdapter an adapter between this controller and the local application's user sign-in system.
+	 * @param connectionRepository the current user's {@link ConnectionRepository} instance; must be a serializable proxy to a request-scoped bean.
 	 */
 	@Inject
-	public ProviderSignInController(String applicationUrl, Provider<ConnectionFactoryLocator> connectionFactoryLocatorProvider, UsersConnectionRepository usersConnectionRepository,
-			Provider<ConnectionRepository> connectionRepositoryProvider, SignInAdapter signInAdapter) {
-		this.connectionFactoryLocatorProvider = connectionFactoryLocatorProvider;
+	public ProviderSignInController(String applicationUrl, ConnectionFactoryLocator connectionFactoryLocator, UsersConnectionRepository usersConnectionRepository,
+			ConnectionRepository connectionRepository, SignInAdapter signInAdapter) {
+		this.connectionFactoryLocator = connectionFactoryLocator;
 		this.usersConnectionRepository = usersConnectionRepository;
-		this.connectionRepositoryProvider = connectionRepositoryProvider;
+		this.connectionRepository = connectionRepository;
 		this.signInAdapter = signInAdapter;
 		this.controllerCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
 	}
@@ -117,7 +111,7 @@ public class ProviderSignInController {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
 	public RedirectView signIn(@PathVariable String providerId, WebRequest request) {
-		ConnectionFactory<?> connectionFactory = getConnectionFactoryLocator().getConnectionFactory(providerId);
+		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
 		if (connectionFactory instanceof OAuth1ConnectionFactory) {
 			return new RedirectView(oauth1Url((OAuth1ConnectionFactory<?>) connectionFactory, request));
 		} else if (connectionFactory instanceof OAuth2ConnectionFactory) {
@@ -138,7 +132,7 @@ public class ProviderSignInController {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="oauth_token")
 	public RedirectView oauth1Callback(@PathVariable String providerId, @RequestParam("oauth_token") String token, @RequestParam(value="oauth_verifier", required=false) String verifier, WebRequest request) {
-		OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) getConnectionFactoryLocator().getConnectionFactory(providerId);
+		OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		OAuthToken accessToken = connectionFactory.getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(extractCachedRequestToken(request), verifier), null);
 		Connection<?> connection = connectionFactory.createConnection(accessToken);
 		return handleSignIn(connection, request);
@@ -155,7 +149,7 @@ public class ProviderSignInController {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public RedirectView oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, WebRequest request) {
-		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) getConnectionFactoryLocator().getConnectionFactory(providerId);
+		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(providerId, request), null);
 		Connection<?> connection = connectionFactory.createConnection(accessGrant);
 		return handleSignIn(connection, request);
@@ -172,10 +166,6 @@ public class ProviderSignInController {
 	}
 	
 	// internal helpers
-
-	private ConnectionFactoryLocator getConnectionFactoryLocator() {
-		return connectionFactoryLocatorProvider.get();
-	}
 
 	private String oauth1Url(OAuth1ConnectionFactory<?> connectionFactory, WebRequest request) {
 		OAuth1Operations oauth1Ops = ((OAuth1ConnectionFactory<?>) connectionFactory).getOAuthOperations();
@@ -211,7 +201,7 @@ public class ProviderSignInController {
 	private RedirectView handleSignIn(Connection<?> connection, WebRequest request) {
 		String localUserId = usersConnectionRepository.findUserIdWithConnection(connection);
 		if (localUserId == null) {
-			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocatorProvider, connectionRepositoryProvider);
+			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, connectionRepository);
 			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, WebRequest.SCOPE_SESSION);
 			return redirect(signUpUrl);
 		} else {

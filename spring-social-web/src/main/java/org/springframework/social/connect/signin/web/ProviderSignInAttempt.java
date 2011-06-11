@@ -17,8 +17,6 @@ package org.springframework.social.connect.signin.web;
 
 import java.io.Serializable;
 
-import javax.inject.Provider;
-
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -43,14 +41,14 @@ public class ProviderSignInAttempt implements Serializable {
 
 	private final ConnectionData connectionData;
 	
-	private final Provider<ConnectionFactoryLocator> connectionFactoryLocatorProvider;
+	private final ConnectionFactoryLocator connectionFactoryLocator;
 	
-	private final Provider<ConnectionRepository> connectionRepositoryProvider;
+	private final ConnectionRepository connectionRepository;
 		
-	public ProviderSignInAttempt(Connection<?> connection, Provider<ConnectionFactoryLocator> connectionFactoryLocatorProvider, Provider<ConnectionRepository> connectionRepositoryProvider) {
+	public ProviderSignInAttempt(Connection<?> connection, ConnectionFactoryLocator connectionFactoryLocator, ConnectionRepository connectionRepository) {
 		this.connectionData = connection.createData();
-		this.connectionFactoryLocatorProvider = connectionFactoryLocatorProvider;
-		this.connectionRepositoryProvider = connectionRepositoryProvider;		
+		this.connectionFactoryLocator = connectionFactoryLocator;
+		this.connectionRepository = connectionRepository;		
 	}
 	
 	/**
@@ -59,7 +57,7 @@ public class ProviderSignInAttempt implements Serializable {
 	 * You can also lookup the id of the provider and use that to display a provider-specific user-sign-in-attempt flash message e.g. "Your Facebook Account is not connected to a Local account. Please sign up."
 	 */
 	public Connection<?> getConnection() {
-		return connectionFactoryLocatorProvider.get().getConnectionFactory(connectionData.getProviderId()).createConnection(connectionData);
+		return connectionFactoryLocator.getConnectionFactory(connectionData.getProviderId()).createConnection(connectionData);
 	}
 	
 	/**
@@ -67,7 +65,7 @@ public class ProviderSignInAttempt implements Serializable {
 	 * @throws DuplicateConnectionException if the user already has this connection
 	 */
 	void addConnection() {
-		connectionRepositoryProvider.get().addConnection(getConnection());
+		connectionRepository.addConnection(getConnection());
 	}
 
 }
