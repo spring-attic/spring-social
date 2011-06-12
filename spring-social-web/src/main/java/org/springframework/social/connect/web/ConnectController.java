@@ -48,6 +48,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
@@ -171,6 +172,7 @@ public class ConnectController  {
 	/**
 	 * Remove all provider connections for a user account.
 	 * The user has decided they no longer wish to use the service provider from this application.
+	 * Note: requires {@link HiddenHttpMethodFilter} to be registered with the '_method' request parameter set to 'DELETE' to convert web browser POSTs to DELETE requests.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.DELETE)
 	public RedirectView removeConnections(@PathVariable String providerId) {
@@ -181,6 +183,7 @@ public class ConnectController  {
 	/**
 	 * Remove a single provider connection associated with a user account.
 	 * The user has decided they no longer wish to use the service provider account from this application.
+	 * Note: requires {@link HiddenHttpMethodFilter} to be registered with the '_method' request parameter set to 'DELETE' to convert web browser POSTs to DELETE requests.
 	 */
 	@RequestMapping(value="/{providerId}/{providerUserId}", method=RequestMethod.DELETE)
 	public RedirectView removeConnections(@PathVariable String providerId, @PathVariable String providerUserId) {
