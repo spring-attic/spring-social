@@ -142,7 +142,7 @@ project('spring-social-core') {
     dependencies {
         compile ("org.springframework:spring-jdbc:$springVersion") { optional = true }
         compile ("org.springframework:spring-web:$springVersion")
-        compile ("org.springframework.security:spring-security-crypto:$springSecurityVersion") { provided = true }
+        compile ("org.springframework.security:spring-security-crypto:$springSecurityVersion") { optional = true }
         compile ("org.apache.httpcomponents:httpclient:$httpComponentsVersion") { optional = true }
         testCompile "com.h2database:h2:$h2Version"
     }
