@@ -129,7 +129,7 @@ class JdbcConnectionRepository implements ConnectionRepository {
 		return connectionsForUsers;
 	}
 
-	public Connection<?> findConnection(ConnectionKey connectionKey) {
+	public Connection<?> getConnection(ConnectionKey connectionKey) {
 		try {
 			return jdbcTemplate.queryForObject(selectFromUserConnection() + " where userId = ? and providerId = ? and providerUserId = ?", connectionMapper, userId, connectionKey.getProviderId(), connectionKey.getProviderUserId());
 		} catch (EmptyResultDataAccessException e) {
@@ -138,22 +138,27 @@ class JdbcConnectionRepository implements ConnectionRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <A> Connection<A> findConnection(Class<A> apiType, String providerUserId) {
+	public <A> Connection<A> getConnection(Class<A> apiType, String providerUserId) {
 		String providerId = getProviderId(apiType);
-		return (Connection<A>) findConnection(new ConnectionKey(providerId, providerUserId));
+		return (Connection<A>) getConnection(new ConnectionKey(providerId, providerUserId));
 	}
 
+	@SuppressWarnings("unchecked")
+	public <A> Connection<A> getPrimaryConnection(Class<A> apiType) {
+		String providerId = getProviderId(apiType);
+		Connection<A> connection = (Connection<A>) findPrimaryConnection(providerId);
+		if (connection == null) {
+			throw new NotConnectedException(providerId);
+		}
+		return connection;
+	}
 
 	@SuppressWarnings("unchecked")
 	public <A> Connection<A> findPrimaryConnection(Class<A> apiType) {
 		String providerId = getProviderId(apiType);
-		try {
-			return (Connection<A>) jdbcTemplate.queryForObject(selectFromUserConnection() + " where userId = ? and providerId = ? and rank = 1", connectionMapper, userId, providerId);
-		} catch (EmptyResultDataAccessException e) {
-			throw new NotConnectedException(providerId);
-		}
+		return (Connection<A>) findPrimaryConnection(providerId);
 	}
-
+	
 	@Transactional
 	public void addConnection(Connection<?> connection) {
 		try {
@@ -186,6 +191,14 @@ class JdbcConnectionRepository implements ConnectionRepository {
 		return "select userId, providerId, providerUserId, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime from " + tablePrefix + "UserConnection";
 	}
 	
+	private Connection<?> findPrimaryConnection(String providerId) {
+		List<Connection<?>> connections = jdbcTemplate.query(selectFromUserConnection() + " where userId = ? and providerId = ? and rank = 1", connectionMapper, userId, providerId);
+		if (connections.size() > 0) {
+			return connections.get(0);
+		} else {
+			return null;
+		}		
+	}
 	
 	private final ServiceProviderConnectionMapper connectionMapper = new ServiceProviderConnectionMapper();
 	

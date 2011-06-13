@@ -116,7 +116,7 @@ public class JdbcUsersConnectionRepositoryTest {
 	@Test
 	public void findUserIdWithConnection() {
 		insertFacebookConnection();
-		String userId = usersConnectionRepository.findUserIdWithConnection(connectionRepository.findPrimaryConnection(TestFacebookApi.class));
+		String userId = usersConnectionRepository.findUserIdWithConnection(connectionRepository.getPrimaryConnection(TestFacebookApi.class));
 		assertEquals("1", userId);
 	}
 	
@@ -130,7 +130,7 @@ public class JdbcUsersConnectionRepositoryTest {
 	public void findUserIdWithConnectionMultipleConnectionsToSameProviderUser() {
 		insertFacebookConnection();
 		insertFacebookConnectionSameFacebookUser();
-		assertNull(usersConnectionRepository.findUserIdWithConnection(connectionRepository.findPrimaryConnection(TestFacebookApi.class)));
+		assertNull(usersConnectionRepository.findUserIdWithConnection(connectionRepository.getPrimaryConnection(TestFacebookApi.class)));
 	}
 	
 	@Test
@@ -248,43 +248,43 @@ public class JdbcUsersConnectionRepositoryTest {
 	@SuppressWarnings("unchecked")
 	public void findConnectionByKey() {
 		insertFacebookConnection();
-		assertFacebookConnection((Connection<TestFacebookApi>) connectionRepository.findConnection(new ConnectionKey("facebook", "9")));
+		assertFacebookConnection((Connection<TestFacebookApi>) connectionRepository.getConnection(new ConnectionKey("facebook", "9")));
 	}
 	
 	@Test(expected=NoSuchConnectionException.class)
 	public void findConnectionByKeyNoSuchConnection() {
-		connectionRepository.findConnection(new ConnectionKey("facebook", "bogus"));
+		connectionRepository.getConnection(new ConnectionKey("facebook", "bogus"));
 	}
 
 	@Test
 	public void findConnectionByApiToUser() {
 		insertFacebookConnection();
 		insertFacebookConnection2();	
-		assertFacebookConnection(connectionRepository.findConnection(TestFacebookApi.class, "9"));
-		assertEquals("10", connectionRepository.findConnection(TestFacebookApi.class, "10").getKey().getProviderUserId());
+		assertFacebookConnection(connectionRepository.getConnection(TestFacebookApi.class, "9"));
+		assertEquals("10", connectionRepository.getConnection(TestFacebookApi.class, "10").getKey().getProviderUserId());
 	}
 
 	@Test(expected=NoSuchConnectionException.class)
 	public void findConnectionByApiToUserNoSuchConnection() {
-		assertFacebookConnection(connectionRepository.findConnection(TestFacebookApi.class, "9"));
+		assertFacebookConnection(connectionRepository.getConnection(TestFacebookApi.class, "9"));
 	}
 	
 	@Test
 	public void findPrimaryConnection() {
 		insertFacebookConnection();
-		assertFacebookConnection(connectionRepository.findPrimaryConnection(TestFacebookApi.class));
+		assertFacebookConnection(connectionRepository.getPrimaryConnection(TestFacebookApi.class));
 	}
 
 	@Test
 	public void findPrimaryConnectionSelectFromMultipleByRank() {
 		insertFacebookConnection2();
 		insertFacebookConnection();
-		assertFacebookConnection(connectionRepository.findPrimaryConnection(TestFacebookApi.class));
+		assertFacebookConnection(connectionRepository.getPrimaryConnection(TestFacebookApi.class));
 	}
 
 	@Test(expected=NotConnectedException.class)
 	public void findPrimaryConnectionNotConnected() {
-		connectionRepository.findPrimaryConnection(TestFacebookApi.class);
+		connectionRepository.getPrimaryConnection(TestFacebookApi.class);
 	}
 
 	@Test
@@ -318,7 +318,7 @@ public class JdbcUsersConnectionRepositoryTest {
 	public void addConnection() {
 		Connection<TestFacebookApi> connection = connectionFactory.createConnection(new AccessGrant("123456789", null, "987654321", 3600));
 		connectionRepository.addConnection(connection);
-		Connection<TestFacebookApi> restoredConnection = connectionRepository.findPrimaryConnection(TestFacebookApi.class);
+		Connection<TestFacebookApi> restoredConnection = connectionRepository.getPrimaryConnection(TestFacebookApi.class);
 		assertEquals(connection, restoredConnection);	
 		assertNewConnection(restoredConnection);
 	}
@@ -334,23 +334,23 @@ public class JdbcUsersConnectionRepositoryTest {
 	public void updateConnectionProfileFields() {
 		connectionFactoryRegistry.addConnectionFactory(new TestTwitterConnectionFactory());		
 		insertTwitterConnection();
-		Connection<TestTwitterApi> twitter = connectionRepository.findPrimaryConnection(TestTwitterApi.class);
+		Connection<TestTwitterApi> twitter = connectionRepository.getPrimaryConnection(TestTwitterApi.class);
 		assertEquals("http://twitter.com/kdonald/picture", twitter.getImageUrl());
 		twitter.sync();
 		assertEquals("http://twitter.com/kdonald/a_new_picture", twitter.getImageUrl());
 		connectionRepository.updateConnection(twitter);
-		Connection<TestTwitterApi> twitter2 = connectionRepository.findPrimaryConnection(TestTwitterApi.class);
+		Connection<TestTwitterApi> twitter2 = connectionRepository.getPrimaryConnection(TestTwitterApi.class);
 		assertEquals("http://twitter.com/kdonald/a_new_picture", twitter2.getImageUrl());
 	}
 	
 	@Test
 	public void updateConnectionAccessFields() {
 		insertFacebookConnection();
-		Connection<TestFacebookApi> facebook = connectionRepository.findPrimaryConnection(TestFacebookApi.class);
+		Connection<TestFacebookApi> facebook = connectionRepository.getPrimaryConnection(TestFacebookApi.class);
 		assertEquals("234567890", facebook.getApi().getAccessToken());
 		facebook.refresh();
 		connectionRepository.updateConnection(facebook);
-		Connection<TestFacebookApi> facebook2 = connectionRepository.findPrimaryConnection(TestFacebookApi.class);
+		Connection<TestFacebookApi> facebook2 = connectionRepository.getPrimaryConnection(TestFacebookApi.class);
 		assertEquals("765432109", facebook2.getApi().getAccessToken());
 		ConnectionData data = facebook.createData();
 		assertEquals("654321098", data.getRefreshToken());

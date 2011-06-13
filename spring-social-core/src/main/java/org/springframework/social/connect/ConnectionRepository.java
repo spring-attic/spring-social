@@ -75,33 +75,42 @@ public interface ConnectionRepository {
 	MultiValueMap<String, Connection<?>> findConnectionsToUsers(MultiValueMap<String, String> providerUserIds);
 	
 	/**
-	 * Find a connection for the current user by its key, which consists of the providerId + providerUserId.
+	 * Get a connection for the current user by its key, which consists of the providerId + providerUserId.
 	 * @param connectionKey the service provider connection key
 	 * @return the connection
 	 * @throws NoSuchConnectionException if no such connection exists for the current user
 	 */
-	Connection<?> findConnection(ConnectionKey connectionKey);
+	Connection<?> getConnection(ConnectionKey connectionKey);
 
 	/**
-	 * Find the connection between the current user and the given provider user.
-	 * Semantically equivalent to {@link #findConnection(ConnectionKey)}, but uses the apiType as the provider key instead of the providerId.
+	 * Get a connection between the current user and the given provider user.
+	 * Semantically equivalent to {@link #getConnection(ConnectionKey)}, but uses the apiType as the provider key instead of the providerId.
 	 * Useful for direct use by application code to obtain a parameterized Connection instance.
 	 * @param <A> the API parameterized type
 	 * @param apiType the API type e.g. Facebook.class or Twitter.class
 	 * @param providerUserId the provider user e.g. "126500".
 	 * @return the connection
-	 * @throws NoSuchConnectionException if the user is not connected to the provider 
+	 * @throws NoSuchConnectionException if no such connection exists for the current user
 	 */
-	<A> Connection<A> findConnection(Class<A> apiType, String providerUserId);
+	<A> Connection<A> getConnection(Class<A> apiType, String providerUserId);
 
 	/**
-	 * Find the "primary" connection the current user has to the provider of the given API e.g. Facebook.class.
+	 * Get the "primary" connection the current user has to the provider of the given API e.g. Facebook.class.
 	 * If the user has multiple connections to the provider associated with the given apiType, this method returns the one with the top rank (or priority).
 	 * Useful for direct use by application code to obtain a parameterized Connection instance.
 	 * @param <A> the API parameterized type
 	 * @param apiType the API type e.g. Facebook.class or Twitter.class
 	 * @return the primary connection
 	 * @throws NotConnectedException if the user is not connected to the provider of the API
+	 */
+	<A> Connection<A> getPrimaryConnection(Class<A> apiType);
+
+	/**
+	 * Find the "primary" connection the current user has to the provider of the given API e.g. Facebook.class.
+	 * Semantically equivalent to {@link #getPrimaryConnection(Class)} but returns null if no connection is found instead of throwing an exception.
+	 * @param <A> the API parameterized type
+	 * @param apiType the API type e.g. Facebook.class or Twitter.class
+	 * @return the primary connection, or <code>null</code> if not found
 	 */
 	<A> Connection<A> findPrimaryConnection(Class<A> apiType);
 
