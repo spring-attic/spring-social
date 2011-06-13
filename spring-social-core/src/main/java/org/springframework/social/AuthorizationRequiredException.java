@@ -16,19 +16,15 @@
 package org.springframework.social;
 
 /**
- * Indicates a security-related error occurred during the invocation of a service provider API operation.
- * For example, updating a Facebook user's status with a revoked or expired access token.
+ * Indicates an attempt to invoke an API operation requiring authorization with no credentials.
+ * For example, updating a user's status on a provider using an API binding that was constructed without an access token. 
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class BadCredentialsException extends ProviderApiException {
+public class AuthorizationRequiredException extends ProviderApiException {
 
-	public BadCredentialsException(String message) {
+	public AuthorizationRequiredException(String message) {
 		super(message);
-	}
-
-	public BadCredentialsException(String message, Throwable cause) {
-		super(message, cause);
 	}
 
 }
