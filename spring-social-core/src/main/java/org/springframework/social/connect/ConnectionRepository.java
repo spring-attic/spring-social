@@ -43,21 +43,6 @@ public interface ConnectionRepository {
 	 * Returns an empty map if the user has no connections.
 	 */
 	MultiValueMap<String, Connection<?>> findAllConnections();
-
-	/**
-	 * Returns true if the current user is connected to the provider by the given id e.g. 'facebook'.
-	 * @param providerId the provider id
-	 * @return true if yes, false otherwise
-	 */
-	public boolean isConnected(String providerId);
-	
-	/**
-	 * Returns true if the current user is connected to the provider of the given API type e.g. Facebook.class.
-	 * Useful as a strongly-typed alternative to {@link #isConnected(String)}.
-	 * @param apiType the apiType e.g. Facebook
-	 * @return true if yes, false otherwise
-	 */
-	public boolean isConnected(Class<?> apiType);
 	
 	/**
 	 * Find the connections the current user has to the provider registered by the given id e.g. 'facebook'.
@@ -70,7 +55,7 @@ public interface ConnectionRepository {
 
 	/**
 	 * Find the connections the current user has to the provider of the given API e.g. Facebook.class.
-	 * Returns the equivalent of {@link #findConnections(String)}, but uses the apiType as the provider key instead of the providerId.
+	 * Semantically equivalent to {@link #findConnections(String)}, but uses the apiType as the provider key instead of the providerId.
 	 * Useful for direct use by application code to obtain parameterized Connection instances e.g. <code>List&lt;Connection&lt;Facebook&gt;&gt;</code>.
 	 * @param <A> the API parameterized type
 	 * @param apiType the API type e.g. Facebook.class or Twitter.class
@@ -99,7 +84,7 @@ public interface ConnectionRepository {
 
 	/**
 	 * Find the connection between the current user and the given provider user.
-	 * Returns the equivalent of {@link #findConnection(ConnectionKey)}, but uses the apiType as the provider key instead of the providerId.
+	 * Semantically equivalent to {@link #findConnection(ConnectionKey)}, but uses the apiType as the provider key instead of the providerId.
 	 * Useful for direct use by application code to obtain a parameterized Connection instance.
 	 * @param <A> the API parameterized type
 	 * @param apiType the API type e.g. Facebook.class or Twitter.class

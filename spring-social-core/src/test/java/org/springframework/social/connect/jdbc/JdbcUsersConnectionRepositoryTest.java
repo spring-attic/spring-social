@@ -166,7 +166,7 @@ public class JdbcUsersConnectionRepositoryTest {
 		MultiValueMap<String, Connection<?>> connections = connectionRepository.findAllConnections();
 		assertEquals(2, connections.size());
 		assertEquals(2, connections.get("facebook").size());
-		assertEquals(1, connections.get("twitter").size());		
+		assertEquals(1, connections.get("twitter").size());
 	}
 
 	@Test
@@ -182,23 +182,6 @@ public class JdbcUsersConnectionRepositoryTest {
 	public void noSuchConnectionFactory() {
 		insertTwitterConnection();
 		connectionRepository.findAllConnections();	
-	}
-	
-	@Test
-	public void isConnectedYes() {
-		insertFacebookConnection();
-		assertTrue(connectionRepository.isConnected("facebook"));
-	}
-
-	@Test
-	public void isConnectedNo() {
-		assertFalse(connectionRepository.isConnected("facebook"));
-	}
-	
-	@Test(expected=IllegalArgumentException.class)
-	public void isConnectedNoSuchConnectionFactory() {
-		insertTwitterConnection();
-		connectionRepository.isConnected("twitter");
 	}
 
 	@Test

@@ -154,6 +154,7 @@ project('spring-social-web') {
         compile ("javax.inject:javax.inject:$javaxInjectVersion")
         compile "org.springframework:spring-web:$springVersion"
         compile "org.springframework:spring-webmvc:$springVersion"
+        compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
         compile project(':spring-social-core')
     }
 }

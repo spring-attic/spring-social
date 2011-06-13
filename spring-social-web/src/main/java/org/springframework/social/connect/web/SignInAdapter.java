@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect.signin.web;
+package org.springframework.social.connect.web;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.social.connect.Connection;
 
 /**
  * Adapter that bridges between a {@link ProviderSignInController} and a application-specific user sign-in service.
@@ -21,11 +26,15 @@ package org.springframework.social.connect.signin.web;
  * @author Craig Walls
  */
 public interface SignInAdapter {
-	
+
 	/**
 	 * Complete a provider sign-in attempt by signing in the local user account with the specified id.
+	 * Called if this SignInAdapter supports users.
 	 * @param userId the local user id
+	 * @param connection the connection
+	 * @param request a reference to the current servlet request
+	 * @param response a reference to the current servlet response
 	 */
-	void signIn(String userId);
-	
+	void signIn(String userId, Connection<?> connection, HttpServletRequest request, HttpServletResponse response);
+
 }

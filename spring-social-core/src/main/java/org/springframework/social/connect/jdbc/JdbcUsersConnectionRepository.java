@@ -33,8 +33,6 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.ConnectionKey;
 import org.springframework.social.connect.ConnectionRepository;
-import org.springframework.social.connect.ConnectionSignUp;
-import org.springframework.social.connect.NoOpConnectionSignUp;
 import org.springframework.social.connect.UsersConnectionRepository;
 
 /**
@@ -52,8 +50,6 @@ public class JdbcUsersConnectionRepository implements UsersConnectionRepository 
 	
 	private String tablePrefix = DEFAULT_TABLE_PREFIX;
 
-	private ConnectionSignUp connectionSignUp = NoOpConnectionSignUp.INSTANCE;
-	
 	public JdbcUsersConnectionRepository(DataSource dataSource, ConnectionFactoryLocator connectionFactoryLocator, TextEncryptor textEncryptor) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.connectionFactoryLocator = connectionFactoryLocator;
@@ -69,30 +65,12 @@ public class JdbcUsersConnectionRepository implements UsersConnectionRepository 
 		this.tablePrefix = tablePrefix;
 	}
 	
-	/**
-	 * The command to execute to create a new local user account in the event no user id could be mapped to a connection.
-	 * Allows for implicitly creating a local user account from connection data during a provider sign-in attempt.
-	 * Defaults to an implementation that simply returns null, indicating explicit sign-up will be required to complete the provider sign-in attempt.
-	 * @see #findUserIdWithConnection(Connection)
-	 */
-	public void setConnectionSignUp(ConnectionSignUp connectionSignUp) {
-		this.connectionSignUp = connectionSignUp;
-	}
-
 	public String findUserIdWithConnection(Connection<?> connection) {
 		try {
 			ConnectionKey key = connection.getKey();
 			return jdbcTemplate.queryForObject("select userId from " + tablePrefix + "UserConnection where providerId = ? and providerUserId = ?", String.class, key.getProviderId(), key.getProviderUserId());
 		} catch (IncorrectResultSizeDataAccessException e) {
-			if (e.getActualSize() == 0) {
-				String userId = connectionSignUp.execute(connection);
-				if (userId != null) {
-					createConnectionRepository(userId).addConnection(connection);
-				}
-				return userId;
-			} else {
-				return null;				
-			}
+			return null;				
 		}
 	}
 
@@ -113,6 +91,9 @@ public class JdbcUsersConnectionRepository implements UsersConnectionRepository 
 	}
 
 	public ConnectionRepository createConnectionRepository(String userId) {
+		if (userId == null) {
+			throw new IllegalArgumentException("userId cannot be null");
+		}
 		return new JdbcConnectionRepository(userId, jdbcTemplate, connectionFactoryLocator, textEncryptor, tablePrefix);
 	}
 

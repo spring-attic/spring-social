@@ -82,14 +82,6 @@ class JdbcConnectionRepository implements ConnectionRepository {
 		return connections;
 	}
 
-	public boolean isConnected(String providerId) {
-		return findConnections(providerId).size() > 0;
-	}
-
-	public boolean isConnected(Class<?> apiType) {
-		return findConnections(apiType).size() > 0;
-	}
-
 	public List<Connection<?>> findConnections(String providerId) {
 		return jdbcTemplate.query(selectFromUserConnection() + " where userId = ? and providerId = ? order by rank", connectionMapper, userId, providerId);
 	}

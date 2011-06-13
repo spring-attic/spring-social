@@ -72,5 +72,9 @@ public final class ConnectionKey {
 		int hashCode = providerId.hashCode();
 		return providerUserId != null ? hashCode + providerUserId.hashCode() : hashCode;
 	}
+	
+	public String toString() {
+		return providerId + ":" + providerUserId;
+	}
 
 }
