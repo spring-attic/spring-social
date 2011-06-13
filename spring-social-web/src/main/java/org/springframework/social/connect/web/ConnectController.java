@@ -69,7 +69,6 @@ public class ConnectController  {
 	
 	/**
 	 * Constructs a ConnectController.
-	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the connection process.
 	 * @param connectionFactoryLocator the locator for {@link ConnectionFactory} instances needed to establish connections
 	 * @param connectionRepository the current user's {@link ConnectionRepository} needed to persist connections; must be a proxy to a request-scoped bean
 	 */

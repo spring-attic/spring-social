@@ -60,13 +60,12 @@ public class ProviderSignInController {
 
 	/**
 	 * Creates a new provider sign-in controller.
-	 * @param applicationUrl the base secure URL for this application, used to construct the callback URL passed to the service providers at the beginning of the sign-in process.
 	 * @param connectionFactoryLocator the locator of {@link ConnectionFactory connection factories} used to support provider sign-in.
-	 * Note: if {@link SignInAdapter#supportsUsers()}, this reference should be a serializable proxy to a singleton-scoped target instance.
+	 * Note: this reference should be a serializable proxy to a singleton-scoped target instance.
 	 * This is because {@link ProviderSignInAttempt} are session-scoped objects that hold ConnectionFactoryLocator references.
 	 * If these references cannot be serialized, NotSerializableExceptions can occur at runtime.
 	 * @param usersConnectionRepository the global store for service provider connections across all users.
-	 * Note: if {@link SignInAdapter#supportsUsers()}, this reference should be a serializable proxy to a singleton-scoped target instance.
+	 * Note: this reference should be a serializable proxy to a singleton-scoped target instance.
 	 * @param signInAdapter handles user sign-in
 	 */
 	@Inject
@@ -110,7 +109,7 @@ public class ProviderSignInController {
 	 * Process the authentication callback from an OAuth 1 service provider.
 	 * Called after the member authorizes the authentication, generally done once by having he or she click "Allow" in their web browser at the provider's site.
 	 * Handles the provider sign-in callback by first determining if a local user account is associated with the connected provider account.
-	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, HttpServletResponse)}.
+	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, HttpServletRequest, HttpServletResponse)}.
 	 * If not, redirects the user to a signup page to create a new account with {@link ProviderSignInAttempt} context exposed in the HttpSession.
 	 * @see ProviderSignInAttempt
 	 * @see ProviderSignInUtils 
@@ -126,7 +125,7 @@ public class ProviderSignInController {
 	 * Process the authentication callback from an OAuth 2 service provider.
 	 * Called after the user authorizes the authentication, generally done once by having he or she click "Allow" in their web browser at the provider's site.
 	 * Handles the provider sign-in callback by first determining if a local user account is associated with the connected provider account.
-	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, HttpServletResponse)}.
+	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, HttpServletRequest, HttpServletResponse)}.
 	 * If not, redirects the user to a signup page to create a new account with {@link ProviderSignInAttempt} context exposed in the HttpSession.
 	 * @see ProviderSignInAttempt
 	 * @see ProviderSignInUtils 
