@@ -207,11 +207,11 @@ public interface OAuth2Operations {
 				Here, FacebookConnectionFactory is a subclass of OAuth2ConnectionFactory:
 				<programlisting language="java"><![CDATA[
 FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory("clientId", "clientSecret");
-OAuth2Operations oauth2Operations = connectionFactory.getOAuth2Operations();
-String authorizeUrl = oauth2Operations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters("callbackUrl"));
+OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
+String authorizeUrl = oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters("callbackUrl"));
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the authorizationCode parameter:
-AccessGrant accessGrant = oauth2Operations.exchangeForAccess(authorizationCode, "callbackUrl");
+AccessGrant accessGrant = oauthOperations.exchangeForAccess(authorizationCode, "callbackUrl");
 Connection<Facebook> connection = connectionFactory.createConnection(accessGrant);]]>
 				</programlisting>
 			</para>
@@ -221,8 +221,8 @@ Connection<Facebook> connection = connectionFactory.createConnection(accessGrant
 				This flow is appropriate for clients incapable of keeping the access grant credentials confidential, such as a mobile device or JavaScript-based user agent.
 				<programlisting language="java"><![CDATA[
 FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory("clientId", "clientSecret");
-OAuth2Operations oauth2Operations = connectionFactory.getOAuth2Operations();
-String authorizeUrl = oauth2Operations.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, new OAuth2Parameters("callbackUrl"));
+OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
+String authorizeUrl = oauthOperations.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, new OAuth2Parameters("callbackUrl"));
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the access_token parameter:
 AccessGrant accessGrant = new AccessGrant(accessToken);
@@ -328,12 +328,12 @@ public interface OAuth1Operations {
 				Here, TwitterConnectionFactory is a subclass of OAuth1ConnectionFactory:
 				<programlisting language="java"><![CDATA[
 TwitterConnectionFactory connectionFactory = new TwitterConnectionFactory("consumerKey", "consumerSecret");
-OAuth1Operations oauth1Operations = connectionFactory.getOAuth1Operations();
-String requestToken = oauth1Operations.fetchRequestToken("callbackUrl");
-String authorizeUrl = oauth1Operations.buildAuthorizeUrl(requestToken, OAuth1Parameters.NONE);
+OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
+String requestToken = oauthOperations.fetchRequestToken("callbackUrl");
+String authorizeUrl = oauthOperations.buildAuthorizeUrl(requestToken, OAuth1Parameters.NONE);
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the oauth_token and oauth_verifier parameters:
-OAuthToken accessToken = oauth1Operations.exchangeForAccessToken(new AuthorizedRequestToken(oauthToken, oauthVerifier));
+OAuthToken accessToken = oauthOperations.exchangeForAccessToken(new AuthorizedRequestToken(oauthToken, oauthVerifier));
 Connection<Twitter> connection = connectionFactory.createConnection(accessToken);]]>
 				</programlisting>
 			</para>
@@ -387,25 +387,25 @@ ConnectionFactory<Facebook> connectionFactory = locator.getConnectionFactory(Fac
 		<programlisting language="java"><![CDATA[
 public interface ConnectionRepository {
 
-    MultiValueMap<String, Connection<?>> findConnections();
+    MultiValueMap<String, Connection<?>> findAllConnections();
 	
-    List<Connection<?>> findConnectionsToProvider(String providerId);
+    List<Connection<?>> findConnections(String providerId);
 
-    MultiValueMap<String, Connection<?>> findConnectionsForUsers(MultiValueMap<String, String> providerUserIds);
+    <A> List<Connection<A>> findConnections(Class<A> apiType);
+
+    MultiValueMap<String, Connection<?>> findConnectionsToUsers(MultiValueMap<String, String> providerUserIds);
 
     Connection<?> findConnection(ConnectionKey connectionKey);
 
-    <A> Connection<A> findPrimaryConnectionToApi(Class<A> apiType);
+    <A> Connection<A> findConnection(Class<A> apiType, String providerUserId);	
 
-    <A> Connection<A> findConnectionToApiForUser(Class<A> apiType, String providerUserId);	
-
-    <A> List<Connection<A>> findConnectionsToApi(Class<A> apiType);
+    <A> Connection<A> findPrimaryConnection(Class<A> apiType);
 	
     void addConnection(Connection<?> connection);
 
     void updateConnection(Connection<?> connection);
 
-    void removeConnectionsToProvider(String providerId);
+    void removeConnections(String providerId);
 
     void removeConnection(ConnectionKey connectionKey);
 
@@ -462,7 +462,7 @@ UsersConnectionRepository usersConnectionRepository =
 ConnectionRepository repository = usersConnectionRepository.createConnectionRepository("kdonald");
 
 // find kdonald's primary Facebook connection
-Connection<Facebook> connection = repository.findPrimaryConnectionToApi(Facebook.class);]]>
+Connection<Facebook> connection = repository.findPrimaryConnection(Facebook.class);]]>
 			</programlisting>
 		</section>
 	</section>

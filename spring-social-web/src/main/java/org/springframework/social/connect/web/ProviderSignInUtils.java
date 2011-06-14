@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect.signin.web;
+package org.springframework.social.connect.web;
 
 import org.springframework.social.connect.Connection;
 import org.springframework.web.context.request.RequestAttributes;
@@ -44,10 +44,10 @@ public class ProviderSignInUtils {
 	 * Does nothing if no provider sign-in was attempted for the current user session (is safe to call in that case).
 	 * @param request the current request attributes, used to extract sign-in attempt information from the current user session
 	 */
-	public static void handlePostSignUp(RequestAttributes request) {
+	public static void handlePostSignUp(String userId, RequestAttributes request) {
 		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
 		if (signInAttempt != null) {
-			signInAttempt.addConnection();
+			signInAttempt.addConnection(userId);
 			request.removeAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
 		}		
 	}

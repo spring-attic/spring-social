@@ -135,14 +135,30 @@ public class OAuth1Template implements OAuth1Operations {
 
 	// subclassing hooks
 
+	/**
+	 * Exposes the consumer key to be read by subclasses.
+	 * This may be useful when overriding {@link #getCustomAuthorizationParameters()} and the consumer key is required in the authorization request.
+	 */
 	protected String getConsumerKey() {
 		return consumerKey;
 	}
 	
-	protected OAuthToken createAccessToken(String accessToken, String secret, MultiValueMap<String, String> body) {
-		return new OAuthToken(accessToken, secret);
+	/**
+	 * Creates an {@link OAuthToken} given the response from the request token or access token exchange with the provider.
+	 * May be overridden to create a custom {@link OAuthToken}.
+	 * @param tokenValue the token value received from the provider.
+	 * @param tokenSecret the token secret received from the provider.
+	 * @param response all parameters from the response received in the request/access token exchange.
+	 * @return an {@link OAuthToken}
+	 */
+	protected OAuthToken createOAuthToken(String tokenValue, String tokenSecret, MultiValueMap<String, String> response) {
+		return new OAuthToken(tokenValue, tokenSecret);
 	}
 
+	/**
+	 * Returns a map of custom authorization parameters.
+	 * May be overridden to return any provider-specific parameters that must be passed in the request to the authorization URL.
+	 */
 	protected MultiValueMap<String, String> getCustomAuthorizationParameters() {
 		return null;
 	}
@@ -178,7 +194,7 @@ public class OAuth1Template implements OAuth1Operations {
 		headers.add("Authorization", buildAuthorizationHeaderValue(tokenUrl, tokenParameters, additionalParameters, tokenSecret));
 		ResponseEntity<MultiValueMap> response = restTemplate.exchange(tokenUrl, HttpMethod.POST, new HttpEntity<MultiValueMap<String, String>>(additionalParameters, headers), MultiValueMap.class);
 		MultiValueMap<String, String> body = response.getBody();
-		return createAccessToken(body.getFirst("oauth_token"), body.getFirst("oauth_token_secret"), body);
+		return createOAuthToken(body.getFirst("oauth_token"), body.getFirst("oauth_token_secret"), body);
 	}
 
 	private String buildAuthorizationHeaderValue(URI tokenUrl, Map<String, String> tokenParameters, MultiValueMap<String, String> additionalParameters, String tokenSecret) {

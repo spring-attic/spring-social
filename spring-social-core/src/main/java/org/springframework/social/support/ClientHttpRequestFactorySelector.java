@@ -20,8 +20,10 @@ import java.net.Proxy;
 import java.util.Properties;
 
 import org.apache.http.HttpHost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.HttpProtocolParams;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.ClassUtils;
@@ -63,7 +65,11 @@ public class ClientHttpRequestFactorySelector {
 	private static class HttpComponentsClientRequestFactoryCreator {
 		
 		public static ClientHttpRequestFactory createRequestFactory(String proxyHost, int proxyPort) {
-			HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+			HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory() {
+				@Override
+				protected void postProcessHttpRequest(HttpUriRequest request) {
+					HttpProtocolParams.setUseExpectContinue(request.getParams(), false);				}
+			};
 			if (proxyHost != null) {
 				DefaultHttpClient httpClient = new DefaultHttpClient();
 				HttpHost proxy = new HttpHost(proxyHost, proxyPort);

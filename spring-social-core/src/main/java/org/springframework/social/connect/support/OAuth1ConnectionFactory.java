@@ -35,7 +35,7 @@ public class OAuth1ConnectionFactory<A> extends ConnectionFactory<A> {
 	 * Create a {@link OAuth1ConnectionFactory}.
 	 * @param providerId the provider id e.g. "twitter"
 	 * @param serviceProvider the ServiceProvider model for conducting the authorization flow and obtaining a native service API instance.
-	 * @param apiAdapter the ApiAdapter for mapping the provider-specific service API model to the uniform ServiceProviderConnection interface.
+	 * @param apiAdapter the ApiAdapter for mapping the provider-specific service API model to the uniform {@link Connection} interface.
 	 */
 	public OAuth1ConnectionFactory(String providerId, OAuth1ServiceProvider<A> serviceProvider, ApiAdapter<A> apiAdapter) {
 		super(providerId, serviceProvider, apiAdapter);
@@ -60,7 +60,7 @@ public class OAuth1ConnectionFactory<A> extends ConnectionFactory<A> {
 	}
 	
 	/**
-	 * Create a OAuth1-based ServiceProviderConnection from the connection data.
+	 * Create a OAuth1-based {@link Connection} from the connection data.
 	 */
 	public Connection<A> createConnection(ConnectionData data) {
 		return new OAuth1Connection<A>(data, getOAuth1ServiceProvider(), getApiAdapter());

@@ -23,7 +23,7 @@ import java.io.Serializable;
  * @author Keith Donald
  */
 @SuppressWarnings("serial")
-public final class OAuthToken implements Serializable {
+public class OAuthToken implements Serializable {
 
 	private final String value;
 	

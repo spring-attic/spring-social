@@ -121,6 +121,12 @@ public class OAuth2Template implements OAuth2Operations {
 
 	// subclassing hooks
 	
+	/**
+	 * Creates the {@link RestTemplate} used to communicate with the provider's OAuth 2 API.
+	 * This implementation creates a RestTemplate with a minimal set of HTTP message converters ({@link FormHttpMessageConverter} and {@link MappingJacksonHttpMessageConverter}).
+	 * May be overridden to customize how the RestTemplate is created.
+	 * For example, if the provider returns data in some format other than JSON for form-encoded, you might override to register an appropriate message converter. 
+	 */
 	protected RestTemplate createRestTemplate() {
 		RestTemplate restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>(2);
@@ -130,12 +136,33 @@ public class OAuth2Template implements OAuth2Operations {
 		return restTemplate;
 	}
 
+	/**
+	 * Posts the request for an access grant to the provider.
+	 * The default implementation uses RestTemplate to request the access token and expects a JSON response to be bound to a Map. The information in the Map will be used to create an {@link AccessGrant}.
+	 * Since the OAuth 2 specification indicates that an access token response should be in JSON format, there's often no need to override this method.
+	 * If all you need to do is capture provider-specific data in the response, you should override createAccessGrant() instead.
+	 * However, in the event of a provider whose access token response is non-JSON, you may need to override this method to request that the response be bound to something other than a Map.
+	 * For example, if the access token response is given as form-encoded, this method should be overridden to call RestTemplate.postForObject() asking for the response to be bound to a MultiValueMap (whose contents can then be used to create an AccessGrant).
+	 * @param accessTokenUrl the URL of the provider's access token endpoint.
+	 * @param parameters the parameters to post to the access token endpoint.
+	 * @return the access grant.
+	 */
 	@SuppressWarnings("unchecked")
 	protected AccessGrant postForAccessGrant(String accessTokenUrl, MultiValueMap<String, String> parameters) {
 		return extractAccessGrant(restTemplate.postForObject(accessTokenUrl, parameters, Map.class));
 	}
 	
-	protected AccessGrant createAccessGrant(String accessToken, String scope, String refreshToken, Integer expiresIn, Map<String, Object> result) {
+	/**
+	 * Creates an {@link AccessGrant} given the response from the access token exchange with the provider.
+	 * May be overridden to create a custom AccessGrant that captures provider-specific information from the access token response. 
+	 * @param accessToken the access token value received from the provider
+	 * @param scope the scope of the access token
+	 * @param refreshToken a refresh token value received from the provider
+	 * @param expiresIn the time (in seconds) remaining before the access token expires.
+	 * @param response all parameters from the response received in the access token exchange.
+	 * @return an {@link AccessGrant}
+	 */
+	protected AccessGrant createAccessGrant(String accessToken, String scope, String refreshToken, Integer expiresIn, Map<String, Object> response) {
 		return new AccessGrant(accessToken, scope, refreshToken, expiresIn);
 	}
 		
@@ -185,5 +212,5 @@ public class OAuth2Template implements OAuth2Operations {
 	private AccessGrant extractAccessGrant(Map<String, Object> result) {
 		return createAccessGrant((String) result.get("access_token"), (String) result.get("scope"), (String) result.get("refresh_token"), (Integer) result.get("expires_in"), result);
 	}
-	
+
 }

@@ -36,7 +36,7 @@ public interface ConnectionFactoryLocator {
 	 * Lookup a ConnectionFactory by apiType; for example, FacebookApi.class.
 	 * The returned factory can be used to create connections to the provider.
 	 * Primarily used in support of connection restoration requested by application code.
-	 * @see ConnectionRepository#findPrimaryConnectionToApi(Class)
+	 * @see ConnectionRepository#getPrimaryConnection(Class)
 	 */
 	<A> ConnectionFactory<A> getConnectionFactory(Class<A> apiType);
 

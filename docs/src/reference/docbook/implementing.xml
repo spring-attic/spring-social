@@ -151,7 +151,7 @@
 							For example, Twitter's API provides access to "status timelines", "searches", "lists", "direct messages", "friends", and "users".
 							Rather than add all operations across these resources to a single flat "Twitter" interface, the Twitter interface is organized hierarchically:
 							<programlisting language="java"><![CDATA[
-public interface Twitter {
+public interface Twitter extends ApiBinding {
 	
     DirectMessageOperations directMessageOperations();
 
@@ -224,27 +224,31 @@ public FacebookTemplate(String accessToken) { ... }]]>
 				For OAuth2, it is a lot simpler, but does still vary across the various drafts of the OAuth2 specification.
 			</para>
 			<para>
-				To encapsulate this complexity, for each authorization protocol Spring Social provides a ProtectedResourceClientFactory you may use to
+				To encapsulate this complexity, for each authorization protocol Spring Social provides a ApiTemplate base class you may extend from to
 				construct a pre-configured RestTemplate instance that performs the request signing for you. For OAuth1:
 				<programlisting language="java"><![CDATA[
-public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
-    this.restTemplate = ProtectedResourceClientFactory.create(consumerKey, consumerSecret, accessToken, accessTokenSecret);
+public class TwitterTemplate extends AbstractOAuth1ApiBinding {
+    public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+        super(consumerKey, consumerSecret, accessToken, accessTokenSecret);
+    }
 }]]>			</programlisting>
 			</para>
 			<para>
 				An OAuth2 example:
 				<programlisting language="java"><![CDATA[
-public FacebookTemplate(String accessToken) {
-    this.restTemplate = ProtectedResourceClientFactory.draft10(accessToken);
+public class FacebookTemplate extends AbstractOAuth2ApiBinding {
+    public FacebookTemplate(String accessToken) {
+        super(accessToken);
+    }
 }]]>
 				</programlisting>
 			</para>
 			<para>
-				Once the REST client has been configured as shown above, you simply use it to implement the various API operations.
+				Once configured as shown above, you simply implement call getRestTemplate() and implement the various API operations.
 				The existing Spring Social client modules all invoke their RestTemplate instances in a standard manner:
 				<programlisting language="java"><![CDATA[
 public TwitterProfile getUserProfile() {
-    return restTemplate.getForObject(buildUri("account/verify_credentials.json"), TwitterProfile.class);
+    return getRestTemplate().getForObject(buildUri("account/verify_credentials.json"), TwitterProfile.class);
 }]]>
 				</programlisting>
 			</para>
@@ -253,7 +257,7 @@ public TwitterProfile getUserProfile() {
 				This ensures we always properly encode client data submitted in URI query parameters, such as screen_name below:
 				<programlisting language="java"><![CDATA[
 public TwitterProfile getUserProfile(String screenName) {
-    return restTemplate.getForObject(buildUri("users/show.json", Collections.singletonMap("screen_name", screenName)), TwitterProfile.class);
+    return getRestTemplate().getForObject(buildUri("users/show.json", Collections.singletonMap("screen_name", screenName)), TwitterProfile.class);
 }]]>
 				</programlisting>
 			</para>

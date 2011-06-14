@@ -16,24 +16,25 @@
 package org.springframework.social.connect;
 
 /**
- * Thrown by a {@link ConnectionRepository} when attempting to add a {@link Connection} and a connection already exists with the given key.
+ * Thrown by a {@link ConnectionRepository} when attempting to fetch a "primary" connection and the user is not connected to the provider in question.
  * @author Keith Donald
- * @see ConnectionRepository#addConnection(Connection)
+ * @see ConnectionRepository#getPrimaryConnection(Class)
  */
 @SuppressWarnings("serial")
-public final class DuplicateConnectionException extends ConnectionRepositoryException {
-	
-	private final ConnectionKey connectionKey;
+public class NotConnectedException extends ConnectionRepositoryException {
 
-	public DuplicateConnectionException(ConnectionKey connectionKey) {
-		super("The connection with key " + connectionKey + " already exists");
-		this.connectionKey = connectionKey;
+	private String providerId;
+
+	public NotConnectedException(String providerId) {
+		super("Not connected to provider '" + providerId + "'");
+		this.providerId = providerId;
 	}
 
 	/**
-	 * The connection key that already exists.
+	 * The id of the provider the current user is not connected to.
 	 */
-	public ConnectionKey getConnectionKey() {
-		return connectionKey;
+	public String getProviderId() {
+		return providerId;
 	}
+	
 }

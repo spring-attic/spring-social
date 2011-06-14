@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect.signin.web;
+package org.springframework.social;
 
 /**
- * Strategy interface for authenticating users to an application given their account ID.
- * An application should provide their own implementation of this interface for use by ProviderSignInControllers.
+ * Indicates that the requested provider API resource could not be found.
  * @author Craig Walls
  */
-public interface SignInService {
+@SuppressWarnings("serial")
+public class ResourceNotFoundException extends ApiException {
 	
-	/**
-	 * Sign in the user with the specified accountId.
-	 * @param localUserId the user's local application user id
-	 */
-	void signIn(String localUserId);
+	public ResourceNotFoundException(String message) {
+		super(message);
+	}
+
+	public ResourceNotFoundException(String message, Throwable cause) {
+		super(message, cause);
+	}
 	
 }

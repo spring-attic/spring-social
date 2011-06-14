@@ -40,6 +40,7 @@ import org.springframework.social.connect.ConnectionKey;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.DuplicateConnectionException;
 import org.springframework.social.connect.NoSuchConnectionException;
+import org.springframework.social.connect.NotConnectedException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -64,7 +65,7 @@ class JdbcConnectionRepository implements ConnectionRepository {
 		this.tablePrefix = tablePrefix;
 	}
 	
-	public MultiValueMap<String, Connection<?>> findConnections() {
+	public MultiValueMap<String, Connection<?>> findAllConnections() {
 		List<Connection<?>> resultList = jdbcTemplate.query(selectFromUserConnection() + " where userId = ? order by providerId, rank", connectionMapper, userId);
 		MultiValueMap<String, Connection<?>> connections = new LinkedMultiValueMap<String, Connection<?>>();
 		Set<String> registeredProviderIds = connectionFactoryLocator.registeredProviderIds();
@@ -81,11 +82,17 @@ class JdbcConnectionRepository implements ConnectionRepository {
 		return connections;
 	}
 
-	public List<Connection<?>> findConnectionsToProvider(String providerId) {
+	public List<Connection<?>> findConnections(String providerId) {
 		return jdbcTemplate.query(selectFromUserConnection() + " where userId = ? and providerId = ? order by rank", connectionMapper, userId, providerId);
 	}
 
-	public MultiValueMap<String, Connection<?>> findConnectionsForUsers(MultiValueMap<String, String> providerUsers) {
+	@SuppressWarnings("unchecked")
+	public <A> List<Connection<A>> findConnections(Class<A> apiType) {
+		List<?> connections = findConnections(getProviderId(apiType));
+		return (List<Connection<A>>) connections;
+	}
+	
+	public MultiValueMap<String, Connection<?>> findConnectionsToUsers(MultiValueMap<String, String> providerUsers) {
 		if (providerUsers.isEmpty()) {
 			throw new IllegalArgumentException("Unable to execute find: no providerUsers provided");
 		}
@@ -122,7 +129,7 @@ class JdbcConnectionRepository implements ConnectionRepository {
 		return connectionsForUsers;
 	}
 
-	public Connection<?> findConnection(ConnectionKey connectionKey) {
+	public Connection<?> getConnection(ConnectionKey connectionKey) {
 		try {
 			return jdbcTemplate.queryForObject(selectFromUserConnection() + " where userId = ? and providerId = ? and providerUserId = ?", connectionMapper, userId, connectionKey.getProviderId(), connectionKey.getProviderUserId());
 		} catch (EmptyResultDataAccessException e) {
@@ -131,27 +138,27 @@ class JdbcConnectionRepository implements ConnectionRepository {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <S> Connection<S> findPrimaryConnectionToApi(Class<S> apiType) {
-		try {
-			String providerId = getProviderId(apiType);
-			return (Connection<S>) jdbcTemplate.queryForObject(selectFromUserConnection() + " where userId = ? and providerId = ? and rank = 1", connectionMapper, userId, providerId);
-		} catch (EmptyResultDataAccessException e) {
-			return null;
-		}
+	public <A> Connection<A> getConnection(Class<A> apiType, String providerUserId) {
+		String providerId = getProviderId(apiType);
+		return (Connection<A>) getConnection(new ConnectionKey(providerId, providerUserId));
 	}
 
 	@SuppressWarnings("unchecked")
-	public <S> List<Connection<S>> findConnectionsToApi(Class<S> apiType) {
-		List<?> connections = findConnectionsToProvider(getProviderId(apiType));
-		return (List<Connection<S>>) connections;
+	public <A> Connection<A> getPrimaryConnection(Class<A> apiType) {
+		String providerId = getProviderId(apiType);
+		Connection<A> connection = (Connection<A>) findPrimaryConnection(providerId);
+		if (connection == null) {
+			throw new NotConnectedException(providerId);
+		}
+		return connection;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <A> Connection<A> findPrimaryConnection(Class<A> apiType) {
+		String providerId = getProviderId(apiType);
+		return (Connection<A>) findPrimaryConnection(providerId);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public <S> Connection<S> findConnectionToApiForUser(Class<S> apiType, String providerUserId) {
-		String providerId = getProviderId(apiType);
-		return (Connection<S>) findConnection(new ConnectionKey(providerId, providerUserId));
-	}
-
 	@Transactional
 	public void addConnection(Connection<?> connection) {
 		try {
@@ -170,7 +177,7 @@ class JdbcConnectionRepository implements ConnectionRepository {
 				data.getDisplayName(), data.getProfileUrl(), data.getImageUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime(), userId, data.getProviderId(), data.getProviderUserId());
 	}
 
-	public void removeConnectionsToProvider(String providerId) {
+	public void removeConnections(String providerId) {
 		jdbcTemplate.update("delete from " + tablePrefix + "UserConnection where userId = ? and providerId = ?", userId, providerId);
 	}
 
@@ -184,6 +191,14 @@ class JdbcConnectionRepository implements ConnectionRepository {
 		return "select userId, providerId, providerUserId, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime from " + tablePrefix + "UserConnection";
 	}
 	
+	private Connection<?> findPrimaryConnection(String providerId) {
+		List<Connection<?>> connections = jdbcTemplate.query(selectFromUserConnection() + " where userId = ? and providerId = ? and rank = 1", connectionMapper, userId, providerId);
+		if (connections.size() > 0) {
+			return connections.get(0);
+		} else {
+			return null;
+		}		
+	}
 	
 	private final ServiceProviderConnectionMapper connectionMapper = new ServiceProviderConnectionMapper();
 	
@@ -210,7 +225,7 @@ class JdbcConnectionRepository implements ConnectionRepository {
 		
 	}
 
-	private <S> String getProviderId(Class<S> apiType) {
+	private <A> String getProviderId(Class<A> apiType) {
 		return connectionFactoryLocator.getConnectionFactory(apiType).getProviderId();
 	}
 	

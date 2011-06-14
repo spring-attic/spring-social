@@ -30,7 +30,6 @@ public interface UsersConnectionRepository {
 	 * Find the id of the <i>single</i> user that has the given {@link Connection}.
 	 * Used to support the ProviderSignIn scenario where the user id returned is used to sign a local application user in using his or her provider account.
 	 * Returns null if there is not exactly one local user connected to the provider user.
-	 * May never return null if this method implicitly creates a user account from the connection if no such user account already exists.
 	 * @param connection the service provider connection resulting from the provider sign-in attempt
 	 */
 	String findUserIdWithConnection(Connection<?> connection);

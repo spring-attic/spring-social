@@ -16,18 +16,17 @@
 package org.springframework.social;
 
 /**
- * Indicates an HTTP 403 (Forbidden) response from making a call to a service provider API.
- * In the case of Twitter, this often means that you are attempting to post a duplicate tweet or have reached an update limit.
+ * Indicates that an error occurred on the provider's server.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class OperationNotPermittedException extends ApiException {
+public class ProviderServerErrorException extends ApiException {
 
-	public OperationNotPermittedException(String message) {
+	public ProviderServerErrorException(String message) {
 		super(message);
 	}
 
-	public OperationNotPermittedException(String message, Throwable cause) {
+	public ProviderServerErrorException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

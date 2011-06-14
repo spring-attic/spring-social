@@ -16,24 +16,18 @@
 package org.springframework.social.connect;
 
 /**
- * Thrown by a {@link ConnectionRepository} when attempting to add a {@link Connection} and a connection already exists with the given key.
+ * A command that signs up a new user in the event no user id could be mapped from a {@link Connection}.
+ * Allows for implicitly creating a local user profile from connection data during a provider sign-in attempt.
+ * @see UsersConnectionRepository#findUserIdWithConnection(Connection)
  * @author Keith Donald
- * @see ConnectionRepository#addConnection(Connection)
  */
-@SuppressWarnings("serial")
-public final class DuplicateConnectionException extends ConnectionRepositoryException {
-	
-	private final ConnectionKey connectionKey;
-
-	public DuplicateConnectionException(ConnectionKey connectionKey) {
-		super("The connection with key " + connectionKey + " already exists");
-		this.connectionKey = connectionKey;
-	}
+public interface ConnectionSignUp {
 
 	/**
-	 * The connection key that already exists.
+	 * Sign up a new user of the application from the connection.
+	 * @param connection the connection
+	 * @return the new user id
 	 */
-	public ConnectionKey getConnectionKey() {
-		return connectionKey;
-	}
+	String execute(Connection<?> connection);
+
 }

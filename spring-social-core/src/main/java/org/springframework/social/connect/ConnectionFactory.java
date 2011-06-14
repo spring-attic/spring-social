@@ -18,7 +18,7 @@ package org.springframework.social.connect;
 import org.springframework.social.ServiceProvider;
 
 /**
- * Base abstraction for factories that construct ServiceProviderConnection instances.
+ * Base abstraction for factories that construct service provider {@link Connection} instances.
  * Encapsulates the differences and knowledge of specific connection implementations, for example, the difference between OAuth1 and OAuth2 based connections. 
  * @author Keith Donald
  * @param <A> the connection service API type
@@ -35,7 +35,7 @@ public abstract class ConnectionFactory<A> {
 	 * Creates a new ConnectionFactory.
 	 * @param providerId the assigned, unique id of the provider this factory creates connections to (used when indexing this factory in a registry)
 	 * @param serviceProvider the model for the ServiceProvider used to conduct the connection authorization/refresh flow and obtain a native service API instance
-	 * @param apiAdapter the adapter that maps common operations exposed by the ServiceProvider's API to the uniform ServiceProviderConnection model
+	 * @param apiAdapter the adapter that maps common operations exposed by the ServiceProvider's API to the uniform {@link Connection} model
 	 */
 	public ConnectionFactory(String providerId, ServiceProvider<A> serviceProvider, ApiAdapter<A> apiAdapter) {
 		this.providerId = providerId;
@@ -47,7 +47,7 @@ public abstract class ConnectionFactory<A> {
 	
 	/**
 	 * The unique id of the provider this factory creates connections to.
-	 * Used to index this ServiceProviderConnetionFactory in a registry to support dynamic lookup operations.
+	 * Used to index this {@link ConnectionFactory} in a registry to support dynamic lookup operations.
 	 * @see ConnectionFactoryLocator#getConnectionFactory(String).
 	 */
 	public String getProviderId() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,20 @@
 package org.springframework.social;
 
 /**
- * Indicates an HTTP 403 (Forbidden) response from making a call to a service provider API.
- * In the case of Twitter, this often means that you are attempting to post a duplicate tweet or have reached an update limit.
+ * Indicates the client is not authorized to invoke the API.
+ * This can occur:
+ * - when invoking an API operation with a revoked or expired access token
+ * - when invoking an operation that requires authorization without providing authorization credentials.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class OperationNotPermittedException extends ApiException {
+public class NotAuthorizedException extends ApiException {
 
-	public OperationNotPermittedException(String message) {
+	public NotAuthorizedException(String message) {
 		super(message);
 	}
 
-	public OperationNotPermittedException(String message, Throwable cause) {
+	public NotAuthorizedException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
