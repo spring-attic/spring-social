@@ -164,13 +164,18 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		String explicitAuthProviderId = getRequestedProviderId(request);
 
 		if (explicitAuthProviderId != null) {
-			// auth explicitly required
-			SocialAuthenticationService<?> authService = authServiceLocator.getAuthenticationService(explicitAuthProviderId);
-			if (authService.getAuthenticationMode() == AuthenticationMode.IMPLICIT) {
-				// unknown service id
+			if (!authServiceLocator.registeredAuthenticationProviderIds().contains(explicitAuthProviderId)) {
+				// simply ignore unknown id and let chain handle request
 				return null;
+			} else {
+				// auth explicitly required
+				SocialAuthenticationService<?> authService = authServiceLocator.getAuthenticationService(explicitAuthProviderId);
+				if (authService.getAuthenticationMode() == AuthenticationMode.IMPLICIT) {
+					// unknown service id
+					return null;
+				}
+				return attemptAuthService(authService, AuthenticationMode.EXPLICIT, request, response);
 			}
-			return attemptAuthService(authService, AuthenticationMode.EXPLICIT, request, response);
 		} else if (!isAuthenticated()) {
 			// implicitly only if not logged in already
 
