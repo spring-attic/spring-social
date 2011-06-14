@@ -19,6 +19,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -58,6 +59,8 @@ public class ProviderSignInController {
 
 	private final ConnectSupport webSupport = new ConnectSupport();
 
+	private String baseCallbackUrl;
+
 	/**
 	 * Creates a new provider sign-in controller.
 	 * @param connectionFactoryLocator the locator of {@link ConnectionFactory connection factories} used to support provider sign-in.
@@ -95,6 +98,16 @@ public class ProviderSignInController {
 	}
 
 	/**
+	 * Sets the application's base URL.
+	 * By default, the callback URL passed to the service providers at the beginning of the connection process is determined from the request made to ProviderSignInController.
+	 * If applicationUrl is set, it will be used to construct the callback URL instead of determining the callback URL from the request.
+	 * @param applicationUrl
+	 */
+	public void setApplicationUrl(String applicationUrl) {
+		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
+	}
+	
+	/**
 	 * Process a sign-in form submission by commencing the process of establishing a connection to the provider on behalf of the user.
 	 * For OAuth1, fetches a new request token from the provider, temporarily stores it in the session, then redirects the user to the provider's site for authentication authorization.
 	 * For OAuth2, redirects the user to the provider's site for authentication authorization.
@@ -102,7 +115,8 @@ public class ProviderSignInController {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
 	public RedirectView signIn(@PathVariable String providerId, NativeWebRequest request) {
 		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
-		return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request));
+		String callbackUrl = baseCallbackUrl != null ? baseCallbackUrl + "/" + providerId : null;
+		return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request, callbackUrl));
 	}
 
 	/**
@@ -133,7 +147,8 @@ public class ProviderSignInController {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public RedirectView oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, NativeWebRequest request, HttpServletResponse response) {
 		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
-		Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
+		String callbackUrl = baseCallbackUrl != null ? baseCallbackUrl + "/" + providerId : null;
+		Connection<?> connection = webSupport.completeConnection(connectionFactory, request, callbackUrl);
 		return handleSignIn(connection, request, response);
 	}
 
