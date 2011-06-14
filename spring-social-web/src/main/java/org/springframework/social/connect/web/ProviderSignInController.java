@@ -81,7 +81,7 @@ public class ProviderSignInController {
 	/**
 	 * Sets the URL to redirect the user to if no local user account can be mapped when signing in using a provider.
 	 * Defaults to "/signup". 
-	 * @param signUpUrl the URL of the sign up page.
+	 * @param signUpUrl the signUp URL
 	 */
 	public void setSignUpUrl(String signUpUrl) {
 		this.signUpUrl = signUpUrl; 
@@ -97,10 +97,13 @@ public class ProviderSignInController {
 	}
 
 	/**
-	 * Sets the application's base URL.
-	 * By default, the callback URL passed to the service providers at the beginning of the connection process is determined from the request made to ProviderSignInController.
-	 * If the request goes through an load balancer or proxy, the URL's scheme, host, and/or port may point at an internal server which is not appropriate as an external callback URL.
-	 * For those cases you can set application URL to the base external URL for the application and it will be used to construct the callback URL instead of determining the callback URL from the request.
+	 * Configures the base secure URL for the application this controller is being used in e.g. <code>https://myapp.com</code>. Defaults to null.
+	 * If specified, will be used to generate OAuth callback URLs.
+	 * If not specified, OAuth callback URLs are generated from {@link HttpServletRequest HttpServletRequests}. 
+	 * You may wish to set this property if requests into your application flow through a proxy to your application server.
+	 * In this case, the HttpServletRequest URI may contain a scheme, host, and/or port value that points to an internal server not appropriate for an external callback URL.
+	 * If you have this problem, you can set this property to the base external URL for your application and it will be used to construct the callback URL instead.
+	 * @param applicationUrl the application URL value
 	 */
 	public void setApplicationUrl(URL applicationUrl) {
 		webSupport.setApplicationUrl(applicationUrl);
