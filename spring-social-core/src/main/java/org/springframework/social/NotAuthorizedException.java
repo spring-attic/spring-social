@@ -16,8 +16,10 @@
 package org.springframework.social;
 
 /**
- * Indicates a security-related error occurred during the invocation of a service provider API operation.
- * For example, updating a Facebook user's status with a revoked/expired access token or when invoking an operation that require authorization without providing credentials.
+ * Indicates the client is not authorized to invoke the API.
+ * This can occur:
+ * - when invoking an API operation with a revoked or expired access token
+ * - when invoking an operation that requires authorization without providing authorization credentials.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
