@@ -16,17 +16,17 @@
 package org.springframework.social;
 
 /**
- * Indicates that the requested provider API resource could not be found.
+ * Indicates that an unexpected error occurred while consuming a provider API.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class ResourceNotFoundException extends ApiException {
-	
-	public ResourceNotFoundException(String message) {
+public class UncategorizedApiException extends ApiException {
+
+	public UncategorizedApiException(String message) {
 		super(message);
 	}
 
-	public ResourceNotFoundException(String message, Throwable cause) {
+	public UncategorizedApiException(String message, Throwable cause) {
 		super(message, cause);
 	}
 	

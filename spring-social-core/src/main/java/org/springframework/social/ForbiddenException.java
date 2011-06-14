@@ -21,13 +21,13 @@ package org.springframework.social;
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class OperationNotPermittedException extends ApiException {
+public class ForbiddenException extends ApiException {
 
-	public OperationNotPermittedException(String message) {
+	public ForbiddenException(String message) {
 		super(message);
 	}
 
-	public OperationNotPermittedException(String message, Throwable cause) {
+	public ForbiddenException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
