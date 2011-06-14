@@ -15,6 +15,8 @@
  */
 package org.springframework.social.connect.web;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.support.OAuth1ConnectionFactory;
@@ -91,7 +93,7 @@ public class ConnectSupport {
 	}
 
 	private String callbackUrl(NativeWebRequest request) {
-		throw new UnsupportedOperationException("Not yet implemented");
+		return request.getNativeRequest(HttpServletRequest.class).getRequestURL().toString();
 	}
 
 	private String buildOAuth1Url(OAuth1Operations oauthOperations, String requestToken, OAuth1Parameters parameters) {
