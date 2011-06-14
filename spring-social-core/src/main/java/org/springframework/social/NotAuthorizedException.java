@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,18 @@
 package org.springframework.social;
 
 /**
- * Indicates that an error occurred while consuming a provider API.
+ * Indicates a security-related error occurred during the invocation of a service provider API operation.
+ * For example, updating a Facebook user's status with a revoked/expired access token or when invoking an operation that require authorization without providing credentials.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class ProviderApiException extends SocialException {
+public class NotAuthorizedException extends ApiException {
 
-	public ProviderApiException(String message) {
+	public NotAuthorizedException(String message) {
 		super(message);
 	}
 
-	public ProviderApiException(String message, Throwable cause) {
+	public NotAuthorizedException(String message, Throwable cause) {
 		super(message, cause);
 	}
 

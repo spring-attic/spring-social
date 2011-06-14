@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,18 @@
 package org.springframework.social;
 
 /**
- * Indicates an attempt to invoke an API operation requiring authorization with no credentials.
- * For example, updating a user's status on a provider using an API binding that was constructed without an access token. 
+ * Indicates that an error occurred while consuming a provider API.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class AuthorizationRequiredException extends ProviderApiException {
+public class ApiException extends SocialException {
 
-	public AuthorizationRequiredException(String message) {
+	public ApiException(String message) {
 		super(message);
+	}
+
+	public ApiException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 }

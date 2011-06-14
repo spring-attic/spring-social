@@ -20,7 +20,7 @@ package org.springframework.social;
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class ProviderServerErrorException extends ProviderApiException {
+public class ProviderServerErrorException extends ApiException {
 
 	public ProviderServerErrorException(String message) {
 		super(message);

@@ -15,7 +15,7 @@
  */
 package org.springframework.social.connect;
 
-import org.springframework.social.ProviderApiException;
+import org.springframework.social.ApiException;
 
 /**
  * An adapter that bridges between the uniform {@link Connection} model and a specific provider API model.
@@ -28,7 +28,7 @@ public interface ApiAdapter<A> {
 	 * Implements {@link Connection#test()} for connections to the given API.
 	 * @param api the API binding
 	 * @return true if the API is functional, false if not
-	 * @throws ProviderApiException if there is a problem testing the connection.
+	 * @throws ApiException if there is a problem testing the connection.
 	 */
 	boolean test(A api);
 	
@@ -37,7 +37,7 @@ public interface ApiAdapter<A> {
 	 * {@link Connection#getProfileUrl()}, and {@link Connection#getImageUrl()} for connections to the given API.
 	 * @param api the API binding
 	 * @param values the connection values to set
-	 * @throws ProviderApiException if there is a problem fetching connection information from the provider.
+	 * @throws ApiException if there is a problem fetching connection information from the provider.
 	 */
 	void setConnectionValues(A api, ConnectionValues values);
 	
@@ -47,7 +47,7 @@ public interface ApiAdapter<A> {
 	 * If the provider's API does not expose user profile data, this method should return {@link UserProfile#EMPTY}. 
 	 * @param api the API binding
 	 * @return the service provider user profile
-	 * @throws ProviderApiException if there is a problem fetching a user profile from the provider.
+	 * @throws ApiException if there is a problem fetching a user profile from the provider.
 	 * @see UserProfileBuilder
 	 */
 	UserProfile fetchUserProfile(A api);
@@ -57,7 +57,7 @@ public interface ApiAdapter<A> {
 	 * If the provider does not have a status concept calling this method should have no effect.
 	 * @param api the API binding
 	 * @param message the status message
-	 * @throws ProviderApiException if there is a problem updating the user's status on the provider.
+	 * @throws ApiException if there is a problem updating the user's status on the provider.
 	 */
 	void updateStatus(A api, String message);
 	

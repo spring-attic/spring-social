@@ -21,7 +21,7 @@ package org.springframework.social;
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class OperationNotPermittedException extends ProviderApiException {
+public class OperationNotPermittedException extends ApiException {
 
 	public OperationNotPermittedException(String message) {
 		super(message);
