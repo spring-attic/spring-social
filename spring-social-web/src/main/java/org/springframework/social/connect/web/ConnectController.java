@@ -15,7 +15,6 @@
  */
 package org.springframework.social.connect.web;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
@@ -93,10 +92,10 @@ public class ConnectController  {
 	/**
 	 * Sets the application's base URL.
 	 * By default, the callback URL passed to the service providers at the beginning of the connection process is determined from the request made to ConnectController.
-	 * If applicationUrl is set, it will be used to construct the callback URL instead of determining the callback URL from the request.
-	 * @param applicationUrl
+	 * If the request went through an load balancer or proxy, the URL's scheme, host, and/or port may point at an internal server which is not appropriate as an external callback URL.
+	 * For those cases you can set application URL to the base external URL for the application and it will be used to construct the callback URL instead of determining the callback URL from the request.
 	 */
-	public void setApplicationUrl(URL applicationUrl) throws MalformedURLException {
+	public void setApplicationUrl(URL applicationUrl) {
 		webSupport.setApplicationUrl(applicationUrl);
 	}
 	
