@@ -1,10 +1,18 @@
-Spring Social 1.0.0 Release Candidate 1 (June 6, 2011)
+Spring Social 1.0.0 Release Candidate 1 (June 14, 2011)
 ======================================================
-Notable
-   * Extracted provider-specific modules to separate projects
-   * Renamed {Provider}Api interfaces to {Provider}.java
+Compatibility Notes
+   * Extracted provider-specific modules to separate projects.
+   * Renamed {Provider}Api.java interfaces to {Provider}.java.
      (e.g. TwitterApi is now Twitter, FacebookApi is now Facebook, etc)
-
+   * Renamed several operations in ConnectionRepository (see JavaDocs/source for details).
+   * Renamed AbstractOAuth1ApiTemplate and AbstractOAuth2ApiTemplate to AbstractOAuth1ApiBinding and AbstractOAuth2ApiBinding, respectively.
+   * Simplified ConnectController and ProviderSignInController constructors (see JavaDocs/source for details).
+   * Moved ConnectController & ProviderSignInController's applicationUrl property from constructor to setter and made optional.
+   * Renamed ConnectController#postLoginUrl property to postSignInUrl for consistency.
+   * Renamed SignInService to SignInAdapter for clarity & added Connection, HttpServletRequest, and HttpServletResponse parameters to signIn method signature.
+   * Factored out web.ConnectSupport from ConnectController and ProviderSignInController for reusability.
+   * Removed commons-codec dependency; spring-security-crypto is now used for Base64 encoding as well as encryption.
+  
 New Features
    * Enabled use of Spring Social behind a proxy
    * Facebook API binding:
@@ -15,6 +23,8 @@ New Features
      * Block API
      * Notifications API
      * Geo API
+   * Added ConnectionSignUp command to sign-in up a new user from a Connection automatically
+   * Introduced super ApiBinding interface with isAuthorized() tester that can be used to determine if the application has been authorized to invoke the API on behalf of a user.
 
 Bug Fixes
    * SOCIAL-152: Spring Social depends upon some Spring 3.1M1 (or unreleased
