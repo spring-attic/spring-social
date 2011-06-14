@@ -142,15 +142,23 @@ public class ConnectSupport {
 	}
 
 	private String callbackUrl(NativeWebRequest request) {
-		HttpServletRequest httpServletRequest = request.getNativeRequest(HttpServletRequest.class);
-		if(applicationUrl != null) {
-			int port  = applicationUrl.getPort();
-			return applicationUrl.getProtocol() + "://" + applicationUrl.getHost() + (port > -1 ? (":" + port) : "") + httpServletRequest.getRequestURI();
+		HttpServletRequest nativeRequest = request.getNativeRequest(HttpServletRequest.class);
+		if (applicationUrl != null) {
+			return applicationUrl.getProtocol() + "://" + applicationUrl.getHost() + portPart() + nativeRequest.getRequestURI();
 		} else {
-			return httpServletRequest.getRequestURL().toString();
+			return nativeRequest.getRequestURL().toString();
 		}
 	}
 
+	private String portPart() {
+		int port = applicationUrl.getPort();
+		if (port == -1) {
+			return "";
+		} else {
+			return ":" + port;
+		}
+	}
+	
 	private String buildOAuth1Url(OAuth1Operations oauthOperations, String requestToken, OAuth1Parameters parameters) {
 		if (useAuthenticateUrl) {
 			return oauthOperations.buildAuthenticateUrl(requestToken, parameters);			
