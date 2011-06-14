@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
@@ -143,7 +143,7 @@ public class ProviderSignInController {
 		String userId = usersConnectionRepository.findUserIdWithConnection(connection);
 		if (userId == null) {
 			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, usersConnectionRepository);
-			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, WebRequest.SCOPE_SESSION);
+			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, RequestAttributes.SCOPE_SESSION);
 			return redirect(signUpUrl);
 		} else {
 			signInAdapter.signIn(userId, connection, request.getNativeRequest(HttpServletRequest.class), response);

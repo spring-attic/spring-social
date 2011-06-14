@@ -33,6 +33,7 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.ConnectionKey;
 import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.connect.ConnectionSignUp;
 import org.springframework.social.connect.UsersConnectionRepository;
 
 /**
@@ -47,13 +48,25 @@ public class JdbcUsersConnectionRepository implements UsersConnectionRepository 
 	private final ConnectionFactoryLocator connectionFactoryLocator;
 
 	private final TextEncryptor textEncryptor;
+
+	private ConnectionSignUp connectionSignUp;
 	
-	private String tablePrefix = DEFAULT_TABLE_PREFIX;
+	private String tablePrefix = "";
 
 	public JdbcUsersConnectionRepository(DataSource dataSource, ConnectionFactoryLocator connectionFactoryLocator, TextEncryptor textEncryptor) {
 		this.jdbcTemplate = new JdbcTemplate(dataSource);
 		this.connectionFactoryLocator = connectionFactoryLocator;
 		this.textEncryptor = textEncryptor;
+	}
+
+	/**
+	 * The command to execute to create a new local user profile in the event no user id could be mapped to a connection.
+	 * Allows for implicitly creating a user profile from connection data during a provider sign-in attempt.
+	 * Defaults to null, indicating explicit sign-up will be required to complete the provider sign-in attempt.
+	 * @see #findUserIdWithConnection(Connection)
+	 */
+	public void setConnectionSignUp(ConnectionSignUp connectionSignUp) {
+		this.connectionSignUp = connectionSignUp;
 	}
 	
 	/**
@@ -70,7 +83,14 @@ public class JdbcUsersConnectionRepository implements UsersConnectionRepository 
 			ConnectionKey key = connection.getKey();
 			return jdbcTemplate.queryForObject("select userId from " + tablePrefix + "UserConnection where providerId = ? and providerUserId = ?", String.class, key.getProviderId(), key.getProviderUserId());
 		} catch (IncorrectResultSizeDataAccessException e) {
-			return null;				
+			if (e.getActualSize() == 0) {
+				if (connectionSignUp != null) {
+					String newUserId = connectionSignUp.execute(connection);
+					createConnectionRepository(newUserId).addConnection(connection);
+					return newUserId;
+				}
+			}
+			return null;
 		}
 	}
 
@@ -97,5 +117,4 @@ public class JdbcUsersConnectionRepository implements UsersConnectionRepository 
 		return new JdbcConnectionRepository(userId, jdbcTemplate, connectionFactoryLocator, textEncryptor, tablePrefix);
 	}
 
-	private static final String DEFAULT_TABLE_PREFIX = "";
 }
