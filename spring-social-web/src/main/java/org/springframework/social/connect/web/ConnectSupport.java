@@ -15,6 +15,8 @@
  */
 package org.springframework.social.connect.web;
 
+import java.net.URL;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.social.connect.Connection;
@@ -38,15 +40,21 @@ public class ConnectSupport {
 
 	private boolean useAuthenticateUrl;
 
+	private URL applicationUrl;
+
 	public void setUseAuthenticateUrl(boolean useAuthenticateUrl) {
 		this.useAuthenticateUrl = useAuthenticateUrl;
 	}
+	
+	public void setApplicationUrl(URL applicationUrl) {
+		this.applicationUrl = applicationUrl;
+	}
 
-	public String buildOAuthUrl(ConnectionFactory<?> connectionFactory, NativeWebRequest request, String overrideCallbackUrl) {
+	public String buildOAuthUrl(ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
 		if (connectionFactory instanceof OAuth1ConnectionFactory) {
-			return buildOAuth1Url((OAuth1ConnectionFactory<?>) connectionFactory, request, overrideCallbackUrl);
+			return buildOAuth1Url((OAuth1ConnectionFactory<?>) connectionFactory, request);
 		} else if (connectionFactory instanceof OAuth2ConnectionFactory) {
-			return buildOAuth2Url((OAuth2ConnectionFactory<?>) connectionFactory, request, overrideCallbackUrl);
+			return buildOAuth2Url((OAuth2ConnectionFactory<?>) connectionFactory, request);
 		} else {
 			throw new IllegalArgumentException("ConnectionFactory not supported");
 		}		
@@ -59,35 +67,32 @@ public class ConnectSupport {
 		return connectionFactory.createConnection(accessToken);
 	}
 
-	public Connection<?> completeConnection(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request, String overrideCallbackUrl) {
+	public Connection<?> completeConnection(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
 		String code = request.getParameter("code");
-		String callbackUrl = overrideCallbackUrl != null ? overrideCallbackUrl : callbackUrl(request);
-		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl, null);
+		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(request), null);
 		return connectionFactory.createConnection(accessGrant);		
 	}
 
 	// internal helpers
 	
-	private String buildOAuth1Url(OAuth1ConnectionFactory<?> connectionFactory, NativeWebRequest request, String overrideCallbackUrl) {
+	private String buildOAuth1Url(OAuth1ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
 		OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
-		String callbackUrl = overrideCallbackUrl != null ? overrideCallbackUrl : callbackUrl(request);
 		OAuthToken requestToken;
 		String authorizeUrl;
 		if (oauthOperations.getVersion() == OAuth1Version.CORE_10_REVISION_A) {
-			requestToken = oauthOperations.fetchRequestToken(callbackUrl, null);				
+			requestToken = oauthOperations.fetchRequestToken(callbackUrl(request), null);				
 			authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), OAuth1Parameters.NONE);
 		} else {
 			requestToken = oauthOperations.fetchRequestToken(null, null);				
-			authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), new OAuth1Parameters(callbackUrl));
+			authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), new OAuth1Parameters(callbackUrl(request)));
 		}
 		request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, RequestAttributes.SCOPE_SESSION);
 		return authorizeUrl;
 	}
 
-	private String buildOAuth2Url(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request, String overrideCallbackUrl) {
+	private String buildOAuth2Url(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
 		OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-		String callbackUrl = overrideCallbackUrl != null ? overrideCallbackUrl : callbackUrl(request);
-		OAuth2Parameters parameters = new OAuth2Parameters(callbackUrl, request.getParameter("scope"));
+		OAuth2Parameters parameters = new OAuth2Parameters(callbackUrl(request), request.getParameter("scope"));
 		if (useAuthenticateUrl) { 
 			return oauthOperations.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters);						
 		} else {
@@ -96,7 +101,13 @@ public class ConnectSupport {
 	}
 
 	private String callbackUrl(NativeWebRequest request) {
-		return request.getNativeRequest(HttpServletRequest.class).getRequestURL().toString();
+		HttpServletRequest httpServletRequest = request.getNativeRequest(HttpServletRequest.class);
+		if(applicationUrl != null) {
+			int port  = applicationUrl.getPort();
+			return applicationUrl.getProtocol() + "://" + applicationUrl.getHost() + (port > -1 ? (":" + port) : "") + httpServletRequest.getRequestURI();
+		} else {
+			return httpServletRequest.getRequestURL().toString();
+		}
 	}
 
 	private String buildOAuth1Url(OAuth1Operations oauthOperations, String requestToken, OAuth1Parameters parameters) {

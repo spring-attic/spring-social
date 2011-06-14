@@ -15,6 +15,8 @@
  */
 package org.springframework.social.connect.web;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +24,6 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -67,8 +68,6 @@ public class ConnectController  {
 	private final MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
 
 	private final ConnectSupport webSupport = new ConnectSupport();
-
-	private String baseCallbackUrl;
 	
 	/**
 	 * Constructs a ConnectController.
@@ -97,8 +96,8 @@ public class ConnectController  {
 	 * If applicationUrl is set, it will be used to construct the callback URL instead of determining the callback URL from the request.
 	 * @param applicationUrl
 	 */
-	public void setApplicationUrl(String applicationUrl) {
-		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
+	public void setApplicationUrl(URL applicationUrl) throws MalformedURLException {
+		webSupport.setApplicationUrl(applicationUrl);
 	}
 	
 	/**
@@ -145,8 +144,7 @@ public class ConnectController  {
 	public RedirectView connect(@PathVariable String providerId, NativeWebRequest request) {
 		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
 		preConnect(connectionFactory, request);
-		String callbackUrl = baseCallbackUrl != null ? baseCallbackUrl + "/" + providerId : null;
-		return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request, callbackUrl));
+		return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request));
 	}
 
 	/**
@@ -171,8 +169,7 @@ public class ConnectController  {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public RedirectView oauth2Callback(@PathVariable String providerId, NativeWebRequest request) {
 		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
-		String callbackUrl = baseCallbackUrl != null ? baseCallbackUrl + "/" + providerId : null;
-		Connection<?> connection = webSupport.completeConnection(connectionFactory, request, callbackUrl);
+		Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
 		addConnection(connection, connectionFactory, request);
 		return connectionStatusRedirect(providerId);
 	}

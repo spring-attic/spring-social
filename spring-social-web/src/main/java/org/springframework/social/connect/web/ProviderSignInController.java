@@ -15,11 +15,13 @@
  */
 package org.springframework.social.connect.web;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -58,8 +60,6 @@ public class ProviderSignInController {
 	private String postSignInUrl = "/";
 
 	private final ConnectSupport webSupport = new ConnectSupport();
-
-	private String baseCallbackUrl;
 
 	/**
 	 * Creates a new provider sign-in controller.
@@ -103,8 +103,8 @@ public class ProviderSignInController {
 	 * If applicationUrl is set, it will be used to construct the callback URL instead of determining the callback URL from the request.
 	 * @param applicationUrl
 	 */
-	public void setApplicationUrl(String applicationUrl) {
-		this.baseCallbackUrl = applicationUrl + AnnotationUtils.findAnnotation(getClass(), RequestMapping.class).value()[0];
+	public void setApplicationUrl(URL applicationUrl) throws MalformedURLException {
+		webSupport.setApplicationUrl(applicationUrl);
 	}
 	
 	/**
@@ -115,8 +115,7 @@ public class ProviderSignInController {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
 	public RedirectView signIn(@PathVariable String providerId, NativeWebRequest request) {
 		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
-		String callbackUrl = baseCallbackUrl != null ? baseCallbackUrl + "/" + providerId : null;
-		return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request, callbackUrl));
+		return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request));
 	}
 
 	/**
@@ -147,8 +146,7 @@ public class ProviderSignInController {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public RedirectView oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, NativeWebRequest request, HttpServletResponse response) {
 		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
-		String callbackUrl = baseCallbackUrl != null ? baseCallbackUrl + "/" + providerId : null;
-		Connection<?> connection = webSupport.completeConnection(connectionFactory, request, callbackUrl);
+		Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
 		return handleSignIn(connection, request, response);
 	}
 
