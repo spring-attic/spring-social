@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,16 @@
  */
 package org.springframework.social;
 
+
 /**
- * Indicates the client is not authorized to invoke the API.
- * This can occur:
- * - when invoking an API operation with a revoked or expired access token
- * - when invoking an operation that requires authorization without providing authorization credentials.
+ * Exception thrown when API calls are being rate-limited.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class NotAuthorizedException extends ApiException {
+public class RateLimitExceededException extends ApiException {
 
-	public NotAuthorizedException(String message) {
-		super(message);
+	public RateLimitExceededException() {
+		super("The rate limit has been exceeded.");
 	}
-
+	
 }

@@ -16,17 +16,14 @@
 package org.springframework.social;
 
 /**
- * Indicates the client is not authorized to invoke the API.
- * This can occur:
- * - when invoking an API operation with a revoked or expired access token
- * - when invoking an operation that requires authorization without providing authorization credentials.
+ * Exception indicating that an operation requiring credentials was attempted using an API binding that was created without credentials.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class NotAuthorizedException extends ApiException {
+public class MissingCredentialsException extends NotAuthorizedException {
 
-	public NotAuthorizedException(String message) {
-		super(message);
+	public MissingCredentialsException() {
+		super("Credentials are required for the operation, but the API binding was created without credentials.");
 	}
-
+	
 }

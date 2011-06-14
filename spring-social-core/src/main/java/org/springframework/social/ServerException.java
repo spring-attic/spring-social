@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,16 @@
  */
 package org.springframework.social;
 
+
 /**
- * Indicates the client is not authorized to invoke the API.
- * This can occur:
- * - when invoking an API operation with a revoked or expired access token
- * - when invoking an operation that requires authorization without providing authorization credentials.
+ * Exception thrown when a server error occurs.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class NotAuthorizedException extends ApiException {
+public class ServerException extends ApiException {
 
-	public NotAuthorizedException(String message) {
+	public ServerException(String message) {
 		super(message);
 	}
-
+	
 }

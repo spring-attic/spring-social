@@ -16,17 +16,14 @@
 package org.springframework.social;
 
 /**
- * Indicates the client is not authorized to invoke the API.
- * This can occur:
- * - when invoking an API operation with a revoked or expired access token
- * - when invoking an operation that requires authorization without providing authorization credentials.
+ * Exception indicating that the credentials used during an operation invocation have expired.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class NotAuthorizedException extends ApiException {
+public class ExpiredCredentialsException extends NotAuthorizedException {
 
-	public NotAuthorizedException(String message) {
-		super(message);
+	public ExpiredCredentialsException() {
+		super("The credentials have expired.");
 	}
-
+	
 }

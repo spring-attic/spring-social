@@ -15,7 +15,6 @@
  */
 package org.springframework.social;
 
-import org.springframework.social.ApiException;
 
 /**
  * Exception thrown when attempting an operation that requires a permission not granted to the caller.
@@ -23,12 +22,12 @@ import org.springframework.social.ApiException;
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class InsufficientPermissionException extends ApiException {
+public class InsufficientPermissionException extends OperationNotPermittedException {
 	
 	private final String requiredPermission;
 
-	public InsufficientPermissionException(String message, String requiredPermission) {
-		super(message);
+	public InsufficientPermissionException(String requiredPermission) {
+		super("The operation requires '" + requiredPermission + "' permission.");
 		this.requiredPermission = requiredPermission;
 	}
 

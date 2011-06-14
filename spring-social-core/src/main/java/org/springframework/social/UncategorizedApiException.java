@@ -16,15 +16,11 @@
 package org.springframework.social;
 
 /**
- * Indicates that an unexpected error occurred while consuming a provider API.
+ * Indicates that an otherwise uncategorized error occurred while consuming a provider API.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
 public class UncategorizedApiException extends ApiException {
-
-	public UncategorizedApiException(String message) {
-		super(message);
-	}
 
 	public UncategorizedApiException(String message, Throwable cause) {
 		super(message, cause);
