@@ -282,7 +282,7 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		ConnectionRepository repo = usersConnectionRepository.createConnectionRepository(userId);
 
 		if (!authService.getConnectionCardinality().isMultiProviderUserId()) {
-			List<Connection<?>> connections = repo.findConnectionsToProvider(data.getProviderId());
+			List<Connection<?>> connections = repo.findConnections(data.getProviderId());
 			if (!connections.isEmpty()) {
 				// TODO maybe throw an exception to allow UI feedback?
 				return null;
