@@ -16,14 +16,14 @@
 package org.springframework.social;
 
 /**
- * Exception indicating that the credentials used during an operation invocation have expired.
+ * Exception indicating that the authorization used during an operation invocation have expired.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class ExpiredCredentialsException extends NotAuthorizedException {
+public class ExpiredAuthorizationException extends NotAuthorizedException {
 
-	public ExpiredCredentialsException() {
-		super("The credentials have expired.");
+	public ExpiredAuthorizationException() {
+		super("The authorization has expired.");
 	}
 	
 }

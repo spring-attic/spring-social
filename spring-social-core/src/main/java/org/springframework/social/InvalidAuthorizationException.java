@@ -16,14 +16,14 @@
 package org.springframework.social;
 
 /**
- * Exception indicating that an operation requiring credentials was attempted using an API binding that was created without credentials.
+ * Exception indicating that the authorization used during an operation invocation are invalid.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class MissingCredentialsException extends NotAuthorizedException {
+public class InvalidAuthorizationException extends NotAuthorizedException {
 
-	public MissingCredentialsException() {
-		super("Credentials are required for the operation, but the API binding was created without credentials.");
+	public InvalidAuthorizationException() {
+		super("The authorization invalid.");
 	}
 	
 }
