@@ -15,7 +15,6 @@
  */
 package org.springframework.social;
 
-
 /**
  * Exception thrown when API calls are being rate-limited.
  * @author Craig Walls

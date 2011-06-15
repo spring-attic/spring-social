@@ -15,7 +15,6 @@
  */
 package org.springframework.social;
 
-
 /**
  * Exception thrown when attempting an operation that requires a permission not granted to the caller.
  * To remedy this kind of error, the application should attempt to reauthorize requesting the additional permission scope and then try again. 
