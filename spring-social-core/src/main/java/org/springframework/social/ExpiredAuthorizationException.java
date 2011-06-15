@@ -16,8 +16,7 @@
 package org.springframework.social;
 
 /**
- * Exception indicating that the authorization presented to the server is invalid.
- * It could be wrong or corrupt, or it could have been revoked by the authorization server.
+ * Exception indicating that the authorization presented to the server has expired.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")

@@ -16,7 +16,7 @@
 package org.springframework.social;
 
 /**
- * Exception indicating an internal error on the server
+ * Exception indicating an internal error occurred on the server.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")

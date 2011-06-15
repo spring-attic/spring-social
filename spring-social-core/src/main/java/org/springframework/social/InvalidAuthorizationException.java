@@ -16,7 +16,8 @@
 package org.springframework.social;
 
 /**
- * Exception indicating that the credentials used during an operation invocation are invalid.
+ * Exception indicating that the authorization presented to the server is invalid.
+ * It could be wrong or corrupt, or it could have been revoked by the authorization server.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
