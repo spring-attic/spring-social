@@ -122,7 +122,7 @@ public class ConnectController  {
 		Map<String, List<Connection<?>>> connections = connectionRepository.findAllConnections();
 		model.addAttribute("providerIds", connectionFactoryLocator.registeredProviderIds());		
 		model.addAttribute("connectionMap", connections);
-		return "connect/status";
+		return connectView("status");
 	}
 
 	/**
@@ -133,10 +133,10 @@ public class ConnectController  {
 		processFlash(request, model);
 		List<Connection<?>> connections = connectionRepository.findConnections(providerId);
 		if (connections.isEmpty()) {
-			return connectView(providerId) + "Connect";
+			return connectView(providerId + "Connect"); 
 		} else {
 			model.addAttribute("connections", connections);
-			return connectView(providerId) + "Connected";			
+			return connectView(providerId + "Connected");			
 		}
 	}
 
@@ -203,8 +203,16 @@ public class ConnectController  {
 
 	// internal helpers
 
-	private String connectView(String providerId) {
-		return "connect/" + providerId;		
+	private String getControllerPath() {
+		return "/connect";
+	}
+
+	private String getViewPath() {
+		return "connect/";
+	}
+	
+	private String connectView(String name) {
+		return getViewPath() + name;		
 	}
 
 	private void addConnection(Connection<?> connection, ConnectionFactory<?> connectionFactory, WebRequest request) {
@@ -248,7 +256,7 @@ public class ConnectController  {
 	}
 
 	private RedirectView connectionStatusRedirect(String providerId) {
-		return new RedirectView(providerId, true);
+		return new RedirectView(getControllerPath() + "/" + providerId, true);
 	}
 
 	private static final String DUPLICATE_CONNECTION_ATTRIBUTE = "social.addConnection.duplicate";
