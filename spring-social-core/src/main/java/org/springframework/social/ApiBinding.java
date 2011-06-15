@@ -27,6 +27,7 @@ public interface ApiBinding {
 	 * If so, calls to the API are signed with the user's authorization credentials, indicating an application is invoking the API on a user's behalf.
 	 * If not, API calls do not contain any user authorization information.
 	 * Callers can use this status flag to determine if API operations requiring authorization can be invoked.
+	 * @see MissingAuthorizationException
 	 */
 	public boolean isAuthorized();
 	

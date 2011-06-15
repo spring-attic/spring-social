@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 the original author or authors.
+ * Copyright 2011 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,15 @@
 package org.springframework.social;
 
 /**
- * Exception indicating that the credentials used during an operation invocation have expired.
+ * Exception thrown when attempting to invoke an API operation requiring authorization but no authorization has been provided.
+ * This can occur after constructing an API binding without providing the necessary authorization information, such as an access token.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class ExpiredCredentialsException extends NotAuthorizedException {
+public class MissingAuthorizationException extends NotAuthorizedException {
 
-	public ExpiredCredentialsException() {
-		super("The credentials have expired.");
+	public MissingAuthorizationException() {
+		super("No authorization has been provided but one is required.");
 	}
 	
 }

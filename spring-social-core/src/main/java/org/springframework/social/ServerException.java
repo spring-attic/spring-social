@@ -15,7 +15,6 @@
  */
 package org.springframework.social;
 
-
 /**
  * Exception thrown when a server error occurs.
  * @author Craig Walls
