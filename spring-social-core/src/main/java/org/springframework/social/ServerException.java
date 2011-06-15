@@ -16,18 +16,14 @@
 package org.springframework.social;
 
 /**
- * Indicates that an error occurred on the provider's server.
+ * Exception thrown when a server error occurs.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class ProviderServerErrorException extends ApiException {
+public class ServerException extends ApiException {
 
-	public ProviderServerErrorException(String message) {
+	public ServerException(String message) {
 		super(message);
 	}
-
-	public ProviderServerErrorException(String message, Throwable cause) {
-		super(message, cause);
-	}
-
+	
 }

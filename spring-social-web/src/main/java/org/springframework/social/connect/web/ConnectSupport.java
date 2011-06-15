@@ -36,20 +36,49 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 
+/**
+ * Provides common connect support and utilities for Java web/servlet environments.
+ * Used by {@link ConnectController} and {@link ProviderSignInController}.
+ * @author Keith Donald
+ */
 public class ConnectSupport {
 
 	private boolean useAuthenticateUrl;
 
 	private URL applicationUrl;
 
+	/**
+	 * Flag indicating if this instance will support OAuth-based authentication instead of the traditional user authorization.
+	 * Some providers expose a special "authenticateUrl" the user should be redirected to as part of an OAuth-based authentication attempt.
+	 * Setting this flag to true has {@link #buildOAuthUrl(ConnectionFactory, NativeWebRequest) oauthUrl} return this authenticate URL.
+	 * @param useAuthenticateUrl whether to use the authenticat url or not
+	 * @see OAuth1Operations#buildAuthenticateUrl(String, OAuth1Parameters)
+	 * @see OAuth2Operations#buildAuthenticateUrl(GrantType, OAuth2Parameters)
+	 */
 	public void setUseAuthenticateUrl(boolean useAuthenticateUrl) {
 		this.useAuthenticateUrl = useAuthenticateUrl;
 	}
-	
+
+	/**
+	 * Configures the base secure URL for the application this controller is being used in e.g. <code>https://myapp.com</code>. Defaults to null.
+	 * If specified, will be used to generate OAuth callback URLs.
+	 * If not specified, OAuth callback URLs are generated from {@link HttpServletRequest HttpServletRequests}. 
+	 * You may wish to set this property if requests into your application flow through a proxy to your application server.
+	 * In this case, the HttpServletRequest URI may contain a scheme, host, and/or port value that points to an internal server not appropriate for an external callback URL.
+	 * If you have this problem, you can set this property to the base external URL for your application and it will be used to construct the callback URL instead.
+	 * @param applicationUrl the application URL value
+	 */
 	public void setApplicationUrl(URL applicationUrl) {
 		this.applicationUrl = applicationUrl;
 	}
 
+	/**
+	 * Builds the provider URL to redirect the user to for connection authorization.
+	 * @param connectionFactory the service provider's connection factory e.g. FacebookConnectionFactory
+	 * @param request the current web request
+	 * @return the URL to redirect the user to for authorization
+	 * @throws IllegalArgumentException if the connection factory is not OAuth1 based.
+	 */
 	public String buildOAuthUrl(ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
 		if (connectionFactory instanceof OAuth1ConnectionFactory) {
 			return buildOAuth1Url((OAuth1ConnectionFactory<?>) connectionFactory, request);
@@ -60,6 +89,12 @@ public class ConnectSupport {
 		}		
 	}
 
+	/**
+	 * Complete the connection to the OAuth1 provider.
+	 * @param connectionFactory the service provider's connection factory e.g. FacebookConnectionFactory
+	 * @param request the current web request
+	 * @return a new connection to the service provider
+	 */
 	public Connection<?> completeConnection(OAuth1ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
 		String verifier = request.getParameter("oauth_verifier"); 
 		AuthorizedRequestToken requestToken = new AuthorizedRequestToken(extractCachedRequestToken(request), verifier);
@@ -67,6 +102,12 @@ public class ConnectSupport {
 		return connectionFactory.createConnection(accessToken);
 	}
 
+	/**
+	 * Complete the connection to the OAuth2 provider.
+	 * @param connectionFactory the service provider's connection factory e.g. FacebookConnectionFactory
+	 * @param request the current web request
+	 * @return a new connection to the service provider
+	 */
 	public Connection<?> completeConnection(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
 		String code = request.getParameter("code");
 		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(request), null);
@@ -101,15 +142,23 @@ public class ConnectSupport {
 	}
 
 	private String callbackUrl(NativeWebRequest request) {
-		HttpServletRequest httpServletRequest = request.getNativeRequest(HttpServletRequest.class);
-		if(applicationUrl != null) {
-			int port  = applicationUrl.getPort();
-			return applicationUrl.getProtocol() + "://" + applicationUrl.getHost() + (port > -1 ? (":" + port) : "") + httpServletRequest.getRequestURI();
+		HttpServletRequest nativeRequest = request.getNativeRequest(HttpServletRequest.class);
+		if (applicationUrl != null) {
+			return applicationUrl.getProtocol() + "://" + applicationUrl.getHost() + portPart() + nativeRequest.getRequestURI();
 		} else {
-			return httpServletRequest.getRequestURL().toString();
+			return nativeRequest.getRequestURL().toString();
 		}
 	}
 
+	private String portPart() {
+		int port = applicationUrl.getPort();
+		if (port == -1) {
+			return "";
+		} else {
+			return ":" + port;
+		}
+	}
+	
 	private String buildOAuth1Url(OAuth1Operations oauthOperations, String requestToken, OAuth1Parameters parameters) {
 		if (useAuthenticateUrl) {
 			return oauthOperations.buildAuthenticateUrl(requestToken, parameters);			

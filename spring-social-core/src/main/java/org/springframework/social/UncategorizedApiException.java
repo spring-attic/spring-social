@@ -16,14 +16,14 @@
 package org.springframework.social;
 
 /**
- * Indicates an operation was attempted that is not permitted.
+ * Indicates that an otherwise uncategorized error occurred while consuming a provider API.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class OperationNotPermittedException extends ApiException {
+public class UncategorizedApiException extends ApiException {
 
-	public OperationNotPermittedException(String message) {
-		super(message);
+	public UncategorizedApiException(String message, Throwable cause) {
+		super(message, cause);
 	}
-
+	
 }

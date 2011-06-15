@@ -16,14 +16,14 @@
 package org.springframework.social;
 
 /**
- * Indicates an operation was attempted that is not permitted.
+ * Exception indicating an internal error occurred on the server.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class OperationNotPermittedException extends ApiException {
+public class InternalServerErrorException extends ServerException {
 
-	public OperationNotPermittedException(String message) {
+	public InternalServerErrorException(String message) {
 		super(message);
 	}
-
+	
 }

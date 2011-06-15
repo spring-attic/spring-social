@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.Connection;
@@ -82,6 +83,7 @@ public class ConnectController  {
 	/**
 	 * Configure the list of interceptors that should receive callbacks during the connection process.
 	 * Convenient when an instance of this class is configured using a tool that supports JavaBeans-based configuration.
+	 * @param interceptors the connect interceptors to add
 	 */
 	public void setInterceptors(List<ConnectInterceptor<?>> interceptors) {
 		for (ConnectInterceptor<?> interceptor : interceptors) {
@@ -90,10 +92,13 @@ public class ConnectController  {
 	}
 
 	/**
-	 * Sets the application's base URL.
-	 * By default, the callback URL passed to the service providers at the beginning of the connection process is determined from the request made to ConnectController.
-	 * If the request went through an load balancer or proxy, the URL's scheme, host, and/or port may point at an internal server which is not appropriate as an external callback URL.
-	 * For those cases you can set application URL to the base external URL for the application and it will be used to construct the callback URL instead of determining the callback URL from the request.
+	 * Configures the base secure URL for the application this controller is being used in e.g. <code>https://myapp.com</code>. Defaults to null.
+	 * If specified, will be used to generate OAuth callback URLs.
+	 * If not specified, OAuth callback URLs are generated from {@link HttpServletRequest HttpServletRequests}. 
+	 * You may wish to set this property if requests into your application flow through a proxy to your application server.
+	 * In this case, the HttpServletRequest URI may contain a scheme, host, and/or port value that points to an internal server not appropriate for an external callback URL.
+	 * If you have this problem, you can set this property to the base external URL for your application and it will be used to construct the callback URL instead.
+	 * @param applicationUrl the application URL value
 	 */
 	public void setApplicationUrl(URL applicationUrl) {
 		webSupport.setApplicationUrl(applicationUrl);
@@ -102,6 +107,7 @@ public class ConnectController  {
 	/**
 	 * Adds a ConnectInterceptor to receive callbacks during the connection process.
 	 * Useful for programmatic configuration.
+	 * @param interceptor the connect interceptor to add
 	 */
 	public void addInterceptor(ConnectInterceptor<?> interceptor) {
 		Class<?> serviceApiType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(), ConnectInterceptor.class);

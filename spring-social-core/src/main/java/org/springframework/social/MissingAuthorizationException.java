@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 package org.springframework.social;
 
 /**
- * Indicates an operation was attempted that is not permitted.
+ * Exception indicating that an operation requiring authorization was attempted using an API binding that was created without authorization.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class OperationNotPermittedException extends ApiException {
+public class MissingAuthorizationException extends NotAuthorizedException {
 
-	public OperationNotPermittedException(String message) {
-		super(message);
+	public MissingAuthorizationException() {
+		super("Authorization is required for the operation, but the API binding was created without authorization.");
 	}
-
+	
 }

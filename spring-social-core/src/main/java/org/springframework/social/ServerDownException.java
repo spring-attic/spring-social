@@ -16,14 +16,14 @@
 package org.springframework.social;
 
 /**
- * Indicates an operation was attempted that is not permitted.
+ * Exception indicating that the server is down or being upgraded.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class OperationNotPermittedException extends ApiException {
+public class ServerDownException extends ServerException {
 
-	public OperationNotPermittedException(String message) {
+	public ServerDownException(String message) {
 		super(message);
 	}
-
+	
 }

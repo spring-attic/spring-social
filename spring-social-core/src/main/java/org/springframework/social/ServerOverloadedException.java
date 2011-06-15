@@ -16,14 +16,14 @@
 package org.springframework.social;
 
 /**
- * Indicates an operation was attempted that is not permitted.
+ * Exception indicating that the server is experiencing high load.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class OperationNotPermittedException extends ApiException {
+public class ServerOverloadedException extends ServerException {
 
-	public OperationNotPermittedException(String message) {
+	public ServerOverloadedException(String message) {
 		super(message);
 	}
-
+	
 }

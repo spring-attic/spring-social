@@ -1,9 +1,16 @@
 ================================ Spring Social ===============================
-To check out the project and build from source, do the following:
+Spring Social is an extension of the Spring Framework that helps you connect your
+applications with Software-as-a-Service (SaaS) providers such as Facebook and Twitter.
 
- git clone --recursive git://github.com/SpringSource/spring-social.git
- cd spring-social
- ./gradlew build
+To get up and running quickly using the project, see the Quickstart:
+https://github.com/SpringSource/spring-social/wiki/Quick-Start
+
+-------------------------------------------------------------------------------
+To get the code and build from source, do the following:
+
+git clone --recursive git://github.com/SpringSource/spring-social.git
+cd spring-social
+./gradlew build
 
 Note: the --recursive switch above is important, as spring-social uses
 git submodules, which must themselves be cloned and initialized. If --recursive
@@ -14,14 +21,33 @@ git submodule init
 git submodule update
 
 -------------------------------------------------------------------------------
-Note that this project no longer contains SaaS provider-specific connectivity
-and API bindings. Each of the provider-specific modules is now in its own project.
+To generate Eclipse metadata (.classpath and .project files), do the following:
+
+./gradlew eclipse
+
+Once complete, you may then import the projects into Eclipse:
+File -> Import -> Existing projects into workspace
+
+-------------------------------------------------------------------------------
+To generate IDEA metadata (.iml and .ipr files), do the following:
+
+./gradlew idea
+
+-------------------------------------------------------------------------------
+To build the JavaDoc, do the following from within the root directory:
+
+ ./gradlew :docs:api
+
+The result will be available in 'docs/build/api'.
+
+-------------------------------------------------------------------------------
+Note that the core Spring Social project no longer contains provider modules.
+Each of the provider modules is now in its own project.
 This will enable those modules to progress and release on a separate schedule
 than Spring Social and be able to react more quickly to changes in the provider's
 API without the need to wait for a Spring Social release.
 
-The SaaS provider-specific projects can be cloned from the following GitHub
-URLs:
+The SaaS provider-specific projects can be cloned from the following GitHub URLs:
 
 Twitter: git://github.com/SpringSource/spring-social-twitter.git
 Facebook: git://github.com/SpringSource/spring-social-facebook.git
@@ -33,25 +59,4 @@ Gowalla: git://github.com/SpringSource/spring-social-gowalla.git
 Each of these projects uses the same build submodule as Spring Social. Thus,
 you'll need to either clone them with the --recursive switch or init/update the
 submodule as described above from Spring Social.
-
--------------------------------------------------------------------------------
-To generate Eclipse metadata (.classpath and .project files), do the following:
-
- ./gradlew eclipse
-
-Once complete, you may then import the projects into Eclipse as usual:
-
- File -> Import -> Existing projects into workspace
-
--------------------------------------------------------------------------------
-To generate IDEA metadata (.iml and .ipr files), do the following:
-
- ./gradlew idea
-
--------------------------------------------------------------------------------
-To build the JavaDoc, do the following from within the root directory:
-
- ./gradlew :docs:api
-
-The result will be available in 'docs/build/api'.
 ===============================================================================

@@ -16,14 +16,14 @@
 package org.springframework.social;
 
 /**
- * Indicates an operation was attempted that is not permitted.
+ * Exception indicating that the authorization presented to the server has expired.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class OperationNotPermittedException extends ApiException {
+public class ExpiredAuthorizationException extends NotAuthorizedException {
 
-	public OperationNotPermittedException(String message) {
-		super(message);
+	public ExpiredAuthorizationException() {
+		super("The authorization has expired.");
 	}
-
+	
 }

@@ -16,14 +16,14 @@
 package org.springframework.social;
 
 /**
- * Indicates an operation was attempted that is not permitted.
+ * Exception thrown when API calls are being rate-limited.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class OperationNotPermittedException extends ApiException {
+public class RateLimitExceededException extends ApiException {
 
-	public OperationNotPermittedException(String message) {
-		super(message);
+	public RateLimitExceededException() {
+		super("The rate limit has been exceeded.");
 	}
-
+	
 }

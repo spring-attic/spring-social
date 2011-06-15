@@ -16,14 +16,22 @@
 package org.springframework.social;
 
 /**
- * Indicates an operation was attempted that is not permitted.
+ * Exception thrown when attempting an operation that requires a permission not granted to the caller.
+ * To remedy this kind of error, the application should attempt to reauthorize requesting the additional permission scope and then try again. 
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class OperationNotPermittedException extends ApiException {
+public class InsufficientPermissionException extends OperationNotPermittedException {
+	
+	private final String requiredPermission;
 
-	public OperationNotPermittedException(String message) {
-		super(message);
+	public InsufficientPermissionException(String requiredPermission) {
+		super("The operation requires '" + requiredPermission + "' permission.");
+		this.requiredPermission = requiredPermission;
 	}
 
+	public String getRequiredPermission() {
+		return requiredPermission;
+	}
+	
 }

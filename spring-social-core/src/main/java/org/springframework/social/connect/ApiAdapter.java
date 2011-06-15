@@ -28,7 +28,6 @@ public interface ApiAdapter<A> {
 	 * Implements {@link Connection#test()} for connections to the given API.
 	 * @param api the API binding
 	 * @return true if the API is functional, false if not
-	 * @throws ApiException if there is a problem testing the connection.
 	 */
 	boolean test(A api);
 	
