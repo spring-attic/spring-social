@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,27 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.connect;
+package org.springframework.social;
 
 /**
- * Thrown when attempting to invoke a API operation and the connection has expired.
- * @author Keith Donald
- * @see Connection#getApi()
+ * Exception indicating that the authorization used during an operation invocation is rejected by the server.
+ * This can occur when
+ *  - an access token that is malformed or fails signature validation
+ *  - an access token has been revoked
+ *  - an access token has expired 
+ * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public final class ConnectionExpiredException extends RuntimeException {
-	
-	private final ConnectionKey connectionKey;
+public class RejectedAuthorizationException extends NotAuthorizedException {
 
-	public ConnectionExpiredException(ConnectionKey connectionKey) {
-		this.connectionKey = connectionKey;
-	}
-
-	/**
-	 * The key identifiying the expired connection.
-	 */
-	public ConnectionKey getConnectionKey() {
-		return connectionKey;
+	public RejectedAuthorizationException(String message) {
+		super(message);
 	}
 	
 }

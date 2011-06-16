@@ -16,14 +16,15 @@
 package org.springframework.social;
 
 /**
- * Exception indicating that the authorization used during an operation invocation are invalid.
+ * Exception indicating that the authorization used during an operation invocation is invalid.
+ * This can occur when an access token that is malformed or fails signature validation
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class InvalidAuthorizationException extends NotAuthorizedException {
+public class InvalidAuthorizationException extends RejectedAuthorizationException {
 
-	public InvalidAuthorizationException() {
-		super("The authorization invalid.");
+	public InvalidAuthorizationException(String message) {
+		super(message);
 	}
 	
 }
