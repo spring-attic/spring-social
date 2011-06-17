@@ -101,7 +101,7 @@ configure(javaprojects) {
     mockitoVersion = '1.8.5'
     servletApiVersion = '2.5'
     springVersion = '3.1.0.M2'
-    springSecurityVersion = '3.1.0.CI-SNAPSHOT'
+    springSecurityVersion = '3.1.0.RC2.crypto'
 
     sourceSets {
         main {
