@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.Connection;
@@ -94,9 +93,9 @@ public class ConnectController  {
 	/**
 	 * Configures the base secure URL for the application this controller is being used in e.g. <code>https://myapp.com</code>. Defaults to null.
 	 * If specified, will be used to generate OAuth callback URLs.
-	 * If not specified, OAuth callback URLs are generated from {@link HttpServletRequest HttpServletRequests}. 
+	 * If not specified, OAuth callback URLs are generated from web request info. 
 	 * You may wish to set this property if requests into your application flow through a proxy to your application server.
-	 * In this case, the HttpServletRequest URI may contain a scheme, host, and/or port value that points to an internal server not appropriate for an external callback URL.
+	 * In this case, the request URI may contain a scheme, host, and/or port value that points to an internal server not appropriate for an external callback URL.
 	 * If you have this problem, you can set this property to the base external URL for your application and it will be used to construct the callback URL instead.
 	 * @param applicationUrl the application URL value
 	 */
