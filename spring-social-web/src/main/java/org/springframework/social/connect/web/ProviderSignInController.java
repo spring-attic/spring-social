@@ -122,7 +122,7 @@ public class ProviderSignInController {
 	 * Process the authentication callback from an OAuth 1 service provider.
 	 * Called after the member authorizes the authentication, generally done once by having he or she click "Allow" in their web browser at the provider's site.
 	 * Handles the provider sign-in callback by first determining if a local user account is associated with the connected provider account.
-	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, NativeWebRequest))}.
+	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, NativeWebRequest)}
 	 * If not, redirects the user to a signup page to create a new account with {@link ProviderSignInAttempt} context exposed in the HttpSession.
 	 * @see ProviderSignInAttempt
 	 * @see ProviderSignInUtils 
@@ -138,7 +138,7 @@ public class ProviderSignInController {
 	 * Process the authentication callback from an OAuth 2 service provider.
 	 * Called after the user authorizes the authentication, generally done once by having he or she click "Allow" in their web browser at the provider's site.
 	 * Handles the provider sign-in callback by first determining if a local user account is associated with the connected provider account.
-	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, NativeWebRequest))}.
+	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, NativeWebRequest)}.
 	 * If not, redirects the user to a signup page to create a new account with {@link ProviderSignInAttempt} context exposed in the HttpSession.
 	 * @see ProviderSignInAttempt
 	 * @see ProviderSignInUtils 

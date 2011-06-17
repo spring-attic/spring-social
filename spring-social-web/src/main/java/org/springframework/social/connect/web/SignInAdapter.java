@@ -29,7 +29,7 @@ public interface SignInAdapter {
 	 * Complete a provider sign-in attempt by signing in the local user account with the specified id.
 	 * @param userId the local user id
 	 * @param connection the connection
-	 * @param a reference to the current web request; is a "native" web request instance providing access to the native
+	 * @param request a reference to the current web request; is a "native" web request instance providing access to the native
 	 * request and response objects, such as a HttpServletRequest and HttpServletResponse, if needed
 	 */
 	void signIn(String userId, Connection<?> connection, NativeWebRequest request);
