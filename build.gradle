@@ -101,7 +101,7 @@ configure(javaprojects) {
     mockitoVersion = '1.8.5'
     servletApiVersion = '2.5'
     springVersion = '3.1.0.M2'
-    springSecurityVersion = '3.1.0.RC2.crypto'
+    springSecurityCryptoVersion = '3.1.0.RC2.crypto'
 
     sourceSets {
         main {
@@ -142,7 +142,7 @@ project('spring-social-core') {
     dependencies {
         compile ("org.springframework:spring-jdbc:$springVersion") { optional = true }
         compile ("org.springframework:spring-web:$springVersion")
-        compile ("org.springframework.security:spring-security-crypto:$springSecurityVersion") { optional = true }
+        compile ("org.springframework.security:spring-security-crypto:$springSecurityCryptoVersion") { optional = true }
         compile ("org.apache.httpcomponents:httpclient:$httpComponentsVersion") { optional = true }
         testCompile "com.h2database:h2:$h2Version"
     }
