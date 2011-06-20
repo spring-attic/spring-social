@@ -144,7 +144,8 @@ public interface OAuth2Operations {
 
     String buildAuthorizeUrl(GrantType grantType, OAuth2Parameters parameters);
 
-    AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters);
+    AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, 
+            MultiValueMap<String, String> additionalParameters);
 
 }]]>
 			</programlisting>			
@@ -206,9 +207,11 @@ public interface OAuth2Operations {
 			 	The example code below shows use of a FacebookConnectionFactory to create a connection to Facebook using the OAuth2 server-side flow illustrated above.
 				Here, FacebookConnectionFactory is a subclass of OAuth2ConnectionFactory:
 				<programlisting language="java"><![CDATA[
-FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory("clientId", "clientSecret");
+FacebookConnectionFactory connectionFactory = 
+    new FacebookConnectionFactory("clientId", "clientSecret");
 OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-String authorizeUrl = oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters("callbackUrl"));
+String authorizeUrl = oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, 
+        new OAuth2Parameters("callbackUrl"));
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the authorizationCode parameter:
 AccessGrant accessGrant = oauthOperations.exchangeForAccess(authorizationCode, "callbackUrl");
@@ -220,9 +223,11 @@ Connection<Facebook> connection = connectionFactory.createConnection(accessGrant
 				The difference between this flow and the server-side "authorization code" flow above is the provider callback directly contains the access grant (no additional exchange is necessary).
 				This flow is appropriate for clients incapable of keeping the access grant credentials confidential, such as a mobile device or JavaScript-based user agent.
 				<programlisting language="java"><![CDATA[
-FacebookConnectionFactory connectionFactory = new FacebookConnectionFactory("clientId", "clientSecret");
+FacebookConnectionFactory connectionFactory = 
+    new FacebookConnectionFactory("clientId", "clientSecret");
 OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-String authorizeUrl = oauthOperations.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, new OAuth2Parameters("callbackUrl"));
+String authorizeUrl = oauthOperations.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, 
+        new OAuth2Parameters("callbackUrl"));
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the access_token parameter:
 AccessGrant accessGrant = new AccessGrant(accessToken);
@@ -253,11 +258,13 @@ public class OAuth1ConnectionFactory<A> extends ConnectionFactory<A> {
 			<programlisting language="java"><![CDATA[
 public interface OAuth1Operations {
 
-    OAuthToken fetchRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters);
+    OAuthToken fetchRequestToken(String callbackUrl, 
+            MultiValueMap<String, String> additionalParameters);
 
     String buildAuthorizeUrl(String requestToken, OAuth1Parameters parameters);
 
-    OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters);
+    OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, 
+            MultiValueMap<String, String> additionalParameters);
 
 }]]>
 			</programlisting>			
@@ -327,13 +334,15 @@ public interface OAuth1Operations {
 				The example code below shows use of a TwitterConnectionFactory to create a connection to Facebook using the OAuth1 server-side flow illustrated above.
 				Here, TwitterConnectionFactory is a subclass of OAuth1ConnectionFactory:
 				<programlisting language="java"><![CDATA[
-TwitterConnectionFactory connectionFactory = new TwitterConnectionFactory("consumerKey", "consumerSecret");
+TwitterConnectionFactory connectionFactory = 
+    new TwitterConnectionFactory("consumerKey", "consumerSecret");
 OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
 String requestToken = oauthOperations.fetchRequestToken("callbackUrl");
 String authorizeUrl = oauthOperations.buildAuthorizeUrl(requestToken, OAuth1Parameters.NONE);
 response.sendRedirect(authorizeUrl);
 // when the provider callback is received with the oauth_token and oauth_verifier parameters:
-OAuthToken accessToken = oauthOperations.exchangeForAccessToken(new AuthorizedRequestToken(oauthToken, oauthVerifier));
+OAuthToken accessToken = oauthOperations.exchangeForAccessToken(
+        new AuthorizedRequestToken(oauthToken, oauthVerifier));
 Connection<Twitter> connection = connectionFactory.createConnection(accessToken);]]>
 				</programlisting>
 			</para>
@@ -393,7 +402,8 @@ public interface ConnectionRepository {
 
     <A> List<Connection<A>> findConnections(Class<A> apiType);
 
-    MultiValueMap<String, Connection<?>> findConnectionsToUsers(MultiValueMap<String, String> providerUserIds);
+    MultiValueMap<String, Connection<?>> findConnectionsToUsers(
+            MultiValueMap<String, String> providerUserIds);
 
     Connection<?> findConnection(ConnectionKey connectionKey);
 

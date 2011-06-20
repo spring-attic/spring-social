@@ -22,17 +22,52 @@
 		<title>Enabling provider sign in</title>
 		<para>
 			To add provider sign in capability to your Spring application, configure <classname>ProviderSignInController</classname> as a bean in your Spring MVC application:
+		</para>
+		
+		<programlisting language="java"><![CDATA[
+@Bean
+public ProviderSignInController providerSignInController() {
+    return new ProviderSignInController(connectionFactoryLocator(), 
+            usersConnectionRepository(), new SimpleSignInAdapter());
+}]]>
+		</programlisting>
+
+		<para>
+			Or in XML, if you prefer:
 		</para>		
+				
 		<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.connect.signin.web.ProviderSignInController">
-    <constructor-arg value="${application.secureUrl}" />
-    <!-- relies on by-type autowiring for the other constructor-args -->    
+    <!-- relies on by-type autowiring for the constructor-args -->    
 </bean>]]>
 		</programlisting>
 		<para>
-			The <classname>ProviderSignInController</classname> bean requires a single explicit <code><![CDATA[<constructor-arg>]]></code> value to specify the application's base secure URL.
-			<classname>ProviderSignInController</classname> will use this URL to construct the callback URL used in the authentication flow.
-			As with <classname>ConnectController</classname>, it is recommended that the application URL be externalized so that it can vary between deployment environments.
+		    As with <classname>ConnectController</classname>, <classname>ProviderSignInController</classname> uses information from the request to determine the protocol, host name, and port number to use when creating a callback URL.
+			But you may set the <code>applicationUrl</code> property to the base external URL of your application to overcome any problems where the request refers to an internal server.
+			For example:
+		</para>
+		<programlisting language="java"><![CDATA[
+@Bean
+public ProviderSignInController providerSignInController() {
+    ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator(), 
+            usersConnectionRepository(), new SimpleSignInAdapter());
+    controller.setApplicationUrl(environment.getProperty("application.url"));
+    return controller;
+}]]>
+		</programlisting>
+
+		<para>
+			Or when configured in XML:
+		</para>
+
+		<programlisting language="xml"><![CDATA[
+<bean class="org.springframework.social.connect.signin.web.ProviderSignInController">
+    <!-- relies on by-type autowiring for the constructor-args -->    
+    <property name="applicationUrl" value="${application.url}" />
+</bean>]]>
+		</programlisting>
+		<para>
+			Once again, we recommend that you externalize the value of the application URL since it will vary between deployment environments.
 		</para>
 		<para>
 			When authenticating via an OAuth 2 provider, <classname>ProviderSignInController</classname> supports the following flow:
@@ -69,57 +104,83 @@
 		<section>
 			<title>ProviderSignInController's dependencies</title>
 			<para>
-				As shown above, <classname>ProviderSignInController</classname> can be configured as a Spring bean given only a single constructor argument.
-				Nevertheless, <classname>ProviderSignInController</classname> depends on a handful of other beans to do its job.
+				As shown in the Java-based configuration above, <classname>ProviderSignInController</classname> depends on a handful of other objects to do its job.
 			</para>
 			<itemizedlist>
 				<listitem><para>A <interfacename>ConnectionFactoryLocator</interfacename> to lookup the ConnectionFactory used to create the Connection to the provider.</para></listitem>
 				<listitem><para>A <interfacename>UsersConnectionRepository</interfacename> to find the user that has the connection to the provider user attempting to sign-in.</para></listitem>
-				<listitem><para>A <interfacename>ConnectionRepository</interfacename> to persist a new connection when a new user signs up with the application after a failed sign-in attempt.</para></listitem>
-				<listitem><para>A <interfacename>SignInService</interfacename> to sign a user into the application when a matching connection is found.</para></listitem>
+				<listitem><para>A <interfacename>SignInAdapter</interfacename> to sign a user into the application when a matching connection is found.</para></listitem>
 			</itemizedlist>
 			<para>
-				Because <classname>ProviderSignInController</classname>'s constructor is annotated with <code>@Inject</code>, those dependencies will be given to <classname>ProviderSignInController</classname> via autowiring.
+				When using XML configuration, it isn't necessary to explicitly configure these constructor arguments because <classname>ProviderSignInController</classname>'s constructor is annotated with <code>@Inject</code>.
+				Those dependencies will be given to <classname>ProviderSignInController</classname> via autowiring.
 				You'll still need to make sure they're available as beans in the Spring application context so that they can be autowired.
 			</para>
 			<para>
 				You should have already configured most of these dependencies when setting up connection support (in the previous chapter).
-				The <interfacename>SignInService</interfacename> is exclusively used for provider sign in and so a <interfacename>SignInService</interfacename> bean will need to be added to the configuration.
-				But first, you'll need to write an implementation of the <interfacename>SignInService</interfacename> interface.
-			</para>
-			<para>
-				The <interfacename>SignInService</interfacename> interface is defined as follows:
+				But when used with <classname>ProviderSignInController</classname>, you should configure them to be created as scoped proxies:
 			</para>
 			<programlisting language="java"><![CDATA[
-public interface SignInService {
-    void signIn(String localUserId);
+@Bean
+@Scope(value="singleton", proxyMode=ScopedProxyMode.INTERFACES)
+public ConnectionFactoryLocator connectionFactoryLocator() {
+    ConnectionFactoryRegistry registry = new ConnectionFactoryRegistry();
+    registry.addConnectionFactory(new FacebookConnectionFactory(
+            environment.getProperty("facebook.clientId"),
+            environment.getProperty("facebook.clientSecret")));
+    registry.addConnectionFactory(new TwitterConnectionFactory(
+            environment.getProperty("twitter.consumerKey"),
+            environment.getProperty("twitter.consumerSecret")));
+    return registry;
+}
+
+@Bean
+@Scope(value="singleton", proxyMode=ScopedProxyMode.INTERFACES)
+public UsersConnectionRepository usersConnectionRepository() {
+    return new JdbcUsersConnectionRepository(dataSource, connectionFactoryLocator(), textEncryptor);
+}]]>
+			</programlisting>	
+			<para>
+				In the event that the sign-in attempt fails, the sign-in attempt will be stored in the session to be used to present a sign-up page to the user (see <xref linkend="signin_signup"/>).
+				By configuring ConnectionFactoryLocator and UsersConnectionRepository as scoped proxies, it enables the proxies to be carried long with the sign-in attempt in the session rather than the actual objects themselves.
+			</para>
+			<para>	
+				The <interfacename>SignInAdapter</interfacename> is exclusively used for provider sign in and so a <interfacename>SignInAdapter</interfacename> bean will need to be added to the configuration.
+				But first, you'll need to write an implementation of the <interfacename>SignInAdapter</interfacename> interface.
+			</para>
+			<para>
+				The <interfacename>SignInAdapter</interfacename> interface is defined as follows:
+			</para>
+			<programlisting language="java"><![CDATA[
+public interface SignInAdapter {
+    void signIn(String userId, Connection<?> connection, NativeWebRequest request);
 }]]>
 			</programlisting>
 			<para>
-				The <methodname>signIn()</methodname> method takes a single argument which is the local application user's user ID normalized as a <classname>String</classname>.
+				The <methodname>signIn()</methodname> method takes the local application user's user ID normalized as a <classname>String</classname>.
 				No other credentials are necessary here because by the time this method is called the user will have signed into the provider and their connection with that provider has been used to prove the user's identity.
 				Implementations of this interface should use this user ID to authenticate the user to the application. 
 			</para>
 			<para>
-				Different applications will implement security differently, so each application must implement <interfacename>SignInService</interfacename> in a way that fits its unique security scheme.
+				Different applications will implement security differently, so each application must implement <interfacename>SignInAdapter</interfacename> in a way that fits its unique security scheme.
 				For example, suppose that an application's security is based Spring Security and simply uses a user's account ID as their principal. 
-				In that case, a simple implementation of <interfacename>SignInService</interfacename> might look like this:
+				In that case, a simple implementation of <interfacename>SignInAdapter</interfacename> might look like this:
 			</para>
 			<programlisting language="java"><![CDATA[
 @Service
-public class SpringSecuritySignInService implements SignInService {
-    public void signIn(String localUserId) {
-        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(localUserId, null, null));
+public class SpringSecuritySignInAdapter implements SignInAdapter {
+    public void signIn(String localUserId, Connection<?> connection, NativeWebRequest request) {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(localUserId, null, null));
     }
-}
-]]>
+}]]>
 			</programlisting>
 		</section>
 		
 		<section>
 			<title>Adding a provider sign in button</title>
 			<para>
-				With <classname>ProviderSignInController</classname> and a <interfacename>SignInService</interfacename> configured, the backend support for provider sign in is in place.
+				With <classname>ProviderSignInController</classname> and a <interfacename>SignInAdapter</interfacename> configured, the backend support for provider sign in is in place.
 	      		The last thing to do is to add a sign in button to your application that will kick off the authentication flow with <classname>ProviderSignInController</classname>.
 	   		</para>
 	   		<para>
@@ -127,7 +188,8 @@ public class SpringSecuritySignInService implements SignInService {
 	  		</para>
 			<programlisting language="xml"><![CDATA[
 <form id="tw_signin" action="<c:url value="/signin/twitter"/>" method="POST">
-    <button type="submit"><img src="<c:url value="/resources/social/twitter/sign-in-with-twitter-d.png"/>" />
+    <button type="submit">
+        <img src="<c:url value="/resources/social/twitter/sign-in-with-twitter-d.png"/>" />
     </button>
 </form>]]>
 			</programlisting>
@@ -161,9 +223,23 @@ public class SpringSecuritySignInService implements SignInService {
 			You can override that default by setting the <code>signupUrl</code> property on the controller. 
 			For example, the following configuration of <classname>ProviderSignInController</classname> sets the sign up URL to "/register": 
 		</para>
+		
+		<programlisting language="java"><![CDATA[
+@Bean
+public ProviderSignInController providerSignInController() {
+    ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator(), 
+            usersConnectionRepository(), new SimpleSignInAdapter());
+    controller.setSignupUrl("/register");
+    return controller;
+}]]>
+		</programlisting>
+		
+		<para>
+			Or to set the sign up URL using XML configuration:
+		</para>
+		
 		<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.connect.signin.web.ProviderSignInController">
-    <constructor-arg value="${application.url}" />
     <property name="signupUrl" value="/register" />
 </bean>]]>
 		</programlisting>
@@ -220,9 +296,10 @@ public String signup(@Valid SignupForm form, BindingResult formBinding, WebReque
     if (formBinding.hasErrors()) {
         return null;
     }
-    boolean accountCreated = createAccount(form, formBinding);
-    if (accountCreated) {
-        ProviderSignInUtils.handlePostSignUp(request);
+    Account account = createAccount(form, formBinding);
+    if (account != null) {
+        SignInUtils.signin(account.getUsername());
+        ProviderSignInUtils.handlePostSignUp(account.getUsername(), request);
         return "redirect:/";
     }
     return null;
