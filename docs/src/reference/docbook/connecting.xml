@@ -79,8 +79,11 @@ public class SocialConfig {
     @Bean
     @Scope(value="request", proxyMode=ScopedProxyMode.INTERFACES)
     public ConnectionRepository connectionRepository(
-            @Value("#{request.userPrincipal}") Principal principal) {
-        return usersConnectionRepository().createConnectionRepository(principal.getName());
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new IllegalStateException("Unable to get a ConnectionRepository: no user signed in");
+        }
+        return usersConnectionRepository().createConnectionRepository(authentication.getName());
     }
 	
 }]]>
