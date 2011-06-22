@@ -18,8 +18,6 @@ package org.springframework.social.connect.web;
 import java.net.URL;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
@@ -99,9 +97,9 @@ public class ProviderSignInController {
 	/**
 	 * Configures the base secure URL for the application this controller is being used in e.g. <code>https://myapp.com</code>. Defaults to null.
 	 * If specified, will be used to generate OAuth callback URLs.
-	 * If not specified, OAuth callback URLs are generated from {@link HttpServletRequest HttpServletRequests}. 
+	 * If not specified, OAuth callback URLs are generated from web request info.
 	 * You may wish to set this property if requests into your application flow through a proxy to your application server.
-	 * In this case, the HttpServletRequest URI may contain a scheme, host, and/or port value that points to an internal server not appropriate for an external callback URL.
+	 * In this case, the request URI may contain a scheme, host, and/or port value that points to an internal server not appropriate for an external callback URL.
 	 * If you have this problem, you can set this property to the base external URL for your application and it will be used to construct the callback URL instead.
 	 * @param applicationUrl the application URL value
 	 */
@@ -124,44 +122,44 @@ public class ProviderSignInController {
 	 * Process the authentication callback from an OAuth 1 service provider.
 	 * Called after the member authorizes the authentication, generally done once by having he or she click "Allow" in their web browser at the provider's site.
 	 * Handles the provider sign-in callback by first determining if a local user account is associated with the connected provider account.
-	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, HttpServletRequest, HttpServletResponse)}.
+	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, NativeWebRequest)}
 	 * If not, redirects the user to a signup page to create a new account with {@link ProviderSignInAttempt} context exposed in the HttpSession.
 	 * @see ProviderSignInAttempt
 	 * @see ProviderSignInUtils 
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="oauth_token")
-	public RedirectView oauth1Callback(@PathVariable String providerId, NativeWebRequest request, HttpServletResponse response) {
+	public RedirectView oauth1Callback(@PathVariable String providerId, NativeWebRequest request) {
 		OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
-		return handleSignIn(connection, request, response);
+		return handleSignIn(connection, request);
 	}
 
 	/**
 	 * Process the authentication callback from an OAuth 2 service provider.
 	 * Called after the user authorizes the authentication, generally done once by having he or she click "Allow" in their web browser at the provider's site.
 	 * Handles the provider sign-in callback by first determining if a local user account is associated with the connected provider account.
-	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, HttpServletRequest, HttpServletResponse)}.
+	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, NativeWebRequest)}.
 	 * If not, redirects the user to a signup page to create a new account with {@link ProviderSignInAttempt} context exposed in the HttpSession.
 	 * @see ProviderSignInAttempt
 	 * @see ProviderSignInUtils 
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
-	public RedirectView oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, NativeWebRequest request, HttpServletResponse response) {
+	public RedirectView oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, NativeWebRequest request) {
 		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
-		return handleSignIn(connection, request, response);
+		return handleSignIn(connection, request);
 	}
 
 	// internal helpers
 
-	private RedirectView handleSignIn(Connection<?> connection, NativeWebRequest request, HttpServletResponse response) {
+	private RedirectView handleSignIn(Connection<?> connection, NativeWebRequest request) {
 		String userId = usersConnectionRepository.findUserIdWithConnection(connection);
 		if (userId == null) {
 			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, usersConnectionRepository);
 			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, RequestAttributes.SCOPE_SESSION);
 			return redirect(signUpUrl);
 		} else {
-			signInAdapter.signIn(userId, connection, request.getNativeRequest(HttpServletRequest.class), response);
+			signInAdapter.signIn(userId, connection, request);
 			return redirect(postSignInUrl);			
 		}			
 	}

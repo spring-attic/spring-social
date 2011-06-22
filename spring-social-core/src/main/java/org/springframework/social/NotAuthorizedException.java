@@ -17,7 +17,7 @@ package org.springframework.social;
 
 /**
  * Indicates the client is not authorized to invoke the API.
- * This can occur:
+ * This can occur when:
  * - when invoking an API operation with a revoked or expired access token
  * - when invoking an operation that requires authorization without providing authorization credentials.
  * @author Craig Walls

@@ -49,9 +49,11 @@ public class SocialConfig {
     @Bean
     public ConnectionFactoryLocator connectionFactoryLocator() {
         ConnectionFactoryRegistry registry = new ConnectionFactoryRegistry();
-        registry.addConnectionFactory(new FacebookConnectionFactory(environment.getProperty("facebook.clientId"),
+        registry.addConnectionFactory(new FacebookConnectionFactory(
+            environment.getProperty("facebook.clientId"),
             environment.getProperty("facebook.clientSecret")));
-        registry.addConnectionFactory(new TwitterConnectionFactory(environment.getProperty("twitter.consumerKey"),
+        registry.addConnectionFactory(new TwitterConnectionFactory(
+            environment.getProperty("twitter.consumerKey"),
             environment.getProperty("twitter.consumerSecret")));
         return registry;
     }
@@ -76,8 +78,12 @@ public class SocialConfig {
 
     @Bean
     @Scope(value="request", proxyMode=ScopedProxyMode.INTERFACES)
-    public ConnectionRepository connectionRepository(@Value("#{request.userPrincipal}") Principal principal) {
-        return usersConnectionRepository().createConnectionRepository(principal.getName());
+    public ConnectionRepository connectionRepository(
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) {
+            throw new IllegalStateException("Unable to get a ConnectionRepository: no user signed in");
+        }
+        return usersConnectionRepository().createConnectionRepository(authentication.getName());
     }
 	
 }]]>
@@ -95,7 +101,8 @@ public class SocialConfig {
 
     @Bean
     public UsersConnectionRepository usersConnectionRepository() {
-        return new JdbcUsersConnectionRepository(dataSource, connectionFactoryLocator(), textEncryptor);
+        return new JdbcUsersConnectionRepository(dataSource, connectionFactoryLocator(), 
+                textEncryptor);
     }
 
     @Inject
@@ -168,7 +175,8 @@ public class SecurityConfig {
 				Here's the XML equivalent of the <classname>ConnectionFactoryRegistry</classname> configuration: 			
 			</para>
 			<programlisting language="xml"><![CDATA[
-<bean id="connectionFactoryLocator" class="org.springframework.social.connect.support.ConnectionFactoryRegistry">
+<bean id="connectionFactoryLocator" 
+      class="org.springframework.social.connect.support.ConnectionFactoryRegistry">
     <property name="connectionFactories">
         <list>
             <bean class="org.springframework.social.twitter.connect.TwitterConnectionFactory">
@@ -190,15 +198,17 @@ public class SecurityConfig {
 				Here's an XML equivalent of the <classname>JdbcUsersConnectionRepository</classname> and <classname>ConnectionRepository</classname> configurations shown before:
 			</para>
 			<programlisting language="xml"><![CDATA[
-<bean id="usersConnectionRepository" class="org.springframework.social.connect.jdbc.JdbcUsersConnectionRepository">
+<bean id="usersConnectionRepository" 
+      class="org.springframework.social.connect.jdbc.JdbcUsersConnectionRepository">
     <constructor-arg ref="dataSource" />
     <constructor-arg ref="connectionFactoryLocator" />
     <constructor-arg ref="textEncryptor" />
 </bean>
 
-<bean id="connectionRepository" factory-method="createConnectionRepository" factory-bean="usersConnectionRepository" scope="request">
+<bean id="connectionRepository" factory-method="createConnectionRepository" 
+      factory-bean="usersConnectionRepository" scope="request">
     <constructor-arg value="#{request.userPrincipal.name}" />
-    <aop:scoped-proxy />
+    <aop:scoped-proxy proxy-target-class="false" />
 </bean>]]>
 			</programlisting>
 			<para>
@@ -212,11 +222,13 @@ public class SecurityConfig {
         http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
 
     <beans profile="dev">
-        <bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="noOpText" />
+        <bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" 
+              factory-method="noOpText" />
     </beans>
 	
     <beans profile="prod">
-        <bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="text">
+        <bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" 
+              factory-method="text">
             <constructor-arg value="${security.encryptPassword}" />
             <constructor-arg value="${security.encryptSalt}" />
         </bean>
@@ -243,8 +255,8 @@ public class SocialConfig {
 
     @Bean
     public ConnectController connectController() {
-        return new ConnectController(environment.getProperty("application.secureUrl"),
-            connectionFactoryLocator(), connectionRepository());
+        return new ConnectController(connectionFactoryLocator(), 
+                connectionRepository());
     }
     
 }]]>
@@ -254,15 +266,9 @@ public class SocialConfig {
 		</para>
 		<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.connect.web.ConnectController">
-    <constructor-arg value="${application.secureUrl}" />
-    <!-- relies on by-type autowiring for the other constructor-args -->
+    <!-- relies on by-type autowiring for the constructor-args -->
 </bean>]]>
 		</programlisting>
-		<para>
-			In either case, <classname>ConnectController</classname> should be constructed with the base "secure URL" for the application.
-			It will use this URL to construct callback URLs used in the authorization flow.
-			Since your application URL will typically vary between environments, its value should be externalized.
-		</para>
 		<para>
 			<classname>ConnectController</classname> supports authorization flows for OAuth 1 and OAuth 2, relying on <interfacename>OAuth1Operations</interfacename> or <interfacename>OAuth2Operations</interfacename> to handle the specifics for each protocol.
 			<classname>ConnectController</classname> will obtain the appropriate OAuth operations interface from one of the provider connection factories registered with <classname>ConnectionFactoryRegistry</classname>.
@@ -270,6 +276,43 @@ public class SocialConfig {
 			The path pattern that <classname>ConnectController</classname> handles is "/connect/{providerId}".
 			Therefore, if <classname>ConnectController</classname> is handling a request for "/connect/twitter", then the <interfacename>ConnectionFactory</interfacename> whose <methodname>getProviderId()</methodname> returns "twitter" will be used.
 			(As configured in the previous section, <classname>TwitterConnectionFactory</classname> will be chosen.)
+		</para>
+		<para>
+			When coordinating a connection with a service provider, <classname>ConnectController</classname> constructs a callback URL for the provider to redirect to after the user grants authorization.
+			By default <classname>ConnectController</classname> uses information from the request to determine the protocol, host name, and port number to use when creating the callback URL.
+			This is fine in many cases, but if your application is hosted behind a proxy those details may point to an internal server and will not be suitable for constructing a public callback URL.
+		</para>
+		<para>
+			If you have this problem, you can set the <code>applicationUrl</code> property to the base external URL of your application.
+			<classname>ConnectController</classname> will use that URL to construct the callback URL instead of using information from the request.
+			For example:
+		</para>
+		<programlisting language="java"><![CDATA[
+@Configuration
+public class SocialConfig {
+
+    @Bean
+    public ConnectController connectController() {
+        ConnectController controller = new ConnectController(
+                connectionFactoryLocator(), connectionRepository());
+        controller.setApplicationUrl(environment.getProperty("application.url"));
+        return controller;
+    }
+    
+}]]>
+		</programlisting>
+		
+		<para>
+			Or if you prefer XML configuration:
+		</para>
+		<programlisting language="xml"><![CDATA[
+<bean class="org.springframework.social.connect.web.ConnectController">
+    <!-- relies on by-type autowiring for the constructor-args -->
+    <property name="applicationUrl" value="${application.url}" />
+</bean>]]>
+		</programlisting>
+		<para>
+			Just as with the authorization keys and secrets, we recommend that you externalize the application URL because it will likely vary across different deployment environments.
 		</para>
 		<para>
 			The flow that <classname>ConnectController</classname> follows is slightly different, depending on which authorization protocol is supported by the service provider.
@@ -333,7 +376,8 @@ public class SocialConfig {
     <p>You haven't created any connections with Twitter yet. Click the button to create
        a connection between your account and your Twitter profile. 
        (You'll be redirected to Twitter where you'll be asked to authorize the connection.)</p>
-    <p><button type="submit"><img src="<c:url value="/resources/social/twitter/signin.png" />"/></button></p>
+    <p><button type="submit"><img src="<c:url value="/resources/social/twitter/signin.png" />"/>
+    </button></p>
 </form>]]>
 			</programlisting>
       		<para>
@@ -403,7 +447,8 @@ public class SocialConfig {
     <p>You haven't created any connections with Twitter yet. Click the button to create
        a connection between your account and your Twitter profile. 
        (You'll be redirected to Twitter where you'll be asked to authorize the connection.)</p>
-    <p><button type="submit"><img src="<c:url value="/resources/social/twitter/signin.png" />"/></button></p>
+    <p><button type="submit"><img src="<c:url value="/resources/social/twitter/signin.png" />"/>
+    </button></p>
 </form>]]>
 				</programlisting>
 				<para>
@@ -525,8 +570,8 @@ public class TweetAfterConnectInterceptor implements ConnectInterceptor<Twitter>
 		<programlisting language="java"><![CDATA[
 @Bean
 public ConnectController connectController() {
-    ConnectController controller = new ConnectController(environment.getProperty("application.secureUrl"),
-        connectionFactoryLocator(), connectionRepository());
+    ConnectController controller = new ConnectController(connectionFactoryLocator(), 
+            connectionRepository());
     controller.addInterceptor(new TweetAfterConnectInterceptor());
     return controller;
 }]]>
@@ -534,7 +579,6 @@ public ConnectController connectController() {
 		<para>Or, as configured in XML:</para>
 		<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.connect.web.ConnectController">
-    <constructor-arg value="${application.secureUrl}" />
     <property name="interceptors">
         <list>
             <bean class="org.springframework.social.showcase.twitter.TweetAfterConnectInterceptor" />

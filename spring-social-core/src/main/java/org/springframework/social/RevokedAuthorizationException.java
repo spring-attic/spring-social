@@ -16,14 +16,15 @@
 package org.springframework.social;
 
 /**
- * Exception indicating that an operation requiring authorization was attempted without providing authorization.
+ * Exception indicating that the authorization used during an operation invocation has been revoked.
+ * This can happen when the user removes the application authorization on the provider or if the provider itself revokes the authorization.
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class MissingAuthorizationException extends NotAuthorizedException {
+public class RevokedAuthorizationException extends RejectedAuthorizationException {
 
-	public MissingAuthorizationException() {
-		super("Authorization is required for the operation, but the API binding was created without authorization.");
+	public RevokedAuthorizationException() {
+		super("The authorization has been revoked.");
 	}
 	
 }

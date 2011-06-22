@@ -20,7 +20,7 @@ package org.springframework.social;
  * @author Craig Walls
  */
 @SuppressWarnings("serial")
-public class ExpiredAuthorizationException extends NotAuthorizedException {
+public class ExpiredAuthorizationException extends RejectedAuthorizationException {
 
 	public ExpiredAuthorizationException() {
 		super("The authorization has expired.");

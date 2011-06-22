@@ -208,7 +208,8 @@ public interface DirectMessageOperations {
 				The way in which an API binding implementation is constructed will vary based on the API's authorization protocol.
 				For APIs secured with OAuth1, the consumerKey, consumerSecret, accessToken, and accessTokenSecret will be required for construction:
 				<programlisting language="java"><![CDATA[
-public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) { ... }]]>
+public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, 
+        String accessTokenSecret) { ... }]]>
 				</programlisting>				
 			</para>
 			<para>
@@ -228,7 +229,8 @@ public FacebookTemplate(String accessToken) { ... }]]>
 				construct a pre-configured RestTemplate instance that performs the request signing for you. For OAuth1:
 				<programlisting language="java"><![CDATA[
 public class TwitterTemplate extends AbstractOAuth1ApiBinding {
-    public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+    public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, 
+            String accessTokenSecret) {
         super(consumerKey, consumerSecret, accessToken, accessTokenSecret);
     }
 }]]>			</programlisting>
@@ -248,7 +250,8 @@ public class FacebookTemplate extends AbstractOAuth2ApiBinding {
 				The existing Spring Social client modules all invoke their RestTemplate instances in a standard manner:
 				<programlisting language="java"><![CDATA[
 public TwitterProfile getUserProfile() {
-    return getRestTemplate().getForObject(buildUri("account/verify_credentials.json"), TwitterProfile.class);
+    return getRestTemplate().getForObject(buildUri("account/verify_credentials.json"), 
+            TwitterProfile.class);
 }]]>
 				</programlisting>
 			</para>
@@ -257,7 +260,8 @@ public TwitterProfile getUserProfile() {
 				This ensures we always properly encode client data submitted in URI query parameters, such as screen_name below:
 				<programlisting language="java"><![CDATA[
 public TwitterProfile getUserProfile(String screenName) {
-    return getRestTemplate().getForObject(buildUri("users/show.json", Collections.singletonMap("screen_name", screenName)), TwitterProfile.class);
+    return getRestTemplate().getForObject(buildUri("users/show.json", 
+            Collections.singletonMap("screen_name", screenName)), TwitterProfile.class);
 }]]>
 				</programlisting>
 			</para>
@@ -277,7 +281,8 @@ public TwitterProfile getUserProfile(String screenName) {
 				To use, first create a MockRestServiceServer against the RestTemplate instance used by your API implementation:
 			</para>
 			<programlisting language="java"><![CDATA[
-TwitterTemplate twitter = new TwitterTemplate("consumerKey", "consumerSecret", "accessToken", "accessTokenSecret");
+TwitterTemplate twitter = new TwitterTemplate("consumerKey", "consumerSecret", "accessToken", 
+        "accessTokenSecret");
 MockRestServer mockServer = MockRestServiceServer.createServer(twitter.getRestTemplate());]]>
 			</programlisting>
 			<para>
@@ -381,6 +386,21 @@ public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider
 				The OAuth2Template will handle the "OAuth dance" with the provider, and should be configured with the provided clientId and clientSecret, along with the provider-specific authorizeUrl and accessTokenUrl.
 			</para>
 			<para>
+				Some providers support provider sign-in (see <xref linkend="signin"/>) through an authentication URL that is distinct from the authorization URL.
+				Using the OAuth2Template constructor as shown above will assume that the authentication URL is the same as the authorization URL.
+				But you may specify a different authentication URL by using OAuth2Template's other constructor.
+				Facebook does not have a separate authentication URL, but for the sake of the example, suppose that Facebook's authentication URL is "https://graph.facebook.com/oauth/authenticate".
+				The following implementation of the FacebookServiceProvider constructor configures the OAuth2Template for that case:
+			</para>
+			<programlisting language="java"><![CDATA[
+public FacebookServiceProvider(String clientId, String clientSecret) {
+    super(new OAuth2Template(clientId, clientSecret,
+       "https://graph.facebook.com/oauth/authorize",
+       "https://graph.facebook.com/oauth/authenticate",
+       "https://graph.facebook.com/oauth/access_token"));
+}]]>
+			</programlisting>
+			<para>
 				In getApi(String), you should construct your API implementation, passing it the access token needed to make authorized requests for protected resources.
 			</para>
 		</section>
@@ -402,6 +422,7 @@ public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<
         super(consumerKey, consumerSecret, new OAuth1Template(consumerKey, consumerSecret, 
             "https://twitter.com/oauth/request_token",
             "https://twitter.com/oauth/authorize",
+            "https://twitter.com/oauth/authenticate",
             "https://twitter.com/oauth/access_token"));
     }
 
@@ -414,8 +435,22 @@ public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<
 			<para>
 				In the constructor, you should call super, passing up the the consumerKey, secret, and configured OAuth1Template.
 				The OAuth1Template will handle the "OAuth dance" with the provider.
-				It should be configured with the provided consumerKey and consumerSecret, along with the provider-specific requestTokenUrl, authorizeUrl, and accessTokenUrl.
+				It should be configured with the provided consumerKey and consumerSecret, along with the provider-specific requestTokenUrl, authorizeUrl, authenticateUrl (optional) and accessTokenUrl.
 			</para>			
+			<para>
+				As you can see here, OAuth1Template is constructed with Twitter's authentication URL (used for provider sign-in; see <xref linkend="signin"/>), which is distinct from their authorization URL.
+				Some providers don't have separate URLs for authentication and authorization.
+				In those cases, you can use OAuth1Template's other constructor which doesn't take the authentication URL as a parameter.
+				For example, here's how the TwitterServiceProvider constructor would look without configuring the authentication URL:
+			</para>
+			<programlisting language="java"><![CDATA[
+public TwitterServiceProvider(String consumerKey, String consumerSecret) {
+    super(consumerKey, consumerSecret, new OAuth1Template(consumerKey, consumerSecret, 
+        "https://twitter.com/oauth/request_token",
+        "https://twitter.com/oauth/authorize",
+        "https://twitter.com/oauth/access_token"));
+}]]>
+			</programlisting>
 			<para>
 				In getApi(String, String), you should construct your API implementation, passing it the four tokens needed to make authorized requests for protected resources.
 			</para>
@@ -449,30 +484,31 @@ public interface ApiAdapter<A> {
 			<programlisting language="java"><![CDATA[
 public class TwitterAdapter implements ApiAdapter<Twitter> {
 
-    public boolean test(Twitter api) {
+    public boolean test(Twitter twitter) {
         try {
-            api.userOperations().getUserProfile();
+            twitter.userOperations().getUserProfile();
             return true;
-        } catch (BadCredentialsException e) {
+        } catch (ApiException e) {
             return false;
         }
     }
 
-    public void setConnectionValues(Twitter api, ConnectionValues values) {
-        TwitterProfile profile = api.userOperations().getUserProfile();
+    public void setConnectionValues(Twitter twitter, ConnectionValues values) {
+        TwitterProfile profile = twitter.userOperations().getUserProfile();
         values.setProviderUserId(Long.toString(profile.getId()));
         values.setDisplayName("@" + profile.getScreenName());
         values.setProfileUrl(profile.getProfileUrl());
         values.setImageUrl(profile.getProfileImageUrl());
     }
     
-    public UserProfile fetchUserProfile(Twitter api) {
-        TwitterProfile profile = api.userOperations().getUserProfile();
-        return new UserProfileBuilder().setName(profile.getName()).setUsername(profile.getScreenName()).build();
+    public UserProfile fetchUserProfile(Twitter twitter) {
+        TwitterProfile profile = twitter.userOperations().getUserProfile();
+        return new UserProfileBuilder().setName(profile.getName()).setUsername(
+                profile.getScreenName()).build();
     }
     
-    public void updateStatus(Twitter api, String message) {
-        api.timelineOperations().updateStatus(message);	
+    public void updateStatus(Twitter twitter, String message) {
+        twitter.timelineOperations().updateStatus(message);	
     }
 	
 }]]>

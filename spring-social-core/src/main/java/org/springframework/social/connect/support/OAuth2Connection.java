@@ -21,11 +21,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.social.ExpiredAuthorizationException;
 import org.springframework.social.ServiceProvider;
 import org.springframework.social.connect.ApiAdapter;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
-import org.springframework.social.connect.ConnectionExpiredException;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
 
@@ -145,7 +145,7 @@ public class OAuth2Connection<A> extends AbstractConnection<A> {
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			synchronized (getMonitor()) {
 				if (hasExpired()) {
-					throw new ConnectionExpiredException(getKey());
+					throw new ExpiredAuthorizationException();
 				}
 				try {
 					return method.invoke(OAuth2Connection.this.api, args);

@@ -116,7 +116,7 @@
 </dependency>]]>
 		</programlisting>
 		<para>
-			If you're developing your own provider module and API binding, you'll need the test module to test it:
+			If you're developing your own client module (<xref linkend="implementing"/>) and API binding, you'll need the test module to test it:
 		</para>
 		<programlisting language="xml"><![CDATA[
 <dependency>
@@ -145,14 +145,14 @@
     <url>http://maven.springframework.org/snapshot</url>
 </repository>]]>
 		</programlisting>
-		<section id="overview-provider-modules">
-			<title>Provider modules</title>
+		<section id="overview-client-modules">
+			<title>Client modules</title>
 			<para>
-				In addition to modules that make up the core Spring Social project, there are a number of provider modules that are released separately that provide connectivity and API bindings to popular SaaS providers.
-				These provider modules are listed in <xref linkend="table-spring-social-provider-modules"/>.
+				In addition to modules that make up the core Spring Social project, there are a number of provider-specific client modules that are released separately that provide connectivity and API bindings to popular SaaS providers.
+				These client modules are listed in <xref linkend="table-spring-social-client-modules"/>.
 			</para>
-			<table xml:id="table-spring-social-provider-modules">
-				<title>Spring Social Provider Modules</title>
+			<table xml:id="table-spring-social-client-modules">
+				<title>Spring Social Client Modules</title>
 				<tgroup cols="3">
 					<colspec align="left" />
 					<colspec colnum="1" colname="col1" colwidth="2*"/>
@@ -211,11 +211,11 @@
 </dependency>]]>
 			</programlisting>	
 	 		<para>
-	 			Note that each of the provider modules will progress and release on a different schedule than Spring Social.
-	 			Consequently, the version numbers for any given provider module may not align with Spring Social or any other provider module.
+	 			Note that each of the client modules will progress and release on a different schedule than Spring Social.
+	 			Consequently, the version numbers for any given client module may not align with Spring Social or any other client module.
 	 		</para>
 	 		<para>
-	 			Refer to each provider module's reference documentation for details on connectivity and the API binding.
+	 			Refer to each client module's reference documentation for details on connectivity and the API binding.
 	 		</para>
 		</section>				
 	</section>
@@ -305,7 +305,7 @@ dependencies {
 			<title>Jackson JSON Processor</title>
 			<para>
 				Spring Social's provider API bindings rely on the <ulink url="http://jackson.codehaus.org/">Jackson JSON Processor</ulink> to map JSON responses to Java objects.
-				Each binding, such as Facebook or Twitter, transitively depends on Jackson 1.8.1, so there's nothing special to do to add Jackson to your project's Maven or Gradle build. 
+				Each binding, such as Facebook or Twitter, transitively depends on Jackson 1.8.2, so there's nothing special to do to add Jackson to your project's Maven or Gradle build. 
 			</para>
   		</section>
 	</section>				

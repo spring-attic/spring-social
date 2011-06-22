@@ -15,10 +15,8 @@
  */
 package org.springframework.social.connect.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.social.connect.Connection;
+import org.springframework.web.context.request.NativeWebRequest;
 
 /**
  * Adapter that bridges between a {@link ProviderSignInController} and a application-specific user sign-in service.
@@ -29,12 +27,11 @@ public interface SignInAdapter {
 
 	/**
 	 * Complete a provider sign-in attempt by signing in the local user account with the specified id.
-	 * Called if this SignInAdapter supports users.
 	 * @param userId the local user id
 	 * @param connection the connection
-	 * @param request a reference to the current servlet request
-	 * @param response a reference to the current servlet response
+	 * @param request a reference to the current web request; is a "native" web request instance providing access to the native
+	 * request and response objects, such as a HttpServletRequest and HttpServletResponse, if needed
 	 */
-	void signIn(String userId, Connection<?> connection, HttpServletRequest request, HttpServletResponse response);
+	void signIn(String userId, Connection<?> connection, NativeWebRequest request);
 
 }
