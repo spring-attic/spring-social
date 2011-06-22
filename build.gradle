@@ -102,6 +102,7 @@ configure(javaprojects) {
     servletApiVersion = '2.5'
     springVersion = '3.1.0.M2'
     springSecurityCryptoVersion = '3.1.0.RC2.crypto'
+    springSecurityWebVersion = '3.1.0.RC2'
 
     sourceSets {
         main {
@@ -164,7 +165,7 @@ project('spring-social-security') {
     dependencies {
         compile ("org.springframework:spring-web:$springVersion")
         compile ("org.springframework:spring-webmvc:$springVersion") { optional = true }
-        compile ("org.springframework.security:spring-security-web:$springSecurityVersion")
+        compile ("org.springframework.security:spring-security-web:$springSecurityWebVersion")
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
         compile project(':spring-social-core')
     }
