@@ -279,9 +279,25 @@ dependencies {
 <dependency>
     <groupId>org.springframework.security</groupId>
     <artifactId>spring-security-crypto</artifactId>
-    <version>3.1.0.RC3</version>
+    <version>3.1.0.RC2.crypto</version>
 </dependency>]]>
 	  		</programlisting>
+	  		
+	  		<note>
+	  			<para>
+	  				Between Spring Security versions 3.1.0.RC1 and 3.1.0.RC2 the crypto module was merged into Spring Security's core module.
+	  				Unfortunately, this would mean that even if you only need the functionality of the crypto module, you'd need to depend on the core module.
+	  				To avoid the unnecessary dependency on the core module, Spring Security 3.1.0.RC3 will once again have a separate crypto module.
+	  			</para>
+	  			<para>
+	  				At the time that this reference documentation is being written, Spring Security 3.1.0.RC3 has not yet been released.
+	  				So that you can depend on the crypto module independently with Spring Security 3.1.0.RC2, a special "RC2.crypto" version of the crypto module may be used.
+	  				Once Spring Security 3.1.0.RC3 is available, you may use version "3.1.0.RC3" of the crypto module without the ".crypto" suffix.
+	  			</para>
+	  			<para>
+	  				In any event, you only need to add the dependency to the crypto module if you're application is not already depending on Spring Security.
+	  			</para>
+	  		</note>
   		</section>
 		<section id="overview-dependencies-httpcomponents">
 			<title>Apache HttpComponents</title>
