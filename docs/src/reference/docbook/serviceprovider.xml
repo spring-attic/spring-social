@@ -131,6 +131,8 @@ public class OAuth2ConnectionFactory<A> extends ConnectionFactory<A> {
 
     public Connection<A> createConnection(AccessGrant accessGrant);
 
+    public Connection<A> createConnection(ConnectionData data);
+
 }]]>
 				</programlisting>
 			</para>
@@ -144,8 +146,13 @@ public interface OAuth2Operations {
 
     String buildAuthorizeUrl(GrantType grantType, OAuth2Parameters parameters);
 
+    String buildAuthenticateUrl(GrantType grantType, OAuth2Parameters parameters);
+
     AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, 
             MultiValueMap<String, String> additionalParameters);
+
+	AccessGrant refreshAccess(String refreshToken, String scope, 
+	        MultiValueMap<String, String> additionalParameters);
 
 }]]>
 			</programlisting>			
@@ -248,6 +255,8 @@ public class OAuth1ConnectionFactory<A> extends ConnectionFactory<A> {
 
     public Connection<A> createConnection(OAuthToken accessToken);
 
+    public Connection<A> createConnection(ConnectionData data);
+
 }]]>
 			</programlisting>
 			<para>
@@ -263,13 +272,15 @@ public interface OAuth1Operations {
 
     String buildAuthorizeUrl(String requestToken, OAuth1Parameters parameters);
 
+    String buildAuthenticateUrl(String requestToken, OAuth1Parameters parameters);
+
     OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, 
             MultiValueMap<String, String> additionalParameters);
 
 }]]>
 			</programlisting>			
 			<para>
-				Callers are first expected to call fetchNewRequestToken(String) obtain a temporary token from the ServiceProvider to use during the authorization session.
+				Callers are first expected to call fetchNewRequestToken(String) to obtain a temporary token from the ServiceProvider to use during the authorization session.
 				Next, callers should call buildAuthorizeUrl(String, OAuth1Parameters) to construct the URL to redirect the user to for connection authorization.
 				Upon user authorization, the authorized request token returned by the provider should be exchanged for an access token.
 				The access token should then used to create a connection.
@@ -368,7 +379,7 @@ public interface ConnectionFactoryLocator {
 
     ConnectionFactory<?> getConnectionFactory(String providerId);
 
-    <A> ConnectionFactory<A> getConnectionFactory(Class<A> serviceApiType);
+    <A> ConnectionFactory<A> getConnectionFactory(Class<A> apiType);
 	
     Set<String> registeredProviderIds();
 
@@ -405,9 +416,11 @@ public interface ConnectionRepository {
     MultiValueMap<String, Connection<?>> findConnectionsToUsers(
             MultiValueMap<String, String> providerUserIds);
 
-    Connection<?> findConnection(ConnectionKey connectionKey);
+    Connection<?> getConnection(ConnectionKey connectionKey);
 
-    <A> Connection<A> findConnection(Class<A> apiType, String providerUserId);	
+    <A> Connection<A> getConnection(Class<A> apiType, String providerUserId);	
+
+    <A> Connection<A> getPrimaryConnection(Class<A> apiType);
 
     <A> Connection<A> findPrimaryConnection(Class<A> apiType);
 	

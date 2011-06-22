@@ -148,7 +148,7 @@
 						<para>
 							<emphasis>Favor organizing the API binding hierarchically by RESTful resource.</emphasis>
 							REST-based APIs typically expose access to a number of resources in an hierarchical manner.
-							For example, Twitter's API provides access to "status timelines", "searches", "lists", "direct messages", "friends", and "users".
+							For example, Twitter's API provides access to "status timelines", "searches", "lists", "direct messages", "friends", "geo location", and "users".
 							Rather than add all operations across these resources to a single flat "Twitter" interface, the Twitter interface is organized hierarchically:
 							<programlisting language="java"><![CDATA[
 public interface Twitter extends ApiBinding {
@@ -156,6 +156,8 @@ public interface Twitter extends ApiBinding {
     DirectMessageOperations directMessageOperations();
 
     FriendOperations friendOperations();
+
+    GeoOperations geoOperations();
 
     ListOperations listOperations();
 
@@ -375,7 +377,7 @@ public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider
            "https://graph.facebook.com/oauth/access_token"));
     }
 
-    public Facebook geteApi(String accessToken) {
+    public Facebook getApi(String accessToken) {
         return new FacebookTemplate(accessToken);
     }
 
@@ -435,7 +437,8 @@ public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<
 			<para>
 				In the constructor, you should call super, passing up the the consumerKey, secret, and configured OAuth1Template.
 				The OAuth1Template will handle the "OAuth dance" with the provider.
-				It should be configured with the provided consumerKey and consumerSecret, along with the provider-specific requestTokenUrl, authorizeUrl, authenticateUrl (optional) and accessTokenUrl.
+				It should be configured with the provided consumerKey and consumerSecret, along with the provider-specific requestTokenUrl, authorizeUrl, authenticateUrl, and accessTokenUrl.
+				The authenticateUrl parameter is optional and may be left out if the provider doesn't have an authentication URL that is different than the authorization URL. 
 			</para>			
 			<para>
 				As you can see here, OAuth1Template is constructed with Twitter's authentication URL (used for provider sign-in; see <xref linkend="signin"/>), which is distinct from their authorization URL.

@@ -142,7 +142,7 @@ public UsersConnectionRepository usersConnectionRepository() {
 			</programlisting>	
 			<para>
 				In the event that the sign in attempt fails, the sign in attempt will be stored in the session to be used to present a sign-up page to the user (see <xref linkend="signin_signup"/>).
-				By configuring ConnectionFactoryLocator and UsersConnectionRepository as scoped proxies, it enables the proxies to be carried long with the sign in attempt in the session rather than the actual objects themselves.
+				By configuring ConnectionFactoryLocator and UsersConnectionRepository as scoped proxies, it enables the proxies to be carried along with the sign in attempt in the session rather than the actual objects themselves.
 			</para>
 			<para>	
 				The <interfacename>SignInAdapter</interfacename> is exclusively used for provider sign in and so a <interfacename>SignInAdapter</interfacename> bean will need to be added to the configuration.
@@ -163,7 +163,7 @@ public interface SignInAdapter {
 			</para>
 			<para>
 				Different applications will implement security differently, so each application must implement <interfacename>SignInAdapter</interfacename> in a way that fits its unique security scheme.
-				For example, suppose that an application's security is based Spring Security and simply uses a user's account ID as their principal. 
+				For example, suppose that an application's security is based on Spring Security and simply uses a user's account ID as their principal. 
 				In that case, a simple implementation of <interfacename>SignInAdapter</interfacename> might look like this:
 			</para>
 			<programlisting language="java"><![CDATA[
@@ -235,7 +235,7 @@ public class SpringSecuritySignInAdapter implements SignInAdapter {
 public ProviderSignInController providerSignInController() {
     ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator(), 
             usersConnectionRepository(), new SimpleSignInAdapter());
-    controller.setSignupUrl("/register");
+    controller.setSignUpUrl("/register");
     return controller;
 }]]>
 			</programlisting>
@@ -323,33 +323,34 @@ public interface ConnectionSignUp {
     String execute(Connection<?> connection);
 }]]>
 			</programlisting>
-
 			<para>
 				The <methodname>execute()</methodname> method is given a <interfacename>Connection</interfacename> that it can use to retrieve information about the user.
 				It can then use that information to create a new local application user and return the new local user ID.
 				For example, the following implementation fetches the user's provider profile and uses it to create a new account: 
 			</para>
 			<programlisting language="java"><![CDATA[
-public class ShowcaseConnectionSignUp implements ConnectionSignUp {
+public class AccountConnectionSignUp implements ConnectionSignUp {
 
-	private final AccountRepository accountRepository;
+    private final AccountRepository accountRepository;
 
-	public ShowcaseConnectionSignUp(AccountRepository accountRepository) {
-		this.accountRepository = accountRepository;
-	}
+    public AccountConnectionSignUp(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
 
-	public String execute(Connection<?> connection) {
-	    UserProfile profile = connection.fetchUserProfile();
-	    Account account = createAccount(profile);
-	    return account != null ? account.getUsername() : null;
-	}
+    public String execute(Connection<?> connection) {
+        UserProfile profile = connection.fetchUserProfile();
+        Account account = createAccount(profile);
+        return account != null ? account.getUsername() : null;
+    }
 
-	private Account createAccount(UserProfile profile) {
-		if(profile == null || profile.getUsername() == null) {
-			return null;
-		}
-		return new Account(profile.getUsername(), profile.getFirstName(), profile.getLastName());
-	}
+    private Account createAccount(UserProfile profile) {
+        if(profile == null || profile.getUsername() == null) {
+            return null;
+        }
+        Account account = new Account(profile.getUsername(), profile.getFirstName(), profile.getLastName());
+        accountRepository.createAccount(account);
+        return account;
+    }
 	
 }]]>
 			</programlisting>			

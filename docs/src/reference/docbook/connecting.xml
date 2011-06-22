@@ -322,7 +322,8 @@ public class SocialConfig {
 			<listitem><para><code>GET /connect/{providerId}</code> - Displays a web page showing connection status to the provider.</para></listitem>
 			<listitem><para><code>POST /connect/{providerId}</code> - Initiates the connection flow with the provider.</para></listitem>
 			<listitem><para><code>GET /connect/{providerId}?code={code}</code> - Receives the authorization callback from the provider, accepting an authorization code. Uses the code to request an access token and complete the connection.</para></listitem>
-			<listitem><para><code>DELETE /connect/{providerId}</code> - Severs a connection with the provider.</para></listitem>
+			<listitem><para><code>DELETE /connect/{providerId}</code> - Severs all of the user's connection with the provider.</para></listitem>
+			<listitem><para><code>DELETE /connect/{providerId}/{providerUserId}</code> - Severs a specific connection with the provider, based on the user's provider user ID.</para></listitem>
 		</itemizedlist>    
 		<para>
 			For an OAuth 1 provider, the flow is very similar, with only a subtle difference in how the callback is handled:
@@ -338,7 +339,8 @@ public class SocialConfig {
 					The <code>oauth_verifier</code> parameter is optional and is only used for providers implementing OAuth 1.0a.
 				</para>
 			</listitem>
-			<listitem><para><code>DELETE /connect/{providerId}</code> - Severs a connection with the provider.</para></listitem>
+			<listitem><para><code>DELETE /connect/{providerId}</code> - Severs all of the user's connection with the provider.</para></listitem>
+			<listitem><para><code>DELETE /connect/{providerId}/{providerUserId}</code> - Severs a specific connection with the provider, based on the user's provider user ID.</para></listitem>
 		</itemizedlist>
 
 		<section id="connect-controller-flow-1">
