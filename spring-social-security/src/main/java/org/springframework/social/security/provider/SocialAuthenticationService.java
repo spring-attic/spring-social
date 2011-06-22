@@ -123,5 +123,11 @@ public interface SocialAuthenticationService<S> {
 	SocialAuthenticationToken getAuthToken(AuthenticationMode authMode, HttpServletRequest request,
 			HttpServletResponse response) throws SocialAuthenticationRedirectException;
 
+	/**
+	 * 
+	 * @param request
+	 * @param connection
+	 * @return null to use filter default
+	 */
 	String getConnectionAddedRedirectUrl(HttpServletRequest request, Connection<?> connection);
 }

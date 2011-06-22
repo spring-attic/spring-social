@@ -4,17 +4,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.social.connect.Connection;
-import org.springframework.util.Assert;
 
 public abstract class AbstractSocialAuthenticationService<S> implements SocialAuthenticationService<S>,
 		InitializingBean {
 
 	private AuthenticationMode authenticationMode = null;
 	private ConnectionCardinality connectionCardinality = ConnectionCardinality.ONE_TO_ONE;
-	private String connectionAddedRedirectUrl = "/";
+	private String connectionAddedRedirectUrl;
 
 	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(connectionAddedRedirectUrl, "connectionAddedRedirectUrl not configured");
 	}
 
 	public AbstractSocialAuthenticationService(AuthenticationMode authenticationMode) {

@@ -66,6 +66,7 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 
 	private String filterProcessesUrl = "/auth";
 	private String signupUrl = "/signup";
+	private String connectionAddedRedirectUrl = "/";
 	
 	private SessionAuthenticationStrategy sessionStrategy = new NullAuthenticatedSessionStrategy();
 
@@ -255,7 +256,12 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 				if (userId != null && principal instanceof ConnectionData) {
 					Connection<?> connection = addConnection(authService, userId, (ConnectionData) principal);
 					if(connection != null) {
-						throw new SocialAuthenticationRedirectException(authService.getConnectionAddedRedirectUrl(request, connection));
+						String redirectUrl = authService.getConnectionAddedRedirectUrl(request, connection);
+						if (redirectUrl == null) {
+							// use default instead
+							redirectUrl = getConnectionAddedRedirectUrl();
+						}
+						throw new SocialAuthenticationRedirectException(redirectUrl);
 					} else {
 						return null;
 					}
@@ -446,6 +452,14 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 
 	public void setSignupUrl(String signupUrl) {
 		this.signupUrl = signupUrl;
+	}
+
+	public String getConnectionAddedRedirectUrl() {
+		return connectionAddedRedirectUrl;
+	}
+
+	public void setConnectionAddedRedirectUrl(String connectionAddedRedirectUrl) {
+		this.connectionAddedRedirectUrl = connectionAddedRedirectUrl;
 	}
 
 	public void setPostLoginUrl(String postLoginUrl) {
