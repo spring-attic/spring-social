@@ -272,8 +272,9 @@ dependencies {
 		<section id="overview-dependencies-springsecurity">
 			<title>Spring Security Crypto</title>
 			<para>
-				If you're using a ConnectionRepository implementation, <interfacename>TextEncryptor</interfacename> from <ulink url="http://static.springsource.org/spring-security/site">Spring Security 3.1</ulink> is required to encrypt connection data as it is persisted. 
-			 	In that case, if you're not already using Spring Security you'll need to add the standalone crypto module to your project build:
+				If you're not already using Spring Security to secure your application, you'll need to add the standalone crypto module. 
+				This is required for OAuth1 request signing and encrypting credentials when persisting Connection data. 
+				If you're already using Spring Security, there is nothing for you to do because the crypto library comes included.
 			</para>
 		    <programlisting language="xml"><![CDATA[
 <dependency>
@@ -282,22 +283,6 @@ dependencies {
     <version>3.1.0.RC2.crypto</version>
 </dependency>]]>
 	  		</programlisting>
-	  		
-	  		<note>
-	  			<para>
-	  				Between Spring Security versions 3.1.0.RC1 and 3.1.0.RC2 the crypto module was merged into Spring Security's core module.
-	  				Unfortunately, this would mean that even if you only need the functionality of the crypto module, you'd need to depend on the core module.
-	  				To avoid the unnecessary dependency on the core module, Spring Security 3.1.0.RC3 will once again have a separate crypto module.
-	  			</para>
-	  			<para>
-	  				At the time that this reference documentation is being written, Spring Security 3.1.0.RC3 has not yet been released.
-	  				So that you can depend on the crypto module independently with Spring Security 3.1.0.RC2, a special "RC2.crypto" version of the crypto module may be used.
-	  				Once Spring Security 3.1.0.RC3 is available, you may use version "3.1.0.RC3" of the crypto module without the ".crypto" suffix.
-	  			</para>
-	  			<para>
-	  				In any event, you only need to add the dependency to the crypto module if you're application is not already depending on Spring Security.
-	  			</para>
-	  		</note>
   		</section>
 		<section id="overview-dependencies-httpcomponents">
 			<title>Apache HttpComponents</title>
@@ -325,4 +310,25 @@ dependencies {
 			</para>
   		</section>
 	</section>				
+	<section id="overview-samples">
+		<title>Sample Code</title>
+		<para>
+			We have created a few sample applications to illustrate the capabilities of Spring Social.
+			To obtain the <ulink>https://github.com/SpringSource/spring-social-samples</ulink> code, use the following git command:
+		</para>
+		<programlisting language="txt">
+git clone git://github.com/SpringSource/spring-social-samples.git
+		</programlisting>
+		
+		<para>
+			The Spring Social Samples project includes the following samples:
+		</para>
+		
+		<itemizedlist>
+			<listitem><para>spring-social-quickstart - Designed to get you up and running quickly.</para></listitem>
+			<listitem><para>spring-social-showcase - Illustrates most of Spring Social's features.</para></listitem>
+			<listitem><para>spring-social-extending-new-api - Shows how to extend Spring Social to implement a new ServiceProvider and API binding.</para></listitem>
+			<listitem><para>spring-social-extending-existing-api - Shows how to extend Spring Social and re-use an existing API binding.</para></listitem>
+		</itemizedlist>
+	</section>
 </chapter>
