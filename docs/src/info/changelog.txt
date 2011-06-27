@@ -1,4 +1,4 @@
-Spring Social 1.0.0 Release Candidate 1 (June 14, 2011)
+Spring Social 1.0.0 Release Candidate 1 (June 22, 2011)
 ======================================================
 Compatibility Notes
    * Extracted provider-specific modules to separate projects.
@@ -27,27 +27,31 @@ New Features
    * Introduced super ApiBinding interface with isAuthorized() tester that can be used to determine if the application has been authorized to invoke the API on behalf of a user.
 
 Bug Fixes
-   * SOCIAL-152: Spring Social depends upon some Spring 3.1M1 (or unreleased
-        3.0.6) classes.
-   * SOCIAL-148: LinkedInTemplate not working on Android because of 
-        javax.xml.bind.annotation.XmlRootElement dependency
-   * SOCIAL-145: Deserialization error on WorkEntry when entry contains location,
-        position, or description.
-   * SOCIAL-158: javax.Inject dependency is marked optional on spring-social-web
-        and it is required
-   * SOCIAL-133: RestTemplate not injected into OAuth2Template
-   * SOCIAL-168: Servlet path must be configurable in the redirect URL generation 
-        of ConnectController
-   * SOCIAL-170: Wrong character set when Spring Social is used with Spring 3.0.x
-   * SOCIAL-142: DuplicateKeyException not handled properly when attempting to
-        insert a connection that already exists
-   * SOCIAL-102: ConnectController should handle ConnectionAlreadyExistsException
-        more gracefully
-   * SOCIAL-174: Facebook feed deserialization fails when a post comments field
-        doesn't have data
-   * SOCIAL-173: TwitterErrorHandler and FacebookErrorHandler should not fail on
-        non-JSON error bodies.
-
+   * Fixed Spring 3.0 compatibility issues (SOCIAL-152)
+   * Converted LinkedInTemplate response binding to be JSON-based, fixing a
+     problem with Android compatibility (SOCIAL-148)
+   * Fixed several JSON deserialization issues by either adding new fields to
+     the model classes or by setting Jackson to ignore unknown properties.
+   * Made javax.Inject dependency a required dependency of spring-social-web (SOCIAL-158)
+   * Added setRequestFactory() methods to OAuth1Template and OAuth2Template to
+     allow for customization of the request factory (SOCIAL-133)
+   * AbstractOAuth1ApiBinding and AbstractOAuth2ApiBinding now create a RestTemplate
+     with a minimal set of message converters. In doing so, they set "UTF-8" character
+     set on FormHttpMessageConverter. (SOCIAL-170)
+   * Handle DuplicateKeyException, putting "social.addConnection.duplicate" in request
+     as flash variable and then into model so that view can inform user of the problem.
+   * Fixed Android 8 (and lower) compatibility issue by creating a HttpComponents
+     request factory that does not put an "Expect: 100-continue" header in the
+     request (SOCIAL-144)
+   * Added setSignUpUrl() to ProviderSignInController to enable configuration of
+     the sign up page location (SOCIAL-183)
+   * Changed TwitterErrorHandler and FacebookErrorHandler to those an
+     UncategorizedApiException if an error response body is non-JSON (and thus does
+     not match the expected error message response). (SOCIAL-173)
+   * Made the applicationUrl property of ConnectController and ProviderSignInController
+     optional, constructing the callback URL from information in the request (SOCIAL-187)
+   * Create new SimpleDateFormat as-needed to fix thread safety problem (SOCIAL-198)
+     
 Spring Social 1.0.0 Milestone 3 (Apr 27, 2011)
 ==============================================
 New Features

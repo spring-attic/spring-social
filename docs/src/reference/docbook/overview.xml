@@ -272,14 +272,15 @@ dependencies {
 		<section id="overview-dependencies-springsecurity">
 			<title>Spring Security Crypto</title>
 			<para>
-				If you're using a ConnectionRepository implementation, <interfacename>TextEncryptor</interfacename> from <ulink url="http://static.springsource.org/spring-security/site">Spring Security 3.1</ulink> is required to encrypt connection data as it is persisted. 
-			 	In that case, if you're not already using Spring Security you'll need to add the standalone crypto module to your project build:
+				If you're not already using Spring Security to secure your application, you'll need to add the standalone crypto module. 
+				This is required for OAuth1 request signing and encrypting credentials when persisting Connection data. 
+				If you're already using Spring Security, there is nothing for you to do because the crypto library comes included.
 			</para>
 		    <programlisting language="xml"><![CDATA[
 <dependency>
     <groupId>org.springframework.security</groupId>
     <artifactId>spring-security-crypto</artifactId>
-    <version>3.1.0.RC3</version>
+    <version>3.1.0.RC2.crypto</version>
 </dependency>]]>
 	  		</programlisting>
   		</section>
@@ -309,4 +310,25 @@ dependencies {
 			</para>
   		</section>
 	</section>				
+	<section id="overview-samples">
+		<title>Sample Code</title>
+		<para>
+			We have created a few sample applications to illustrate the capabilities of Spring Social.
+			To obtain the <ulink>https://github.com/SpringSource/spring-social-samples</ulink> code, use the following git command:
+		</para>
+		<programlisting language="txt">
+git clone git://github.com/SpringSource/spring-social-samples.git
+		</programlisting>
+		
+		<para>
+			The Spring Social Samples project includes the following samples:
+		</para>
+		
+		<itemizedlist>
+			<listitem><para>spring-social-quickstart - Designed to get you up and running quickly.</para></listitem>
+			<listitem><para>spring-social-showcase - Illustrates most of Spring Social's features.</para></listitem>
+			<listitem><para>spring-social-extending-new-api - Shows how to extend Spring Social to implement a new ServiceProvider and API binding.</para></listitem>
+			<listitem><para>spring-social-extending-existing-api - Shows how to extend Spring Social and re-use an existing API binding.</para></listitem>
+		</itemizedlist>
+	</section>
 </chapter>

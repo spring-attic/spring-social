@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.Connection;
@@ -195,16 +196,12 @@ public class ConnectController  {
 	 * Note: requires {@link HiddenHttpMethodFilter} to be registered with the '_method' request parameter set to 'DELETE' to convert web browser POSTs to DELETE requests.
 	 */
 	@RequestMapping(value="/{providerId}/{providerUserId}", method=RequestMethod.DELETE)
-	public RedirectView removeConnection(@PathVariable String providerId, @PathVariable String providerUserId) {
+	public RedirectView removeConnection(@PathVariable String providerId, @PathVariable String providerUserId, HttpServletRequest request) {
 		connectionRepository.removeConnection(new ConnectionKey(providerId, providerUserId));
-		return connectionStatusRedirect(providerId);
+		return connectionStatusRedirect("../" + providerId);
 	}
 
 	// internal helpers
-
-	private String getControllerPath() {
-		return "/connect";
-	}
 
 	private String getViewPath() {
 		return "connect/";
@@ -254,8 +251,8 @@ public class ConnectController  {
 		}
 	}
 
-	private RedirectView connectionStatusRedirect(String providerId) {
-		return new RedirectView(getControllerPath() + "/" + providerId, true);
+	private RedirectView connectionStatusRedirect(String relativePath) {
+		return new RedirectView(relativePath, true);
 	}
 
 	private static final String DUPLICATE_CONNECTION_ATTRIBUTE = "social.addConnection.duplicate";
