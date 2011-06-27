@@ -19,8 +19,10 @@ package org.springframework.social.security;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.FilterChain;
@@ -50,6 +52,7 @@ import org.springframework.security.web.authentication.session.NullAuthenticated
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.connect.ConnectionKey;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.security.provider.SocialAuthenticationService;
@@ -246,9 +249,8 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 						throw e;
 					} else {
 						// store ConnectionData in session and redirect to register page
-						if (SignInAttempts.add(request.getSession(), (ConnectionData) token.getPrincipal())) {
-							throw new SocialAuthenticationRedirectException(getSignupUrl());
-						}
+						SignInAttempts.add(request.getSession(), (ConnectionData) token.getPrincipal());
+						throw new SocialAuthenticationRedirectException(getSignupUrl());
 					}
 				}
 			} else {
@@ -549,8 +551,11 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		
 		private static final String ATTR_SIGN_IN_ATTEMPT = SignInAttempts.class.getName();
 		
-		private List<ConnectionData> attempts = new ArrayList<ConnectionData>(1);
+		private Map<ConnectionKey, ConnectionData> attempts = new HashMap<ConnectionKey, ConnectionData>();
 		
+		/**
+		 * @return always <code>true</code>
+		 */
 		private static boolean add(HttpSession session, ConnectionData data) {
 			SignInAttempts signInAttempts = (SignInAttempts) session.getAttribute(ATTR_SIGN_IN_ATTEMPT);
 			if (signInAttempts == null) {
@@ -578,26 +583,19 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		private SignInAttempts() {
 		}
 		
+		/**
+		 * @return <code>true</code> if previous connection was replaced
+		 */
 		private boolean addAttempt(ConnectionData data) {
-			if (!contains(data.getProviderId(), data.getProviderUserId())) {
-				attempts.add(data);
-				return true;
-			} else {
-				return false;
-			}
+			return attempts.put(key(data), data) != null;
 		}
 		
-		private boolean contains(String providerId, String providerUserId) {
-			for (ConnectionData attempt : attempts) {
-				if (providerId.equals(attempt.getProviderId()) && providerUserId.equals(attempt.getProviderUserId())) {
-					return true;
-				}
-			}
-			return false;
-		}
-
 		private List<ConnectionData> getAttempts() {
-			return Collections.unmodifiableList(attempts);
+			return new ArrayList<ConnectionData>(attempts.values());
+		}
+		
+		private ConnectionKey key(ConnectionData data) {
+			return new ConnectionKey(data.getProviderId(), data.getProviderUserId());
 		}
 	}
 }

@@ -199,10 +199,10 @@ public class SocialAuthenticationFilterTest {
 	@Test
 	public void addSignInAttempt() {
 		MockHttpSession session = new MockHttpSession();
-		assertTrue(SocialAuthenticationFilter.addSignInAttempt(session, data("A", "a")));
 		assertFalse(SocialAuthenticationFilter.addSignInAttempt(session, data("A", "a")));
-		assertTrue(SocialAuthenticationFilter.addSignInAttempt(session, data("A", "b")));
-		assertTrue(SocialAuthenticationFilter.addSignInAttempt(session, data("B", "a")));
+		assertTrue(SocialAuthenticationFilter.addSignInAttempt(session, data("A", "a")));
+		assertFalse(SocialAuthenticationFilter.addSignInAttempt(session, data("A", "b")));
+		assertFalse(SocialAuthenticationFilter.addSignInAttempt(session, data("B", "a")));
 		assertEquals(3, SocialAuthenticationFilter.getSignInAttempts(session).size());
 		SocialAuthenticationFilter.clearSignInAttempts(session);
 		assertEquals(0, SocialAuthenticationFilter.getSignInAttempts(session).size());
