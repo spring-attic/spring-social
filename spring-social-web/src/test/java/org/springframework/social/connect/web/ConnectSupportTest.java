@@ -57,18 +57,57 @@ public class ConnectSupportTest {
 	}
 
 	@Test
+	public void buildOAuthUrl_OAuth10_withContextPath() {
+		ConnectSupport support = new ConnectSupport();
+		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
+		mockRequest.setScheme("http");
+		mockRequest.setServerName("somesite.com");
+		mockRequest.setRequestURI("/appname/connect/someprovider");
+		ServletWebRequest request = new ServletWebRequest(mockRequest);
+		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10), request);
+		assertEquals("https://serviceprovider.com/oauth/authorize?oauth_callback=http://somesite.com/appname/connect/someprovider", url);
+	}
+	
+	@Test
 	public void buildOAuthUrl_OAuth10_withApplicationUrl() throws Exception {
 		ConnectSupport support = new ConnectSupport();
 		support.setApplicationUrl(new URL("https://someothersite.com:1234"));
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
-		mockRequest.setRequestURI("/connect/someprovider");
+		mockRequest.setServletPath("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10), request);
 		assertEquals("https://serviceprovider.com/oauth/authorize?oauth_callback=https://someothersite.com:1234/connect/someprovider", url);
 	}
+	
+	@Test
+	public void buildOAuthUrl_OAuth10_withApplicationUrlAndNonDefaultServletPath() throws Exception {
+		ConnectSupport support = new ConnectSupport();
+		support.setApplicationUrl(new URL("http://somehost:8080/spring-social-showcase"));
+		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
+		mockRequest.setScheme("http");
+		mockRequest.setServerName("somesite.com");
+		mockRequest.setServletPath("/foo");
+		mockRequest.setPathInfo("/connect/someprovider");
+		ServletWebRequest request = new ServletWebRequest(mockRequest);
+		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10), request);
+		assertEquals("https://serviceprovider.com/oauth/authorize?oauth_callback=http://somehost:8080/spring-social-showcase/foo/connect/someprovider", url);
+	}
 
+	@Test
+	public void buildOAuthUrl_OAuth10_withApplicationUrlHavingDeepPath() throws Exception {
+		ConnectSupport support = new ConnectSupport();
+		support.setApplicationUrl(new URL("http://ec2.instance.com:8080/spring-social/showcase"));
+		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
+		mockRequest.setScheme("http");
+		mockRequest.setServerName("somesite.com");
+		mockRequest.setServletPath("/connect/someprovider");
+		ServletWebRequest request = new ServletWebRequest(mockRequest);
+		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10), request);
+		assertEquals("https://serviceprovider.com/oauth/authorize?oauth_callback=http://ec2.instance.com:8080/spring-social/showcase/connect/someprovider", url);
+	}
+	
 	@Test
 	public void buildOAuthUrl_OAuth10_useAuthenticateUrl() {
 		ConnectSupport support = new ConnectSupport();
@@ -133,16 +172,56 @@ public class ConnectSupportTest {
 	}
 
 	@Test
+	public void buildOAuthUrl_OAuth2_withContextPath() throws Exception {
+		ConnectSupport support = new ConnectSupport();
+		support.setApplicationUrl(new URL("https://someothersite.com:1234"));
+		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
+		mockRequest.setScheme("http");
+		mockRequest.setServerName("somesite.com");
+		mockRequest.setServletPath("/appname/connect/someprovider");
+		ServletWebRequest request = new ServletWebRequest(mockRequest);
+		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
+		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://someothersite.com:1234/appname/connect/someprovider", url);
+	}
+	
+	@Test
 	public void buildOAuthUrl_OAuth2_withApplicationUrl() throws Exception {
 		ConnectSupport support = new ConnectSupport();
 		support.setApplicationUrl(new URL("https://someothersite.com:1234"));
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
-		mockRequest.setRequestURI("/connect/someprovider");
+		mockRequest.setServletPath("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
 		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://someothersite.com:1234/connect/someprovider", url);
+	}
+	
+	@Test
+	public void buildOAuthUrl_OAuth2_withApplicationUrlAndNonDefaultServletPath() throws Exception {
+		ConnectSupport support = new ConnectSupport();
+		support.setApplicationUrl(new URL("https://someothersite.com:1234/spring-social-showcase"));
+		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
+		mockRequest.setScheme("http");
+		mockRequest.setServerName("somesite.com");
+		mockRequest.setServletPath("/foo");
+		mockRequest.setPathInfo("/connect/someprovider");
+		ServletWebRequest request = new ServletWebRequest(mockRequest);
+		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
+		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://someothersite.com:1234/spring-social-showcase/foo/connect/someprovider", url);
+	}
+
+	@Test
+	public void buildOAuthUrl_OAuth2_withApplicationUrlHavingDeepPath() throws Exception {
+		ConnectSupport support = new ConnectSupport();
+		support.setApplicationUrl(new URL("http://ec2.instance.com:8080/spring-social/showcase"));
+		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
+		mockRequest.setScheme("http");
+		mockRequest.setServerName("somesite.com");
+		mockRequest.setServletPath("/connect/someprovider");
+		ServletWebRequest request = new ServletWebRequest(mockRequest);
+		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
+		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=http://ec2.instance.com:8080/spring-social/showcase/connect/someprovider", url);
 	}
 
 	@Test
