@@ -69,7 +69,7 @@ public class SocialAuthenticationProvider implements AuthenticationProvider {
 			throw new BadCredentialsException("unknown access token");
 		}
 
-		final UserDetails userDetails = userDetailsService.loadUserByAccountId(userId);
+		final UserDetails userDetails = userDetailsService.loadUserByUserId(userId);
 		if (userDetails == null) {
 			throw new UsernameNotFoundException("unknown connected account id");
 		}

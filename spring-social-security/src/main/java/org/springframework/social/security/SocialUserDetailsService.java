@@ -16,16 +16,13 @@
 
 package org.springframework.social.security;
 
-import java.io.Serializable;
-
 import org.springframework.dao.DataAccessException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 
 /**
- * similar to {@link UserDetailsService} but loads details by account id, not username
+ * similar to {@link UserDetailsService} but loads details by user id, not username
  *
  * @author stf@molindo.at
  */
@@ -34,5 +31,5 @@ public interface SocialUserDetailsService {
 	/**
 	 * @see UserDetailsService#loadUserByUsername(String)
 	 */
-	UserDetails loadUserByAccountId(Serializable accountId) throws UsernameNotFoundException, DataAccessException;
+	SocialUserDetails loadUserByUserId(String userId) throws UsernameNotFoundException, DataAccessException;
 }

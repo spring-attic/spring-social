@@ -254,7 +254,7 @@ public class SocialAuthenticationFilterTest {
 			auth = new SocialAuthenticationToken(DummyConnection.dummy("provider", "user").createData(), null);
 
 			Collection<? extends GrantedAuthority> authorities = Collections.emptyList();
-			User user = new User("foo", "bar", authorities);
+			User user = new SocialUser("foo", "bar", authorities);
 			authSuccess = new SocialAuthenticationToken("mock", user, null, authorities);
 		}
 

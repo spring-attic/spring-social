@@ -41,7 +41,6 @@ import org.springframework.security.authentication.event.InteractiveAuthenticati
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AbstractAuthenticationTargetUrlRequestHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -245,10 +244,11 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 				token.setDetails(getAuthDetailsSource().buildDetails(request));
 				try {
 					Authentication success = getAuthManager().authenticate(token);
+					Assert.isInstanceOf(SocialUserDetails.class, success.getPrincipal(), "unexpected principle type");
 					
 					// success, now update existing data if necessary
 					if (isUpdateConnections()) {
-						String userId = ((UserDetails)success.getPrincipal()).getUsername();
+						String userId = ((SocialUserDetails)success.getPrincipal()).getUserId();
 						ConnectionData data = (ConnectionData) token.getPrincipal();
 						
 						Connection<?> connection = authService.getConnectionFactory().createConnection(data);

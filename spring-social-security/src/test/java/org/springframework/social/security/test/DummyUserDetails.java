@@ -22,10 +22,10 @@ import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.social.security.SocialUserDetails;
 
 @SuppressWarnings("serial")
-public class DummyUserDetails implements UserDetails {
+public class DummyUserDetails implements SocialUserDetails {
 	
 	private final String username;
 	private final String password;
@@ -39,6 +39,10 @@ public class DummyUserDetails implements UserDetails {
 		}
 	}
 	
+	public String getUserId() {
+		return getUsername();
+	}
+
 	public String getUsername() {
 		return username;
 	}

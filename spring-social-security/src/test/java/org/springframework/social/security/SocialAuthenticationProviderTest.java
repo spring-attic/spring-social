@@ -69,15 +69,15 @@ public class SocialAuthenticationProviderTest {
 		provider.setUsersConnectionRepository(repo);
 		provider.setUserDetailsService(userDetailsService);
 
-		final UserDetails userDetails = new DummyUserDetails("user1", "pass", "moderator");
+		final DummyUserDetails userDetails = new DummyUserDetails("user1", "pass", "moderator");
 		
 		// mapping from providerUserId to userId
 		Mockito.when(repo.findUserIdsConnectedTo("provider", set("providerUser1"))).thenReturn(set("user1"));
 		Mockito.when(repo.findUserIdsConnectedTo("provider", set("providerUser2"))).thenReturn(set("user1", "user2"));
 		Mockito.when(repo.findUserIdsConnectedTo("provider", set("providerUser3"))).thenReturn(set("user3"));
 		// mapping from userId to userDetails
-		Mockito.when(userDetailsService.loadUserByAccountId("user1")).thenReturn(userDetails);
-		Mockito.when(userDetailsService.loadUserByAccountId("user2")).thenReturn(new DummyUserDetails("user2", "pass", "moderator"));
+		Mockito.when(userDetailsService.loadUserByUserId("user1")).thenReturn(userDetails);
+		Mockito.when(userDetailsService.loadUserByUserId("user2")).thenReturn(new DummyUserDetails("user2", "pass", "moderator"));
 		
 		// success
 		SocialAuthenticationToken token = new SocialAuthenticationToken(data("providerUser1"), null);
