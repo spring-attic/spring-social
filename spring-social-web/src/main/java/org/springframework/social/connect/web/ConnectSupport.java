@@ -144,21 +144,17 @@ public class ConnectSupport {
 	private String callbackUrl(NativeWebRequest request) {
 		HttpServletRequest nativeRequest = request.getNativeRequest(HttpServletRequest.class);
 		if (applicationUrl != null) {
-			return applicationUrl.getProtocol() + "://" + applicationUrl.getHost() + portPart() + nativeRequest.getRequestURI();
+			return applicationUrl + connectPath(nativeRequest);
 		} else {
 			return nativeRequest.getRequestURL().toString();
 		}
 	}
 
-	private String portPart() {
-		int port = applicationUrl.getPort();
-		if (port == -1) {
-			return "";
-		} else {
-			return ":" + port;
-		}
+	private String connectPath(HttpServletRequest request) {
+		String pathInfo = request.getPathInfo();
+		return request.getServletPath() + (pathInfo != null ? pathInfo : "");
 	}
-	
+
 	private String buildOAuth1Url(OAuth1Operations oauthOperations, String requestToken, OAuth1Parameters parameters) {
 		if (useAuthenticateUrl) {
 			return oauthOperations.buildAuthenticateUrl(requestToken, parameters);			
