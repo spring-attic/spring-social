@@ -41,6 +41,7 @@ import org.springframework.security.authentication.event.InteractiveAuthenticati
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AbstractAuthenticationTargetUrlRequestHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -71,6 +72,7 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 	private String filterProcessesUrl = "/auth";
 	private String signupUrl = "/signup";
 	private String connectionAddedRedirectUrl = "/";
+	private boolean updateConnections = true;
 	
 	private SessionAuthenticationStrategy sessionStrategy = new NullAuthenticatedSessionStrategy();
 
@@ -242,14 +244,26 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 				}
 				token.setDetails(getAuthDetailsSource().buildDetails(request));
 				try {
-					return getAuthManager().authenticate(token);
+					Authentication success = getAuthManager().authenticate(token);
+					
+					// success, now update existing data if necessary
+					if (isUpdateConnections()) {
+						String userId = ((UserDetails)success.getPrincipal()).getUsername();
+						ConnectionData data = (ConnectionData) token.getPrincipal();
+						
+						Connection<?> connection = authService.getConnectionFactory().createConnection(data);
+						ConnectionRepository repo = getUsersConnectionRepository().createConnectionRepository(userId);
+						repo.updateConnection(connection);
+					}
+					
+					return success;
 				} catch (BadCredentialsException e) {
 					// connection unknown, register new user?
 					if (getSignupUrl() == null) {
 						throw e;
 					} else {
 						// store ConnectionData in session and redirect to register page
-						SignInAttempts.add(request.getSession(), (ConnectionData) token.getPrincipal());
+						addSignInAttempt(request.getSession(), (ConnectionData) token.getPrincipal());
 						throw new SocialAuthenticationRedirectException(getSignupUrl());
 					}
 				}
@@ -466,6 +480,14 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 
 	public void setConnectionAddedRedirectUrl(String connectionAddedRedirectUrl) {
 		this.connectionAddedRedirectUrl = connectionAddedRedirectUrl;
+	}
+
+	public boolean isUpdateConnections() {
+		return updateConnections;
+	}
+
+	public void setUpdateConnections(boolean updateConnections) {
+		this.updateConnections = updateConnections;
 	}
 
 	public void setPostLoginUrl(String postLoginUrl) {

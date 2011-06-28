@@ -35,6 +35,7 @@ import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -74,6 +75,7 @@ public class SocialAuthenticationFilterTest {
 		{
 			ConnectionFactory<Object> factory = mock(MockConnectionFactory.class);
 			when(factory.getProviderId()).thenReturn("mockExplicit");
+			when(factory.createConnection(Mockito.any(ConnectionData.class))).thenAnswer(DummyConnection.answer());
 
 			SocialAuthenticationService<Object> authServiceExplicit = mock(SocialAuthenticationService.class);
 			when(authServiceExplicit.getAuthenticationMode()).thenReturn(AuthenticationMode.EXPLICIT);
@@ -86,6 +88,7 @@ public class SocialAuthenticationFilterTest {
 		{
 			ConnectionFactory<String> factory = mock(MockConnectionFactory.StringFactory.class);
 			when(factory.getProviderId()).thenReturn("mockImplicit");
+			when(factory.createConnection(Mockito.any(ConnectionData.class))).thenAnswer(DummyConnection.answer());
 
 			SocialAuthenticationService<String> authServiceImplicit = mock(SocialAuthenticationService.class);
 			when(authServiceImplicit.getAuthenticationMode()).thenReturn(AuthenticationMode.IMPLICIT);
@@ -244,7 +247,10 @@ public class SocialAuthenticationFilterTest {
 			filter.setAuthManager(mock(AuthenticationManager.class));
 			filter.setUserIdExtractor(mock(UserIdExtractor.class));
 			filter.setUsersConnectionRepository(mock(UsersConnectionRepository.class));
-
+			
+			ConnectionRepository repo = mock(ConnectionRepository.class);
+			when(filter.getUsersConnectionRepository().createConnectionRepository(Mockito.anyString())).thenReturn(repo);
+			
 			auth = new SocialAuthenticationToken(DummyConnection.dummy("provider", "user").createData(), null);
 
 			Collection<? extends GrantedAuthority> authorities = Collections.emptyList();

@@ -15,6 +15,8 @@
  */
  package org.springframework.social.security.test;
 
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionKey;
@@ -79,6 +81,16 @@ public class DummyConnection<T> implements Connection<T> {
 	public ConnectionData createData() {
 		return new ConnectionData(_key.getProviderId(), _key.getProviderUserId(), getDisplayName(),
 				getProfileUrl(), getImageUrl(), null, null, null, null);
+	}
+
+	public static Answer<DummyConnection<Object>> answer() {
+		return new Answer<DummyConnection<Object>>() {
+
+			public DummyConnection<Object> answer(InvocationOnMock invocation) throws Throwable {
+				ConnectionData data = (ConnectionData) invocation.getArguments()[0];
+				return dummy(data.getProviderId(), data.getProviderUserId());
+			}
+		};
 	}
 
 }
