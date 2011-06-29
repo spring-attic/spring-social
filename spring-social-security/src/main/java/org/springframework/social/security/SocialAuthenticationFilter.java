@@ -18,6 +18,7 @@ package org.springframework.social.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -102,6 +103,14 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 			return new ArrayList<ConnectionData>(0);
 		}
 		return new ArrayList<ConnectionData>(SignInAttempts.get(session));
+	}
+	
+	public static boolean removeSignInAttempt(HttpSession session, ConnectionKey key) {
+		return session != null ? SignInAttempts.remove(session, key) : false;
+	}
+	
+	public static boolean removeSignInAttempt(HttpSession session, ConnectionData data) {
+		return removeSignInAttempt(session, SignInAttempts.key(data));
 	}
 	
 	/**
@@ -589,7 +598,7 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		/**
 		 * @return unmodifiable list
 		 */
-		private static List<ConnectionData> get(HttpSession session) {
+		private static Collection<ConnectionData> get(HttpSession session) {
 			SignInAttempts signInAttempts = (SignInAttempts) session.getAttribute(ATTR_SIGN_IN_ATTEMPT);
 			if(signInAttempts == null) {
 				return Collections.emptyList();
@@ -598,6 +607,11 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 			}
 		}
 
+		private static boolean remove(HttpSession session, ConnectionKey key) {
+			SignInAttempts signInAttempts = (SignInAttempts) session.getAttribute(ATTR_SIGN_IN_ATTEMPT);
+			return signInAttempts != null ? signInAttempts.removeAttempt(key) : false;
+		}
+		
 		private static void clear(HttpSession session) {
 			session.removeAttribute(ATTR_SIGN_IN_ATTEMPT);
 		}
@@ -612,11 +626,15 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 			return attempts.put(key(data), data) != null;
 		}
 		
-		private List<ConnectionData> getAttempts() {
-			return new ArrayList<ConnectionData>(attempts.values());
+		private boolean removeAttempt(ConnectionKey key) {
+			return attempts.remove(key) != null;
 		}
 		
-		private ConnectionKey key(ConnectionData data) {
+		private Collection<ConnectionData> getAttempts() {
+			return attempts.values();
+		}
+		
+		private static ConnectionKey key(ConnectionData data) {
 			return new ConnectionKey(data.getProviderId(), data.getProviderUserId());
 		}
 	}

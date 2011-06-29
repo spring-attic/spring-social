@@ -207,6 +207,8 @@ public class SocialAuthenticationFilterTest {
 		assertFalse(SocialAuthenticationFilter.addSignInAttempt(session, data("A", "b")));
 		assertFalse(SocialAuthenticationFilter.addSignInAttempt(session, data("B", "a")));
 		assertEquals(3, SocialAuthenticationFilter.getSignInAttempts(session).size());
+		SocialAuthenticationFilter.removeSignInAttempt(session, SocialAuthenticationFilter.getSignInAttempts(session).get(0));
+		assertEquals(2, SocialAuthenticationFilter.getSignInAttempts(session).size());
 		SocialAuthenticationFilter.clearSignInAttempts(session);
 		assertEquals(0, SocialAuthenticationFilter.getSignInAttempts(session).size());
 	}
