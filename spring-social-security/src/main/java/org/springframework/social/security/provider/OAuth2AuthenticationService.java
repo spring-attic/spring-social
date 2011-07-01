@@ -36,7 +36,8 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 
 	private OAuth2ConnectionFactory<S> connectionFactory;
 	private Set<String> returnToUrlParameters;
-
+	private String scope;
+	
 	public OAuth2AuthenticationService() {
 		super(AuthenticationMode.EXPLICIT);
 	}
@@ -63,7 +64,7 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 		if (!StringUtils.hasText(code)) {
 			// First phase: get a request token
 			String returnToUrl = buildReturnToUrl(request);
-			String scope = null; // TODO set scope
+			String scope = getScope(); // TODO set scope
 			String redirect = getConnectionFactory().getOAuthOperations().buildAuthenticateUrl(
 					GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(returnToUrl, scope));
 			throw new SocialAuthenticationRedirectException(redirect);
@@ -120,4 +121,16 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 		return returnToUrlParameters;
 	}
 
+	public String getScope() {
+		return scope;
+	}
+
+	/**
+	 * @param scope OAuth scope to use, i.e. requested permissions
+	 */
+	public void setScope(String scope) {
+		this.scope = scope;
+	}
+
+	
 }
