@@ -22,6 +22,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.support.OAuth1ConnectionFactory;
@@ -37,6 +39,8 @@ import org.springframework.util.StringUtils;
 
 public class OAuth1AuthenticationService<S> extends AbstractSocialAuthenticationService<S> implements InitializingBean {
 
+	protected final Log logger = LogFactory.getLog(getClass());
+	
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
 
 	private Set<String> returnToUrlParameters;
@@ -82,8 +86,15 @@ public class OAuth1AuthenticationService<S> extends AbstractSocialAuthentication
 			throw new SocialAuthenticationRedirectException(oAuthUrl);
 		} else {
 			// Second phase: request an access token
+			
+			OAuthToken requestToken = extractCachedRequestToken(request);
+			if (requestToken == null) {
+				logger.warn("requestToken unavailable for oauth_verifier");
+				return null;
+			}
+			
 			OAuthToken accessToken = getConnectionFactory().getOAuthOperations().exchangeForAccessToken(
-					new AuthorizedRequestToken(extractCachedRequestToken(request), verifier), null);
+					new AuthorizedRequestToken(requestToken, verifier), null);
 
 			// TODO avoid API call if possible (auth using token would be fine)
 			ConnectionData data = getConnectionFactory().createConnection(accessToken).createData();
