@@ -24,12 +24,21 @@ package org.springframework.social;
 public class InsufficientPermissionException extends OperationNotPermittedException {
 	
 	private final String requiredPermission;
+	
+	public InsufficientPermissionException() {
+		super("Insufficent permission for this operation.");
+		this.requiredPermission = null;
+	}
 
 	public InsufficientPermissionException(String requiredPermission) {
 		super("The operation requires '" + requiredPermission + "' permission.");
 		this.requiredPermission = requiredPermission;
 	}
 
+	/**
+	 * The permission required to access the resource.
+	 * May be null if the required permission is unknown.
+	 */
 	public String getRequiredPermission() {
 		return requiredPermission;
 	}
