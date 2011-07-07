@@ -47,6 +47,8 @@ public interface OAuth2Operations {
 	 * Exchange the authorization code for an access grant.
 	 * @param authorizationCode the authorization code returned by the provider upon user authorization
 	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider
+	 * @param additionalParameters any additional parameters to be sent when exchanging the authorization code for an access grant. Should not be encoded. 
+	 * @return the access grant.
 	 */
 	AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters);
 
@@ -54,6 +56,8 @@ public interface OAuth2Operations {
 	 * Refreshes a previous access grant.
 	 * @param refreshToken the refresh token from the previous access grant.
 	 * @param scope optional scope to narrow to when refreshing access; if null, the existing scope is preserved.
+	 * @param additionalParameters any additional parameters to be sent when refreshing a previous access grant. Should not be encoded. 
+	 * @return the access grant.
 	 */
 	AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters);
 	
