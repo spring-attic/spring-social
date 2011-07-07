@@ -65,7 +65,7 @@ public final class ConnectionKey {
 		}
 		ConnectionKey other = (ConnectionKey) o;
 		boolean sameProvider = providerId.equals(other.providerId);
-		return providerUserId != null ? sameProvider && providerUserId.equals(providerUserId) : sameProvider;
+		return providerUserId != null ? sameProvider && providerUserId.equals(other.providerUserId) : sameProvider;
 	}
 	
 	public int hashCode() {

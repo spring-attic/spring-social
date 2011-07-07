@@ -66,7 +66,7 @@ public class OAuth2Template implements OAuth2Operations {
 		String clientInfo = "?client_id=" + formEncode(clientId);
 		this.authorizeUrl = authorizeUrl + clientInfo;
 		if (authenticateUrl != null) {
-			this.authenticateUrl = authenticateUrl + "?client_id=" + formEncode(clientId);
+			this.authenticateUrl = authenticateUrl + clientInfo;
 		} else {
 			this.authenticateUrl = null;
 		}
