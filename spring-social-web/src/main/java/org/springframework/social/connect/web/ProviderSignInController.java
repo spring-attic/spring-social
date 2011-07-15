@@ -159,7 +159,10 @@ public class ProviderSignInController {
 			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, RequestAttributes.SCOPE_SESSION);
 			return redirect(signUpUrl);
 		} else {
-			signInAdapter.signIn(userId, connection, request);
+			String redirectUrl = signInAdapter.signIn(userId, connection, request);
+			if(redirectUrl != null) {
+				return redirect(redirectUrl);
+			}
 			return redirect(postSignInUrl);			
 		}			
 	}
