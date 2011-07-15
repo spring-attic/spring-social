@@ -31,7 +31,9 @@ public interface SignInAdapter {
 	 * @param connection the connection
 	 * @param request a reference to the current web request; is a "native" web request instance providing access to the native
 	 * request and response objects, such as a HttpServletRequest and HttpServletResponse, if needed
+	 * @return the URL that ProviderSignInController should redirect to after sign in. May be null, indicating that ProviderSignInController
+	 * should redirect to its postSignInUrl.
 	 */
-	void signIn(String userId, Connection<?> connection, NativeWebRequest request);
+	String signIn(String userId, Connection<?> connection, NativeWebRequest request);
 
 }
