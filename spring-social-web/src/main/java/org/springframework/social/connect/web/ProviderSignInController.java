@@ -86,7 +86,7 @@ public class ProviderSignInController {
 	}
 
 	/**
- 	 * Sets the URL to redirect the user to after signing in using a provider.
+ 	 * Sets the default URL to redirect the user to after signing in using a provider.
  	 * Defaults to "/".
 	 * @param postSignInUrl the postSignIn URL
 	 */
@@ -159,11 +159,8 @@ public class ProviderSignInController {
 			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, RequestAttributes.SCOPE_SESSION);
 			return redirect(signUpUrl);
 		} else {
-			String redirectUrl = signInAdapter.signIn(userId, connection, request);
-			if(redirectUrl != null) {
-				return redirect(redirectUrl);
-			}
-			return redirect(postSignInUrl);			
+			String originalUrl = signInAdapter.signIn(userId, connection, request);
+			return originalUrl != null ? redirect(originalUrl) : redirect(postSignInUrl);
 		}			
 	}
 
