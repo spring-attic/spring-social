@@ -1,10 +1,8 @@
+Thumbs.db
 .DS_Store
-build
-**/build
-**/src/test/java/exploration
 .gradle
-spring-social-core/src/test/java/exploration
-**/.classpath
-**/.project
-**/.settings
-**/bin
+build
+bin
+.classpath
+.project
+.settings
