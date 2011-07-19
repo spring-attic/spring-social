@@ -22,7 +22,6 @@ import javax.inject.Inject;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
-import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.support.OAuth1ConnectionFactory;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
