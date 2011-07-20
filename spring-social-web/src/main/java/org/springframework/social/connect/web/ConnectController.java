@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.Connection;
@@ -118,7 +119,8 @@ public class ConnectController  {
 	 * Render the status of connections across all providers to the user as HTML in their web browser.
 	 */
 	@RequestMapping(value="/", method=RequestMethod.GET)
-	public String connectionStatus(WebRequest request, Model model) {
+	public String connectionStatus(NativeWebRequest request, Model model) {
+		setNoCache(request);
 		Map<String, List<Connection<?>>> connections = connectionRepository.findAllConnections();
 		model.addAttribute("providerIds", connectionFactoryLocator.registeredProviderIds());		
 		model.addAttribute("connectionMap", connections);
@@ -129,9 +131,10 @@ public class ConnectController  {
 	 * Render the status of the connections to the service provider to the user as HTML in their web browser.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET)
-	public String connectionStatus(@PathVariable String providerId, WebRequest request, Model model) {
+	public String connectionStatus(@PathVariable String providerId, NativeWebRequest request, Model model) {
 		processFlash(request, model);
 		List<Connection<?>> connections = connectionRepository.findConnections(providerId);
+		setNoCache(request);
 		if (connections.isEmpty()) {
 			return connectView(providerId + "Connect"); 
 		} else {
@@ -253,6 +256,13 @@ public class ConnectController  {
 
 	private RedirectView connectionStatusRedirect(String relativePath) {
 		return new RedirectView(relativePath, true);
+	}
+	
+	private void setNoCache(NativeWebRequest request) {
+		HttpServletResponse response = request.getNativeResponse(HttpServletResponse.class);
+		if (response != null) {
+			response.addHeader("Cache-Control", "no-cache");
+		}
 	}
 
 	private static final String DUPLICATE_CONNECTION_ATTRIBUTE = "social.addConnection.duplicate";
