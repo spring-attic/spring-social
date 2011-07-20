@@ -60,7 +60,7 @@ import org.springframework.web.servlet.view.RedirectView;
  */
 @Controller
 @RequestMapping("/connect")
-public class ConnectController  {
+public class ConnectController {
 	
 	private final ConnectionFactoryLocator connectionFactoryLocator;
 	
@@ -261,7 +261,10 @@ public class ConnectController  {
 	private void setNoCache(NativeWebRequest request) {
 		HttpServletResponse response = request.getNativeResponse(HttpServletResponse.class);
 		if (response != null) {
-			response.addHeader("Cache-Control", "no-cache");
+			response.setHeader("Pragma", "no-cache");
+			response.setDateHeader("Expires", 1L);
+			response.setHeader("Cache-Control", "no-cache");
+			response.addHeader("Cache-Control", "no-store");
 		}
 	}
 
