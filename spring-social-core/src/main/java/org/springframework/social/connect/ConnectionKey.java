@@ -15,13 +15,16 @@
  */
 package org.springframework.social.connect;
 
+import java.io.Serializable;
+
 /**
  * The unique business key for a {@link Connection} instance.
  * A composite key that consists of the providerId (e.g. "facebook") plus providerUserId (e.g. "125660").
  * Provides the basis for connection equals() and hashCode().
  * @author Keith Donald
  */
-public final class ConnectionKey {
+@SuppressWarnings("serial")
+public final class ConnectionKey implements Serializable {
 	
 	private final String providerId;
 	
