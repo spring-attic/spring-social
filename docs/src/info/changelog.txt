@@ -1,5 +1,20 @@
+Spring Social 1.0.0 Release Candidate 1 (July 25, 2011)
+=======================================================
+Bug Fixes
+   * Display a message indicating a user should sign-up after a provider
+     sign-in is unable to find a matching local user. (SOCIAL-207)
+   * When ConnectController is given an application URL, it now uses the
+     entire URL to construct the callback URL instead of piecing together
+     the callback URL from specific parts of it. (SOCIAL-200)
+   * Use coalesce function in SQL rather than ifnull for greater DB
+     compatibility. (SOCIAL-226)
+   * Added cache-control headers in response for ConnectController status
+     pages to prevent caching. (SOCIAL-224)
+   * Made ConnectionKey to implement Serializable, so that DuplicateConnectionException
+     can be serialized in the session. (SOCIAL-225)
+
 Spring Social 1.0.0 Release Candidate 1 (June 22, 2011)
-======================================================
+=======================================================
 Compatibility Notes
    * Extracted provider-specific modules to separate projects.
    * Renamed {Provider}Api.java interfaces to {Provider}.java.
