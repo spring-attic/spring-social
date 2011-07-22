@@ -37,6 +37,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
@@ -190,7 +191,11 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 					// unknown service id
 					return null;
 				}
-				return attemptAuthService(authService, AuthenticationMode.EXPLICIT, request, response);
+				Authentication auth = attemptAuthService(authService, AuthenticationMode.EXPLICIT, request, response);
+				if (auth == null) {
+					throw new AuthenticationServiceException("explicit authentication failed");
+				}
+				return auth;
 			}
 		} else if (!isAuthenticated()) {
 			// implicitly only if not logged in already
@@ -239,7 +244,7 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 
 	protected Authentication attemptAuthService(final SocialAuthenticationService<?> authService,
 			AuthenticationMode authMode, final HttpServletRequest request, final HttpServletResponse response)
-			throws SocialAuthenticationRedirectException {
+			throws SocialAuthenticationRedirectException, AuthenticationException {
 
 		final SocialAuthenticationToken token = authService.getAuthToken(authMode, request, response);
 		if (token != null) {
