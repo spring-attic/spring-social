@@ -22,6 +22,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
@@ -31,9 +33,12 @@ import org.springframework.social.security.SocialAuthenticationRedirectException
 import org.springframework.social.security.SocialAuthenticationToken;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestClientException;
 
 public class OAuth2AuthenticationService<S> extends AbstractSocialAuthenticationService<S> {
 
+	protected final Log logger = LogFactory.getLog(getClass());
+	
 	private OAuth2ConnectionFactory<S> connectionFactory;
 	private Set<String> returnToUrlParameters;
 	private String scope;
@@ -69,13 +74,18 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 					GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(returnToUrl, scope));
 			throw new SocialAuthenticationRedirectException(redirect);
 		} else if (StringUtils.hasText(code)) {
-			String returnToUrl = buildReturnToUrl(request);
-			AccessGrant accessGrant = getConnectionFactory().getOAuthOperations().exchangeForAccess(code, returnToUrl,
-					null);
-
-			// TODO avoid API call if possible (auth using token would be fine)
-			ConnectionData data = getConnectionFactory().createConnection(accessGrant).createData();
-			return new SocialAuthenticationToken(data, null);
+			try {
+				String returnToUrl = buildReturnToUrl(request);
+				AccessGrant accessGrant = getConnectionFactory().getOAuthOperations().exchangeForAccess(code, returnToUrl,
+						null);
+	
+				// TODO avoid API call if possible (auth using token would be fine)
+				ConnectionData data = getConnectionFactory().createConnection(accessGrant).createData();
+				return new SocialAuthenticationToken(data, null);
+			} catch (RestClientException e) {
+				logger.debug("failed to exchange for access", e);
+				return null;
+			}
 		} else {
 			return null;
 		}
