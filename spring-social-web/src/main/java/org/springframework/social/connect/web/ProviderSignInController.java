@@ -52,6 +52,8 @@ public class ProviderSignInController {
 	
 	private final SignInAdapter signInAdapter;
 
+	private String signInUrl = "/signin";
+	
 	private String signUpUrl = "/signup";
 
 	private String postSignInUrl = "/";
@@ -76,6 +78,15 @@ public class ProviderSignInController {
 		this.webSupport.setUseAuthenticateUrl(true);
 	}
 
+	/**
+	 * Sets the URL of the application's sign in page.
+	 * Defaults to "/signin".
+	 * @param signInUrl the signIn URL
+	 */
+	public void setSignInUrl(String signInUrl) {
+		this.signInUrl = signInUrl;
+	}
+	
 	/**
 	 * Sets the URL to redirect the user to if no local user account can be mapped when signing in using a provider.
 	 * Defaults to "/signup". 
@@ -106,7 +117,7 @@ public class ProviderSignInController {
 	public void setApplicationUrl(URL applicationUrl) {
 		webSupport.setApplicationUrl(applicationUrl);
 	}
-	
+
 	/**
 	 * Process a sign-in form submission by commencing the process of establishing a connection to the provider on behalf of the user.
 	 * For OAuth1, fetches a new request token from the provider, temporarily stores it in the session, then redirects the user to the provider's site for authentication authorization.
@@ -148,6 +159,15 @@ public class ProviderSignInController {
 		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
 		return handleSignIn(connection, request);
+	}
+	
+	/**
+	 * Process the authentication callback when neither the oauth_token or code parameter is given, likely indicating that the user denied authorization with the provider.
+	 * Redirects to application's sign in URL, as set in the signInUrl property.
+	 */
+	@RequestMapping(value="/{providerId}", method=RequestMethod.GET)
+	public RedirectView canceledAuthorizationCallback() {
+		return redirect(signInUrl);
 	}
 
 	// internal helpers
