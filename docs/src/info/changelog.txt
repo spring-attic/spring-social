@@ -13,6 +13,11 @@ Bug Fixes
    * Made ConnectionKey to implement Serializable, so that DuplicateConnectionException
      can be serialized in the session. (SOCIAL-225)
 
+Improvements
+   * ProviderSignInController now handles callbacks from the provider when the
+     user denies authorization by redirecting to the application's sign in page.
+     (SOCIAL-236)
+
 Spring Social 1.0.0 Release Candidate 1 (June 22, 2011)
 =======================================================
 Compatibility Notes
