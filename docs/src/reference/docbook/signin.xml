@@ -79,7 +79,14 @@ public ProviderSignInController providerSignInController() {
 					<listitem>
 						<para>
 							If the provider user ID doesn't match any existing connection, <classname>ProviderSignInController</classname> will redirect to a sign up URL. 
-							The sign up URL is "/signup" (relative to the application root).
+							The default sign up URL is "/signup" (relative to the application root), but can be customized by setting the <code>signUpUrl</code> property.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							If the provider user ID matches more than one existing connection, <classname>ProviderSignInController</classname> will redirect to the application's sign in URL to offer the user a chance to sign in through another provider or with their username and password.
+							The request to the sign in URL will have an "error" query parameter set to "multiple_users" to indicate the problem so that the page can communicate it to the user.
+							The default sign in URL is "/signin" (relative to the application root), but can be customized by setting the <code>signInUrl</code> property.
 						</para>
 					</listitem>
 				</itemizedlist>
@@ -95,7 +102,14 @@ public ProviderSignInController providerSignInController() {
 					<listitem>
 						<para>
 							If the provider user ID doesn't match any existing connection, <classname>ProviderSignInController</classname> will redirect to a sign up URL. 
-							The sign up URL is "/signup" (relative to the application root).
+							The default sign up URL is "/signup" (relative to the application root), but can be customized by setting the <code>signUpUrl</code> property.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							If the provider user ID matches more than one existing connection, <classname>ProviderSignInController</classname> will redirect to the application's sign in URL to offer the user a chance to sign in through another provider or with their username and password.
+							The request to the sign in URL will have an "error" query parameter set to "multiple_users" to indicate the problem so that the page can communicate it to the user.
+							The default sign in URL is "/signin" (relative to the application root), but can be customized by setting the <code>signInUrl</code> property.
 						</para>
 					</listitem>
 				</itemizedlist>
@@ -224,7 +238,7 @@ public class SpringSecuritySignInAdapter implements SignInAdapter {
 			</para>
     	</section>
 	</section>
-	
+
 	<section xml:id="signin_signup">
 		<title>Signing up after a failed sign in</title>
 		<para>

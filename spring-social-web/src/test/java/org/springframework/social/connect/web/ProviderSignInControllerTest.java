@@ -59,6 +59,35 @@ public class ProviderSignInControllerTest {
 	}
 
 	@Test
+	public void oauth1Callback_multipleMatchingUsers() {
+		ConnectionFactoryLocator connectionFactoryLocator = new TestConnectionFactoryLocator();
+		UsersConnectionRepository usersConnectionRepository = new TestUsersConnectionRepository("oauth1provider", Arrays.asList("testuser1", "testuser2"));
+		SignInAdapter signInAdapter = null;
+		ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, signInAdapter);
+		
+		MockHttpServletRequest nativeRequest = new MockHttpServletRequest();
+		nativeRequest.addParameter("verifier", "verifier");
+		ServletWebRequest request = new ServletWebRequest(nativeRequest);
+		RedirectView redirect = controller.oauth1Callback("oauth1provider", request);
+		assertEquals("/signin?error=multiple_users", redirect.getUrl());
+	}
+
+	@Test
+	public void oauth1Callback_multipleMatchingUsers_customSignInUrl() {
+		ConnectionFactoryLocator connectionFactoryLocator = new TestConnectionFactoryLocator();
+		UsersConnectionRepository usersConnectionRepository = new TestUsersConnectionRepository("oauth1provider", Arrays.asList("testuser1", "testuser2"));
+		SignInAdapter signInAdapter = null;
+		ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, signInAdapter);
+		controller.setSignInUrl("/customsignin?param=1234");
+		
+		MockHttpServletRequest nativeRequest = new MockHttpServletRequest();
+		nativeRequest.addParameter("verifier", "verifier");
+		ServletWebRequest request = new ServletWebRequest(nativeRequest);
+		RedirectView redirect = controller.oauth1Callback("oauth1provider", request);
+		assertEquals("/customsignin?param=1234&error=multiple_users", redirect.getUrl());
+	}	
+	
+	@Test
 	public void oauth1Callback_noMatchingUser_customSignUpUrl() {
 		ConnectionFactoryLocator connectionFactoryLocator = new TestConnectionFactoryLocator();
 		UsersConnectionRepository usersConnectionRepository = new TestUsersConnectionRepository("oauth1provider", null);
@@ -127,6 +156,35 @@ public class ProviderSignInControllerTest {
 	}
 	
 	@Test
+	public void oauth2Callback_multipleMatchingUsers() {
+		ConnectionFactoryLocator connectionFactoryLocator = new TestConnectionFactoryLocator();
+		UsersConnectionRepository usersConnectionRepository = new TestUsersConnectionRepository("oauth2provider", Arrays.asList("testuser1", "testuser2"));
+		SignInAdapter signInAdapter = null;
+		ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, signInAdapter);
+		
+		MockHttpServletRequest nativeRequest = new MockHttpServletRequest();
+		nativeRequest.addParameter("code", "authcode");
+		ServletWebRequest request = new ServletWebRequest(nativeRequest);
+		RedirectView redirect = controller.oauth2Callback("oauth2provider", "authcode", request);
+		assertEquals("/signin?error=multiple_users", redirect.getUrl());
+	}
+
+	@Test
+	public void oauth2Callback_multipleMatchingUsers_customSignInUrl() {
+		ConnectionFactoryLocator connectionFactoryLocator = new TestConnectionFactoryLocator();
+		UsersConnectionRepository usersConnectionRepository = new TestUsersConnectionRepository("oauth2provider", Arrays.asList("testuser1", "testuser2"));
+		SignInAdapter signInAdapter = null;
+		ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, signInAdapter);
+		controller.setSignInUrl("/customsignin?someparameter=1234");
+		
+		MockHttpServletRequest nativeRequest = new MockHttpServletRequest();
+		nativeRequest.addParameter("code", "authcode");
+		ServletWebRequest request = new ServletWebRequest(nativeRequest);
+		RedirectView redirect = controller.oauth2Callback("oauth2provider", "authcode", request);
+		assertEquals("/customsignin?someparameter=1234&error=multiple_users", redirect.getUrl());
+	}
+
+	@Test
 	public void oauth2Callback_matchingUser_noOriginalUrl() {
 		performOAuth2Callback(null, null);
 	}
@@ -143,7 +201,7 @@ public class ProviderSignInControllerTest {
 
 	private void performOAuth1Callback(String originalUrl, String postSignInUrl) {
 		ConnectionFactoryLocator connectionFactoryLocator = new TestConnectionFactoryLocator();
-		TestUsersConnectionRepository usersConnectionRepository = new TestUsersConnectionRepository("oauth1provider", "testuser");
+		TestUsersConnectionRepository usersConnectionRepository = new TestUsersConnectionRepository("oauth1provider", Arrays.asList("testuser"));
 		SignInAdapter signInAdapter = new TestSignInAdapter(originalUrl);
 		ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, signInAdapter);
 		if (postSignInUrl != null) {
@@ -168,7 +226,7 @@ public class ProviderSignInControllerTest {
 
 	private void performOAuth2Callback(String originalUrl, String postSignInUrl) {
 		ConnectionFactoryLocator connectionFactoryLocator = new TestConnectionFactoryLocator();
-		TestUsersConnectionRepository usersConnectionRepository = new TestUsersConnectionRepository("oauth2provider", "testuser");
+		TestUsersConnectionRepository usersConnectionRepository = new TestUsersConnectionRepository("oauth2provider", Arrays.asList("testuser"));
 		SignInAdapter signInAdapter = new TestSignInAdapter(originalUrl);
 		ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, signInAdapter);
 		if (postSignInUrl != null) {
@@ -210,18 +268,18 @@ public class ProviderSignInControllerTest {
 	}
 	
 	private static class TestUsersConnectionRepository implements UsersConnectionRepository {
-		private final String matchingUserId;
+		private final List<String> matchingUserIds;
 		private ConnectionRepository connectionRepository;
 		private final String providerId;
 
-		public TestUsersConnectionRepository(String providerId, String matchingUserId) {
+		public TestUsersConnectionRepository(String providerId, List<String> matchingUserIds) {
 			this.providerId = providerId;
-			this.matchingUserId = matchingUserId;
+			this.matchingUserIds = matchingUserIds;
 			connectionRepository = mock(ConnectionRepository.class);
 		}
 		
 		public List<String> findUserIdsWithConnection(Connection<?> connection) {
-			return matchingUserId != null ? Arrays.asList(matchingUserId) : Collections.<String>emptyList();
+			return matchingUserIds != null ? matchingUserIds : Collections.<String>emptyList();
 		}
 
 		public Set<String> findUserIdsConnectedTo(String providerId, Set<String> providerUserIds) {

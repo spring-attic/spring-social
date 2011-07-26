@@ -26,6 +26,7 @@ import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.support.OAuth1ConnectionFactory;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
+import org.springframework.social.support.URIBuilder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -184,7 +185,7 @@ public class ProviderSignInController {
 			String originalUrl = signInAdapter.signIn(userIds.get(0), connection, request);
 			return originalUrl != null ? redirect(originalUrl) : redirect(postSignInUrl);
 		} else {
-			return redirect(signInUrl + "?signInError=multiple");
+			return redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "multiple_users").build().toString());
 		}
 	}
 
