@@ -17,6 +17,9 @@ Improvements
    * ProviderSignInController now handles callbacks from the provider when the
      user denies authorization by redirecting to the application's sign in page.
      (SOCIAL-236)
+   * If multiple matching connections are found during provider sign in, redirect
+     to the sign in page to offer the user a chance to sign in through some other
+     means (username/password, via a different provider, etc). (SOCIAL-237)
 
 Spring Social 1.0.0 Release Candidate 1 (June 22, 2011)
 =======================================================
