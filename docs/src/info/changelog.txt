@@ -1,4 +1,4 @@
-Spring Social 1.0.0 Release Candidate 2 (July 25, 2011)
+Spring Social 1.0.0 Release Candidate 2 (July 26, 2011)
 =======================================================
 Bug Fixes
    * Display a message indicating a user should sign-up after a provider
