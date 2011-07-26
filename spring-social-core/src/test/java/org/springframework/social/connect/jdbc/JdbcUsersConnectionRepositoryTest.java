@@ -15,11 +15,7 @@
  */
 package org.springframework.social.connect.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -116,21 +112,24 @@ public class JdbcUsersConnectionRepositoryTest {
 	@Test
 	public void findUserIdWithConnection() {
 		insertFacebookConnection();
-		String userId = usersConnectionRepository.findUserIdWithConnection(connectionRepository.getPrimaryConnection(TestFacebookApi.class));
-		assertEquals("1", userId);
+		List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connectionRepository.getPrimaryConnection(TestFacebookApi.class));
+		assertEquals("1", userIds.get(0));
 	}
 	
 	@Test
 	public void findUserIdWithConnectionNoSuchConnection() {
 		Connection<TestFacebookApi> connection = connectionFactory.createConnection(new AccessGrant("12345"));
-		assertNull(usersConnectionRepository.findUserIdWithConnection(connection));
+		assertEquals(0, usersConnectionRepository.findUserIdsWithConnection(connection).size());
 	}
 
 	@Test
 	public void findUserIdWithConnectionMultipleConnectionsToSameProviderUser() {
 		insertFacebookConnection();
 		insertFacebookConnectionSameFacebookUser();
-		assertNull(usersConnectionRepository.findUserIdWithConnection(connectionRepository.getPrimaryConnection(TestFacebookApi.class)));
+		List<String> localUserIds = usersConnectionRepository.findUserIdsWithConnection(connectionRepository.getPrimaryConnection(TestFacebookApi.class));
+		assertEquals(2, localUserIds.size());
+		assertEquals("1", localUserIds.get(0));
+		assertEquals("2", localUserIds.get(1));
 	}
 	
 	@Test

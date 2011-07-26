@@ -4,6 +4,9 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -217,8 +220,8 @@ public class ProviderSignInControllerTest {
 			connectionRepository = mock(ConnectionRepository.class);
 		}
 		
-		public String findUserIdWithConnection(Connection<?> connection) {
-			return matchingUserId;
+		public List<String> findUserIdsWithConnection(Connection<?> connection) {
+			return matchingUserId != null ? Arrays.asList(matchingUserId) : Collections.<String>emptyList();
 		}
 
 		public Set<String> findUserIdsConnectedTo(String providerId, Set<String> providerUserIds) {

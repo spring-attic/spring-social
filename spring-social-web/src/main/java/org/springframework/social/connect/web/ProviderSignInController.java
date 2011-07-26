@@ -16,6 +16,7 @@
 package org.springframework.social.connect.web;
 
 import java.net.URL;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -173,14 +174,14 @@ public class ProviderSignInController {
 	// internal helpers
 
 	private RedirectView handleSignIn(Connection<?> connection, NativeWebRequest request) {
-		String userId = usersConnectionRepository.findUserIdWithConnection(connection);
-		if (userId == null) {
+		List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
+		if (userIds.size() == 0) {
 			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, usersConnectionRepository);
 			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, RequestAttributes.SCOPE_SESSION);
 			return redirect(signUpUrl);
 		} else {
-			usersConnectionRepository.createConnectionRepository(userId).updateConnection(connection);
-			String originalUrl = signInAdapter.signIn(userId, connection, request);
+			usersConnectionRepository.createConnectionRepository(userIds.get(0)).updateConnection(connection);
+			String originalUrl = signInAdapter.signIn(userIds.get(0), connection, request);
 			return originalUrl != null ? redirect(originalUrl) : redirect(postSignInUrl);
 		}			
 	}
