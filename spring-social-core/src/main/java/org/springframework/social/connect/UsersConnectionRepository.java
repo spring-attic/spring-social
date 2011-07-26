@@ -15,6 +15,7 @@
  */
 package org.springframework.social.connect;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -27,12 +28,11 @@ import java.util.Set;
 public interface UsersConnectionRepository {
 
 	/**
-	 * Find the id of the <i>single</i> user that has the given {@link Connection}.
+	 * Find the ids for users that have the given {@link Connection}.
 	 * Used to support the ProviderSignIn scenario where the user id returned is used to sign a local application user in using his or her provider account.
-	 * Returns null if there is not exactly one local user connected to the provider user.
 	 * @param connection the service provider connection resulting from the provider sign-in attempt
 	 */
-	String findUserIdWithConnection(Connection<?> connection);
+	List<String> findUserIdsWithConnection(Connection<?> connection);
 
 	/**
 	 * Find the ids of the users who are connected to the specific provider user accounts.
