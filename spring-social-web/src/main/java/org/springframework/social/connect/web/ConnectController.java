@@ -18,7 +18,6 @@ package org.springframework.social.connect.web;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -116,18 +115,6 @@ public class ConnectController {
 	}
 
 	/**
-	 * Render the status of connections across all providers to the user as HTML in their web browser.
-	 */
-	@RequestMapping(value="/", method=RequestMethod.GET)
-	public String connectionStatus(NativeWebRequest request, Model model) {
-		setNoCache(request);
-		Map<String, List<Connection<?>>> connections = connectionRepository.findAllConnections();
-		model.addAttribute("providerIds", connectionFactoryLocator.registeredProviderIds());		
-		model.addAttribute("connectionMap", connections);
-		return connectView();
-	}
-
-	/**
 	 * Render the status of the connections to the service provider to the user as HTML in their web browser.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET)
@@ -207,38 +194,6 @@ public class ConnectController {
 	// subclassing hooks
 	
 	/**
-	 * Returns the ConnectionFactoryLocator.
-	 */
-	protected ConnectionFactoryLocator getConnectionFactoryLocator() {
-		return connectionFactoryLocator;
-	}
-	
-	/**
-	 * Returns the ConnectionRepository.
-	 */
-	protected ConnectionRepository getConnectionRepository() {
-		return connectionRepository;
-	}
-	
-	/**
-	 * Returns a RedirectView with the URL to redirect to after a connection is created or deleted.
-	 * Defaults to "/connect/{providerId}" relative to the servlet context path. 
-	 * May be overridden to handle custom redirection needs.
-	 * @param providerId the ID of the provider for which a connection was created or deleted.
-	 */
-	protected RedirectView connectionStatusRedirect(String providerId) {
-		return new RedirectView("/connect/" + providerId, true);
-	}
-
-	/**
-	 * Returns the view name of a general connection status page, typically displaying the user's connection status for all providers.
-	 * Defaults to "/connect/status". May be overridden to return a custom view name.
-	 */
-	protected String connectView() {
-		return getViewPath() + "status";
-	}
-
-	/**
 	 * Returns the view name of a page to display for a provider when the user is not connected to the provider.
 	 * Typically this page would offer the user an opportunity to create a connection with the provider.
 	 * Defaults to "connect/{providerId}Connect". May be overridden to return a custom view name.
@@ -256,6 +211,16 @@ public class ConnectController {
 	 */
 	protected String connectedView(String providerId) {
 		return getViewPath() + providerId + "Connected";		
+	}
+
+	/**
+	 * Returns a RedirectView with the URL to redirect to after a connection is created or deleted.
+	 * Defaults to "/connect/{providerId}" relative to the servlet context path. 
+	 * May be overridden to handle custom redirection needs.
+	 * @param providerId the ID of the provider for which a connection was created or deleted.
+	 */
+	protected RedirectView connectionStatusRedirect(String providerId) {
+		return new RedirectView("/connect/" + providerId, true);
 	}
 
 	// internal helpers
