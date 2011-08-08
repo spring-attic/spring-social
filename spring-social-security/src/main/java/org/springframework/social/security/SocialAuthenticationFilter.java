@@ -335,6 +335,12 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		return connection;
 	}
 
+	/**
+	 * returns an explicitly requested providerId following this pattern /{context}/{filterProcessesUrl}/{providerId}
+	 * 
+	 * @param request
+	 * @return requested providerId or null 
+	 */
 	protected String getRequestedProviderId(HttpServletRequest request) {
 		String uri = request.getRequestURI();
 		int pathParamIndex = uri.indexOf(';');
@@ -344,19 +350,18 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 			uri = uri.substring(0, pathParamIndex);
 		}
 
-		String providerId = uri;
-		if (!uri.startsWith(request.getContextPath())) {
-			return null;
-		}
-		providerId = providerId.substring(request.getContextPath().length());
+		// uri must start with context path
+		uri = uri.substring(request.getContextPath().length());
 
+		// remaining uri must start with filterProcessesUrl
 		if (!uri.startsWith(getFilterProcessesUrl())) {
 			return null;
 		}
-		providerId = providerId.substring(getFilterProcessesUrl().length());
+		uri = uri.substring(getFilterProcessesUrl().length());
 
-		if (providerId.startsWith("/")) {
-			return providerId.substring(1);
+		// expect /filterprocessesurl/provider, not /filterprocessesurlproviderr
+		if (uri.startsWith("/")) {
+			return uri.substring(1);
 		} else {
 			return null;
 		}
@@ -408,8 +413,10 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 
 		SecurityContextHolder.getContext().setAuthentication(authResult);
 
-		getRememberMeServices().loginSuccess(request, response, authResult);
-
+		if (getRememberMeServices() != null) {
+			getRememberMeServices().loginSuccess(request, response, authResult);
+		}
+		
 		// Fire event
 		ApplicationEventPublisher eventPublisher = getEventPublisher();
 		if (eventPublisher != null) {
@@ -440,7 +447,9 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 			logger.debug("Updated SecurityContextHolder to contain null Authentication");
 		}
 
-		getRememberMeServices().loginFail(request, response);
+		if (getRememberMeServices() != null) {
+			getRememberMeServices().loginFail(request, response);
+		}
 		
 		getFailureHandler().onAuthenticationFailure(request, response, failed);
 	}
