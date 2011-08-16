@@ -32,6 +32,7 @@ import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
@@ -80,10 +81,22 @@ public class ConnectSupport {
 	 * @throws IllegalArgumentException if the connection factory is not OAuth1 based.
 	 */
 	public String buildOAuthUrl(ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
+		return buildOAuthUrl(connectionFactory, request, null);
+	}
+	
+	/**
+	 * Builds the provider URL to redirect the user to for connection authorization.
+	 * @param connectionFactory the service provider's connection factory e.g. FacebookConnectionFactory
+	 * @param request the current web request
+	 * @param additionalParameters parameters to add to the authorization URL.
+	 * @return the URL to redirect the user to for authorization
+	 * @throws IllegalArgumentException if the connection factory is not OAuth1 based.
+	 */
+	public String buildOAuthUrl(ConnectionFactory<?> connectionFactory, NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
 		if (connectionFactory instanceof OAuth1ConnectionFactory) {
-			return buildOAuth1Url((OAuth1ConnectionFactory<?>) connectionFactory, request);
+			return buildOAuth1Url((OAuth1ConnectionFactory<?>) connectionFactory, request, additionalParameters);
 		} else if (connectionFactory instanceof OAuth2ConnectionFactory) {
-			return buildOAuth2Url((OAuth2ConnectionFactory<?>) connectionFactory, request);
+			return buildOAuth2Url((OAuth2ConnectionFactory<?>) connectionFactory, request, additionalParameters);
 		} else {
 			throw new IllegalArgumentException("ConnectionFactory not supported");
 		}		
@@ -116,24 +129,24 @@ public class ConnectSupport {
 
 	// internal helpers
 	
-	private String buildOAuth1Url(OAuth1ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
+	private String buildOAuth1Url(OAuth1ConnectionFactory<?> connectionFactory, NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
 		OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
 		OAuthToken requestToken;
 		String authorizeUrl;
 		if (oauthOperations.getVersion() == OAuth1Version.CORE_10_REVISION_A) {
 			requestToken = oauthOperations.fetchRequestToken(callbackUrl(request), null);				
-			authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), OAuth1Parameters.NONE);
+			authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), new OAuth1Parameters(null, additionalParameters));
 		} else {
 			requestToken = oauthOperations.fetchRequestToken(null, null);				
-			authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), new OAuth1Parameters(callbackUrl(request)));
+			authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), new OAuth1Parameters(callbackUrl(request), additionalParameters));
 		}
 		request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, RequestAttributes.SCOPE_SESSION);
 		return authorizeUrl;
 	}
 
-	private String buildOAuth2Url(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
+	private String buildOAuth2Url(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
 		OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-		OAuth2Parameters parameters = new OAuth2Parameters(callbackUrl(request), request.getParameter("scope"));
+		OAuth2Parameters parameters = new OAuth2Parameters(callbackUrl(request), request.getParameter("scope"), null, additionalParameters);
 		if (useAuthenticateUrl) { 
 			return oauthOperations.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters);						
 		} else {

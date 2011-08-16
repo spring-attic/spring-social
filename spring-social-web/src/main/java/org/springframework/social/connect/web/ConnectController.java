@@ -152,8 +152,8 @@ public class ConnectController {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
 	public RedirectView connect(@PathVariable String providerId, NativeWebRequest request) {
 		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
-		preConnect(connectionFactory, request);
-		return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request));
+		MultiValueMap<String, String> additionalParameters = preConnect(connectionFactory, request);
+		return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request, additionalParameters));
 	}
 
 	/**
@@ -260,10 +260,15 @@ public class ConnectController {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void preConnect(ConnectionFactory<?> connectionFactory, WebRequest request) {
+	private MultiValueMap<String, String> preConnect(ConnectionFactory<?> connectionFactory, WebRequest request) {
+		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
 		for (ConnectInterceptor interceptor : interceptingConnectionsTo(connectionFactory)) {
-			interceptor.preConnect(connectionFactory, request);
+			MultiValueMap parameters = interceptor.preConnect(connectionFactory, request);
+			if (parameters != null) {
+				additionalParameters.putAll(parameters);
+			}
 		}
+		return additionalParameters;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
