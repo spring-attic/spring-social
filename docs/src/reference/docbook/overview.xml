@@ -326,9 +326,11 @@ git clone git://github.com/SpringSource/spring-social-samples.git
 		
 		<itemizedlist>
 			<listitem><para>spring-social-quickstart - Designed to get you up and running quickly.</para></listitem>
+			<listitem><para>spring-social-quickstart-30x - Designed to get you up and running quickly as well as using Spring Social with Spring 3.0.x.</para></listitem>
 			<listitem><para>spring-social-showcase - Illustrates most of Spring Social's features.</para></listitem>
 			<listitem><para>spring-social-movies - Shows how to extend Spring Social to implement a new ServiceProvider and API binding.</para></listitem>
 			<listitem><para>spring-social-twitter4j - Shows how to extend Spring Social and re-use an existing API binding.</para></listitem>
+			<listitem><para>spring-social-popup - Shows how to use Spring Social to drive a browser popup-based connection flow.</para></listitem>
 		</itemizedlist>
 	</section>
 </chapter>

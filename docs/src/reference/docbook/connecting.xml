@@ -540,25 +540,28 @@ public class SocialConfig {
 		<programlisting language="java"><![CDATA[
 public interface ConnectInterceptor<A> {
 	
-    void preConnect(ConnectionFactory<A> connectionFactory, WebRequest request);
+    MultiValueMap<String, String> preConnect(ConnectionFactory<A> connectionFactory, WebRequest request);
 
     void postConnect(Connection<A> connection, WebRequest request);
 	
 }]]>
 		</programlisting>
 		<para>
-			The <methodname>preConnect()</methodname> method will be called by <classname>ConnectController</classname> just before redirecting the browser to the provider's authorization page. 
+			The <methodname>preConnect()</methodname> method will be called by <classname>ConnectController</classname> just before redirecting the browser to the provider's authorization page.
+			It has a return type of <code>MultiValueMap&lt;String, String&gt;</code> which can contain parameters to be passed on the request when <classname>ConnectController</classname> redirects to the provider's authorization URL.
+			If it has no parameters to contribute to the authorization URL, it may return <code>null</code>.  
 			<methodname>postConnect()</methodname> will be called immediately after a connection has been persisted linking the user's local account with the provider profile.
 		</para>
 		<para>
-			For example, suppose that after connecting a user account with their Twitter profile , you want to immediately post a tweet about that connection to the user's Twitter timeline. 
+			For example, suppose that after connecting a user account with their Twitter profile you want to immediately post a tweet about that connection to the user's Twitter timeline. 
 			To accomplish that, you might write the following connection interceptor:
 		</para>
 		<programlisting language="java"><![CDATA[
 public class TweetAfterConnectInterceptor implements ConnectInterceptor<Twitter> {
 
-    public void preConnect(ConnectionFactory<TwitterApi> provider, WebRequest request) {
+    public MultiValueMap<String, String> preConnect(ConnectionFactory<TwitterApi> provider, WebRequest request) {
         // nothing to do
+        return null;
     }
 
     public void postConnect(Connection<TwitterApi> connection, WebRequest request) {

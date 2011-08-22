@@ -464,9 +464,33 @@ public interface UsersConnectionRepository {
 			<title>JDBC-based persistence</title>
 			<para>
 				Spring Social provides a JdbcUsersConnectionRepository implementation capable of persisting connections to a RDBMS.
-				The database schema designed to back this repository is defined in JdbcUsersConnectionRepository.sql.
+				The database schema designed to back this repository is defined as follows:
+			</para>
+			
+  			<programlisting language="sql"><![CDATA[
+create table UserConnection (userId varchar(255) not null,
+    providerId varchar(255) not null,
+    providerUserId varchar(255),
+    rank int not null,
+    displayName varchar(255),
+    profileUrl varchar(512),
+    imageUrl varchar(512),
+    accessToken varchar(255) not null,					
+    secret varchar(255),
+    refreshToken varchar(255),
+    expireTime bigint,
+    primary key (userId, providerId, providerUserId));
+create unique index UserConnectionRank on UserConnection(userId, providerId, rank);]]>
+  			</programlisting>
+
+			<para>
+				For convenience is bootstrapping the schema from a running application, this schema definition is available in the <code>spring-social-core</code> module as a resource at the path /org/springframework/social/connect/jdbc/JdbcUsersConnectionRepository.sql.				
+			</para>
+
+			<para>
 				The implementation also provides support for encrypting authorization credentials so they are not stored in plain-text.
 			</para>
+			
 			<para>
 				The example code below demonstrates construction and usage of a JdbcUsersConnectionRepository:
 			</para>
