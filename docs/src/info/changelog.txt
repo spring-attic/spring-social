@@ -1,3 +1,19 @@
+Spring Social 1.0.0.RELEASE (August 25, 2011)
+=============================================
+Bug Fixes
+   * Discontinued use of "../"-based relative URLs when redirecting
+     after deleting a connection to fix redirection when the disconnect
+     form's action URL has a trailing slash. (SOCIAL-238)
+
+Improvements
+   * Added schema for JdbcUsersConnectionRepository to reference documentation
+     and briefly described its purpose and location within the core module.
+     (SOCIAL-241)
+   * ConnectInterceptor.preConnect() now returns a MultiValueMap<String, String>
+     to be able to add parameters to the authorization URL. (SOCIAL-243)
+   * New samples illustrating a popup-based connection flow and Spring Social
+     in a Facebook Canvas application.
+
 Spring Social 1.0.0 Release Candidate 2 (July 26, 2011)
 =======================================================
 Bug Fixes
