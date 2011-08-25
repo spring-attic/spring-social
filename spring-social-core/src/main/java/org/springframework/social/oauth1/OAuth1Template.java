@@ -137,7 +137,7 @@ public class OAuth1Template implements OAuth1Operations {
 
 	/**
 	 * Exposes the consumer key to be read by subclasses.
-	 * This may be useful when overriding {@link #customAuthorizationParameters(MultiValueMap)} and the consumer key is required in the authorization request.
+	 * This may be useful when overriding {@link #addCustomAuthorizationParameters(MultiValueMap)} and the consumer key is required in the authorization request.
 	 */
 	protected String getConsumerKey() {
 		return consumerKey;
@@ -159,7 +159,7 @@ public class OAuth1Template implements OAuth1Operations {
 	 * Subclassing hook to add custom authorization parameters to the authorization URL.
 	 * Default implementation adds no parameters.
 	 */
-	protected void customAuthorizationParameters(MultiValueMap<String, String> parameters) {
+	protected void addCustomAuthorizationParameters(MultiValueMap<String, String> parameters) {
 	}
 	
 	// internal helpers
@@ -207,7 +207,7 @@ public class OAuth1Template implements OAuth1Operations {
 
 	private String buildAuthUrl(String baseAuthUrl, String requestToken, OAuth1Parameters parameters) {
 		StringBuilder authUrl = new StringBuilder(baseAuthUrl).append('?').append("oauth_token").append('=').append(formEncode(requestToken));
-		customAuthorizationParameters(parameters);
+		addCustomAuthorizationParameters(parameters);
 		if (parameters != null) {
 			for (Iterator<Entry<String, List<String>>> additionalParams = parameters.entrySet().iterator(); additionalParams.hasNext();) {
 				Entry<String, List<String>> param = additionalParams.next();

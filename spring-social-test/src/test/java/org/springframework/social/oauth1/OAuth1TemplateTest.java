@@ -51,7 +51,7 @@ public class OAuth1TemplateTest {
 
 		customOauth10 = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
 				AUTHORIZE_URL, null, ACCESS_TOKEN_URL, OAuth1Version.CORE_10) {
-			protected void customAuthorizationParameters(MultiValueMap<String,String> parameters) {
+			protected void addCustomAuthorizationParameters(MultiValueMap<String,String> parameters) {
 				parameters.set("custom_parameter", "custom_parameter_value");
 			};
 		};
