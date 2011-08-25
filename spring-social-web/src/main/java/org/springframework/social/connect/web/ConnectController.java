@@ -153,7 +153,7 @@ public class ConnectController {
 	public RedirectView connect(@PathVariable String providerId, NativeWebRequest request) {
 		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
 		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>(); 
-		preConnect(connectionFactory, request, parameters);
+		preConnect(connectionFactory, parameters, request);
 		return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request, parameters));
 	}
 
@@ -261,9 +261,9 @@ public class ConnectController {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void preConnect(ConnectionFactory<?> connectionFactory, WebRequest request, MultiValueMap<String, String> parameters) {
+	private void preConnect(ConnectionFactory<?> connectionFactory, MultiValueMap<String, String> parameters, WebRequest request) {
 		for (ConnectInterceptor interceptor : interceptingConnectionsTo(connectionFactory)) {
-			interceptor.preConnect(connectionFactory, request, parameters);
+			interceptor.preConnect(connectionFactory, parameters, request);
 		}
 	}
 
