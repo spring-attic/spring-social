@@ -15,23 +15,29 @@
  */
 package org.springframework.social.oauth1;
 
-import org.springframework.util.LinkedMultiValueMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.social.support.AbstractOAuthParameters;
 
 /**
  * Parameters for building an OAuth1 authorize URL.
  * @author Keith Donald
  * @see OAuth1Operations#buildAuthorizeUrl(String, OAuth1Parameters)
  */
-@SuppressWarnings("serial")
-public final class OAuth1Parameters extends LinkedMultiValueMap<String, String> {
+public final class OAuth1Parameters extends AbstractOAuthParameters {
 
 	private static final String OAUTH_CALLBACK = "oauth_callback";
 	
 	/**
 	 * Shared instance for passing zero authorization parameters (accepted for OAuth 1.0a-based flows).
 	 */
-	public static final OAuth1Parameters NONE = new OAuth1Parameters();
+	public static final OAuth1Parameters NONE = new OAuth1Parameters(null);
 
+	public OAuth1Parameters(Map<String, List<String>> parameters) {
+		super(parameters);
+	}
+	
 	/**
 	 * The authorization callback url; this value must be included for OAuth 1.0 providers (and NOT for OAuth 1.0a)
 	 */

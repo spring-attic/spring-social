@@ -15,15 +15,17 @@
  */
 package org.springframework.social.oauth2;
 
-import org.springframework.util.LinkedMultiValueMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.social.support.AbstractOAuthParameters;
 
 /**
  * Parameters for building an OAuth2 authorize URL.
  * @author Roy Clarkson
  * @see OAuth2Operations#buildAuthorizeUrl(GrantType, OAuth2Parameters)
  */
-@SuppressWarnings("serial")
-public final class OAuth2Parameters extends LinkedMultiValueMap<String, String> {
+public final class OAuth2Parameters extends AbstractOAuthParameters {
 
 	private static final String STATE = "state";
 	
@@ -31,6 +33,10 @@ public final class OAuth2Parameters extends LinkedMultiValueMap<String, String> 
 	
 	private static final String REDIRECT_URI = "redirect_uri";
 
+	public OAuth2Parameters(Map<String, List<String>> parameters) {
+		super(parameters);
+	}
+	
 	/**
 	 * Returns the authorization callback url; this value must match the redirectUri registered with the provider (optional per the OAuth 2 spec, but required by most OAuth 2 providers). 
 	 */

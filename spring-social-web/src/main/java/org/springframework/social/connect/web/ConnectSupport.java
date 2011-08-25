@@ -131,21 +131,13 @@ public class ConnectSupport {
 	
 	private String buildOAuth1Url(OAuth1ConnectionFactory<?> connectionFactory, NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
 		OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
-		OAuth1Parameters parameters = getOAuth1Parameters(additionalParameters);
+		OAuth1Parameters parameters = new OAuth1Parameters(additionalParameters);
 		if (oauthOperations.getVersion() == OAuth1Version.CORE_10) {
 			parameters.setCallbackUrl(callbackUrl(request));
 		}
 		OAuthToken requestToken = fetchRequestToken(request, oauthOperations);
 		request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, RequestAttributes.SCOPE_SESSION);
 		return buildOAuth1Url(oauthOperations, requestToken.getValue(), parameters);
-	}
-
-	private OAuth1Parameters getOAuth1Parameters(MultiValueMap<String, String> additionalParameters) {
-		OAuth1Parameters parameters = new OAuth1Parameters();
-		if (additionalParameters != null) {
-			parameters.putAll(additionalParameters);
-		}
-		return parameters;
 	}
 
 	private OAuthToken fetchRequestToken(NativeWebRequest request, OAuth1Operations oauthOperations) {
@@ -166,10 +158,7 @@ public class ConnectSupport {
 	}
 
 	private OAuth2Parameters getOAuth2Parameters(NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
-		OAuth2Parameters parameters = new OAuth2Parameters();
-		if (additionalParameters != null) {			
-			parameters.putAll(additionalParameters);
-		}
+		OAuth2Parameters parameters = new OAuth2Parameters(additionalParameters);
 		parameters.setRedirectUri(callbackUrl(request));
 		String scope = request.getParameter("scope");
 		if (scope != null) {

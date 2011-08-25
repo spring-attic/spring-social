@@ -59,7 +59,7 @@ public class OAuth1TemplateTest {
 
 	@Test
 	public void buildAuthorizeUrl() {
-		OAuth1Parameters parameters = new OAuth1Parameters();
+		OAuth1Parameters parameters = new OAuth1Parameters(null);
 		parameters.setCallbackUrl("http://www.someclient.com/oauth/callback");
 		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token",
 				oauth10a.buildAuthorizeUrl("request_token", OAuth1Parameters.NONE));
@@ -69,7 +69,7 @@ public class OAuth1TemplateTest {
 	
 	@Test
 	public void buildAuthorizeUrl_customAuthorizeParameters() {
-		OAuth1Parameters parameters = new OAuth1Parameters();
+		OAuth1Parameters parameters = new OAuth1Parameters(null);
 		parameters.setCallbackUrl("http://www.someclient.com/oauth/callback");
 		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token&oauth_callback=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback&custom_parameter=custom_parameter_value",
 				customOauth10.buildAuthorizeUrl("request_token", parameters));
