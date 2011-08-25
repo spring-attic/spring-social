@@ -15,54 +15,32 @@
  */
 package org.springframework.social.oauth1;
 
-import org.springframework.util.MultiValueMap;
+import org.springframework.util.LinkedMultiValueMap;
 
 /**
  * Parameters for building an OAuth1 authorize URL.
  * @author Keith Donald
  * @see OAuth1Operations#buildAuthorizeUrl(String, OAuth1Parameters)
  */
-public final class OAuth1Parameters {
-	
-	private final String callbackUrl;
-	
-	private final MultiValueMap<String, String> additionalParameters;
+@SuppressWarnings("serial")
+public final class OAuth1Parameters extends LinkedMultiValueMap<String, String> {
 
+	private static final String OAUTH_CALLBACK = "oauth_callback";
+	
 	/**
 	 * Shared instance for passing zero authorization parameters (accepted for OAuth 1.0a-based flows).
 	 */
-	public static final OAuth1Parameters NONE = new OAuth1Parameters(null, null);
-	
-	/**
-	 * Creates a new OAuth1Parameters instance.
-	 * @param callbackUrl the authorization callback url; this value must be included for OAuth 1.0 providers (and NOT for OAuth 1.0a)
-	 */
-	public OAuth1Parameters(String callbackUrl) {
-		this(callbackUrl, null);
-	}
-	
-	/**
-	 * Creates a new OAuth1Parameters instance.
-	 * @param callbackUrl the authorization callback url; this value must be included for OAuth 1.0 providers (and NOT for OAuth 1.0a)
-	 * @param additionalParameters additional supported parameters to pass to the provider
-	 */
-	public OAuth1Parameters(String callbackUrl, MultiValueMap<String, String> additionalParameters) {
-		this.callbackUrl = callbackUrl;
-		this.additionalParameters = additionalParameters;
-	}
+	public static final OAuth1Parameters NONE = new OAuth1Parameters();
 
 	/**
 	 * The authorization callback url; this value must be included for OAuth 1.0 providers (and NOT for OAuth 1.0a)
 	 */
 	public String getCallbackUrl() {
-		return callbackUrl;
+		return getFirst(OAUTH_CALLBACK);
 	}
-
-	/**
-	 * Additional supported parameters to pass to the provider.
-	 */
-	public MultiValueMap<String, String> getAdditionalParameters() {
-		return additionalParameters;
+	
+	public void setCallbackUrl(String callbackUrl) {
+		set(OAUTH_CALLBACK, callbackUrl);
 	}
 	
 }

@@ -32,9 +32,8 @@ public interface ConnectInterceptor<S> {
 	/**
 	 * Called during connection initiation, immediately before user authorization.
 	 * May be used to store custom connection attributes in the session before redirecting the user to the provider's site or to contribute parameters to the authorization URL.
-	 * @return Additional parameters to be passed on the authorization URL. May return null if the interceptor doesn't contribute any parameters.
 	 */
-	MultiValueMap<String, String> preConnect(ConnectionFactory<S> connectionFactory, WebRequest request);
+	void preConnect(ConnectionFactory<S> connectionFactory, WebRequest request, MultiValueMap<String, String> parameters);
 
 	/**
 	 * Called immediately after the connection is established.

@@ -32,6 +32,7 @@ import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
@@ -81,7 +82,7 @@ public class ConnectSupport {
 	 * @throws IllegalArgumentException if the connection factory is not OAuth1 based.
 	 */
 	public String buildOAuthUrl(ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
-		return buildOAuthUrl(connectionFactory, request, null);
+		return buildOAuthUrl(connectionFactory, request, new LinkedMultiValueMap<String, String>());
 	}
 	
 	/**
@@ -133,12 +134,15 @@ public class ConnectSupport {
 		OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
 		OAuthToken requestToken;
 		String authorizeUrl;
+		OAuth1Parameters parameters = new OAuth1Parameters();
+		parameters.putAll(additionalParameters);
 		if (oauthOperations.getVersion() == OAuth1Version.CORE_10_REVISION_A) {
-			requestToken = oauthOperations.fetchRequestToken(callbackUrl(request), null);				
-			authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), new OAuth1Parameters(null, additionalParameters));
+			requestToken = oauthOperations.fetchRequestToken(callbackUrl(request), null);
+			authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), parameters);
 		} else {
 			requestToken = oauthOperations.fetchRequestToken(null, null);				
-			authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), new OAuth1Parameters(callbackUrl(request), additionalParameters));
+			parameters.setCallbackUrl(callbackUrl(request));
+			authorizeUrl = buildOAuth1Url(oauthOperations, requestToken.getValue(), parameters);
 		}
 		request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, RequestAttributes.SCOPE_SESSION);
 		return authorizeUrl;
@@ -146,7 +150,13 @@ public class ConnectSupport {
 
 	private String buildOAuth2Url(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
 		OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-		OAuth2Parameters parameters = new OAuth2Parameters(callbackUrl(request), request.getParameter("scope"), null, additionalParameters);
+		OAuth2Parameters parameters = new OAuth2Parameters();
+		parameters.putAll(additionalParameters);
+		parameters.setRedirectUri(callbackUrl(request));
+		String scope = request.getParameter("scope");
+		if (scope != null) {
+			parameters.setScope(scope);
+		}
 		if (useAuthenticateUrl) { 
 			return oauthOperations.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters);						
 		} else {

@@ -1,5 +1,5 @@
-Spring Social 1.0.0.RELEASE (August 25, 2011)
-=============================================
+Spring Social 1.0.0 Release Candidate 3 (August 25, 2011)
+=========================================================
 Bug Fixes
    * Discontinued use of "../"-based relative URLs when redirecting
      after deleting a connection to fix redirection when the disconnect

@@ -15,80 +15,62 @@
  */
 package org.springframework.social.oauth2;
 
-import org.springframework.util.MultiValueMap;
+import org.springframework.util.LinkedMultiValueMap;
 
 /**
  * Parameters for building an OAuth2 authorize URL.
  * @author Roy Clarkson
  * @see OAuth2Operations#buildAuthorizeUrl(GrantType, OAuth2Parameters)
  */
-public final class OAuth2Parameters {
+@SuppressWarnings("serial")
+public final class OAuth2Parameters extends LinkedMultiValueMap<String, String> {
+
+	private static final String STATE = "state";
 	
-	private final String redirectUri;
+	private static final String SCOPE = "scope";
 	
-	private final String scope;
-	
-	private final String state;
-	
-	private final MultiValueMap<String, String> additionalParameters;
+	private static final String REDIRECT_URI = "redirect_uri";
 
 	/**
-	 * Creates a new authorization parameters instance.
-	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider (required)
-	 */
-	public OAuth2Parameters(String redirectUri) {
-		this(redirectUri, null, null, null);
-	}
-
-	/**
-	 * Creates a new authorization parameters instance.
-	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider (required)
-	 * @param scope the permissions the application is seeking with the authorization (optional)
-	 */
-	public OAuth2Parameters(String redirectUri, String scope) {
-		this(redirectUri, scope, null, null);
-	}
-	
-	/**
-	 * Creates a new authorization parameters instance.
-	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider (required)
-	 * @param scope the permissions the application is seeking with the authorization (optional)
-	 * @param state an opaque key that must be included in the provider's authorization callback (optional)
-	 * @param additionalParameters additional supported parameters to pass to the provider (optional)
-	 */
-	public OAuth2Parameters(String redirectUri, String scope, String state, MultiValueMap<String, String> additionalParameters) {
-		this.redirectUri = redirectUri;
-		this.scope = scope;
-		this.state = state;
-		this.additionalParameters = additionalParameters;
-	}
-	
-	/**
-	 * The authorization callback url; this value must match the redirectUri registered with the provider (required). 
+	 * Returns the authorization callback url; this value must match the redirectUri registered with the provider (optional per the OAuth 2 spec, but required by most OAuth 2 providers). 
 	 */
 	public String getRedirectUri() {
-		return redirectUri;
-	}
-
-	/**
-	 * The permissions the application is seeking with the authorization (optional).
-	 */
-	public String getScope() {
-		return scope;
-	}
-
-	/**
-	 * An opaque key that must be included in the provider's authorization callback (optional).
-	 */
-	public String getState() {
-		return state;
-	}
-
-	/**
-	 * Additional supported parameters to pass to the provider (optional).
-	 */
-	public MultiValueMap<String, String> getAdditionalParameters() {
-		return additionalParameters;
+		return getFirst(REDIRECT_URI);
 	}
 	
+	/**
+	 * Sets the authorization callback url; this value must match the redirectUri registered with the provider (optional per the OAuth 2 spec, but required by most OAuth 2 providers). 
+	 */
+	public void setRedirectUri(String redirectUri) {
+		set(REDIRECT_URI, redirectUri);
+	}
+
+	/**
+	 * Returns the permissions the application is seeking with the authorization (optional).
+	 */
+	public String getScope() {
+		return getFirst(SCOPE);
+	}
+	
+	/**
+	 * Sets the permissions the application is seeking with the authorization (optional).
+	 */
+	public void setScope(String scope) {
+		set(SCOPE, scope);
+	}
+
+	/**
+	 * Returns an opaque key that must be included in the provider's authorization callback (optional).
+	 */
+	public String getState() {
+		return getFirst(STATE);
+	}
+	
+	/**
+	 * Sets an opaque key that must be included in the provider's authorization callback (optional).
+	 */
+	public void setState(String state) {
+		set(STATE, state);
+	}
+
 }

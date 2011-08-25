@@ -136,7 +136,7 @@ public class ConnectSupportTest {
 		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
 		additionalParameters.set("display", "popup");
 		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10), request, additionalParameters);
-		assertEquals("https://serviceprovider.com/oauth/authorize?oauth_callback=http://somesite.com/connect/someprovider&display=popup", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup&oauth_callback=http://somesite.com/connect/someprovider", url);
 	}
 
 	@Test
@@ -282,7 +282,7 @@ public class ConnectSupportTest {
 		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
 		additionalParameters.set("display", "popup");
 		String url = support.buildOAuthUrl(connectionFactory, request, additionalParameters);
-		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=http://somesite.com/connect/someprovider&display=popup", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup&redirect_uri=http://somesite.com/connect/someprovider", url);
 	}
 
 	private static class PortAwareMockHttpServletRequest extends MockHttpServletRequest {
@@ -362,17 +362,13 @@ public class ConnectSupportTest {
 				}
 
 				public String buildAuthorizeUrl(String requestToken, OAuth1Parameters params) {
-					String callbackUrl = params.getCallbackUrl();
-					String callbackQuery = callbackQuery(callbackUrl);
-					String additionalParametersQuery = additionalParametersQuery(params.getAdditionalParameters(), !callbackQuery.isEmpty());
-					return "https://serviceprovider.com/oauth/authorize" + callbackQuery + additionalParametersQuery;
+					String additionalParametersQuery = additionalParametersQuery(params, false);
+					return "https://serviceprovider.com/oauth/authorize" + additionalParametersQuery;
 				}
 
 				public String buildAuthenticateUrl(String requestToken, OAuth1Parameters params) {
-					String callbackUrl = params.getCallbackUrl();
-					String callbackQuery = callbackQuery(callbackUrl);
-					String additionalParametersQuery = additionalParametersQuery(params.getAdditionalParameters(), !callbackQuery.isEmpty());
-					return "https://serviceprovider.com/oauth/authenticate" + callbackQuery + additionalParametersQuery;
+					String additionalParametersQuery = additionalParametersQuery(params, false);
+					return "https://serviceprovider.com/oauth/authenticate" + additionalParametersQuery;
 				}
 
 				public OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters) {
@@ -419,10 +415,10 @@ public class ConnectSupportTest {
 		public OAuth2Operations getOAuthOperations() {
 			return new OAuth2Operations() {
 				public String buildAuthorizeUrl(GrantType grantType, OAuth2Parameters params) {
-					return "https://serviceprovider.com/oauth/authorize?redirect_uri=" + params.getRedirectUri() + additionalParametersQuery(params.getAdditionalParameters(), true);
+					return "https://serviceprovider.com/oauth/authorize" + additionalParametersQuery(params, false);
 				}
 				public String buildAuthenticateUrl(GrantType grantType, OAuth2Parameters params) {
-					return "https://serviceprovider.com/oauth/authenticate?redirect_uri=" + params.getRedirectUri() + additionalParametersQuery(params.getAdditionalParameters(), true);
+					return "https://serviceprovider.com/oauth/authenticate" + additionalParametersQuery(params, false);
 				}
 				public AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri, MultiValueMap<String, String> additionalParameters) {
 					assertEquals("authorization-grant", authorizationGrant);
