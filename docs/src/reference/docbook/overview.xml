@@ -330,6 +330,7 @@ git clone git://github.com/SpringSource/spring-social-samples.git
 			<listitem><para>spring-social-movies - Shows how to extend Spring Social to implement a new ServiceProvider and API binding.</para></listitem>
 			<listitem><para>spring-social-twitter4j - Shows how to extend Spring Social and re-use an existing API binding.</para></listitem>
 			<listitem><para>spring-social-popup - Shows how to use Spring Social to drive a browser popup-based connection flow.</para></listitem>
+			<listitem><para>spring-social-canvas - Demonstrates how to use Spring Social within a Facebook Canvas application.</para></listitem>
 		</itemizedlist>
 	</section>
 </chapter>
