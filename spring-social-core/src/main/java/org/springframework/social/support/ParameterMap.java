@@ -122,7 +122,7 @@ public class ParameterMap implements MultiValueMap<String, String> {
 	public void set(String key, String value) {
 		List<String> values = new LinkedList<String>();
 		values.add(value);
-		parameters.put(key,	values);
+		parameters.put(key, values);
 	}
 
 	public void setAll(Map<String, String> values) {
