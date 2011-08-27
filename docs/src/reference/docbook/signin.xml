@@ -23,19 +23,16 @@
 		<para>
 			To add provider sign in capability to your Spring application, configure <classname>ProviderSignInController</classname> as a bean in your Spring MVC application:
 		</para>
-		
 		<programlisting language="java"><![CDATA[
 @Bean
 public ProviderSignInController providerSignInController() {
     return new ProviderSignInController(connectionFactoryLocator(), 
-            usersConnectionRepository(), new SimpleSignInAdapter());
+        usersConnectionRepository(), new SimpleSignInAdapter());
 }]]>
 		</programlisting>
-
 		<para>
 			Or in XML, if you prefer:
 		</para>		
-				
 		<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.connect.signin.web.ProviderSignInController">
     <!-- relies on by-type autowiring for the constructor-args -->    
@@ -50,16 +47,14 @@ public ProviderSignInController providerSignInController() {
 @Bean
 public ProviderSignInController providerSignInController() {
     ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator(), 
-            usersConnectionRepository(), new SimpleSignInAdapter());
+        usersConnectionRepository(), new SimpleSignInAdapter());
     controller.setApplicationUrl(environment.getProperty("application.url"));
     return controller;
 }]]>
 		</programlisting>
-
 		<para>
 			Or when configured in XML:
 		</para>
-
 		<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.connect.signin.web.ProviderSignInController">
     <!-- relies on by-type autowiring for the constructor-args -->    
@@ -139,12 +134,15 @@ public ProviderSignInController providerSignInController() {
 @Scope(value="singleton", proxyMode=ScopedProxyMode.INTERFACES)
 public ConnectionFactoryLocator connectionFactoryLocator() {
     ConnectionFactoryRegistry registry = new ConnectionFactoryRegistry();
+    
     registry.addConnectionFactory(new FacebookConnectionFactory(
-            environment.getProperty("facebook.clientId"),
-            environment.getProperty("facebook.clientSecret")));
+        environment.getProperty("facebook.clientId"),
+        environment.getProperty("facebook.clientSecret")));
+            
     registry.addConnectionFactory(new TwitterConnectionFactory(
-            environment.getProperty("twitter.consumerKey"),
-            environment.getProperty("twitter.consumerSecret")));
+        environment.getProperty("twitter.consumerKey"),
+        environment.getProperty("twitter.consumerSecret")));
+            
     return registry;
 }
 
@@ -185,7 +183,7 @@ public interface SignInAdapter {
 public class SpringSecuritySignInAdapter implements SignInAdapter {
     public void signIn(String localUserId, Connection<?> connection, NativeWebRequest request) {
         SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(localUserId, null, null));
+            new UsernamePasswordAuthenticationToken(localUserId, null, null));
     }
 }]]>
 			</programlisting>
@@ -202,17 +200,15 @@ public class SpringSecuritySignInAdapter implements SignInAdapter {
 	  		</para>
 			<programlisting language="xml"><![CDATA[
 <form id="tw_signin" action="<c:url value="/signin/twitter"/>" method="POST">
-    <button type="submit">
-        <img src="<c:url value="/resources/social/twitter/sign-in-with-twitter-d.png"/>" />
-    </button>
+  <button type="submit">
+    <img src="<c:url value="/resources/social/twitter/sign-in-with-twitter-d.png"/>" />
+  </button>
 </form>]]>
 			</programlisting>
 			<para>
 				Notice that the path used in the form's <code>action</code> attribute maps to the first step in <classname>ProviderSignInController</classname>'s flow.
 				In this case, the provider is identified as "twitter".
 			</para>
-
-		
 			<note>
 				<para>
 					Some providers offer client-side sign in widgets, such as Twitter @Anywhere's "Connect with Twitter" button and Facebook's <code>&lt;fb:login-button&gt;</code>.
@@ -220,7 +216,6 @@ public class SpringSecuritySignInAdapter implements SignInAdapter {
 					The <code>ProviderSignInController</code> sign in flow should be initiated by submitting a POST request as described above.
 				</para>
 			</note>
-
 			<para>
 				Clicking this button will trigger a POST request to "/signin/twitter", kicking off the Twitter sign in flow. 
 				If the user has not yet signed into Twitter, the user will be presented with the following page from Twitter:
@@ -258,16 +253,14 @@ public class SpringSecuritySignInAdapter implements SignInAdapter {
 @Bean
 public ProviderSignInController providerSignInController() {
     ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator(), 
-            usersConnectionRepository(), new SimpleSignInAdapter());
+        usersConnectionRepository(), new SimpleSignInAdapter());
     controller.setSignUpUrl("/register");
     return controller;
 }]]>
 			</programlisting>
-			
 			<para>
 				Or to set the sign up URL using XML configuration:
 			</para>
-			
 			<programlisting language="xml"><![CDATA[
 <bean class="org.springframework.social.connect.signin.web.ProviderSignInController">
     <property name="signUpUrl" value="/register" />
@@ -368,7 +361,7 @@ public class AccountConnectionSignUp implements ConnectionSignUp {
     }
 
     private Account createAccount(UserProfile profile) {
-        if(profile == null || profile.getUsername() == null) {
+        if (profile == null || profile.getUsername() == null) {
             return null;
         }
         Account account = new Account(profile.getUsername(), profile.getFirstName(), profile.getLastName());
@@ -390,10 +383,10 @@ public class AccountConnectionSignUp implements ConnectionSignUp {
 @Bean
 @Scope(value="singleton", proxyMode=ScopedProxyMode.INTERFACES) 
 public UsersConnectionRepository usersConnectionRepository(AccountRepository accountRepository) {
-  JdbcUsersConnectionRepository repository = new JdbcUsersConnectionRepository(
-          dataSource, connectionFactoryLocator(), Encryptors.noOpText());
-  repository.setConnectionSignUp(new AccountConnectionSignUp(accountRepository));
-  return repository;
+    JdbcUsersConnectionRepository repository = new JdbcUsersConnectionRepository(
+        dataSource, connectionFactoryLocator(), Encryptors.noOpText());
+    repository.setConnectionSignUp(new AccountConnectionSignUp(accountRepository));
+    return repository;
 }]]>
 			</programlisting>	
 		</section>

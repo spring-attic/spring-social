@@ -211,7 +211,7 @@ public interface DirectMessageOperations {
 				For APIs secured with OAuth1, the consumerKey, consumerSecret, accessToken, and accessTokenSecret will be required for construction:
 				<programlisting language="java"><![CDATA[
 public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, 
-        String accessTokenSecret) { ... }]]>
+    String accessTokenSecret) { ... }]]>
 				</programlisting>				
 			</para>
 			<para>
@@ -252,8 +252,8 @@ public class FacebookTemplate extends AbstractOAuth2ApiBinding {
 				The existing Spring Social client modules all invoke their RestTemplate instances in a standard manner:
 				<programlisting language="java"><![CDATA[
 public TwitterProfile getUserProfile() {
-    return getRestTemplate().getForObject(buildUri("account/verify_credentials.json"), 
-            TwitterProfile.class);
+    return getRestTemplate().getForObject(buildUri("account/verify_credentials.json"),
+        TwitterProfile.class);
 }]]>
 				</programlisting>
 			</para>
@@ -263,7 +263,7 @@ public TwitterProfile getUserProfile() {
 				<programlisting language="java"><![CDATA[
 public TwitterProfile getUserProfile(String screenName) {
     return getRestTemplate().getForObject(buildUri("users/show.json", 
-            Collections.singletonMap("screen_name", screenName)), TwitterProfile.class);
+        Collections.singletonMap("screen_name", screenName)), TwitterProfile.class);
 }]]>
 				</programlisting>
 			</para>
@@ -283,8 +283,8 @@ public TwitterProfile getUserProfile(String screenName) {
 				To use, first create a MockRestServiceServer against the RestTemplate instance used by your API implementation:
 			</para>
 			<programlisting language="java"><![CDATA[
-TwitterTemplate twitter = new TwitterTemplate("consumerKey", "consumerSecret", "accessToken", 
-        "accessTokenSecret");
+TwitterTemplate twitter = new TwitterTemplate("consumerKey", "consumerSecret", "accessToken",
+    "accessTokenSecret");
 MockRestServer mockServer = MockRestServiceServer.createServer(twitter.getRestTemplate());]]>
 			</programlisting>
 			<para>
@@ -373,8 +373,8 @@ public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider
 
     public FacebookServiceProvider(String clientId, String clientSecret) {
         super(new OAuth2Template(clientId, clientSecret,
-           "https://graph.facebook.com/oauth/authorize",
-           "https://graph.facebook.com/oauth/access_token"));
+            "https://graph.facebook.com/oauth/authorize",
+            "https://graph.facebook.com/oauth/access_token"));
     }
 
     public Facebook getApi(String accessToken) {
@@ -397,9 +397,9 @@ public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider
 			<programlisting language="java"><![CDATA[
 public FacebookServiceProvider(String clientId, String clientSecret) {
     super(new OAuth2Template(clientId, clientSecret,
-       "https://graph.facebook.com/oauth/authorize",
-       "https://graph.facebook.com/oauth/authenticate",
-       "https://graph.facebook.com/oauth/access_token"));
+        "https://graph.facebook.com/oauth/authorize",
+        "https://graph.facebook.com/oauth/authenticate",
+        "https://graph.facebook.com/oauth/access_token"));
 }]]>
 			</programlisting>
 			<para>
@@ -507,7 +507,7 @@ public class TwitterAdapter implements ApiAdapter<Twitter> {
     public UserProfile fetchUserProfile(Twitter twitter) {
         TwitterProfile profile = twitter.userOperations().getUserProfile();
         return new UserProfileBuilder().setName(profile.getName()).setUsername(
-                profile.getScreenName()).build();
+            profile.getScreenName()).build();
     }
     
     public void updateStatus(Twitter twitter, String message) {
