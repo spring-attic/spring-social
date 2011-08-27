@@ -1,3 +1,12 @@
+Spring Social 1.0.0 Release ()
+=========================================================
+Bug Fixes
+  * OAuth1Parameters.NONE was accidentally made mutable; it is now back to being immutable as it should be.
+  * Updated reference documentation to reflect the minor API changes introduced in RC3.
+
+Improvements
+  * Added default constructor to OAuth1Parameters and OAuth2Parameters for more convenient standalone usage.  
+
 Spring Social 1.0.0 Release Candidate 3 (August 25, 2011)
 =========================================================
 Bug Fixes
@@ -9,7 +18,7 @@ Improvements
    * Added schema for JdbcUsersConnectionRepository to reference documentation
      and briefly described its purpose and location within the core module.
      (SOCIAL-241)
-   * ConnectInterceptor.preConnect() now returns a MultiValueMap<String, String>
+   * ConnectInterceptor.preConnect() now accepts a MultiValueMap<String, String>
      to be able to add parameters to the authorization URL. (SOCIAL-243)
    * New samples illustrating a popup-based connection flow and Spring Social
      in a Facebook Canvas application.
