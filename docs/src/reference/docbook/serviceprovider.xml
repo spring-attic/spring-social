@@ -149,10 +149,10 @@ public interface OAuth2Operations {
     String buildAuthenticateUrl(GrantType grantType, OAuth2Parameters parameters);
 
     AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, 
-            MultiValueMap<String, String> additionalParameters);
+        MultiValueMap<String, String> additionalParameters);
 
-	AccessGrant refreshAccess(String refreshToken, String scope, 
-	        MultiValueMap<String, String> additionalParameters);
+    AccessGrant refreshAccess(String refreshToken, String scope, 
+            MultiValueMap<String, String> additionalParameters);
 
 }]]>
 			</programlisting>			
@@ -217,11 +217,13 @@ public interface OAuth2Operations {
 FacebookConnectionFactory connectionFactory = 
     new FacebookConnectionFactory("clientId", "clientSecret");
 OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-String authorizeUrl = oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, 
-        new OAuth2Parameters("callbackUrl"));
+OAuth2Parameters params = new OAuth2Parameters();
+params.setCallbackUrl("https://my-callback-url");
+String authorizeUrl = oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, params);
 response.sendRedirect(authorizeUrl);
-// when the provider callback is received with the authorizationCode parameter:
-AccessGrant accessGrant = oauthOperations.exchangeForAccess(authorizationCode, "callbackUrl");
+
+// upon receiving the callback from the provider:
+AccessGrant accessGrant = oauthOperations.exchangeForAccess(authorizationCode, "https://my-callback-url");
 Connection<Facebook> connection = connectionFactory.createConnection(accessGrant);]]>
 				</programlisting>
 			</para>
@@ -233,10 +235,12 @@ Connection<Facebook> connection = connectionFactory.createConnection(accessGrant
 FacebookConnectionFactory connectionFactory = 
     new FacebookConnectionFactory("clientId", "clientSecret");
 OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-String authorizeUrl = oauthOperations.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, 
-        new OAuth2Parameters("callbackUrl"));
+OAuth2Parameters params = new OAuth2Parameters();
+params.setCallbackUrl("https://my-callback-url");
+String authorizeUrl = oauthOperations.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, params);
 response.sendRedirect(authorizeUrl);
-// when the provider callback is received with the access_token parameter:
+
+// upon receiving the callback from the provider:
 AccessGrant accessGrant = new AccessGrant(accessToken);
 Connection<Facebook> connection = connectionFactory.createConnection(accessGrant);]]>
 				</programlisting>
@@ -268,14 +272,14 @@ public class OAuth1ConnectionFactory<A> extends ConnectionFactory<A> {
 public interface OAuth1Operations {
 
     OAuthToken fetchRequestToken(String callbackUrl, 
-            MultiValueMap<String, String> additionalParameters);
+        MultiValueMap<String, String> additionalParameters);
 
     String buildAuthorizeUrl(String requestToken, OAuth1Parameters parameters);
 
     String buildAuthenticateUrl(String requestToken, OAuth1Parameters parameters);
 
     OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, 
-            MultiValueMap<String, String> additionalParameters);
+        MultiValueMap<String, String> additionalParameters);
 
 }]]>
 			</programlisting>			
@@ -348,12 +352,13 @@ public interface OAuth1Operations {
 TwitterConnectionFactory connectionFactory = 
     new TwitterConnectionFactory("consumerKey", "consumerSecret");
 OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
-String requestToken = oauthOperations.fetchRequestToken("callbackUrl");
+String requestToken = oauthOperations.fetchRequestToken("https://my-callback-url");
 String authorizeUrl = oauthOperations.buildAuthorizeUrl(requestToken, OAuth1Parameters.NONE);
 response.sendRedirect(authorizeUrl);
-// when the provider callback is received with the oauth_token and oauth_verifier parameters:
+
+// upon receiving the callback from the provider:
 OAuthToken accessToken = oauthOperations.exchangeForAccessToken(
-        new AuthorizedRequestToken(oauthToken, oauthVerifier));
+    new AuthorizedRequestToken(oauthToken, oauthVerifier));
 Connection<Twitter> connection = connectionFactory.createConnection(accessToken);]]>
 				</programlisting>
 			</para>
@@ -414,7 +419,7 @@ public interface ConnectionRepository {
     <A> List<Connection<A>> findConnections(Class<A> apiType);
 
     MultiValueMap<String, Connection<?>> findConnectionsToUsers(
-            MultiValueMap<String, String> providerUserIds);
+        MultiValueMap<String, String> providerUserIds);
 
     Connection<?> getConnection(ConnectionKey connectionKey);
 
@@ -497,8 +502,10 @@ create unique index UserConnectionRank on UserConnection(userId, providerId, ran
 			<programlisting language="java"><![CDATA[
 // JDBC DataSource pointing to the DB where connection data is stored
 DataSource dataSource = ...;
+
 // locator for factories needed to construct Connections when restoring from persistent form
 ConnectionFactoryLocator connectionFactoryLocator = ...;
+
 // encryptor of connection authorization credentials
 TextEncryptor encryptor = ...;
 
