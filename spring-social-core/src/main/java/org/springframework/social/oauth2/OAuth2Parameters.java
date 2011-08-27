@@ -18,14 +18,14 @@ package org.springframework.social.oauth2;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.social.support.AbstractOAuthParameters;
+import org.springframework.social.support.ParameterMap;
 
 /**
  * Parameters for building an OAuth2 authorize URL.
  * @author Roy Clarkson
  * @see OAuth2Operations#buildAuthorizeUrl(GrantType, OAuth2Parameters)
  */
-public final class OAuth2Parameters extends AbstractOAuthParameters {
+public final class OAuth2Parameters extends ParameterMap {
 
 	private static final String STATE = "state";
 	
@@ -33,26 +33,49 @@ public final class OAuth2Parameters extends AbstractOAuthParameters {
 	
 	private static final String REDIRECT_URI = "redirect_uri";
 
+	/**
+	 * Creates a new OAuth2Parameters map that is initially empty.
+	 * Use the setter methods to add parameters after construction.
+	 * @see #setRedirectUri(String)
+	 * @see #setScope(String)
+	 * @see #setState(String)
+	 * @see #set(String, String)
+	 */
+	public OAuth2Parameters() {
+		super();
+	}
+	
+	/**
+	 * Creates a new OAuth2Parameters populated from the initial parameters provided.
+	 * @param parameters the initial parameters
+	 * @see #setRedirectUri(String)
+	 * @see #setScope(String)
+	 * @see #setState(String)
+	 */
 	public OAuth2Parameters(Map<String, List<String>> parameters) {
 		super(parameters);
 	}
 	
 	/**
-	 * Returns the authorization callback url; this value must match the redirectUri registered with the provider (optional per the OAuth 2 spec, but required by most OAuth 2 providers). 
+	 * The authorization callback url.
+	 * This value must match the redirectUri registered with the provider.
+	 * This is optional per the OAuth 2 spec, but required by most OAuth 2 providers. 
 	 */
 	public String getRedirectUri() {
 		return getFirst(REDIRECT_URI);
 	}
 	
 	/**
-	 * Sets the authorization callback url; this value must match the redirectUri registered with the provider (optional per the OAuth 2 spec, but required by most OAuth 2 providers). 
+	 * Sets the authorization callback url.
+	 * This value must match the redirectUri registered with the provider.
+	 * This is optional per the OAuth 2 spec, but required by most OAuth 2 providers.
 	 */
 	public void setRedirectUri(String redirectUri) {
 		set(REDIRECT_URI, redirectUri);
 	}
 
 	/**
-	 * Returns the permissions the application is seeking with the authorization (optional).
+	 * The permissions the application is seeking with the authorization (optional).
 	 */
 	public String getScope() {
 		return getFirst(SCOPE);
@@ -66,7 +89,7 @@ public final class OAuth2Parameters extends AbstractOAuthParameters {
 	}
 
 	/**
-	 * Returns an opaque key that must be included in the provider's authorization callback (optional).
+	 * An opaque key that must be included in the provider's authorization callback (optional).
 	 */
 	public String getState() {
 		return getFirst(STATE);

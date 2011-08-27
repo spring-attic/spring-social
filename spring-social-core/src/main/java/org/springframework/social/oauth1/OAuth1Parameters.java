@@ -15,36 +15,59 @@
  */
 package org.springframework.social.oauth1;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.social.support.AbstractOAuthParameters;
+import org.springframework.social.support.ParameterMap;
 
 /**
  * Parameters for building an OAuth1 authorize URL.
  * @author Keith Donald
  * @see OAuth1Operations#buildAuthorizeUrl(String, OAuth1Parameters)
  */
-public final class OAuth1Parameters extends AbstractOAuthParameters {
+public final class OAuth1Parameters extends ParameterMap {
 
 	private static final String OAUTH_CALLBACK = "oauth_callback";
 	
 	/**
-	 * Shared instance for passing zero authorization parameters (accepted for OAuth 1.0a-based flows).
+	 * Shared instance for passing zero authorization parameters (common for OAuth 1.0a-based flows).
+	 * The underlying map is immutable.
+	 * @see Collections#emptyMap()
 	 */
-	public static final OAuth1Parameters NONE = new OAuth1Parameters(null);
+	public static final OAuth1Parameters NONE = new OAuth1Parameters(Collections.<String, List<String>>emptyMap());
 
+	/**
+	 * Creates a new OAuth1Parameters map that is initially empty.
+	 * Use the setter methods to add parameters after construction.
+	 * @see #setCallbackUrl(String)
+	 * @see #set(String, String)
+	 */
+	public OAuth1Parameters() {
+		super();
+	}
+	
+	/**
+	 * Creates a new OAuth1Parameters populated from the initial parameters provided.
+	 * @param parameters the initial parameters
+	 * @see #setCallbackUrl(String)
+	 */	
 	public OAuth1Parameters(Map<String, List<String>> parameters) {
 		super(parameters);
 	}
 	
 	/**
-	 * The authorization callback url; this value must be included for OAuth 1.0 providers (and NOT for OAuth 1.0a)
+	 * The authorization callback url.
+	 * This value must be included for OAuth 1.0 providers (and NOT for OAuth 1.0a)
 	 */
 	public String getCallbackUrl() {
 		return getFirst(OAUTH_CALLBACK);
 	}
-	
+
+	/**
+	 * Sets the authorization callback url.
+	 * This value must be included for OAuth 1.0 providers (and NOT for OAuth 1.0a).
+	 */
 	public void setCallbackUrl(String callbackUrl) {
 		set(OAUTH_CALLBACK, callbackUrl);
 	}

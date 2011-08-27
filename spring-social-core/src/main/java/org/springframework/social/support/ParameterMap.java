@@ -26,14 +26,28 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /**
- * Base class for OAuth1Parameters and OAuth2Parameters to shield them from any direct implementation of MultiValueMap.
+ * Generally useful base class for creating MultiValueMaps that store HTTP query parameters.
+ * May be subclassed to add specific getter/setter methods for known parameters used in a specific context.
+ * Also makes it easy to adapt a Map&lt;String, List&lt;String&gt;&gt; to an MultiValueMap&lt;String, String&gt;.
  * @author Craig Walls
  */
-public abstract class AbstractOAuthParameters implements MultiValueMap<String, String> {
+public class ParameterMap implements MultiValueMap<String, String> {
 
 	private final Map<String, List<String>> parameters;
 	
-	protected AbstractOAuthParameters(Map<String, List<String>> parameters) {
+	/**
+	 * Creates a new MultiValueMap&lt;String, String&gt; that is initially empty.
+	 */
+	protected ParameterMap() {
+		this(null);
+	}
+
+	/**
+	 * Wraps the provided Map&lt;String, List&lt;String&gt;&gt; as a MultiValueMap&lt;String, String&gt;.
+	 * The map passed in is stored internally.
+	 * No copy is created.
+	 */
+	protected ParameterMap(Map<String, List<String>> parameters) {
 		if (parameters != null) {
 			this.parameters = parameters;
 		} else {
@@ -118,11 +132,11 @@ public abstract class AbstractOAuthParameters implements MultiValueMap<String, S
 	}
 
 	public Map<String, String> toSingleValueMap() {
-		LinkedHashMap<String, String> singleValueMap = new LinkedHashMap<String,String>(this.parameters.size());
+		Map<String, String> map = new LinkedHashMap<String, String>(this.parameters.size());
 		for (Entry<String, List<String>> entry : parameters.entrySet()) {
-			singleValueMap.put(entry.getKey(), entry.getValue().get(0));
+			map.put(entry.getKey(), entry.getValue().get(0));
 		}
-		return singleValueMap;
+		return map;
 	}
 
 }
