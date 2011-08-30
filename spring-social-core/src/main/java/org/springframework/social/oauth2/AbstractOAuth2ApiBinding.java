@@ -46,6 +46,7 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 		accessToken = null;
 		restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 		restTemplate.setMessageConverters(getMessageConverters());
+		configureRestTemplate(restTemplate);
 	}
 	
 	/**
@@ -56,6 +57,7 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 		this.accessToken = accessToken;
 		restTemplate = ProtectedResourceClientFactory.create(accessToken, getOAuth2Version());
 		restTemplate.setMessageConverters(getMessageConverters());
+		configureRestTemplate(restTemplate);
 	}
 	
 	/**
@@ -100,6 +102,14 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 	 */
 	protected OAuth2Version getOAuth2Version() {
 		return OAuth2Version.BEARER;
+	}
+
+	/**
+	 * Subclassing hook to enable customization of the RestTemplate used to consume provider API resources.
+	 * An example use case might be to configure a custom error handler.
+	 * @param restTemplate the RestTemplate to configure.
+	 */
+	protected void configureRestTemplate(RestTemplate restTemplate) {		
 	}
 
 	/**
