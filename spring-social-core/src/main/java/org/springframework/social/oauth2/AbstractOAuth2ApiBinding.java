@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -103,7 +104,7 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 
 	/**
 	 * Returns a list of {@link HttpMessageConverter}s to be used by the internal {@link RestTemplate}.
-	 * By default, this includes a {@link StringHttpMessageConverter}, a {@link MappingJacksonHttpMessageConverter}, and a {@link FormHttpMessageConverter}.
+	 * By default, this includes a {@link StringHttpMessageConverter}, a {@link MappingJacksonHttpMessageConverter}, a {@link ByteArrayHttpMessageConverter}, and a {@link FormHttpMessageConverter}.
 	 * The {@link FormHttpMessageConverter} is set to use "UTF-8" character encoding.
 	 * Override this method to add additional message converters or to replace the default list of message converters.
 	 */
@@ -113,8 +114,19 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 		FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
 		formHttpMessageConverter.setCharset(Charset.forName("UTF-8"));
 		messageConverters.add(formHttpMessageConverter);
-		messageConverters.add(new MappingJacksonHttpMessageConverter());
+		MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();
+		configureJsonMessageConverter(jsonConverter);
+		messageConverters.add(jsonConverter);
+		messageConverters.add(new ByteArrayHttpMessageConverter());
 		return messageConverters;
 	}
 	
+	/**
+	 * Subclassing hook to enable API binding implementations to configure the MappingJacksonHttpMessageConverter.
+	 * For example, an API binding may configure the converter with a custom ObjectMapper.
+	 * @param converter The MappingJacksonHttpMessageConverter to be configured. 
+	 */
+	protected void configureJsonMessageConverter(MappingJacksonHttpMessageConverter converter) {
+	}
+
 }
