@@ -17,8 +17,10 @@ package org.springframework.social.oauth1;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.FormHttpMessageConverter;
@@ -114,22 +116,40 @@ public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
 	protected List<HttpMessageConverter<?>> getMessageConverters() {
 		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
 		messageConverters.add(new StringHttpMessageConverter());
-		FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
-		formHttpMessageConverter.setCharset(Charset.forName("UTF-8"));
-		messageConverters.add(formHttpMessageConverter);
-		MappingJacksonHttpMessageConverter jsonConverter = new MappingJacksonHttpMessageConverter();
-		configureJsonMessageConverter(jsonConverter);
-		messageConverters.add(jsonConverter);
-		messageConverters.add(new ByteArrayHttpMessageConverter());
+		messageConverters.add(getFormMessageConverter());
+		messageConverters.add(getJsonMessageConverter());
+		messageConverters.add(getByteArrayMessageConverter());
 		return messageConverters;
 	}
 	
 	/**
-	 * Subclassing hook to enable API binding implementations to configure the MappingJacksonHttpMessageConverter.
-	 * For example, an API binding may configure the converter with a custom ObjectMapper.
-	 * @param converter The MappingJacksonHttpMessageConverter to be configured. 
+	 * Returns an {@link FormHttpMessageConverter} to be used by the internal {@link RestTemplate}.
+	 * By default, the message converter is set to use "UTF-8" character encoding.
+	 * May be overridden to customize the message converter (for example, to set supported media types or message converters for the parts of a multipart message). 
 	 */
-	protected void configureJsonMessageConverter(MappingJacksonHttpMessageConverter converter) {
+	protected FormHttpMessageConverter getFormMessageConverter() {
+		FormHttpMessageConverter converter = new FormHttpMessageConverter();
+		converter.setCharset(Charset.forName("UTF-8"));
+		return converter;
+	}
+	
+	/**
+	 * Returns a {@link MappingJacksonHttpMessageConverter} to be used by the internal {@link RestTemplate}.
+	 * May be overridden to customize the message converter (for example, to set a custom object mapper or supported media types).
+	 */
+	protected MappingJacksonHttpMessageConverter getJsonMessageConverter() {
+		return new MappingJacksonHttpMessageConverter(); 
+	}
+	
+	/**
+	 * Returns a {@link ByteArrayHttpMessageConverter} to be used by the internal {@link RestTemplate} when consuming image or other binary resources.
+	 * By default, the message converter supports "image/jpeg", "image/gif", and "image/png" media types.
+	 * May be overridden to customize the message converter (for example, to set supported media types).
+	 */
+	protected ByteArrayHttpMessageConverter getByteArrayMessageConverter() {
+		ByteArrayHttpMessageConverter converter = new ByteArrayHttpMessageConverter();
+		converter.setSupportedMediaTypes(Arrays.asList(MediaType.IMAGE_JPEG, MediaType.IMAGE_GIF, MediaType.IMAGE_PNG));
+		return converter;
 	}
 	
 }
