@@ -109,6 +109,7 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 	/**
 	 * Subclassing hook to enable customization of the RestTemplate used to consume provider API resources.
 	 * An example use case might be to configure a custom error handler.
+	 * Note that this method is called after the RestTemplate has been configured with the message converters returned from getMessageConverters().
 	 * @param restTemplate the RestTemplate to configure.
 	 */
 	protected void configureRestTemplate(RestTemplate restTemplate) {		
@@ -132,7 +133,8 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 	/**
 	 * Returns an {@link FormHttpMessageConverter} to be used by the internal {@link RestTemplate}.
 	 * By default, the message converter is set to use "UTF-8" character encoding.
-	 * May be overridden to customize the message converter (for example, to set supported media types or message converters for the parts of a multipart message). 
+	 * Override to customize the message converter (for example, to set supported media types or message converters for the parts of a multipart message). 
+	 * To remove/replace this or any of the other message converters that are registered by default, override the getMessageConverters() method instead.
 	 */
 	protected FormHttpMessageConverter getFormMessageConverter() {
 		FormHttpMessageConverter converter = new FormHttpMessageConverter();
@@ -142,7 +144,8 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 	
 	/**
 	 * Returns a {@link MappingJacksonHttpMessageConverter} to be used by the internal {@link RestTemplate}.
-	 * May be overridden to customize the message converter (for example, to set a custom object mapper or supported media types).
+	 * Override to customize the message converter (for example, to set a custom object mapper or supported media types).
+	 * To remove/replace this or any of the other message converters that are registered by default, override the getMessageConverters() method instead.
 	 */
 	protected MappingJacksonHttpMessageConverter getJsonMessageConverter() {
 		return new MappingJacksonHttpMessageConverter(); 
@@ -151,7 +154,8 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 	/**
 	 * Returns a {@link ByteArrayHttpMessageConverter} to be used by the internal {@link RestTemplate} when consuming image or other binary resources.
 	 * By default, the message converter supports "image/jpeg", "image/gif", and "image/png" media types.
-	 * May be overridden to customize the message converter (for example, to set supported media types).
+	 * Override to customize the message converter (for example, to set supported media types).
+	 * To remove/replace this or any of the other message converters that are registered by default, override the getMessageConverters() method instead.	 
 	 */
 	protected ByteArrayHttpMessageConverter getByteArrayMessageConverter() {
 		ByteArrayHttpMessageConverter converter = new ByteArrayHttpMessageConverter();
