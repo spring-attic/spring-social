@@ -42,7 +42,7 @@ public class OAuth2TemplateTest {
 
 	@Test
 	public void buildAuthorizeUrl_codeResponseType() {
-		OAuth2Parameters parameters = new OAuth2Parameters(null);
+		OAuth2Parameters parameters = new OAuth2Parameters();
 		parameters.setRedirectUri("http://www.someclient.com/connect/foo");
 		parameters.setScope("read,write");
 		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=code&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&scope=read%2Cwrite";
@@ -52,7 +52,7 @@ public class OAuth2TemplateTest {
 
 	@Test
 	public void buildAuthorizeUrl_tokenResponseType() {
-		OAuth2Parameters parameters = new OAuth2Parameters(null);
+		OAuth2Parameters parameters = new OAuth2Parameters();
 		parameters.setRedirectUri("http://www.someclient.com/connect/foo");
 		parameters.setScope("read,write");
 		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=token&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&scope=read%2Cwrite";
@@ -62,7 +62,7 @@ public class OAuth2TemplateTest {
 
 	@Test
 	public void buildAuthorizeUrl_noScopeInParameters() {
-		OAuth2Parameters parameters = new OAuth2Parameters(null);
+		OAuth2Parameters parameters = new OAuth2Parameters();
 		parameters.setRedirectUri("http://www.someclient.com/connect/foo");
 		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=code&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo";
 		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, parameters);
@@ -71,7 +71,7 @@ public class OAuth2TemplateTest {
 
 	@Test
 	public void buildAuthorizeUrl_additionalParameters() {
-		OAuth2Parameters parameters = new OAuth2Parameters(null);
+		OAuth2Parameters parameters = new OAuth2Parameters();
 		parameters.setRedirectUri("http://www.someclient.com/connect/foo");
 		parameters.setScope("read,write");
 		parameters.add("display", "touch");
