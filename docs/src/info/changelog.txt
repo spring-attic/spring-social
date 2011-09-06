@@ -1,8 +1,11 @@
-Spring Social 1.0.0 Release ()
-=========================================================
+Spring Social 1.0.0 Release (September 8, 2011)
+===============================================
 Bug Fixes
   * OAuth1Parameters.NONE was accidentally made mutable; it is now back to being immutable as it should be.
   * Updated reference documentation to reflect the minor API changes introduced in RC3.
+  * OAuth-encode consumer/token secrets when creating an OAuth 1 signature key (SOCIAL-248).
+  * Handle signature differences between Spring 3.1M2 and Spring 3.1RC1 RestTemplate.setInterceptors() 
+    (SOCIAL-247).
 
 Improvements
   * Added default constructor to OAuth1Parameters and OAuth2Parameters for more convenient standalone usage.  

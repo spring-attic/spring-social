@@ -15,7 +15,9 @@
  */
 package org.springframework.social.oauth2;
 
+import java.lang.reflect.Method;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -37,7 +39,7 @@ class ProtectedResourceClientFactory {
 			// favored
 			LinkedList<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
 			interceptors.add(new OAuth2RequestInterceptor(accessToken, version));
-			client.setInterceptors(interceptors);
+			setInterceptors(client, interceptors);
 		} else {
 			// 3.0.x compatibility
 			client.setRequestFactory(new Spring30OAuth2RequestFactory(client.getRequestFactory(), accessToken, version));
@@ -52,6 +54,26 @@ class ProtectedResourceClientFactory {
 		return new Spring30OAuth2RequestFactory(requestFactory, accessToken, version);
 	}
 
+	/*
+	 * Sets interceptors on a Spring 3.1 RestTemplate. 
+	 * Handles the differences between 3.1M2 and 3.1RC1 setInterceptors() method signatures.
+	 * To be removed when Spring 3.1RC1 is released. 
+	 */
+	private static void setInterceptors(RestTemplate client, LinkedList<ClientHttpRequestInterceptor> interceptors) {
+		try {
+			Method method = RestTemplate.class.getMethod("setInterceptors", List.class);
+			method.invoke(client, interceptors);
+		} catch (NoSuchMethodException e) {
+			setInterceptors(client, interceptors.toArray(new ClientHttpRequestInterceptor[0]));
+		} catch (Exception shouldntHappen) {}
+	}
+	
+	private static void setInterceptors(RestTemplate client, ClientHttpRequestInterceptor[] interceptors) {
+		try {
+			Method method = RestTemplate.class.getMethod("setInterceptors", interceptors.getClass());
+			method.invoke(client, new Object[] {interceptors});
+		} catch (Exception shouldntHappen) {}
+	}
 
 	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor", ProtectedResourceClientFactory.class.getClassLoader());
 
