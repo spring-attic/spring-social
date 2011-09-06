@@ -15,6 +15,8 @@
  */
 package org.springframework.social.oauth2;
 
+import java.util.LinkedList;
+
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
@@ -33,7 +35,9 @@ class ProtectedResourceClientFactory {
 		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 		if (interceptorsSupported) {
 			// favored
-			client.setInterceptors(new ClientHttpRequestInterceptor[] { new OAuth2RequestInterceptor(accessToken, version) });
+			LinkedList<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
+			interceptors.add(new OAuth2RequestInterceptor(accessToken, version));
+			client.setInterceptors(interceptors);
 		} else {
 			// 3.0.x compatibility
 			client.setRequestFactory(new Spring30OAuth2RequestFactory(client.getRequestFactory(), accessToken, version));
