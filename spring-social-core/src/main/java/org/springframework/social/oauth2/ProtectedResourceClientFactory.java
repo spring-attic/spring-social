@@ -37,9 +37,7 @@ class ProtectedResourceClientFactory {
 		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 		if (interceptorsSupported) {
 			// favored
-			LinkedList<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
-			interceptors.add(new OAuth2RequestInterceptor(accessToken, version));
-			setInterceptors(client, interceptors);
+			setInterceptor(client, new OAuth2RequestInterceptor(accessToken, version));
 		} else {
 			// 3.0.x compatibility
 			client.setRequestFactory(new Spring30OAuth2RequestFactory(client.getRequestFactory(), accessToken, version));
@@ -59,12 +57,16 @@ class ProtectedResourceClientFactory {
 	 * Handles the differences between 3.1M2 and 3.1RC1 setInterceptors() method signatures.
 	 * To be removed when Spring 3.1RC1 is released. 
 	 */
-	private static void setInterceptors(RestTemplate client, LinkedList<ClientHttpRequestInterceptor> interceptors) {
+	private static void setInterceptor(RestTemplate client, ClientHttpRequestInterceptor interceptor) {
 		try {
+			// Would like to call getInterceptors().add(interceptor), but the current Spring snapshot
+			// doesn't initialize the interceptors list.
 			Method method = RestTemplate.class.getMethod("setInterceptors", List.class);
+			List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
+			interceptors.add(interceptor);
 			method.invoke(client, interceptors);
 		} catch (NoSuchMethodException e) {
-			setInterceptors(client, interceptors.toArray(new ClientHttpRequestInterceptor[0]));
+			setInterceptors(client, new ClientHttpRequestInterceptor[] { interceptor });
 		} catch (Exception shouldntHappen) {}
 	}
 	
