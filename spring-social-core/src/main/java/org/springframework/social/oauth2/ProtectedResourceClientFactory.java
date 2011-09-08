@@ -59,24 +59,33 @@ class ProtectedResourceClientFactory {
 	 */
 	private static void setInterceptor(RestTemplate client, ClientHttpRequestInterceptor interceptor) {
 		try {
-			// Would like to call getInterceptors().add(interceptor), but the current Spring snapshot
-			// doesn't initialize the interceptors list.
-			Method method = RestTemplate.class.getMethod("setInterceptors", List.class);
-			List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
-			interceptors.add(interceptor);
-			method.invoke(client, interceptors);
-		} catch (NoSuchMethodException e) {
-			setInterceptors(client, new ClientHttpRequestInterceptor[] { interceptor });
+			if (listBasedInterceptors) {
+				List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
+				interceptors.add(interceptor);
+				setInterceptorsMethod.invoke(client, interceptors);			
+			} else {
+				setInterceptorsMethod.invoke(client, new Object[] {new ClientHttpRequestInterceptor[] { interceptor }});
+			}
 		} catch (Exception shouldntHappen) {}
 	}
 	
-	private static void setInterceptors(RestTemplate client, ClientHttpRequestInterceptor[] interceptors) {
-		try {
-			Method method = RestTemplate.class.getMethod("setInterceptors", interceptors.getClass());
-			method.invoke(client, new Object[] {interceptors});
-		} catch (Exception shouldntHappen) {}
-	}
-
 	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor", ProtectedResourceClientFactory.class.getClassLoader());
+	
+	private static Method setInterceptorsMethod;
+	
+	private static boolean listBasedInterceptors = false;
+	
+	static {
+		try {
+			// Would like to call getInterceptors().add(interceptor), but the current Spring snapshot
+			// doesn't initialize the interceptors list.
+			setInterceptorsMethod = RestTemplate.class.getMethod("setInterceptors", List.class);
+			listBasedInterceptors = true;
+		} catch (NoSuchMethodException e) {
+			try {
+				setInterceptorsMethod = RestTemplate.class.getMethod("setInterceptors", new ClientHttpRequestInterceptor[0].getClass());
+			} catch (NoSuchMethodException shouldntHappen) {}
+		}
+	}
 
 }
