@@ -45,10 +45,10 @@ public ProviderSignInController providerSignInController() {
 		</para>
 		<programlisting language="java"><![CDATA[
 @Bean
-public ProviderSignInController providerSignInController() {
+public ProviderSignInController providerSignInController() throws MalformedURLException {
     ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator(), 
         usersConnectionRepository(), new SimpleSignInAdapter());
-    controller.setApplicationUrl(environment.getProperty("application.url"));
+    controller.setApplicationUrl(new URL(environment.getProperty("application.url")));
     return controller;
 }]]>
 		</programlisting>

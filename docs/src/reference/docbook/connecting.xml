@@ -295,10 +295,10 @@ public class SocialConfig {
 public class SocialConfig {
 
     @Bean
-    public ConnectController connectController() {
+    public ConnectController connectController() throws MalformedURLException {
         ConnectController controller = new ConnectController(
             connectionFactoryLocator(), connectionRepository());
-        controller.setApplicationUrl(environment.getProperty("application.url"));
+        controller.setApplicationUrl(new URL(environment.getProperty("application.url"));
         return controller;
     }
     
@@ -322,6 +322,7 @@ public class SocialConfig {
 			For OAuth 2-based providers, the flow is as follows:
 		</para>
 		<itemizedlist>
+			<listitem><para><code>GET /connect</code> - Displays a web page showing connection status for all providers.</para></listitem>
 			<listitem><para><code>GET /connect/{providerId}</code> - Displays a web page showing connection status to the provider.</para></listitem>
 			<listitem><para><code>POST /connect/{providerId}</code> - Initiates the connection flow with the provider.</para></listitem>
 			<listitem><para><code>GET /connect/{providerId}?code={code}</code> - Receives the authorization callback from the provider, accepting an authorization code. Uses the code to request an access token and complete the connection.</para></listitem>
@@ -332,6 +333,7 @@ public class SocialConfig {
 			For an OAuth 1 provider, the flow is very similar, with only a subtle difference in how the callback is handled:
 		</para>
 		<itemizedlist>
+			<listitem><para><code>GET /connect</code> - Displays a web page showing connection status for all providers.</para></listitem>
 			<listitem><para><code>GET /connect/{providerId}</code> - Displays a web page showing connection status to the provider.</para></listitem>
 			<listitem><para><code>POST /connect/{providerId}</code> - Initiates the connection flow with the provider.</para></listitem>
 			<listitem>
@@ -367,6 +369,16 @@ public class SocialConfig {
 			<para>
 				The view names that <classname>ConnectController</classname> responds with are based on the provider's name. 
 				In this case, since the provider name is "twitter", the view names are "connect/twitterConnect" and "connect/twitterConnected".
+			</para>
+			<para>
+				Optionally, you may choose to display a page that shows connection status for all providers.
+				In that case, the link might look like this:
+			</para>
+			<programlisting language="xml"><![CDATA[
+<a href="<c:url value="/connect" />">Your connections</a>]]>
+			</programlisting>
+			<para>
+				The view name that <classname>ConnectController</classname> responds with for this URL is "connect/status".
 			</para>
 		</section>
     

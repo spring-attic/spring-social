@@ -13,7 +13,7 @@
 		<para>
 			The phrase "social networking" often refers to efforts aimed at bringing people together.
 			In the software world, those efforts take the form of online social networks such as Facebook, Twitter, and LinkedIn.
-			Roughly half a billion of this world's internet users have flocked to these services to keep frequent contact with family, friends, and colleagues.
+			Over half a billion of this world's internet users have flocked to these services to keep frequent contact with family, friends, and colleagues.
 		</para>
 		<para>
 			Under the surface, however, these services are just software applications that gather, store, and process information.
@@ -279,7 +279,7 @@ dependencies {
 <dependency>
     <groupId>org.springframework.security</groupId>
     <artifactId>spring-security-crypto</artifactId>
-    <version>3.1.0.RC2.crypto</version>
+    <version>3.1.0.RC3</version>
 </dependency>]]>
 	  		</programlisting>
   		</section>
@@ -294,7 +294,7 @@ dependencies {
 <dependency>
     <groupId>org.apache.httpcomponents</groupId>
     <artifactId>httpclient</artifactId>
-    <version>4.1.1</version>
+    <version>4.1.2</version>
 </dependency>]]>
 	  		</programlisting>
 			<para>
@@ -305,7 +305,7 @@ dependencies {
 			<title>Jackson JSON Processor</title>
 			<para>
 				Spring Social's provider API bindings rely on the <ulink url="http://jackson.codehaus.org/">Jackson JSON Processor</ulink> to map JSON responses to Java objects.
-				Each binding, such as Facebook or Twitter, transitively depends on Jackson 1.8, so there's nothing special to do to add Jackson to your project's Maven or Gradle build. 
+				Each binding, such as Facebook or Twitter, transitively depends on Jackson 1.8.5, so there's nothing special to do to add Jackson to your project's Maven or Gradle build. 
 			</para>
   		</section>
 	</section>				
