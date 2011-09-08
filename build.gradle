@@ -97,11 +97,11 @@ configure(javaprojects) {
     httpComponentsVersion = '4.1.2'
     jacksonVersion = '1.8.5'
     javaxInjectVersion = '1'
-    junitVersion = '4.8.2'
+    junitVersion = '4.9'
     mockitoVersion = '1.8.5'
     servletApiVersion = '2.5'
     springVersion = '3.1.0.M2'
-    springSecurityCryptoVersion = '3.1.0.RC2.crypto'
+    springSecurityCryptoVersion = '3.1.0.RC3'
 
     sourceSets {
         main {
