@@ -295,10 +295,10 @@ public class SocialConfig {
 public class SocialConfig {
 
     @Bean
-    public ConnectController connectController() throws MalformedURLException {
+    public ConnectController connectController() {
         ConnectController controller = new ConnectController(
             connectionFactoryLocator(), connectionRepository());
-        controller.setApplicationUrl(new URL(environment.getProperty("application.url"));
+        controller.setApplicationUrl(environment.getProperty("application.url");
         return controller;
     }
     

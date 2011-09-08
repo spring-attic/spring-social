@@ -13,6 +13,7 @@ Improvements
   * Added getFormMessageConverter(), getJsonMessageConverter(), and getByteArrayMessageConverter() hooks to 
     AbstractOAuth1ApiBinding and AbstractOAuth2ApiBinding for convenient per-converter customization.
   * Added default constructor to OAuth1Parameters and OAuth2Parameters for more convenient standalone usage.  
+  * Changed applicationUrl property on ConnectController and ProviderSignInController to be a String instead of URL.
 
 Spring Social 1.0.0 Release Candidate 3 (August 25, 2011)
 =========================================================

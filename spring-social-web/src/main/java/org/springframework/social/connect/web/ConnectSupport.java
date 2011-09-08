@@ -15,8 +15,6 @@
  */
 package org.springframework.social.connect.web;
 
-import java.net.URL;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.social.connect.Connection;
@@ -46,7 +44,7 @@ public class ConnectSupport {
 
 	private boolean useAuthenticateUrl;
 
-	private URL applicationUrl;
+	private String applicationUrl;
 
 	/**
 	 * Flag indicating if this instance will support OAuth-based authentication instead of the traditional user authorization.
@@ -69,7 +67,7 @@ public class ConnectSupport {
 	 * If you have this problem, you can set this property to the base external URL for your application and it will be used to construct the callback URL instead.
 	 * @param applicationUrl the application URL value
 	 */
-	public void setApplicationUrl(URL applicationUrl) {
+	public void setApplicationUrl(String applicationUrl) {
 		this.applicationUrl = applicationUrl;
 	}
 

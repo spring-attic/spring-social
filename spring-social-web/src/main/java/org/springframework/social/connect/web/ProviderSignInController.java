@@ -15,7 +15,6 @@
  */
 package org.springframework.social.connect.web;
 
-import java.net.URL;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -116,7 +115,7 @@ public class ProviderSignInController {
 	 * If you have this problem, you can set this property to the base external URL for your application and it will be used to construct the callback URL instead.
 	 * @param applicationUrl the application URL value
 	 */
-	public void setApplicationUrl(URL applicationUrl) {
+	public void setApplicationUrl(String applicationUrl) {
 		webSupport.setApplicationUrl(applicationUrl);
 	}
 

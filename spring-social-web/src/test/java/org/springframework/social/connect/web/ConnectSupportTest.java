@@ -75,7 +75,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth10_withApplicationUrl() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("https://someothersite.com:1234"));
+		support.setApplicationUrl("https://someothersite.com:1234");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
@@ -88,7 +88,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth10_withApplicationUrlAndNonDefaultServletPath() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("http://somehost:8080/spring-social-showcase"));
+		support.setApplicationUrl("http://somehost:8080/spring-social-showcase");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
@@ -102,7 +102,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth10_withApplicationUrlHavingDeepPath() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("http://ec2.instance.com:8080/spring-social/showcase"));
+		support.setApplicationUrl("http://ec2.instance.com:8080/spring-social/showcase");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
@@ -154,7 +154,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth10a_withApplicationUrl() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("https://someothersite.com:1234"));
+		support.setApplicationUrl("https://someothersite.com:1234");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
@@ -206,7 +206,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth2_withContextPath() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("https://someothersite.com:1234"));
+		support.setApplicationUrl("https://someothersite.com:1234");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
@@ -219,7 +219,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth2_withApplicationUrl() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("https://someothersite.com:1234"));
+		support.setApplicationUrl("https://someothersite.com:1234");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
@@ -232,7 +232,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth2_withApplicationUrlAndNonDefaultServletPath() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("https://someothersite.com:1234/spring-social-showcase"));
+		support.setApplicationUrl("https://someothersite.com:1234/spring-social-showcase");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
@@ -246,7 +246,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth2_withApplicationUrlHavingDeepPath() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("http://ec2.instance.com:8080/spring-social/showcase"));
+		support.setApplicationUrl("http://ec2.instance.com:8080/spring-social/showcase");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
