@@ -71,14 +71,12 @@ class ProtectedResourceClientFactory {
 	
 	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor", ProtectedResourceClientFactory.class.getClassLoader());
 	
-	private static Method setInterceptorsMethod;
-	
 	private static boolean listBasedInterceptors = false;
-	
+
+	private static Method setInterceptorsMethod;
+
 	static {
 		try {
-			// Would like to call getInterceptors().add(interceptor), but the current Spring snapshot
-			// doesn't initialize the interceptors list.
 			setInterceptorsMethod = RestTemplate.class.getMethod("setInterceptors", List.class);
 			listBasedInterceptors = true;
 		} catch (NoSuchMethodException e) {
