@@ -45,6 +45,25 @@ import org.springframework.web.client.RestTemplate;
  */
 class ProtectedResourceClientFactory {
 
+	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor", ProtectedResourceClientFactory.class.getClassLoader());
+	
+	private static boolean listBasedInterceptors = false;
+	
+	private static Method setInterceptorsMethod;
+	
+	static {
+		if (interceptorsSupported) {
+			try {
+				setInterceptorsMethod = RestTemplate.class.getMethod("setInterceptors", List.class);
+				listBasedInterceptors = true;
+			} catch (NoSuchMethodException e) {
+				try {
+					setInterceptorsMethod = RestTemplate.class.getMethod("setInterceptors", new ClientHttpRequestInterceptor[0].getClass());
+				} catch (NoSuchMethodException shouldntHappen) {}
+			}
+		}
+	}
+
 	/**
 	 * Constructs a RestTemplate that adds the OAuth1 Authorization header to each request before it is executed.
 	 */
@@ -52,7 +71,16 @@ class ProtectedResourceClientFactory {
 		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 		if (interceptorsSupported) {
 			// favored
-			setInterceptor(client, new OAuth1RequestInterceptor(credentials));
+			OAuth1RequestInterceptor interceptor = new OAuth1RequestInterceptor(credentials);
+			try {
+				if (listBasedInterceptors) {
+					List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
+					interceptors.add(interceptor);
+					setInterceptorsMethod.invoke(client, interceptors);			
+				} else {
+					setInterceptorsMethod.invoke(client, new Object[] {new ClientHttpRequestInterceptor[] { interceptor }});
+				}
+			} catch (Exception shouldntHappen) {}
 		} else {
 			// 3.0.x compatibility
 			client.setRequestFactory(new Spring30OAuth1RequestFactory(client.getRequestFactory(), credentials));
@@ -74,42 +102,6 @@ class ProtectedResourceClientFactory {
 			return requestFactory;
 		}		
 		return new Spring30OAuth1RequestFactory(requestFactory, credentials);
-	}
-	
-	/*
-	 * Sets interceptors on a Spring 3.1 RestTemplate. 
-	 * Handles the differences between 3.1M2 and 3.1RC1 setInterceptors() method signatures.
-	 * To be removed when Spring 3.1RC1 is released. 
-	 */
-	private static void setInterceptor(RestTemplate client, Object interceptor) {
-		try {
-			if (listBasedInterceptors) {
-				List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
-				interceptors.add((ClientHttpRequestInterceptor) interceptor);
-				setInterceptorsMethod.invoke(client, interceptors);			
-			} else {
-				setInterceptorsMethod.invoke(client, new Object[] {new ClientHttpRequestInterceptor[] { (ClientHttpRequestInterceptor) interceptor }});
-			}
-		} catch (Exception shouldntHappen) {}
-	}
-	
-	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor", ProtectedResourceClientFactory.class.getClassLoader());
-	
-	private static boolean listBasedInterceptors = false;
-	
-	private static Method setInterceptorsMethod;
-	
-	static {
-		if (interceptorsSupported) {
-			try {
-				setInterceptorsMethod = RestTemplate.class.getMethod("setInterceptors", List.class);
-				listBasedInterceptors = true;
-			} catch (NoSuchMethodException e) {
-				try {
-					setInterceptorsMethod = RestTemplate.class.getMethod("setInterceptors", new ClientHttpRequestInterceptor[0].getClass());
-				} catch (NoSuchMethodException shouldntHappen) {}
-			}
-		}
 	}
 	
 }

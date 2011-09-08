@@ -33,42 +33,6 @@ import org.springframework.web.client.RestTemplate;
  */
 class ProtectedResourceClientFactory {
 
-	public static RestTemplate create(String accessToken, OAuth2Version version) {
-		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
-		if (interceptorsSupported) {
-			// favored
-			setInterceptor(client, new OAuth2RequestInterceptor(accessToken, version));
-		} else {
-			// 3.0.x compatibility
-			client.setRequestFactory(new Spring30OAuth2RequestFactory(client.getRequestFactory(), accessToken, version));
-		}
-		return client;				
-	}
-
-	public static ClientHttpRequestFactory addOAuthSigning(ClientHttpRequestFactory requestFactory, String accessToken, OAuth2Version version) {
-		if (interceptorsSupported) {
-			return requestFactory;
-		}
-		return new Spring30OAuth2RequestFactory(requestFactory, accessToken, version);
-	}
-
-	/*
-	 * Sets interceptors on a Spring 3.1 RestTemplate. 
-	 * Handles the differences between 3.1M2 and 3.1RC1 setInterceptors() method signatures.
-	 * To be removed when Spring 3.1RC1 is released. 
-	 */
-	private static void setInterceptor(RestTemplate client, Object interceptor) {
-		try {
-			if (listBasedInterceptors) {
-				List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
-				interceptors.add((ClientHttpRequestInterceptor) interceptor);
-				setInterceptorsMethod.invoke(client, interceptors);			
-			} else {
-				setInterceptorsMethod.invoke(client, new Object[] {new ClientHttpRequestInterceptor[] { (ClientHttpRequestInterceptor) interceptor }});
-			}
-		} catch (Exception shouldntHappen) {}
-	}
-	
 	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor", ProtectedResourceClientFactory.class.getClassLoader());
 	
 	private static boolean listBasedInterceptors = false;
@@ -86,6 +50,34 @@ class ProtectedResourceClientFactory {
 				} catch (NoSuchMethodException shouldntHappen) {}
 			}
 		}
+	}
+
+	public static RestTemplate create(String accessToken, OAuth2Version version) {
+		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
+		if (interceptorsSupported) {
+			// favored
+			OAuth2RequestInterceptor interceptor = new OAuth2RequestInterceptor(accessToken, version);
+			try {
+				if (listBasedInterceptors) {
+					List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
+					interceptors.add(interceptor);
+					setInterceptorsMethod.invoke(client, interceptors);			
+				} else {
+					setInterceptorsMethod.invoke(client, new Object[] {new ClientHttpRequestInterceptor[] { interceptor }});
+				}
+			} catch (Exception shouldntHappen) {}
+		} else {
+			// 3.0.x compatibility
+			client.setRequestFactory(new Spring30OAuth2RequestFactory(client.getRequestFactory(), accessToken, version));
+		}
+		return client;				
+	}
+
+	public static ClientHttpRequestFactory addOAuthSigning(ClientHttpRequestFactory requestFactory, String accessToken, OAuth2Version version) {
+		if (interceptorsSupported) {
+			return requestFactory;
+		}
+		return new Spring30OAuth2RequestFactory(requestFactory, accessToken, version);
 	}
 
 }
