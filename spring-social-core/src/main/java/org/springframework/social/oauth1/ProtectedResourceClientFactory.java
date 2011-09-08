@@ -81,14 +81,14 @@ class ProtectedResourceClientFactory {
 	 * Handles the differences between 3.1M2 and 3.1RC1 setInterceptors() method signatures.
 	 * To be removed when Spring 3.1RC1 is released. 
 	 */
-	private static void setInterceptor(RestTemplate client, ClientHttpRequestInterceptor interceptor) {
+	private static void setInterceptor(RestTemplate client, Object interceptor) {
 		try {
 			if (listBasedInterceptors) {
 				List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
-				interceptors.add(interceptor);
+				interceptors.add((ClientHttpRequestInterceptor) interceptor);
 				setInterceptorsMethod.invoke(client, interceptors);			
 			} else {
-				setInterceptorsMethod.invoke(client, new Object[] {new ClientHttpRequestInterceptor[] { interceptor }});
+				setInterceptorsMethod.invoke(client, new Object[] {new ClientHttpRequestInterceptor[] { (ClientHttpRequestInterceptor) interceptor }});
 			}
 		} catch (Exception shouldntHappen) {}
 	}
@@ -100,13 +100,15 @@ class ProtectedResourceClientFactory {
 	private static Method setInterceptorsMethod;
 	
 	static {
-		try {
-			setInterceptorsMethod = RestTemplate.class.getMethod("setInterceptors", List.class);
-			listBasedInterceptors = true;
-		} catch (NoSuchMethodException e) {
+		if (interceptorsSupported) {
 			try {
-				setInterceptorsMethod = RestTemplate.class.getMethod("setInterceptors", new ClientHttpRequestInterceptor[0].getClass());
-			} catch (NoSuchMethodException shouldntHappen) {}
+				setInterceptorsMethod = RestTemplate.class.getMethod("setInterceptors", List.class);
+				listBasedInterceptors = true;
+			} catch (NoSuchMethodException e) {
+				try {
+					setInterceptorsMethod = RestTemplate.class.getMethod("setInterceptors", new ClientHttpRequestInterceptor[0].getClass());
+				} catch (NoSuchMethodException shouldntHappen) {}
+			}
 		}
 	}
 	
