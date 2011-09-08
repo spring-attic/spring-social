@@ -8,6 +8,10 @@ Bug Fixes
     (SOCIAL-247).
 
 Improvements
+  * Added new configureRestTemplate() subclassing hook to AbstractOAuth1ApiBinding and AbstractOAuth2ApiBinding
+    so that subclasses can configure the RestTemplate without writing that configuration code in the constructor.
+  * Added getFormMessageConverter(), getJsonMessageConverter(), and getByteArrayMessageConverter() hooks to 
+    AbstractOAuth1ApiBinding and AbstractOAuth2ApiBinding for convenient per-converter customization.
   * Added default constructor to OAuth1Parameters and OAuth2Parameters for more convenient standalone usage.  
 
 Spring Social 1.0.0 Release Candidate 3 (August 25, 2011)
