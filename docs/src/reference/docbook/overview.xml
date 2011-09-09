@@ -13,7 +13,7 @@
 		<para>
 			The phrase "social networking" often refers to efforts aimed at bringing people together.
 			In the software world, those efforts take the form of online social networks such as Facebook, Twitter, and LinkedIn.
-			Roughly half a billion of this world's internet users have flocked to these services to keep frequent contact with family, friends, and colleagues.
+			Over half a billion of this world's internet users have flocked to these services to keep frequent contact with family, friends, and colleagues.
 		</para>
 		<para>
 			Under the surface, however, these services are just software applications that gather, store, and process information.
@@ -126,7 +126,7 @@
 </dependency>]]>
 		</programlisting>
 		<para>
-			If you are developing against a milestone or release candidate version, such as 1.0.0.RC1, you will need to add the following repository in order to resolve the artifact:
+			If you are developing against a milestone or release candidate version, such as 1.0.0.M1 or 1.0.0.RC1, you will need to add the following repository in order to resolve the artifact:
 		</para>
 		<programlisting language="xml"><![CDATA[
 <repository>
@@ -246,13 +246,13 @@
 				Spring Framework 3.1 is recommended to take advantage of several RestTemplate improvements.
 			</para>
 			<para>
-				If you are using Spring Social with Spring Framework 3.0.5, make sure you explicitly add the spring-web dependency to your build:
+				If you are using Spring Social with Spring Framework 3.0.5 or >, make sure you explicitly add the spring-web dependency to your build:
 			</para>
 			<programlisting language="xml"><![CDATA[
 <dependency>
     <groupId>org.springframework</groupId>
     <artifactId>spring-web</artifactId>
-    <version>3.0.5.RELEASE</version>
+    <version>3.0.6.RELEASE</version>
 </dependency>]]>
 			</programlisting>
 			<para>
@@ -264,8 +264,7 @@
 			</para>
 			<programlisting language="java"><![CDATA[
 dependencies { 
-    compile ("org.springframework.social:spring-social-core:1.0.0.RC1")
-    compile ("org.springframework:spring-web:3.0.5.RELEASE") { force=true }
+    compile ("org.springframework:spring-web:3.0.6.RELEASE") { force=true }
 }]]>
 			</programlisting>
 		</section>			
@@ -280,7 +279,7 @@ dependencies {
 <dependency>
     <groupId>org.springframework.security</groupId>
     <artifactId>spring-security-crypto</artifactId>
-    <version>3.1.0.RC2.crypto</version>
+    <version>3.1.0.RC3</version>
 </dependency>]]>
 	  		</programlisting>
   		</section>
@@ -295,7 +294,7 @@ dependencies {
 <dependency>
     <groupId>org.apache.httpcomponents</groupId>
     <artifactId>httpclient</artifactId>
-    <version>4.1.1</version>
+    <version>4.1.2</version>
 </dependency>]]>
 	  		</programlisting>
 			<para>
@@ -306,7 +305,7 @@ dependencies {
 			<title>Jackson JSON Processor</title>
 			<para>
 				Spring Social's provider API bindings rely on the <ulink url="http://jackson.codehaus.org/">Jackson JSON Processor</ulink> to map JSON responses to Java objects.
-				Each binding, such as Facebook or Twitter, transitively depends on Jackson 1.8.2, so there's nothing special to do to add Jackson to your project's Maven or Gradle build. 
+				Each binding, such as Facebook or Twitter, transitively depends on Jackson 1.8.5, so there's nothing special to do to add Jackson to your project's Maven or Gradle build. 
 			</para>
   		</section>
 	</section>				
@@ -326,9 +325,12 @@ git clone git://github.com/SpringSource/spring-social-samples.git
 		
 		<itemizedlist>
 			<listitem><para>spring-social-quickstart - Designed to get you up and running quickly.</para></listitem>
+			<listitem><para>spring-social-quickstart-30x - Designed to get you up and running quickly as well as using Spring Social with Spring 3.0.x.</para></listitem>
 			<listitem><para>spring-social-showcase - Illustrates most of Spring Social's features.</para></listitem>
-			<listitem><para>spring-social-extending-new-api - Shows how to extend Spring Social to implement a new ServiceProvider and API binding.</para></listitem>
-			<listitem><para>spring-social-extending-existing-api - Shows how to extend Spring Social and re-use an existing API binding.</para></listitem>
+			<listitem><para>spring-social-movies - Shows how to extend Spring Social to implement a new ServiceProvider and API binding.</para></listitem>
+			<listitem><para>spring-social-twitter4j - Shows how to extend Spring Social and re-use an existing API binding.</para></listitem>
+			<listitem><para>spring-social-popup - Shows how to use Spring Social to drive a browser popup-based connection flow.</para></listitem>
+			<listitem><para>spring-social-canvas - Demonstrates how to use Spring Social within a Facebook Canvas application.</para></listitem>
 		</itemizedlist>
 	</section>
 </chapter>

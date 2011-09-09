@@ -1,4 +1,37 @@
-Spring Social 1.0.0 Release Candidate 2 (July 25, 2011)
+Spring Social 1.0.0 Release (September 8, 2011)
+===============================================
+Bug Fixes
+  * OAuth1Parameters.NONE was accidentally made mutable; it is now back to being immutable as it should be.
+  * Updated reference documentation to reflect the minor API changes introduced in RC3.
+  * OAuth-encode consumer/token secrets when creating an OAuth 1 signature key (SOCIAL-248).
+  * Handle signature differences between Spring 3.1M2 and Spring 3.1RC1 RestTemplate.setInterceptors() 
+    (SOCIAL-247).
+
+Improvements
+  * Added new configureRestTemplate() subclassing hook to AbstractOAuth1ApiBinding and AbstractOAuth2ApiBinding
+    so that subclasses can configure the RestTemplate without writing that configuration code in the constructor.
+  * Added getFormMessageConverter(), getJsonMessageConverter(), and getByteArrayMessageConverter() hooks to 
+    AbstractOAuth1ApiBinding and AbstractOAuth2ApiBinding for convenient per-converter customization.
+  * Added default constructor to OAuth1Parameters and OAuth2Parameters for more convenient standalone usage.  
+  * Changed applicationUrl property on ConnectController and ProviderSignInController to be a String instead of URL.
+
+Spring Social 1.0.0 Release Candidate 3 (August 25, 2011)
+=========================================================
+Bug Fixes
+   * Discontinued use of "../"-based relative URLs when redirecting
+     after deleting a connection to fix redirection when the disconnect
+     form's action URL has a trailing slash. (SOCIAL-238)
+
+Improvements
+   * Added schema for JdbcUsersConnectionRepository to reference documentation
+     and briefly described its purpose and location within the core module.
+     (SOCIAL-241)
+   * ConnectInterceptor.preConnect() now accepts a MultiValueMap<String, String>
+     to be able to add parameters to the authorization URL. (SOCIAL-243)
+   * New samples illustrating a popup-based connection flow and Spring Social
+     in a Facebook Canvas application.
+
+Spring Social 1.0.0 Release Candidate 2 (July 26, 2011)
 =======================================================
 Bug Fixes
    * Display a message indicating a user should sign-up after a provider
@@ -12,6 +45,14 @@ Bug Fixes
      pages to prevent caching. (SOCIAL-224)
    * Made ConnectionKey to implement Serializable, so that DuplicateConnectionException
      can be serialized in the session. (SOCIAL-225)
+
+Improvements
+   * ProviderSignInController now handles callbacks from the provider when the
+     user denies authorization by redirecting to the application's sign in page.
+     (SOCIAL-236)
+   * If multiple matching connections are found during provider sign in, redirect
+     to the sign in page to offer the user a chance to sign in through some other
+     means (username/password, via a different provider, etc). (SOCIAL-237)
 
 Spring Social 1.0.0 Release Candidate 1 (June 22, 2011)
 =======================================================

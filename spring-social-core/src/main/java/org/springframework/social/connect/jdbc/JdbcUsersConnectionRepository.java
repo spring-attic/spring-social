@@ -17,13 +17,14 @@ package org.springframework.social.connect.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.sql.DataSource;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -63,7 +64,7 @@ public class JdbcUsersConnectionRepository implements UsersConnectionRepository 
 	 * The command to execute to create a new local user profile in the event no user id could be mapped to a connection.
 	 * Allows for implicitly creating a user profile from connection data during a provider sign-in attempt.
 	 * Defaults to null, indicating explicit sign-up will be required to complete the provider sign-in attempt.
-	 * @see #findUserIdWithConnection(Connection)
+	 * @see #findUserIdsWithConnection(Connection)
 	 */
 	public void setConnectionSignUp(ConnectionSignUp connectionSignUp) {
 		this.connectionSignUp = connectionSignUp;
@@ -78,20 +79,17 @@ public class JdbcUsersConnectionRepository implements UsersConnectionRepository 
 		this.tablePrefix = tablePrefix;
 	}
 	
-	public String findUserIdWithConnection(Connection<?> connection) {
-		try {
-			ConnectionKey key = connection.getKey();
-			return jdbcTemplate.queryForObject("select userId from " + tablePrefix + "UserConnection where providerId = ? and providerUserId = ?", String.class, key.getProviderId(), key.getProviderUserId());
-		} catch (IncorrectResultSizeDataAccessException e) {
-			if (e.getActualSize() == 0) {
-				if (connectionSignUp != null) {
-					String newUserId = connectionSignUp.execute(connection);
-					createConnectionRepository(newUserId).addConnection(connection);
-					return newUserId;
-				}
+	public List<String> findUserIdsWithConnection(Connection<?> connection) {
+		ConnectionKey key = connection.getKey();
+		List<String> localUserIds = jdbcTemplate.queryForList("select userId from " + tablePrefix + "UserConnection where providerId = ? and providerUserId = ?", String.class, key.getProviderId(), key.getProviderUserId());		
+		if (localUserIds.size() == 0) {
+			if (connectionSignUp != null) {
+				String newUserId = connectionSignUp.execute(connection);
+				createConnectionRepository(newUserId).addConnection(connection);
+				return Arrays.asList(newUserId);
 			}
-			return null;
 		}
+		return localUserIds;
 	}
 
 	public Set<String> findUserIdsConnectedTo(String providerId, Set<String> providerUserIds) {

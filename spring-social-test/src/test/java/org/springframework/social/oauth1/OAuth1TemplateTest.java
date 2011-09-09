@@ -26,7 +26,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.social.test.client.MockRestServiceServer;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 public class OAuth1TemplateTest {
@@ -52,26 +51,28 @@ public class OAuth1TemplateTest {
 
 		customOauth10 = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
 				AUTHORIZE_URL, null, ACCESS_TOKEN_URL, OAuth1Version.CORE_10) {
-			protected MultiValueMap<String,String> getCustomAuthorizationParameters() {
-				MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+			protected void addCustomAuthorizationParameters(MultiValueMap<String,String> parameters) {
 				parameters.set("custom_parameter", "custom_parameter_value");
-				return parameters;
 			};
 		};
 }
 
 	@Test
 	public void buildAuthorizeUrl() {
+		OAuth1Parameters parameters = new OAuth1Parameters(null);
+		parameters.setCallbackUrl("http://www.someclient.com/oauth/callback");
 		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token",
 				oauth10a.buildAuthorizeUrl("request_token", OAuth1Parameters.NONE));
 		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token&oauth_callback=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback",
-				oauth10.buildAuthorizeUrl("request_token", new OAuth1Parameters("http://www.someclient.com/oauth/callback")));
+				oauth10.buildAuthorizeUrl("request_token", parameters));
 	}
 	
 	@Test
 	public void buildAuthorizeUrl_customAuthorizeParameters() {
+		OAuth1Parameters parameters = new OAuth1Parameters(null);
+		parameters.setCallbackUrl("http://www.someclient.com/oauth/callback");
 		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token&oauth_callback=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback&custom_parameter=custom_parameter_value",
-				customOauth10.buildAuthorizeUrl("request_token", new OAuth1Parameters("http://www.someclient.com/oauth/callback")));
+				customOauth10.buildAuthorizeUrl("request_token", parameters));
 	}
 
 	@Test

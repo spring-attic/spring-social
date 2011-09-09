@@ -91,7 +91,11 @@ public class URIBuilder {
 				}
 			}
 			
-			return new URI(baseUri + (builder.length() > 0 ? "?" + builder.toString() : ""));
+			String queryDelimiter = "?";
+			if(URI.create(baseUri).getQuery() != null) {
+				queryDelimiter = "&";
+			}
+			return new URI(baseUri + (builder.length() > 0 ? queryDelimiter + builder.toString() : ""));
 		} catch (URISyntaxException e) {
 			throw new URIBuilderException("Unable to build URI: Bad URI syntax", e);
 		}

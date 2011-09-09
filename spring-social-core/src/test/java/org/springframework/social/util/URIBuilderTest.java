@@ -15,7 +15,7 @@
  */
 package org.springframework.social.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.net.URI;
 
@@ -30,6 +30,18 @@ public class URIBuilderTest {
 		assertEquals("http://example.com", uri.toString());		
 	}
 	
+	@Test
+	public void buildURIWithExistingParameters() {
+		URI uri = URIBuilder.fromUri("http://example.com?foo=bar").build();
+		assertEquals("http://example.com?foo=bar", uri.toString());				
+	}
+
+	@Test
+	public void buildURIWithExistingAndNewParameters() {
+		URI uri = URIBuilder.fromUri("http://example.com?foo=bar&x=1").queryParam("salt", "NaCl").build();
+		assertEquals("http://example.com?foo=bar&x=1&salt=NaCl", uri.toString());				
+	}
+
 	@Test
 	public void buildURIWithOneParameter() {
 		URI uri = URIBuilder.fromUri("http://example.com").queryParam("foo", "bar").build();

@@ -26,8 +26,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.social.test.client.MockRestServiceServer;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 public class OAuth2TemplateTest {
 	
@@ -44,33 +42,43 @@ public class OAuth2TemplateTest {
 
 	@Test
 	public void buildAuthorizeUrl_codeResponseType() {
-		String expected = AUTHORIZE_URL + "?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=code&scope=read%2Cwrite";
-		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters("http://www.someclient.com/connect/foo", "read,write", null, null));
+		OAuth2Parameters parameters = new OAuth2Parameters();
+		parameters.setRedirectUri("http://www.someclient.com/connect/foo");
+		parameters.setScope("read,write");
+		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=code&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&scope=read%2Cwrite";
+		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, parameters);
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void buildAuthorizeUrl_tokenResponseType() {
-		String expected = AUTHORIZE_URL + "?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=token&scope=read%2Cwrite";
-		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, new OAuth2Parameters("http://www.someclient.com/connect/foo", "read,write", null, null));
+		OAuth2Parameters parameters = new OAuth2Parameters();
+		parameters.setRedirectUri("http://www.someclient.com/connect/foo");
+		parameters.setScope("read,write");
+		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=token&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&scope=read%2Cwrite";
+		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, parameters);
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void buildAuthorizeUrl_noScopeInParameters() {
-		String expected = AUTHORIZE_URL + "?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=code";
-		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, new OAuth2Parameters("http://www.someclient.com/connect/foo", null, null, null));
+		OAuth2Parameters parameters = new OAuth2Parameters();
+		parameters.setRedirectUri("http://www.someclient.com/connect/foo");
+		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=code&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo";
+		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, parameters);
 		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void buildAuthorizeUrl_additionalParameters() {
-		String expected = AUTHORIZE_URL + "?client_id=client_id&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&response_type=token&scope=read%2Cwrite&display=touch&anotherparam=somevalue1&anotherparam=somevalue2";
-		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-		params.add("display", "touch");
-		params.add("anotherparam", "somevalue1");
-		params.add("anotherparam", "somevalue2");
-		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, new OAuth2Parameters("http://www.someclient.com/connect/foo", "read,write", null, params));
+		OAuth2Parameters parameters = new OAuth2Parameters();
+		parameters.setRedirectUri("http://www.someclient.com/connect/foo");
+		parameters.setScope("read,write");
+		parameters.add("display", "touch");
+		parameters.add("anotherparam", "somevalue1");
+		parameters.add("anotherparam", "somevalue2");
+		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=token&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&scope=read%2Cwrite&display=touch&anotherparam=somevalue1&anotherparam=somevalue2";
+		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, parameters);
 		assertEquals(expected, actual);
 	}
 

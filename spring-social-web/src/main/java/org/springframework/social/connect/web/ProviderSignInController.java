@@ -15,7 +15,7 @@
  */
 package org.springframework.social.connect.web;
 
-import java.net.URL;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -25,6 +25,7 @@ import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.support.OAuth1ConnectionFactory;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
+import org.springframework.social.support.URIBuilder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,6 +53,8 @@ public class ProviderSignInController {
 	
 	private final SignInAdapter signInAdapter;
 
+	private String signInUrl = "/signin";
+	
 	private String signUpUrl = "/signup";
 
 	private String postSignInUrl = "/";
@@ -76,6 +79,15 @@ public class ProviderSignInController {
 		this.webSupport.setUseAuthenticateUrl(true);
 	}
 
+	/**
+	 * Sets the URL of the application's sign in page.
+	 * Defaults to "/signin".
+	 * @param signInUrl the signIn URL
+	 */
+	public void setSignInUrl(String signInUrl) {
+		this.signInUrl = signInUrl;
+	}
+	
 	/**
 	 * Sets the URL to redirect the user to if no local user account can be mapped when signing in using a provider.
 	 * Defaults to "/signup". 
@@ -103,10 +115,10 @@ public class ProviderSignInController {
 	 * If you have this problem, you can set this property to the base external URL for your application and it will be used to construct the callback URL instead.
 	 * @param applicationUrl the application URL value
 	 */
-	public void setApplicationUrl(URL applicationUrl) {
+	public void setApplicationUrl(String applicationUrl) {
 		webSupport.setApplicationUrl(applicationUrl);
 	}
-	
+
 	/**
 	 * Process a sign-in form submission by commencing the process of establishing a connection to the provider on behalf of the user.
 	 * For OAuth1, fetches a new request token from the provider, temporarily stores it in the session, then redirects the user to the provider's site for authentication authorization.
@@ -149,20 +161,31 @@ public class ProviderSignInController {
 		Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
 		return handleSignIn(connection, request);
 	}
+	
+	/**
+	 * Process the authentication callback when neither the oauth_token or code parameter is given, likely indicating that the user denied authorization with the provider.
+	 * Redirects to application's sign in URL, as set in the signInUrl property.
+	 */
+	@RequestMapping(value="/{providerId}", method=RequestMethod.GET)
+	public RedirectView canceledAuthorizationCallback() {
+		return redirect(signInUrl);
+	}
 
 	// internal helpers
 
 	private RedirectView handleSignIn(Connection<?> connection, NativeWebRequest request) {
-		String userId = usersConnectionRepository.findUserIdWithConnection(connection);
-		if (userId == null) {
+		List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
+		if (userIds.size() == 0) {
 			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, usersConnectionRepository);
 			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, RequestAttributes.SCOPE_SESSION);
 			return redirect(signUpUrl);
-		} else {
-			usersConnectionRepository.createConnectionRepository(userId).updateConnection(connection);
-			String originalUrl = signInAdapter.signIn(userId, connection, request);
+		} else if (userIds.size() == 1){
+			usersConnectionRepository.createConnectionRepository(userIds.get(0)).updateConnection(connection);
+			String originalUrl = signInAdapter.signIn(userIds.get(0), connection, request);
 			return originalUrl != null ? redirect(originalUrl) : redirect(postSignInUrl);
-		}			
+		} else {
+			return redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "multiple_users").build().toString());
+		}
 	}
 
 	private RedirectView redirect(String url) {

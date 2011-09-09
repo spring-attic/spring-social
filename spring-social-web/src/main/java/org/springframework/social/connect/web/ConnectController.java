@@ -15,7 +15,6 @@
  */
 package org.springframework.social.connect.web;
 
-import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +100,7 @@ public class ConnectController {
 	 * If you have this problem, you can set this property to the base external URL for your application and it will be used to construct the callback URL instead.
 	 * @param applicationUrl the application URL value
 	 */
-	public void setApplicationUrl(URL applicationUrl) {
+	public void setApplicationUrl(String applicationUrl) {
 		webSupport.setApplicationUrl(applicationUrl);
 	}
 	
@@ -118,28 +117,30 @@ public class ConnectController {
 	/**
 	 * Render the status of connections across all providers to the user as HTML in their web browser.
 	 */
-	@RequestMapping(value="/", method=RequestMethod.GET)
+	@RequestMapping(method=RequestMethod.GET)
 	public String connectionStatus(NativeWebRequest request, Model model) {
 		setNoCache(request);
+		processFlash(request, model);
 		Map<String, List<Connection<?>>> connections = connectionRepository.findAllConnections();
 		model.addAttribute("providerIds", connectionFactoryLocator.registeredProviderIds());		
 		model.addAttribute("connectionMap", connections);
-		return connectView("status");
+		return connectView();
 	}
-
+	
 	/**
 	 * Render the status of the connections to the service provider to the user as HTML in their web browser.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET)
 	public String connectionStatus(@PathVariable String providerId, NativeWebRequest request, Model model) {
+		setNoCache(request);
 		processFlash(request, model);
 		List<Connection<?>> connections = connectionRepository.findConnections(providerId);
 		setNoCache(request);
 		if (connections.isEmpty()) {
-			return connectView(providerId + "Connect"); 
+			return connectView(providerId); 
 		} else {
 			model.addAttribute("connections", connections);
-			return connectView(providerId + "Connected");			
+			return connectedView(providerId);			
 		}
 	}
 
@@ -151,8 +152,9 @@ public class ConnectController {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
 	public RedirectView connect(@PathVariable String providerId, NativeWebRequest request) {
 		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
-		preConnect(connectionFactory, request);
-		return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request));
+		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>(); 
+		preConnect(connectionFactory, parameters, request);
+		return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request, parameters));
 	}
 
 	/**
@@ -201,7 +203,46 @@ public class ConnectController {
 	@RequestMapping(value="/{providerId}/{providerUserId}", method=RequestMethod.DELETE)
 	public RedirectView removeConnection(@PathVariable String providerId, @PathVariable String providerUserId, HttpServletRequest request) {
 		connectionRepository.removeConnection(new ConnectionKey(providerId, providerUserId));
-		return connectionStatusRedirect("../" + providerId);
+		return connectionStatusRedirect(providerId);
+	}
+
+	// subclassing hooks
+	/**
+	 * Returns the view name of a general connection status page, typically displaying the user's connection status for all providers.
+	 * Defaults to "/connect/status". May be overridden to return a custom view name.
+	 */
+	protected String connectView() {
+		return getViewPath() + "status";
+	}
+	
+	/**
+	 * Returns the view name of a page to display for a provider when the user is not connected to the provider.
+	 * Typically this page would offer the user an opportunity to create a connection with the provider.
+	 * Defaults to "connect/{providerId}Connect". May be overridden to return a custom view name.
+	 * @param providerId the ID of the provider to display the connection status for.
+	 */
+	protected String connectView(String providerId) {
+		return getViewPath() + providerId + "Connect";		
+	}
+
+	/**
+	 * Returns the view name of a page to display for a provider when the user is connected to the provider.
+	 * Typically this page would allow the user to disconnect from the provider.
+	 * Defaults to "connect/{providerId}Connected". May be overridden to return a custom view name.
+	 * @param providerId the ID of the provider to display the connection status for.
+	 */
+	protected String connectedView(String providerId) {
+		return getViewPath() + providerId + "Connected";		
+	}
+
+	/**
+	 * Returns a RedirectView with the URL to redirect to after a connection is created or deleted.
+	 * Defaults to "/connect/{providerId}" relative to the servlet context path. 
+	 * May be overridden to handle custom redirection needs.
+	 * @param providerId the ID of the provider for which a connection was created or deleted.
+	 */
+	protected RedirectView connectionStatusRedirect(String providerId) {
+		return new RedirectView("/connect/" + providerId, true);
 	}
 
 	// internal helpers
@@ -210,10 +251,6 @@ public class ConnectController {
 		return "connect/";
 	}
 	
-	private String connectView(String name) {
-		return getViewPath() + name;		
-	}
-
 	private void addConnection(Connection<?> connection, ConnectionFactory<?> connectionFactory, WebRequest request) {
 		try {
 			connectionRepository.addConnection(connection);
@@ -224,9 +261,9 @@ public class ConnectController {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void preConnect(ConnectionFactory<?> connectionFactory, WebRequest request) {
+	private void preConnect(ConnectionFactory<?> connectionFactory, MultiValueMap<String, String> parameters, WebRequest request) {
 		for (ConnectInterceptor interceptor : interceptingConnectionsTo(connectionFactory)) {
-			interceptor.preConnect(connectionFactory, request);
+			interceptor.preConnect(connectionFactory, parameters, request);
 		}
 	}
 
@@ -254,8 +291,14 @@ public class ConnectController {
 		}
 	}
 
-	private RedirectView connectionStatusRedirect(String relativePath) {
-		return new RedirectView(relativePath, true);
+	private void setNoCache(NativeWebRequest request) {
+		HttpServletResponse response = request.getNativeResponse(HttpServletResponse.class);
+		if (response != null) {
+			response.setHeader("Pragma", "no-cache");
+			response.setDateHeader("Expires", 1L);
+			response.setHeader("Cache-Control", "no-cache");
+			response.addHeader("Cache-Control", "no-store");
+		}
 	}
 	
 	private void setNoCache(NativeWebRequest request) {

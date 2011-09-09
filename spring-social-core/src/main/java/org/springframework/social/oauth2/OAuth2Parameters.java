@@ -15,80 +15,91 @@
  */
 package org.springframework.social.oauth2;
 
-import org.springframework.util.MultiValueMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.social.support.ParameterMap;
 
 /**
  * Parameters for building an OAuth2 authorize URL.
  * @author Roy Clarkson
  * @see OAuth2Operations#buildAuthorizeUrl(GrantType, OAuth2Parameters)
  */
-public final class OAuth2Parameters {
+public final class OAuth2Parameters extends ParameterMap {
+
+	private static final String STATE = "state";
 	
-	private final String redirectUri;
+	private static final String SCOPE = "scope";
 	
-	private final String scope;
-	
-	private final String state;
-	
-	private final MultiValueMap<String, String> additionalParameters;
+	private static final String REDIRECT_URI = "redirect_uri";
 
 	/**
-	 * Creates a new authorization parameters instance.
-	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider (required)
+	 * Creates a new OAuth2Parameters map that is initially empty.
+	 * Use the setter methods to add parameters after construction.
+	 * @see #setRedirectUri(String)
+	 * @see #setScope(String)
+	 * @see #setState(String)
+	 * @see #set(String, String)
 	 */
-	public OAuth2Parameters(String redirectUri) {
-		this(redirectUri, null, null, null);
-	}
-
-	/**
-	 * Creates a new authorization parameters instance.
-	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider (required)
-	 * @param scope the permissions the application is seeking with the authorization (optional)
-	 */
-	public OAuth2Parameters(String redirectUri, String scope) {
-		this(redirectUri, scope, null, null);
+	public OAuth2Parameters() {
+		super();
 	}
 	
 	/**
-	 * Creates a new authorization parameters instance.
-	 * @param redirectUri the authorization callback url; this value must match the redirectUri registered with the provider (required)
-	 * @param scope the permissions the application is seeking with the authorization (optional)
-	 * @param state an opaque key that must be included in the provider's authorization callback (optional)
-	 * @param additionalParameters additional supported parameters to pass to the provider (optional)
+	 * Creates a new OAuth2Parameters populated from the initial parameters provided.
+	 * @param parameters the initial parameters
+	 * @see #setRedirectUri(String)
+	 * @see #setScope(String)
+	 * @see #setState(String)
 	 */
-	public OAuth2Parameters(String redirectUri, String scope, String state, MultiValueMap<String, String> additionalParameters) {
-		this.redirectUri = redirectUri;
-		this.scope = scope;
-		this.state = state;
-		this.additionalParameters = additionalParameters;
+	public OAuth2Parameters(Map<String, List<String>> parameters) {
+		super(parameters);
 	}
 	
 	/**
-	 * The authorization callback url; this value must match the redirectUri registered with the provider (required). 
+	 * The authorization callback url.
+	 * This value must match the redirectUri registered with the provider.
+	 * This is optional per the OAuth 2 spec, but required by most OAuth 2 providers. 
 	 */
 	public String getRedirectUri() {
-		return redirectUri;
+		return getFirst(REDIRECT_URI);
+	}
+	
+	/**
+	 * Sets the authorization callback url.
+	 * This value must match the redirectUri registered with the provider.
+	 * This is optional per the OAuth 2 spec, but required by most OAuth 2 providers.
+	 */
+	public void setRedirectUri(String redirectUri) {
+		set(REDIRECT_URI, redirectUri);
 	}
 
 	/**
 	 * The permissions the application is seeking with the authorization (optional).
 	 */
 	public String getScope() {
-		return scope;
+		return getFirst(SCOPE);
+	}
+	
+	/**
+	 * Sets the permissions the application is seeking with the authorization (optional).
+	 */
+	public void setScope(String scope) {
+		set(SCOPE, scope);
 	}
 
 	/**
 	 * An opaque key that must be included in the provider's authorization callback (optional).
 	 */
 	public String getState() {
-		return state;
-	}
-
-	/**
-	 * Additional supported parameters to pass to the provider (optional).
-	 */
-	public MultiValueMap<String, String> getAdditionalParameters() {
-		return additionalParameters;
+		return getFirst(STATE);
 	}
 	
+	/**
+	 * Sets an opaque key that must be included in the provider's authorization callback (optional).
+	 */
+	public void setState(String state) {
+		set(STATE, state);
+	}
+
 }

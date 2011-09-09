@@ -17,9 +17,12 @@ package org.springframework.social.oauth2;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -45,6 +48,7 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 		accessToken = null;
 		restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
 		restTemplate.setMessageConverters(getMessageConverters());
+		configureRestTemplate(restTemplate);
 	}
 	
 	/**
@@ -55,6 +59,7 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 		this.accessToken = accessToken;
 		restTemplate = ProtectedResourceClientFactory.create(accessToken, getOAuth2Version());
 		restTemplate.setMessageConverters(getMessageConverters());
+		configureRestTemplate(restTemplate);
 	}
 	
 	/**
@@ -102,19 +107,60 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 	}
 
 	/**
+	 * Subclassing hook to enable customization of the RestTemplate used to consume provider API resources.
+	 * An example use case might be to configure a custom error handler.
+	 * Note that this method is called after the RestTemplate has been configured with the message converters returned from getMessageConverters().
+	 * @param restTemplate the RestTemplate to configure.
+	 */
+	protected void configureRestTemplate(RestTemplate restTemplate) {		
+	}
+
+	/**
 	 * Returns a list of {@link HttpMessageConverter}s to be used by the internal {@link RestTemplate}.
-	 * By default, this includes a {@link StringHttpMessageConverter}, a {@link MappingJacksonHttpMessageConverter}, and a {@link FormHttpMessageConverter}.
+	 * By default, this includes a {@link StringHttpMessageConverter}, a {@link MappingJacksonHttpMessageConverter}, a {@link ByteArrayHttpMessageConverter}, and a {@link FormHttpMessageConverter}.
 	 * The {@link FormHttpMessageConverter} is set to use "UTF-8" character encoding.
 	 * Override this method to add additional message converters or to replace the default list of message converters.
 	 */
 	protected List<HttpMessageConverter<?>> getMessageConverters() {
 		List<HttpMessageConverter<?>> messageConverters = new ArrayList<HttpMessageConverter<?>>();
 		messageConverters.add(new StringHttpMessageConverter());
-		FormHttpMessageConverter formHttpMessageConverter = new FormHttpMessageConverter();
-		formHttpMessageConverter.setCharset(Charset.forName("UTF-8"));
-		messageConverters.add(formHttpMessageConverter);
-		messageConverters.add(new MappingJacksonHttpMessageConverter());
+		messageConverters.add(getFormMessageConverter());
+		messageConverters.add(getJsonMessageConverter());
+		messageConverters.add(getByteArrayMessageConverter());
 		return messageConverters;
 	}
 	
+	/**
+	 * Returns an {@link FormHttpMessageConverter} to be used by the internal {@link RestTemplate}.
+	 * By default, the message converter is set to use "UTF-8" character encoding.
+	 * Override to customize the message converter (for example, to set supported media types or message converters for the parts of a multipart message). 
+	 * To remove/replace this or any of the other message converters that are registered by default, override the getMessageConverters() method instead.
+	 */
+	protected FormHttpMessageConverter getFormMessageConverter() {
+		FormHttpMessageConverter converter = new FormHttpMessageConverter();
+		converter.setCharset(Charset.forName("UTF-8"));
+		return converter;
+	}
+	
+	/**
+	 * Returns a {@link MappingJacksonHttpMessageConverter} to be used by the internal {@link RestTemplate}.
+	 * Override to customize the message converter (for example, to set a custom object mapper or supported media types).
+	 * To remove/replace this or any of the other message converters that are registered by default, override the getMessageConverters() method instead.
+	 */
+	protected MappingJacksonHttpMessageConverter getJsonMessageConverter() {
+		return new MappingJacksonHttpMessageConverter(); 
+	}
+	
+	/**
+	 * Returns a {@link ByteArrayHttpMessageConverter} to be used by the internal {@link RestTemplate} when consuming image or other binary resources.
+	 * By default, the message converter supports "image/jpeg", "image/gif", and "image/png" media types.
+	 * Override to customize the message converter (for example, to set supported media types).
+	 * To remove/replace this or any of the other message converters that are registered by default, override the getMessageConverters() method instead.	 
+	 */
+	protected ByteArrayHttpMessageConverter getByteArrayMessageConverter() {
+		ByteArrayHttpMessageConverter converter = new ByteArrayHttpMessageConverter();
+		converter.setSupportedMediaTypes(Arrays.asList(MediaType.IMAGE_JPEG, MediaType.IMAGE_GIF, MediaType.IMAGE_PNG));
+		return converter;
+	}
+
 }

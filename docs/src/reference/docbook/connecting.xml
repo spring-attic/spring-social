@@ -49,12 +49,15 @@ public class SocialConfig {
     @Bean
     public ConnectionFactoryLocator connectionFactoryLocator() {
         ConnectionFactoryRegistry registry = new ConnectionFactoryRegistry();
+        
         registry.addConnectionFactory(new FacebookConnectionFactory(
             environment.getProperty("facebook.clientId"),
             environment.getProperty("facebook.clientSecret")));
+        
         registry.addConnectionFactory(new TwitterConnectionFactory(
             environment.getProperty("twitter.consumerKey"),
             environment.getProperty("twitter.consumerSecret")));
+            
         return registry;
     }
 
@@ -102,7 +105,7 @@ public class SocialConfig {
     @Bean
     public UsersConnectionRepository usersConnectionRepository() {
         return new JdbcUsersConnectionRepository(dataSource, connectionFactoryLocator(), 
-                textEncryptor);
+            textEncryptor);
     }
 
     @Inject
@@ -223,12 +226,12 @@ public class SecurityConfig {
 
     <beans profile="dev">
         <bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" 
-              factory-method="noOpText" />
+            factory-method="noOpText" />
     </beans>
 	
     <beans profile="prod">
         <bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" 
-              factory-method="text">
+                factory-method="text">
             <constructor-arg value="${security.encryptPassword}" />
             <constructor-arg value="${security.encryptSalt}" />
         </bean>
@@ -256,7 +259,7 @@ public class SocialConfig {
     @Bean
     public ConnectController connectController() {
         return new ConnectController(connectionFactoryLocator(), 
-                connectionRepository());
+            connectionRepository());
     }
     
 }]]>
@@ -294,8 +297,8 @@ public class SocialConfig {
     @Bean
     public ConnectController connectController() {
         ConnectController controller = new ConnectController(
-                connectionFactoryLocator(), connectionRepository());
-        controller.setApplicationUrl(environment.getProperty("application.url"));
+            connectionFactoryLocator(), connectionRepository());
+        controller.setApplicationUrl(environment.getProperty("application.url");
         return controller;
     }
     
@@ -319,6 +322,7 @@ public class SocialConfig {
 			For OAuth 2-based providers, the flow is as follows:
 		</para>
 		<itemizedlist>
+			<listitem><para><code>GET /connect</code> - Displays a web page showing connection status for all providers.</para></listitem>
 			<listitem><para><code>GET /connect/{providerId}</code> - Displays a web page showing connection status to the provider.</para></listitem>
 			<listitem><para><code>POST /connect/{providerId}</code> - Initiates the connection flow with the provider.</para></listitem>
 			<listitem><para><code>GET /connect/{providerId}?code={code}</code> - Receives the authorization callback from the provider, accepting an authorization code. Uses the code to request an access token and complete the connection.</para></listitem>
@@ -329,6 +333,7 @@ public class SocialConfig {
 			For an OAuth 1 provider, the flow is very similar, with only a subtle difference in how the callback is handled:
 		</para>
 		<itemizedlist>
+			<listitem><para><code>GET /connect</code> - Displays a web page showing connection status for all providers.</para></listitem>
 			<listitem><para><code>GET /connect/{providerId}</code> - Displays a web page showing connection status to the provider.</para></listitem>
 			<listitem><para><code>POST /connect/{providerId}</code> - Initiates the connection flow with the provider.</para></listitem>
 			<listitem>
@@ -364,6 +369,16 @@ public class SocialConfig {
 			<para>
 				The view names that <classname>ConnectController</classname> responds with are based on the provider's name. 
 				In this case, since the provider name is "twitter", the view names are "connect/twitterConnect" and "connect/twitterConnected".
+			</para>
+			<para>
+				Optionally, you may choose to display a page that shows connection status for all providers.
+				In that case, the link might look like this:
+			</para>
+			<programlisting language="xml"><![CDATA[
+<a href="<c:url value="/connect" />">Your connections</a>]]>
+			</programlisting>
+			<para>
+				The view name that <classname>ConnectController</classname> responds with for this URL is "connect/status".
 			</para>
 		</section>
     
@@ -512,12 +527,14 @@ public class SocialConfig {
 			</para>
 			<programlisting language="xml"><![CDATA[
 <form action="<c:url value="/connect/twitter" />" method="post">
-   <div class="formInfo">
-      <p>Spring Social Showcase is connected to your Twitter account.
-         Click the button if you wish to disconnect.</p>
-   </div>
-   <button type="submit">Disconnect</button>	
-   <input type="hidden" name="_method" value="delete" />
+  <div class="formInfo">
+    <p>
+      Spring Social Showcase is connected to your Twitter account.
+      Click the button if you wish to disconnect.
+    </p>
+  </div>
+  <button type="submit">Disconnect</button>	
+  <input type="hidden" name="_method" value="delete" />
 </form>]]>
 			</programlisting>
 			<para>
@@ -540,24 +557,25 @@ public class SocialConfig {
 		<programlisting language="java"><![CDATA[
 public interface ConnectInterceptor<A> {
 	
-    void preConnect(ConnectionFactory<A> connectionFactory, WebRequest request);
+    void preConnect(ConnectionFactory<A> connectionFactory, MultiValueMap<String, String> parameters, WebRequest request);
 
     void postConnect(Connection<A> connection, WebRequest request);
 	
 }]]>
 		</programlisting>
 		<para>
-			The <methodname>preConnect()</methodname> method will be called by <classname>ConnectController</classname> just before redirecting the browser to the provider's authorization page. 
+			The <methodname>preConnect()</methodname> method will be called by <classname>ConnectController</classname> just before redirecting the browser to the provider's authorization page.
+			Custom authorization parameters may be added to the provided parameter map.
 			<methodname>postConnect()</methodname> will be called immediately after a connection has been persisted linking the user's local account with the provider profile.
 		</para>
 		<para>
-			For example, suppose that after connecting a user account with their Twitter profile , you want to immediately post a tweet about that connection to the user's Twitter timeline. 
+			For example, suppose that after connecting a user account with their Twitter profile you want to immediately post a tweet about that connection to the user's Twitter timeline. 
 			To accomplish that, you might write the following connection interceptor:
 		</para>
 		<programlisting language="java"><![CDATA[
 public class TweetAfterConnectInterceptor implements ConnectInterceptor<Twitter> {
 
-    public void preConnect(ConnectionFactory<TwitterApi> provider, WebRequest request) {
+    public void preConnect(ConnectionFactory<TwitterApi> provider, MultiValueMap<String, String> parameters, WebRequest request) {
         // nothing to do
     }
 
@@ -572,8 +590,8 @@ public class TweetAfterConnectInterceptor implements ConnectInterceptor<Twitter>
 		<programlisting language="java"><![CDATA[
 @Bean
 public ConnectController connectController() {
-    ConnectController controller = new ConnectController(connectionFactoryLocator(), 
-            connectionRepository());
+    ConnectController controller = new ConnectController(connectionFactoryLocator(),
+        connectionRepository());
     controller.addInterceptor(new TweetAfterConnectInterceptor());
     return controller;
 }]]>

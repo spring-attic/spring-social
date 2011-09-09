@@ -64,7 +64,7 @@ class SigningSupport {
 		collectedParameters.setAll(oauthParameters);
 		collectedParameters.putAll(additionalParameters);		
 		String baseString = buildBaseString(method, getBaseStringUri(targetUrl), collectedParameters);
-		String signature = calculateSignature(baseString, consumerSecret, tokenSecret);		
+		String signature = calculateSignature(baseString, consumerSecret, tokenSecret);
 		header.append(oauthEncode("oauth_signature")).append("=\"").append(oauthEncode(signature)).append("\"");
 		return header.toString();
 	}
@@ -177,7 +177,7 @@ class SigningSupport {
 	}
 
 	private String calculateSignature(String baseString, String consumerSecret, String tokenSecret) {
-		String key = consumerSecret + "&" + (tokenSecret != null ? tokenSecret : "");
+		String key = oauthEncode(consumerSecret) + "&" + (tokenSecret != null ? oauthEncode(tokenSecret) : "");
 		return sign(baseString, key);
 	}
 

@@ -175,25 +175,17 @@ public class OAuth2Template implements OAuth2Operations {
 	// internal helpers
 
 	private String buildAuthUrl(String baseAuthUrl, GrantType grantType, OAuth2Parameters parameters) {
-		StringBuilder authUrl = new StringBuilder(baseAuthUrl).append('&').append("redirect_uri").append('=').append(formEncode(parameters.getRedirectUri()));
+		StringBuilder authUrl = new StringBuilder(baseAuthUrl);
 		if (grantType == GrantType.AUTHORIZATION_CODE) {
 			authUrl.append('&').append("response_type").append('=').append("code");
 		} else if (grantType == GrantType.IMPLICIT_GRANT) {
 			authUrl.append('&').append("response_type").append('=').append("token");
 		}
-		if (parameters.getScope() != null) {
-			authUrl.append('&').append("scope").append('=').append(formEncode(parameters.getScope()));
-		}
-		if (parameters.getState() != null) {
-			authUrl.append('&').append("state").append('=').append(formEncode(parameters.getState()));	
-		}
-		if (parameters.getAdditionalParameters() != null) {
-			for (Iterator<Entry<String, List<String>>> additionalParams = parameters.getAdditionalParameters().entrySet().iterator(); additionalParams.hasNext();) {
-				Entry<String, List<String>> param = additionalParams.next();
-				String name = formEncode(param.getKey());
-				for (Iterator<String> values = param.getValue().iterator(); values.hasNext();) {
-					authUrl.append('&').append(name).append('=').append(formEncode(values.next()));
-				}
+		for (Iterator<Entry<String, List<String>>> additionalParams = parameters.entrySet().iterator(); additionalParams.hasNext();) {
+			Entry<String, List<String>> param = additionalParams.next();
+			String name = formEncode(param.getKey());
+			for (Iterator<String> values = param.getValue().iterator(); values.hasNext();) {
+				authUrl.append('&').append(name).append('=').append(formEncode(values.next()));
 			}
 		}
 		return authUrl.toString();		

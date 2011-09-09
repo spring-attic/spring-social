@@ -19,6 +19,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.net.URL;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -40,6 +43,7 @@ import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.ServletWebRequest;
 
@@ -72,7 +76,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth10_withApplicationUrl() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("https://someothersite.com:1234"));
+		support.setApplicationUrl("https://someothersite.com:1234");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
@@ -85,7 +89,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth10_withApplicationUrlAndNonDefaultServletPath() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("http://somehost:8080/spring-social-showcase"));
+		support.setApplicationUrl("http://somehost:8080/spring-social-showcase");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
@@ -99,7 +103,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth10_withApplicationUrlHavingDeepPath() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("http://ec2.instance.com:8080/spring-social/showcase"));
+		support.setApplicationUrl("http://ec2.instance.com:8080/spring-social/showcase");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
@@ -121,6 +125,20 @@ public class ConnectSupportTest {
 		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10), request);
 		assertEquals("https://serviceprovider.com/oauth/authenticate?oauth_callback=http://somesite.com/connect/someprovider", url);
 	}
+	
+	@Test
+	public void buildOAuthUrl_OAuth10_withAdditionalParameters() {
+		ConnectSupport support = new ConnectSupport();
+		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
+		mockRequest.setScheme("http");
+		mockRequest.setServerName("somesite.com");
+		mockRequest.setRequestURI("/connect/someprovider");
+		ServletWebRequest request = new ServletWebRequest(mockRequest);
+		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
+		additionalParameters.set("display", "popup");
+		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10), request, additionalParameters);
+		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup&oauth_callback=http://somesite.com/connect/someprovider", url);
+	}
 
 	@Test
 	public void buildOAuthUrl_OAuth10a() {
@@ -137,7 +155,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth10a_withApplicationUrl() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("https://someothersite.com:1234"));
+		support.setApplicationUrl("https://someothersite.com:1234");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
@@ -161,6 +179,20 @@ public class ConnectSupportTest {
 	}
 	
 	@Test
+	public void buildOAuthUrl_OAuth10a_withAdditionalParameters() {
+		ConnectSupport support = new ConnectSupport();
+		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
+		mockRequest.setScheme("http");
+		mockRequest.setServerName("somesite.com");
+		mockRequest.setRequestURI("/connect/someprovider");
+		ServletWebRequest request = new ServletWebRequest(mockRequest);
+		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
+		additionalParameters.set("display", "popup");
+		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10_REVISION_A), request, additionalParameters);
+		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup", url);
+	}
+
+	@Test
 	public void buildOAuthUrl_OAuth2() {
 		ConnectSupport support = new ConnectSupport();
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
@@ -175,7 +207,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth2_withContextPath() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("https://someothersite.com:1234"));
+		support.setApplicationUrl("https://someothersite.com:1234");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
@@ -188,7 +220,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth2_withApplicationUrl() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("https://someothersite.com:1234"));
+		support.setApplicationUrl("https://someothersite.com:1234");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
@@ -201,7 +233,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth2_withApplicationUrlAndNonDefaultServletPath() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("https://someothersite.com:1234/spring-social-showcase"));
+		support.setApplicationUrl("https://someothersite.com:1234/spring-social-showcase");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
@@ -215,7 +247,7 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth2_withApplicationUrlHavingDeepPath() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl(new URL("http://ec2.instance.com:8080/spring-social/showcase"));
+		support.setApplicationUrl("http://ec2.instance.com:8080/spring-social/showcase");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
@@ -237,6 +269,21 @@ public class ConnectSupportTest {
 		TestOAuth2ConnectionFactory connectionFactory = new TestOAuth2ConnectionFactory();
 		String url = support.buildOAuthUrl(connectionFactory, request);
 		assertEquals("https://serviceprovider.com/oauth/authenticate?redirect_uri=http://somesite.com/connect/someprovider", url);
+	}
+
+	@Test
+	public void buildOAuthUrl_OAuth2_withAdditionalParametersl() throws Exception {
+		ConnectSupport support = new ConnectSupport();
+		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
+		mockRequest.setScheme("http");
+		mockRequest.setServerName("somesite.com");
+		mockRequest.setRequestURI("/connect/someprovider");
+		ServletWebRequest request = new ServletWebRequest(mockRequest);
+		TestOAuth2ConnectionFactory connectionFactory = new TestOAuth2ConnectionFactory();
+		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
+		additionalParameters.set("display", "popup");
+		String url = support.buildOAuthUrl(connectionFactory, request, additionalParameters);
+		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup&redirect_uri=http://somesite.com/connect/someprovider", url);
 	}
 
 	private static class PortAwareMockHttpServletRequest extends MockHttpServletRequest {
@@ -316,13 +363,13 @@ public class ConnectSupportTest {
 				}
 
 				public String buildAuthorizeUrl(String requestToken, OAuth1Parameters params) {
-					String callbackUrl = params.getCallbackUrl();
-					return "https://serviceprovider.com/oauth/authorize" + callbackQuery(callbackUrl);
+					String additionalParametersQuery = additionalParametersQuery(params, false);
+					return "https://serviceprovider.com/oauth/authorize" + additionalParametersQuery;
 				}
 
 				public String buildAuthenticateUrl(String requestToken, OAuth1Parameters params) {
-					String callbackUrl = params.getCallbackUrl();
-					return "https://serviceprovider.com/oauth/authenticate" + callbackQuery(callbackUrl);
+					String additionalParametersQuery = additionalParametersQuery(params, false);
+					return "https://serviceprovider.com/oauth/authenticate" + additionalParametersQuery;
 				}
 
 				public OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters) {
@@ -338,8 +385,7 @@ public class ConnectSupportTest {
 						callbackQuery = "?oauth_callback=" + callbackUrl;
 					}
 					return callbackQuery;
-				}
-
+				}				
 			};
 		}
 		
@@ -370,10 +416,10 @@ public class ConnectSupportTest {
 		public OAuth2Operations getOAuthOperations() {
 			return new OAuth2Operations() {
 				public String buildAuthorizeUrl(GrantType grantType, OAuth2Parameters params) {
-					return "https://serviceprovider.com/oauth/authorize?redirect_uri=" + params.getRedirectUri();
+					return "https://serviceprovider.com/oauth/authorize" + additionalParametersQuery(params, false);
 				}
 				public String buildAuthenticateUrl(GrantType grantType, OAuth2Parameters params) {
-					return "https://serviceprovider.com/oauth/authenticate?redirect_uri=" + params.getRedirectUri();
+					return "https://serviceprovider.com/oauth/authenticate" + additionalParametersQuery(params, false);
 				}
 				public AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri, MultiValueMap<String, String> additionalParameters) {
 					assertEquals("authorization-grant", authorizationGrant);
@@ -383,7 +429,7 @@ public class ConnectSupportTest {
 				}
 				public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
 					return null;
-				}								
+				}
 			};
 		}
 
@@ -417,4 +463,25 @@ public class ConnectSupportTest {
 		}
 		
 	}
+	
+	private static String additionalParametersQuery(MultiValueMap<String, String> additionalParameters, boolean existingParameters) {
+		if(additionalParameters == null) {
+			return "";
+		}
+		
+		char delimiter = existingParameters ? '&' : '?';
+
+		StringBuffer buffer = new StringBuffer();
+		Set<Entry<String, List<String>>> entrySet = additionalParameters.entrySet();
+		for (Entry<String, List<String>> entry : entrySet) {
+			String key = entry.getKey();
+			List<String> values = entry.getValue();
+			for (String value : values) {
+				buffer.append(delimiter).append(key).append("=").append(value);
+				delimiter = '&';
+			}
+		}
+		return buffer.toString();
+	}
+
 }

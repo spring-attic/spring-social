@@ -15,54 +15,61 @@
  */
 package org.springframework.social.oauth1;
 
-import org.springframework.util.MultiValueMap;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.social.support.ParameterMap;
 
 /**
  * Parameters for building an OAuth1 authorize URL.
  * @author Keith Donald
  * @see OAuth1Operations#buildAuthorizeUrl(String, OAuth1Parameters)
  */
-public final class OAuth1Parameters {
+public final class OAuth1Parameters extends ParameterMap {
+
+	private static final String OAUTH_CALLBACK = "oauth_callback";
 	
-	private final String callbackUrl;
-	
-	private final MultiValueMap<String, String> additionalParameters;
+	/**
+	 * Shared instance for passing zero authorization parameters (common for OAuth 1.0a-based flows).
+	 * The underlying map is immutable.
+	 * @see Collections#emptyMap()
+	 */
+	public static final OAuth1Parameters NONE = new OAuth1Parameters(Collections.<String, List<String>>emptyMap());
 
 	/**
-	 * Shared instance for passing zero authorization parameters (accepted for OAuth 1.0a-based flows).
+	 * Creates a new OAuth1Parameters map that is initially empty.
+	 * Use the setter methods to add parameters after construction.
+	 * @see #setCallbackUrl(String)
+	 * @see #set(String, String)
 	 */
-	public static final OAuth1Parameters NONE = new OAuth1Parameters(null, null);
-	
-	/**
-	 * Creates a new OAuth1Parameters instance.
-	 * @param callbackUrl the authorization callback url; this value must be included for OAuth 1.0 providers (and NOT for OAuth 1.0a)
-	 */
-	public OAuth1Parameters(String callbackUrl) {
-		this(callbackUrl, null);
+	public OAuth1Parameters() {
+		super();
 	}
 	
 	/**
-	 * Creates a new OAuth1Parameters instance.
-	 * @param callbackUrl the authorization callback url; this value must be included for OAuth 1.0 providers (and NOT for OAuth 1.0a)
-	 * @param additionalParameters additional supported parameters to pass to the provider
-	 */
-	public OAuth1Parameters(String callbackUrl, MultiValueMap<String, String> additionalParameters) {
-		this.callbackUrl = callbackUrl;
-		this.additionalParameters = additionalParameters;
+	 * Creates a new OAuth1Parameters populated from the initial parameters provided.
+	 * @param parameters the initial parameters
+	 * @see #setCallbackUrl(String)
+	 */	
+	public OAuth1Parameters(Map<String, List<String>> parameters) {
+		super(parameters);
 	}
-
+	
 	/**
-	 * The authorization callback url; this value must be included for OAuth 1.0 providers (and NOT for OAuth 1.0a)
+	 * The authorization callback url.
+	 * This value must be included for OAuth 1.0 providers (and NOT for OAuth 1.0a)
 	 */
 	public String getCallbackUrl() {
-		return callbackUrl;
+		return getFirst(OAUTH_CALLBACK);
 	}
 
 	/**
-	 * Additional supported parameters to pass to the provider.
+	 * Sets the authorization callback url.
+	 * This value must be included for OAuth 1.0 providers (and NOT for OAuth 1.0a).
 	 */
-	public MultiValueMap<String, String> getAdditionalParameters() {
-		return additionalParameters;
+	public void setCallbackUrl(String callbackUrl) {
+		set(OAUTH_CALLBACK, callbackUrl);
 	}
 	
 }

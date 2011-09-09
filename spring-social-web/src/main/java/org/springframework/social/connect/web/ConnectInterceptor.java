@@ -17,6 +17,7 @@ package org.springframework.social.connect.web;
 
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.request.WebRequest;
 
 /**
@@ -30,9 +31,9 @@ public interface ConnectInterceptor<S> {
 	
 	/**
 	 * Called during connection initiation, immediately before user authorization.
-	 * Used to store custom connection attributes in the session before redirecting the user to the provider's site.
+	 * May be used to store custom connection attributes in the session before redirecting the user to the provider's site or to contribute parameters to the authorization URL.
 	 */
-	void preConnect(ConnectionFactory<S> connectionFactory, WebRequest request);
+	void preConnect(ConnectionFactory<S> connectionFactory, MultiValueMap<String, String> parameters, WebRequest request);
 
 	/**
 	 * Called immediately after the connection is established.

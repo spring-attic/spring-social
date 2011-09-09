@@ -137,7 +137,7 @@ public class OAuth1Template implements OAuth1Operations {
 
 	/**
 	 * Exposes the consumer key to be read by subclasses.
-	 * This may be useful when overriding {@link #getCustomAuthorizationParameters()} and the consumer key is required in the authorization request.
+	 * This may be useful when overriding {@link #addCustomAuthorizationParameters(MultiValueMap)} and the consumer key is required in the authorization request.
 	 */
 	protected String getConsumerKey() {
 		return consumerKey;
@@ -156,11 +156,10 @@ public class OAuth1Template implements OAuth1Operations {
 	}
 
 	/**
-	 * Returns a map of custom authorization parameters.
-	 * May be overridden to return any provider-specific parameters that must be passed in the request to the authorization URL.
+	 * Subclassing hook to add custom authorization parameters to the authorization URL.
+	 * Default implementation adds no parameters.
 	 */
-	protected MultiValueMap<String, String> getCustomAuthorizationParameters() {
-		return null;
+	protected void addCustomAuthorizationParameters(MultiValueMap<String, String> parameters) {
 	}
 	
 	// internal helpers
@@ -208,12 +207,9 @@ public class OAuth1Template implements OAuth1Operations {
 
 	private String buildAuthUrl(String baseAuthUrl, String requestToken, OAuth1Parameters parameters) {
 		StringBuilder authUrl = new StringBuilder(baseAuthUrl).append('?').append("oauth_token").append('=').append(formEncode(requestToken));
-		if (version == OAuth1Version.CORE_10) {
-			authUrl.append('&').append("oauth_callback").append("=").append(formEncode(parameters.getCallbackUrl()));
-		}
-		MultiValueMap<String, String> additionalParameters = getAdditionalParameters(parameters.getAdditionalParameters());
-		if (additionalParameters != null) {
-			for (Iterator<Entry<String, List<String>>> additionalParams = additionalParameters.entrySet().iterator(); additionalParams.hasNext();) {
+		addCustomAuthorizationParameters(parameters);
+		if (parameters != null) {
+			for (Iterator<Entry<String, List<String>>> additionalParams = parameters.entrySet().iterator(); additionalParams.hasNext();) {
 				Entry<String, List<String>> param = additionalParams.next();
 				String name = formEncode(param.getKey());
 				for (Iterator<String> values = param.getValue().iterator(); values.hasNext();) {
@@ -222,18 +218,6 @@ public class OAuth1Template implements OAuth1Operations {
 			}
 		}		
 		return authUrl.toString();
-	}
-
-	private MultiValueMap<String, String> getAdditionalParameters(MultiValueMap<String, String> clientAdditionalParameters) {
-		MultiValueMap<String, String> customAuthorizeParameters = getCustomAuthorizationParameters();
-		if (customAuthorizeParameters == null) {
-			return clientAdditionalParameters;
-		} else {
-			if(clientAdditionalParameters != null) {
-				customAuthorizeParameters.putAll(clientAdditionalParameters);
-			}
-			return customAuthorizeParameters;
-		}
 	}
 	
 	private String formEncode(String data) {

@@ -149,10 +149,10 @@ public interface OAuth2Operations {
     String buildAuthenticateUrl(GrantType grantType, OAuth2Parameters parameters);
 
     AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, 
-            MultiValueMap<String, String> additionalParameters);
+        MultiValueMap<String, String> additionalParameters);
 
-	AccessGrant refreshAccess(String refreshToken, String scope, 
-	        MultiValueMap<String, String> additionalParameters);
+    AccessGrant refreshAccess(String refreshToken, String scope, 
+            MultiValueMap<String, String> additionalParameters);
 
 }]]>
 			</programlisting>			
@@ -217,11 +217,13 @@ public interface OAuth2Operations {
 FacebookConnectionFactory connectionFactory = 
     new FacebookConnectionFactory("clientId", "clientSecret");
 OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-String authorizeUrl = oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, 
-        new OAuth2Parameters("callbackUrl"));
+OAuth2Parameters params = new OAuth2Parameters();
+params.setRedirectUri("https://my-callback-url");
+String authorizeUrl = oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, params);
 response.sendRedirect(authorizeUrl);
-// when the provider callback is received with the authorizationCode parameter:
-AccessGrant accessGrant = oauthOperations.exchangeForAccess(authorizationCode, "callbackUrl");
+
+// upon receiving the callback from the provider:
+AccessGrant accessGrant = oauthOperations.exchangeForAccess(authorizationCode, "https://my-callback-url", null);
 Connection<Facebook> connection = connectionFactory.createConnection(accessGrant);]]>
 				</programlisting>
 			</para>
@@ -233,10 +235,12 @@ Connection<Facebook> connection = connectionFactory.createConnection(accessGrant
 FacebookConnectionFactory connectionFactory = 
     new FacebookConnectionFactory("clientId", "clientSecret");
 OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-String authorizeUrl = oauthOperations.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, 
-        new OAuth2Parameters("callbackUrl"));
+OAuth2Parameters params = new OAuth2Parameters();
+params.setRedirectUri("https://my-callback-url");
+String authorizeUrl = oauthOperations.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, params);
 response.sendRedirect(authorizeUrl);
-// when the provider callback is received with the access_token parameter:
+
+// upon receiving the callback from the provider:
 AccessGrant accessGrant = new AccessGrant(accessToken);
 Connection<Facebook> connection = connectionFactory.createConnection(accessGrant);]]>
 				</programlisting>
@@ -268,14 +272,14 @@ public class OAuth1ConnectionFactory<A> extends ConnectionFactory<A> {
 public interface OAuth1Operations {
 
     OAuthToken fetchRequestToken(String callbackUrl, 
-            MultiValueMap<String, String> additionalParameters);
+        MultiValueMap<String, String> additionalParameters);
 
     String buildAuthorizeUrl(String requestToken, OAuth1Parameters parameters);
 
     String buildAuthenticateUrl(String requestToken, OAuth1Parameters parameters);
 
     OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, 
-            MultiValueMap<String, String> additionalParameters);
+        MultiValueMap<String, String> additionalParameters);
 
 }]]>
 			</programlisting>			
@@ -348,12 +352,13 @@ public interface OAuth1Operations {
 TwitterConnectionFactory connectionFactory = 
     new TwitterConnectionFactory("consumerKey", "consumerSecret");
 OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
-String requestToken = oauthOperations.fetchRequestToken("callbackUrl");
+OAuthToken requestToken = oauthOperations.fetchRequestToken("https://my-callback-url", null);
 String authorizeUrl = oauthOperations.buildAuthorizeUrl(requestToken, OAuth1Parameters.NONE);
 response.sendRedirect(authorizeUrl);
-// when the provider callback is received with the oauth_token and oauth_verifier parameters:
+
+// upon receiving the callback from the provider:
 OAuthToken accessToken = oauthOperations.exchangeForAccessToken(
-        new AuthorizedRequestToken(oauthToken, oauthVerifier));
+    new AuthorizedRequestToken(requestToken, oauthVerifier), null);
 Connection<Twitter> connection = connectionFactory.createConnection(accessToken);]]>
 				</programlisting>
 			</para>
@@ -414,7 +419,7 @@ public interface ConnectionRepository {
     <A> List<Connection<A>> findConnections(Class<A> apiType);
 
     MultiValueMap<String, Connection<?>> findConnectionsToUsers(
-            MultiValueMap<String, String> providerUserIds);
+        MultiValueMap<String, String> providerUserIds);
 
     Connection<?> getConnection(ConnectionKey connectionKey);
 
@@ -447,7 +452,7 @@ public interface ConnectionRepository {
 		<programlisting language="java"><![CDATA[
 public interface UsersConnectionRepository {
 
-    String findUserIdWithConnection(Connection connection);
+    String findUserIdWithConnection(Connection<?> connection);
 
     Set<String> findUserIdsConnectedTo(String providerId, Set<String> providerUserIds);
 
@@ -464,17 +469,43 @@ public interface UsersConnectionRepository {
 			<title>JDBC-based persistence</title>
 			<para>
 				Spring Social provides a JdbcUsersConnectionRepository implementation capable of persisting connections to a RDBMS.
-				The database schema designed to back this repository is defined in JdbcUsersConnectionRepository.sql.
+				The database schema designed to back this repository is defined as follows:
+			</para>
+			
+  			<programlisting language="sql"><![CDATA[
+create table UserConnection (userId varchar(255) not null,
+    providerId varchar(255) not null,
+    providerUserId varchar(255),
+    rank int not null,
+    displayName varchar(255),
+    profileUrl varchar(512),
+    imageUrl varchar(512),
+    accessToken varchar(255) not null,					
+    secret varchar(255),
+    refreshToken varchar(255),
+    expireTime bigint,
+    primary key (userId, providerId, providerUserId));
+create unique index UserConnectionRank on UserConnection(userId, providerId, rank);]]>
+  			</programlisting>
+
+			<para>
+				For convenience is bootstrapping the schema from a running application, this schema definition is available in the <code>spring-social-core</code> module as a resource at the path /org/springframework/social/connect/jdbc/JdbcUsersConnectionRepository.sql.				
+			</para>
+
+			<para>
 				The implementation also provides support for encrypting authorization credentials so they are not stored in plain-text.
 			</para>
+			
 			<para>
 				The example code below demonstrates construction and usage of a JdbcUsersConnectionRepository:
 			</para>
 			<programlisting language="java"><![CDATA[
 // JDBC DataSource pointing to the DB where connection data is stored
 DataSource dataSource = ...;
+
 // locator for factories needed to construct Connections when restoring from persistent form
 ConnectionFactoryLocator connectionFactoryLocator = ...;
+
 // encryptor of connection authorization credentials
 TextEncryptor encryptor = ...;
 

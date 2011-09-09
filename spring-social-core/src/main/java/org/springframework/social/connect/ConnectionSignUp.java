@@ -18,7 +18,7 @@ package org.springframework.social.connect;
 /**
  * A command that signs up a new user in the event no user id could be mapped from a {@link Connection}.
  * Allows for implicitly creating a local user profile from connection data during a provider sign-in attempt.
- * @see UsersConnectionRepository#findUserIdWithConnection(Connection)
+ * @see UsersConnectionRepository#findUserIdsWithConnection(Connection)
  * @author Keith Donald
  */
 public interface ConnectionSignUp {
