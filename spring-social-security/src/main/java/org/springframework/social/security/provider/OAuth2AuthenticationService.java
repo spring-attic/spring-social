@@ -70,8 +70,11 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 			// First phase: get a request token
 			String returnToUrl = buildReturnToUrl(request);
 			String scope = getScope(); // TODO set scope
+			OAuth2Parameters params =  new OAuth2Parameters();
+			params.setRedirectUri(returnToUrl);
+			params.setScope(scope);
 			String redirect = getConnectionFactory().getOAuthOperations().buildAuthenticateUrl(
-					GrantType.AUTHORIZATION_CODE, new OAuth2Parameters(returnToUrl, scope));
+					GrantType.AUTHORIZATION_CODE, params);
 			throw new SocialAuthenticationRedirectException(redirect);
 		} else if (StringUtils.hasText(code)) {
 			try {

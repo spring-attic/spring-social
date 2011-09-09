@@ -301,16 +301,6 @@ public class ConnectController {
 		}
 	}
 	
-	private void setNoCache(NativeWebRequest request) {
-		HttpServletResponse response = request.getNativeResponse(HttpServletResponse.class);
-		if (response != null) {
-			response.setHeader("Pragma", "no-cache");
-			response.setDateHeader("Expires", 1L);
-			response.setHeader("Cache-Control", "no-cache");
-			response.addHeader("Cache-Control", "no-store");
-		}
-	}
-
 	private static final String DUPLICATE_CONNECTION_ATTRIBUTE = "social.addConnection.duplicate";
 
 }

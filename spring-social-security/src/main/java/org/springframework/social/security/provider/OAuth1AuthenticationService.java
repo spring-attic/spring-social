@@ -80,9 +80,16 @@ public class OAuth1AuthenticationService<S> extends AbstractSocialAuthentication
 			request.getSession().setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken);
 
 			// Redirect to the service provider for authorization
-			String oAuthUrl = ops.buildAuthenticateUrl(requestToken.getValue(),
-					ops.getVersion() == OAuth1Version.CORE_10 ? new OAuth1Parameters(returnToUrl)
-							: OAuth1Parameters.NONE);
+			OAuth1Parameters params;
+			if (ops.getVersion() == OAuth1Version.CORE_10) {
+				params = new OAuth1Parameters();
+				params.setCallbackUrl(returnToUrl);
+			} else {
+				params = OAuth1Parameters.NONE;
+			}
+			
+			String oAuthUrl = ops.buildAuthenticateUrl(requestToken.getValue(), params);
+			
 			throw new SocialAuthenticationRedirectException(oAuthUrl);
 		} else {
 			// Second phase: request an access token
