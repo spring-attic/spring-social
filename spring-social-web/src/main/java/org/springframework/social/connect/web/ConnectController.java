@@ -167,7 +167,7 @@ public class ConnectController {
 		OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
 		addConnection(connection, connectionFactory, request);
-		return connectionStatusRedirect(providerId);
+		return connectionStatusRedirect(providerId, request);
 	}
 
 	/**
@@ -180,7 +180,7 @@ public class ConnectController {
 		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 		Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
 		addConnection(connection, connectionFactory, request);
-		return connectionStatusRedirect(providerId);
+		return connectionStatusRedirect(providerId, request);
 	}
 
 	/**
@@ -189,9 +189,9 @@ public class ConnectController {
 	 * Note: requires {@link HiddenHttpMethodFilter} to be registered with the '_method' request parameter set to 'DELETE' to convert web browser POSTs to DELETE requests.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.DELETE)
-	public RedirectView removeConnections(@PathVariable String providerId) {
+	public RedirectView removeConnections(@PathVariable String providerId, NativeWebRequest request) {
 		connectionRepository.removeConnections(providerId);
-		return connectionStatusRedirect(providerId);
+		return connectionStatusRedirect(providerId, request);
 	}
 
 	/**
@@ -200,9 +200,9 @@ public class ConnectController {
 	 * Note: requires {@link HiddenHttpMethodFilter} to be registered with the '_method' request parameter set to 'DELETE' to convert web browser POSTs to DELETE requests.
 	 */
 	@RequestMapping(value="/{providerId}/{providerUserId}", method=RequestMethod.DELETE)
-	public RedirectView removeConnection(@PathVariable String providerId, @PathVariable String providerUserId, HttpServletRequest request) {
+	public RedirectView removeConnection(@PathVariable String providerId, @PathVariable String providerUserId, NativeWebRequest request) {
 		connectionRepository.removeConnection(new ConnectionKey(providerId, providerUserId));
-		return connectionStatusRedirect(providerId);
+		return connectionStatusRedirect(providerId, request);
 	}
 
 	// subclassing hooks
@@ -240,8 +240,15 @@ public class ConnectController {
 	 * May be overridden to handle custom redirection needs.
 	 * @param providerId the ID of the provider for which a connection was created or deleted.
 	 */
-	protected RedirectView connectionStatusRedirect(String providerId) {
-		return new RedirectView("/connect/" + providerId, true);
+	protected RedirectView connectionStatusRedirect(String providerId, NativeWebRequest request) {
+		String servletPath = request.getNativeRequest(HttpServletRequest.class).getServletPath();
+		String providerConnectPath = "/connect/" + providerId;
+		// If DispatcherServlet is mapped to "/", the servlet path will start with "/connect/{providerId}"; 
+		// otherwise it will be whatever DispatcherServlet is mapped to.
+		if (!servletPath.startsWith(providerConnectPath)) {
+			providerConnectPath = servletPath + providerConnectPath;
+		}
+		return new RedirectView(providerConnectPath, true);
 	}
 
 	// internal helpers
