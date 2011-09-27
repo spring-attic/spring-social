@@ -241,8 +241,8 @@ public class ConnectController {
 	 * @param providerId the ID of the provider for which a connection was created or deleted.
 	 */
 	protected RedirectView connectionStatusRedirect(String providerId, NativeWebRequest request) {
-		String servletPath = request.getNativeRequest(HttpServletRequest.class).getServletPath();
 		String providerConnectPath = "/connect/" + providerId;
+		String servletPath = request.getNativeRequest(HttpServletRequest.class).getServletPath();
 		// If DispatcherServlet is mapped to "/", the servlet path will start with "/connect/{providerId}"; 
 		// otherwise it will be whatever DispatcherServlet is mapped to.
 		if (!servletPath.startsWith(providerConnectPath)) {
