@@ -1,3 +1,13 @@
+Spring Social 1.0.1 Release
+===========================
+Compatibility Notes
+  * Changed signature of ConnectController.connectionStatusRedirect() to take a NativeWebRequest in
+    addition to the provider ID (SOCIAL-258).
+
+Bug Fixes
+  * Fixed ConnectController to use the servlet path when doing connection status redirects so that
+    the application's DispatcherServlet does not have to be mapped to "/" (SOCIAL-258).
+
 Spring Social 1.0.0 Release (September 8, 2011)
 ===============================================
 Bug Fixes

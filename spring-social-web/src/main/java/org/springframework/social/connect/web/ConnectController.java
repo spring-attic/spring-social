@@ -236,9 +236,10 @@ public class ConnectController {
 
 	/**
 	 * Returns a RedirectView with the URL to redirect to after a connection is created or deleted.
-	 * Defaults to "/connect/{providerId}" relative to the servlet context path. 
+	 * Defaults to "/connect/{providerId}" relative to DispatcherServlet's path. 
 	 * May be overridden to handle custom redirection needs.
 	 * @param providerId the ID of the provider for which a connection was created or deleted.
+	 * @param request the NativeWebRequest used to access the servlet path when constructing the redirect path.
 	 */
 	protected RedirectView connectionStatusRedirect(String providerId, NativeWebRequest request) {
 		String providerConnectPath = "/connect/" + providerId;
