@@ -36,6 +36,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -44,6 +45,8 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UrlPathHelper;
+import org.springframework.web.util.WebUtils;
 
 /**
  * Generic UI controller for managing the account-to-service-provider connection flow.
@@ -69,6 +72,8 @@ public class ConnectController {
 
 	private final ConnectSupport webSupport = new ConnectSupport();
 	
+	private final UrlPathHelper urlPathHelper = new UrlPathHelper();
+
 	/**
 	 * Constructs a ConnectController.
 	 * @param connectionFactoryLocator the locator for {@link ConnectionFactory} instances needed to establish connections
@@ -242,17 +247,30 @@ public class ConnectController {
 	 * @param request the NativeWebRequest used to access the servlet path when constructing the redirect path.
 	 */
 	protected RedirectView connectionStatusRedirect(String providerId, NativeWebRequest request) {
-		String providerConnectPath = "/connect/" + providerId;
-		String servletPath = request.getNativeRequest(HttpServletRequest.class).getServletPath();
-		// If DispatcherServlet is mapped to "/", the servlet path will start with "/connect/{providerId}"; 
-		// otherwise it will be whatever DispatcherServlet is mapped to.
-		if (!servletPath.startsWith(providerConnectPath)) {
-			providerConnectPath = servletPath + providerConnectPath;
+		String path = "/connect/" + providerId + getPathExtension(request);
+		HttpServletRequest nativeRequest = request.getNativeRequest(HttpServletRequest.class);
+		if (prependServletPath(nativeRequest)) {
+			path = nativeRequest.getServletPath() + path;
 		}
-		return new RedirectView(providerConnectPath, true);
+		return new RedirectView(path, true);
 	}
 
 	// internal helpers
+
+	private boolean prependServletPath(HttpServletRequest request) {
+		return !this.urlPathHelper.getPathWithinServletMapping(request).equals("");
+	}
+	
+	/*
+	 * Determines the path extension, if any.
+	 * Returns the extension, including the period at the beginning, or an empty string if there is no extension.
+	 * This makes it possible to append the returned value to a path even if there is no extension.
+	 */
+	private String getPathExtension(NativeWebRequest request) {
+		String fileName = WebUtils.extractFullFilenameFromUrlPath(request.getNativeRequest(HttpServletRequest.class).getRequestURI());		
+		String extension = StringUtils.getFilenameExtension(fileName);
+		return extension != null ? "." + extension : "";
+	}
 
 	private String getViewPath() {
 		return "connect/";
