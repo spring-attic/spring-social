@@ -247,10 +247,10 @@ public class ConnectController {
 	 * @param request the NativeWebRequest used to access the servlet path when constructing the redirect path.
 	 */
 	protected RedirectView connectionStatusRedirect(String providerId, NativeWebRequest request) {
-		String path = "/connect/" + providerId + getPathExtension(request);
-		HttpServletRequest nativeRequest = request.getNativeRequest(HttpServletRequest.class);
-		if (prependServletPath(nativeRequest)) {
-			path = nativeRequest.getServletPath() + path;
+		HttpServletRequest servletRequest = request.getNativeRequest(HttpServletRequest.class);
+		String path = "/connect/" + providerId + getPathExtension(servletRequest);
+		if (prependServletPath(servletRequest)) {
+			path = servletRequest.getServletPath() + path;
 		}
 		return new RedirectView(path, true);
 	}
@@ -266,8 +266,8 @@ public class ConnectController {
 	 * Returns the extension, including the period at the beginning, or an empty string if there is no extension.
 	 * This makes it possible to append the returned value to a path even if there is no extension.
 	 */
-	private String getPathExtension(NativeWebRequest request) {
-		String fileName = WebUtils.extractFullFilenameFromUrlPath(request.getNativeRequest(HttpServletRequest.class).getRequestURI());		
+	private String getPathExtension(HttpServletRequest request) {
+		String fileName = WebUtils.extractFullFilenameFromUrlPath(request.getRequestURI());		
 		String extension = StringUtils.getFilenameExtension(fileName);
 		return extension != null ? "." + extension : "";
 	}
