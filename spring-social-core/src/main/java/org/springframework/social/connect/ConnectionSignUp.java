@@ -26,7 +26,7 @@ public interface ConnectionSignUp {
 	/**
 	 * Sign up a new user of the application from the connection.
 	 * @param connection the connection
-	 * @return the new user id
+	 * @return the new user id (must not be null).
 	 */
 	String execute(Connection<?> connection);
 

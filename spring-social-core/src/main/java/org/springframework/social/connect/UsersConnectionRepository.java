@@ -28,9 +28,13 @@ import java.util.Set;
 public interface UsersConnectionRepository {
 
 	/**
-	 * Find the ids for users that have the given {@link Connection}.
+	 * Find the ids for local application users that have the given {@link Connection}.
 	 * Used to support the ProviderSignIn scenario where the user id returned is used to sign a local application user in using his or her provider account.
+	 * No entries indicates no application users are associated with the connection; ProviderSignInController will offer the user a signup page to register with the app.
+	 * A single entry indicates that exactly one application user is associated with the connection and is used to sign in that user via ProviderSignInController.
+	 * Multiple entries indicate that multiple application users are associated with the connection and handled as an error by ProviderSignInController.
 	 * @param connection the service provider connection resulting from the provider sign-in attempt
+	 * @return the user ids associated with the connection. 
 	 */
 	List<String> findUserIdsWithConnection(Connection<?> connection);
 

@@ -356,25 +356,13 @@ public class AccountConnectionSignUp implements ConnectionSignUp {
 
     public String execute(Connection<?> connection) {
         UserProfile profile = connection.fetchUserProfile();
-        Account account = createAccount(profile);
-        return account != null ? account.getUsername() : null;
-    }
-
-    private Account createAccount(UserProfile profile) {
-        if (profile == null || profile.getUsername() == null) {
-            return null;
-        }
         Account account = new Account(profile.getUsername(), profile.getFirstName(), profile.getLastName());
         accountRepository.createAccount(account);
-        return account;
+        return account.getUsername();
     }
 	
 }]]>
 			</programlisting>			
-			<para>
-				If <methodname>execute()</methodname> returns null, then it indicates that the user could not be implicitly signed up.
-				In that case, <classname>ProviderSignInController</classname>'s explicit sign up flow will be in effect and the browser will be redirected to the sign up form.
-			</para>
 			<para>
 				Once you've written a <interfacename>ConnectionSignUp</interfacename> for your application, you'll need to inject it into the <interfacename>UsersConnectionRepository</interfacename>.
 				In Java-based configuration: 

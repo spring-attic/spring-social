@@ -452,7 +452,7 @@ public interface ConnectionRepository {
 		<programlisting language="java"><![CDATA[
 public interface UsersConnectionRepository {
 
-    String findUserIdWithConnection(Connection<?> connection);
+    List<String> findUserIdsWithConnection(Connection<?> connection);
 
     Set<String> findUserIdsConnectedTo(String providerId, Set<String> providerUserIds);
 
