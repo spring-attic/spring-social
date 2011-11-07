@@ -207,10 +207,11 @@ public class OAuth2Template implements OAuth2Operations {
 
 	// Retrieves object from map into an Integer, regardless of the object's actual type. Allows for flexibility in object type (eg, "3600" vs 3600).
 	private Integer getIntegerValue(Map<String, Object> map, String key) {
-		Object object = map.get(key);		 
-		return object != null ? 
-				Integer.valueOf(String.valueOf(object)) : // normalize to String before creating integer value; 
-				null;
+		try {
+			return Integer.valueOf(String.valueOf(map.get(key))); // normalize to String before creating integer value;			
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 }

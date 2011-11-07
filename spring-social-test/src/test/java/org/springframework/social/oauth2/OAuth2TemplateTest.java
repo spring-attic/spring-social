@@ -135,6 +135,17 @@ public class OAuth2TemplateTest {
 	}
 
 	@Test
+	public void exchangeForAccess_jsonResponse_expiresInAsNonNumericString() {
+		MediaType responseContentType = MediaType.APPLICATION_JSON;
+		String responseFile = "accessToken_expiresInAsNonNumericString.json";
+		AccessGrant accessGrant = getAccessGrant(responseContentType, responseFile);
+		assertEquals("8d0a88a5c4f1ae4937ad864cafa8e857", accessGrant.getAccessToken());
+		assertEquals("6b0411401bf8751e34f57feb29fb8e32", accessGrant.getRefreshToken());
+		assertNull(accessGrant.getExpireTime());
+		assertEquals("read", accessGrant.getScope());
+	}
+
+	@Test
 	public void refreshAccessToken_jsonResponse() {
 		MediaType responseContentType = MediaType.APPLICATION_JSON;
 		String responseFile = "refreshToken.json";
