@@ -202,7 +202,15 @@ public class OAuth2Template implements OAuth2Operations {
 	}
 	
 	private AccessGrant extractAccessGrant(Map<String, Object> result) {
-		return createAccessGrant((String) result.get("access_token"), (String) result.get("scope"), (String) result.get("refresh_token"), (Integer) result.get("expires_in"), result);
+		return createAccessGrant((String) result.get("access_token"), (String) result.get("scope"), (String) result.get("refresh_token"), getIntegerValue(result, "expires_in"), result);
+	}
+
+	// Retrieves object from map into an Integer, regardless of the object's actual type. Allows for flexibility in object type (eg, "3600" vs 3600).
+	private Integer getIntegerValue(Map<String, Object> map, String key) {
+		Object object = map.get(key);		 
+		return object != null ? 
+				Integer.valueOf(String.valueOf(object)) : // normalize to String before creating integer value; 
+				null;
 	}
 
 }

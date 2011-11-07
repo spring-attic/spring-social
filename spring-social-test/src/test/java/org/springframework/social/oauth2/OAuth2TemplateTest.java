@@ -34,7 +34,7 @@ public class OAuth2TemplateTest {
 	private static final String ACCESS_TOKEN_URL = "http://www.someprovider.com/oauth/accessToken";
 
 	private OAuth2Template oAuth2Template;
-	
+
 	@Before
 	public void setup() {
 		oAuth2Template = new OAuth2Template("client_id", "client_secret", AUTHORIZE_URL, null, ACCESS_TOKEN_URL);
@@ -118,6 +118,20 @@ public class OAuth2TemplateTest {
 		assertEquals("6b0411401bf8751e34f57feb29fb8e32", accessGrant.getRefreshToken());
 		assertNull(accessGrant.getExpireTime());
 		assertNull(accessGrant.getScope());
+	}
+
+	@Test
+	public void exchangeForAccess_jsonResponse_expiresInAsString() {
+		MediaType responseContentType = MediaType.APPLICATION_JSON;
+		String responseFile = "accessToken_expiresInAsString.json";
+		AccessGrant accessGrant = getAccessGrant(responseContentType, responseFile);
+		assertEquals("8d0a88a5c4f1ae4937ad864cafa8e857", accessGrant.getAccessToken());
+		assertEquals("6b0411401bf8751e34f57feb29fb8e32", accessGrant.getRefreshToken());
+		long approximateExpirationTime = System.currentTimeMillis() + 40735000;
+		long actualExpirationTime = (long) accessGrant.getExpireTime();
+		//allow for 1 second of wiggle room on expiration time.
+		assertTrue(approximateExpirationTime - actualExpirationTime < 1000);
+		assertEquals("read", accessGrant.getScope());
 	}
 
 	@Test
