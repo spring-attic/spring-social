@@ -15,6 +15,7 @@
  */
 package org.springframework.social.connect.support;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,8 @@ import org.springframework.social.connect.ConnectionFactoryLocator;
  * Call {@link #addConnectionFactory(ConnectionFactory)} to add to this registry.
  * @author Keith Donald
  */
-public class ConnectionFactoryRegistry implements ConnectionFactoryLocator {
+@SuppressWarnings("serial")
+public class ConnectionFactoryRegistry implements ConnectionFactoryLocator, Serializable {
 
 	private final Map<String, ConnectionFactory<?>> connectionFactories = new HashMap<String, ConnectionFactory<?>>();
 
