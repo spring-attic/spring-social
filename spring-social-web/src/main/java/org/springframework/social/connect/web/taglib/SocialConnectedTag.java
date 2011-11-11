@@ -5,13 +5,17 @@ package org.springframework.social.connect.web.taglib;
  * JSP Tag to return true/false if you're connected to a provider.
  *
  * Sample usages in JSP:
-
- * 1)
+ *
+ * Include at top of JSP:
+ * <%@ taglib prefix="social" uri="http://org.springframework/social" %>
+ *
  * <social:connected provider="facebook">
  * 	    [ show some FB profile info ]
  * </social:connected>
  *
- * 2)
+ * OR another usage, more suitable for if you need to toggle on a page a connect check
+ * or multiple checks need to be made:
+ *
  * <c:set var="connectedToFB" value="false"/>
  * <social:connected provider="facebook">
  * 	    <c:set var="connectedToFB" value="true"/>
