@@ -103,7 +103,7 @@ configure(javaprojects) {
     servletApiVersion = '2.5'
     springVersion = '3.1.0.RC1'
     springSecurityCryptoVersion = '3.1.0.RC3'
-	jspApiVersion = '2.2.1'
+    jspApiVersion = '2.2.1'
 
     sourceSets {
         main {
@@ -146,7 +146,7 @@ project('spring-social-core') {
         compile ("org.springframework:spring-web:$springVersion")
         compile ("org.springframework.security:spring-security-crypto:$springSecurityCryptoVersion") { optional = true }
         compile ("org.apache.httpcomponents:httpclient:$httpComponentsVersion") { optional = true }
-		testCompile "com.h2database:h2:$h2Version"
+        testCompile "com.h2database:h2:$h2Version"
     }
 }
 
@@ -157,11 +157,10 @@ project('spring-social-web') {
         compile "org.springframework:spring-web:$springVersion"
         compile "org.springframework:spring-webmvc:$springVersion"
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
-		compile ("javax.servlet.jsp:javax.servlet.jsp-api:$jspApiVersion") { provided = true }
+        compile ("javax.servlet.jsp:javax.servlet.jsp-api:$jspApiVersion") { provided = true }
         compile project(':spring-social-core')
     }
-	metaInf << files("src/main/resources/tld/spring-social.tld")
-
+    metaInf << files("src/main/resources/tld/spring-social.tld")
 }
 
 project('spring-social-test') {
