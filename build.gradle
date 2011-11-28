@@ -15,6 +15,7 @@
  */
  import org.springframework.build.Version
 
+
 // -----------------------------------------------------------------------------
 // Main gradle build file for Spring Social
 // @author Chris Beams
@@ -102,6 +103,7 @@ configure(javaprojects) {
     servletApiVersion = '2.5'
     springVersion = '3.1.0.RC1'
     springSecurityCryptoVersion = '3.1.0.RC3'
+    jspApiVersion = '2.2.1'
 
     sourceSets {
         main {
@@ -155,8 +157,10 @@ project('spring-social-web') {
         compile "org.springframework:spring-web:$springVersion"
         compile "org.springframework:spring-webmvc:$springVersion"
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
+        compile ("javax.servlet.jsp:javax.servlet.jsp-api:$jspApiVersion") { provided = true }
         compile project(':spring-social-core')
     }
+    metaInf << files("src/main/resources/tld/spring-social.tld")
 }
 
 project('spring-social-test') {

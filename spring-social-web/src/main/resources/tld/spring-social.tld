@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<taglib
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee web-jsptaglibrary_2_1.xsd"
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    version="2.1">
+
+    <tlib-version>1.0</tlib-version>
+    <jsp-version>2.0</jsp-version>
+    <short-name>social</short-name>
+    <uri>http://org.springframework/social</uri>
+    <description>Tags for dealing with social media (facebook, twitter, etc.)</description>
+
+    <tag>
+        <name>connected</name>
+        <tag-class>org.springframework.social.connect.web.taglib.SocialConnectedTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>A conditional tag that will display tag body if the user is connected to the provider</description>
+        <attribute>
+            <name>provider</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>provider name (facebook, twitter)</description>
+        </attribute>
+    </tag>
+    <tag>
+        <name>notConnected</name>
+        <tag-class>org.springframework.social.connect.web.taglib.SocialNotConnectedTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>A conditional tag that will display tag body if the user is NOT connected to the provider</description>
+        <attribute>
+            <name>provider</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>provider name (facebook, twitter)</description>
+        </attribute>
+    </tag>
+</taglib>
