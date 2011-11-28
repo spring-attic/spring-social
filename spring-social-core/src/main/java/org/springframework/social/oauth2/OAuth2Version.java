@@ -22,12 +22,6 @@ package org.springframework.social.oauth2;
  */
 public enum OAuth2Version {
 
-	Bearer {
-		public String getAuthorizationHeaderValue(String accessToken) {
-			return "Bearer " + accessToken;
-		}		
-	},
-
 	BEARER {
 		public String getAuthorizationHeaderValue(String accessToken) {
 			return "BEARER " + accessToken;
