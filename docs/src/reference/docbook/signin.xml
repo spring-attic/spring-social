@@ -165,7 +165,7 @@ public UsersConnectionRepository usersConnectionRepository() {
 			</para>
 			<programlisting language="java"><![CDATA[
 public interface SignInAdapter {
-    void signIn(String userId, Connection<?> connection, NativeWebRequest request);
+    String signIn(String userId, Connection<?> connection, NativeWebRequest request);
 }]]>
 			</programlisting>
 			<para>
@@ -181,9 +181,10 @@ public interface SignInAdapter {
 			<programlisting language="java"><![CDATA[
 @Service
 public class SpringSecuritySignInAdapter implements SignInAdapter {
-    public void signIn(String localUserId, Connection<?> connection, NativeWebRequest request) {
+    public String signIn(String localUserId, Connection<?> connection, NativeWebRequest request) {
         SecurityContextHolder.getContext().setAuthentication(
             new UsernamePasswordAuthenticationToken(localUserId, null, null));
+        return null;
     }
 }]]>
 			</programlisting>
