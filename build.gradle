@@ -102,6 +102,7 @@ configure(javaprojects) {
     servletApiVersion = '2.5'
     springVersion = '3.1.0.RC1'
     springSecurityCryptoVersion = '3.1.0.RC3'
+    springSecurityWebVersion = '3.1.0.RC2'
 
     sourceSets {
         main {
@@ -154,6 +155,17 @@ project('spring-social-web') {
         compile ("javax.inject:javax.inject:$javaxInjectVersion")
         compile "org.springframework:spring-web:$springVersion"
         compile "org.springframework:spring-webmvc:$springVersion"
+        compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
+        compile project(':spring-social-core')
+    }
+}
+
+project('spring-social-security') {
+    description = 'Spring Security Integration'
+    dependencies {
+        compile ("org.springframework:spring-web:$springVersion")
+        compile ("org.springframework:spring-webmvc:$springVersion") { optional = true }
+        compile ("org.springframework.security:spring-security-web:$springSecurityWebVersion")
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
         compile project(':spring-social-core')
     }

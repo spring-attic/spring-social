@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2010 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,25 @@
  * limitations under the License.
  */
 
-rootProject.name = 'spring-social'
+package org.springframework.social.security;
 
-include 'docs'
-include 'spring-social-core'
-include 'spring-social-web'
-include 'spring-social-security'
-include 'spring-social-test'
+import java.net.URL;
+
+@SuppressWarnings("serial")
+public class SocialAuthenticationRedirectException extends SocialAuthenticationException {
+
+	private final String redirectUrl;
+
+	public SocialAuthenticationRedirectException(URL redirectUrl) {
+		this.redirectUrl = redirectUrl.toString();
+	}
+
+	public SocialAuthenticationRedirectException(String redirectUrl) {
+		this.redirectUrl = redirectUrl;
+	}
+
+	public String getRedirectUrl() {
+		return redirectUrl;
+	}
+
+}
