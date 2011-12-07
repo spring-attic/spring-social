@@ -100,7 +100,7 @@ configure(javaprojects) {
     junitVersion = '4.9'
     mockitoVersion = '1.8.5'
     servletApiVersion = '2.5'
-    springVersion = '3.1.0.RC1'
+    springVersion = '3.1.0.BUILD-SNAPSHOT'
     springSecurityCryptoVersion = '3.1.0.RELEASE'
 
     sourceSets {
