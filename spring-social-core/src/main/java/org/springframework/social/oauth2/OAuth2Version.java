@@ -24,7 +24,7 @@ public enum OAuth2Version {
 
 	BEARER {
 		public String getAuthorizationHeaderValue(String accessToken) {
-			return "BEARER " + accessToken;
+			return "Bearer " + accessToken;
 		}		
 	},
 	
