@@ -7,6 +7,8 @@ Compatibility Notes
 Bug Fixes
   * Fixed ConnectController to use the servlet path when doing connection status redirects so that
     the application's DispatcherServlet does not have to be mapped to "/" (SOCIAL-258).
+  * OAuth2Version.BEARER's value is now "Bearer" to be consistent with the latest drafts of the
+    specification (SOCIAL-272)
 
 Spring Social 1.0.0 Release (September 8, 2011)
 ===============================================
