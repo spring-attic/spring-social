@@ -15,7 +15,7 @@
  */
 package org.springframework.social.oauth2;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -32,7 +32,7 @@ public class OAuth2RequestInterceptorTest {
 	@Test
 	public void currentOAuth2SpecInterceptor() throws Exception {
 		OAuth2RequestInterceptor interceptor = new OAuth2RequestInterceptor("access_token", OAuth2Version.BEARER);
-		assertThatInterceptorWritesAuthorizationHeader(interceptor, "BEARER access_token");
+		assertThatInterceptorWritesAuthorizationHeader(interceptor, "Bearer access_token");
 	}
 	
 	@Test
