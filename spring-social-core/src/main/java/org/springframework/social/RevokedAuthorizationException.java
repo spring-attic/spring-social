@@ -24,7 +24,11 @@ package org.springframework.social;
 public class RevokedAuthorizationException extends RejectedAuthorizationException {
 
 	public RevokedAuthorizationException() {
-		super("The authorization has been revoked.");
+		this("Unknown");
+	}
+	
+	public RevokedAuthorizationException(String reason) {
+		super("The authorization has been revoked. Reason: " + reason);
 	}
 	
 }
