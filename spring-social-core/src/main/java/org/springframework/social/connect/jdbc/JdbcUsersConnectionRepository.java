@@ -82,12 +82,10 @@ public class JdbcUsersConnectionRepository implements UsersConnectionRepository 
 	public List<String> findUserIdsWithConnection(Connection<?> connection) {
 		ConnectionKey key = connection.getKey();
 		List<String> localUserIds = jdbcTemplate.queryForList("select userId from " + tablePrefix + "UserConnection where providerId = ? and providerUserId = ?", String.class, key.getProviderId(), key.getProviderUserId());		
-		if (localUserIds.size() == 0) {
-			if (connectionSignUp != null) {
-				String newUserId = connectionSignUp.execute(connection);
-				createConnectionRepository(newUserId).addConnection(connection);
-				return Arrays.asList(newUserId);
-			}
+		if (localUserIds.size() == 0 && connectionSignUp != null) {
+			String newUserId = connectionSignUp.execute(connection);
+			createConnectionRepository(newUserId).addConnection(connection);
+			return Arrays.asList(newUserId);
 		}
 		return localUserIds;
 	}

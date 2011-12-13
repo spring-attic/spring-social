@@ -44,6 +44,7 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionKey;
 import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.connect.ConnectionSignUp;
 import org.springframework.social.connect.ConnectionValues;
 import org.springframework.social.connect.DuplicateConnectionException;
 import org.springframework.social.connect.NoSuchConnectionException;
@@ -131,7 +132,20 @@ public class JdbcUsersConnectionRepositoryTest {
 		assertEquals("1", localUserIds.get(0));
 		assertEquals("2", localUserIds.get(1));
 	}
-	
+
+	@Test
+	public void findUserIdWithConnectionNoConnection_withWorkingConnectionSignUp() {		
+		Connection<TestFacebookApi> connection = connectionFactory.createConnection(new AccessGrant("12345"));
+		usersConnectionRepository.setConnectionSignUp(new ConnectionSignUp() {
+			public String execute(Connection<?> connection) {
+				return "batman";
+			}
+		});
+		List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
+		assertEquals(1, userIds.size());
+		assertEquals("batman", userIds.get(0));
+	}
+
 	@Test
 	public void findUserIdsConnectedTo() {
 		insertFacebookConnection();
