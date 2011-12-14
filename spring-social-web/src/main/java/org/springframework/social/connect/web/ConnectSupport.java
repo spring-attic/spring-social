@@ -17,6 +17,8 @@ package org.springframework.social.connect.web;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.support.OAuth1ConnectionFactory;
@@ -31,6 +33,7 @@ import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
@@ -41,6 +44,8 @@ import org.springframework.web.context.request.WebRequest;
  * @author Keith Donald
  */
 public class ConnectSupport {
+	
+	private final static Log logger = LogFactory.getLog(ConnectSupport.class);
 
 	private boolean useAuthenticateUrl;
 
@@ -121,8 +126,14 @@ public class ConnectSupport {
 	 */
 	public Connection<?> completeConnection(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
 		String code = request.getParameter("code");
-		AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(request), null);
-		return connectionFactory.createConnection(accessGrant);		
+		try {
+			AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(request), null);
+			return connectionFactory.createConnection(accessGrant);
+		} catch (HttpClientErrorException e) {
+			logger.warn("HttpClientErrorException while completing connection: " + e.getMessage());
+			logger.warn("      Response body: " + e.getResponseBodyAsString());
+			throw e;
+		}
 	}
 
 	// internal helpers

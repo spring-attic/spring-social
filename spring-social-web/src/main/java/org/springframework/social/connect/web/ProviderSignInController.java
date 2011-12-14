@@ -19,6 +19,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -47,6 +49,8 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/signin")
 public class ProviderSignInController {
 
+	private final static Log logger = LogFactory.getLog(ProviderSignInController.class);
+	
 	private final ConnectionFactoryLocator connectionFactoryLocator;
 
 	private final UsersConnectionRepository usersConnectionRepository;
@@ -157,9 +161,14 @@ public class ProviderSignInController {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public RedirectView oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, NativeWebRequest request) {
-		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
-		Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
-		return handleSignIn(connection, request);
+		try {
+			OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
+			Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
+			return handleSignIn(connection, request);
+		} catch (Exception e) {
+			logger.warn("Exception while handling OAuth2 callback (" + e.getMessage() + "). Redirecting to " + signInUrl);
+			return redirect(signInUrl);
+		}
 	}
 	
 	/**
