@@ -23,6 +23,8 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
@@ -63,6 +65,8 @@ import org.springframework.web.util.WebUtils;
 @Controller
 @RequestMapping("/connect")
 public class ConnectController {
+	
+	private final static Log logger = LogFactory.getLog(ConnectController.class);
 	
 	private final ConnectionFactoryLocator connectionFactoryLocator;
 	
@@ -182,9 +186,13 @@ public class ConnectController {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public RedirectView oauth2Callback(@PathVariable String providerId, NativeWebRequest request) {
-		OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
-		Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
-		addConnection(connection, connectionFactory, request);
+		try {
+			OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
+			Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
+			addConnection(connection, connectionFactory, request);
+		} catch (Exception e) {
+			logger.warn("Exception while handling OAuth2 callback (" + e.getMessage() + "). Redirecting to " + providerId +" connection status page.");
+		}
 		return connectionStatusRedirect(providerId, request);
 	}
 
