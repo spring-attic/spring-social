@@ -12,6 +12,8 @@ Bug Fixes
 Improvements
   * OAuth2Version.BEARER's value is now "Bearer" to be consistent with the latest drafts of the
     specification (SOCIAL-272)
+  * Now built against Spring Framework 3.1.0.RELEASE (still compatible with Spring Framework 3.0.6)
+  * Now built against Spring Security 3.1.0.RELEASE
 
 Spring Social 1.0.0 Release (September 8, 2011)
 ===============================================
