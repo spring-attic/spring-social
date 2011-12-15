@@ -37,7 +37,6 @@ public class SocialConfig {
 			<listitem><para><classname>org.springframework.social.linkedin.connect.LinkedInConnectionFactory</classname></para></listitem>
 			<listitem><para><classname>org.springframework.social.tripit.connect.TripItConnectionFactory</classname></para></listitem>
 			<listitem><para><classname>org.springframework.social.github.connect.GitHubConnectionFactory</classname></para></listitem>
-			<listitem><para><classname>org.springframework.social.gowalla.connect.GowallaConnectionFactory</classname></para></listitem>
 		</itemizedlist>
 		<para>
 			To register one or more ConnectionFactories, simply define a ConnectionFactoryLocator @Bean as follows:

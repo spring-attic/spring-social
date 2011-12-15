@@ -191,11 +191,6 @@
 						  <entry>org.springframework.social</entry>
 						  <entry>spring-social-github</entry>
 						</row>
-						<row>
-						  <entry><ulink url="http://static.springsource.org/spring-social-gowalla/docs/1.0.x/reference/html/">Spring Social Gowalla</ulink></entry>
-						  <entry>org.springframework.social</entry>
-						  <entry>spring-social-gowalla</entry>
-						</row>
 					</tbody>
 				</tgroup>
 			</table>
