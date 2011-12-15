@@ -1,5 +1,5 @@
-Spring Social 1.0.1 Release
-===========================
+Spring Social 1.0.1 Release (December 15, 2011)
+===============================================
 Compatibility Notes
   * Changed signature of ConnectController.connectionStatusRedirect() to take a NativeWebRequest in
     addition to the provider ID (SOCIAL-258).
