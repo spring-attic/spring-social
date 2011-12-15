@@ -7,6 +7,9 @@ Compatibility Notes
 Bug Fixes
   * Fixed ConnectController to use the servlet path when doing connection status redirects so that
     the application's DispatcherServlet does not have to be mapped to "/" (SOCIAL-258).
+  * A handful of documentation fixes (SOCIAL-249 and SOCIAL-273)
+
+Improvements
   * OAuth2Version.BEARER's value is now "Bearer" to be consistent with the latest drafts of the
     specification (SOCIAL-272)
 
