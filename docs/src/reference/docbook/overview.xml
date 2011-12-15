@@ -313,7 +313,7 @@ dependencies {
 		<title>Sample Code</title>
 		<para>
 			We have created a few sample applications to illustrate the capabilities of Spring Social.
-			To obtain the <ulink>https://github.com/SpringSource/spring-social-samples</ulink> code, use the following git command:
+			To obtain the <ulink url="https://github.com/SpringSource/spring-social-samples">https://github.com/SpringSource/spring-social-samples</ulink> code, use the following git command:
 		</para>
 		<programlisting language="txt">
 git clone git://github.com/SpringSource/spring-social-samples.git
