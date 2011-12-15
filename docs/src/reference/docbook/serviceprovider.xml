@@ -122,7 +122,7 @@ public interface Connection<A> {
 		<section id="service-providers-oauth2">
 			<title>OAuth2 service providers</title>
 			<para>
-				OAuth 2 is rapidly becoming a preferred authorization protocol, and is used by major service providers such as Facebook, Github, Foursquare, Gowalla, and 37signals.
+				OAuth 2 is rapidly becoming a preferred authorization protocol, and is used by major service providers such as Facebook, Github, Foursquare, and 37signals.
 				In Spring Social, a OAuth2ConnectionFactory is used to establish connections with a OAuth2-based service provider:
 				<programlisting language="java"><![CDATA[
 public class OAuth2ConnectionFactory<A> extends ConnectionFactory<A> {
