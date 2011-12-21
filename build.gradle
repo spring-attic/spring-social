@@ -98,10 +98,11 @@ configure(javaprojects) {
     jacksonVersion = '1.9.2'
     javaxInjectVersion = '1'
     junitVersion = '4.9'
-    mockitoVersion = '1.8.5'
+    mockitoVersion = '1.9.0'
     servletApiVersion = '2.5'
     springVersion = '3.1.0.RELEASE'
     springSecurityCryptoVersion = '3.1.0.RELEASE'
+    springTestMvcVersion = "1.0.0.BUILD-SNAPSHOT"
 
     sourceSets {
         main {
@@ -118,8 +119,9 @@ configure(javaprojects) {
 
     // dependencies that are common across all java projects
     dependencies {
-        testCompile "junit:junit:$junitVersion"
-        testCompile "org.mockito:mockito-all:$mockitoVersion"
+		testCompile "org.hamcrest:hamcrest-library:1.2.1"
+        testCompile "junit:junit-dep:$junitVersion"
+        testCompile "org.mockito:mockito-core:$mockitoVersion"
         testCompile "org.springframework:spring-test:$springVersion"
     }
 
@@ -156,6 +158,7 @@ project('spring-social-web') {
         compile "org.springframework:spring-webmvc:$springVersion"
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
         compile project(':spring-social-core')
+        testCompile "org.springframework:spring-test-mvc:$springTestMvcVersion"
     }
 }
 
