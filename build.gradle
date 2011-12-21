@@ -94,6 +94,7 @@ configure(javaprojects) {
     apply from: "$buildSrcDir/schema-publication.gradle"
 
     h2Version = '1.3.162'
+    hamcrestVersion = '1.2.1'
     httpComponentsVersion = '4.1.2'
     jacksonVersion = '1.9.2'
     javaxInjectVersion = '1'
@@ -119,7 +120,7 @@ configure(javaprojects) {
 
     // dependencies that are common across all java projects
     dependencies {
-		testCompile "org.hamcrest:hamcrest-library:1.2.1"
+		testCompile "org.hamcrest:hamcrest-library:$hamcrestVersion"
         testCompile "junit:junit-dep:$junitVersion"
         testCompile "org.mockito:mockito-core:$mockitoVersion"
         testCompile "org.springframework:spring-test:$springVersion"
