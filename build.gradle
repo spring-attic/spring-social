@@ -160,6 +160,7 @@ project('spring-social-web') {
         compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
         compile project(':spring-social-core')
         testCompile "org.springframework:spring-test-mvc:$springTestMvcVersion"
+        testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
     }
 }
 

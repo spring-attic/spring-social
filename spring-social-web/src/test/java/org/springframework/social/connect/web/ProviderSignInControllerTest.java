@@ -1,3 +1,18 @@
+/*
+ * Copyright 2011 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.springframework.social.connect.web;
 
 import static org.junit.Assert.*;
@@ -268,18 +283,16 @@ public class ProviderSignInControllerTest {
 	}
 	
 	private static class TestUsersConnectionRepository implements UsersConnectionRepository {
-		private final List<String> matchingUserIds;
-		private ConnectionRepository connectionRepository;
-		private final String providerId;
+		private TestUsersConnectionRepositoryData data = new TestUsersConnectionRepositoryData();
 
 		public TestUsersConnectionRepository(String providerId, List<String> matchingUserIds) {
-			this.providerId = providerId;
-			this.matchingUserIds = matchingUserIds;
-			connectionRepository = mock(ConnectionRepository.class);
+			this.data.providerId = providerId;
+			this.data.matchingUserIds = matchingUserIds;
+			data.connectionRepository = mock(ConnectionRepository.class);
 		}
 		
 		public List<String> findUserIdsWithConnection(Connection<?> connection) {
-			return matchingUserIds != null ? matchingUserIds : Collections.<String>emptyList();
+			return data.matchingUserIds != null ? data.matchingUserIds : Collections.<String>emptyList();
 		}
 
 		public Set<String> findUserIdsConnectedTo(String providerId, Set<String> providerUserIds) {
@@ -287,17 +300,17 @@ public class ProviderSignInControllerTest {
 		}
 
 		public ConnectionRepository createConnectionRepository(String userId) {
-			return connectionRepository;
+			return data.connectionRepository;
 		}
 		
 		public void verifyUpdateConnection() {			
 			ArgumentMatcher<Connection<?>> matcher = new ArgumentMatcher<Connection<?>>() {
 				public boolean matches(Object argument) {
 					Connection<?> connection = (Connection<?>) argument;
-					return connection.getKey().getProviderId().equals(providerId) && connection.getKey().getProviderUserId().equals("testuser");
+					return connection.getKey().getProviderId().equals(data.providerId) && connection.getKey().getProviderUserId().equals("testuser");
 				}
 			};			
-			verify(connectionRepository, times(1)).updateConnection(argThat(matcher));
+			verify(data.connectionRepository, times(1)).updateConnection(argThat(matcher));
 		}
 	}
 	
