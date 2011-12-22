@@ -24,9 +24,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
-import org.springframework.social.connect.web.test.TestApi;
 import org.springframework.social.connect.web.test.StubOAuth1ConnectionFactory;
+import org.springframework.social.connect.web.test.StubOAuth1Template;
 import org.springframework.social.connect.web.test.StubOAuth2ConnectionFactory;
+import org.springframework.social.connect.web.test.TestApi;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.test.web.server.MockMvc;
 
@@ -74,5 +75,15 @@ public class ConnectControllerTest {
 		mockMvc.perform(post("/connect/oauth1Provider"))
 			.andExpect(redirectedUrl("https://someprovider.com/oauth/authorize?oauth_token=requestToken"))
 			.andExpect(request().sessionAttribute("oauthToken", samePropertyValuesAs(new OAuthToken("requestToken", "requestTokenSecret"))));
+	}
+
+	@Test
+	public void connect_OAuth1Provider_httpClientErrorExceptionWhileFetchingRequestToken() throws Exception {
+		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
+		ConnectionFactory<TestApi> connectionFactory = new StubOAuth1ConnectionFactory("clientId", "clientSecret", StubOAuth1Template.Behavior.FETCH_REQUEST_TOKEN_HTTPCLIENT_ERROR);
+		connectionFactoryLocator.addConnectionFactory(connectionFactory);
+		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, null)).build();
+		mockMvc.perform(post("/connect/oauth1Provider"))
+			.andExpect(redirectedUrl("/connect/oauth1Provider"));
 	}
 }

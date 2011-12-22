@@ -162,7 +162,11 @@ public class ConnectController {
 		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
 		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>(); 
 		preConnect(connectionFactory, parameters, request);
-		return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request, parameters));
+		try {
+			return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request, parameters));
+		} catch (Exception e) {
+			return connectionStatusRedirect(providerId, request);
+		}
 	}
 
 	/**
