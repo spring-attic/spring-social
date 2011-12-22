@@ -103,10 +103,27 @@ public class ConnectControllerTest {
 		mockMvc.perform(get("/connect/oauth1Provider")
 						.sessionAttr("oauthToken", new OAuthToken("requestToken", "requestTokenSecret"))
 						.param("oauth_token", "requestToken")
-						.param("oauth_verifier", "verifier"));
+						.param("oauth_verifier", "verifier"))
+			.andExpect(redirectedUrl("/connect/oauth1Provider"));
 		List<Connection<?>> connections = connectionRepository.findConnections("oauth1Provider");
 		assertEquals(1, connections.size());
 		assertEquals("oauth1Provider", connections.get(0).getKey().getProviderId());
+	}
+
+	@Test
+	public void oauth1Callback_exceptionWhileFetchingAccessToken() throws Exception {
+		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
+		ConnectionFactory<TestApi> connectionFactory = new StubOAuth1ConnectionFactory("clientId", "clientSecret", StubOAuth1Template.Behavior.THROW_EXCEPTION);
+		connectionFactoryLocator.addConnectionFactory(connectionFactory);
+		StubConnectionRepository connectionRepository = new StubConnectionRepository();
+		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
+		assertNull(connectionRepository.findConnections("oauth1Provider"));		
+		mockMvc.perform(get("/connect/oauth1Provider")
+						.sessionAttr("oauthToken", new OAuthToken("requestToken", "requestTokenSecret"))
+						.param("oauth_token", "requestToken")
+						.param("oauth_verifier", "verifier"))
+			.andExpect(redirectedUrl("/connect/oauth1Provider"));
+		assertNull(connectionRepository.findConnections("oauth1Provider"));
 	}
 
 }
