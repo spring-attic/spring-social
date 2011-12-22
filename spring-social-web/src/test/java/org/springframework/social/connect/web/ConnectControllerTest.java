@@ -17,6 +17,7 @@ package org.springframework.social.connect.web;
 
 import static org.hamcrest.beans.SamePropertyValuesAs.*;
 import static org.junit.Assert.*;
+import static org.springframework.social.connect.web.test.StubOAuthTemplateBehavior.*;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.server.setup.MockMvcBuilders.*;
@@ -30,8 +31,8 @@ import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
 import org.springframework.social.connect.web.test.StubConnectionRepository;
 import org.springframework.social.connect.web.test.StubOAuth1ConnectionFactory;
-import org.springframework.social.connect.web.test.StubOAuth1Template;
 import org.springframework.social.connect.web.test.StubOAuth2ConnectionFactory;
+import org.springframework.social.connect.web.test.StubOAuthTemplateBehavior;
 import org.springframework.social.connect.web.test.TestApi;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.test.web.server.MockMvc;
@@ -50,26 +51,8 @@ public class ConnectControllerTest {
 		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, null)).build();
 		mockMvc.perform(post("/connect/noSuchProvider"));
 	}
-
-	@Test
-	public void connect_OAuth2Provider() throws Exception {
-		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
-		ConnectionFactory<TestApi> connectionFactory = new StubOAuth2ConnectionFactory("clientId", "clientSecret");
-		connectionFactoryLocator.addConnectionFactory(connectionFactory);
-		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, null)).build();
-		mockMvc.perform(post("/connect/oauth2Provider"))
-			.andExpect(redirectedUrl(OAUTH2_AUTHORIZE_URL));
-	}
-
-	@Test
-	public void connect_OAuth2Provider_withScope() throws Exception {
-		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
-		ConnectionFactory<TestApi> connectionFactory = new StubOAuth2ConnectionFactory("clientId", "clientSecret");
-		connectionFactoryLocator.addConnectionFactory(connectionFactory);
-		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, null)).build();
-		mockMvc.perform(post("/connect/oauth2Provider").param("scope", "read,write"))
-			.andExpect(redirectedUrl(OAUTH2_AUTHORIZE_URL + "&scope=read%2Cwrite"));
-	}
+	
+	// OAuth 1
 
 	@Test
 	public void connect_OAuth1Provider() throws Exception {
@@ -85,7 +68,7 @@ public class ConnectControllerTest {
 	@Test
 	public void connect_OAuth1Provider_exceptionWhileFetchingRequestToken() throws Exception {
 		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
-		ConnectionFactory<TestApi> connectionFactory = new StubOAuth1ConnectionFactory("clientId", "clientSecret", StubOAuth1Template.Behavior.THROW_EXCEPTION);
+		ConnectionFactory<TestApi> connectionFactory = new StubOAuth1ConnectionFactory("clientId", "clientSecret", StubOAuthTemplateBehavior.THROW_EXCEPTION);
 		connectionFactoryLocator.addConnectionFactory(connectionFactory);
 		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, null)).build();
 		mockMvc.perform(post("/connect/oauth1Provider"))
@@ -113,7 +96,7 @@ public class ConnectControllerTest {
 	@Test
 	public void oauth1Callback_exceptionWhileFetchingAccessToken() throws Exception {
 		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
-		ConnectionFactory<TestApi> connectionFactory = new StubOAuth1ConnectionFactory("clientId", "clientSecret", StubOAuth1Template.Behavior.THROW_EXCEPTION);
+		ConnectionFactory<TestApi> connectionFactory = new StubOAuth1ConnectionFactory("clientId", "clientSecret", THROW_EXCEPTION);
 		connectionFactoryLocator.addConnectionFactory(connectionFactory);
 		StubConnectionRepository connectionRepository = new StubConnectionRepository();
 		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
@@ -124,6 +107,56 @@ public class ConnectControllerTest {
 						.param("oauth_verifier", "verifier"))
 			.andExpect(redirectedUrl("/connect/oauth1Provider"));
 		assertNull(connectionRepository.findConnections("oauth1Provider"));
+	}
+
+	// OAuth 2
+	
+	@Test
+	public void connect_OAuth2Provider() throws Exception {
+		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
+		ConnectionFactory<TestApi> connectionFactory = new StubOAuth2ConnectionFactory("clientId", "clientSecret");
+		connectionFactoryLocator.addConnectionFactory(connectionFactory);
+		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, null)).build();
+		mockMvc.perform(post("/connect/oauth2Provider"))
+			.andExpect(redirectedUrl(OAUTH2_AUTHORIZE_URL));
+	}
+
+	@Test
+	public void connect_OAuth2Provider_withScope() throws Exception {
+		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
+		ConnectionFactory<TestApi> connectionFactory = new StubOAuth2ConnectionFactory("clientId", "clientSecret");
+		connectionFactoryLocator.addConnectionFactory(connectionFactory);
+		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, null)).build();
+		mockMvc.perform(post("/connect/oauth2Provider").param("scope", "read,write"))
+			.andExpect(redirectedUrl(OAUTH2_AUTHORIZE_URL + "&scope=read%2Cwrite"));
+	}
+	
+	@Test
+	public void oauth2Callback() throws Exception {
+		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
+		ConnectionFactory<TestApi> connectionFactory = new StubOAuth2ConnectionFactory("clientId", "clientSecret");
+		connectionFactoryLocator.addConnectionFactory(connectionFactory);
+		StubConnectionRepository connectionRepository = new StubConnectionRepository();
+		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
+		assertNull(connectionRepository.findConnections("oauth2Provider"));		
+		mockMvc.perform(get("/connect/oauth2Provider").param("code", "oauth2Code"))
+			.andExpect(redirectedUrl("/connect/oauth2Provider"));
+		List<Connection<?>> connections = connectionRepository.findConnections("oauth2Provider");
+		assertEquals(1, connections.size());
+		assertEquals("oauth2Provider", connections.get(0).getKey().getProviderId());
+	}
+
+	@Test
+	public void oauth2Callback_exceptionWhileFetchingAccessToken() throws Exception {
+		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
+		ConnectionFactory<TestApi> connectionFactory = new StubOAuth2ConnectionFactory("clientId", "clientSecret", THROW_EXCEPTION);
+		connectionFactoryLocator.addConnectionFactory(connectionFactory);
+		StubConnectionRepository connectionRepository = new StubConnectionRepository();
+		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
+		assertNull(connectionRepository.findConnections("oauth2Provider"));		
+		mockMvc.perform(get("/connect/oauth2Provider").param("code", "oauth2Code"))
+			.andExpect(redirectedUrl("/connect/oauth2Provider"));
+		assertNull(connectionRepository.findConnections("oauth2Provider"));		
 	}
 
 }

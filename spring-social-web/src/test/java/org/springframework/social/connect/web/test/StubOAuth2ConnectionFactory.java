@@ -15,12 +15,17 @@
  */
 package org.springframework.social.connect.web.test;
 
+import static org.springframework.social.connect.web.test.StubOAuthTemplateBehavior.*;
+
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 
 public class StubOAuth2ConnectionFactory extends OAuth2ConnectionFactory<TestApi> {
-
 	public StubOAuth2ConnectionFactory(String clientId, String clientSecret) {
-		super("oauth2Provider", new StubOAuth2ServiceProvider(clientId, clientSecret), null);
+		this(clientId, clientSecret, NO_EXCEPTION);
+	}
+	
+	public StubOAuth2ConnectionFactory(String clientId, String clientSecret, StubOAuthTemplateBehavior behavior) {
+		super("oauth2Provider", new StubOAuth2ServiceProvider(clientId, clientSecret, behavior), null);
 	}
 	
 }

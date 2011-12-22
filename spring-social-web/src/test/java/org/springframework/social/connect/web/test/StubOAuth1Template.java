@@ -15,7 +15,9 @@
  */
 package org.springframework.social.connect.web.test;
 
-import org.springframework.http.HttpStatus;
+import static org.springframework.http.HttpStatus.*;
+import static org.springframework.social.connect.web.test.StubOAuthTemplateBehavior.*;
+
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Template;
 import org.springframework.social.oauth1.OAuthToken;
@@ -24,9 +26,9 @@ import org.springframework.web.client.HttpClientErrorException;
 
 public class StubOAuth1Template extends OAuth1Template {
 
-	private final Behavior behavior;
+	private final StubOAuthTemplateBehavior behavior;
 
-	public StubOAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl, Behavior behavior) {
+	public StubOAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String accessTokenUrl, StubOAuthTemplateBehavior behavior) {
 		super(consumerKey, consumerSecret, requestTokenUrl, authorizeUrl, accessTokenUrl);
 		this.behavior = behavior;
 	}
@@ -34,8 +36,8 @@ public class StubOAuth1Template extends OAuth1Template {
 	@Override
 	public OAuthToken fetchRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters) {
 		
-		if (behavior == Behavior.THROW_EXCEPTION) {
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		if (behavior == THROW_EXCEPTION) {
+			throw new HttpClientErrorException(BAD_REQUEST);
 		}
 		
 		return new OAuthToken("requestToken", "requestTokenSecret");
@@ -43,14 +45,9 @@ public class StubOAuth1Template extends OAuth1Template {
 	
 	@Override
 	public OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters) {
-		if (behavior == Behavior.THROW_EXCEPTION) {
-			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		if (behavior == THROW_EXCEPTION) {
+			throw new HttpClientErrorException(BAD_REQUEST);
 		}
 		return new OAuthToken("accessToken", "accessTokenSecret");
-	}
-	
-	public static enum Behavior {
-		NO_EXCEPTION,
-		THROW_EXCEPTION
 	}
 }

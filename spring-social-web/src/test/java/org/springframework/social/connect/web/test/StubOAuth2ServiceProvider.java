@@ -15,13 +15,18 @@
  */
 package org.springframework.social.connect.web.test;
 
+import static org.springframework.social.connect.web.test.StubOAuthTemplateBehavior.*;
+
 import org.springframework.social.oauth2.AbstractOAuth2ServiceProvider;
-import org.springframework.social.oauth2.OAuth2Template;
 
 public class StubOAuth2ServiceProvider extends AbstractOAuth2ServiceProvider<TestApi> {
 
 	public StubOAuth2ServiceProvider(String clientId, String clientSecret) {
-		super(new OAuth2Template(clientId, clientSecret, "https://someprovider.com/oauth/authorize", "https://someprovider.com/oauth/token"));
+		this(clientId, clientSecret, NO_EXCEPTION);
+	}
+	
+	public StubOAuth2ServiceProvider(String clientId, String clientSecret, StubOAuthTemplateBehavior behavior) {
+		super(new StubOAuth2Template(clientId, clientSecret, "https://someprovider.com/oauth/authorize", "https://someprovider.com/oauth/token", behavior));
 	}
 
 	public TestApi getApi(String accessToken) {

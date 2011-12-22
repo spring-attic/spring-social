@@ -15,15 +15,17 @@
  */
 package org.springframework.social.connect.web.test;
 
+import static org.springframework.social.connect.web.test.StubOAuthTemplateBehavior.*;
+
 import org.springframework.social.oauth1.AbstractOAuth1ServiceProvider;
 
 public class StubOAuth1ServiceProvider extends AbstractOAuth1ServiceProvider<TestApi> {
 
 	public StubOAuth1ServiceProvider(String consumerKey, String consumerSecret) {
-		this(consumerKey, consumerSecret, StubOAuth1Template.Behavior.NO_EXCEPTION);
+		this(consumerKey, consumerSecret, NO_EXCEPTION);
 	}
 	
-	public StubOAuth1ServiceProvider(String consumerKey, String consumerSecret, StubOAuth1Template.Behavior behavior) {
+	public StubOAuth1ServiceProvider(String consumerKey, String consumerSecret, StubOAuthTemplateBehavior behavior) {
 		super(consumerKey, consumerSecret, new StubOAuth1Template(consumerKey, consumerSecret,
 			"https://someprovider.com/oauth/request_token",
 			"https://someprovider.com/oauth/authorize",
