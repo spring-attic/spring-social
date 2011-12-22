@@ -27,6 +27,7 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
 import org.springframework.social.connect.web.test.StubConnectionRepository;
@@ -50,6 +51,40 @@ public class ConnectControllerTest {
 		connectionFactoryLocator.addConnectionFactory(connectionFactory);
 		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, null)).build();
 		mockMvc.perform(post("/connect/noSuchProvider"));
+	}
+	
+	@Test
+	public void removeConnections() throws Exception {
+		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
+		ConnectionFactory<TestApi> connectionFactory = new StubOAuth2ConnectionFactory("clientId", "clientSecret", THROW_EXCEPTION);
+		connectionFactoryLocator.addConnectionFactory(connectionFactory);				
+		StubConnectionRepository connectionRepository = new StubConnectionRepository();
+		connectionRepository.addConnection(connectionFactory.createConnection(new ConnectionData("provider1", "provider1User1", null, null, null, null, null, null, null)));
+		connectionRepository.addConnection(connectionFactory.createConnection(new ConnectionData("provider1", "provider1User2", null, null, null, null, null, null, null)));
+		connectionRepository.addConnection(connectionFactory.createConnection(new ConnectionData("provider2", "provider2User1", null, null, null, null, null, null, null)));
+		connectionRepository.addConnection(connectionFactory.createConnection(new ConnectionData("provider2", "provider2User2", null, null, null, null, null, null, null)));
+		assertEquals(2, connectionRepository.findConnections("provider1").size());		
+		assertEquals(2, connectionRepository.findConnections("provider2").size());		
+		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
+		mockMvc.perform(delete("/connect/provider2"))
+			.andExpect(redirectedUrl("/connect/provider2"));
+		assertEquals(2, connectionRepository.findConnections("provider1").size());		
+		assertEquals(0, connectionRepository.findConnections("provider2").size());		
+	}
+
+	@Test
+	public void removeConnection() throws Exception {
+		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
+		ConnectionFactory<TestApi> connectionFactory = new StubOAuth2ConnectionFactory("clientId", "clientSecret", THROW_EXCEPTION);
+		connectionFactoryLocator.addConnectionFactory(connectionFactory);				
+		StubConnectionRepository connectionRepository = new StubConnectionRepository();
+		connectionRepository.addConnection(connectionFactory.createConnection(new ConnectionData("provider1", "provider1User1", null, null, null, null, null, null, null)));
+		connectionRepository.addConnection(connectionFactory.createConnection(new ConnectionData("provider1", "provider1User2", null, null, null, null, null, null, null)));
+		assertEquals(2, connectionRepository.findConnections("provider1").size());		
+		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
+		mockMvc.perform(delete("/connect/provider1/provider1User1"))
+			.andExpect(redirectedUrl("/connect/provider1"));
+		assertEquals(1, connectionRepository.findConnections("provider1").size());		
 	}
 	
 	// OAuth 1
@@ -82,7 +117,7 @@ public class ConnectControllerTest {
 		connectionFactoryLocator.addConnectionFactory(connectionFactory);
 		StubConnectionRepository connectionRepository = new StubConnectionRepository();
 		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
-		assertNull(connectionRepository.findConnections("oauth1Provider"));		
+		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
 		mockMvc.perform(get("/connect/oauth1Provider")
 						.sessionAttr("oauthToken", new OAuthToken("requestToken", "requestTokenSecret"))
 						.param("oauth_token", "requestToken")
@@ -100,13 +135,13 @@ public class ConnectControllerTest {
 		connectionFactoryLocator.addConnectionFactory(connectionFactory);
 		StubConnectionRepository connectionRepository = new StubConnectionRepository();
 		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
-		assertNull(connectionRepository.findConnections("oauth1Provider"));		
+		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
 		mockMvc.perform(get("/connect/oauth1Provider")
 						.sessionAttr("oauthToken", new OAuthToken("requestToken", "requestTokenSecret"))
 						.param("oauth_token", "requestToken")
 						.param("oauth_verifier", "verifier"))
 			.andExpect(redirectedUrl("/connect/oauth1Provider"));
-		assertNull(connectionRepository.findConnections("oauth1Provider"));
+		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
 	}
 
 	// OAuth 2
@@ -138,7 +173,7 @@ public class ConnectControllerTest {
 		connectionFactoryLocator.addConnectionFactory(connectionFactory);
 		StubConnectionRepository connectionRepository = new StubConnectionRepository();
 		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
-		assertNull(connectionRepository.findConnections("oauth2Provider"));		
+		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
 		mockMvc.perform(get("/connect/oauth2Provider").param("code", "oauth2Code"))
 			.andExpect(redirectedUrl("/connect/oauth2Provider"));
 		List<Connection<?>> connections = connectionRepository.findConnections("oauth2Provider");
@@ -153,10 +188,10 @@ public class ConnectControllerTest {
 		connectionFactoryLocator.addConnectionFactory(connectionFactory);
 		StubConnectionRepository connectionRepository = new StubConnectionRepository();
 		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
-		assertNull(connectionRepository.findConnections("oauth2Provider"));		
+		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
 		mockMvc.perform(get("/connect/oauth2Provider").param("code", "oauth2Code"))
 			.andExpect(redirectedUrl("/connect/oauth2Provider"));
-		assertNull(connectionRepository.findConnections("oauth2Provider"));		
+		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
 	}
 
 }

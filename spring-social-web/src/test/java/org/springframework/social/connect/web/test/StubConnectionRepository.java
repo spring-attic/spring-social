@@ -15,6 +15,7 @@
  */
 package org.springframework.social.connect.web.test;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.social.connect.Connection;
@@ -27,13 +28,15 @@ public class StubConnectionRepository implements ConnectionRepository {
 	
 	private MultiValueMap<String, Connection<?>> providerIdConnectionMap = new LinkedMultiValueMap<String, Connection<?>>();	
 
+	private MultiValueMap<ConnectionKey, Connection<?>> connectionKeyConnectionMap = new LinkedMultiValueMap<ConnectionKey, Connection<?>>();	
+
 	public MultiValueMap<String, Connection<?>> findAllConnections() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public List<Connection<?>> findConnections(String providerId) {
-		return providerIdConnectionMap.get(providerId);
+		return providerIdConnectionMap.containsKey(providerId) ? providerIdConnectionMap.get(providerId) : Collections.<Connection<?>>emptyList();
 	}
 
 	public <A> List<Connection<A>> findConnections(Class<A> apiType) {
@@ -68,6 +71,7 @@ public class StubConnectionRepository implements ConnectionRepository {
 
 	public void addConnection(Connection<?> connection) {
 		providerIdConnectionMap.add(connection.getKey().getProviderId(), connection);
+		connectionKeyConnectionMap.add(connection.getKey(), connection);
 	}
 
 	public void updateConnection(Connection<?> connection) {
@@ -76,13 +80,18 @@ public class StubConnectionRepository implements ConnectionRepository {
 	}
 
 	public void removeConnections(String providerId) {
-		// TODO Auto-generated method stub
-		
+		providerIdConnectionMap.remove(providerId);
 	}
 
 	public void removeConnection(ConnectionKey connectionKey) {
-		// TODO Auto-generated method stub
-		
+		connectionKeyConnectionMap.remove(connectionKey);
+		List<Connection<?>> connections = providerIdConnectionMap.get(connectionKey.getProviderId());
+		providerIdConnectionMap.remove(connectionKey.getProviderId());
+		for (Connection<?> connection : connections) {
+			if (connection.getKey().equals(connectionKey)) {
+				providerIdConnectionMap.add(connectionKey.getProviderId(), connection);
+			}
+		}
 	}
 
 }
