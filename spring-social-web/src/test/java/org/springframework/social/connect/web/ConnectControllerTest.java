@@ -16,14 +16,19 @@
 package org.springframework.social.connect.web;
 
 import static org.hamcrest.beans.SamePropertyValuesAs.*;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.server.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.server.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.server.setup.MockMvcBuilders.*;
 
+import java.util.List;
+
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
+import org.springframework.social.connect.web.test.StubConnectionRepository;
 import org.springframework.social.connect.web.test.StubOAuth1ConnectionFactory;
 import org.springframework.social.connect.web.test.StubOAuth1Template;
 import org.springframework.social.connect.web.test.StubOAuth2ConnectionFactory;
@@ -78,12 +83,30 @@ public class ConnectControllerTest {
 	}
 
 	@Test
-	public void connect_OAuth1Provider_httpClientErrorExceptionWhileFetchingRequestToken() throws Exception {
+	public void connect_OAuth1Provider_exceptionWhileFetchingRequestToken() throws Exception {
 		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
-		ConnectionFactory<TestApi> connectionFactory = new StubOAuth1ConnectionFactory("clientId", "clientSecret", StubOAuth1Template.Behavior.FETCH_REQUEST_TOKEN_HTTPCLIENT_ERROR);
+		ConnectionFactory<TestApi> connectionFactory = new StubOAuth1ConnectionFactory("clientId", "clientSecret", StubOAuth1Template.Behavior.THROW_EXCEPTION);
 		connectionFactoryLocator.addConnectionFactory(connectionFactory);
 		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, null)).build();
 		mockMvc.perform(post("/connect/oauth1Provider"))
 			.andExpect(redirectedUrl("/connect/oauth1Provider"));
 	}
+	
+	@Test
+	public void oauth1Callback() throws Exception {
+		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
+		ConnectionFactory<TestApi> connectionFactory = new StubOAuth1ConnectionFactory("clientId", "clientSecret");
+		connectionFactoryLocator.addConnectionFactory(connectionFactory);
+		StubConnectionRepository connectionRepository = new StubConnectionRepository();
+		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
+		assertNull(connectionRepository.findConnections("oauth1Provider"));		
+		mockMvc.perform(get("/connect/oauth1Provider")
+						.sessionAttr("oauthToken", new OAuthToken("requestToken", "requestTokenSecret"))
+						.param("oauth_token", "requestToken")
+						.param("oauth_verifier", "verifier"));
+		List<Connection<?>> connections = connectionRepository.findConnections("oauth1Provider");
+		assertEquals(1, connections.size());
+		assertEquals("oauth1Provider", connections.get(0).getKey().getProviderId());
+	}
+
 }

@@ -16,6 +16,7 @@
 package org.springframework.social.connect.web.test;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Template;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.util.MultiValueMap;
@@ -33,15 +34,23 @@ public class StubOAuth1Template extends OAuth1Template {
 	@Override
 	public OAuthToken fetchRequestToken(String callbackUrl, MultiValueMap<String, String> additionalParameters) {
 		
-		if (behavior == Behavior.FETCH_REQUEST_TOKEN_HTTPCLIENT_ERROR) {
+		if (behavior == Behavior.THROW_EXCEPTION) {
 			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
 		}
 		
 		return new OAuthToken("requestToken", "requestTokenSecret");
 	}
 	
+	@Override
+	public OAuthToken exchangeForAccessToken(AuthorizedRequestToken requestToken, MultiValueMap<String, String> additionalParameters) {
+		if (behavior == Behavior.THROW_EXCEPTION) {
+			throw new HttpClientErrorException(HttpStatus.BAD_REQUEST);
+		}
+		return new OAuthToken("accessToken", "accessTokenSecret");
+	}
+	
 	public static enum Behavior {
-		NO_ERROR,
-		FETCH_REQUEST_TOKEN_HTTPCLIENT_ERROR
+		NO_EXCEPTION,
+		THROW_EXCEPTION
 	}
 }

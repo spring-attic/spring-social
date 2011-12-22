@@ -20,7 +20,7 @@ import org.springframework.social.connect.support.OAuth1ConnectionFactory;
 public class StubOAuth1ConnectionFactory extends OAuth1ConnectionFactory<TestApi> {
 	
 	public StubOAuth1ConnectionFactory(String clientId, String clientSecret) {
-		this(clientId, clientSecret, StubOAuth1Template.Behavior.NO_ERROR);
+		this(clientId, clientSecret, StubOAuth1Template.Behavior.NO_EXCEPTION);
 	}
 	
 	public StubOAuth1ConnectionFactory(String clientId, String clientSecret, StubOAuth1Template.Behavior behavior) {

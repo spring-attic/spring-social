@@ -20,7 +20,7 @@ import org.springframework.social.oauth1.AbstractOAuth1ServiceProvider;
 public class StubOAuth1ServiceProvider extends AbstractOAuth1ServiceProvider<TestApi> {
 
 	public StubOAuth1ServiceProvider(String consumerKey, String consumerSecret) {
-		this(consumerKey, consumerSecret, StubOAuth1Template.Behavior.NO_ERROR);
+		this(consumerKey, consumerSecret, StubOAuth1Template.Behavior.NO_EXCEPTION);
 	}
 	
 	public StubOAuth1ServiceProvider(String consumerKey, String consumerSecret, StubOAuth1Template.Behavior behavior) {
