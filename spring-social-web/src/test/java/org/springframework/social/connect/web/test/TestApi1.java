@@ -15,18 +15,6 @@
  */
 package org.springframework.social.connect.web.test;
 
-import static org.springframework.social.connect.web.test.StubOAuthTemplateBehavior.*;
-
-import org.springframework.social.connect.support.OAuth1ConnectionFactory;
-
-public class StubOAuth1ConnectionFactory extends OAuth1ConnectionFactory<TestApi1> {
-	
-	public StubOAuth1ConnectionFactory(String clientId, String clientSecret) {
-		this(clientId, clientSecret, NO_EXCEPTION);
-	}
-	
-	public StubOAuth1ConnectionFactory(String clientId, String clientSecret, StubOAuthTemplateBehavior behavior) {
-		super("oauth1Provider", new StubOAuth1ServiceProvider(clientId, clientSecret, behavior), null);
-	}
+public interface TestApi1 {
 
 }

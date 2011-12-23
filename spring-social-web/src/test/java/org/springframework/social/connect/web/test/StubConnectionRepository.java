@@ -31,8 +31,7 @@ public class StubConnectionRepository implements ConnectionRepository {
 	private MultiValueMap<ConnectionKey, Connection<?>> connectionKeyConnectionMap = new LinkedMultiValueMap<ConnectionKey, Connection<?>>();	
 
 	public MultiValueMap<String, Connection<?>> findAllConnections() {
-		// TODO Auto-generated method stub
-		return null;
+		return providerIdConnectionMap;
 	}
 
 	public List<Connection<?>> findConnections(String providerId) {

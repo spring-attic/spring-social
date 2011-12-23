@@ -15,6 +15,6 @@
  */
 package org.springframework.social.connect.web.test;
 
-public interface TestApi {
+public interface TestApi2 {
 
 }

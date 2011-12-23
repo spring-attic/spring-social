@@ -19,7 +19,7 @@ import static org.springframework.social.connect.web.test.StubOAuthTemplateBehav
 
 import org.springframework.social.oauth1.AbstractOAuth1ServiceProvider;
 
-public class StubOAuth1ServiceProvider extends AbstractOAuth1ServiceProvider<TestApi> {
+public class StubOAuth1ServiceProvider extends AbstractOAuth1ServiceProvider<TestApi1> {
 
 	public StubOAuth1ServiceProvider(String consumerKey, String consumerSecret) {
 		this(consumerKey, consumerSecret, NO_EXCEPTION);
@@ -32,8 +32,8 @@ public class StubOAuth1ServiceProvider extends AbstractOAuth1ServiceProvider<Tes
 			"https://someprovider.com/oauth/access_token", behavior));
 	}
 
-	public TestApi getApi(String accessToken, String secret) {
-		return new TestApi() {};
+	public TestApi1 getApi(String accessToken, String secret) {
+		return new TestApi1() {};
 	}
 
 }

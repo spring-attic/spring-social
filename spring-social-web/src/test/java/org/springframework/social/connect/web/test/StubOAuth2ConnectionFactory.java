@@ -19,7 +19,7 @@ import static org.springframework.social.connect.web.test.StubOAuthTemplateBehav
 
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 
-public class StubOAuth2ConnectionFactory extends OAuth2ConnectionFactory<TestApi> {
+public class StubOAuth2ConnectionFactory extends OAuth2ConnectionFactory<TestApi2> {
 	public StubOAuth2ConnectionFactory(String clientId, String clientSecret) {
 		this(clientId, clientSecret, NO_EXCEPTION);
 	}
