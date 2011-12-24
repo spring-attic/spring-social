@@ -51,7 +51,7 @@ public class ProviderSignInController {
 
 	private final static Log logger = LogFactory.getLog(ProviderSignInController.class);
 	
-	private final ConnectionFactoryLocator connectionFactoryLocator;
+	protected final ConnectionFactoryLocator connectionFactoryLocator;
 
 	private final UsersConnectionRepository usersConnectionRepository;
 	
@@ -63,7 +63,7 @@ public class ProviderSignInController {
 
 	private String postSignInUrl = "/";
 
-	private final ConnectSupport webSupport = new ConnectSupport();
+	protected final ConnectSupport webSupport = new ConnectSupport();
 
 	/**
 	 * Creates a new provider sign-in controller.
@@ -182,7 +182,7 @@ public class ProviderSignInController {
 
 	// internal helpers
 
-	private RedirectView handleSignIn(Connection<?> connection, NativeWebRequest request) {
+	protected RedirectView handleSignIn(Connection<?> connection, NativeWebRequest request) {
 		List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
 		if (userIds.size() == 0) {
 			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, usersConnectionRepository);

@@ -68,13 +68,13 @@ public class ConnectController {
 	
 	private final static Log logger = LogFactory.getLog(ConnectController.class);
 	
-	private final ConnectionFactoryLocator connectionFactoryLocator;
+	protected final ConnectionFactoryLocator connectionFactoryLocator;
 	
 	private final ConnectionRepository connectionRepository;
 
 	private final MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
 
-	private final ConnectSupport webSupport = new ConnectSupport();
+	protected final ConnectSupport webSupport = new ConnectSupport();
 	
 	private final UrlPathHelper urlPathHelper = new UrlPathHelper();
 
@@ -284,7 +284,7 @@ public class ConnectController {
 		return "connect/";
 	}
 	
-	private void addConnection(Connection<?> connection, ConnectionFactory<?> connectionFactory, WebRequest request) {
+	protected void addConnection(Connection<?> connection, ConnectionFactory<?> connectionFactory, WebRequest request) {
 		try {
 			connectionRepository.addConnection(connection);
 			postConnect(connectionFactory, connection, request);
@@ -294,7 +294,7 @@ public class ConnectController {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void preConnect(ConnectionFactory<?> connectionFactory, MultiValueMap<String, String> parameters, WebRequest request) {
+	protected void preConnect(ConnectionFactory<?> connectionFactory, MultiValueMap<String, String> parameters, WebRequest request) {
 		for (ConnectInterceptor interceptor : interceptingConnectionsTo(connectionFactory)) {
 			interceptor.preConnect(connectionFactory, parameters, request);
 		}
