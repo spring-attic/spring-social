@@ -170,6 +170,7 @@ public abstract class AbstractConnection<A> implements Connection<A> {
 	private ServiceProviderConnectionValuesImpl setValues() {
 		ServiceProviderConnectionValuesImpl values = new ServiceProviderConnectionValuesImpl();
 		apiAdapter.setConnectionValues(getApi(), values);
+		valuesInitialized = true;
 		return values;
 	}
 	
