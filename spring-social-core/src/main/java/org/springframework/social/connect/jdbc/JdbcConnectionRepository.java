@@ -93,7 +93,7 @@ class JdbcConnectionRepository implements ConnectionRepository {
 	}
 	
 	public MultiValueMap<String, Connection<?>> findConnectionsToUsers(MultiValueMap<String, String> providerUsers) {
-		if (providerUsers.isEmpty()) {
+		if (providerUsers == null || providerUsers.isEmpty()) {
 			throw new IllegalArgumentException("Unable to execute find: no providerUsers provided");
 		}
 		StringBuilder providerUsersCriteriaSql = new StringBuilder();
