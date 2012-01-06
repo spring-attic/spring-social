@@ -98,7 +98,7 @@ configure(javaprojects) {
     httpComponentsVersion = '4.1.2'
     jacksonVersion = '1.9.2'
     javaxInjectVersion = '1'
-    junitVersion = '4.9'
+    junitVersion = '4.10'
     mockitoVersion = '1.9.0'
     servletApiVersion = '2.5'
     springVersion = '3.1.0.RELEASE'
@@ -161,6 +161,7 @@ project('spring-social-web') {
         compile project(':spring-social-core')
         testCompile "org.springframework:spring-test-mvc:$springTestMvcVersion"
         testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+        testCompile "com.google.guava:guava:10.0"
     }
 }
 
