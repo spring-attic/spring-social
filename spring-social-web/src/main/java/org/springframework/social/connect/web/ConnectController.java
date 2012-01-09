@@ -162,7 +162,12 @@ public class ConnectController {
 		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
 		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>(); 
 		preConnect(connectionFactory, parameters, request);
-		return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request, parameters));
+		try {
+			return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request, parameters));
+		} catch (Exception e) {
+			request.setAttribute(PROVIDER_ERROR_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);
+			return connectionStatusRedirect(providerId, request);
+		}
 	}
 
 	/**
@@ -173,9 +178,14 @@ public class ConnectController {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="oauth_token")
 	public RedirectView oauth1Callback(@PathVariable String providerId, NativeWebRequest request) {
-		OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
-		Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
-		addConnection(connection, connectionFactory, request);
+		try {
+			OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
+			Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
+			addConnection(connection, connectionFactory, request);
+		} catch (Exception e) {
+			request.setAttribute(PROVIDER_ERROR_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);
+			logger.warn("Exception while handling OAuth1 callback (" + e.getMessage() + "). Redirecting to " + providerId +" connection status page.");
+		}
 		return connectionStatusRedirect(providerId, request);
 	}
 
@@ -191,6 +201,7 @@ public class ConnectController {
 			Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
 			addConnection(connection, connectionFactory, request);
 		} catch (Exception e) {
+			request.setAttribute(PROVIDER_ERROR_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);
 			logger.warn("Exception while handling OAuth2 callback (" + e.getMessage() + "). Redirecting to " + providerId +" connection status page.");
 		}
 		return connectionStatusRedirect(providerId, request);
@@ -317,10 +328,14 @@ public class ConnectController {
 	}
 	
 	private void processFlash(WebRequest request, Model model) {
-		DuplicateConnectionException exception = (DuplicateConnectionException) request.getAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
-		if (exception != null) {
-			model.addAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, Boolean.TRUE);
-			request.removeAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);			
+		convertSessionAttributeToModelAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, request, model);
+		convertSessionAttributeToModelAttribute(PROVIDER_ERROR_ATTRIBUTE, request, model);
+	}
+
+	private void convertSessionAttributeToModelAttribute(String attributeName, WebRequest request, Model model) {
+		if (request.getAttribute(attributeName, RequestAttributes.SCOPE_SESSION) != null) {
+			model.addAttribute(attributeName, Boolean.TRUE);
+			request.removeAttribute(attributeName, RequestAttributes.SCOPE_SESSION);			
 		}
 	}
 
@@ -335,5 +350,7 @@ public class ConnectController {
 	}
 
 	private static final String DUPLICATE_CONNECTION_ATTRIBUTE = "social.addConnection.duplicate";
+	
+	private static final String PROVIDER_ERROR_ATTRIBUTE = "social.provider.error";
 
 }

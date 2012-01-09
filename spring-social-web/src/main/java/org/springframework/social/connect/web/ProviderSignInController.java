@@ -131,7 +131,11 @@ public class ProviderSignInController {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
 	public RedirectView signIn(@PathVariable String providerId, NativeWebRequest request) {
 		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
-		return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request));
+		try {
+			return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request));
+		} catch (Exception e) {
+			return redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "provider").build().toString());
+		}
 	}
 
 	/**
@@ -145,9 +149,13 @@ public class ProviderSignInController {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="oauth_token")
 	public RedirectView oauth1Callback(@PathVariable String providerId, NativeWebRequest request) {
-		OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
-		Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
-		return handleSignIn(connection, request);
+		try {
+			OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
+			Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
+			return handleSignIn(connection, request);
+		} catch (Exception e) {
+			return redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "provider").build().toString());
+		}
 	}
 
 	/**
@@ -167,7 +175,7 @@ public class ProviderSignInController {
 			return handleSignIn(connection, request);
 		} catch (Exception e) {
 			logger.warn("Exception while handling OAuth2 callback (" + e.getMessage() + "). Redirecting to " + signInUrl);
-			return redirect(signInUrl);
+			return redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "provider").build().toString());
 		}
 	}
 	
@@ -200,5 +208,7 @@ public class ProviderSignInController {
 	private RedirectView redirect(String url) {
 		return new RedirectView(url, true);
 	}
-	
+
+	private static final String PROVIDER_ERROR_ATTRIBUTE = "social.provider.error";
+
 }
