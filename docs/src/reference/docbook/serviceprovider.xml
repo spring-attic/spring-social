@@ -489,7 +489,9 @@ create unique index UserConnectionRank on UserConnection(userId, providerId, ran
   			</programlisting>
 
 			<para>
-				For convenience is bootstrapping the schema from a running application, this schema definition is available in the <code>spring-social-core</code> module as a resource at the path /org/springframework/social/connect/jdbc/JdbcUsersConnectionRepository.sql.				
+				For convenience is bootstrapping the schema from a running application, this schema definition is available in the <code>spring-social-core</code> module as a resource at the path /org/springframework/social/connect/jdbc/JdbcUsersConnectionRepository.sql.
+				Note that although this schema was designed with compatibility in mind, it may not be compatible with all databases.
+				You may need to adapt this schema definition to accommodate any peculiarities of your chosen database.
 			</para>
 
 			<para>
