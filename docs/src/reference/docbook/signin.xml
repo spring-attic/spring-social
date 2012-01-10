@@ -84,6 +84,13 @@ public ProviderSignInController providerSignInController() {
 							The default sign in URL is "/signin" (relative to the application root), but can be customized by setting the <code>signInUrl</code> property.
 						</para>
 					</listitem>
+					<listitem>
+						<para>
+							If any error occurs while fetching the access token or while fetching the user's profile data, <classname>ProviderSignInController</classname> will redirect to the application's sign in URL.
+							The request to the sign in URL will have an "error" query parameter set to "provider" to indicate an error occurred while communicating with the provider.
+							The default sign in URL is "/signin" (relative to the application root), but can be customized by setting the <code>signInUrl</code> property.
+						</para>
+					</listitem>
 				</itemizedlist>
 			</listitem>
 		</itemizedlist>
@@ -91,7 +98,17 @@ public ProviderSignInController providerSignInController() {
 			For OAuth 1 providers, the flow is only slightly different:
 		</para>
 		<itemizedlist>
-			<listitem><para><code>POST /signin/{providerId}</code> - Initiates the sign in flow. This involves fetching a request token from the provider and then redirecting to Provider's authentication endpoint.</para></listitem>
+			<listitem><para><code>POST /signin/{providerId}</code> - Initiates the sign in flow. This involves fetching a request token from the provider and then redirecting to Provider's authentication endpoint.</para>
+				<itemizedlist>
+					<listitem>
+						<para>
+							If any error occurs while fetching the request token, <classname>ProviderSignInController</classname> will redirect to the application's sign in URL.
+							The request to the sign in URL will have an "error" query parameter set to "provider" to indicate an error occurred while communicating with the provider.
+							The default sign in URL is "/signin" (relative to the application root), but can be customized by setting the <code>signInUrl</code> property.
+						</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
 			<listitem><para><code>GET /signin/{providerId}?oauth_token={request token}&amp;oauth_verifier={verifier}</code> - Receives the authentication callback from the provider, accepting a verification code. Exchanges this verification code along with the request token for an access token. Using this access token, it retrieves the user's provider user ID and uses that to lookup a connected account and then authenticates to the application through the sign in service. </para>
 				<itemizedlist>
 					<listitem>
@@ -106,6 +123,13 @@ public ProviderSignInController providerSignInController() {
 							The request to the sign in URL will have an "error" query parameter set to "multiple_users" to indicate the problem so that the page can communicate it to the user.
 							The default sign in URL is "/signin" (relative to the application root), but can be customized by setting the <code>signInUrl</code> property.
 						</para>
+						<listitem>
+							<para>
+								If any error occurs when exchanging the request token for an access token or while fetching the user's profile data, <classname>ProviderSignInController</classname> will redirect to the application's sign in URL.
+								The request to the sign in URL will have an "error" query parameter set to "provider" to indicate an error occurred while communicating with the provider.
+								The default sign in URL is "/signin" (relative to the application root), but can be customized by setting the <code>signInUrl</code> property.
+							</para>
+						</listitem>
 					</listitem>
 				</itemizedlist>
 			</listitem>
