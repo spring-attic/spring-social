@@ -161,7 +161,6 @@ project('spring-social-web') {
         compile project(':spring-social-core')
         testCompile "org.springframework:spring-test-mvc:$springTestMvcVersion"
         testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
-        testCompile "com.google.guava:guava:10.0"
     }
 }
 

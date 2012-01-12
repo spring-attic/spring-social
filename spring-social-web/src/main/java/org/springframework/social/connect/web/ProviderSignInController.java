@@ -196,7 +196,7 @@ public class ProviderSignInController {
 			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, usersConnectionRepository);
 			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, RequestAttributes.SCOPE_SESSION);
 			return redirect(signUpUrl);
-		} else if (userIds.size() == 1){
+		} else if (userIds.size() == 1) {
 			usersConnectionRepository.createConnectionRepository(userIds.get(0)).updateConnection(connection);
 			String originalUrl = signInAdapter.signIn(userIds.get(0), connection, request);
 			return originalUrl != null ? redirect(originalUrl) : redirect(postSignInUrl);
