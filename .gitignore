@@ -7,3 +7,6 @@ bin
 .project
 .settings
 exploration
+*.iml
+*.ipr
+*.iws
