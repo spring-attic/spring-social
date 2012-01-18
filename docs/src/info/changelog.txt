@@ -1,3 +1,12 @@
+Spring Social 1.0.2 Release (January ??, 2011)
+==============================================
+Bug Fixes
+  * Handle errors from provider during connection/sign-in process more gracefully. (SOCIAL-280)
+  * Properly set valuesInitialized flag in AbstractConnection after a profile has been set the first
+    time to avoid unnecessary fetches from the provider. (SOCIAL-282)
+  * Guard against potential NullPointerException in JdbcConnectionRepository.findConnectionToUsers().
+    (SOCIAL-283)
+
 Spring Social 1.0.1 Release (December 15, 2011)
 ===============================================
 Compatibility Notes
