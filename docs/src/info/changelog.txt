@@ -1,4 +1,4 @@
-Spring Social 1.0.2 Release (January ??, 2011)
+Spring Social 1.0.2 Release (January 23, 2012)
 ==============================================
 Bug Fixes
   * Handle errors from provider during connection/sign-in process more gracefully. (SOCIAL-280)
@@ -6,6 +6,8 @@ Bug Fixes
     time to avoid unnecessary fetches from the provider. (SOCIAL-282)
   * Guard against potential NullPointerException in JdbcConnectionRepository.findConnectionToUsers().
     (SOCIAL-283)
+  * Allow for null returned from ConnectionSignUp.execute() to indicate a problem with implicitly
+    creating a user. (SOCIAL-254)
 
 Spring Social 1.0.1 Release (December 15, 2011)
 ===============================================

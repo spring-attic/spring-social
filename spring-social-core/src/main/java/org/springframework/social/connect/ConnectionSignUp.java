@@ -26,7 +26,7 @@ public interface ConnectionSignUp {
 	/**
 	 * Sign up a new user of the application from the connection.
 	 * @param connection the connection
-	 * @return the new user id (null indicates that an implicit local user profile could not be created).
+	 * @return the new user id. May be null to indicate that an implicit local user profile could not be created.
 	 */
 	String execute(Connection<?> connection);
 

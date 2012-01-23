@@ -387,7 +387,11 @@ public class AccountConnectionSignUp implements ConnectionSignUp {
     }
 	
 }]]>
-			</programlisting>			
+			</programlisting>
+			<para>
+				If there is any problem in creating the new user implicitly (for example, if the implicitly chosen username is already taken) <methodname>execute()</methodname> may return null to indicate that the user could not be created implicitly.
+				This will ultimately result in <classname>ProviderSignInController</classname> redirecting the user to the signup page.
+			</para>
 			<para>
 				Once you've written a <interfacename>ConnectionSignUp</interfacename> for your application, you'll need to inject it into the <interfacename>UsersConnectionRepository</interfacename>.
 				In Java-based configuration: 
