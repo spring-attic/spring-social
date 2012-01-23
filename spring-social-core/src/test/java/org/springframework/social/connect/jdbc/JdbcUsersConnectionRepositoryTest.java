@@ -145,6 +145,18 @@ public class JdbcUsersConnectionRepositoryTest {
 		assertEquals(1, userIds.size());
 		assertEquals("batman", userIds.get(0));
 	}
+	
+	@Test
+	public void findUserIdWithConnectionNoConnection_withConnectionSignUpReturningNull() {		
+		Connection<TestFacebookApi> connection = connectionFactory.createConnection(new AccessGrant("12345"));
+		usersConnectionRepository.setConnectionSignUp(new ConnectionSignUp() {
+			public String execute(Connection<?> connection) {
+				return null;
+			}
+		});
+		List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
+		assertEquals(0, userIds.size());
+	}
 
 	@Test
 	public void findUserIdsConnectedTo() {
