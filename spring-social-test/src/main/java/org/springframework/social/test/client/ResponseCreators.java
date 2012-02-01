@@ -69,14 +69,15 @@ public abstract class ResponseCreators {
 	 * Respond with a given response body (from a {@link Resource}) and headers. The response status code is HTTP 200 (OK).
 	 * 
 	 * @param responseBodyResource a {@link Resource} containing the body of the response
+	 * @param charsetName the char set to use to read the {@link Resource}
 	 * @param headers the response headers
 	 * @param statusCode the response status code
 	 * @param statusText the response status text
 	 * @return a {@link ResponseCreator}
 	 */
-	public static ResponseCreator withResponse(final Resource responseBodyResource, final HttpHeaders headers,
-			final HttpStatus statusCode, final String statusText) {
-		return withResponse(readResource(responseBodyResource), headers, statusCode, statusText);
+	public static ResponseCreator withResponse(final Resource responseBodyResource, String charsetName,
+			final HttpHeaders headers, final HttpStatus statusCode, final String statusText) {
+		return withResponse(readResource(responseBodyResource, charsetName), headers, statusCode, statusText);
 	}
 	
 	/**
@@ -86,13 +87,23 @@ public abstract class ResponseCreators {
 	 * @return a {@link ResponseCreator}
 	 */
 	public static ResponseCreator withResponse(Resource responseBody, HttpHeaders headers) {
-		return withResponse(responseBody, headers, HttpStatus.OK, "");
+		return withResponse(responseBody, null, headers);
+	}
+	
+	/**
+	 * Response with a given response body specifying the char set to use and headers. The response status code is HTTP 200 (OK).
+	 * @param responseBody the body of the response
+	 * @param headers the response headers
+	 * @return a {@link ResponseCreator}
+	 */
+	public static ResponseCreator withResponse(Resource responseBody, String charsetName, HttpHeaders headers) {
+		return withResponse(responseBody, charsetName, headers, HttpStatus.OK, "");
 	}
 
-	private static String readResource(Resource resource) {
+	private static String readResource(Resource resource, String charsetName) {
 		StringBuilder resourceText = new StringBuilder();
 		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream()));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(resource.getInputStream(), charsetName));
 			while (reader.ready()) {
 				resourceText.append(reader.readLine() + "\n");
 			}
