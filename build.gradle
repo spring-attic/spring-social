@@ -168,15 +168,6 @@ project('spring-social-web') {
     metaInf << files("src/main/resources/tld/spring-social.tld")
 }
 
-project('spring-social-test') {
-    description = 'Rest Template Test Support'
-    dependencies {
-        compile project(':spring-social-core')
-        compile ("org.springframework:spring-web:$springVersion")
-        testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
-    }
-}
-
 // -----------------------------------------------------------------------------
 // Configuration for the docs subproject
 // -----------------------------------------------------------------------------
