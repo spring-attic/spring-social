@@ -110,7 +110,7 @@ configure(javaprojects) {
     sourceSets {
         main {
             resources {
-                srcDirs = ['src/main/java']
+                srcDirs = ['src/main/java','src/main/resources']
             }
         }
         test {
@@ -168,6 +168,17 @@ project('spring-social-web') {
         testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
     }
     metaInf << files("src/main/resources/tld/spring-social.tld")
+}
+
+project('spring-social-config') {
+    description = 'Spring Social Config'
+    dependencies {
+      compile project(':spring-social-core')
+      compile project(':spring-social-web')
+      compile ("org.springframework.social:spring-social-twitter:$springSocialVersion") { transitive = false }
+      compile ("org.springframework.social:spring-social-facebook:$springSocialVersion") { transitive = false }
+      testCompile "com.h2database:h2:$h2Version"
+    }
 }
 
 // -----------------------------------------------------------------------------

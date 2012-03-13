@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:social="http://www.springframework.org/schema/social"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/social http://www.springframework.org/schema/social/spring-social.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<social:config>
+		<social:twitter consumer-key="twitterkey" consumer-secret="twittersecret" />
+		<social:facebook consumer-key="facebookKey" consumer-secret="facebookSecret" />
+		<social:jdbc-connection-repository />
+	</social:config>
+
+
+	<jdbc:embedded-database id="dataSource" type="H2">
+		<jdbc:script location="classpath:org/springframework/social/connect/jdbc/JdbcUsersConnectionRepository.sql"/>
+	</jdbc:embedded-database>
+
+	<bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="noOpText" />
+
+	<bean id="userIdSource" class="org.springframework.social.config.xml.SimpleUserIdSource" />
+
+</beans>
