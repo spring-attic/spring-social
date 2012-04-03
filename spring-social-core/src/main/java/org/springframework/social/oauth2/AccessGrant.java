@@ -40,7 +40,7 @@ public class AccessGrant implements Serializable {
 		this.accessToken = accessToken;
 		this.scope = scope;
 		this.refreshToken = refreshToken;
-		this.expireTime = expiresIn != null ? System.currentTimeMillis() + expiresIn * 1000 : null;
+		this.expireTime = expiresIn != null ? System.currentTimeMillis() + expiresIn * 1000l : null;
 	}
 
 	/**
