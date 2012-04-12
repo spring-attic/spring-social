@@ -1,80 +1,21 @@
-/*
- * Copyright 2010 the original author or authors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-
-// -----------------------------------------------------------------------------
-// Main gradle build file for Spring Social
-// @author Chris Beams
-// @author Craig Walls
-// -----------------------------------------------------------------------------
-
-// -----------------------------------------------------------------------------
-// Configuration for the root project
-// -----------------------------------------------------------------------------
-description = 'Spring Social'
-abbreviation = 'SOCIAL'
-
-apply plugin: 'base'
-apply plugin: 'idea'
-
-// -----------------------------------------------------------------------------
-// Configuration for all projects including this one (the root project)
-//
-// @see settings.gradle for list of all subprojects
-// -----------------------------------------------------------------------------
-allprojects {
-    // group will translate to groupId during pom generation and deployment
-    group = 'org.springframework.social'
-
-    // default set of maven repositories to be used when resolving dependencies
+buildscript {
     repositories {
-        mavenRepo urls: 'http://maven.springframework.org/release'
-        mavenRepo urls: 'http://maven.springframework.org/milestone'
-        mavenRepo urls: 'http://maven.springframework.org/snapshot'
-        mavenCentral()
+        maven { url 'http://repo.springsource.org/plugins-release' }
+    }
+    dependencies {
+        classpath 'org.springframework.build.gradle:docbook-reference-plugin:0.1.3'
     }
 }
 
+configure(allprojects) {
+    apply plugin: 'java'
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
 
-// -----------------------------------------------------------------------------
-// Create collections of subprojects - each will receive their own configuration
-// - all subprojects that start with spring-social-* are 'java projects'
-// - documentation-related subprojects are not collected here
-//
-// @see configure(*) sections below
-// -----------------------------------------------------------------------------
+    group = 'org.springframework.social'
 
-javaprojects = subprojects.findAll { project ->
-    project.path.startsWith(':spring-social-')
-}
-
-// -----------------------------------------------------------------------------
-// Configuration for all java subprojects
-// -----------------------------------------------------------------------------
-configure(javaprojects) {
-
-    apply plugin: 'java' // tasks for conventional java lifecycle
-    apply plugin: 'maven' // `gradle install` to push jars to local .m2 cache
-    apply plugin: 'eclipse' // `gradle eclipse` to generate .classpath/.project
-    apply plugin: 'idea' // `gradle idea` to generate .ipr/.iml
-
-    // set up dedicated directories for jars and source jars.
-    // this makes it easier when putting together the distribution
-    libsBinDir = new File(libsDir, 'bin')
-    libsSrcDir = new File(libsDir, 'src')
+    sourceCompatibility=1.5
+    targetCompatibility=1.5
 
     h2Version = '1.3.163'
     hamcrestVersion = '1.2.1'
@@ -89,40 +30,72 @@ configure(javaprojects) {
     springTestMvcVersion = "1.0.0.BUILD-SNAPSHOT"
     jspApiVersion = '2.2.1'
 
-    sourceSets {
-        main {
-            resources {
-                srcDirs = ['src/main/java']
-            }
-        }
-        test {
-            resources {
-                srcDirs = ['src/test/java']
-            }
-        }
+    [compileJava, compileTestJava]*.options*.compilerArgs = ['-Xlint:none']
+
+    sourceSets.test.resources.srcDirs = ['src/test/resources', 'src/test/java']
+
+    test.systemProperty("java.awt.headless", "true")
+
+    repositories {
+        maven { url "http://repo.springsource.org/libs-release" }
+        maven { url "http://repo.springsource.org/libs-milestone" }
+        maven { url "http://repo.springsource.org/libs-snapshot" }
+        maven { url "http://repo.springsource.org/ebr-maven-external" }
     }
 
-    // dependencies that are common across all java projects
     dependencies {
-		testCompile "org.hamcrest:hamcrest-library:$hamcrestVersion"
+		    testCompile "org.hamcrest:hamcrest-library:$hamcrestVersion"
         testCompile "junit:junit-dep:$junitVersion"
         testCompile "org.mockito:mockito-core:$mockitoVersion"
         testCompile "org.springframework:spring-test:$springVersion"
     }
 
-    // enable all compiler warnings (GRADLE-1077)
-    [compileJava, compileTestJava]*.options*.compilerArgs = ['-Xlint:all']
-
-    // generate .classpath files without GRADLE_CACHE variable (GRADLE-1079)
-    eclipseClasspath.variables = [:]
+    // servlet-api (2.5) and tomcat-servlet-api (3.0) classpath entries should not be
+    // exported to dependent projects in Eclipse to avoid false compilation errors due
+    // to changing APIs across these versions
+    eclipse.classpath.file.whenMerged { classpath ->
+        classpath.entries.findAll { entry -> entry.path.contains('servlet-api') }*.exported = false
+    }
 }
 
+configure(subprojects) { subproject ->
+    apply from: "${rootProject.projectDir}/publish-maven.gradle"
 
-// -----------------------------------------------------------------------------
-// Configuration for each individual core java subproject
-//
-// @see configure(javaprojects) above for general config
-// -----------------------------------------------------------------------------
+    jar {
+        manifest.attributes['Implementation-Title'] = subproject.name
+        manifest.attributes['Implementation-Version'] = subproject.version
+
+        from("${rootProject.projectDir}/src/dist") {
+            include "license.txt"
+            include "notice.txt"
+            into "META-INF"
+            expand(copyright: new Date().format('yyyy'), version: project.version)
+        }
+    }
+
+    javadoc {
+        options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PROTECTED
+        options.author = true
+        options.header = project.name
+        //options.overview = "${projectDir}/src/main/java/overview.html"
+    }
+
+    task sourcesJar(type: Jar, dependsOn:classes) {
+        classifier = 'sources'
+        from sourceSets.main.allJava
+    }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
+    }
+
+    artifacts {
+        archives sourcesJar
+        archives javadocJar
+    }
+}
+
 
 project('spring-social-core') {
     description = 'Foundational module containing the ServiceProvider Connect Framework and Service API invocation support.'
@@ -151,3 +124,154 @@ project('spring-social-web') {
     }
     metaInf << files("src/main/resources/tld/spring-social.tld")
 }
+
+configure(rootProject) {
+    description = 'Spring Social'
+
+    apply plugin: 'docbook-reference'
+
+    reference {
+        sourceDir = file('src/reference/docbook')
+    }
+
+    // don't publish the default jar for the root project
+    configurations.archives.artifacts.clear()
+
+    dependencies { // for integration tests
+    }
+    
+    task api(type: Javadoc) {
+        group = 'Documentation'
+        description = 'Generates aggregated Javadoc API documentation.'
+        title = "${rootProject.description} ${version} API"
+        options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PROTECTED
+        options.author = true
+        options.header = rootProject.description
+        options.overview = 'src/api/overview.html'
+        options.links(
+            'http://docs.jboss.org/jbossas/javadoc/4.0.5/connector'
+        )
+        source subprojects.collect { project ->
+            project.sourceSets.main.allJava
+        }
+        destinationDir = new File(buildDir, "api")
+        classpath = files(subprojects.collect { project ->
+            project.sourceSets.main.compileClasspath
+        })
+        maxMemory = '1024m'
+    }
+
+    task docsZip(type: Zip) {
+        group = 'Distribution'
+        classifier = 'docs'
+        description = "Builds -${classifier} archive containing api and reference " +
+            "for deployment at static.springframework.org/spring-social/docs."
+
+        from('src/dist') {
+            include 'changelog.txt'
+        }
+
+        from (api) {
+            into 'api'
+        }
+
+        from (reference) {
+            into 'reference'
+        }
+    }
+
+    task schemaZip(type: Zip) {
+        group = 'Distribution'
+        classifier = 'schema'
+        description = "Builds -${classifier} archive containing all " +
+            "XSDs for deployment at static.springframework.org/schema."
+
+        subprojects.each { subproject ->
+            def Properties schemas = new Properties();
+
+            subproject.sourceSets.main.resources.find {
+                it.path.endsWith('META-INF/spring.schemas')
+            }?.withInputStream { schemas.load(it) }
+
+            for (def key : schemas.keySet()) {
+                def shortName = key.replaceAll(/http.*schema.(.*).spring-.*/, '$1')
+                assert shortName != key
+                File xsdFile = subproject.sourceSets.main.resources.find {
+                    it.path.endsWith(schemas.get(key))
+                }
+                assert xsdFile != null
+                into (shortName) {
+                    from xsdFile.path
+                }
+            }
+        }
+    }
+
+    task distZip(type: Zip, dependsOn: [docsZip, schemaZip]) {
+        group = 'Distribution'
+        classifier = 'dist'
+        description = "Builds -${classifier} archive, containing all jars and docs, " +
+                      "suitable for community download page."
+
+        baseDir = "${project.name}-${project.version}";
+
+        from('src/dist') {
+            include 'readme.txt'
+            include 'license.txt'
+            include 'notice.txt'
+            into "${baseDir}"
+            expand(copyright: new Date().format('yyyy'), version: project.version)
+        }
+
+        from(zipTree(docsZip.archivePath)) {
+            into "${baseDir}/docs"
+        }
+
+        from(zipTree(schemaZip.archivePath)) {
+            into "${baseDir}/schema"
+        }
+
+        subprojects.each { subproject ->
+            into ("${baseDir}/libs") {
+                from subproject.jar
+                if (subproject.tasks.findByPath('sourcesJar')) {
+                    from subproject.sourcesJar
+                }
+                if (subproject.tasks.findByPath('javadocJar')) {
+                    from subproject.javadocJar
+                }
+            }
+        }
+    }
+
+    artifacts {
+        archives docsZip
+//        archives schemaZip
+        archives distZip
+    }
+
+    task wrapper(type: Wrapper) {
+        description = 'Generates gradlew[.bat] scripts'
+        gradleVersion = '1.0-milestone-8a'
+    }
+
+}
+
+task updateRootDocs << {
+    copy {
+        from 'src/dist'
+        into "${rootProject.projectDir}"
+        include 'notice.txt'
+        expand(copyright: new Date().format('yyyy'), version: project.version)
+        rename { filename -> 'NOTICE' }
+    }
+
+    copy {
+        from 'src/dist'
+        into "${rootProject.projectDir}"
+        include 'license.txt'
+        rename { filename -> 'LICENSE' }
+    }
+}
+
+build.dependsOn('updateRootDocs')
