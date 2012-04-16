@@ -34,7 +34,7 @@ public ProviderSignInController providerSignInController() {
 			Or in XML, if you prefer:
 		</para>		
 		<programlisting language="xml"><![CDATA[
-<bean class="org.springframework.social.connect.signin.web.ProviderSignInController">
+<bean class="org.springframework.social.connect.web.ProviderSignInController">
     <!-- relies on by-type autowiring for the constructor-args -->    
 </bean>]]>
 		</programlisting>
@@ -56,7 +56,7 @@ public ProviderSignInController providerSignInController() {
 			Or when configured in XML:
 		</para>
 		<programlisting language="xml"><![CDATA[
-<bean class="org.springframework.social.connect.signin.web.ProviderSignInController">
+<bean class="org.springframework.social.connect.web.ProviderSignInController">
     <!-- relies on by-type autowiring for the constructor-args -->    
     <property name="applicationUrl" value="${application.url}" />
 </bean>]]>
@@ -287,7 +287,7 @@ public ProviderSignInController providerSignInController() {
 				Or to set the sign up URL using XML configuration:
 			</para>
 			<programlisting language="xml"><![CDATA[
-<bean class="org.springframework.social.connect.signin.web.ProviderSignInController">
+<bean class="org.springframework.social.connect.web.ProviderSignInController">
     <property name="signUpUrl" value="/register" />
 </bean>]]>
 			</programlisting>
