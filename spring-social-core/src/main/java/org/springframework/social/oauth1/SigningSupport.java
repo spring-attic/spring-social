@@ -49,7 +49,11 @@ import org.springframework.util.StringUtils;
 class SigningSupport {
 	
 	private TimestampGenerator timestampGenerator = new DefaultTimestampGenerator();
-	
+
+    private String urlDecodingCharsetName = UTF8_CHARSET_NAME;
+    private String percentEncodingCharsetName = UTF8_CHARSET_NAME;
+    private String signatureGenerationCharsetName = UTF8_CHARSET_NAME;
+
 	/**
 	 * Builds the authorization header.
 	 * The elements in additionalParameters are expected to not be encoded.
@@ -186,10 +190,10 @@ class SigningSupport {
 			Mac mac = Mac.getInstance(HMAC_SHA1_MAC_NAME);
 			SecretKeySpec spec = new SecretKeySpec(key.getBytes(), HMAC_SHA1_MAC_NAME);
 			mac.init(spec);
-			byte[] text = signatureBaseString.getBytes(UTF8_CHARSET_NAME);
+			byte[] text = signatureBaseString.getBytes(signatureGenerationCharsetName);
 			byte[] signatureBytes = mac.doFinal(text);
 			signatureBytes = Base64.encode(signatureBytes);
-			String signature = new String(signatureBytes, UTF8_CHARSET_NAME);
+			String signature = new String(signatureBytes, signatureGenerationCharsetName);
 			return signature;
 		} catch (NoSuchAlgorithmException e) {
 			throw new IllegalStateException(e);
@@ -204,7 +208,7 @@ class SigningSupport {
 		if (bodyType != null && bodyType.equals(MediaType.APPLICATION_FORM_URLENCODED)) {
 			String body;
 			try {
-				body = new String(bodyBytes, UTF8_CHARSET_NAME);
+				body = new String(bodyBytes, urlDecodingCharsetName);
 			} catch (UnsupportedEncodingException shouldntHappen) {
 				throw new IllegalStateException(shouldntHappen);
 			}
@@ -290,10 +294,10 @@ class SigningSupport {
 		UNRESERVED = unreserved;		
 	}
 	
-	private static String oauthEncode(String param) {
+	private String oauthEncode(String param) {
 		try {
 			// See http://tools.ietf.org/html/rfc5849#section-3.6
-			byte[] bytes = encode(param.getBytes(UTF8_CHARSET_NAME), UNRESERVED);
+			byte[] bytes = encode(param.getBytes(percentEncodingCharsetName), UNRESERVED);
 			return new String(bytes, "US-ASCII");
 		} catch (Exception shouldntHappen) {
 			throw new IllegalStateException(shouldntHappen);
@@ -322,9 +326,9 @@ class SigningSupport {
 		return bos.toByteArray();
 	}
 	
-	private static String formDecode(String encoded) {
+	private String formDecode(String encoded) {
 		try {
-			return URLDecoder.decode(encoded, UTF8_CHARSET_NAME);
+			return URLDecoder.decode(encoded, urlDecodingCharsetName);
 		} catch (UnsupportedEncodingException shouldntHappen) {
 			throw new IllegalStateException(shouldntHappen);
 		}
@@ -336,4 +340,15 @@ class SigningSupport {
 
 	private static final String UTF8_CHARSET_NAME = "UTF-8";
 
+    public void setUrlDecodingCharsetName(String urlDecodingCharsetName) {
+        this.urlDecodingCharsetName = urlDecodingCharsetName;
+    }
+
+    public void setPercentEncodingCharsetName(String percentEncodingCharsetName) {
+        this.percentEncodingCharsetName = percentEncodingCharsetName;
+    }
+
+    public void setSignatureGenerationCharsetName(String signatureGenerationCharsetName) {
+        this.signatureGenerationCharsetName = signatureGenerationCharsetName;
+    }
 }

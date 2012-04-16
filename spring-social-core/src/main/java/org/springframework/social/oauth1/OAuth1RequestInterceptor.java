@@ -28,7 +28,7 @@ import org.springframework.social.support.HttpRequestDecorator;
  * @author Keith Donald
  * @author Craig Walls
  */
-class OAuth1RequestInterceptor implements ClientHttpRequestInterceptor {
+public class OAuth1RequestInterceptor implements ClientHttpRequestInterceptor {
 
 	private final SigningSupport signingUtils;
 	private final OAuth1Credentials oauth1Credentials;
@@ -53,5 +53,8 @@ class OAuth1RequestInterceptor implements ClientHttpRequestInterceptor {
 	private String getAuthorizationHeaderValue(HttpRequest request, byte[] body) {
 		return signingUtils.buildAuthorizationHeaderValue(request, body, oauth1Credentials);
 	}
-	
+
+    public SigningSupport getSigningUtils() {
+        return signingUtils;
+    }
 }
