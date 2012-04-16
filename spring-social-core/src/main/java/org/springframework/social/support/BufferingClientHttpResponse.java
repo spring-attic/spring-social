@@ -49,6 +49,10 @@ class BufferingClientHttpResponse implements ClientHttpResponse {
 		return response.getStatusText();
 	}
 
+	public int getRawStatusCode() throws IOException {
+		return response.getRawStatusCode();
+	}
+	
 	public HttpHeaders getHeaders() {
 		return response.getHeaders();
 	}
