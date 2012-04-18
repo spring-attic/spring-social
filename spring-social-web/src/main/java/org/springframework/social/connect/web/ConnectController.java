@@ -72,7 +72,9 @@ public class ConnectController {
 	
 	private final ConnectionRepository connectionRepository;
 
-	private final MultiValueMap<Class<?>, ConnectInterceptor<?>> interceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
+	private final MultiValueMap<Class<?>, ConnectInterceptor<?>> connectInterceptors = new LinkedMultiValueMap<Class<?>, ConnectInterceptor<?>>();
+
+	private final MultiValueMap<Class<?>, DisconnectInterceptor<?>> disconnectInterceptors = new LinkedMultiValueMap<Class<?>, DisconnectInterceptor<?>>();
 
 	private final ConnectSupport webSupport = new ConnectSupport();
 	
@@ -90,13 +92,35 @@ public class ConnectController {
 	}
 
 	/**
-	 * Configure the list of interceptors that should receive callbacks during the connection process.
+	 * Configure the list of connect interceptors that should receive callbacks during the connection process.
+	 * Convenient when an instance of this class is configured using a tool that supports JavaBeans-based configuration.
+	 * @param interceptors the connect interceptors to add
+	 * @deprecated Use {@link #setConnectInterceptors(List)} instead.
+	 */
+	@Deprecated
+	public void setInterceptors(List<ConnectInterceptor<?>> interceptors) {
+		setConnectInterceptors(interceptors);
+	}
+	
+	/**
+	 * Configure the list of connect interceptors that should receive callbacks during the connection process.
 	 * Convenient when an instance of this class is configured using a tool that supports JavaBeans-based configuration.
 	 * @param interceptors the connect interceptors to add
 	 */
-	public void setInterceptors(List<ConnectInterceptor<?>> interceptors) {
+	public void setConnectInterceptors(List<ConnectInterceptor<?>> interceptors) {
 		for (ConnectInterceptor<?> interceptor : interceptors) {
 			addInterceptor(interceptor);
+		}
+	}
+
+	/**
+	 * Configure the list of discconnect interceptors that should receive callbacks when connections are removed.
+	 * Convenient when an instance of this class is configured using a tool that supports JavaBeans-based configuration.
+	 * @param interceptors the connect interceptors to add
+	 */
+	public void setDisconnectInterceptors(List<DisconnectInterceptor<?>> interceptors) {
+		for (DisconnectInterceptor<?> interceptor : interceptors) {
+			addDisconnectInterceptor(interceptor);
 		}
 	}
 
@@ -120,7 +144,17 @@ public class ConnectController {
 	 */
 	public void addInterceptor(ConnectInterceptor<?> interceptor) {
 		Class<?> serviceApiType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(), ConnectInterceptor.class);
-		interceptors.add(serviceApiType, interceptor);
+		connectInterceptors.add(serviceApiType, interceptor);
+	}
+
+	/**
+	 * Adds a DisconnectInterceptor to receive callbacks during the disconnection process.
+	 * Useful for programmatic configuration.
+	 * @param interceptor the connect interceptor to add
+	 */
+	public void addDisconnectInterceptor(DisconnectInterceptor<?> interceptor) {
+		Class<?> serviceApiType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(), DisconnectInterceptor.class);
+		disconnectInterceptors.add(serviceApiType, interceptor);
 	}
 
 	/**
@@ -214,7 +248,10 @@ public class ConnectController {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.DELETE)
 	public RedirectView removeConnections(@PathVariable String providerId, NativeWebRequest request) {
+		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
+		preDisconnect(connectionFactory, request);
 		connectionRepository.removeConnections(providerId);
+		postDisconnect(connectionFactory, request);
 		return connectionStatusRedirect(providerId, request);
 	}
 
@@ -225,7 +262,10 @@ public class ConnectController {
 	 */
 	@RequestMapping(value="/{providerId}/{providerUserId}", method=RequestMethod.DELETE)
 	public RedirectView removeConnection(@PathVariable String providerId, @PathVariable String providerUserId, NativeWebRequest request) {
+		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
+		preDisconnect(connectionFactory, request);
 		connectionRepository.removeConnection(new ConnectionKey(providerId, providerUserId));
+		postDisconnect(connectionFactory, request);
 		return connectionStatusRedirect(providerId, request);
 	}
 
@@ -318,15 +358,38 @@ public class ConnectController {
 		}
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void preDisconnect(ConnectionFactory<?> connectionFactory, WebRequest request) {
+		for (DisconnectInterceptor interceptor : interceptingDisconnectionsTo(connectionFactory)) {
+			interceptor.preDisconnect(connectionFactory, request);
+		}		
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void postDisconnect(ConnectionFactory<?> connectionFactory, WebRequest request) {
+		for (DisconnectInterceptor interceptor : interceptingDisconnectionsTo(connectionFactory)) {
+			interceptor.postDisconnect(connectionFactory, request);
+		}		
+	}
+
 	private List<ConnectInterceptor<?>> interceptingConnectionsTo(ConnectionFactory<?> connectionFactory) {
 		Class<?> serviceType = GenericTypeResolver.resolveTypeArgument(connectionFactory.getClass(), ConnectionFactory.class);
-		List<ConnectInterceptor<?>> typedInterceptors = interceptors.get(serviceType);
+		List<ConnectInterceptor<?>> typedInterceptors = connectInterceptors.get(serviceType);
 		if (typedInterceptors == null) {
 			typedInterceptors = Collections.emptyList();
 		}
 		return typedInterceptors;
 	}
-	
+
+	private List<DisconnectInterceptor<?>> interceptingDisconnectionsTo(ConnectionFactory<?> connectionFactory) {
+		Class<?> serviceType = GenericTypeResolver.resolveTypeArgument(connectionFactory.getClass(), ConnectionFactory.class);
+		List<DisconnectInterceptor<?>> typedInterceptors = disconnectInterceptors.get(serviceType);
+		if (typedInterceptors == null) {
+			typedInterceptors = Collections.emptyList();
+		}
+		return typedInterceptors;
+	}
+
 	private void processFlash(WebRequest request, Model model) {
 		convertSessionAttributeToModelAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, request, model);
 		convertSessionAttributeToModelAttribute(PROVIDER_ERROR_ATTRIBUTE, request, model);
