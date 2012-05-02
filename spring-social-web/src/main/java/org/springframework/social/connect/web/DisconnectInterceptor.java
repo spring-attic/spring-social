@@ -32,13 +32,13 @@ public interface DisconnectInterceptor<S> {
 	 * @param providerId the providerId for the connection(s) to be removed.
 	 * @param request the web request
 	 */
-	void preDisconnect(ConnectionFactory<?> connectionFactory, WebRequest request);	
+	void preDisconnect(ConnectionFactory<S> connectionFactory, WebRequest request);	
 	
 	/**
 	 * Called immediately after a connection is removed.
 	 * @param providerId the providerId for the connection(s) to be removed.
 	 * @param request the web request
 	 */
-	void postDisconnect(ConnectionFactory<?> connectionFactory, WebRequest request);
+	void postDisconnect(ConnectionFactory<S> connectionFactory, WebRequest request);
 	
 }
