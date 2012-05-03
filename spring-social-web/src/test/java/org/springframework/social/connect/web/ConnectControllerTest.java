@@ -120,12 +120,21 @@ public class ConnectControllerTest {
 		connectionRepository.addConnection(connectionFactory.createConnection(new ConnectionData("oauth2Provider", "provider2User1", null, null, null, null, null, null, null)));
 		connectionRepository.addConnection(connectionFactory.createConnection(new ConnectionData("oauth2Provider", "provider2User2", null, null, null, null, null, null, null)));
 		assertEquals(2, connectionRepository.findConnections("provider1").size());		
-		assertEquals(2, connectionRepository.findConnections("oauth2Provider").size());		
-		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
+		assertEquals(2, connectionRepository.findConnections("oauth2Provider").size());				
+		ConnectController connectController = new ConnectController(connectionFactoryLocator, connectionRepository);
+		List<DisconnectInterceptor<?>> interceptors = getDisconnectInterceptor();
+		connectController.setDisconnectInterceptors(interceptors);
+		MockMvc mockMvc = standaloneSetup(connectController).build();
 		mockMvc.perform(delete("/connect/oauth2Provider"))
 			.andExpect(redirectedUrl("/connect/oauth2Provider"));
 		assertEquals(2, connectionRepository.findConnections("provider1").size());		
 		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
+		assertFalse(((TestConnectInterceptor<?>)(interceptors.get(0))).preDisconnectInvoked);
+		assertFalse(((TestConnectInterceptor<?>)(interceptors.get(0))).postDisconnectInvoked);
+		assertNull(((TestConnectInterceptor<?>)(interceptors.get(0))).connectionFactory);
+		assertTrue(((TestConnectInterceptor<?>)(interceptors.get(1))).preDisconnectInvoked);
+		assertTrue(((TestConnectInterceptor<?>)(interceptors.get(1))).postDisconnectInvoked);
+		assertSame(connectionFactory, ((TestConnectInterceptor<?>)(interceptors.get(1))).connectionFactory);
 	}
 
 	@Test
@@ -137,10 +146,19 @@ public class ConnectControllerTest {
 		connectionRepository.addConnection(connectionFactory.createConnection(new ConnectionData("oauth2Provider", "provider1User1", null, null, null, null, null, null, null)));
 		connectionRepository.addConnection(connectionFactory.createConnection(new ConnectionData("oauth2Provider", "provider1User2", null, null, null, null, null, null, null)));
 		assertEquals(2, connectionRepository.findConnections("oauth2Provider").size());		
-		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
+		ConnectController connectController = new ConnectController(connectionFactoryLocator, connectionRepository);
+		List<DisconnectInterceptor<?>> interceptors = getDisconnectInterceptor();
+		connectController.setDisconnectInterceptors(interceptors);
+		MockMvc mockMvc = standaloneSetup(connectController).build();
 		mockMvc.perform(delete("/connect/oauth2Provider/provider1User1"))
 			.andExpect(redirectedUrl("/connect/oauth2Provider"));
 		assertEquals(1, connectionRepository.findConnections("oauth2Provider").size());		
+		assertFalse(((TestConnectInterceptor<?>)(interceptors.get(0))).preDisconnectInvoked);
+		assertFalse(((TestConnectInterceptor<?>)(interceptors.get(0))).postDisconnectInvoked);
+		assertNull(((TestConnectInterceptor<?>)(interceptors.get(0))).connectionFactory);
+		assertTrue(((TestConnectInterceptor<?>)(interceptors.get(1))).preDisconnectInvoked);
+		assertTrue(((TestConnectInterceptor<?>)(interceptors.get(1))).postDisconnectInvoked);
+		assertSame(connectionFactory, ((TestConnectInterceptor<?>)(interceptors.get(1))).connectionFactory);
 	}
 	
 	// OAuth 1
@@ -152,7 +170,7 @@ public class ConnectControllerTest {
 		connectionFactoryLocator.addConnectionFactory(connectionFactory);
 		ConnectController connectController = new ConnectController(connectionFactoryLocator, null);
 		List<ConnectInterceptor<?>> interceptors = getConnectInterceptor();
-		connectController.setInterceptors(interceptors);
+		connectController.setConnectInterceptors(interceptors);
 		MockMvc mockMvc = standaloneSetup(connectController).build();
 		mockMvc.perform(post("/connect/oauth1Provider"))
 			.andExpect(redirectedUrl("https://someprovider.com/oauth/authorize?oauth_token=requestToken"))
@@ -183,7 +201,7 @@ public class ConnectControllerTest {
 		StubConnectionRepository connectionRepository = new StubConnectionRepository();
 		ConnectController connectController = new ConnectController(connectionFactoryLocator, connectionRepository);
 		List<ConnectInterceptor<?>> interceptors = getConnectInterceptor();
-		connectController.setInterceptors(interceptors);
+		connectController.setConnectInterceptors(interceptors);
 		MockMvc mockMvc = standaloneSetup(connectController).build();
 		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
 		mockMvc.perform(get("/connect/oauth1Provider")
@@ -226,7 +244,7 @@ public class ConnectControllerTest {
 		connectionFactoryLocator.addConnectionFactory(connectionFactory);
 		ConnectController connectController = new ConnectController(connectionFactoryLocator, null);
 		List<ConnectInterceptor<?>> interceptors = getConnectInterceptor();
-		connectController.setInterceptors(interceptors);
+		connectController.setConnectInterceptors(interceptors);
 		MockMvc mockMvc = standaloneSetup(connectController).build();
 		mockMvc.perform(post("/connect/oauth2Provider"))
 			.andExpect(redirectedUrl(OAUTH2_AUTHORIZE_URL));
@@ -255,7 +273,7 @@ public class ConnectControllerTest {
 		StubConnectionRepository connectionRepository = new StubConnectionRepository();
 		ConnectController connectController = new ConnectController(connectionFactoryLocator, connectionRepository);
 		List<ConnectInterceptor<?>> interceptors = getConnectInterceptor();
-		connectController.setInterceptors(interceptors);
+		connectController.setConnectInterceptors(interceptors);
 		MockMvc mockMvc = standaloneSetup(connectController).build();
 		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
 		mockMvc.perform(get("/connect/oauth2Provider").param("code", "oauth2Code"))
@@ -290,14 +308,24 @@ public class ConnectControllerTest {
 		return interceptors;
 	}
 
-	private static abstract class TestConnectInterceptor<T> implements ConnectInterceptor<T> {
+	private List<DisconnectInterceptor<?>> getDisconnectInterceptor() {
+		List<DisconnectInterceptor<?>> interceptors = new ArrayList<DisconnectInterceptor<?>>();
+		interceptors.add(new TestConnectInterceptor<TestApi1>() {});
+		interceptors.add(new TestConnectInterceptor<TestApi2>() {});
+		return interceptors;
+	}
+	private static abstract class TestConnectInterceptor<T> implements ConnectInterceptor<T>, DisconnectInterceptor<T> {
 		ConnectionFactory<T> connectionFactory = null;
 		MultiValueMap<String, String> parameters = null;
 		WebRequest preConnectRequest = null;
-		Connection<T> connection = null;
 		WebRequest postConnectRequest = null;
-		public boolean preConnectInvoked = false;
-		public boolean postConnectInvoked = false;
+		WebRequest preDisconnectRequest = null;
+		WebRequest postDisconnectRequest = null;
+		Connection<T> connection = null;
+		boolean preConnectInvoked = false;
+		boolean postConnectInvoked = false;
+		boolean preDisconnectInvoked = false;
+		boolean postDisconnectInvoked = false;
 
 		public void preConnect(ConnectionFactory<T> connectionFactory, MultiValueMap<String, String> parameters, WebRequest request) {
 			this.connectionFactory = connectionFactory;
@@ -310,6 +338,18 @@ public class ConnectControllerTest {
 			this.connection = connection;
 			this.postConnectRequest = request;
 			this.postConnectInvoked = true;
+		}
+		
+		public void preDisconnect(ConnectionFactory<T> connectionFactory, WebRequest request) {
+			this.connectionFactory = connectionFactory;
+			this.preDisconnectRequest = request;
+			this.preDisconnectInvoked = true;
+		}
+		
+		public void postDisconnect(ConnectionFactory<T> connectionFactory, WebRequest request) {
+			this.connectionFactory = connectionFactory;
+			this.postDisconnectRequest = request;
+			this.postDisconnectInvoked = true;
 		}
 	}
 
