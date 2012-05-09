@@ -37,10 +37,7 @@ configure(allprojects) {
     test.systemProperty("java.awt.headless", "true")
 
     repositories {
-        maven { url "http://repo.springsource.org/libs-release" }
-        maven { url "http://repo.springsource.org/libs-milestone" }
         maven { url "http://repo.springsource.org/libs-snapshot" }
-        maven { url "http://repo.springsource.org/ebr-maven-external" }
     }
 
     dependencies {
