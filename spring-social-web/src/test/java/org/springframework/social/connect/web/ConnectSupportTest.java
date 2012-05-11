@@ -429,6 +429,9 @@ public class ConnectSupportTest {
 				public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
 					return null;
 				}
+				public AccessGrant extendAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
+					return null;
+				}
 			};
 		}
 

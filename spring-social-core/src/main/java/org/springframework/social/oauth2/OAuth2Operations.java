@@ -61,4 +61,12 @@ public interface OAuth2Operations {
 	 */
 	AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters);
 	
+	/**
+	 * Request an extension of a short access grant to a longer one
+	 * @param refreshToken the refresh token from the previous access grant.
+	 * @param scope optional scope to narrow to when refreshing access; if null, the existing scope is preserved.
+	 * @param additionalParameters any additional parameters to be sent when refreshing a previous access grant. Should not be encoded. 
+	 * @return the access grant.
+	 */
+	AccessGrant extendAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters);
 }

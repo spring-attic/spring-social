@@ -40,11 +40,11 @@ import org.springframework.web.client.RestTemplate;
  */
 public class OAuth2Template implements OAuth2Operations {
 
-	private final String clientId;
+	protected final String clientId;
 	
-	private final String clientSecret;
+	protected final String clientSecret;
 
-	private final String accessTokenUrl;
+	protected final String accessTokenUrl;
 
 	private final String authorizeUrl;
 
@@ -119,6 +119,10 @@ public class OAuth2Template implements OAuth2Operations {
 		return postForAccessGrant(accessTokenUrl, params);
 	}
 
+	public AccessGrant extendAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
+		return refreshAccess(refreshToken, scope, additionalParameters);
+	}
+	
 	// subclassing hooks
 	
 	/**
