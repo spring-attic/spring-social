@@ -123,13 +123,13 @@ public ProviderSignInController providerSignInController() {
 							The request to the sign in URL will have an "error" query parameter set to "multiple_users" to indicate the problem so that the page can communicate it to the user.
 							The default sign in URL is "/signin" (relative to the application root), but can be customized by setting the <code>signInUrl</code> property.
 						</para>
-						<listitem>
-							<para>
-								If any error occurs when exchanging the request token for an access token or while fetching the user's profile data, <classname>ProviderSignInController</classname> will redirect to the application's sign in URL.
-								The request to the sign in URL will have an "error" query parameter set to "provider" to indicate an error occurred while communicating with the provider.
-								The default sign in URL is "/signin" (relative to the application root), but can be customized by setting the <code>signInUrl</code> property.
-							</para>
-						</listitem>
+					</listitem>
+					<listitem>
+						<para>
+							If any error occurs when exchanging the request token for an access token or while fetching the user's profile data, <classname>ProviderSignInController</classname> will redirect to the application's sign in URL.
+							The request to the sign in URL will have an "error" query parameter set to "provider" to indicate an error occurred while communicating with the provider.
+							The default sign in URL is "/signin" (relative to the application root), but can be customized by setting the <code>signInUrl</code> property.
+						</para>
 					</listitem>
 				</itemizedlist>
 			</listitem>
