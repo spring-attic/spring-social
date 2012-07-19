@@ -27,7 +27,7 @@ configure(allprojects) {
     servletApiVersion = '2.5'
     springVersion = '3.1.1.RELEASE'
     springSecurityCryptoVersion = '3.1.0.RELEASE'
-    springTestMvcVersion = "1.0.0.BUILD-SNAPSHOT"
+    springTestMvcVersion = "1.0.0.M1"
     jspApiVersion = '2.2.1'
 
     [compileJava, compileTestJava]*.options*.compilerArgs = ['-Xlint:none']
