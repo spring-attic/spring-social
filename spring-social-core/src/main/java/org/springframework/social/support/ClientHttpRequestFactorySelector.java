@@ -24,7 +24,9 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpProtocolParams;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.ClassUtils;
 
@@ -35,6 +37,10 @@ import org.springframework.util.ClassUtils;
  * @author Roy Clarkson
  */
 public class ClientHttpRequestFactorySelector {
+	
+	public static ClientHttpRequestFactory foo() {
+		return new HttpComponentsClientHttpRequestFactory();
+	}
 	
 	public static ClientHttpRequestFactory getRequestFactory() {
 		Properties properties = System.getProperties();
@@ -60,9 +66,9 @@ public class ClientHttpRequestFactorySelector {
 		return new BufferingClientHttpRequestFactory(requestFactory);
 	}
 	
-	private static boolean HTTP_COMPONENTS_AVAILABLE = ClassUtils.isPresent("org.apache.http.client.HttpClient", ClientHttpRequestFactory.class.getClassLoader());
+	private static final boolean HTTP_COMPONENTS_AVAILABLE = ClassUtils.isPresent("org.apache.http.client.HttpClient", ClientHttpRequestFactory.class.getClassLoader());
 
-	private static class HttpComponentsClientRequestFactoryCreator {
+	public static class HttpComponentsClientRequestFactoryCreator {
 		
 		public static ClientHttpRequestFactory createRequestFactory(String proxyHost, int proxyPort) {
 			HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory() {
@@ -75,8 +81,9 @@ public class ClientHttpRequestFactorySelector {
 				HttpHost proxy = new HttpHost(proxyHost, proxyPort);
 				httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 				requestFactory.setHttpClient(httpClient);
-			}			
+			}
 			return requestFactory;			
 		}
 	}
+
 }
