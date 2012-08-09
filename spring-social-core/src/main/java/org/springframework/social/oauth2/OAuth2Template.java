@@ -52,38 +52,22 @@ public class OAuth2Template implements OAuth2Operations {
 	
 	private final RestTemplate restTemplate;
 	
-	private final boolean parameterBasedClientAuthentication; 
+	private boolean useParametersForClientAuthentication; 
 
 	/**
 	 * Constructs an OAuth2Template for a given set of client credentials. 
-	 * Assumes that those credentials will be presented to the provider using HTTP Basic authentication.
-	 * Also assumes that the authorization URL is the same as the authentication URL.
+	 * Assumes that the authorization URL is the same as the authentication URL.
 	 * @param clientId the client ID
 	 * @param clientSecret the client secret
 	 * @param authorizeUrl the base URL to redirect to when doing authorization code or implicit grant authorization
 	 * @param accessTokenUrl the URL at which an authorization code, refresh token, or user credentials may be exchanged for an access token.
 	 */
 	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String accessTokenUrl) {
-		this(clientId, clientSecret, authorizeUrl, null, accessTokenUrl, false);
-	}
-
-	/**
-	 * Constructs an OAuth2Template for a given set of client credentials.
-	 * Allows for client credentials to be presented to the provider via client_id and client_secret parameters. 
-	 * Assumes that the authorization URL is the same as the authentication URL.
-	 * @param clientId the client ID
-	 * @param clientSecret the client secret
-	 * @param authorizeUrl the base URL to redirect to when doing authorization code or implicit grant authorization
-	 * @param accessTokenUrl the URL at which an authorization code, refresh token, or user credentials may be exchanged for an access token.
-	 * @param parameterBasedClientAuthentication if true, the client will be authenticated with the provider using parameters instead of HTTP Basic.
-	 */
-	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String accessTokenUrl, boolean parameterBasedClientAuthentication) {
-		this(clientId, clientSecret, authorizeUrl, null, accessTokenUrl, parameterBasedClientAuthentication);
+		this(clientId, clientSecret, authorizeUrl, null, accessTokenUrl);
 	}
 
 	/**
 	 * Constructs an OAuth2Template for a given set of client credentials. 
-	 * Assumes that those credentials will be presented to the provider using HTTP Basic authentication.
 	 * @param clientId the client ID
 	 * @param clientSecret the client secret
 	 * @param authorizeUrl the base URL to redirect to when doing authorization code or implicit grant authorization
@@ -91,19 +75,6 @@ public class OAuth2Template implements OAuth2Operations {
 	 * @param accessTokenUrl the URL at which an authorization code, refresh token, or user credentials may be exchanged for an access token
 	 */
 	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String authenticateUrl, String accessTokenUrl) {
-		this(clientId, clientSecret, authorizeUrl, null, accessTokenUrl, false);
-	}
-	
-	/**
-	 * Constructs an OAuth2Template for a given set of client credentials. 
-	 * @param clientId the client ID
-	 * @param clientSecret the client secret
-	 * @param authorizeUrl the base URL to redirect to when doing authorization code or implicit grant authorization
-	 * @param authenticateUrl the URL to redirect to when doing authentication via authorization code grant
-	 * @param accessTokenUrl the URL at which an authorization code, refresh token, or user credentials may be exchanged for an access token
-	 * @param parameterBasedClientAuthentication if true, the client will be authenticated with the provider using parameters instead of HTTP Basic.
-	 */
-	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String authenticateUrl, String accessTokenUrl, boolean parameterBasedClientAuthentication) {
 		Assert.notNull(clientId, "The clientId property cannot be null");
 		Assert.notNull(clientSecret, "The clientSecret property cannot be null");
 		Assert.notNull(authorizeUrl, "The authorizeUrl property cannot be null");
@@ -118,11 +89,18 @@ public class OAuth2Template implements OAuth2Operations {
 			this.authenticateUrl = null;
 		}
 		this.accessTokenUrl = accessTokenUrl;
-		this.parameterBasedClientAuthentication = parameterBasedClientAuthentication;
 		this.restTemplate = createRestTemplate();
-		if (!parameterBasedClientAuthentication) {
+		if (!useParametersForClientAuthentication) {
 			restTemplate.getInterceptors().add(new PreemptiveBasicAuthClientHttpRequestInterceptor(clientId, clientSecret));
 		}
+	}
+	
+	/**
+	 * Set to true to pass client credentials to the provider as parameters instead of using HTTP Basic authentication.
+	 * @param useParametersForClientAuthentication
+	 */
+	public void setUseParametersForClientAuthentication(boolean useParametersForClientAuthentication) {
+		this.useParametersForClientAuthentication = useParametersForClientAuthentication;
 	}
 
 	/**
@@ -144,7 +122,7 @@ public class OAuth2Template implements OAuth2Operations {
 
 	public AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters) {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-		if (parameterBasedClientAuthentication) {
+		if (useParametersForClientAuthentication) {
 			params.set("client_id", clientId);
 			params.set("client_secret", clientSecret);
 		}
@@ -160,7 +138,7 @@ public class OAuth2Template implements OAuth2Operations {
 
 	public AccessGrant exchangeCredentialsForAccess(String username, String password, MultiValueMap<String, String> additionalParameters) {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-		if (parameterBasedClientAuthentication) {
+		if (useParametersForClientAuthentication) {
 			params.set("client_id", clientId);
 			params.set("client_secret", clientSecret);
 		}
@@ -180,7 +158,7 @@ public class OAuth2Template implements OAuth2Operations {
 	
 	public AccessGrant refreshAccess(String refreshToken, MultiValueMap<String, String> additionalParameters) {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-		if (parameterBasedClientAuthentication) {
+		if (useParametersForClientAuthentication) {
 			params.set("client_id", clientId);
 			params.set("client_secret", clientSecret);
 		}

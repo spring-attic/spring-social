@@ -39,7 +39,8 @@ public class OAuth2TemplateTest {
 	@Before
 	public void setup() {
 		oAuth2Template = new OAuth2Template("client_id", "client_secret", AUTHORIZE_URL, null, ACCESS_TOKEN_URL);
-		oAuth2TemplateParamBased = new OAuth2Template("client_id", "client_secret", AUTHORIZE_URL, null, ACCESS_TOKEN_URL, true);
+		oAuth2TemplateParamBased = new OAuth2Template("client_id", "client_secret", AUTHORIZE_URL, null, ACCESS_TOKEN_URL);
+		oAuth2TemplateParamBased.setUseParametersForClientAuthentication(true);
 	}
 
 	@Test
