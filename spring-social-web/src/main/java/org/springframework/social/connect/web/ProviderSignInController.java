@@ -209,6 +209,4 @@ public class ProviderSignInController {
 		return new RedirectView(url, true);
 	}
 
-	private static final String PROVIDER_ERROR_ATTRIBUTE = "social.provider.error";
-
 }
