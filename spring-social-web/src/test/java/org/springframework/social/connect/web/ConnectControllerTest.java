@@ -314,13 +314,21 @@ public class ConnectControllerTest {
 		interceptors.add(new TestConnectInterceptor<TestApi2>() {});
 		return interceptors;
 	}
+
+	
 	private static abstract class TestConnectInterceptor<T> implements ConnectInterceptor<T>, DisconnectInterceptor<T> {
 		ConnectionFactory<T> connectionFactory = null;
+		@SuppressWarnings("unused")
 		MultiValueMap<String, String> parameters = null;
+		@SuppressWarnings("unused")
 		WebRequest preConnectRequest = null;
+		@SuppressWarnings("unused")
 		WebRequest postConnectRequest = null;
+		@SuppressWarnings("unused")
 		WebRequest preDisconnectRequest = null;
+		@SuppressWarnings("unused")
 		WebRequest postDisconnectRequest = null;
+		@SuppressWarnings("unused")
 		Connection<T> connection = null;
 		boolean preConnectInvoked = false;
 		boolean postConnectInvoked = false;

@@ -17,7 +17,6 @@ package org.springframework.social.oauth1;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,7 +37,7 @@ import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.util.Assert;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * OAuth10Operations implementation that uses REST-template to make the OAuth calls.
@@ -178,13 +177,7 @@ public class OAuth1Template implements OAuth1Operations {
 	}
 	
 	private URI encodeTokenUri(String url) {
-		try {
-			return new URI(UriUtils.encodeUri(url, "UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			throw new IllegalStateException(e);
-		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException("Not a valid url: " + url, e);
-		}
+		return UriComponentsBuilder.fromUriString(url).build().toUri();
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

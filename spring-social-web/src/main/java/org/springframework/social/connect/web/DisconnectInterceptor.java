@@ -29,14 +29,14 @@ public interface DisconnectInterceptor<S> {
 
 	/**
 	 * Called immediately before a connection is removed.
-	 * @param providerId the providerId for the connection(s) to be removed.
+	 * @param connectionFactory the connection factory for the service provider
 	 * @param request the web request
 	 */
 	void preDisconnect(ConnectionFactory<S> connectionFactory, WebRequest request);	
 	
 	/**
 	 * Called immediately after a connection is removed.
-	 * @param providerId the providerId for the connection(s) to be removed.
+	 * @param connectionFactory the connection factory for the service provider
 	 * @param request the web request
 	 */
 	void postDisconnect(ConnectionFactory<S> connectionFactory, WebRequest request);
