@@ -51,12 +51,59 @@ public class OAuth2Template implements OAuth2Operations {
 	private String authenticateUrl;
 	
 	private final RestTemplate restTemplate;
+	
+	private final boolean parameterBasedClientAuthentication; 
 
+	/**
+	 * Constructs an OAuth2Template for a given set of client credentials. 
+	 * Assumes that those credentials will be presented to the provider using HTTP Basic authentication.
+	 * Also assumes that the authorization URL is the same as the authentication URL.
+	 * @param clientId the client ID
+	 * @param clientSecret the client secret
+	 * @param authorizeUrl the base URL to redirect to when doing authorization code or implicit grant authorization
+	 * @param accessTokenUrl the URL at which an authorization code, refresh token, or user credentials may be exchanged for an access token.
+	 */
 	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String accessTokenUrl) {
-		this(clientId, clientSecret, authorizeUrl, null, accessTokenUrl);
+		this(clientId, clientSecret, authorizeUrl, null, accessTokenUrl, false);
+	}
+
+	/**
+	 * Constructs an OAuth2Template for a given set of client credentials.
+	 * Allows for client credentials to be presented to the provider via client_id and client_secret parameters. 
+	 * Assumes that the authorization URL is the same as the authentication URL.
+	 * @param clientId the client ID
+	 * @param clientSecret the client secret
+	 * @param authorizeUrl the base URL to redirect to when doing authorization code or implicit grant authorization
+	 * @param accessTokenUrl the URL at which an authorization code, refresh token, or user credentials may be exchanged for an access token.
+	 * @param parameterBasedClientAuthentication if true, the client will be authenticated with the provider using parameters instead of HTTP Basic.
+	 */
+	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String accessTokenUrl, boolean parameterBasedClientAuthentication) {
+		this(clientId, clientSecret, authorizeUrl, null, accessTokenUrl, parameterBasedClientAuthentication);
+	}
+
+	/**
+	 * Constructs an OAuth2Template for a given set of client credentials. 
+	 * Assumes that those credentials will be presented to the provider using HTTP Basic authentication.
+	 * @param clientId the client ID
+	 * @param clientSecret the client secret
+	 * @param authorizeUrl the base URL to redirect to when doing authorization code or implicit grant authorization
+	 * @param authenticateUrl the URL to redirect to when doing authentication via authorization code grant
+	 * @param accessTokenUrl the URL at which an authorization code, refresh token, or user credentials may be exchanged for an access token
+	 */
+	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String authenticateUrl, String accessTokenUrl) {
+		this(clientId, clientSecret, authorizeUrl, null, accessTokenUrl, false);
 	}
 	
-	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String authenticateUrl, String accessTokenUrl) {
+	/**
+	 * Constructs an OAuth2Template for a given set of client credentials. 
+	 * @param clientId the client ID
+	 * @param clientSecret the client secret
+	 * @param authorizeUrl the base URL to redirect to when doing authorization code or implicit grant authorization
+	 * @param authenticateUrl the URL to redirect to when doing authentication via authorization code grant
+	 * @param accessTokenUrl the URL at which an authorization code, refresh token, or user credentials may be exchanged for an access token
+	 * @param parameterBasedClientAuthentication if true, the client will be authenticated with the provider using parameters instead of HTTP Basic.
+	 */
+	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String authenticateUrl, String accessTokenUrl, boolean parameterBasedClientAuthentication) {
 		Assert.notNull(clientId, "The clientId property cannot be null");
 		Assert.notNull(clientSecret, "The clientSecret property cannot be null");
 		Assert.notNull(authorizeUrl, "The authorizeUrl property cannot be null");
@@ -71,7 +118,11 @@ public class OAuth2Template implements OAuth2Operations {
 			this.authenticateUrl = null;
 		}
 		this.accessTokenUrl = accessTokenUrl;
+		this.parameterBasedClientAuthentication = parameterBasedClientAuthentication;
 		this.restTemplate = createRestTemplate();
+		if (!parameterBasedClientAuthentication) {
+			restTemplate.getInterceptors().add(new PreemptiveBasicAuthClientHttpRequestInterceptor(clientId, clientSecret));
+		}
 	}
 
 	/**
@@ -93,8 +144,10 @@ public class OAuth2Template implements OAuth2Operations {
 
 	public AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters) {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-		params.set("client_id", clientId);
-		params.set("client_secret", clientSecret);
+		if (parameterBasedClientAuthentication) {
+			params.set("client_id", clientId);
+			params.set("client_secret", clientSecret);
+		}
 		params.set("code", authorizationCode);
 		params.set("redirect_uri", redirectUri);
 		params.set("grant_type", "authorization_code");
@@ -106,8 +159,10 @@ public class OAuth2Template implements OAuth2Operations {
 
 	public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-		params.set("client_id", clientId);
-		params.set("client_secret", clientSecret);
+		if (parameterBasedClientAuthentication) {
+			params.set("client_id", clientId);
+			params.set("client_secret", clientSecret);
+		}
 		params.set("refresh_token", refreshToken);
 		if (scope != null) {
 			params.set("scope", scope);
@@ -128,7 +183,8 @@ public class OAuth2Template implements OAuth2Operations {
 	 * For example, if the provider returns data in some format other than JSON for form-encoded, you might override to register an appropriate message converter. 
 	 */
 	protected RestTemplate createRestTemplate() {
-		RestTemplate restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
+		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactorySelector.getRequestFactory();
+		RestTemplate restTemplate = new RestTemplate(requestFactory);
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>(2);
 		converters.add(new FormHttpMessageConverter());
 		converters.add(new MappingJacksonHttpMessageConverter());
