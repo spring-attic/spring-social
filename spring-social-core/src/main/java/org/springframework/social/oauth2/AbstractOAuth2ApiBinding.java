@@ -67,11 +67,7 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 	 * @param requestFactory the request factory
 	 */
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
-		if (isAuthorized()) {
-			restTemplate.setRequestFactory(ProtectedResourceClientFactory.addOAuthSigning(requestFactory, accessToken, getOAuth2Version()));
-		} else {
-			restTemplate.setRequestFactory(requestFactory);
-		}
+		restTemplate.setRequestFactory(requestFactory);
 	}
 
 	// implementing ApiBinding

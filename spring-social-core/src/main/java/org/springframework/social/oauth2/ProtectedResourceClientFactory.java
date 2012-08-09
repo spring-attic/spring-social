@@ -19,7 +19,6 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.util.ClassUtils;
@@ -54,30 +53,16 @@ class ProtectedResourceClientFactory {
 
 	public static RestTemplate create(String accessToken, OAuth2Version version) {
 		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
-		if (interceptorsSupported) {
-			// favored
-			OAuth2RequestInterceptor interceptor = new OAuth2RequestInterceptor(accessToken, version);
-			try {
-				if (listBasedInterceptors) {
-					List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
-					interceptors.add(interceptor);
-					setInterceptorsMethod.invoke(client, interceptors);			
-				} else {
-					setInterceptorsMethod.invoke(client, new Object[] {new ClientHttpRequestInterceptor[] { interceptor }});
-				}
-			} catch (Exception shouldntHappen) {}
-		} else {
-			// 3.0.x compatibility
-			client.setRequestFactory(new Spring30OAuth2RequestFactory(client.getRequestFactory(), accessToken, version));
-		}
+		OAuth2RequestInterceptor interceptor = new OAuth2RequestInterceptor(accessToken, version);
+		try {
+			if (listBasedInterceptors) {
+				List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
+				interceptors.add(interceptor);
+				setInterceptorsMethod.invoke(client, interceptors);			
+			} else {
+				setInterceptorsMethod.invoke(client, new Object[] {new ClientHttpRequestInterceptor[] { interceptor }});
+			}
+		} catch (Exception shouldntHappen) {}
 		return client;				
 	}
-
-	public static ClientHttpRequestFactory addOAuthSigning(ClientHttpRequestFactory requestFactory, String accessToken, OAuth2Version version) {
-		if (interceptorsSupported) {
-			return requestFactory;
-		}
-		return new Spring30OAuth2RequestFactory(requestFactory, accessToken, version);
-	}
-
 }
