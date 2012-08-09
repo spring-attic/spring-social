@@ -53,12 +53,31 @@ public interface OAuth2Operations {
 	AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters);
 
 	/**
+	 * Exchanges user credentials for an access grant using OAuth2's Resource Owner Credentials Grant (aka, "password" grant).
+	 * @param username the user's username on the provider
+	 * @param password the user's password on the provider
+	 * @param additionalParameters any additional parameters to be sent when exchanging the credentials for an access grant. Should not be encoded. 
+	 * @return the access grant.
+	 */
+	AccessGrant exchangeCredentialsForAccess(String username, String password, MultiValueMap<String, String> additionalParameters);
+
+	/**
 	 * Refreshes a previous access grant.
 	 * @param refreshToken the refresh token from the previous access grant.
 	 * @param scope optional scope to narrow to when refreshing access; if null, the existing scope is preserved.
 	 * @param additionalParameters any additional parameters to be sent when refreshing a previous access grant. Should not be encoded. 
 	 * @return the access grant.
+	 * @deprecated Set the scope via additional parameters. This can be done conveniently user OAuth2Parameters.
 	 */
+	@Deprecated
 	AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters);
-	
+
+	/**
+	 * Refreshes a previous access grant.
+	 * @param refreshToken the refresh token from the previous access grant.
+	 * @param additionalParameters any additional parameters to be sent when refreshing a previous access grant. Should not be encoded. 
+	 * @return the access grant.
+	 */
+	AccessGrant refreshAccess(String refreshToken, MultiValueMap<String, String> additionalParameters);
+
 }

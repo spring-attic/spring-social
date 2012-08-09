@@ -198,7 +198,31 @@ public class OAuth2TemplateTest {
 		assertTrue(approximateExpirationTime - actualExpirationTime < 1000);
 		assertNull(accessGrant.getScope());
 	}
+	
+	@Test
+	public void exchangeCredentialsForAccess() {
+		AccessGrant accessGrant = passwordGrant("accessToken.json");
+		assertEquals("8d0a88a5c4f1ae4937ad864cafa8e857", accessGrant.getAccessToken());
+		assertEquals("6b0411401bf8751e34f57feb29fb8e32", accessGrant.getRefreshToken());
+		long approximateExpirationTime = System.currentTimeMillis() + 40735000;
+		long actualExpirationTime = (long) accessGrant.getExpireTime();
+		//allow for 1 second of wiggle room on expiration time.
+		assertTrue(approximateExpirationTime - actualExpirationTime < 1000);
+		assertEquals("read", accessGrant.getScope());
+	}
 
+	@Test
+	public void exchangeCredentialsForAccess_paramBasedClientAuthentication() {
+		AccessGrant accessGrant = passwordGrant_paramBasedClientAuth("accessToken.json");
+		assertEquals("8d0a88a5c4f1ae4937ad864cafa8e857", accessGrant.getAccessToken());
+		assertEquals("6b0411401bf8751e34f57feb29fb8e32", accessGrant.getRefreshToken());
+		long approximateExpirationTime = System.currentTimeMillis() + 40735000;
+		long actualExpirationTime = (long) accessGrant.getExpireTime();
+		//allow for 1 second of wiggle room on expiration time.
+		assertTrue(approximateExpirationTime - actualExpirationTime < 1000);
+		assertEquals("read", accessGrant.getScope());
+	}
+	
 	@Test
 	public void refreshAccessToken_paramBasedClientAuthentication_jsonResponse() {
 		AccessGrant accessGrant = refreshToken_paramBasedClientAuth("refreshToken.json");
@@ -277,8 +301,29 @@ public class OAuth2TemplateTest {
 			responseActions.andExpect(header("Authorization", expectedAuthorizationHeader));
 		}
 		responseActions.andRespond(withSuccess(new ClassPathResource(responseFile, getClass()), MediaType.APPLICATION_JSON));
-		AccessGrant accessGrant = oauthTemplate.exchangeForAccess("code", "http://www.someclient.com/callback", null);
-		return accessGrant;
+		return oauthTemplate.exchangeForAccess("code", "http://www.someclient.com/callback", null);
+	}
+	
+	private AccessGrant passwordGrant_paramBasedClientAuth(String responseFile) {
+		return passwordGrant(oAuth2TemplateParamBased, "client_id=client_id&client_secret=client_secret&", null, responseFile);
+	}
+
+	private AccessGrant passwordGrant(String responseFile) {
+		return passwordGrant(oAuth2Template, "", "Basic Y2xpZW50X2lkOmNsaWVudF9zZWNyZXQ=", responseFile);
+	}
+	
+	private AccessGrant passwordGrant(OAuth2Template oauthTemplate, String expectedClientParams, String expectedAuthorizationHeader, String responseFile) {
+		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauthTemplate.getRestTemplate());
+		ResponseActions responseActions = mockServer.expect(requestTo(ACCESS_TOKEN_URL))
+				.andExpect(method(POST))
+				.andExpect(body(expectedClientParams + "username=habuma&password=letmein01&grant_type=password&scope=read%2Cwrite"));
+		if (expectedAuthorizationHeader != null) {
+			responseActions.andExpect(header("Authorization", expectedAuthorizationHeader));
+		}
+		responseActions.andRespond(withSuccess(new ClassPathResource(responseFile, getClass()), MediaType.APPLICATION_JSON));
+		OAuth2Parameters parameters = new OAuth2Parameters();
+		parameters.setScope("read,write");
+		return oauthTemplate.exchangeCredentialsForAccess("habuma", "letmein01", parameters);
 	}
 
 	private AccessGrant refreshToken_paramBasedClientAuth(String responseFile) {
@@ -298,8 +343,7 @@ public class OAuth2TemplateTest {
 			responseActions.andExpect(header("Authorization", expectedAuthorizationHeader));
 		}
 		responseActions.andRespond(withSuccess(new ClassPathResource(responseFile, getClass()), MediaType.APPLICATION_JSON));
-		AccessGrant accessGrant = oauthTemplate.refreshAccess("r3fr35h_t0k3n", null, null);
-		return accessGrant;
+		return oauthTemplate.refreshAccess("r3fr35h_t0k3n", null);
 	}
 
 }

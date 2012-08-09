@@ -156,24 +156,42 @@ public class OAuth2Template implements OAuth2Operations {
 		}
 		return postForAccessGrant(accessTokenUrl, params);
 	}
+	
 
-	public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
+	public AccessGrant exchangeCredentialsForAccess(String username, String password, MultiValueMap<String, String> additionalParameters) {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 		if (parameterBasedClientAuthentication) {
 			params.set("client_id", clientId);
 			params.set("client_secret", clientSecret);
 		}
-		params.set("refresh_token", refreshToken);
-		if (scope != null) {
-			params.set("scope", scope);
-		}
-		params.set("grant_type", "refresh_token");
+		params.set("username", username);
+		params.set("password", password);
+		params.set("grant_type", "password");
 		if (additionalParameters != null) {
 			params.putAll(additionalParameters);
 		}
 		return postForAccessGrant(accessTokenUrl, params);
 	}
 
+	public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
+		additionalParameters.set("scope", scope);
+		return refreshAccess(refreshToken, additionalParameters);
+	}
+	
+	public AccessGrant refreshAccess(String refreshToken, MultiValueMap<String, String> additionalParameters) {
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+		if (parameterBasedClientAuthentication) {
+			params.set("client_id", clientId);
+			params.set("client_secret", clientSecret);
+		}
+		params.set("refresh_token", refreshToken);
+		params.set("grant_type", "refresh_token");
+		if (additionalParameters != null) {
+			params.putAll(additionalParameters);
+		}
+		return postForAccessGrant(accessTokenUrl, params);
+	}
+	
 	// subclassing hooks
 	
 	/**

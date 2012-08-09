@@ -98,7 +98,7 @@ public class OAuth2Connection<A> extends AbstractConnection<A> {
 
 	public void refresh() {
 		synchronized (getMonitor()) {
-			AccessGrant accessGrant = serviceProvider.getOAuthOperations().refreshAccess(refreshToken, null, null);
+			AccessGrant accessGrant = serviceProvider.getOAuthOperations().refreshAccess(refreshToken, null);
 			initAccessTokens(accessGrant.getAccessToken(), accessGrant.getRefreshToken(), accessGrant.getExpireTime());
 			initApi();
 		}
