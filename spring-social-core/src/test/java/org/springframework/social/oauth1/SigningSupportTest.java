@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.util.LinkedMultiValueMap;
@@ -57,18 +56,6 @@ public class SigningSupportTest {
 		HttpRequest request = new SimpleClientHttpRequestFactory().createRequest(uri, HttpMethod.POST);
 		request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		String authorizationHeader = signingUtils.buildAuthorizationHeaderValue(request, "c2&a3=2+q".getBytes(), new OAuth1Credentials("9djdj82h48djs9d2", "consumer_secret", "kkk9d7dh3k39sjv7", "token_secret"));
-		assertAuthorizationHeader(authorizationHeader, "qz6HT3AG1Z9J%2BP99O4HeMtClGeY%3D");
-	}
-	
-	@Test
-	public void spring30buildAuthorizationHeaderValue() throws Exception {
-		SigningSupport signingUtils = new SigningSupport();
-		signingUtils.setTimestampGenerator(new MockTimestampGenerator(123456789, 987654321));
-		URI uri = URIBuilder.fromUri("http://example.com/request").queryParam("b5", "=%3D").queryParam("a3", "a").queryParam("c@", "")
-			.queryParam("a2", "r b").build();
-		ClientHttpRequest request = new SimpleClientHttpRequestFactory().createRequest(uri, HttpMethod.POST);
-		request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		String authorizationHeader = signingUtils.spring30buildAuthorizationHeaderValue(request, "c2&a3=2+q".getBytes(), new OAuth1Credentials("9djdj82h48djs9d2", "consumer_secret", "kkk9d7dh3k39sjv7", "token_secret"));
 		assertAuthorizationHeader(authorizationHeader, "qz6HT3AG1Z9J%2BP99O4HeMtClGeY%3D");
 	}
 

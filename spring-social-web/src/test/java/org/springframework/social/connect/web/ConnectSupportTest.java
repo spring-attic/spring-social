@@ -376,14 +376,6 @@ public class ConnectSupportTest {
 					assertNull(additionalParameters);
 					return new OAuthToken("accessToken", "accessTokenSecret");
 				}								
-
-				private String callbackQuery(String callbackUrl) {
-					String callbackQuery = "";
-					if (callbackUrl != null) {
-						callbackQuery = "?oauth_callback=" + callbackUrl;
-					}
-					return callbackQuery;
-				}				
 			};
 		}
 		
