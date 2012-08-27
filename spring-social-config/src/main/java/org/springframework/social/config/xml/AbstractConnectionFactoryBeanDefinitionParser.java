@@ -59,8 +59,7 @@ public abstract class AbstractConnectionFactoryBeanDefinitionParser implements B
 	private BeanDefinition getConnectionFactoryLocatorBeanDefinition(ParserContext parserContext) {
 		if (!parserContext.getRegistry().containsBeanDefinition(CONNECTION_FACTORY_LOCATOR_ID)) {		
 			BeanDefinition connFactoryLocatorBeanDef = BeanDefinitionBuilder.genericBeanDefinition(ConnectionFactoryRegistry.class).getBeanDefinition();
-			BeanComponentDefinition connFactoryLocatorBeanCompDef = new BeanComponentDefinition(connFactoryLocatorBeanDef, CONNECTION_FACTORY_LOCATOR_ID);		
-			parserContext.registerBeanComponent(connFactoryLocatorBeanCompDef);
+			parserContext.registerBeanComponent(new BeanComponentDefinition(connFactoryLocatorBeanDef, CONNECTION_FACTORY_LOCATOR_ID));
 		}		
 		BeanDefinition connectionFactoryLocatorBD = parserContext.getRegistry().getBeanDefinition(CONNECTION_FACTORY_LOCATOR_ID);
 		return connectionFactoryLocatorBD;

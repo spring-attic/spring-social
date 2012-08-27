@@ -11,7 +11,7 @@
 	<!-- SET UP SOME CONNECTION FACTORIES -->
 	<social:twitter app-id="twitterkey" app-secret="twittersecret" />
 	<social:facebook app-id="fbKey" app-secret="fbSecret" />
-
+	<social:jdbc-connection-repository />
 
 
 

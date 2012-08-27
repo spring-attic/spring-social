@@ -130,7 +130,9 @@ project('spring-social-config') {
       compile project(':spring-social-web')
       compile ("org.springframework.social:spring-social-twitter:$version") { transitive = false }
       compile ("org.springframework.social:spring-social-facebook:$version") { transitive = false }
+      testCompile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
       testCompile "com.h2database:h2:$h2Version"
+      testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
     }
 }
 
