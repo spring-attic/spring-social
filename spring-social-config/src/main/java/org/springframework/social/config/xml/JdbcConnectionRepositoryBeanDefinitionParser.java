@@ -15,7 +15,9 @@
  */
 package org.springframework.social.config.xml;
 
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.parsing.BeanComponentDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
@@ -49,7 +51,7 @@ public class JdbcConnectionRepositoryBeanDefinitionParser implements BeanDefinit
 				.addConstructorArgReference(connectionFactoryLocatorRef)
 				.addConstructorArgReference(encryptorRef)
 				.getBeanDefinition();
-		parserContext.registerBeanComponent(new BeanComponentDefinition(usersConnectionRepositoryBD, USERS_CONNECTION_REPOSITORY_ID));
+		parserContext.getRegistry().registerBeanDefinition(USERS_CONNECTION_REPOSITORY_ID, decorateWithScopedProxy(USERS_CONNECTION_REPOSITORY_ID, usersConnectionRepositoryBD, parserContext));
 		return usersConnectionRepositoryBD;
 	}
 	
@@ -64,13 +66,19 @@ public class JdbcConnectionRepositoryBeanDefinitionParser implements BeanDefinit
 	}
 	
 	private BeanDefinition registerConnectionRepository(ParserContext parserContext, BeanDefinition usersConnectionRepositoryBD) {
-		BeanDefinition connectionRepositoryDB = BeanDefinitionBuilder.genericBeanDefinition().addConstructorArgValue(USER_ID_STRING_ID).getBeanDefinition();
-		connectionRepositoryDB.setFactoryBeanName(USERS_CONNECTION_REPOSITORY_ID);
-		connectionRepositoryDB.setFactoryMethodName(CREATE_CONNECTION_REPOSITORY);
-		connectionRepositoryDB.setScope("request");
-		// TODO: Set scoped proxy on this somehow
-		parserContext.registerBeanComponent(new BeanComponentDefinition(connectionRepositoryDB, CONNECTION_REPOSITORY_ID));
-		return connectionRepositoryDB;
+		BeanDefinition connectionRepositoryBD = BeanDefinitionBuilder.genericBeanDefinition().addConstructorArgValue(USER_ID_STRING_ID).getBeanDefinition();
+		connectionRepositoryBD.setFactoryBeanName(USERS_CONNECTION_REPOSITORY_ID);
+		connectionRepositoryBD.setFactoryMethodName(CREATE_CONNECTION_REPOSITORY);
+		connectionRepositoryBD.setScope("request");
+		parserContext.getRegistry().registerBeanDefinition(CONNECTION_REPOSITORY_ID, decorateWithScopedProxy(CONNECTION_REPOSITORY_ID, connectionRepositoryBD, parserContext));
+		return connectionRepositoryBD;
+	}
+
+	private BeanDefinition decorateWithScopedProxy(String beanName, BeanDefinition beanDefinition, ParserContext parserContext) {
+		BeanDefinitionHolder bdHolder = new BeanDefinitionHolder(beanDefinition, beanName + "_target");
+		BeanDefinitionHolder scopedProxyHolder = ScopedProxyUtils.createScopedProxy(bdHolder, parserContext.getRegistry(), false);
+		parserContext.registerBeanComponent(new BeanComponentDefinition(bdHolder));
+		return scopedProxyHolder.getBeanDefinition();
 	}
 
 }

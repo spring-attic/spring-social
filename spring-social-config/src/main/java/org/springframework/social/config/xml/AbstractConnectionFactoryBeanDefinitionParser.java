@@ -18,8 +18,10 @@ package org.springframework.social.config.xml;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.parsing.BeanComponentDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
@@ -40,6 +42,11 @@ public abstract class AbstractConnectionFactoryBeanDefinitionParser implements B
 
 	public final BeanDefinition parse(Element element, ParserContext parserContext) {
 		BeanDefinition connectionFactoryLocatorBD = getConnectionFactoryLocatorBeanDefinition(parserContext);
+		
+		// BIG TODO: Can't pass in property placeholders for app-id or app-secret because the connection factory itself is never
+		//           defined via a BeanDefinition and thus, Spring has no opportunity to perform the replacement of the placeholders.
+		//           Need to create the CF as a bean definition and then register it with the CFL.
+		
 		ConnectionFactory<?> cf = getConnectionFactory(element.getAttribute(APP_ID), element.getAttribute(APP_SECRET));
 		addConnectionFactory(connectionFactoryLocatorBD, cf);
 		return connectionFactoryLocatorBD;
@@ -59,10 +66,17 @@ public abstract class AbstractConnectionFactoryBeanDefinitionParser implements B
 	private BeanDefinition getConnectionFactoryLocatorBeanDefinition(ParserContext parserContext) {
 		if (!parserContext.getRegistry().containsBeanDefinition(CONNECTION_FACTORY_LOCATOR_ID)) {		
 			BeanDefinition connFactoryLocatorBeanDef = BeanDefinitionBuilder.genericBeanDefinition(ConnectionFactoryRegistry.class).getBeanDefinition();
-			parserContext.registerBeanComponent(new BeanComponentDefinition(connFactoryLocatorBeanDef, CONNECTION_FACTORY_LOCATOR_ID));
+			parserContext.getRegistry().registerBeanDefinition(CONNECTION_FACTORY_LOCATOR_ID, decorateWithScopedProxy(CONNECTION_FACTORY_LOCATOR_ID, connFactoryLocatorBeanDef, parserContext));
 		}		
-		BeanDefinition connectionFactoryLocatorBD = parserContext.getRegistry().getBeanDefinition(CONNECTION_FACTORY_LOCATOR_ID);
+
+		BeanDefinition connectionFactoryLocatorBD = parserContext.getRegistry().getBeanDefinition(CONNECTION_FACTORY_LOCATOR_ID + "_target");
 		return connectionFactoryLocatorBD;
 	}
 	
+	private BeanDefinition decorateWithScopedProxy(String beanName, BeanDefinition beanDefinition, ParserContext parserContext) {
+		BeanDefinitionHolder bdHolder = new BeanDefinitionHolder(beanDefinition, beanName + "_target");
+		BeanDefinitionHolder scopedProxyHolder = ScopedProxyUtils.createScopedProxy(bdHolder, parserContext.getRegistry(), false);
+		parserContext.registerBeanComponent(new BeanComponentDefinition(bdHolder));
+		return scopedProxyHolder.getBeanDefinition();
+	}
 }

@@ -19,7 +19,6 @@ import static org.junit.Assert.*;
 
 import javax.inject.Inject;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
@@ -55,16 +54,6 @@ public class SocialNamespaceTest {
 		// TODO: Assert that key/secret are properly set
 		assertNotNull(cfl.getConnectionFactory(Twitter.class));
 		assertNotNull(cfl.getConnectionFactory(Facebook.class));
-	}
-
-	@Test
-	@Ignore
-	public void jdbcUsersConnectionRepository() {
-		assertTrue(context.containsBean("usersConnectionRepository"));
-		ConnectionFactoryLocator cfl = context.getBean(ConnectionFactoryLocator.class);
-		UsersConnectionRepository usersConnectionRepository = context.getBean(UsersConnectionRepository.class);
-		ConnectionRepository connectionRepository = usersConnectionRepository.createConnectionRepository("bob");
-		testConnectionRepository(cfl, connectionRepository);
 	}
 
 	@Test
