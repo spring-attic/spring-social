@@ -15,20 +15,16 @@
  */
 package org.springframework.social.oauth1;
 
-import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
-import org.springframework.util.ClassUtils;
 import org.springframework.web.client.RestTemplate;
 
 /**
  * Factory for RestTemplate instances that execute requests for resources protected by the OAuth 1 protocol.
  * Encapsulates the configuration of the interceptor that adds the necessary Authorization header to each request before it is executed.
- * Also hides the differences between Spring 3.0.x and 3.1 implementation.
  * 
  * <h4>Parameter Encoding</h4>
  * 
@@ -44,64 +40,17 @@ import org.springframework.web.client.RestTemplate;
  * @author Keith Donald
  */
 class ProtectedResourceClientFactory {
-
-	private static boolean interceptorsSupported = ClassUtils.isPresent("org.springframework.http.client.ClientHttpRequestInterceptor", ProtectedResourceClientFactory.class.getClassLoader());
 	
-	private static boolean listBasedInterceptors = false;
-	
-	private static Method setInterceptorsMethod;
-	
-	static {
-		if (interceptorsSupported) {
-			try {
-				setInterceptorsMethod = RestTemplate.class.getMethod("setInterceptors", List.class);
-				listBasedInterceptors = true;
-			} catch (NoSuchMethodException e) {
-				try {
-					setInterceptorsMethod = RestTemplate.class.getMethod("setInterceptors", new ClientHttpRequestInterceptor[0].getClass());
-				} catch (NoSuchMethodException shouldntHappen) {}
-			}
-		}
-	}
-
 	/**
 	 * Constructs a RestTemplate that adds the OAuth1 Authorization header to each request before it is executed.
 	 */
 	public static RestTemplate create(OAuth1Credentials credentials) {
 		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
-		if (interceptorsSupported) {
-			// favored
-			OAuth1RequestInterceptor interceptor = new OAuth1RequestInterceptor(credentials);
-			try {
-				if (listBasedInterceptors) {
-					List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
-					interceptors.add(interceptor);
-					setInterceptorsMethod.invoke(client, interceptors);			
-				} else {
-					setInterceptorsMethod.invoke(client, new Object[] {new ClientHttpRequestInterceptor[] { interceptor }});
-				}
-			} catch (Exception shouldntHappen) {}
-		} else {
-			// 3.0.x compatibility
-			client.setRequestFactory(new Spring30OAuth1RequestFactory(client.getRequestFactory(), credentials));
-		}
+		OAuth1RequestInterceptor interceptor = new OAuth1RequestInterceptor(credentials);
+		List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
+		interceptors.add(interceptor);
+		client.setInterceptors(interceptors);
 		return client;
-	}
-
-	/**
-	 * Wraps a given ClientHttpRequestFactory with Spring30OAuth1RequestFactory, if necessary to support OAuth request signing.
-	 * If Spring 3.1 interceptors are available, no wrapping is necessary and the original request factory is returned.
-	 * @param requestFactory the request factory to wrap
-	 * @param consumerKey the consumer key
-	 * @param consumerSecret the consumer secret
-	 * @param accessToken the access token
-	 * @param accessTokenSecret the access token secret
-	 */
-	public static ClientHttpRequestFactory addOAuthSigning(ClientHttpRequestFactory requestFactory, OAuth1Credentials credentials) {
-		if (interceptorsSupported) {
-			return requestFactory;
-		}		
-		return new Spring30OAuth1RequestFactory(requestFactory, credentials);
 	}
 	
 }

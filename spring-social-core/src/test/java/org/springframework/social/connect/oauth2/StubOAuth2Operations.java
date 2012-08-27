@@ -35,6 +35,14 @@ class StubOAuth2Operations implements OAuth2Operations {
 		return new AccessGrant("12345", null, "23456", 3600);
 	}
 	
+	public AccessGrant exchangeCredentialsForAccess(String username, String password, MultiValueMap<String, String> additionalParameters) {
+		return new AccessGrant("12345", null, "23456", 3600);
+	}
+	
+	public AccessGrant refreshAccess(String refreshToken, MultiValueMap<String, String> additionalParameters) {
+		return new AccessGrant("12345", null,  "23456", 3600);
+	}
+	
 	public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
 		return new AccessGrant("12345", null,  "23456", 3600);
 	}

@@ -39,7 +39,6 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
@@ -80,18 +79,6 @@ class SigningSupport {
 		return buildAuthorizationHeaderValue(request.getMethod(), request.getURI(), oauthParameters, additionalParameters, oauth1Credentials.getConsumerSecret(), oauth1Credentials.getAccessTokenSecret());
 	}
 	
-	/**
-	 * Builds an authorization header from a request.
-	 * Expects that the request's query parameters are form-encoded.
-	 * This method is a Spring 3.0-compatible version of buildAuthorizationHeaderValue(); planned for removal in Spring Social 1.1
-	 */
-	public String spring30buildAuthorizationHeaderValue(ClientHttpRequest request, byte[] body, OAuth1Credentials oauth1Credentials) {
-		Map<String, String> oauthParameters = commonOAuthParameters(oauth1Credentials.getConsumerKey());
-		oauthParameters.put("oauth_token", oauth1Credentials.getAccessToken());
-		MultiValueMap<String, String> additionalParameters = union(readFormParameters(request.getHeaders().getContentType(), body), parseFormParameters(request.getURI().getRawQuery()));
-		return buildAuthorizationHeaderValue(request.getMethod(), request.getURI(), oauthParameters, additionalParameters, oauth1Credentials.getConsumerSecret(), oauth1Credentials.getAccessTokenSecret());
-	}
-
 	Map<String, String> commonOAuthParameters(String consumerKey) {
 		Map<String, String> oauthParameters = new HashMap<String, String>();
 		oauthParameters.put("oauth_consumer_key", consumerKey);

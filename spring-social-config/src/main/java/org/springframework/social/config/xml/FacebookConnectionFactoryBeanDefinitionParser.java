@@ -15,10 +15,14 @@
  */
 package org.springframework.social.config.xml;
 
-public class SimpleUserIdSource implements UserIdSource {
+import org.springframework.social.connect.ConnectionFactory;
+import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 
-	public String getUserId() {
-		return "bob";
+public class FacebookConnectionFactoryBeanDefinitionParser extends AbstractConnectionFactoryBeanDefinitionParser {
+
+	@Override
+	protected ConnectionFactory<?> getConnectionFactory(String appId, String appSecret) {
+		return new FacebookConnectionFactory(appId, appSecret);
 	}
-	
+
 }

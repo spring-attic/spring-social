@@ -92,8 +92,7 @@ public class OAuth1TemplateTest {
 				.andExpect(headerContains("Authorization", "oauth_nonce=\""))
 				.andExpect(headerContains("Authorization", "oauth_signature=\""))
 				.andExpect(headerContains("Authorization", "oauth_timestamp=\""))
-				.andRespond(
-						withResponse(new ClassPathResource("requestToken.formencoded", getClass()), responseHeaders));
+				.andRespond(withSuccess(new ClassPathResource("requestToken.formencoded", getClass()), MediaType.APPLICATION_FORM_URLENCODED));
 
 		OAuthToken requestToken = oauth10a.fetchRequestToken("http://www.someclient.com/oauth/callback", null);
 		assertEquals("1234567890", requestToken.getValue());
@@ -113,7 +112,7 @@ public class OAuth1TemplateTest {
 				.andExpect(headerContains("Authorization", "oauth_nonce=\""))
 				.andExpect(headerContains("Authorization", "oauth_signature=\""))
 				.andExpect(headerContains("Authorization", "oauth_timestamp=\""))
-				.andRespond(withResponse(new ClassPathResource("requestToken.formencoded", getClass()), responseHeaders));
+				.andRespond(withSuccess(new ClassPathResource("requestToken.formencoded", getClass()), MediaType.APPLICATION_FORM_URLENCODED));
 
 		OAuthToken requestToken = oauth10.fetchRequestToken("http://www.someclient.com/oauth/callback", null);
 		assertEquals("1234567890", requestToken.getValue());
@@ -136,7 +135,7 @@ public class OAuth1TemplateTest {
 				.andExpect(headerContains("Authorization", "oauth_nonce=\""))
 				.andExpect(headerContains("Authorization", "oauth_signature=\""))
 				.andExpect(headerContains("Authorization", "oauth_timestamp=\""))
-				.andRespond(withResponse(new ClassPathResource("accessToken.formencoded", getClass()), responseHeaders));
+				.andRespond(withSuccess(new ClassPathResource("accessToken.formencoded", getClass()), MediaType.APPLICATION_FORM_URLENCODED));
 
 		OAuthToken requestToken = new OAuthToken("1234567890", "abcdefghijklmnop");
 		OAuthToken accessToken = oauth10a.exchangeForAccessToken(new AuthorizedRequestToken(requestToken, "verifier"), null);
@@ -159,7 +158,7 @@ public class OAuth1TemplateTest {
 				.andExpect(headerContains("Authorization", "oauth_nonce=\""))
 				.andExpect(headerContains("Authorization", "oauth_signature=\""))
 				.andExpect(headerContains("Authorization", "oauth_timestamp=\""))
-				.andRespond(withResponse(new ClassPathResource("accessToken.formencoded", getClass()), responseHeaders));
+				.andRespond(withSuccess(new ClassPathResource("accessToken.formencoded", getClass()), MediaType.APPLICATION_FORM_URLENCODED));
 
 		OAuthToken requestToken = new OAuthToken("1234567890", "abcdefghijklmnop");
 		OAuthToken accessToken = oauth10.exchangeForAccessToken(new AuthorizedRequestToken(requestToken, "verifier"), null);

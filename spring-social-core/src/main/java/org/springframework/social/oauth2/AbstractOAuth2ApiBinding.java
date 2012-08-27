@@ -18,10 +18,12 @@ package org.springframework.social.oauth2;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -57,7 +59,7 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 	 */
 	protected AbstractOAuth2ApiBinding(String accessToken) {
 		this.accessToken = accessToken;
-		restTemplate = ProtectedResourceClientFactory.create(accessToken, getOAuth2Version());
+		restTemplate = createRestTemplate(accessToken, getOAuth2Version());
 		restTemplate.setMessageConverters(getMessageConverters());
 		configureRestTemplate(restTemplate);
 	}
@@ -67,11 +69,7 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 	 * @param requestFactory the request factory
 	 */
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
-		if (isAuthorized()) {
-			restTemplate.setRequestFactory(ProtectedResourceClientFactory.addOAuthSigning(requestFactory, accessToken, getOAuth2Version()));
-		} else {
-			restTemplate.setRequestFactory(requestFactory);
-		}
+		restTemplate.setRequestFactory(requestFactory);
 	}
 
 	// implementing ApiBinding
@@ -163,4 +161,12 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 		return converter;
 	}
 
+	private RestTemplate createRestTemplate(String accessToken, OAuth2Version version) {
+		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
+		OAuth2RequestInterceptor interceptor = new OAuth2RequestInterceptor(accessToken, version);
+		List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
+		interceptors.add(interceptor);
+		client.setInterceptors(interceptors);
+		return client;
+	}
 }

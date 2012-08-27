@@ -15,10 +15,14 @@
  */
 package org.springframework.social.config.xml;
 
-public class SimpleUserIdSource implements UserIdSource {
+import org.springframework.social.connect.ConnectionFactory;
+import org.springframework.social.twitter.connect.TwitterConnectionFactory;
 
-	public String getUserId() {
-		return "bob";
+public class TwitterConnectionFactoryBeanDefinitionParser extends AbstractConnectionFactoryBeanDefinitionParser {
+
+	@Override
+	protected ConnectionFactory<?> getConnectionFactory(String appId, String appSecret) {
+		return new TwitterConnectionFactory(appId, appSecret);
 	}
 	
 }

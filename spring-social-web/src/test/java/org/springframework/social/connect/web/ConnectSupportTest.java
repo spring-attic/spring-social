@@ -17,7 +17,6 @@ package org.springframework.social.connect.web;
 
 import static org.junit.Assert.*;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -377,14 +376,6 @@ public class ConnectSupportTest {
 					assertNull(additionalParameters);
 					return new OAuthToken("accessToken", "accessTokenSecret");
 				}								
-
-				private String callbackQuery(String callbackUrl) {
-					String callbackQuery = "";
-					if (callbackUrl != null) {
-						callbackQuery = "?oauth_callback=" + callbackUrl;
-					}
-					return callbackQuery;
-				}				
 			};
 		}
 		
@@ -426,7 +417,13 @@ public class ConnectSupportTest {
 					assertNull(additionalParameters);
 					return new AccessGrant("access-token");
 				}
+				public AccessGrant exchangeCredentialsForAccess(String username, String password, MultiValueMap<String, String> additionalParameters) {
+					return null;
+				}				
 				public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
+					return null;
+				}
+				public AccessGrant refreshAccess(String refreshToken, MultiValueMap<String, String> additionalParameters) {
 					return null;
 				}
 			};

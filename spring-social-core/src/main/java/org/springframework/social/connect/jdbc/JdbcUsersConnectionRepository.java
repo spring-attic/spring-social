@@ -39,7 +39,7 @@ import org.springframework.social.connect.UsersConnectionRepository;
 
 /**
  * {@link UsersConnectionRepository} that uses the JDBC API to persist connection data to a relational database.
- * The supporting schema is defined in JdbcMultiUserConnectionRepository.sql.
+ * The supporting schema is defined in JdbcUsersConnectionRepository.sql.
  * @author Keith Donald
  */
 public class JdbcUsersConnectionRepository implements UsersConnectionRepository {

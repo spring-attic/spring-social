@@ -116,23 +116,13 @@
 </dependency>]]>
 		</programlisting>
 		<para>
-			If you're developing your own client module (<xref linkend="implementing"/>) and API binding, you'll need the test module to test it:
-		</para>
-		<programlisting language="xml"><![CDATA[
-<dependency>
-    <groupId>org.springframework.social</groupId>
-    <artifactId>spring-social-test</artifactId>
-    <version>${spring-social.version}</version>
-</dependency>]]>
-		</programlisting>
-		<para>
 			If you are developing against a milestone or release candidate version, such as 1.0.0.M1 or 1.0.0.RC1, you will need to add the following repository in order to resolve the artifact:
 		</para>
 		<programlisting language="xml"><![CDATA[
 <repository>
     <id>org.springframework.maven.milestone</id>
     <name>Spring Maven Milestone Repository</name>
-    <url>http://maven.springframework.org/milestone</url>
+		<url>http://repo.springsource.org/libs-milestone-local</url>
 </repository>]]>
 		</programlisting>		
 		<para>
@@ -142,7 +132,7 @@
 <repository>
     <id>org.springframework.maven.snapshot</id>
     <name>Spring Maven Snapshot Repository</name>
-    <url>http://maven.springframework.org/snapshot</url>
+		<url>http://repo.springsource.org/libs-snapshot-local</url>
 </repository>]]>
 		</programlisting>
 		<section id="overview-client-modules">

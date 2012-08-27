@@ -15,10 +15,15 @@
  */
 package org.springframework.social.config.xml;
 
-public class SimpleUserIdSource implements UserIdSource {
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.xml.BeanDefinitionParser;
+import org.springframework.beans.factory.xml.ParserContext;
+import org.w3c.dom.Element;
 
-	public String getUserId() {
-		return "bob";
-	}
+public class JdbcConnectionRepositoryBeanDefinitionParser implements BeanDefinitionParser {
+
+	public BeanDefinition parse(Element element, ParserContext context) {
+		return null;
+	}	
 	
 }

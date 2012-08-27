@@ -18,10 +18,12 @@ package org.springframework.social.oauth1;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -60,7 +62,7 @@ public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
 	 */
 	protected AbstractOAuth1ApiBinding(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
 		credentials = new OAuth1Credentials(consumerKey, consumerSecret, accessToken, accessTokenSecret);
-		restTemplate = ProtectedResourceClientFactory.create(credentials);
+		restTemplate = createRestTemplate(credentials);
 		restTemplate.setMessageConverters(getMessageConverters());
 		configureRestTemplate(restTemplate);
 	}
@@ -70,11 +72,7 @@ public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
 	 * @param requestFactory the request factory
 	 */
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
-		if (isAuthorized()) {
-			restTemplate.setRequestFactory(ProtectedResourceClientFactory.addOAuthSigning(requestFactory, credentials));
-		} else {
-			restTemplate.setRequestFactory(requestFactory);
-		}
+		restTemplate.setRequestFactory(requestFactory);
 	}
 
 	// implementing ApiBinding
@@ -154,6 +152,15 @@ public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
 		ByteArrayHttpMessageConverter converter = new ByteArrayHttpMessageConverter();
 		converter.setSupportedMediaTypes(Arrays.asList(MediaType.IMAGE_JPEG, MediaType.IMAGE_GIF, MediaType.IMAGE_PNG));
 		return converter;
+	}
+	
+	private RestTemplate createRestTemplate(OAuth1Credentials credentials) {
+		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
+		OAuth1RequestInterceptor interceptor = new OAuth1RequestInterceptor(credentials);
+		List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
+		interceptors.add(interceptor);
+		client.setInterceptors(interceptors);
+		return client;
 	}
 	
 }

@@ -3,30 +3,20 @@
 	xmlns:social="http://www.springframework.org/schema/social"
 	targetNamespace="http://www.springframework.org/schema/social">
 
-	<xs:element name="config">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="social:twitter" />
-				<xs:element ref="social:facebook" />
-				<xs:element ref="social:jdbc-connection-repository" />
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-
 	<xs:element name="twitter">
 		<xs:complexType>
-			<xs:attribute name="consumer-key" use="required" type="xs:string" />
-			<xs:attribute name="consumer-secret" use="required" type="xs:string" />
+			<xs:attribute name="app-id" use="required" type="xs:string" />
+			<xs:attribute name="app-secret" use="required" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
 
 	<xs:element name="facebook">
 		<xs:complexType>
-			<xs:attribute name="consumer-key" use="required" type="xs:string" />
-			<xs:attribute name="consumer-secret" use="required" type="xs:string" />
+			<xs:attribute name="app-id" use="required" type="xs:string" />
+			<xs:attribute name="app-secret" use="required" type="xs:string" />
 		</xs:complexType>
 	</xs:element>
-
+	
 	<xs:element name="jdbc-connection-repository">
 		<xs:complexType>
 			<xs:attribute name="data-source-ref" use="optional" type="xs:string" default="dataSource" />
