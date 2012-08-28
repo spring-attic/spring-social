@@ -34,26 +34,25 @@ import org.w3c.dom.Element;
 class JdbcConnectionRepositoryBeanDefinitionParser implements BeanDefinitionParser {
 
 	public BeanDefinition parse(Element element, ParserContext parserContext) {		
+		String connectionRepositoryId = element.getAttribute("connection-repository-id");
+		String usersConnectionRepositoryId = element.getAttribute("users-connection-repository-id");
 		String connectionFactoryLocatorRef = element.getAttribute("connection-factory-locator-ref");
 		String dataSourceRef = element.getAttribute("data-source-ref");
 		String encryptorRef = element.getAttribute("encryptor-ref");
 		String userIdSourceRef = element.getAttribute("user-id-source-ref");
 		
-		BeanDefinition usersConnectionRepositoryBD = registerUsersConnectionRepositoryBeanDefinition(parserContext, connectionFactoryLocatorRef, dataSourceRef, encryptorRef);
+		registerUsersConnectionRepositoryBeanDefinition(parserContext, usersConnectionRepositoryId, connectionFactoryLocatorRef, dataSourceRef, encryptorRef);
 		registerUserIdBeanDefinition(parserContext, userIdSourceRef);
-		BeanDefinition connectionRepositoryDB = registerConnectionRepository(parserContext, usersConnectionRepositoryBD);
-
-		return connectionRepositoryDB;
+		return registerConnectionRepository(parserContext, usersConnectionRepositoryId, connectionRepositoryId);
 	}
 
-	private BeanDefinition registerUsersConnectionRepositoryBeanDefinition(ParserContext parserContext, String connectionFactoryLocatorRef, String dataSourceRef, String encryptorRef) {
+	private void registerUsersConnectionRepositoryBeanDefinition(ParserContext parserContext, String usersConnectionRepositoryId, String connectionFactoryLocatorRef, String dataSourceRef, String encryptorRef) {
 		BeanDefinition usersConnectionRepositoryBD = BeanDefinitionBuilder.genericBeanDefinition(JdbcUsersConnectionRepository.class)
 				.addConstructorArgReference(dataSourceRef)
 				.addConstructorArgReference(connectionFactoryLocatorRef)
 				.addConstructorArgReference(encryptorRef)
 				.getBeanDefinition();
-		parserContext.getRegistry().registerBeanDefinition(USERS_CONNECTION_REPOSITORY_ID, decorateWithScopedProxy(USERS_CONNECTION_REPOSITORY_ID, usersConnectionRepositoryBD, parserContext));
-		return usersConnectionRepositoryBD;
+		parserContext.getRegistry().registerBeanDefinition(usersConnectionRepositoryId, decorateWithScopedProxy(usersConnectionRepositoryId, usersConnectionRepositoryBD, parserContext));
 	}
 	
 	// TODO: Kinda hackish...pushes a request-scoped String containing the name retrieved from the UserIdSource into the context.
@@ -66,28 +65,22 @@ class JdbcConnectionRepositoryBeanDefinitionParser implements BeanDefinitionPars
 		return userIdStringDB;
 	}
 	
-	private BeanDefinition registerConnectionRepository(ParserContext parserContext, BeanDefinition usersConnectionRepositoryBD) {
+	private BeanDefinition registerConnectionRepository(ParserContext parserContext, String usersConnectionRepositoryId, String connectionRepositoryId) {
 		BeanDefinition connectionRepositoryBD = BeanDefinitionBuilder.genericBeanDefinition().addConstructorArgValue(USER_ID_STRING_ID).getBeanDefinition();
-		connectionRepositoryBD.setFactoryBeanName(USERS_CONNECTION_REPOSITORY_ID);
-		connectionRepositoryBD.setFactoryMethodName(CREATE_CONNECTION_REPOSITORY);
+		connectionRepositoryBD.setFactoryBeanName(usersConnectionRepositoryId);
+		connectionRepositoryBD.setFactoryMethodName(CREATE_CONNECTION_REPOSITORY_METHOD_NAME);
 		connectionRepositoryBD.setScope("request");
-		parserContext.getRegistry().registerBeanDefinition(CONNECTION_REPOSITORY_ID, decorateWithScopedProxy(CONNECTION_REPOSITORY_ID, connectionRepositoryBD, parserContext));
+		parserContext.getRegistry().registerBeanDefinition(connectionRepositoryId, decorateWithScopedProxy(connectionRepositoryId, connectionRepositoryBD, parserContext));
 		return connectionRepositoryBD;
 	}
 
 	private BeanDefinition decorateWithScopedProxy(String beanName, BeanDefinition beanDefinition, ParserContext parserContext) {
-		BeanDefinitionHolder bdHolder = new BeanDefinitionHolder(beanDefinition, beanName + "_target");
-		BeanDefinitionHolder scopedProxyHolder = ScopedProxyUtils.createScopedProxy(bdHolder, parserContext.getRegistry(), false);
-		parserContext.registerBeanComponent(new BeanComponentDefinition(bdHolder));
-		return scopedProxyHolder.getBeanDefinition();
+		BeanDefinitionHolder beanDefinitionHolder = new BeanDefinitionHolder(beanDefinition, beanName);
+		return ScopedProxyUtils.createScopedProxy(beanDefinitionHolder, parserContext.getRegistry(), false).getBeanDefinition();
 	}
 
-	private static final String CREATE_CONNECTION_REPOSITORY = "createConnectionRepository";
+	private static final String CREATE_CONNECTION_REPOSITORY_METHOD_NAME = "createConnectionRepository";
 
-	private static final String USERS_CONNECTION_REPOSITORY_ID = "usersConnectionRepository";
-	
-	private static final String CONNECTION_REPOSITORY_ID = "connectionRepository";
-	
-	private static final String USER_ID_STRING_ID = "_userIdString";
+	private static final String USER_ID_STRING_ID = "__userIdString";
 	
 }

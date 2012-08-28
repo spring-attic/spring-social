@@ -59,7 +59,7 @@ public class SocialNamespaceTest {
 	@Test
 	public void userIdString() {
 		setupRequestScope();
-		String userId = context.getBean("_userIdString", String.class);
+		String userId = context.getBean("__userIdString", String.class);
 		assertEquals("habuma", userId);
 	}
 	

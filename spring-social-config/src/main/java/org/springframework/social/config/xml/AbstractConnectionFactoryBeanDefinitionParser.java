@@ -17,6 +17,7 @@ package org.springframework.social.config.xml;
 
 import java.util.List;
 
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.PropertyValue;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -66,13 +67,12 @@ abstract class AbstractConnectionFactoryBeanDefinitionParser implements BeanDefi
 	}
 
 	private BeanDefinition getConnectionFactoryLocatorBeanDefinition(ParserContext parserContext) {
-		String proxyTargetBeanId = CONNECTION_FACTORY_LOCATOR_ID + "_target";
 		if (!parserContext.getRegistry().containsBeanDefinition(CONNECTION_FACTORY_LOCATOR_ID)) {		
-			BeanDefinition connFactoryLocatorBeanDef = BeanDefinitionBuilder.genericBeanDefinition(ConnectionFactoryRegistry.class).getBeanDefinition();
-			BeanDefinitionHolder proxyTargetBeanDefinitionHolder = new BeanDefinitionHolder(connFactoryLocatorBeanDef, proxyTargetBeanId);
-			parserContext.getRegistry().registerBeanDefinition(CONNECTION_FACTORY_LOCATOR_ID, ScopedProxyUtils.decorateWithScopedProxy(parserContext, proxyTargetBeanDefinitionHolder, false));
+			BeanDefinitionHolder connFactoryLocatorBeanDefHolder = new BeanDefinitionHolder(BeanDefinitionBuilder.genericBeanDefinition(ConnectionFactoryRegistry.class).getBeanDefinition(), CONNECTION_FACTORY_LOCATOR_ID);			
+			BeanDefinitionHolder scopedProxy = ScopedProxyUtils.createScopedProxy(connFactoryLocatorBeanDefHolder, parserContext.getRegistry(), false);			
+			parserContext.getRegistry().registerBeanDefinition(scopedProxy.getBeanName(), scopedProxy.getBeanDefinition());
 		}		
-		BeanDefinition connectionFactoryLocatorBD = parserContext.getRegistry().getBeanDefinition(proxyTargetBeanId);
+		BeanDefinition connectionFactoryLocatorBD = parserContext.getRegistry().getBeanDefinition(ScopedProxyUtils.getTargetBeanName(CONNECTION_FACTORY_LOCATOR_ID));
 		return connectionFactoryLocatorBD;
 	}
 

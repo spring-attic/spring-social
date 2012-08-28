@@ -19,6 +19,8 @@
 	
 	<xs:element name="jdbc-connection-repository">
 		<xs:complexType>
+			<xs:attribute name="connection-repository-id" use="optional" type="xs:string" default="connectionRepository" />
+			<xs:attribute name="users-connection-repository-id" use="optional" type="xs:string" default="usersConnectionRepository" />
 			<xs:attribute name="connection-factory-locator-ref" use="optional" type="xs:string" default="connectionFactoryLocator" />
 			<xs:attribute name="data-source-ref" use="optional" type="xs:string" default="dataSource" />
  			<xs:attribute name="encryptor-ref" use="optional" type="xs:string" default="textEncryptor" />
