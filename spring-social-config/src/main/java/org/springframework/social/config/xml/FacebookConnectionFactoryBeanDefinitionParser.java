@@ -15,14 +15,16 @@
  */
 package org.springframework.social.config.xml;
 
-import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 
-public class FacebookConnectionFactoryBeanDefinitionParser extends AbstractConnectionFactoryBeanDefinitionParser {
+/**
+ * Implementation of {@link AbstractConnectionFactoryBeanDefinitionParser} that creates a {@link FacebookConnectionFactory}.
+ * @author Craig Walls
+ */
+class FacebookConnectionFactoryBeanDefinitionParser extends AbstractConnectionFactoryBeanDefinitionParser {
 
-	@Override
-	protected ConnectionFactory<?> getConnectionFactory(String appId, String appSecret) {
-		return new FacebookConnectionFactory(appId, appSecret);
+	public FacebookConnectionFactoryBeanDefinitionParser() {
+		super(FacebookConnectionFactory.class);
 	}
-
+	
 }

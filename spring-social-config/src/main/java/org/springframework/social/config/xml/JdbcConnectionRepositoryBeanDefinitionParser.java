@@ -22,16 +22,17 @@ import org.springframework.beans.factory.parsing.BeanComponentDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.BeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
+import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.jdbc.JdbcUsersConnectionRepository;
 import org.w3c.dom.Element;
 
-public class JdbcConnectionRepositoryBeanDefinitionParser implements BeanDefinitionParser {
+/**
+ * {@link BeanDefinitionParser} for creating {@link UsersConnectionRepository} (specifically, {@link JdbcUsersConnectionRepository}) and {@link ConnectionRepository} beans that use JDBC as the persistence mechanism.
+ * @author Craig Walls
+ */
+class JdbcConnectionRepositoryBeanDefinitionParser implements BeanDefinitionParser {
 
-	private static final String CREATE_CONNECTION_REPOSITORY = "createConnectionRepository";
-	private static final String USERS_CONNECTION_REPOSITORY_ID = "usersConnectionRepository";
-	private static final String CONNECTION_REPOSITORY_ID = "connectionRepository";
-	private static final String USER_ID_STRING_ID = "_userIdString";
-	
 	public BeanDefinition parse(Element element, ParserContext parserContext) {		
 		String connectionFactoryLocatorRef = element.getAttribute("connection-factory-locator-ref");
 		String dataSourceRef = element.getAttribute("data-source-ref");
@@ -81,4 +82,12 @@ public class JdbcConnectionRepositoryBeanDefinitionParser implements BeanDefinit
 		return scopedProxyHolder.getBeanDefinition();
 	}
 
+	private static final String CREATE_CONNECTION_REPOSITORY = "createConnectionRepository";
+
+	private static final String USERS_CONNECTION_REPOSITORY_ID = "usersConnectionRepository";
+	
+	private static final String CONNECTION_REPOSITORY_ID = "connectionRepository";
+	
+	private static final String USER_ID_STRING_ID = "_userIdString";
+	
 }

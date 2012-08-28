@@ -15,14 +15,16 @@
  */
 package org.springframework.social.config.xml;
 
-import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.twitter.connect.TwitterConnectionFactory;
 
-public class TwitterConnectionFactoryBeanDefinitionParser extends AbstractConnectionFactoryBeanDefinitionParser {
+/**
+ * Implementation of {@link AbstractConnectionFactoryBeanDefinitionParser} that creates a {@link TwitterConnectionFactory}.
+ * @author Craig Walls
+ */
+class TwitterConnectionFactoryBeanDefinitionParser extends AbstractConnectionFactoryBeanDefinitionParser {
 
-	@Override
-	protected ConnectionFactory<?> getConnectionFactory(String appId, String appSecret) {
-		return new TwitterConnectionFactory(appId, appSecret);
+	public TwitterConnectionFactoryBeanDefinitionParser() {
+		super(TwitterConnectionFactory.class);
 	}
-	
+
 }

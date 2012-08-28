@@ -15,8 +15,19 @@
  */
 package org.springframework.social.config.xml;
 
+import org.springframework.social.connect.ConnectionRepository;
+
+/**
+ * Strategy interface for determining a value that uniquely identifies a user within an application.
+ * Used when creating a {@link ConnectionRepository} bean to manage connections for a user.
+ *  
+ * @author Craig Walls
+ */
 public interface UserIdSource {
 
+	/**
+	 * @return A String that uniquely identifies a user within the application.
+	 */
 	String getUserId();
 
 }

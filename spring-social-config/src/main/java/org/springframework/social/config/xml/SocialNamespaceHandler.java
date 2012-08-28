@@ -26,6 +26,11 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+/**
+ * {@link NamespaceHandler} for Spring Social
+ * 
+ * @author Craig Walls
+ */
 public class SocialNamespaceHandler implements NamespaceHandler {
 
     private final Map<String, BeanDefinitionParser> parsers = new HashMap<String, BeanDefinitionParser>();
