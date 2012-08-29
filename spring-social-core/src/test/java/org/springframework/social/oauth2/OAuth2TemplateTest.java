@@ -253,6 +253,28 @@ public class OAuth2TemplateTest {
 		assertNull(accessGrant.getExpireTime());
 		assertNull(accessGrant.getScope());
 	}
+
+    @Test
+	public void authenticateClient() {
+		AccessGrant accessGrant = clientCredentials("accessToken_noUser.json");
+		assertEquals("8d0a88a5c4f1ae4937ad864cafa8e857", accessGrant.getAccessToken());
+		long approximateExpirationTime = System.currentTimeMillis() + 40735000;
+		long actualExpirationTime = (long) accessGrant.getExpireTime();
+		//allow for 1 second of wiggle room on expiration time.
+		assertTrue(approximateExpirationTime - actualExpirationTime < 1000);
+		assertEquals("read,write", accessGrant.getScope());
+	}
+
+	@Test
+	public void authenticateClient_paramBasedClientAuthentication() {
+		AccessGrant accessGrant = clientCredentials_paramBasedClientAuth("accessToken_noUser.json");
+		assertEquals("8d0a88a5c4f1ae4937ad864cafa8e857", accessGrant.getAccessToken());
+		long approximateExpirationTime = System.currentTimeMillis() + 40735000;
+		long actualExpirationTime = (long) accessGrant.getExpireTime();
+		//allow for 1 second of wiggle room on expiration time.
+		assertTrue(approximateExpirationTime - actualExpirationTime < 1000);
+		assertEquals("read,write", accessGrant.getScope());
+	}
 	
 	// parameter assertion tests
 
@@ -325,6 +347,28 @@ public class OAuth2TemplateTest {
 		OAuth2Parameters parameters = new OAuth2Parameters();
 		parameters.setScope("read,write");
 		return oauthTemplate.exchangeCredentialsForAccess("habuma", "letmein01", parameters);
+	}
+
+    private AccessGrant clientCredentials_paramBasedClientAuth(String responseFile) {
+		return clientCredentials(oAuth2TemplateParamBased, "client_id=client_id&client_secret=client_secret&", null, responseFile);
+	}
+
+	private AccessGrant clientCredentials(String responseFile) {
+		return clientCredentials(oAuth2Template, "", "Basic Y2xpZW50X2lkOmNsaWVudF9zZWNyZXQ=", responseFile);
+	}
+
+    private AccessGrant clientCredentials(OAuth2Template oauthTemplate, String expectedClientParams, String expectedAuthorizationHeader, String responseFile) {
+		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauthTemplate.getRestTemplate());
+		ResponseActions responseActions = mockServer.expect(requestTo(ACCESS_TOKEN_URL))
+				.andExpect(method(POST))
+				.andExpect(body(expectedClientParams + "grant_type=client_credentials&scope=read%2Cwrite"));
+		if (expectedAuthorizationHeader != null) {
+			responseActions.andExpect(header("Authorization", expectedAuthorizationHeader));
+		}
+		responseActions.andRespond(withSuccess(new ClassPathResource(responseFile, getClass()), MediaType.APPLICATION_JSON));
+		OAuth2Parameters parameters = new OAuth2Parameters();
+		parameters.setScope("read,write");
+		return oauthTemplate.authenticateClient("read,write");
 	}
 
 	private AccessGrant refreshToken_paramBasedClientAuth(String responseFile) {
