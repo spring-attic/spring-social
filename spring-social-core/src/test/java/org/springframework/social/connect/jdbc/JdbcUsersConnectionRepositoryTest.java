@@ -486,8 +486,12 @@ public class JdbcUsersConnectionRepositoryTest {
 				}
 				public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
 					return new AccessGrant("765432109", "read", "654321098", 3600);
-				}								
-			};
+				}
+
+                public AccessGrant authenticateClient(String scope) {
+                    return null;
+                }
+            };
 		}
 
 		public TestFacebookApi getApi(final String accessToken) {
@@ -499,7 +503,7 @@ public class JdbcUsersConnectionRepositoryTest {
 		}
 		
 	}
-		
+
 	public interface TestFacebookApi {
 		
 		String getAccessToken();
