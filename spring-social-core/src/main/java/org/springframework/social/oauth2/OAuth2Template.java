@@ -169,8 +169,21 @@ public class OAuth2Template implements OAuth2Operations {
 		}
 		return postForAccessGrant(accessTokenUrl, params);
 	}
-	
-	// subclassing hooks
+
+	public AccessGrant authenticateClient(String scope) {
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+		if (useParametersForClientAuthentication) {
+			params.set("client_id", clientId);
+			params.set("client_secret", clientSecret);
+		}
+		params.set("grant_type", "client_credentials");
+		if (scope != null) {
+			params.set("scope", scope);
+		}
+		return postForAccessGrant(accessTokenUrl, params);
+	}
+
+    // subclassing hooks
 	
 	/**
 	 * Creates the {@link RestTemplate} used to communicate with the provider's OAuth 2 API.
