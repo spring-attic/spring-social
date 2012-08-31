@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.springframework.social.config.xml;
 
-rootProject.name = 'spring-social'
+import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 
-include 'docs'
-include 'spring-social-core'
-include 'spring-social-web'
-include 'spring-social-config'
+/**
+ * Implementation of {@link AbstractConnectionFactoryBeanDefinitionParser} that creates a {@link FacebookConnectionFactory}.
+ * @author Craig Walls
+ */
+class FacebookConnectionFactoryBeanDefinitionParser extends AbstractConnectionFactoryBeanDefinitionParser {
+
+	public FacebookConnectionFactoryBeanDefinitionParser() {
+		super(FacebookConnectionFactory.class);
+	}
+	
+}

@@ -17,18 +17,20 @@ configure(allprojects) {
     sourceCompatibility=1.5
     targetCompatibility=1.5
 
-    h2Version = '1.3.168'
-    hamcrestVersion = '1.3'
-    httpComponentsVersion = '4.2.1'
-    jacksonVersion = '1.9.9'
-    javaxInjectVersion = '1'
-    junitVersion = '4.10'
-    mockitoVersion = '1.9.0'
-    servletApiVersion = '2.5'
-    springVersion = '3.1.2.RELEASE'
-    springSecurityCryptoVersion = '3.1.1.RELEASE'
-    springTestMvcVersion = '1.0.0.M1'
-    jspApiVersion = '2.2.1'
+    ext {
+      h2Version = '1.3.168'
+      hamcrestVersion = '1.3'
+      httpComponentsVersion = '4.2.1'
+      jacksonVersion = '1.9.9'
+      javaxInjectVersion = '1'
+      junitVersion = '4.10'
+      mockitoVersion = '1.9.0'
+      servletApiVersion = '2.5'
+      springVersion = '3.1.2.RELEASE'
+      springSecurityVersion = '3.1.1.RELEASE'
+      springTestMvcVersion = '1.0.0.M1'
+      jspApiVersion = '2.2.1'
+    }
 
     [compileJava, compileTestJava]*.options*.compilerArgs = ['-Xlint:none']
 
@@ -97,10 +99,10 @@ configure(subprojects) { subproject ->
 project('spring-social-core') {
     description = 'Foundational module containing the ServiceProvider Connect Framework and Service API invocation support.'
     dependencies {
-        compile ("org.springframework:spring-jdbc:$springVersion") { optional = true }
+        compile ("org.springframework:spring-jdbc:$springVersion", optional)
         compile ("org.springframework:spring-web:$springVersion")
-        compile ("org.springframework.security:spring-security-crypto:$springSecurityCryptoVersion") { optional = true }
-        compile ("org.apache.httpcomponents:httpclient:$httpComponentsVersion") { optional = true }
+        compile ("org.springframework.security:spring-security-crypto:$springSecurityVersion", optional)
+        compile ("org.apache.httpcomponents:httpclient:$httpComponentsVersion", optional)
         testCompile "com.h2database:h2:$h2Version"
         testCompile "org.springframework:spring-test-mvc:$springTestMvcVersion"
         testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
@@ -113,13 +115,28 @@ project('spring-social-web') {
         compile ("javax.inject:javax.inject:$javaxInjectVersion")
         compile "org.springframework:spring-web:$springVersion"
         compile "org.springframework:spring-webmvc:$springVersion"
-        compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
-        compile ("javax.servlet.jsp:javax.servlet.jsp-api:$jspApiVersion") { provided = true }
+        compile ("javax.servlet:servlet-api:$servletApiVersion", provided)
+        compile ("javax.servlet.jsp:javax.servlet.jsp-api:$jspApiVersion", provided)
         compile project(':spring-social-core')
         testCompile "org.springframework:spring-test-mvc:$springTestMvcVersion"
         testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
     }
     metaInf << files("src/main/resources/tld/spring-social.tld")
+}
+
+
+project('spring-social-config') {
+    description = 'Spring Social Config'
+    dependencies {
+      compile project(':spring-social-core')
+      compile project(':spring-social-web')
+      compile ("org.springframework.social:spring-social-twitter:$version") { transitive = false }
+      compile ("org.springframework.social:spring-social-facebook:$version") { transitive = false }
+      compile ("org.springframework.security:spring-security-core:$springSecurityVersion", optional)
+      testCompile ("javax.servlet:servlet-api:$servletApiVersion", provided)
+      testCompile "com.h2database:h2:$h2Version"
+      testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+    }
 }
 
 configure(rootProject) {
@@ -128,7 +145,7 @@ configure(rootProject) {
     apply plugin: 'docbook-reference'
 
     reference {
-        sourceDir = file('src/reference/docbook')
+        ext.sourceDir = file('src/reference/docbook')
     }
 
     // don't publish the default jar for the root project
@@ -210,7 +227,7 @@ configure(rootProject) {
         description = "Builds -${classifier} archive, containing all jars and docs, " +
                       "suitable for community download page."
 
-        baseDir = "${project.name}-${project.version}";
+        ext.baseDir = "${project.name}-${project.version}";
 
         from('src/dist') {
             include 'readme.txt'
@@ -249,7 +266,7 @@ configure(rootProject) {
 
     task wrapper(type: Wrapper) {
         description = 'Generates gradlew[.bat] scripts'
-        gradleVersion = '1.0-milestone-8a'
+        gradleVersion = '1.1'
     }
 
 }
