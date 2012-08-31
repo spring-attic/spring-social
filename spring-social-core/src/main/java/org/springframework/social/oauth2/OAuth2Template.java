@@ -170,6 +170,10 @@ public class OAuth2Template implements OAuth2Operations {
 		return postForAccessGrant(accessTokenUrl, params);
 	}
 
+	public AccessGrant authenticateClient() {
+		return authenticateClient(null);
+	}
+	
 	public AccessGrant authenticateClient(String scope) {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 		if (useParametersForClientAuthentication) {
