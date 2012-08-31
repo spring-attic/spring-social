@@ -488,9 +488,9 @@ public class JdbcUsersConnectionRepositoryTest {
 					return new AccessGrant("765432109", "read", "654321098", 3600);
 				}
 
-                public AccessGrant authenticateClient(String scope) {
-                    return null;
-                }
+				public AccessGrant authenticateClient(String scope) {
+					return null;
+				}
             };
 		}
 

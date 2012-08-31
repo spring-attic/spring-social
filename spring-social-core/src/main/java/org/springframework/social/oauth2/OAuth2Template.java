@@ -170,8 +170,8 @@ public class OAuth2Template implements OAuth2Operations {
 		return postForAccessGrant(accessTokenUrl, params);
 	}
 
-    public AccessGrant authenticateClient(String scope) {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+	public AccessGrant authenticateClient(String scope) {
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 		if (useParametersForClientAuthentication) {
 			params.set("client_id", clientId);
 			params.set("client_secret", clientSecret);
@@ -181,7 +181,7 @@ public class OAuth2Template implements OAuth2Operations {
 			params.set("scope", scope);
 		}
 		return postForAccessGrant(accessTokenUrl, params);
-    }
+	}
 
     // subclassing hooks
 	

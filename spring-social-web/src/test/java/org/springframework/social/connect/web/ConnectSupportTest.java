@@ -426,11 +426,10 @@ public class ConnectSupportTest {
 				public AccessGrant refreshAccess(String refreshToken, MultiValueMap<String, String> additionalParameters) {
 					return null;
 				}
-
-                public AccessGrant authenticateClient(String scope) {
-                    return null;
-                }
-            };
+				public AccessGrant authenticateClient(String scope) {
+					return null;
+				}
+			};
 		}
 
 		public TestApi getApi(final String accessToken) {

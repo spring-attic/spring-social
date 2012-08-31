@@ -47,7 +47,8 @@ class StubOAuth2Operations implements OAuth2Operations {
 		return new AccessGrant("12345", null,  "23456", 3600);
 	}
 
-    public AccessGrant authenticateClient(String scope) {
-        return new AccessGrant("12345", null,  null, 3600);
-    }
+	public AccessGrant authenticateClient(String scope) {
+		return new AccessGrant("12345", null,  null, 3600);
+	}
+
 }

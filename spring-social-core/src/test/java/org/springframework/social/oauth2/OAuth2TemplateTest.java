@@ -254,7 +254,7 @@ public class OAuth2TemplateTest {
 		assertNull(accessGrant.getScope());
 	}
 
-    @Test
+	@Test
 	public void authenticateClient() {
 		AccessGrant accessGrant = clientCredentials("accessToken_noUser.json");
 		assertEquals("8d0a88a5c4f1ae4937ad864cafa8e857", accessGrant.getAccessToken());
@@ -349,7 +349,7 @@ public class OAuth2TemplateTest {
 		return oauthTemplate.exchangeCredentialsForAccess("habuma", "letmein01", parameters);
 	}
 
-    private AccessGrant clientCredentials_paramBasedClientAuth(String responseFile) {
+	private AccessGrant clientCredentials_paramBasedClientAuth(String responseFile) {
 		return clientCredentials(oAuth2TemplateParamBased, "client_id=client_id&client_secret=client_secret&", null, responseFile);
 	}
 
