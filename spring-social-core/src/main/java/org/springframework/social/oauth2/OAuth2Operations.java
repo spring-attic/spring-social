@@ -83,6 +83,13 @@ public interface OAuth2Operations {
 	/**
 	 * Retrieves the client access grant using OAuth 2 client password flow.
 	 * This is an access grant that is based on the client id and password (a.k.a. client secret).
+	 * @return the access grant of the client only (not user related)
+	 */
+	AccessGrant authenticateClient();
+
+	/**
+	 * Retrieves the client access grant using OAuth 2 client password flow.
+	 * This is an access grant that is based on the client id and password (a.k.a. client secret).
 	 * @param scope optional scope to get for the access grant
 	 * @return the access grant of the client only (not user related)
 	 */
