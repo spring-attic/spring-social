@@ -15,6 +15,13 @@
  */
 package org.springframework.social.config.xml;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.facebook.api.Facebook;
+import org.springframework.social.facebook.api.impl.FacebookTemplate;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 
 /**
@@ -24,7 +31,16 @@ import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 class FacebookConnectionFactoryBeanDefinitionParser extends AbstractConnectionFactoryBeanDefinitionParser {
 
 	public FacebookConnectionFactoryBeanDefinitionParser() {
-		super(FacebookConnectionFactory.class);
+		super(FacebookConnectionFactory.class, FacebookApiConfig.class);
 	}
-	
+
+	private static final class FacebookApiConfig {
+		@Bean
+		@Scope(value="request", proxyMode=ScopedProxyMode.INTERFACES)
+		public Facebook facebook(ConnectionRepository connectionRepository) {
+			Connection<Facebook> facebook = connectionRepository.findPrimaryConnection(Facebook.class);
+			return facebook != null ? facebook.getApi() : new FacebookTemplate();
+		}
+	}
+
 }

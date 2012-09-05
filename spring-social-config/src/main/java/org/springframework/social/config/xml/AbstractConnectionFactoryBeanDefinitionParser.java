@@ -28,6 +28,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
+import org.springframework.util.ClassUtils;
 import org.w3c.dom.Element;
 
 /**
@@ -37,20 +38,24 @@ import org.w3c.dom.Element;
  */
 abstract class AbstractConnectionFactoryBeanDefinitionParser implements BeanDefinitionParser {
 
-	private Class<? extends ConnectionFactory<?>> connectionFactoryClass;
+	private final Class<? extends ConnectionFactory<?>> connectionFactoryClass;
+	
+	private Class<?> apiConfigClass;
 
 	/**
 	 * Constructs a connection factory-creating {@link BeanDefinitionParser}.
 	 * @param connectionFactoryClass The type of {@link ConnectionFactory} to create. Must have a two-argument constructor taking an application's ID and secret as Strings.
 	 */
-	protected AbstractConnectionFactoryBeanDefinitionParser(Class<? extends ConnectionFactory<?>> connectionFactoryClass) {
-		this.connectionFactoryClass = connectionFactoryClass;		
+	protected AbstractConnectionFactoryBeanDefinitionParser(Class<? extends ConnectionFactory<?>> connectionFactoryClass, Class<?> apiConfigClass) {
+		this.connectionFactoryClass = connectionFactoryClass;
+		this.apiConfigClass = apiConfigClass;	
 	}
 	
 	public final BeanDefinition parse(Element element, ParserContext parserContext) {
 		BeanDefinition connectionFactoryLocatorBD = getConnectionFactoryLocatorBeanDefinition(parserContext);
 		addConnectionFactory(connectionFactoryLocatorBD, element.getAttribute(APP_ID), element.getAttribute(APP_SECRET));
-		return connectionFactoryLocatorBD;
+		BeanDefinition addApiBindingBean = addApiBindingBean(parserContext);
+		return addApiBindingBean;
 	}
 
 	private BeanDefinition getConnectionFactoryBeanDefinition(String appId, String appSecret) {
@@ -71,11 +76,17 @@ abstract class AbstractConnectionFactoryBeanDefinitionParser implements BeanDefi
 			BeanDefinitionHolder connFactoryLocatorBeanDefHolder = new BeanDefinitionHolder(BeanDefinitionBuilder.genericBeanDefinition(ConnectionFactoryRegistry.class).getBeanDefinition(), CONNECTION_FACTORY_LOCATOR_ID);			
 			BeanDefinitionHolder scopedProxy = ScopedProxyUtils.createScopedProxy(connFactoryLocatorBeanDefHolder, parserContext.getRegistry(), false);			
 			parserContext.getRegistry().registerBeanDefinition(scopedProxy.getBeanName(), scopedProxy.getBeanDefinition());
-		}		
+		}
 		BeanDefinition connectionFactoryLocatorBD = parserContext.getRegistry().getBeanDefinition(ScopedProxyUtils.getTargetBeanName(CONNECTION_FACTORY_LOCATOR_ID));
 		return connectionFactoryLocatorBD;
 	}
-
+	
+	private BeanDefinition addApiBindingBean(ParserContext parserContext) {
+		BeanDefinition beanDefinition = BeanDefinitionBuilder.rootBeanDefinition(apiConfigClass).getBeanDefinition();
+		parserContext.getRegistry().registerBeanDefinition(ClassUtils.getShortNameAsProperty(apiConfigClass), beanDefinition);
+		return null;
+	}
+	
 	private static final String CONNECTION_FACTORY_LOCATOR_ID = "connectionFactoryLocator";
 
 	private static final String APP_ID = "app-id";

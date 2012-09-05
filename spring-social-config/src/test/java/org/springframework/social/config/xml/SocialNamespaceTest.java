@@ -41,12 +41,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
 public class SocialNamespaceTest {
-	
+
 	@Inject
 	private ApplicationContext context;
 
 	@Test
 	public void connectionFactoryLocator() throws Exception {
+		setupRequestScope();
 		assertTrue(context.containsBean("connectionFactoryLocator"));
 		assertTrue(context.getBean("connectionFactoryLocator") instanceof ConnectionFactoryLocator);
 		ConnectionFactoryLocator cfl = context.getBean(ConnectionFactoryLocator.class);
@@ -66,8 +67,8 @@ public class SocialNamespaceTest {
 	@Test
 	public void jdbcConnectionRepository() {
 		setupRequestScope();
-		assertNotNull(context.getBean("usersConnectionRepository", UsersConnectionRepository.class));		
-		assertNotNull(context.getBean("connectionRepository", ConnectionRepository.class));		
+		assertNotNull(context.getBean("usersConnectionRepository", UsersConnectionRepository.class));
+		assertNotNull(context.getBean("connectionRepository", ConnectionRepository.class));
 	}
 	
 	@Test
@@ -80,12 +81,17 @@ public class SocialNamespaceTest {
 	
 	private void testConnectionRepository(ConnectionFactoryLocator cfl, ConnectionRepository connectionRepository) {
 		assertNull(connectionRepository.findPrimaryConnection(Twitter.class));
+		assertNull(connectionRepository.findPrimaryConnection(Facebook.class));		
 		ConnectionFactory<Twitter> twitterCF = cfl.getConnectionFactory(Twitter.class);
 		Connection<Twitter> connection = twitterCF.createConnection(new ConnectionData("twitter", "bob", "Bob McBob", "http://www.twitter.com/mcbob", null, "someToken", "someSecret", null, null));
 		connectionRepository.addConnection(connection);
+		ConnectionFactory<Facebook> facebookCF = cfl.getConnectionFactory(Facebook.class);
+		Connection<Facebook> fbConnection = facebookCF.createConnection(new ConnectionData("facebook", "bob", "Bob McBob", "http://www.facebook.com/mcbob", null, "someToken", "someSecret", null, null));
+		connectionRepository.addConnection(fbConnection);
 		assertNotNull(connectionRepository.findPrimaryConnection(Twitter.class));
-		connectionRepository.removeConnections("twitter");
-		assertNull(connectionRepository.findPrimaryConnection(Twitter.class));
+		assertNotNull(connectionRepository.findPrimaryConnection(Facebook.class));
+		assertTrue(context.getBean(Facebook.class).isAuthorized());
+		assertTrue(context.getBean(Twitter.class).isAuthorized());
 	}
 
 	private void setupRequestScope() {
