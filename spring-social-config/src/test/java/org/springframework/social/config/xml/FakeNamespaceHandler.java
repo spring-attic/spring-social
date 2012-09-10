@@ -31,7 +31,7 @@ import org.w3c.dom.Node;
  * 
  * @author Craig Walls
  */
-public class SocialNamespaceHandler implements NamespaceHandler {
+public class FakeNamespaceHandler implements NamespaceHandler {
 
     private final Map<String, BeanDefinitionParser> parsers = new HashMap<String, BeanDefinitionParser>();
 
@@ -66,7 +66,7 @@ public class SocialNamespaceHandler implements NamespaceHandler {
     }
 
 	private void loadParsers() {
-		parsers.put("jdbc-connection-repository", new JdbcConnectionRepositoryBeanDefinitionParser());
+		parsers.put("fake", new FakeConnectionFactoryBeanDefinitionParser());
 	}
 
 }

@@ -130,8 +130,6 @@ project('spring-social-config') {
     dependencies {
       compile project(':spring-social-core')
       compile project(':spring-social-web')
-      compile ("org.springframework.social:spring-social-twitter:$version") { transitive = false }
-      compile ("org.springframework.social:spring-social-facebook:$version") { transitive = false }
       compile ("org.springframework.security:spring-security-core:$springSecurityVersion", optional)
       testCompile ("javax.servlet:servlet-api:$servletApiVersion", provided)
       testCompile "com.h2database:h2:$h2Version"

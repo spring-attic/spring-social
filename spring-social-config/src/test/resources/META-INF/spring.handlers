@@ -1,0 +1,2 @@
+http\://www.springframework.org/schema/social=org.springframework.social.config.xml.SocialNamespaceHandler
+http\://www.springframework.org/schema/social/fake=org.springframework.social.config.xml.FakeNamespaceHandler
