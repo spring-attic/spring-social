@@ -15,6 +15,8 @@
  */
 package org.springframework.social.config.xml;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -33,6 +35,8 @@ import org.w3c.dom.Element;
  */
 class JdbcConnectionRepositoryBeanDefinitionParser implements BeanDefinitionParser {
 
+	private final static Log logger = LogFactory.getLog(JdbcConnectionRepositoryBeanDefinitionParser.class);
+
 	public BeanDefinition parse(Element element, ParserContext parserContext) {		
 		String connectionRepositoryId = element.getAttribute("connection-repository-id");
 		String usersConnectionRepositoryId = element.getAttribute("users-connection-repository-id");
@@ -47,6 +51,9 @@ class JdbcConnectionRepositoryBeanDefinitionParser implements BeanDefinitionPars
 	}
 
 	private void registerUsersConnectionRepositoryBeanDefinition(ParserContext parserContext, String usersConnectionRepositoryId, String connectionFactoryLocatorRef, String dataSourceRef, String encryptorRef) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Registering JdbcUsersConnectionRepository bean");
+		}		
 		BeanDefinition usersConnectionRepositoryBD = BeanDefinitionBuilder.genericBeanDefinition(JdbcUsersConnectionRepository.class)
 				.addConstructorArgReference(dataSourceRef)
 				.addConstructorArgReference(connectionFactoryLocatorRef)
@@ -66,7 +73,10 @@ class JdbcConnectionRepositoryBeanDefinitionParser implements BeanDefinitionPars
 	}
 	
 	private BeanDefinition registerConnectionRepository(ParserContext parserContext, String usersConnectionRepositoryId, String connectionRepositoryId) {
-		BeanDefinition connectionRepositoryBD = BeanDefinitionBuilder.genericBeanDefinition().addConstructorArgValue(USER_ID_STRING_ID).getBeanDefinition();
+		if (logger.isDebugEnabled()) {
+			logger.debug("Registering JdbcConnectionRepository bean");
+		}		
+		BeanDefinition connectionRepositoryBD = BeanDefinitionBuilder.genericBeanDefinition().addConstructorArgReference(USER_ID_STRING_ID).getBeanDefinition();
 		connectionRepositoryBD.setFactoryBeanName(usersConnectionRepositoryId);
 		connectionRepositoryBD.setFactoryMethodName(CREATE_CONNECTION_REPOSITORY_METHOD_NAME);
 		connectionRepositoryBD.setScope("request");

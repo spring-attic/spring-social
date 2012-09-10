@@ -62,7 +62,7 @@ public class StubConnectionRepository implements ConnectionRepository {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
 	public <A> Connection<A> findPrimaryConnection(Class<A> apiType) {
 		// TODO Auto-generated method stub
 		return null;
