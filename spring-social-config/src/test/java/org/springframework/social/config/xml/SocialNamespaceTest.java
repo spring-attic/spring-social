@@ -20,12 +20,14 @@ import static org.junit.Assert.*;
 import javax.inject.Inject;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.UsersConnectionRepository;
@@ -37,18 +39,19 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
-@Ignore("TODO: Reinstate test with generic test provider configuration")
 public class SocialNamespaceTest {
 
 	@Inject
 	private ApplicationContext context;
-	
+
+	@Inject
+	private Fake fake;
+
 	@Before
 	public void setup() {
 		setupRequestScope();
 	}
 	
-
 	@Test
 	public void connectionFactoryLocator() throws Exception {
 		assertTrue(context.containsBean("connectionFactoryLocator"));
@@ -56,7 +59,7 @@ public class SocialNamespaceTest {
 		ConnectionFactoryLocator cfl = context.getBean(ConnectionFactoryLocator.class);
 		
 		// TODO: Test with fake provider
-//		assertNotNull(cfl.getConnectionFactory(Twitter.class));
+		assertNotNull(cfl.getConnectionFactory(Fake.class));
 	}
 
 	@Test
@@ -79,15 +82,14 @@ public class SocialNamespaceTest {
 	}
 	
 	private void testConnectionRepository(ConnectionFactoryLocator cfl, ConnectionRepository connectionRepository) {
-		// TODO: Replace with tests using fake provider
-//		assertNull(connectionRepository.findPrimaryConnection(Twitter.class));
-//		ConnectionFactory<Twitter> twitterCF = cfl.getConnectionFactory(Twitter.class);
-//		Connection<Twitter> connection = twitterCF.createConnection(new ConnectionData("twitter", "bob", "Bob McBob", "http://www.twitter.com/mcbob", null, "someToken", "someSecret", null, null));
-//		connectionRepository.addConnection(connection);
-//		assertNotNull(connectionRepository.findPrimaryConnection(Twitter.class));
-//		assertTrue(context.getBean(Twitter.class).isAuthorized());
-//		assertNotNull(twitter);
-//		assertTrue(twitter.isAuthorized());
+		assertNull(connectionRepository.findPrimaryConnection(Fake.class));
+		ConnectionFactory<Fake> fakeCF = cfl.getConnectionFactory(Fake.class);
+		Connection<Fake> connection = fakeCF.createConnection(new ConnectionData("fake", "bob", "Bob McBob", "http://www.twitter.com/mcbob", null, "someToken", "someSecret", null, null));
+		connectionRepository.addConnection(connection);
+		assertNotNull(connectionRepository.findPrimaryConnection(Fake.class));
+		assertTrue(context.getBean(Fake.class).isAuthorized());
+		assertNotNull(fake);
+		assertTrue(fake.isAuthorized());
 	}
 
 	private void setupRequestScope() {

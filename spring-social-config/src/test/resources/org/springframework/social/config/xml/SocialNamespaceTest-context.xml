@@ -2,13 +2,17 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:social="http://www.springframework.org/schema/social"
+	xmlns:socialfake="http://www.springframework.org/schema/social/fake"
 	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/social/fake http://www.springframework.org/schema/social/spring-social-fake.xsd
 		http://www.springframework.org/schema/social http://www.springframework.org/schema/social/spring-social.xsd">
 
 	<!-- SET UP SOME CONNECTION FACTORIES -->
 	<social:jdbc-connection-repository />
+	
+	<socialfake:fake app-id="fakeAppId" app-secret="fakeAppSecret" />
 
     <!--  SUPPORTING BEANS  -->
 	<jdbc:embedded-database id="dataSource" type="H2">
