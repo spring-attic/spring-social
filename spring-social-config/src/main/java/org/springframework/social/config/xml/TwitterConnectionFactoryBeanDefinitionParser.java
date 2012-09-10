@@ -15,6 +15,12 @@
  */
 package org.springframework.social.config.xml;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.social.twitter.api.Twitter;
+import org.springframework.social.twitter.api.impl.TwitterTemplate;
 import org.springframework.social.twitter.connect.TwitterConnectionFactory;
 
 /**
@@ -24,7 +30,34 @@ import org.springframework.social.twitter.connect.TwitterConnectionFactory;
 class TwitterConnectionFactoryBeanDefinitionParser extends AbstractConnectionFactoryBeanDefinitionParser {
 
 	public TwitterConnectionFactoryBeanDefinitionParser() {
-		super(TwitterConnectionFactory.class);
+		super(TwitterConnectionFactory.class, TwitterApiHelper.class);
+	}
+
+	static class TwitterApiHelper implements ApiHelper<Twitter> {
+		
+		private final UsersConnectionRepository usersConnectionRepository;
+
+		private final UserIdSource userIdSource;
+
+		private TwitterApiHelper(UsersConnectionRepository usersConnectionRepository, UserIdSource userIdSource) {
+			this.usersConnectionRepository = usersConnectionRepository;
+			this.userIdSource = userIdSource;		
+		}
+
+		public Twitter getApi() {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Getting API binding instance for Twitter");
+			}
+					
+			Connection<Twitter> connection = usersConnectionRepository.createConnectionRepository(userIdSource.getUserId()).findPrimaryConnection(Twitter.class);
+			if (logger.isDebugEnabled() && connection == null) {
+				logger.debug("No current connection; Returning default TwitterTemplate instance.");
+			}
+			return connection != null ? connection.getApi() : new TwitterTemplate();
+		}
+		
+		private final static Log logger = LogFactory.getLog(TwitterApiHelper.class);
+
 	}
 
 }
