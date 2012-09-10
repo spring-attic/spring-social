@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
@@ -44,10 +45,21 @@ public class SocialNamespaceTest {
 
 	@Inject
 	private ApplicationContext context;
+	
+	@Inject
+	Facebook facebook;
+
+	@Inject
+	Twitter twitter;
+
+	@Before
+	public void setup() {
+		setupRequestScope();
+	}
+	
 
 	@Test
 	public void connectionFactoryLocator() throws Exception {
-		setupRequestScope();
 		assertTrue(context.containsBean("connectionFactoryLocator"));
 		assertTrue(context.getBean("connectionFactoryLocator") instanceof ConnectionFactoryLocator);
 		ConnectionFactoryLocator cfl = context.getBean(ConnectionFactoryLocator.class);
@@ -59,21 +71,18 @@ public class SocialNamespaceTest {
 
 	@Test
 	public void userIdString() {
-		setupRequestScope();
 		String userId = context.getBean("__userIdString", String.class);
 		assertEquals("habuma", userId);
 	}
 	
 	@Test
 	public void jdbcConnectionRepository() {
-		setupRequestScope();
 		assertNotNull(context.getBean("usersConnectionRepository", UsersConnectionRepository.class));
 		assertNotNull(context.getBean("connectionRepository", ConnectionRepository.class));
 	}
 	
 	@Test
 	public void jdbcConnectionRepository_addAndRemoveAConnection() {
-		setupRequestScope();
 		ConnectionFactoryLocator cfl = context.getBean(ConnectionFactoryLocator.class);
 		ConnectionRepository connectionRepository = context.getBean(ConnectionRepository.class);
 		testConnectionRepository(cfl, connectionRepository);
@@ -92,6 +101,10 @@ public class SocialNamespaceTest {
 		assertNotNull(connectionRepository.findPrimaryConnection(Facebook.class));
 		assertTrue(context.getBean(Facebook.class).isAuthorized());
 		assertTrue(context.getBean(Twitter.class).isAuthorized());
+		assertNotNull(facebook);
+		assertTrue(facebook.isAuthorized());
+		assertNotNull(twitter);
+		assertTrue(twitter.isAuthorized());
 	}
 
 	private void setupRequestScope() {

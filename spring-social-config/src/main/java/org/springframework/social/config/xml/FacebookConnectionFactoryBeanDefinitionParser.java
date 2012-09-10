@@ -15,11 +15,10 @@
  */
 package org.springframework.social.config.xml;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.facebook.api.impl.FacebookTemplate;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
@@ -31,16 +30,34 @@ import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 class FacebookConnectionFactoryBeanDefinitionParser extends AbstractConnectionFactoryBeanDefinitionParser {
 
 	public FacebookConnectionFactoryBeanDefinitionParser() {
-		super(FacebookConnectionFactory.class, FacebookApiConfig.class);
+		super(FacebookConnectionFactory.class, FacebookApiHelper.class);
 	}
 
-	private static final class FacebookApiConfig {
-		@Bean
-		@Scope(value="request", proxyMode=ScopedProxyMode.INTERFACES)
-		public Facebook facebook(ConnectionRepository connectionRepository) {
-			Connection<Facebook> facebook = connectionRepository.findPrimaryConnection(Facebook.class);
-			return facebook != null ? facebook.getApi() : new FacebookTemplate();
+	static class FacebookApiHelper implements ApiHelper<Facebook> {
+
+		private final UsersConnectionRepository usersConnectionRepository;
+
+		private final UserIdSource userIdSource;
+
+		private FacebookApiHelper(UsersConnectionRepository usersConnectionRepository, UserIdSource userIdSource) {
+			this.usersConnectionRepository = usersConnectionRepository;
+			this.userIdSource = userIdSource;		
 		}
-	}
 
+		public Facebook getApi() {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Getting API binding instance for Facebook");
+			}
+			
+			Connection<Facebook> connection = usersConnectionRepository.createConnectionRepository(userIdSource.getUserId()).findPrimaryConnection(Facebook.class);
+			if (logger.isDebugEnabled() && connection == null) {
+				logger.debug("No current connection; Returning default FacebookTemplate instance.");
+			}
+			return connection != null ? connection.getApi() : new FacebookTemplate();
+		}
+
+		private final static Log logger = LogFactory.getLog(FacebookApiHelper.class);
+
+	}
+	
 }
