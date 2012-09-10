@@ -67,7 +67,6 @@ public class SocialNamespaceHandler implements NamespaceHandler {
 
 	private void loadParsers() {
 		parsers.put("jdbc-connection-repository", new JdbcConnectionRepositoryBeanDefinitionParser());
-		parsers.put("twitter", new TwitterConnectionFactoryBeanDefinitionParser());
 	}
 
 }

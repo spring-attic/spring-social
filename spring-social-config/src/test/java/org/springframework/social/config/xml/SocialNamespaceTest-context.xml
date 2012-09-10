@@ -8,13 +8,8 @@
 		http://www.springframework.org/schema/social http://www.springframework.org/schema/social/spring-social.xsd">
 
 	<!-- SET UP SOME CONNECTION FACTORIES -->
-	<social:twitter app-id="twitterkey" app-secret="twittersecret" />
 	<social:jdbc-connection-repository />
 
-
-
-
-   
     <!--  SUPPORTING BEANS  -->
 	<jdbc:embedded-database id="dataSource" type="H2">
 		<jdbc:script location="classpath:org/springframework/social/connect/jdbc/JdbcUsersConnectionRepository.sql"/>
