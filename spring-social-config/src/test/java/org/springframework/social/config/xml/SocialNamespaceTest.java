@@ -31,7 +31,6 @@ import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.UsersConnectionRepository;
-import org.springframework.social.facebook.api.Facebook;
 import org.springframework.social.twitter.api.Twitter;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -46,9 +45,6 @@ public class SocialNamespaceTest {
 	@Inject
 	private ApplicationContext context;
 	
-	@Inject
-	Facebook facebook;
-
 	@Inject
 	Twitter twitter;
 
@@ -66,7 +62,6 @@ public class SocialNamespaceTest {
 		
 		// TODO: Assert that key/secret are properly set
 		assertNotNull(cfl.getConnectionFactory(Twitter.class));
-		assertNotNull(cfl.getConnectionFactory(Facebook.class));
 	}
 
 	@Test
@@ -90,19 +85,11 @@ public class SocialNamespaceTest {
 	
 	private void testConnectionRepository(ConnectionFactoryLocator cfl, ConnectionRepository connectionRepository) {
 		assertNull(connectionRepository.findPrimaryConnection(Twitter.class));
-		assertNull(connectionRepository.findPrimaryConnection(Facebook.class));		
 		ConnectionFactory<Twitter> twitterCF = cfl.getConnectionFactory(Twitter.class);
 		Connection<Twitter> connection = twitterCF.createConnection(new ConnectionData("twitter", "bob", "Bob McBob", "http://www.twitter.com/mcbob", null, "someToken", "someSecret", null, null));
 		connectionRepository.addConnection(connection);
-		ConnectionFactory<Facebook> facebookCF = cfl.getConnectionFactory(Facebook.class);
-		Connection<Facebook> fbConnection = facebookCF.createConnection(new ConnectionData("facebook", "bob", "Bob McBob", "http://www.facebook.com/mcbob", null, "someToken", "someSecret", null, null));
-		connectionRepository.addConnection(fbConnection);
 		assertNotNull(connectionRepository.findPrimaryConnection(Twitter.class));
-		assertNotNull(connectionRepository.findPrimaryConnection(Facebook.class));
-		assertTrue(context.getBean(Facebook.class).isAuthorized());
 		assertTrue(context.getBean(Twitter.class).isAuthorized());
-		assertNotNull(facebook);
-		assertTrue(facebook.isAuthorized());
 		assertNotNull(twitter);
 		assertTrue(twitter.isAuthorized());
 	}
