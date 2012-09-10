@@ -39,7 +39,7 @@ import org.w3c.dom.Element;
  * Automatically creates a {@link ConnectionFactoryLocator} bean if none exists and registers the {@link ConnectionFactory} bean with the {@link ConnectionFactoryLocator}.
  * @author Craig Walls
  */
-abstract class AbstractConnectionFactoryBeanDefinitionParser implements BeanDefinitionParser {
+public abstract class AbstractConnectionFactoryBeanDefinitionParser implements BeanDefinitionParser {
 
 	private final static Log logger = LogFactory.getLog(AbstractConnectionFactoryBeanDefinitionParser.class);
 
