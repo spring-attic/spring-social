@@ -35,13 +35,14 @@ import org.springframework.util.ClassUtils;
 import org.w3c.dom.Element;
 
 /**
- * Abstract bean definition parser for declaring {@link ConnectionFactory}s in a Spring application context.
+ * Abstract bean definition parser for configuring provider-specific beans in a Spring application context.
  * Automatically creates a {@link ConnectionFactoryLocator} bean if none exists and registers the {@link ConnectionFactory} bean with the {@link ConnectionFactoryLocator}.
+ * Also creates a request-scoped API binding bean retrieved from the connection repository.
  * @author Craig Walls
  */
-public abstract class AbstractConnectionFactoryBeanDefinitionParser implements BeanDefinitionParser {
+public abstract class AbstractProviderConfigBeanDefinitionParser implements BeanDefinitionParser {
 
-	private final static Log logger = LogFactory.getLog(AbstractConnectionFactoryBeanDefinitionParser.class);
+	private final static Log logger = LogFactory.getLog(AbstractProviderConfigBeanDefinitionParser.class);
 
 	private final Class<? extends ConnectionFactory<?>> connectionFactoryClass;
 	
@@ -53,7 +54,7 @@ public abstract class AbstractConnectionFactoryBeanDefinitionParser implements B
 	 * Constructs a connection factory-creating {@link BeanDefinitionParser}.
 	 * @param connectionFactoryClass The type of {@link ConnectionFactory} to create. Must have a two-argument constructor taking an application's ID and secret as Strings.
 	 */
-	protected AbstractConnectionFactoryBeanDefinitionParser(Class<? extends ConnectionFactory<?>> connectionFactoryClass, Class<?> apiHelperClass) {
+	protected AbstractProviderConfigBeanDefinitionParser(Class<? extends ConnectionFactory<?>> connectionFactoryClass, Class<?> apiHelperClass) {
 		this.connectionFactoryClass = connectionFactoryClass;
 		this.apiHelperClass = apiHelperClass;
 		this.apiBindingType = GenericTypeResolver.resolveTypeArgument(connectionFactoryClass, ConnectionFactory.class);
