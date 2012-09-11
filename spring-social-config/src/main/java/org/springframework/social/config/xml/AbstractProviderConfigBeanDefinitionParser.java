@@ -33,6 +33,7 @@ import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
 import org.springframework.util.ClassUtils;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 
 /**
  * Abstract bean definition parser for configuring provider-specific beans in a Spring application context.
@@ -42,13 +43,12 @@ import org.w3c.dom.Element;
  */
 public abstract class AbstractProviderConfigBeanDefinitionParser implements BeanDefinitionParser {
 
-	private final static Log logger = LogFactory.getLog(AbstractProviderConfigBeanDefinitionParser.class);
-
-	private final Class<? extends ConnectionFactory<?>> connectionFactoryClass;
-	
-	private final Class<?> apiBindingType;
-
-	private final Class<?> apiHelperClass;
+	public final BeanDefinition parse(Element element, ParserContext parserContext) {
+		BeanDefinition connectionFactoryLocatorBD = getConnectionFactoryLocatorBeanDefinition(parserContext);
+		addConnectionFactory(connectionFactoryLocatorBD, element.getAttribute(APP_ID), element.getAttribute(APP_SECRET), element.getAttributes());
+		BeanDefinition addApiBindingBean = addApiBindingBean(parserContext);
+		return addApiBindingBean;
+	}
 
 	/**
 	 * Constructs a connection factory-creating {@link BeanDefinitionParser}.
@@ -60,18 +60,19 @@ public abstract class AbstractProviderConfigBeanDefinitionParser implements Bean
 		this.apiBindingType = GenericTypeResolver.resolveTypeArgument(connectionFactoryClass, ConnectionFactory.class);
 	}
 	
-	public final BeanDefinition parse(Element element, ParserContext parserContext) {
-		BeanDefinition connectionFactoryLocatorBD = getConnectionFactoryLocatorBeanDefinition(parserContext);
-		addConnectionFactory(connectionFactoryLocatorBD, element.getAttribute(APP_ID), element.getAttribute(APP_SECRET));
-		BeanDefinition addApiBindingBean = addApiBindingBean(parserContext);
-		return addApiBindingBean;
-	}
-
-	private BeanDefinition getConnectionFactoryBeanDefinition(String appId, String appSecret) {
+	/**
+	 * Creates a BeanDefinition for a provider connection factory.
+	 * Although most providers will not need to override this method, it does allow for overriding to address any provider-specific needs.
+	 * @param appId The application's App ID
+	 * @param appSecret The application's App Secret
+	 * @param allAttributes All attributes available on the configuration element. Useful for provider-specific configuration.
+	 * @return a BeanDefinition for the provider's connection factory bean.
+	 */
+	protected BeanDefinition getConnectionFactoryBeanDefinition(String appId, String appSecret, NamedNodeMap allAttributes) {
 		return BeanDefinitionBuilder.genericBeanDefinition(connectionFactoryClass).addConstructorArgValue(appId).addConstructorArgValue(appSecret).getBeanDefinition();
 	}
 
-	private void addConnectionFactory(BeanDefinition connectionFactoryLocatorBD, String appId, String appSecret) {
+	private void addConnectionFactory(BeanDefinition connectionFactoryLocatorBD, String appId, String appSecret, NamedNodeMap allAttributes) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Registering ConnectionFactory for " + ClassUtils.getShortName(apiBindingType));
 		}		
@@ -79,7 +80,7 @@ public abstract class AbstractProviderConfigBeanDefinitionParser implements Bean
 		@SuppressWarnings("unchecked")
 		List<BeanDefinition> connectionFactoriesList = connectionFactoriesPropertyValue != null ? 
 				(List<BeanDefinition>) connectionFactoriesPropertyValue.getValue() : new ManagedList<BeanDefinition>();
-		connectionFactoriesList.add(getConnectionFactoryBeanDefinition(appId, appSecret));		
+		connectionFactoriesList.add(getConnectionFactoryBeanDefinition(appId, appSecret, allAttributes));		
 		connectionFactoryLocatorBD.getPropertyValues().addPropertyValue(CONNECTION_FACTORIES, connectionFactoriesList);
 	}
 
@@ -116,6 +117,15 @@ public abstract class AbstractProviderConfigBeanDefinitionParser implements Bean
 		return scopedProxyBDH.getBeanDefinition();
 	}
 	
+
+	private final Class<? extends ConnectionFactory<?>> connectionFactoryClass;
+	
+	private final Class<?> apiBindingType;
+
+	private final Class<?> apiHelperClass;
+
+	private final static Log logger = LogFactory.getLog(AbstractProviderConfigBeanDefinitionParser.class);
+
 	private static final String CONNECTION_FACTORY_LOCATOR_ID = "connectionFactoryLocator";
 
 	private static final String APP_ID = "app-id";

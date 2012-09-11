@@ -27,13 +27,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * {@link NamespaceHandler} for Spring Social
- * 
+ * Base {@link NamespaceHandler} for Spring Social provider modules to create configuration namespaces. 
+ * Requires, at minimum, that the provider-specific namespace provider an AbstractProviderConfigBeanDefinition for parsing "config" elements.
  * @author Craig Walls
  */
 public abstract class AbstractProviderConfigNamespaceHandler implements NamespaceHandler {
-
-    private final Map<String, BeanDefinitionParser> parsers = new HashMap<String, BeanDefinitionParser>();
 
 	public final void init() {
 		loadParsers();
@@ -84,5 +82,7 @@ public abstract class AbstractProviderConfigNamespaceHandler implements Namespac
 		parsers.put("config", getProviderConfigBeanDefinitionParser());
 		loadParsers(parsers);
 	}
+
+    private final Map<String, BeanDefinitionParser> parsers = new HashMap<String, BeanDefinitionParser>();
 
 }
