@@ -21,10 +21,10 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UsersConnectionRepository;
 
 /**
- * Implementation of {@link AbstractConnectionFactoryBeanDefinitionParser} that creates a FakeConnectionFactory.
+ * Implementation of {@link AbstractProviderConfigBeanDefinitionParser} that creates a FakeConnectionFactory.
  * @author Craig Walls
  */
-class FakeConnectionFactoryBeanDefinitionParser extends AbstractConnectionFactoryBeanDefinitionParser {
+class FakeConnectionFactoryBeanDefinitionParser extends AbstractProviderConfigBeanDefinitionParser {
 
 	public FakeConnectionFactoryBeanDefinitionParser() {
 		super(FakeConnectionFactory.class, FakeApiHelper.class);
