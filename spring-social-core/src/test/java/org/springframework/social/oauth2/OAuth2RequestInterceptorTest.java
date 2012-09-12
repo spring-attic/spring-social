@@ -25,7 +25,8 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.test.web.client.MockHttpRequest;
+import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 public class OAuth2RequestInterceptorTest {
 	
@@ -49,8 +50,8 @@ public class OAuth2RequestInterceptorTest {
 
 	private void assertThatInterceptorWritesAuthorizationHeader(OAuth2RequestInterceptor interceptor, final String expected) throws Exception {
 		byte[] body = "status=Hello+there".getBytes();
-		MockHttpRequest request = new MockHttpRequest(HttpMethod.POST, "https://api.someprovider.com/status/update");
-		request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.POST.name(), "https://api.someprovider.com/status/update");
+		request.setContentType(MediaType.APPLICATION_FORM_URLENCODED.toString());
 		ClientHttpRequestExecution execution = new ClientHttpRequestExecution() {
 			public ClientHttpResponse execute(HttpRequest request, byte[] body) throws IOException {
 				String authorizationHeader = request.getHeaders().getFirst("Authorization");
@@ -59,6 +60,6 @@ public class OAuth2RequestInterceptorTest {
 				return null;
 			}
 		};		
-		interceptor.intercept(request, body, execution);
+		interceptor.intercept(new ServletServerHttpRequest(request), body, execution);
 	}
 }
