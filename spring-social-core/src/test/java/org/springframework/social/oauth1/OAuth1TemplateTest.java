@@ -15,6 +15,7 @@
  */
 package org.springframework.social.oauth1;
 
+import static org.hamcrest.core.StringContains.*;
 import static org.junit.Assert.*;
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.test.web.client.match.RequestMatchers.*;
@@ -26,6 +27,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.RequestMatcher;
 import org.springframework.util.MultiValueMap;
 
 public class OAuth1TemplateTest {
@@ -49,13 +51,12 @@ public class OAuth1TemplateTest {
 		oauth10a = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL, AUTHORIZE_URL, null, ACCESS_TOKEN_URL, OAuth1Version.CORE_10_REVISION_A);
 		oauth10 = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL, AUTHORIZE_URL, AUTHENTICATE_URL, ACCESS_TOKEN_URL, OAuth1Version.CORE_10);
 
-		customOauth10 = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL,
-				AUTHORIZE_URL, null, ACCESS_TOKEN_URL, OAuth1Version.CORE_10) {
+		customOauth10 = new OAuth1Template("consumer_key", "consumer_secret", REQUEST_TOKEN_URL, AUTHORIZE_URL, null, ACCESS_TOKEN_URL, OAuth1Version.CORE_10) {
 			protected void addCustomAuthorizationParameters(MultiValueMap<String,String> parameters) {
 				parameters.set("custom_parameter", "custom_parameter_value");
 			};
 		};
-}
+	}
 
 	@Test
 	public void buildAuthorizeUrl() {
@@ -80,12 +81,11 @@ public class OAuth1TemplateTest {
 		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauth10a.getRestTemplate());
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		
 		mockServer
 				.expect(requestTo(REQUEST_TOKEN_URL))
 				.andExpect(method(POST))
-				.andExpect(
-						headerContains("Authorization",
-								"oauth_callback=\"http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback\""))
+				.andExpect(headerContains("Authorization", "oauth_callback=\"http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback\""))
 				.andExpect(headerContains("Authorization", "oauth_version=\"1.0\""))
 				.andExpect(headerContains("Authorization", "oauth_signature_method=\"HMAC-SHA1\""))
 				.andExpect(headerContains("Authorization", "oauth_consumer_key=\"consumer_key\""))
@@ -196,6 +196,13 @@ public class OAuth1TemplateTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void setRequestFactory_null() {
 		oauth10a.setRequestFactory(null);
+	}
+	
+
+	// private helper
+	@SuppressWarnings("unchecked")
+	private RequestMatcher headerContains(String name, String substring) {
+		return header(name, containsString(substring));
 	}
 
 }
