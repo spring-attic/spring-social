@@ -319,7 +319,7 @@ public class OAuth2TemplateTest {
 		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauthTemplate.getRestTemplate());
 		ResponseActions responseActions = mockServer.expect(requestTo(ACCESS_TOKEN_URL))
 				.andExpect(method(POST))
-				.andExpect(body(expectedClientParams + "code=code&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fcallback&grant_type=authorization_code"));
+				.andExpect(content().string(expectedClientParams + "code=code&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fcallback&grant_type=authorization_code"));
 		if (expectedAuthorizationHeader != null) {
 			responseActions.andExpect(header("Authorization", expectedAuthorizationHeader));
 		}
@@ -339,7 +339,7 @@ public class OAuth2TemplateTest {
 		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauthTemplate.getRestTemplate());
 		ResponseActions responseActions = mockServer.expect(requestTo(ACCESS_TOKEN_URL))
 				.andExpect(method(POST))
-				.andExpect(body(expectedClientParams + "username=habuma&password=letmein01&grant_type=password&scope=read%2Cwrite"));
+				.andExpect(content().string(expectedClientParams + "username=habuma&password=letmein01&grant_type=password&scope=read%2Cwrite"));
 		if (expectedAuthorizationHeader != null) {
 			responseActions.andExpect(header("Authorization", expectedAuthorizationHeader));
 		}
@@ -361,7 +361,7 @@ public class OAuth2TemplateTest {
 		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauthTemplate.getRestTemplate());
 		ResponseActions responseActions = mockServer.expect(requestTo(ACCESS_TOKEN_URL))
 				.andExpect(method(POST))
-				.andExpect(body(expectedClientParams + "grant_type=client_credentials&scope=read%2Cwrite"));
+				.andExpect(content().string(expectedClientParams + "grant_type=client_credentials&scope=read%2Cwrite"));
 		if (expectedAuthorizationHeader != null) {
 			responseActions.andExpect(header("Authorization", expectedAuthorizationHeader));
 		}
@@ -383,7 +383,7 @@ public class OAuth2TemplateTest {
 		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauthTemplate.getRestTemplate());
 		ResponseActions responseActions = mockServer.expect(requestTo(ACCESS_TOKEN_URL))
 				.andExpect(method(POST))
-				.andExpect(body(expectedClientParams + "refresh_token=r3fr35h_t0k3n&grant_type=refresh_token"));
+				.andExpect(content().string(expectedClientParams + "refresh_token=r3fr35h_t0k3n&grant_type=refresh_token"));
 		if (expectedAuthorizationHeader != null) {
 			responseActions.andExpect(header("Authorization", expectedAuthorizationHeader));
 		}
