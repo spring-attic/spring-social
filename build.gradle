@@ -28,7 +28,7 @@ configure(allprojects) {
       servletApiVersion = '2.5'
       springVersion = '3.1.2.RELEASE'
       springSecurityVersion = '3.1.1.RELEASE'
-      springTestMvcVersion = '1.0.0.M1'
+      springTestMvcVersion = '1.0.0.BUILD-SNAPSHOT'
       jspApiVersion = '2.2.1'
     }
 
@@ -105,6 +105,7 @@ project('spring-social-core') {
         compile ("org.apache.httpcomponents:httpclient:$httpComponentsVersion", optional)
         testCompile "com.h2database:h2:$h2Version"
         testCompile "org.springframework:spring-test-mvc:$springTestMvcVersion"
+        testCompile ("javax.servlet:servlet-api:$servletApiVersion")
         testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
     }
 }

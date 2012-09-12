@@ -27,7 +27,8 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.test.web.client.MockHttpRequest;
+import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 public class OAuth1RequestInterceptorTest {
 
@@ -35,8 +36,10 @@ public class OAuth1RequestInterceptorTest {
 	public void beforeExecution() throws Exception {
 		OAuth1RequestInterceptor interceptor = new OAuth1RequestInterceptor(new OAuth1Credentials("consumer_key", "consumer_secret", "access_token", "token_secret"));
 		byte[] body = "status=Hello+there".getBytes();
-		MockHttpRequest request = new MockHttpRequest(HttpMethod.POST, "https://api.someprovider.com/status/update");
-		request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		MockHttpServletRequest request = new MockHttpServletRequest(HttpMethod.POST.name(), "/status/update");
+		request.setRemoteHost("api.someprovider.com");
+		request.setSecure(true);
+		request.setContentType(MediaType.APPLICATION_FORM_URLENCODED.toString());
 
 		ClientHttpRequestExecution execution = new ClientHttpRequestExecution() {
 			public ClientHttpResponse execute(HttpRequest request, byte[] body) throws IOException {
@@ -54,7 +57,7 @@ public class OAuth1RequestInterceptorTest {
 				return null;
 			}
 		};
-		interceptor.intercept(request, body, execution);
+		interceptor.intercept(new ServletServerHttpRequest(request), body, execution);
 	}
 
 	private Map<String, String> extractHeaderParameters(String authorizationHeader) {
