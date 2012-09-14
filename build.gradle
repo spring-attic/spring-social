@@ -135,6 +135,7 @@ project('spring-social-config') {
       testCompile ("javax.servlet:servlet-api:$servletApiVersion", provided)
       testCompile "com.h2database:h2:$h2Version"
       testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+      testCompile "org.springframework:spring-jdbc:$springVersion"
     }
 }
 
