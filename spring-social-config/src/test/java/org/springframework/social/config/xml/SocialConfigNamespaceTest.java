@@ -39,7 +39,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
-public class SocialNamespaceTest {
+public class SocialConfigNamespaceTest {
 
 	@Inject
 	private ApplicationContext context;
@@ -56,9 +56,7 @@ public class SocialNamespaceTest {
 	public void connectionFactoryLocator() throws Exception {
 		assertTrue(context.containsBean("connectionFactoryLocator"));
 		assertTrue(context.getBean("connectionFactoryLocator") instanceof ConnectionFactoryLocator);
-		ConnectionFactoryLocator cfl = context.getBean(ConnectionFactoryLocator.class);
-		
-		// TODO: Test with fake provider
+		ConnectionFactoryLocator cfl = context.getBean(ConnectionFactoryLocator.class);		
 		assertNotNull(cfl.getConnectionFactory(Fake.class));
 	}
 

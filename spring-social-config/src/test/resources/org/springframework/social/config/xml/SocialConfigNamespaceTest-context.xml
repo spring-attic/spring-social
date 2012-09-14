@@ -10,8 +10,8 @@
 		http://www.springframework.org/schema/social http://www.springframework.org/schema/social/spring-social.xsd">
 
 	<!-- SET UP SOME CONNECTION FACTORIES -->
-	<social:jdbc-connection-repository />
-	
+ 	<social:jdbc-connection-repository />
+
 	<socialfake:fake app-id="fakeAppId" app-secret="fakeAppSecret" />
 
     <!--  SUPPORTING BEANS  -->
