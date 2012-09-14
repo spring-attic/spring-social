@@ -24,18 +24,25 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.social.connect.jdbc.JdbcUsersConnectionRepository;
 
+/**
+ * Support class providing methods for configuring a singleton {@link JdbcUsersConnectionRepository} bean and a request-scoped JdbcConnectionRepository bean.
+ * Used by JdbcConnectionRepositoryRegistrar (for EnableJdbcConnectionRepository) and JdbcConnectionRepositoryBeanDefinitionParser for XML configuration.
+ * @author Craig Walls
+ */
 public abstract class JdbcConnectionRepositoryConfigSupport {
 
 	private final static Log logger = LogFactory.getLog(JdbcConnectionRepositoryConfigSupport.class);
 
-	public BeanDefinition registerJdbcConnectionRepositoryBeans(BeanDefinitionRegistry registry, String connectionRepositoryId, String usersConnectionRepositoryId, String connectionFactoryLocatorRef, String dataSourceRef, String encryptorRef, String userIdSourceRef) {
+	public BeanDefinition registerJdbcConnectionRepositoryBeans(BeanDefinitionRegistry registry, String connectionRepositoryId, String usersConnectionRepositoryId, 
+			String connectionFactoryLocatorRef, String dataSourceRef, String encryptorRef, String userIdSourceRef) {
 		registerUsersConnectionRepositoryBeanDefinition(registry, usersConnectionRepositoryId, connectionFactoryLocatorRef, dataSourceRef, encryptorRef);
 		registerUserIdBeanDefinition(registry, userIdSourceRef);
 		return registerConnectionRepository(registry, usersConnectionRepositoryId, connectionRepositoryId);		
 	}
 	
 	
-	private BeanDefinition registerUsersConnectionRepositoryBeanDefinition(BeanDefinitionRegistry registry, String usersConnectionRepositoryId, String connectionFactoryLocatorRef, String dataSourceRef, String encryptorRef) {
+	private BeanDefinition registerUsersConnectionRepositoryBeanDefinition(BeanDefinitionRegistry registry, String usersConnectionRepositoryId, 
+			String connectionFactoryLocatorRef, String dataSourceRef, String encryptorRef) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Registering JdbcUsersConnectionRepository bean");
 		}				
@@ -57,7 +64,6 @@ public abstract class JdbcConnectionRepositoryConfigSupport {
 		userIdStringDB.setFactoryMethodName("getUserId");
 		userIdStringDB.setScope("request");
 		registry.registerBeanDefinition(USER_ID_STRING_ID, userIdStringDB);
-//		parserContext.registerBeanComponent(new BeanComponentDefinition(userIdStringDB, USER_ID_STRING_ID));
 		return userIdStringDB;
 	}
 

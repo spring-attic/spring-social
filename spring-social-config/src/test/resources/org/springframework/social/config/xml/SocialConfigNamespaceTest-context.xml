@@ -21,6 +21,6 @@
 
 	<bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="noOpText" />
 
-	<bean id="userIdSource" class="org.springframework.social.config.xml.SimpleUserIdSource" />
+	<bean id="userIdSource" class="org.springframework.social.config.SimpleUserIdSource" />
 
 </beans>

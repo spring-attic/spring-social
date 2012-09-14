@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.config.xml;
+package org.springframework.social.config.annotation;
 
 import static org.junit.Assert.*;
 
@@ -39,8 +39,8 @@ import org.springframework.web.context.request.RequestScope;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration
-public class SocialConfigNamespaceTest {
+@ContextConfiguration(classes=SocialConfig.class)
+public class SocialConfigAnnotationTest {
 
 	@Inject
 	private ApplicationContext context;

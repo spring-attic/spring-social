@@ -23,14 +23,17 @@ import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.social.config.support.JdbcConnectionRepositoryConfigSupport;
 
-public class JdbcConnectionRepositoryRegistrar extends JdbcConnectionRepositoryConfigSupport implements ImportBeanDefinitionRegistrar {
+/**
+ * {@link ImportBeanDefinitionRegistrar} to enable {@link EnableJdbcConnectionRepository} annotation.
+ * @author Craig Walls
+ */
+class JdbcConnectionRepositoryRegistrar extends JdbcConnectionRepositoryConfigSupport implements ImportBeanDefinitionRegistrar {
 
 	public void registerBeanDefinitions(AnnotationMetadata annotationMetadata, BeanDefinitionRegistry registry) {
 		Map<String, Object> annotationAttributes = annotationMetadata.getAnnotationAttributes(EnableJdbcConnectionRepository.class.getName());
 		if (annotationAttributes == null) {
 			return;
 		}
-
 		AnnotationAttributes attributes = new AnnotationAttributes(annotationAttributes);
 		String connectionRepositoryId = attributes.getString("connectionRepositoryId");
 		String usersConnectionRepositoryId = attributes.getString("usersConnectionRepositoryId");

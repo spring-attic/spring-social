@@ -23,8 +23,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
+import org.springframework.social.connect.jdbc.JdbcUsersConnectionRepository;
 
-// THROWAWAY
+/**
+ * Annotation to enable JDBC-based persistence of connections.
+ * Configures a singleton {@link JdbcUsersConnectionRepository} and a request-scoped JdbcConnectionRepository. 
+ * @author Craig Walls
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -32,16 +37,40 @@ import org.springframework.context.annotation.Import;
 @Import(JdbcConnectionRepositoryRegistrar.class)
 public @interface EnableJdbcConnectionRepository {
 
+	/**
+	 * The ID to assign to the ConnectionRepository bean.
+	 * Defaults to "connectionRepository". 
+	 */
 	String connectionRepositoryId() default "connectionRepository";
 	
+	/**
+	 * The ID to assign to the UsersConnectionRepository bean.
+	 * Defaults to "usersConnectionRepository". 
+	 */
 	String usersConnectionRepositoryId() default "usersConnectionRepository";
 	
+	/**
+	 * The ID of the ConnectionFactoryLocator bean to fetch a ConnectionFactory from when creating/persisting connections.
+	 * Defaults to "connectionFactoryLocator". 
+	 */
 	String connectionFactoryLocatorRef() default "connectionFactoryLocator";
 	
+	/**
+	 * The ID of a DataSource for accessing the database.
+	 * Defaults to "dataSource". 
+	 */
 	String dataSourceRef() default "dataSource";
 	
+	/**
+	 * The ID of a TextEncryptor used when persisting connection details.
+	 * Defaults to "textEncryptor". 
+	 */
 	String encryptorRef() default "textEncryptor";
 	
+	/**
+	 * The ID of a UserIdSource bean used to determine the unique identifier of the current user.
+	 * Defaults to "userIdSource". 
+	 */
 	String userIdSourceRef() default "userIdSource";
 	
 }

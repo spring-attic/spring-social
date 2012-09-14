@@ -29,11 +29,14 @@ import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.config.xml.ApiHelper;
 import org.springframework.social.connect.ConnectionFactory;
+import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
 import org.springframework.util.ClassUtils;
 
 /**
- * 
+ * Support class providing methods for configuring a {@link ConnectionFactory} (and a {@link ConnectionFactoryLocator} if one is not yet registered).
+ * Also registers a request-scoped API binding retrieved from a {@link ConnectionRepository} bean.
  * @author Craig Walls
  */
 public class ProviderConfigSupport {
@@ -56,8 +59,7 @@ public class ProviderConfigSupport {
 
 	public static BeanDefinition registerConnectionFactoryBean(BeanDefinition connectionFactoryLocatorBD, BeanDefinition connectionFactoryBD, Class<? extends ConnectionFactory<?>> connectionFactoryClass) {
 		if (logger.isDebugEnabled()) {
-			Class<?> apiBindingType = getApiBindingType(connectionFactoryClass);
-			logger.debug("Registering ConnectionFactory for " + ClassUtils.getShortName(apiBindingType));
+			logger.debug("Registering ConnectionFactory for " + ClassUtils.getShortName(getApiBindingType(connectionFactoryClass)));
 		}		
 		PropertyValue connectionFactoriesPropertyValue = connectionFactoryLocatorBD.getPropertyValues().getPropertyValue(CONNECTION_FACTORIES);
 		@SuppressWarnings("unchecked")
@@ -73,6 +75,7 @@ public class ProviderConfigSupport {
 			logger.debug("Registering API Helper bean for " + ClassUtils.getShortName(apiBindingType));
 		}		
 		String helperId = "__" + ClassUtils.getShortNameAsProperty(apiBindingType) + "ApiHelper";
+		// TODO: Make the bean IDs here configurable.
 		BeanDefinition helperBD = BeanDefinitionBuilder.genericBeanDefinition(apiHelperClass).addConstructorArgReference("usersConnectionRepository").addConstructorArgReference("userIdSource").getBeanDefinition();
 		registry.registerBeanDefinition(helperId, helperBD);
 		
