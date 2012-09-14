@@ -1,3 +1,11 @@
+Spring Social 1.1.0 Milestone 1 (October 15, 2012)
+==================================================
+Improvements
+  * Added an XML configuration namespace to simplify configuring Spring Social connection
+    repositories. Also established base bean definition parser and namespace handler classes
+    for provider modules to build on configuration support for connection factory and API
+    binding. (SOCIAL-292)
+
 Spring Social 1.0.2 Release (January 23, 2012)
 ==============================================
 Bug Fixes

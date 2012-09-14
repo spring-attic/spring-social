@@ -13,12 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.config.xml;
+package org.springframework.social.config;
 
-public interface Fake {
+public class FakeTemplate implements Fake {
 
-	String getAccessToken();
+	private String accessToken;
+
+	public FakeTemplate() {}
 	
-	boolean isAuthorized();
+	public FakeTemplate(String accessToken) {
+		this.accessToken = accessToken;
+	}
+
+	public String getAccessToken() {
+		return accessToken;
+	}	
 	
+	public boolean isAuthorized() {
+		return accessToken != null;
+	}
 }

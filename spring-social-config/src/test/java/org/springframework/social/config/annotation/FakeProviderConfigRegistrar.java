@@ -13,26 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.config.xml;
+package org.springframework.social.config.annotation;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.social.config.Fake;
 import org.springframework.social.config.FakeConnectionFactory;
 import org.springframework.social.config.FakeTemplate;
+import org.springframework.social.config.xml.ApiHelper;
+import org.springframework.social.config.xml.UserIdSource;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UsersConnectionRepository;
 
-/**
- * Implementation of {@link AbstractProviderConfigBeanDefinitionParser} that creates a FakeConnectionFactory.
- * @author Craig Walls
- */
-class FakeConnectionFactoryBeanDefinitionParser extends AbstractProviderConfigBeanDefinitionParser {
+public class FakeProviderConfigRegistrar extends ProviderConfigRegistrarSupport {
 
-	public FakeConnectionFactoryBeanDefinitionParser() {
-		super(FakeConnectionFactory.class, FakeApiHelper.class);
+	public FakeProviderConfigRegistrar() {
+		super(EnableFake.class, FakeConnectionFactory.class, FakeApiHelper.class);
 	}
-
+	
 	static class FakeApiHelper implements ApiHelper<Fake> {
 		
 		private final UsersConnectionRepository usersConnectionRepository;

@@ -25,6 +25,8 @@ import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.social.config.Fake;
+import org.springframework.social.config.FakeConnectionFactory;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactory;
@@ -39,7 +41,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
-public class SocialNamespaceTest {
+public class SocialConfigNamespaceTest {
 
 	@Inject
 	private ApplicationContext context;
@@ -56,10 +58,11 @@ public class SocialNamespaceTest {
 	public void connectionFactoryLocator() throws Exception {
 		assertTrue(context.containsBean("connectionFactoryLocator"));
 		assertTrue(context.getBean("connectionFactoryLocator") instanceof ConnectionFactoryLocator);
-		ConnectionFactoryLocator cfl = context.getBean(ConnectionFactoryLocator.class);
-		
-		// TODO: Test with fake provider
-		assertNotNull(cfl.getConnectionFactory(Fake.class));
+		ConnectionFactoryLocator cfl = context.getBean(ConnectionFactoryLocator.class);		
+		FakeConnectionFactory fakeConnectionFactory = (FakeConnectionFactory) cfl.getConnectionFactory(Fake.class);
+		assertNotNull(fakeConnectionFactory);
+		assertEquals("fakeAppId", fakeConnectionFactory.getAppId());		
+		assertEquals("fakeAppSecret", fakeConnectionFactory.getAppSecret());
 	}
 
 	@Test
