@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.social.config.Fake;
+import org.springframework.social.config.FakeConnectionFactory;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactory;
@@ -58,7 +59,10 @@ public class SocialConfigNamespaceTest {
 		assertTrue(context.containsBean("connectionFactoryLocator"));
 		assertTrue(context.getBean("connectionFactoryLocator") instanceof ConnectionFactoryLocator);
 		ConnectionFactoryLocator cfl = context.getBean(ConnectionFactoryLocator.class);		
-		assertNotNull(cfl.getConnectionFactory(Fake.class));
+		FakeConnectionFactory fakeConnectionFactory = (FakeConnectionFactory) cfl.getConnectionFactory(Fake.class);
+		assertNotNull(fakeConnectionFactory);
+		assertEquals("fakeAppId", fakeConnectionFactory.getAppId());		
+		assertEquals("fakeAppSecret", fakeConnectionFactory.getAppSecret());
 	}
 
 	@Test

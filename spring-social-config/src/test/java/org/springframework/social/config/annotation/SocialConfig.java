@@ -18,6 +18,8 @@ package org.springframework.social.config.annotation;
 import javax.sql.DataSource;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.crypto.encrypt.Encryptors;
@@ -27,9 +29,15 @@ import org.springframework.social.config.xml.UserIdSource;
 import org.springframework.stereotype.Component;
 
 @Component
+@PropertySource("classpath:/org/springframework/social/config/fake.properties")
 @EnableJdbcConnectionRepository
-@EnableFake(appId="appId", appSecret="appSecret")
+@EnableFake(appId="${fake.appId}", appSecret="${fake.appSecret}")
 public class SocialConfig {
+	
+	@Bean
+	public PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
+		return new PropertySourcesPlaceholderConfigurer();
+	}
 	
 	@Bean(destroyMethod="shutdown")
 	public DataSource dataSource() {

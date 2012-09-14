@@ -21,12 +21,25 @@ import org.springframework.social.oauth2.OAuth2Template;
 
 public class FakeConnectionFactory extends OAuth2ConnectionFactory<Fake> {
 
+	private String appId;
+	
+	private String appSecret;
+
 	public FakeConnectionFactory(String appId, String appSecret) {
 		super("fake", new FakeServiceProvider(appId, appSecret), null);
+		this.appId = appId;
+		this.appSecret = appSecret;
 	}
 	
-	private static final class FakeServiceProvider extends AbstractOAuth2ServiceProvider<Fake> {
-
+	public String getAppId() {
+		return appId;
+	}
+	
+	public String getAppSecret() {
+		return appSecret;
+	}
+	
+	public static final class FakeServiceProvider extends AbstractOAuth2ServiceProvider<Fake> {
 		public FakeServiceProvider(String appId, String appSecret) {
 			super(new OAuth2Template(appId, appSecret, "http://fake.com/auth", "http://fake.com/token"));
 		}
@@ -35,6 +48,5 @@ public class FakeConnectionFactory extends OAuth2ConnectionFactory<Fake> {
 		public Fake getApi(String accessToken) {
 			return new FakeTemplate(accessToken);
 		}
-		
 	}
 }

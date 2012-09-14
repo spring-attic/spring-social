@@ -4,15 +4,19 @@
 	xmlns:social="http://www.springframework.org/schema/social"
 	xmlns:socialfake="http://www.springframework.org/schema/social/fake"
 	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/social http://www.springframework.org/schema/social/spring-social.xsd
 		http://www.springframework.org/schema/social/fake http://www.springframework.org/schema/social/spring-social-fake.xsd
-		http://www.springframework.org/schema/social http://www.springframework.org/schema/social/spring-social.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
 	<!-- SET UP SOME CONNECTION FACTORIES -->
  	<social:jdbc-connection-repository />
 
-	<socialfake:fake app-id="fakeAppId" app-secret="fakeAppSecret" />
+	<socialfake:fake app-id="${fake.appId}" app-secret="${fake.appSecret}" />
 
     <!--  SUPPORTING BEANS  -->
 	<jdbc:embedded-database id="dataSource" type="H2">
@@ -22,5 +26,12 @@
 	<bean id="textEncryptor" class="org.springframework.security.crypto.encrypt.Encryptors" factory-method="noOpText" />
 
 	<bean id="userIdSource" class="org.springframework.social.config.SimpleUserIdSource" />
+
+	<context:property-placeholder properties-ref="fakeProviderProperties" />
+	
+	<util:properties id="fakeProviderProperties">
+		<prop key="fake.appId">fakeAppId</prop>
+		<prop key="fake.appSecret">fakeAppSecret</prop>
+	</util:properties>
 
 </beans>
