@@ -22,8 +22,8 @@ package org.springframework.social;
 @SuppressWarnings("serial")
 public class ResourceNotFoundException extends ApiException {
 	
-	public ResourceNotFoundException(String message) {
-		super(message);
+	public ResourceNotFoundException(String providerId, String message) {
+		super(providerId, message);
 	}
 
 }

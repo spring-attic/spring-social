@@ -22,8 +22,8 @@ package org.springframework.social;
 @SuppressWarnings("serial")
 public class UncategorizedApiException extends ApiException {
 
-	public UncategorizedApiException(String message, Throwable cause) {
-		super(message, cause);
+	public UncategorizedApiException(String providerId, String message, Throwable cause) {
+		super(providerId, message, cause);
 	}
 	
 }

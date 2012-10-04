@@ -22,8 +22,8 @@ package org.springframework.social;
 @SuppressWarnings("serial")
 public class RateLimitExceededException extends ApiException {
 
-	public RateLimitExceededException() {
-		super("The rate limit has been exceeded.");
+	public RateLimitExceededException(String providerId) {
+		super(providerId, "The rate limit has been exceeded.");
 	}
 	
 }

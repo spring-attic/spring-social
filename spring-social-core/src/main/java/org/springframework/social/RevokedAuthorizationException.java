@@ -23,12 +23,12 @@ package org.springframework.social;
 @SuppressWarnings("serial")
 public class RevokedAuthorizationException extends RejectedAuthorizationException {
 
-	public RevokedAuthorizationException() {
-		this("Unknown");
+	public RevokedAuthorizationException(String providerId) {
+		this(providerId, "Unknown");
 	}
 	
-	public RevokedAuthorizationException(String reason) {
-		super("The authorization has been revoked. Reason: " + reason);
+	public RevokedAuthorizationException(String providerId, String reason) {
+		super(providerId, "The authorization has been revoked. Reason: " + reason);
 	}
 	
 }

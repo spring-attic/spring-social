@@ -22,8 +22,8 @@ package org.springframework.social;
 @SuppressWarnings("serial")
 public class InternalServerErrorException extends ServerException {
 
-	public InternalServerErrorException(String message) {
-		super(message);
+	public InternalServerErrorException(String providerId, String message) {
+		super(providerId, message);
 	}
 	
 }

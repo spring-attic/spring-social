@@ -25,8 +25,8 @@ package org.springframework.social;
 @SuppressWarnings("serial")
 public class NotAuthorizedException extends ApiException {
 
-	public NotAuthorizedException(String message) {
-		super(message);
+	public NotAuthorizedException(String providerId, String message) {
+		super(providerId, message);
 	}
 
 }

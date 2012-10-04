@@ -22,8 +22,8 @@ package org.springframework.social;
 @SuppressWarnings("serial")
 public class ServerDownException extends ServerException {
 
-	public ServerDownException(String message) {
-		super(message);
+	public ServerDownException(String providerId, String message) {
+		super(providerId, message);
 	}
 	
 }
