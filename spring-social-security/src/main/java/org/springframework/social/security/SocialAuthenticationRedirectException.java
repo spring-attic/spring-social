@@ -17,6 +17,10 @@ package org.springframework.social.security;
 
 import java.net.URL;
 
+/**
+ * Indicates the need to perform a redirect in the course of authenticating with a social provider. 
+ * @author Stefan Fusseneger
+ */
 @SuppressWarnings("serial")
 public class SocialAuthenticationRedirectException extends SocialAuthenticationException {
 

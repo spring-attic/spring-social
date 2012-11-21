@@ -22,8 +22,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
  * similar to {@link UserDetailsService} but loads details by user id, not username
- *
- * @author stf@molindo.at
+ * @author Stefan Fussennegger
  */
 public interface SocialUserDetailsService {
 	

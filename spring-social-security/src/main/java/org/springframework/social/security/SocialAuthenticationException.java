@@ -17,6 +17,10 @@ package org.springframework.social.security;
 
 import org.springframework.social.SocialException;
 
+/**
+ * Indicates an error while authenticating against a social provider.
+ * @author Stefan Fusseneger
+ */
 @SuppressWarnings("serial")
 public class SocialAuthenticationException extends SocialException {
 

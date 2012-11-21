@@ -36,6 +36,10 @@ import org.springframework.social.security.SocialAuthenticationToken;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+/**
+ * @author Stefan Fussennegger
+ * @param <S> The provider's API type.
+ */
 public class OAuth1AuthenticationService<S> extends AbstractSocialAuthenticationService<S> implements InitializingBean {
 
 	protected final Log logger = LogFactory.getLog(getClass());

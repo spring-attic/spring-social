@@ -37,16 +37,15 @@ public class SocialAuthenticationProviderTest {
 
 	@Test
 	public void supports() {
-		SocialAuthenticationProvider provider = new SocialAuthenticationProvider();
+		SocialAuthenticationProvider provider = new SocialAuthenticationProvider(null, null);
 		assertTrue(provider.supports(SocialAuthenticationToken.class));
 		assertFalse(provider.supports(Authentication.class));
 	}
 
 	@Test
 	public void toUserId() {
-		SocialAuthenticationProvider provider = new SocialAuthenticationProvider();
 		UsersConnectionRepository repo = mock(UsersConnectionRepository.class);
-		provider.setUsersConnectionRepository(repo);
+		SocialAuthenticationProvider provider = new SocialAuthenticationProvider(repo, null);
 
 		Mockito.when(repo.findUserIdsConnectedTo("provider", set("providerUser1"))).thenReturn(set("user1"));
 		Mockito.when(repo.findUserIdsConnectedTo("provider", set("providerUser2"))).thenReturn(set("user1", "user2"));
@@ -57,13 +56,11 @@ public class SocialAuthenticationProviderTest {
 
 	@Test
 	public void authenticate() {
-		final SocialAuthenticationProvider provider = new SocialAuthenticationProvider();
-		final UsersConnectionRepository repo = mock(UsersConnectionRepository.class);
-		final SocialUserDetailsService userDetailsService = mock(SocialUserDetailsService.class);
-		provider.setUsersConnectionRepository(repo);
-		provider.setUserDetailsService(userDetailsService);
+		UsersConnectionRepository repo = mock(UsersConnectionRepository.class);
+		SocialUserDetailsService userDetailsService = mock(SocialUserDetailsService.class);
+		SocialAuthenticationProvider provider = new SocialAuthenticationProvider(repo, userDetailsService);
 
-		final DummyUserDetails userDetails = new DummyUserDetails("user1", "pass", "moderator");
+		DummyUserDetails userDetails = new DummyUserDetails("user1", "pass", "moderator");
 		
 		// mapping from providerUserId to userId
 		Mockito.when(repo.findUserIdsConnectedTo("provider", set("providerUser1"))).thenReturn(set("user1"));

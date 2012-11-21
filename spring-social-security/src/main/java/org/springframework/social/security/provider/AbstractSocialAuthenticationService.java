@@ -20,6 +20,10 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.social.connect.Connection;
 
+/**
+ * @author Stefan Fussennegger
+ * @param <S> The provider API type.
+ */
 public abstract class AbstractSocialAuthenticationService<S> implements SocialAuthenticationService<S>, InitializingBean {
 
 	private ConnectionCardinality connectionCardinality = ConnectionCardinality.ONE_TO_ONE;

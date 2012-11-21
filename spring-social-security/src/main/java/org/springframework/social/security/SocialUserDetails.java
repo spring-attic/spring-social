@@ -17,11 +17,14 @@ package org.springframework.social.security;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
+/**
+ * @author Stefan Fussennegger
+ */
 public interface SocialUserDetails extends UserDetails {
 
 	/**
-	 * might be same as {@link #getUsername()} if users are identified by username
-	 * 
+	 * The user's identity at the provider.
+	 * Might be same as {@link #getUsername()} if users are identified by username
 	 * @return user's id used to assign connections
 	 */
 	String getUserId();

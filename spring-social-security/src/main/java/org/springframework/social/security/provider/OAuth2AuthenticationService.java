@@ -34,6 +34,10 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClientException;
 
+/**
+ * @author Stefan Fussennegger
+ * @param <S> The provider's API type.
+ */
 public class OAuth2AuthenticationService<S> extends AbstractSocialAuthenticationService<S> {
 
 	protected final Log logger = LogFactory.getLog(getClass());

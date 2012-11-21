@@ -23,17 +23,14 @@ import org.springframework.social.security.provider.SocialAuthenticationService;
 public interface SocialAuthenticationServiceLocator extends ConnectionFactoryLocator {
 
 	/**
-	 * Lookup a {@link SocialAuthenticationService} by providerId; for example,
-	 * "facebook".
+	 * Lookup a {@link SocialAuthenticationService} by providerId; for example, "facebook".
 	 */
 	SocialAuthenticationService<?> getAuthenticationService(String providerId);
 
 	/**
-	 * Returns the set of providerIds for which a
-	 * {@link SocialAuthenticationService} is registered; for example, <code>{
-	 * "twitter", "facebook", "foursquare" }</code> Elements in this set can be
-	 * passed to {@link #getAuthenticationService(String)} to fetch a specific
-	 * authentication service.
+	 * Returns the set of providerIds for which a {@link SocialAuthenticationService} is registered; for example, <code>{"twitter", "facebook", "foursquare" }</code>.
+	 * Elements in this set can be passed to {@link #getAuthenticationService(String)} to fetch a specific authentication service.
 	 */
 	Set<String> registeredAuthenticationProviderIds();
+
 }

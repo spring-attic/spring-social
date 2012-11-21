@@ -22,16 +22,14 @@ import java.util.Set;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
 import org.springframework.social.security.provider.SocialAuthenticationService;
 
-public class SocialAuthenticationServiceRegistry extends ConnectionFactoryRegistry implements
-		SocialAuthenticationServiceLocator {
+public class SocialAuthenticationServiceRegistry extends ConnectionFactoryRegistry implements SocialAuthenticationServiceLocator {
 
 	private Map<String, SocialAuthenticationService<?>> authenticationServices = new HashMap<String, SocialAuthenticationService<?>>();
 
 	public SocialAuthenticationService<?> getAuthenticationService(String providerId) {
 		SocialAuthenticationService<?> authenticationService = authenticationServices.get(providerId);
 		if (authenticationService == null) {
-			throw new IllegalArgumentException("No authentication service for service provider '" + providerId
-					+ "' is registered");
+			throw new IllegalArgumentException("No authentication service for service provider '" + providerId + "' is registered");
 		}
 		return authenticationService;
 	}
@@ -45,13 +43,11 @@ public class SocialAuthenticationServiceRegistry extends ConnectionFactoryRegist
 	}
 
 	/**
-	 * Set the group of {@link SocialAuthenticationService}s registered in this
-	 * registry. JavaBean setter that allows for this object to be more easily
-	 * configured by tools. For programmatic configuration, prefer
-	 * {@link #addAuthenticationService(SocialAuthenticationService)}.
+	 * Set the group of {@link SocialAuthenticationService}s registered in this registry. 
+	 * JavaBean setter that allows for this object to be more easily configured by tools. 
+	 * For programmatic configuration, prefer {@link #addAuthenticationService(SocialAuthenticationService)}.
 	 * 
-	 * @param connectionFactories
-	 *            the set of connection factories to register
+	 * @param connectionFactories the set of connection factories to register
 	 */
 	public void setAuthenticationServices(Iterable<SocialAuthenticationService<?>> authenticationServices) {
 		for (SocialAuthenticationService<?> authenticationService : authenticationServices) {

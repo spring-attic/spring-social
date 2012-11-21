@@ -25,11 +25,8 @@ import org.springframework.social.security.SocialAuthenticationToken;
 
 /**
  * Authentication for social {@link ConnectionFactory}
- * 
- * @param <S>
- *            The service hosted by the service provider.
- * 
- * @author stf@molindo.at
+ * @param <S> The provider's API type.
+ * @author Stefan Fussennegger
  */
 public interface SocialAuthenticationService<S> {
 
@@ -40,14 +37,13 @@ public interface SocialAuthenticationService<S> {
 		ONE_TO_ONE(false, false),
 
 		/**
-		 * many connected providerUserIds per userId, but only one userId per
-		 * providerUserId
+		 * many connected providerUserIds per userId, but only one userId per providerUserId
 		 */
 		ONE_TO_MANY(false, true),
 
 		/**
-		 * only one providerUserId per userId, but many userIds per
-		 * providerUserId. Authentication of users not possible
+		 * only one providerUserId per userId, but many userIds per providerUserId. 
+		 * Authentication of users not possible
 		 */
 		MANY_TO_ONE(true, false),
 
@@ -96,16 +92,12 @@ public interface SocialAuthenticationService<S> {
 	/**
 	 * extract {@link SocialAuthenticationToken} from request
 	 * 
-	 * @param request
-	 *            current {@link HttpServletRequest}
-	 * @param response
-	 *            current {@link HttpServletResponse}
+	 * @param request current {@link HttpServletRequest}
+	 * @param response current {@link HttpServletResponse}
 	 * 
 	 * @return new unauthenticated token or null
-	 * @throws SocialAuthenticationRedirectException
-	 *             if social auth requires a redirect, e.g. OAuth
-	 * @see SocialAuthenticationToken#SocialAuthenticationToken(String, String,
-	 *      Object)
+	 * @throws SocialAuthenticationRedirectException if social auth requires a redirect, e.g. OAuth
+	 * @see SocialAuthenticationToken#SocialAuthenticationToken(String, String, Object)
 	 */
 	SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response) throws SocialAuthenticationRedirectException;
 
@@ -116,4 +108,5 @@ public interface SocialAuthenticationService<S> {
 	 * @return null to use filter default
 	 */
 	String getConnectionAddedRedirectUrl(HttpServletRequest request, Connection<?> connection);
+
 }

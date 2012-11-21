@@ -26,12 +26,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.social.ServiceProvider;
 import org.springframework.social.connect.ConnectionData;
+import org.springframework.util.Assert;
 
 /**
- * auth token for social authentication, e.g. Twitter or Facebook
+ * Authentication token for social authentication, e.g. Twitter or Facebook
  * 
- * 
- * @author stf@molindo.at
+ * @author Stefan Fussennegger
  */
 @SuppressWarnings("serial")
 public class SocialAuthenticationToken extends AbstractAuthenticationToken {
@@ -43,23 +43,14 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 	private final Map<String, String> providerAccountData;
 
 	/**
-	 * new unauthenticated token
-	 * 
-	 * @param connection
-	 *            connection data
-	 * @param providerAccountData
-	 *            optional extra account data
+	 * @param connection connection data
+	 * @param providerAccountData optional extra account data
 	 */
-	public SocialAuthenticationToken(final ConnectionData connection,
-			final Map<String, String> providerAccountData) {
+	public SocialAuthenticationToken(ConnectionData connection, Map<String, String> providerAccountData) {
 		super(null);
 
-		if (connection == null) {
-			throw new NullPointerException("connection");
-		}
-		if (connection.getProviderId() == null) {
-			throw new NullPointerException("connection.providerId");
-		}
+		Assert.notNull(connection);
+		Assert.notNull(connection.getProviderId());
 		if (connection.getExpireTime() != null && connection.getExpireTime() < System.currentTimeMillis()) {
 			throw new IllegalArgumentException("connection.expireTime < currentTime");
 		}
@@ -75,36 +66,21 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 	}
 
 	/**
-	 * new authenticated token using authorities from provided {@link UserDetails}
-	 * 
-	 * @param providerId
-	 *            {@link ServiceProvider} id
-	 * @param details
-	 *            user details, typically as returned by
-	 *            {@link SocialUserDetailsService}
-	 * @param providerAccountData
-	 *            optional extra account data
+	 * @param providerId {@link ServiceProvider} id
+	 * @param details user details, typically as returned by {@link SocialUserDetailsService}
+	 * @param providerAccountData optional extra account data
 	 */
-	public SocialAuthenticationToken(final String providerId, final UserDetails details,
-			final Map<String, String> providerAccountData) {
+	public SocialAuthenticationToken(final String providerId, final UserDetails details, final Map<String, String> providerAccountData) {
 		this(providerId, details, providerAccountData, details.getAuthorities());
 	}
 	
 	/**
-	 * new authenticated token
-	 * 
-	 * @param providerId
-	 *            {@link ServiceProvider} id
-	 * @param details
-	 *            user details, typically as returned by
-	 *            {@link SocialUserDetailsService}
-	 * @param providerAccountData
-	 *            optional extra account data
-	 * @param authorities
-	 *            any {@link GrantedAuthority}s for this user
+	 * @param providerId {@link ServiceProvider} id
+	 * @param details user details, typically as returned by {@link SocialUserDetailsService}
+	 * @param providerAccountData optional extra account data
+	 * @param authorities any {@link GrantedAuthority}s for this user
 	 */
-	public SocialAuthenticationToken(final String providerId, final UserDetails details,
-			final Map<String, String> providerAccountData, final Collection<? extends GrantedAuthority> authorities) {
+	public SocialAuthenticationToken(final String providerId, final UserDetails details, final Map<String, String> providerAccountData, final Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
 		if (providerId == null) {
 			throw new NullPointerException("providerId");
@@ -137,8 +113,7 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 	}
 
 	/**
-	 * @return {@link ConnectionData} if not authenticated, {@link UserDetails}
-	 *         otherwise
+	 * @return {@link ConnectionData} if not authenticated, {@link UserDetails} otherwise
 	 */
 	public Serializable getPrincipal() {
 		return principle;
@@ -152,9 +127,7 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 	}
 
 	/**
-	 * @throws IllegalArgumentException
-	 *             when trying to authenticate a previously unauthenticated
-	 *             token
+	 * @throws IllegalArgumentException when trying to authenticate a previously unauthenticated token
 	 */
 	@Override
 	public void setAuthenticated(final boolean isAuthenticated) throws IllegalArgumentException {
