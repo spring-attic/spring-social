@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.springframework.social.security;
 
-rootProject.name = 'spring-social'
+import org.springframework.security.core.Authentication;
 
-include 'docs'
-include 'spring-social-core'
-include 'spring-social-web'
-include 'spring-social-config'
-include 'spring-social-security'
+/**
+ * Strategy interface used by {@link SocialAuthenticationFilter} to determine
+ * the account ID of the user for purposes of creating connections.
+ * 
+ * @author stf@molindo.at
+ */
+public interface UserIdExtractor {
+
+	/**
+	 * Extracts an account ID from current {@link Authentication}.
+	 */
+	String extractUserId(Authentication authentication);
+
+}

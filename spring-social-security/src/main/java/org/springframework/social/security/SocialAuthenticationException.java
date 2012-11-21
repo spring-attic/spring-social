@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.springframework.social.security;
 
-rootProject.name = 'spring-social'
+import org.springframework.social.SocialException;
 
-include 'docs'
-include 'spring-social-core'
-include 'spring-social-web'
-include 'spring-social-config'
-include 'spring-social-security'
+@SuppressWarnings("serial")
+public class SocialAuthenticationException extends SocialException {
+
+	public SocialAuthenticationException() {
+		super("");
+	}
+
+	public SocialAuthenticationException(String message) {
+		super(message);
+	}
+
+	public SocialAuthenticationException(Throwable cause) {
+		super("", cause);
+	}
+
+	public SocialAuthenticationException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+}
