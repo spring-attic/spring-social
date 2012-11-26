@@ -1,10 +1,30 @@
-Spring Social 1.1.0 Milestone 1 (October 15, 2012)
-==================================================
+Spring Social 1.1.0 Milestone 1 (November 26, 2012)
+===================================================
+Compatibility Notes
+  * Spring 3.0.x compatibility removed in this release. Spring Social depends on Spring 3.1.x
+    or higher.
+
+Bug Fixes
+  * Properly calculate expiry time to fix integer overflow when the expiry value is large.
+    (SOCIAL-303)
+  * Corrected package name for ProviderSignInController in reference documentation. (SOCIAL-304)
+  * Corrected name of schema file in reference documentation. (SOCIAL-318)
+
 Improvements
   * Added an XML configuration namespace to simplify configuring Spring Social connection
     repositories. Also established base bean definition parser and namespace handler classes
     for provider modules to build on configuration support for connection factory and API
     binding. (SOCIAL-292)
+  * Simplified Spring Social configuration for Java-based configuration. (SOCIAL-293)
+  * HTTP Basic client authentication for OAuth 2 clients to adhere to the latest OAuth 2 spec
+    drafts. (SOCIAL-320)
+  * Added postDelete() to ConnectionInterceptor to offer a connection lifecycle hook for
+    disconnect. (SOCIAL-239)
+  * Support for Resource Owner Credentials Grant to OAuth2Operations/OAuth2Template.
+    (SOCIAL-305)
+  * Support for Client Credentials Grant to OAuth2Operations/OAuth2Template.
+    (SOCIAL-324)
+
 
 Spring Social 1.0.2 Release (January 23, 2012)
 ==============================================
