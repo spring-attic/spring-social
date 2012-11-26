@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 import javax.inject.Inject;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
@@ -41,6 +42,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
+@Ignore
 public class SocialConfigNamespaceTest {
 
 	@Inject

@@ -125,7 +125,6 @@ project('spring-social-web') {
     metaInf << files("src/main/resources/tld/spring-social.tld")
 }
 
-
 project('spring-social-config') {
     description = 'Spring Social Config'
     dependencies {
@@ -136,6 +135,17 @@ project('spring-social-config') {
       testCompile "com.h2database:h2:$h2Version"
       testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
       testCompile "org.springframework:spring-jdbc:$springVersion"
+    }
+}
+
+project('spring-social-security') {
+    description = 'Spring Security Integration'
+    dependencies {
+        compile "org.springframework:spring-web:$springVersion"
+        compile "org.springframework:spring-webmvc:$springVersion"
+        compile ("org.springframework.security:spring-security-web:$springSecurityVersion")
+        compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
+        compile project(':spring-social-core')
     }
 }
 
