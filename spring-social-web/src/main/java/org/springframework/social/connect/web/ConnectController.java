@@ -178,6 +178,7 @@ public class ConnectController {
 		setNoCache(request);
 		processFlash(request, model);
 		List<Connection<?>> connections = connectionRepository.findConnections(providerId);
+		setNoCache(request);
 		if (connections.isEmpty()) {
 			return connectView(providerId); 
 		} else {
@@ -411,7 +412,7 @@ public class ConnectController {
 			response.addHeader("Cache-Control", "no-store");
 		}
 	}
-
+	
 	private static final String DUPLICATE_CONNECTION_ATTRIBUTE = "social.addConnection.duplicate";
 	
 	private static final String PROVIDER_ERROR_ATTRIBUTE = "social.provider.error";

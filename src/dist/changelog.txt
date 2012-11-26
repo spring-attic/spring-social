@@ -25,7 +25,6 @@ Improvements
   * Support for Client Credentials Grant to OAuth2Operations/OAuth2Template.
     (SOCIAL-324)
 
-
 Spring Social 1.0.2 Release (January 23, 2012)
 ==============================================
 Bug Fixes
