@@ -20,14 +20,14 @@ configure(allprojects) {
     ext {
       h2Version = '1.3.168'
       hamcrestVersion = '1.3'
-      httpComponentsVersion = '4.2.1'
+      httpComponentsVersion = '4.2.2'
       jacksonVersion = '1.9.9'
       javaxInjectVersion = '1'
       junitVersion = '4.10'
-      mockitoVersion = '1.9.0'
+      mockitoVersion = '1.9.5'
       servletApiVersion = '2.5'
-      springVersion = '3.1.2.RELEASE'
-      springSecurityVersion = '3.1.1.RELEASE'
+      springVersion = '3.1.3.RELEASE'
+      springSecurityVersion = '3.1.3.RELEASE'
       springTestMvcVersion = '1.0.0.BUILD-SNAPSHOT'
       jspApiVersion = '2.2.1'
     }
