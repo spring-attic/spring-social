@@ -103,10 +103,10 @@ project('spring-social-core') {
         compile ("org.springframework:spring-web:$springVersion")
         compile ("org.springframework.security:spring-security-crypto:$springSecurityVersion", optional)
         compile ("org.apache.httpcomponents:httpclient:$httpComponentsVersion", optional)
-        testCompile "com.h2database:h2:$h2Version"
-        testCompile "org.springframework:spring-test-mvc:$springTestMvcVersion"
+        testCompile ("com.h2database:h2:$h2Version")
+        testCompile ("org.springframework:spring-test-mvc:$springTestMvcVersion")
         testCompile ("javax.servlet:servlet-api:$servletApiVersion")
-        testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+        testCompile ("org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion")
     }
 }
 
@@ -114,13 +114,13 @@ project('spring-social-web') {
     description = 'Spring Web Integration'
     dependencies {
         compile ("javax.inject:javax.inject:$javaxInjectVersion")
-        compile "org.springframework:spring-web:$springVersion"
-        compile "org.springframework:spring-webmvc:$springVersion"
+        compile ("org.springframework:spring-web:$springVersion")
+        compile ("org.springframework:spring-webmvc:$springVersion")
         compile ("javax.servlet:servlet-api:$servletApiVersion", provided)
         compile ("javax.servlet.jsp:javax.servlet.jsp-api:$jspApiVersion", provided)
-        compile project(':spring-social-core')
-        testCompile "org.springframework:spring-test-mvc:$springTestMvcVersion"
-        testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
+        compile project (':spring-social-core')
+        testCompile ("org.springframework:spring-test-mvc:$springTestMvcVersion")
+        testCompile ("org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion")
     }
     metaInf << files("src/main/resources/tld/spring-social.tld")
 }
@@ -128,24 +128,24 @@ project('spring-social-web') {
 project('spring-social-config') {
     description = 'Spring Social Config'
     dependencies {
-      compile project(':spring-social-core')
-      compile project(':spring-social-web')
+      compile project (':spring-social-core')
+      compile project (':spring-social-web')
       compile ("org.springframework.security:spring-security-core:$springSecurityVersion", optional)
       testCompile ("javax.servlet:servlet-api:$servletApiVersion", provided)
-      testCompile "com.h2database:h2:$h2Version"
-      testCompile "org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion"
-      testCompile "org.springframework:spring-jdbc:$springVersion"
+      testCompile ("com.h2database:h2:$h2Version")
+      testCompile ("org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion")
+      testCompile ("org.springframework:spring-jdbc:$springVersion")
     }
 }
 
 project('spring-social-security') {
     description = 'Spring Security Integration'
     dependencies {
-        compile "org.springframework:spring-web:$springVersion"
-        compile "org.springframework:spring-webmvc:$springVersion"
+        compile ("org.springframework:spring-web:$springVersion")
+        compile ("org.springframework:spring-webmvc:$springVersion")
         compile ("org.springframework.security:spring-security-web:$springSecurityVersion")
-        compile ("javax.servlet:servlet-api:$servletApiVersion") { provided = true }
-        compile project(':spring-social-core')
+        compile ("javax.servlet:servlet-api:$servletApiVersion", provided)
+        compile project (':spring-social-core')
     }
 }
 
@@ -276,7 +276,7 @@ configure(rootProject) {
 
     task wrapper(type: Wrapper) {
         description = 'Generates gradlew[.bat] scripts'
-        gradleVersion = '1.1'
+        gradleVersion = '1.3'
     }
 
 }
