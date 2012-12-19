@@ -24,14 +24,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.social.connect.ConnectionData;
+import org.springframework.security.web.authentication.AuthenticationRedirectException;
+import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.support.OAuth1ConnectionFactory;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuth1Parameters;
 import org.springframework.social.oauth1.OAuth1Version;
 import org.springframework.social.oauth1.OAuthToken;
-import org.springframework.social.security.SocialAuthenticationRedirectException;
 import org.springframework.social.security.SocialAuthenticationToken;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -59,7 +59,7 @@ public class OAuth1AuthenticationService<S> extends AbstractSocialAuthentication
 		Assert.notNull(getConnectionFactory(), "connectionFactory");
 	}
 
-	public SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response) throws SocialAuthenticationRedirectException {
+	public SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response) throws AuthenticationRedirectException {
 		/**
 		 * OAuth Authentication flow: See http://dev.twitter.com/pages/auth
 		 */
@@ -83,7 +83,7 @@ public class OAuth1AuthenticationService<S> extends AbstractSocialAuthentication
 			
 			String oAuthUrl = ops.buildAuthenticateUrl(requestToken.getValue(), params);
 			
-			throw new SocialAuthenticationRedirectException(oAuthUrl);
+			throw new AuthenticationRedirectException(oAuthUrl);
 		} else {
 			// Second phase: request an access token
 			
@@ -96,9 +96,8 @@ public class OAuth1AuthenticationService<S> extends AbstractSocialAuthentication
 			OAuthToken accessToken = getConnectionFactory().getOAuthOperations().exchangeForAccessToken(
 					new AuthorizedRequestToken(requestToken, verifier), null);
 
-			// TODO avoid API call if possible (auth using token would be fine)
-			ConnectionData data = getConnectionFactory().createConnection(accessToken).createData();
-			return new SocialAuthenticationToken(data, null);
+			Connection<S> connection = getConnectionFactory().createConnection(accessToken);
+            return new SocialAuthenticationToken(connection, null);
 		}
 	}
 

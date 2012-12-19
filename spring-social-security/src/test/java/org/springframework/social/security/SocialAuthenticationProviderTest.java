@@ -15,12 +15,19 @@
  */
 package org.springframework.social.security;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -29,8 +36,10 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.social.security.test.DummyConnection;
 import org.springframework.social.security.test.DummyUserDetails;
 
 public class SocialAuthenticationProviderTest {
@@ -46,12 +55,14 @@ public class SocialAuthenticationProviderTest {
 	public void toUserId() {
 		UsersConnectionRepository repo = mock(UsersConnectionRepository.class);
 		SocialAuthenticationProvider provider = new SocialAuthenticationProvider(repo, null);
-
-		Mockito.when(repo.findUserIdsConnectedTo("provider", set("providerUser1"))).thenReturn(set("user1"));
-		Mockito.when(repo.findUserIdsConnectedTo("provider", set("providerUser2"))).thenReturn(set("user1", "user2"));
-
-		assertEquals("user1", provider.toUserId(data("providerUser1")));
-		assertNull(provider.toUserId(data("providerUser2")));
+		Connection<Object> dummyConnection1 = dummyConnection("providerUser1");
+		Connection<Object> dummyConnection2 = dummyConnection("providerUser2");
+		
+		Mockito.when(repo.findUserIdsWithConnection(dummyConnection1)).thenReturn(list("user1"));
+        Mockito.when(repo.findUserIdsWithConnection(dummyConnection2)).thenReturn(list("user1", "user2"));
+        
+		assertEquals("user1", provider.toUserId(dummyConnection1));
+		assertNull(provider.toUserId(dummyConnection2));
 	}
 
 	@Test
@@ -61,21 +72,25 @@ public class SocialAuthenticationProviderTest {
 		SocialAuthenticationProvider provider = new SocialAuthenticationProvider(repo, userDetailsService);
 
 		DummyUserDetails userDetails = new DummyUserDetails("user1", "pass", "moderator");
+		Connection<Object> dummyConnection1 = dummyConnection("providerUser1");
+		Connection<Object> dummyConnection2 = dummyConnection("providerUser2");
+		Connection<Object> dummyConnection3 = dummyConnection("providerUser3");
 		
-		// mapping from providerUserId to userId
-		Mockito.when(repo.findUserIdsConnectedTo("provider", set("providerUser1"))).thenReturn(set("user1"));
-		Mockito.when(repo.findUserIdsConnectedTo("provider", set("providerUser2"))).thenReturn(set("user1", "user2"));
-		Mockito.when(repo.findUserIdsConnectedTo("provider", set("providerUser3"))).thenReturn(set("user3"));
+        // mapping from Connection to userId
+        Mockito.when(repo.findUserIdsWithConnection(dummyConnection1)).thenReturn(list("user1"));
+        Mockito.when(repo.findUserIdsWithConnection(dummyConnection2)).thenReturn(list("user1", "user2"));
+        Mockito.when(repo.findUserIdsWithConnection(dummyConnection3)).thenReturn(list("user3"));
 		// mapping from userId to userDetails
 		Mockito.when(userDetailsService.loadUserByUserId("user1")).thenReturn(userDetails);
 		Mockito.when(userDetailsService.loadUserByUserId("user2")).thenReturn(new DummyUserDetails("user2", "pass", "moderator"));
 		
 		// success
-		SocialAuthenticationToken token = new SocialAuthenticationToken(data("providerUser1"), null);
+		SocialAuthenticationToken token = new SocialAuthenticationToken(dummyConnection1, null);
 		SocialAuthenticationToken authToken = (SocialAuthenticationToken) provider.authenticate(token);
 		
 		assertNotNull(authToken);
-		assertTrue(token.getPrincipal() instanceof ConnectionData);
+		assertTrue(token.getPrincipal() == null);
+		assertEquals(token.getConnection(), dummyConnection1);
 		assertTrue(authToken.getPrincipal() instanceof UserDetails);
 		assertEquals(userDetails.getUsername(), authToken.getName());
 		assertEquals(token.getProviderId(), authToken.getProviderId());
@@ -83,7 +98,7 @@ public class SocialAuthenticationProviderTest {
 	
 		// fail - unknown providerUserId
 		try {
-			provider.authenticate(new SocialAuthenticationToken(data("someUnknownProviderUser"), null));
+			provider.authenticate(new SocialAuthenticationToken(dummyConnection("someUnknownProviderUser"), null));
 			fail();
 		} catch (BadCredentialsException e) {
 			// expected			
@@ -91,7 +106,7 @@ public class SocialAuthenticationProviderTest {
 		
 		// fail - multiple local users connected
 		try {
-			provider.authenticate(new SocialAuthenticationToken(data("providerUser2"), null));
+			provider.authenticate(new SocialAuthenticationToken(dummyConnection2, null));
 			fail();
 		} catch (BadCredentialsException e) {
 			// expected
@@ -99,7 +114,7 @@ public class SocialAuthenticationProviderTest {
 		
 		// fail - no details for connected user
 		try {
-			provider.authenticate(new SocialAuthenticationToken(data("providerUser3"), null));
+			provider.authenticate(new SocialAuthenticationToken(dummyConnection3, null));
 			fail();
 		} catch (UsernameNotFoundException e) {
 			// expected
@@ -110,7 +125,15 @@ public class SocialAuthenticationProviderTest {
 		return new ConnectionData("provider", providerUserId, null, null, null, null, null, null, null);
 	}
 
+    private static Connection<Object> dummyConnection(String providerUserId) {
+        return DummyConnection.dummy("provider", providerUserId);
+    }
+
 	private static <T> Set<T> set(T... t) {
 		return Collections.unmodifiableSet(new HashSet<T>(Arrays.asList(t)));
 	}
+
+    private static <T> List<T> list(T... t) {
+        return Collections.unmodifiableList((List<? extends T>) new ArrayList<T>(Arrays.asList(t)));
+    }
 }

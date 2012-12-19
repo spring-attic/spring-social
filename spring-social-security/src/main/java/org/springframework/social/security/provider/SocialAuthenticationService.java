@@ -18,9 +18,9 @@ package org.springframework.social.security.provider;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.security.web.authentication.AuthenticationRedirectException;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
-import org.springframework.social.security.SocialAuthenticationRedirectException;
 import org.springframework.social.security.SocialAuthenticationToken;
 
 /**
@@ -99,7 +99,7 @@ public interface SocialAuthenticationService<S> {
 	 * @throws SocialAuthenticationRedirectException if social auth requires a redirect, e.g. OAuth
 	 * @see SocialAuthenticationToken#SocialAuthenticationToken(String, String, Object)
 	 */
-	SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response) throws SocialAuthenticationRedirectException;
+	SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response) throws AuthenticationRedirectException;
 
 	/**
 	 * 
