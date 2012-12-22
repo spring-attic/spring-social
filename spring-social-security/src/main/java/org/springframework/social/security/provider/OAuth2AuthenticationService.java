@@ -23,12 +23,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.security.web.authentication.AuthenticationRedirectException;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Parameters;
+import org.springframework.social.security.SocialAuthenticationRedirectException;
 import org.springframework.social.security.SocialAuthenticationToken;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -36,7 +36,6 @@ import org.springframework.web.client.RestClientException;
 
 /**
  * @author Stefan Fussennegger
- * @param <S> The provider's API type.
  */
 public class OAuth2AuthenticationService<S> extends AbstractSocialAuthenticationService<S> {
 
@@ -57,7 +56,8 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 		Assert.notNull(getConnectionFactory(), "connectionFactory");
 	}
 
-	public SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response) throws AuthenticationRedirectException {
+	public SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response)
+	        throws SocialAuthenticationRedirectException {
 		String code = request.getParameter("code");
 
 		if (!StringUtils.hasText(code)) {
@@ -69,7 +69,7 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 			params.setScope(scope);
 			String redirect = getConnectionFactory().getOAuthOperations().buildAuthenticateUrl(
 					GrantType.AUTHORIZATION_CODE, params);
-			throw new AuthenticationRedirectException(redirect);
+			throw new SocialAuthenticationRedirectException(redirect);
 		} else {
 			try {
 				String returnToUrl = buildReturnToUrl(request);

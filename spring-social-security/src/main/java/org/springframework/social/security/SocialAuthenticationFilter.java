@@ -15,10 +15,12 @@
  */
 package org.springframework.social.security;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -32,7 +34,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AbstractAuthenticationTargetUrlRequestHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationRedirectException;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.social.connect.Connection;
@@ -81,6 +82,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
      *
      * @return <code>true</code> if the filter should attempt authentication, <code>false</code> otherwise.
      */
+	@Override
     protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
         String providerId = getRequestedProviderId(request);
         if (providerId != null){
@@ -91,8 +93,10 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
     }
 
     /* (non-Javadoc)
-     * @see org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter#attemptAuthentication(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     * @see org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter#attemptAuthentication
+     * (javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
+    @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         Authentication auth = null;
         Set<String> authProviders = authServiceLocator.registeredAuthenticationProviderIds();
@@ -105,6 +109,23 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
             }
         }
         return auth;
+    }
+
+    /**
+     * Override to handle redirect exception.
+     * 
+     * @see org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter#unsuccessfulAuthentication
+     * (javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, 
+     *  org.springframework.security.core.AuthenticationException)
+     */
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+            AuthenticationException failed) throws IOException, ServletException {
+        if (failed instanceof SocialAuthenticationRedirectException){
+            response.sendRedirect(((SocialAuthenticationRedirectException)failed).getRedirectUrl()); 
+            return;
+        }
+        super.unsuccessfulAuthentication(request, response, failed);
     }
 
     // private helpers
@@ -147,7 +168,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
      * Otherwise, it is already authenticated, add this connection.
      */
     private Authentication attemptAuthService(final SocialAuthenticationService<?> authService, final HttpServletRequest request, 
-            HttpServletResponse response) throws AuthenticationRedirectException, AuthenticationException {
+            HttpServletResponse response) throws SocialAuthenticationRedirectException, AuthenticationException {
 
         final SocialAuthenticationToken token = authService.getAuthToken(request, response);
         if (token == null) return null;
@@ -183,7 +204,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
             if (getSignupUrl() != null) {
                 // store ConnectionData in session and redirect to register page
                 addSignInAttempt(request.getSession(), (ConnectionData) token.getPrincipal());
-                throw new AuthenticationRedirectException(getSignupUrl());
+                throw new SocialAuthenticationRedirectException(getSignupUrl());
             }
             throw e;
         }
@@ -217,7 +238,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
                 // use default instead
                 redirectUrl = getConnectionAddedRedirectUrl();
             }
-            throw new AuthenticationRedirectException(redirectUrl);
+            throw new SocialAuthenticationRedirectException(redirectUrl);
         }
     }
 
@@ -280,7 +301,8 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 			AbstractAuthenticationTargetUrlRequestHandler h = (AbstractAuthenticationTargetUrlRequestHandler) successHandler;
 			h.setDefaultTargetUrl(postLoginUrl);
 		} else {
-			throw new IllegalStateException("can't set postLoginUrl on unknown successHandler, type is " + successHandler.getClass().getName());
+			throw new IllegalStateException("can't set postLoginUrl on unknown successHandler, type is " 
+			                + successHandler.getClass().getName());
 		}
 	}
 
@@ -290,7 +312,8 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 			SimpleUrlAuthenticationFailureHandler h = (SimpleUrlAuthenticationFailureHandler) failureHandler;
 			h.setDefaultFailureUrl(postFailureUrl);
 		} else {
-			throw new IllegalStateException("can't set postFailureUrl on unknown failureHandler, type is " + failureHandler.getClass().getName());
+			throw new IllegalStateException("can't set postFailureUrl on unknown failureHandler, type is " 
+			                + failureHandler.getClass().getName());
 		}
 	}
 	

@@ -29,13 +29,13 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.security.web.authentication.AuthenticationRedirectException;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.support.OAuth1ConnectionFactory;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuth1Parameters;
 import org.springframework.social.oauth1.OAuth1Version;
 import org.springframework.social.oauth1.OAuthToken;
+import org.springframework.social.security.SocialAuthenticationRedirectException;
 import org.springframework.social.security.SocialAuthenticationToken;
 import org.springframework.social.security.test.ArgMatchers;
 import org.springframework.social.security.test.DummyConnection;
@@ -81,7 +81,7 @@ public class OAuth1AuthenticationServiceTest {
 		try {
 			SocialAuthenticationToken token = authSvc.getAuthToken(request, response);
 			fail("redirect expected, was token " + token);
-		} catch (AuthenticationRedirectException e) {
+		} catch (SocialAuthenticationRedirectException e) {
 			// expect redirect to service url including token
 			assertEquals(serviceUrl + "?oauth_token=" + oAuthToken.getValue(), e.getRedirectUrl());
 		}
