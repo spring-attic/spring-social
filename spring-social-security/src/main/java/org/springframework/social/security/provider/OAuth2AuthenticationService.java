@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.GrantType;
@@ -36,7 +36,6 @@ import org.springframework.web.client.RestClientException;
 
 /**
  * @author Stefan Fussennegger
- * @param <S> The provider's API type.
  */
 public class OAuth2AuthenticationService<S> extends AbstractSocialAuthenticationService<S> {
 
@@ -57,7 +56,8 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 		Assert.notNull(getConnectionFactory(), "connectionFactory");
 	}
 
-	public SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response) throws SocialAuthenticationRedirectException {
+	public SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response)
+	        throws SocialAuthenticationRedirectException {
 		String code = request.getParameter("code");
 
 		if (!StringUtils.hasText(code)) {
@@ -70,21 +70,18 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 			String redirect = getConnectionFactory().getOAuthOperations().buildAuthenticateUrl(
 					GrantType.AUTHORIZATION_CODE, params);
 			throw new SocialAuthenticationRedirectException(redirect);
-		} else if (StringUtils.hasText(code)) {
+		} else {
 			try {
 				String returnToUrl = buildReturnToUrl(request);
 				AccessGrant accessGrant = getConnectionFactory().getOAuthOperations().exchangeForAccess(code, returnToUrl,
 						null);
 	
-				// TODO avoid API call if possible (auth using token would be fine)
-				ConnectionData data = getConnectionFactory().createConnection(accessGrant).createData();
-				return new SocialAuthenticationToken(data, null);
+				Connection<S> connection = getConnectionFactory().createConnection(accessGrant);
+                return new SocialAuthenticationToken(connection, null);
 			} catch (RestClientException e) {
 				logger.debug("failed to exchange for access", e);
 				return null;
 			}
-		} else {
-			return null;
 		}
 	}
 

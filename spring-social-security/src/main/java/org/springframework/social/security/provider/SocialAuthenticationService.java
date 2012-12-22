@@ -26,6 +26,7 @@ import org.springframework.social.security.SocialAuthenticationToken;
 /**
  * Authentication for social {@link ConnectionFactory}
  * @param <S> The provider's API type.
+ * 
  * @author Stefan Fussennegger
  */
 public interface SocialAuthenticationService<S> {

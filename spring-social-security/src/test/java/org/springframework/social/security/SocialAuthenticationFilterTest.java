@@ -80,7 +80,7 @@ public class SocialAuthenticationFilterTest {
 		when(authService.getAuthToken(env.req, env.res)).thenReturn(env.auth);
 		env.addAuthService(authService);
 
-		when(env.filter.getAuthManager().authenticate(env.auth)).thenReturn(env.authSuccess);
+		when(env.authManager.authenticate(env.auth)).thenReturn(env.authSuccess);
 
 		assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -183,25 +183,27 @@ public class SocialAuthenticationFilterTest {
 		private final MockFilterConfig config = new MockFilterConfig();
 		private final SocialAuthenticationToken auth;
 		private final SocialAuthenticationToken authSuccess;
+		private final AuthenticationManager authManager;
 
 		private FilterTestEnv(String method, String requestURI) {
 			context = new MockServletContext();
 			req = new MockHttpServletRequest(context, method, requestURI);
 			res = new MockHttpServletResponse();
 			chain = new MockFilterChain();
+			authManager = mock(AuthenticationManager.class);
 
-			filter = new SocialAuthenticationFilter(mock(AuthenticationManager.class), mock(UserIdExtractor.class), mock(UsersConnectionRepository.class), new SocialAuthenticationServiceRegistry());
+			filter = new SocialAuthenticationFilter(authManager, mock(UserIdExtractor.class), mock(UsersConnectionRepository.class), new SocialAuthenticationServiceRegistry());
 			filter.setServletContext(context);
 			filter.setRememberMeServices(new NullRememberMeServices());
 			
 			ConnectionRepository repo = mock(ConnectionRepository.class);
 			when(filter.getUsersConnectionRepository().createConnectionRepository(Mockito.anyString())).thenReturn(repo);
 			
-			auth = new SocialAuthenticationToken(DummyConnection.dummy("provider", "user").createData(), null);
+			auth = new SocialAuthenticationToken(DummyConnection.dummy("provider", "user"), null);
 
 			Collection<? extends GrantedAuthority> authorities = Collections.emptyList();
 			User user = new SocialUser("foo", "bar", authorities);
-			authSuccess = new SocialAuthenticationToken("mock", user, null, authorities);
+			authSuccess = new SocialAuthenticationToken(DummyConnection.dummy("provider", "user"), user, null, authorities);
 		}
 
 		private void addAuthService(SocialAuthenticationService<?> authenticationService) {

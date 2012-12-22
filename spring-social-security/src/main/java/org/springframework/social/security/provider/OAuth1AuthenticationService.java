@@ -24,7 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.support.OAuth1ConnectionFactory;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuth1Operations;
@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * @author Stefan Fussennegger
- * @param <S> The provider's API type.
+ * 
  */
 public class OAuth1AuthenticationService<S> extends AbstractSocialAuthenticationService<S> implements InitializingBean {
 
@@ -59,7 +59,8 @@ public class OAuth1AuthenticationService<S> extends AbstractSocialAuthentication
 		Assert.notNull(getConnectionFactory(), "connectionFactory");
 	}
 
-	public SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response) throws SocialAuthenticationRedirectException {
+	public SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response)
+	        throws SocialAuthenticationRedirectException {
 		/**
 		 * OAuth Authentication flow: See http://dev.twitter.com/pages/auth
 		 */
@@ -96,9 +97,8 @@ public class OAuth1AuthenticationService<S> extends AbstractSocialAuthentication
 			OAuthToken accessToken = getConnectionFactory().getOAuthOperations().exchangeForAccessToken(
 					new AuthorizedRequestToken(requestToken, verifier), null);
 
-			// TODO avoid API call if possible (auth using token would be fine)
-			ConnectionData data = getConnectionFactory().createConnection(accessToken).createData();
-			return new SocialAuthenticationToken(data, null);
+			Connection<S> connection = getConnectionFactory().createConnection(accessToken);
+            return new SocialAuthenticationToken(connection, null);
 		}
 	}
 

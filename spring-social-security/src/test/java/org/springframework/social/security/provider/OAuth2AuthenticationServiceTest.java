@@ -15,10 +15,14 @@
  */
 package org.springframework.social.security.provider;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.social.security.test.ArgMatchers.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.social.security.test.ArgMatchers.oAuth2Parameters;
 
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -26,7 +30,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.GrantType;
@@ -90,7 +93,7 @@ public class OAuth2AuthenticationServiceTest {
 
 		SocialAuthenticationToken token = authSvc.getAuthToken(request, response);
 		assertNotNull(token);
-		assertTrue(token.getPrincipal() instanceof ConnectionData);
+		assertTrue(token.getConnection() instanceof Connection);
 		assertFalse(token.isAuthenticated());
 	}
 }

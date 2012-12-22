@@ -19,20 +19,22 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.security.test.DummyConnection;
 import org.springframework.social.security.test.DummyUserDetails;
 
 public class SocialAuthenticationTokenTest {
 
 	@Test
 	public void testUnauthenticated() {
-		final ConnectionData data = data("user1");
-		SocialAuthenticationToken token = new SocialAuthenticationToken(data, null);
+		final Connection<Object> dummyConnection = dummyConnection("user1");
+		SocialAuthenticationToken token = new SocialAuthenticationToken(dummyConnection, null);
 
 		assertFalse(token.isAuthenticated());
-		assertTrue(token.getPrincipal() instanceof ConnectionData);
-		assertEquals(data.getProviderId(), token.getProviderId());
-		assertEquals(data, token.getPrincipal());
+		assertTrue(token.getConnection() instanceof Connection);
+		assertEquals(dummyConnection.createData().getProviderId(), token.getProviderId());
+		assertEquals(dummyConnection, token.getConnection());
 		assertEquals(0, token.getAuthorities().size());
 		assertEquals(0, token.getProviderAccountData().size());
 		assertNull(token.getCredentials());
@@ -41,7 +43,7 @@ public class SocialAuthenticationTokenTest {
 
 	@Test
 	public void testAuthenticated() {
-		SocialAuthenticationToken token = new SocialAuthenticationToken("provider", new DummyUserDetails("user", "pass", "moderator"), null);
+		SocialAuthenticationToken token = new SocialAuthenticationToken(dummyConnection("user1"), new DummyUserDetails("user", "pass", "moderator"), null);
 
 		assertTrue(token.isAuthenticated());
 		assertTrue(token.getPrincipal() instanceof UserDetails);
@@ -50,8 +52,9 @@ public class SocialAuthenticationTokenTest {
 		assertNull(token.getCredentials());
 		assertNull(token.getDetails());
 	}
-	private static ConnectionData data(String providerUserId) {
-		return new ConnectionData("provider", providerUserId, null, null, null, null, null, null, null);
-	}
+
+    private static Connection<Object> dummyConnection(String providerUserId) {
+        return DummyConnection.dummy("provider", providerUserId);
+    }
 
 }
