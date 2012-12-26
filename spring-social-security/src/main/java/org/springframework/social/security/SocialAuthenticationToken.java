@@ -25,6 +25,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.social.ServiceProvider;
+import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.util.Assert;
 
@@ -32,6 +33,7 @@ import org.springframework.util.Assert;
  * Authentication token for social authentication, e.g. Twitter or Facebook
  * 
  * @author Stefan Fussennegger
+ * @author Yuan Ji
  */
 @SuppressWarnings("serial")
 public class SocialAuthenticationToken extends AbstractAuthenticationToken {
@@ -39,6 +41,8 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 	private final String providerId;
 
 	private final Serializable principle;
+	
+	private final Connection<?> connection;
 
 	private final Map<String, String> providerAccountData;
 
@@ -46,17 +50,20 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 	 * @param connection connection data
 	 * @param providerAccountData optional extra account data
 	 */
-	public SocialAuthenticationToken(ConnectionData connection, Map<String, String> providerAccountData) {
+	public SocialAuthenticationToken(final Connection<?> connection, Map<String, String> providerAccountData) {
 		super(null);
 
 		Assert.notNull(connection);
-		Assert.notNull(connection.getProviderId());
-		if (connection.getExpireTime() != null && connection.getExpireTime() < System.currentTimeMillis()) {
+		ConnectionData connectionData = connection.createData();
+		Assert.notNull(connectionData.getProviderId());
+		
+		if (connectionData.getExpireTime() != null && connectionData.getExpireTime() < System.currentTimeMillis()) {
 			throw new IllegalArgumentException("connection.expireTime < currentTime");
 		}
 		
-		this.providerId = connection.getProviderId();
-		this.principle = connection;
+		this.providerId = connectionData.getProviderId();
+		this.connection = connection;
+		this.principle = null; //no principal yet
 		if (providerAccountData != null) {
 			this.providerAccountData = Collections.unmodifiableMap(new HashMap<String, String>(providerAccountData));
 		} else {
@@ -66,29 +73,33 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 	}
 
 	/**
-	 * @param providerId {@link ServiceProvider} id
+	 * @param connection {@link Connection}
 	 * @param details user details, typically as returned by {@link SocialUserDetailsService}
 	 * @param providerAccountData optional extra account data
 	 */
-	public SocialAuthenticationToken(final String providerId, final UserDetails details, final Map<String, String> providerAccountData) {
-		this(providerId, details, providerAccountData, details.getAuthorities());
+	public SocialAuthenticationToken(final Connection<?> connection, final UserDetails details, final Map<String, String> providerAccountData) {
+		this(connection, details, providerAccountData, details.getAuthorities());
 	}
 	
 	/**
-	 * @param providerId {@link ServiceProvider} id
+	 * @param connection {@link Connection}
 	 * @param details user details, typically as returned by {@link SocialUserDetailsService}
 	 * @param providerAccountData optional extra account data
 	 * @param authorities any {@link GrantedAuthority}s for this user
 	 */
-	public SocialAuthenticationToken(final String providerId, final UserDetails details, final Map<String, String> providerAccountData, final Collection<? extends GrantedAuthority> authorities) {
+	public SocialAuthenticationToken(final Connection<?> connection, final UserDetails details, final Map<String, String> providerAccountData, final Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
-		if (providerId == null) {
-			throw new NullPointerException("providerId");
-		}
-		if (details == null) {
+        
+		Assert.notNull(connection);
+        this.connection = connection;
+
+        ConnectionData connectionData = connection.createData();
+        Assert.notNull(connectionData.getProviderId());
+        this.providerId = connectionData.getProviderId();
+
+        if (details == null) {
 			throw new NullPointerException("details");
 		}
-		this.providerId = providerId;
 		this.principle = details;
 		if (providerAccountData != null) {
 			this.providerAccountData = Collections.unmodifiableMap(new HashMap<String, String>(providerAccountData));
@@ -119,7 +130,11 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 		return principle;
 	}
 
-	/**
+    public Connection<?> getConnection(){
+        return connection;
+    }
+
+    /**
 	 * @return unmodifiable map, never null
 	 */
 	public Map<String, String> getProviderAccountData() {

@@ -20,39 +20,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.authentication.AbstractAuthenticationTargetUrlRequestHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
-import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.security.provider.SocialAuthenticationService;
 import org.springframework.util.Assert;
-import org.springframework.web.filter.GenericFilterBean;
 
 /**
  * Filter for handling the provider sign-in flow within the Spring Security filter chain.
@@ -60,20 +49,11 @@ import org.springframework.web.filter.GenericFilterBean;
  * 
  * @author Stefan Fussenegger
  * @author Craig Walls
+ * @author Yuan Ji
  */
-public class SocialAuthenticationFilter extends GenericFilterBean {
-
-	private AuthenticationManager authManager;
+public class SocialAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
 	private SocialAuthenticationServiceLocator authServiceLocator;
-
-	private AuthenticationDetailsSource<HttpServletRequest, ?> authDetailsSource = new WebAuthenticationDetailsSource();
-
-	private ApplicationEventPublisher eventPublisher;
-
-	private RememberMeServices rememberMeServices = null;
-
-	private String filterProcessesUrl = "/auth";
 
 	private String signupUrl = "/signup";
 
@@ -81,55 +61,34 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 
 	private boolean updateConnections = true;
 
-	private SessionAuthenticationStrategy sessionStrategy = new NullAuthenticatedSessionStrategy();
-
-	private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
-
-	private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
-
 	private UserIdExtractor userIdExtractor;
 
 	private UsersConnectionRepository usersConnectionRepository;
 
 	public SocialAuthenticationFilter(AuthenticationManager authManager, UserIdExtractor userIdExtractor, 
 			UsersConnectionRepository usersConnectionRepository, SocialAuthenticationServiceLocator authServiceLocator) {
-		this.authManager = authManager;
+        super("/auth");
+        setAuthenticationManager(authManager);
 		this.userIdExtractor = userIdExtractor;
 		this.usersConnectionRepository = usersConnectionRepository;
 		this.authServiceLocator = authServiceLocator;
 	}
 
-	public final void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain) 
-			throws IOException, ServletException {
-		doFilter((HttpServletRequest) req, (HttpServletResponse) res, chain);
-	}
-	
-	public void doFilter(final HttpServletRequest request, final HttpServletResponse response, final FilterChain chain) 
-			throws IOException, ServletException {		
-		try {
-			final Authentication auth = attemptAuthentication(request, response);
-			if (auth != null) {
-				getSessionStrategy().onAuthentication(auth, request, response);
-				successfulAuthentication(request, response, auth);
-
-				if (logger.isDebugEnabled()) {
-					logger.debug("SecurityContextHolder populated with social token: '" + getAuthentication() + "'");
-				}
-			}
-		} catch (final AuthenticationException authenticationException) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("SecurityContextHolder not populated with social token", authenticationException);
-			}
-			unsuccessfulAuthentication(request, response, authenticationException);
-		} catch (SocialAuthenticationRedirectException e) {
-			response.sendRedirect(e.getRedirectUrl()); // TODO: Handle in-app redirects cleaner
-			return;
-		}
-
-		if (!response.isCommitted()) {
-			chain.doFilter(request, response);
-		}
-	}
+    /**
+     * Indicates whether this filter should attempt to process a social network login request for the current invocation.
+     * <p>Check if request URL matches filterProcessesUrl with valid providerId. 
+     * The URL must be like {filterProcessesUrl}/{providerId}. 
+     *
+     * @return <code>true</code> if the filter should attempt authentication, <code>false</code> otherwise.
+     */
+    protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        String providerId = getRequestedProviderId(request);
+        if (providerId != null){
+            Set<String> authProviders = authServiceLocator.registeredAuthenticationProviderIds();
+            return authProviders.contains(providerId);
+        }
+        return false;
+    }
 
 	protected Connection<?> addConnection(SocialAuthenticationService<?> authService, String userId, ConnectionData data) {
 		HashSet<String> userIdSet = new HashSet<String>();
@@ -161,86 +120,14 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		return connection;
 	}
 
-	/**
-	 * Override to change exception handling strategy. 
-	 * Raise current exception to fail fast, return exception that will be raised at the end or simply return null to ignore.
-	 * @param previous previously returned value or null
-	 * @param current current exception
-	 * @param authService service that caused current exception
-	 * @return exception that should be thrown at the end
-	 * @throws AuthenticationException if no further services should be tried
-	 */
-	protected AuthenticationException toAuthException(AuthenticationException previous, AuthenticationException current, 
-			SocialAuthenticationService<?> authService) throws AuthenticationException {
-		// return previous == null ? current : previous;
-		return null; // no exception for implicit auth
-	}
-
-	/**
-	 * Default behaviour for successful authentication. 
-	 * <ol> 
-	 *   <li>Sets the successful <tt>Authentication</tt> object on the {@link SecurityContextHolder}</li> 
-	 *   <li>Invokes the configured {@link SessionAuthenticationStrategy} to handle any session-related behaviour (such as creating a new session to protect against session-fixation attacks).</li> 
-	 *   <li>Informs the configured <tt>RememberMeServices</tt> of the successful login</li> 
-	 *   <li>Fires an {@link InteractiveAuthenticationSuccessEvent} via the configured <tt>ApplicationEventPublisher</tt></li>
-	 *   <li>Delegates additional behaviour to the {@link AuthenticationSuccessHandler}.</li> 
-	 * </ol>
-	 * @param authResult the object returned from the <tt>attemptAuthentication</tt> method.
-	 */
-	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult) 
-			throws IOException, ServletException {
-
-		if (logger.isDebugEnabled()) {
-			logger.debug("Authentication success. Updating SecurityContextHolder to contain: " + authResult);
-		}
-
-		SecurityContextHolder.getContext().setAuthentication(authResult);
-		if (getRememberMeServices() != null) {
-			getRememberMeServices().loginSuccess(request, response, authResult);
-		}
-		
-		// Fire event
-		ApplicationEventPublisher eventPublisher = getEventPublisher();
-		if (eventPublisher != null) {
-			eventPublisher.publishEvent(new InteractiveAuthenticationSuccessEvent(authResult, this.getClass()));
-		}
-		if (getRequestedProviderId(request) != null) {
-			// only redirect explicit auth
-			getSuccessHandler().onAuthenticationSuccess(request, response, authResult);
-		}
-	}
-
-	/**
-	 * Default behaviour for unsuccessful authentication. 
-	 * <ol> 
-	 *   <li>Clears the {@link SecurityContextHolder}</li> 
-	 *   <li>Stores the exception in the session (if it exists or <tt>allowSesssionCreation</tt> is set to <tt>true</tt>)</li> 
-	 *   <li>Informs the configured <tt>RememberMeServices</tt> of the failed login</li> 
-	 *   <li>Delegates additional behaviour to the {@link AuthenticationFailureHandler}.</li>
-	 * </ol>
-	 */
-	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) 
-			throws IOException, ServletException {
-		SecurityContextHolder.clearContext();
-		if (logger.isDebugEnabled()) {
-			logger.debug("Authentication request failed: " + failed.toString());
-			logger.debug("Updated SecurityContextHolder to contain null Authentication");
-		}
-		if (getRememberMeServices() != null) {
-			getRememberMeServices().loginFail(request, response);
-		}
-		
-		getFailureHandler().onAuthenticationFailure(request, response, failed);
-	}
-
-	// private helpers
-
-	private Authentication attemptAuthentication(final HttpServletRequest request, final HttpServletResponse response) 
-			throws AuthenticationException, IOException, ServletException, SocialAuthenticationRedirectException {
+    /* (non-Javadoc)
+     * @see org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter#attemptAuthentication(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 		Authentication auth = null;
 		Set<String> authProviders = authServiceLocator.registeredAuthenticationProviderIds();
 		String authProviderId = getRequestedProviderId(request);
-		if (!authProviders.isEmpty() && authProviderId != null && authServiceLocator.registeredAuthenticationProviderIds().contains(authProviderId)) {
+		if (!authProviders.isEmpty() && authProviderId != null && authProviders.contains(authProviderId)) {
 			SocialAuthenticationService<?> authService = authServiceLocator.getAuthenticationService(authProviderId);
 			auth = attemptAuthService(authService, request, response);
 			if (auth == null) {
@@ -250,10 +137,34 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		return auth;
 	}
 
-	private Authentication getAuthentication() {
+    /**
+     * Override to handle redirect exception.
+     * 
+     * @see org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter#unsuccessfulAuthentication(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.springframework.security.core.AuthenticationException)
+     */
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+            AuthenticationException failed) throws IOException, ServletException {
+        if (failed instanceof SocialAuthenticationRedirectException){
+            response.sendRedirect(((SocialAuthenticationRedirectException)failed).getRedirectUrl()); 
+            return;
+        }
+        super.unsuccessfulAuthentication(request, response, failed);
+    }
+
+    // private helpers
+    
+    private Authentication getAuthentication() {
 		return SecurityContextHolder.getContext().getAuthentication();
 	}
 
+    /*
+     * Call SocialAuthenticationService.getAuthToken() to get SocialAuthenticationToken:
+     *     If first phase, throw AuthenticationRedirectException to redirect to provider website.
+     *     If second phase, get token/code from request parameter and call provider API to get accessToken/accessGrant.
+     * Check Authentication object in spring security context, if null or not authenticated,  call doAuthentication()
+     * Otherwise, it is already authenticated, add this connection.
+     */
 	private Authentication attemptAuthService(final SocialAuthenticationService<?> authService, final HttpServletRequest request, 
 			HttpServletResponse response) throws SocialAuthenticationRedirectException, AuthenticationException {
 
@@ -319,8 +230,8 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 			SocialAuthenticationToken token) {
 		try {
 			if (!authService.getConnectionCardinality().isAuthenticatePossible()) return null;
-			token.setDetails(getAuthDetailsSource().buildDetails(request));
-			Authentication success = getAuthManager().authenticate(token);
+			token.setDetails(authenticationDetailsSource.buildDetails(request));
+			Authentication success = getAuthenticationManager().authenticate(token);
 			Assert.isInstanceOf(SocialUserDetails.class, success.getPrincipal(), "unexpected principle type");			
 			updateConnections(authService, token, success);			
 			return success;
@@ -345,38 +256,6 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		}
 	}
 	
-	
-	public AuthenticationDetailsSource<HttpServletRequest, ?> getAuthDetailsSource() {
-		return authDetailsSource;
-	}
-
-	public void setAuthDetailsSource(final AuthenticationDetailsSource<HttpServletRequest, ?> authDetailsSource) {
-		this.authDetailsSource = authDetailsSource;
-	}
-
-	/**
-	 * @return may be null
-	 */
-	public ApplicationEventPublisher getEventPublisher() {
-		return eventPublisher;
-	}
-
-	public void setEventPublisher(final ApplicationEventPublisher eventPublisher) {
-		this.eventPublisher = eventPublisher;
-	}
-
-	public AuthenticationManager getAuthManager() {
-		return authManager;
-	}
-
-	public String getFilterProcessesUrl() {
-		return filterProcessesUrl;
-	}
-
-	public void setFilterProcessesUrl(String filterProcessesUrl) {
-		this.filterProcessesUrl = filterProcessesUrl;
-	}
-
 	public String getSignupUrl() {
 		return signupUrl;
 	}
@@ -421,41 +300,6 @@ public class SocialAuthenticationFilter extends GenericFilterBean {
 		}
 	}
 	
-	public RememberMeServices getRememberMeServices() {
-		return rememberMeServices;
-	}
-
-	public void setRememberMeServices(RememberMeServices rememberMeServices) {
-		this.rememberMeServices = rememberMeServices;
-	}
-
-	public AuthenticationSuccessHandler getSuccessHandler() {
-		return successHandler;
-	}
-
-	public void setSuccessHandler(AuthenticationSuccessHandler successHandler) {
-		if (successHandler == null) {
-			throw new NullPointerException("successHandler");
-		}
-		this.successHandler = successHandler;
-	}
-
-	public AuthenticationFailureHandler getFailureHandler() {
-		return failureHandler;
-	}
-
-	public void setFailureHandler(AuthenticationFailureHandler failureHandler) {
-		this.failureHandler = failureHandler;
-	}
-
-	public SessionAuthenticationStrategy getSessionStrategy() {
-		return sessionStrategy;
-	}
-
-	public void setSessionStrategy(SessionAuthenticationStrategy sessionStrategy) {
-		this.sessionStrategy = sessionStrategy;
-	}
-
 	public UserIdExtractor getUserIdExtractor() {
 		return userIdExtractor;
 	}
