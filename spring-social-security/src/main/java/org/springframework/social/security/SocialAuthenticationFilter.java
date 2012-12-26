@@ -171,7 +171,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		final SocialAuthenticationToken token = authService.getAuthToken(request, response);
 		if (token == null) return null;
 		
-		Assert.isInstanceOf(ConnectionData.class, token.getPrincipal(), "unexpected principle type");
+		Assert.notNull(token.getConnection());
 		
 		Authentication auth = getAuthentication();
 		if (auth == null || !auth.isAuthenticated()) {
