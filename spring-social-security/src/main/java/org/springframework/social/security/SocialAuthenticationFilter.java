@@ -249,8 +249,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	private void updateConnections(SocialAuthenticationService<?> authService, SocialAuthenticationToken token, Authentication success) {
 		if (isUpdateConnections()) {
 			String userId = ((SocialUserDetails)success.getPrincipal()).getUserId();
-			ConnectionData data = (ConnectionData) token.getPrincipal();
-			Connection<?> connection = authService.getConnectionFactory().createConnection(data);
+			Connection<?> connection = token.getConnection();
 			ConnectionRepository repo = getUsersConnectionRepository().createConnectionRepository(userId);
 			repo.updateConnection(connection);
 		}
