@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.GrantType;
@@ -77,8 +77,8 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 						null);
 	
 				// TODO avoid API call if possible (auth using token would be fine)
-				ConnectionData data = getConnectionFactory().createConnection(accessGrant).createData();
-				return new SocialAuthenticationToken(data, null);
+                Connection<S> connection = getConnectionFactory().createConnection(accessGrant);
+                return new SocialAuthenticationToken(connection, null);
 			} catch (RestClientException e) {
 				logger.debug("failed to exchange for access", e);
 				return null;
