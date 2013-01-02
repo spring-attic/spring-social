@@ -312,7 +312,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	}
 
 	private boolean addSignInAttempt(HttpSession session, ConnectionData data) {
-		return session == null || data == null ? null : SignInAttempts.add(session, data);
+		return session == null || data == null ? false : SignInAttempts.add(session, data);
 	}
 
 }
