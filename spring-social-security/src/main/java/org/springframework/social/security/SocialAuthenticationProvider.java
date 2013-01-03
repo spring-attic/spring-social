@@ -27,7 +27,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.social.ServiceProvider;
 import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.util.Assert;
 
@@ -58,7 +57,6 @@ public class SocialAuthenticationProvider implements AuthenticationProvider {
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		Assert.isInstanceOf(SocialAuthenticationToken.class, authentication, "unsupported authentication type");
 		Assert.isTrue(!authentication.isAuthenticated(), "already authenticated");
-
 		SocialAuthenticationToken authToken = (SocialAuthenticationToken) authentication;
 		String providerId = authToken.getProviderId();
 		Connection<?> connection = authToken.getConnection();
@@ -73,8 +71,7 @@ public class SocialAuthenticationProvider implements AuthenticationProvider {
 			throw new UsernameNotFoundException("Unknown connected account id");
 		}
 
-        return new SocialAuthenticationToken(connection, userDetails, authToken.getProviderAccountData(),
-                getAuthorities(providerId, userDetails));
+        return new SocialAuthenticationToken(connection, userDetails, authToken.getProviderAccountData(), getAuthorities(providerId, userDetails));
 	}
 
     protected String toUserId(Connection<?> connection) {

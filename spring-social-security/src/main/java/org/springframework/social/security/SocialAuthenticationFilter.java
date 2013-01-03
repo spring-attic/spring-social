@@ -73,12 +73,55 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		this.usersConnectionRepository = usersConnectionRepository;
 		this.authServiceLocator = authServiceLocator;
 	}
+	
+	public void setSignupUrl(String signupUrl) {
+		this.signupUrl = signupUrl;
+	}
 
+	public void setConnectionAddedRedirectUrl(String connectionAddedRedirectUrl) {
+		this.connectionAddedRedirectUrl = connectionAddedRedirectUrl;
+	}
+
+	public void setUpdateConnections(boolean updateConnections) {
+		this.updateConnections = updateConnections;
+	}
+
+	public void setPostLoginUrl(String postLoginUrl) {
+		AuthenticationSuccessHandler successHandler = getSuccessHandler();
+		if (successHandler instanceof AbstractAuthenticationTargetUrlRequestHandler) {
+			AbstractAuthenticationTargetUrlRequestHandler h = (AbstractAuthenticationTargetUrlRequestHandler) successHandler;
+			h.setDefaultTargetUrl(postLoginUrl);
+		} else {
+			throw new IllegalStateException("can't set postLoginUrl on unknown successHandler, type is " + successHandler.getClass().getName());
+		}
+	}
+
+	public void setPostFailureUrl(String postFailureUrl) {
+		AuthenticationFailureHandler failureHandler = getFailureHandler();
+		if (failureHandler instanceof SimpleUrlAuthenticationFailureHandler) {
+			SimpleUrlAuthenticationFailureHandler h = (SimpleUrlAuthenticationFailureHandler) failureHandler;
+			h.setDefaultFailureUrl(postFailureUrl);
+		} else {
+			throw new IllegalStateException("can't set postFailureUrl on unknown failureHandler, type is " + failureHandler.getClass().getName());
+		}
+	}
+	
+	public UserIdExtractor getUserIdExtractor() {
+		return userIdExtractor;
+	}
+
+	public UsersConnectionRepository getUsersConnectionRepository() {
+		return usersConnectionRepository;
+	}
+
+	public SocialAuthenticationServiceLocator getAuthServiceLocator() {
+		return authServiceLocator;
+	}
+	
     /**
      * Indicates whether this filter should attempt to process a social network login request for the current invocation.
      * <p>Check if request URL matches filterProcessesUrl with valid providerId. 
      * The URL must be like {filterProcessesUrl}/{providerId}. 
-     *
      * @return <code>true</code> if the filter should attempt authentication, <code>false</code> otherwise.
      */
     protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
@@ -93,8 +136,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	protected Connection<?> addConnection(SocialAuthenticationService<?> authService, String userId, ConnectionData data) {
 		HashSet<String> userIdSet = new HashSet<String>();
 		userIdSet.add(data.getProviderUserId());
-		Set<String> connectedUserIds = usersConnectionRepository
-				.findUserIdsConnectedTo(data.getProviderId(), userIdSet);
+		Set<String> connectedUserIds = usersConnectionRepository.findUserIdsConnectedTo(data.getProviderId(), userIdSet);
 		if (connectedUserIds.contains(userId)) {
 			// already connected
 			return null;
@@ -110,7 +152,6 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 				// TODO maybe throw an exception to allow UI feedback?
 				return null;
 			}
-
 		}
 
 		// add new connection
@@ -120,9 +161,6 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		return connection;
 	}
 
-    /* (non-Javadoc)
-     * @see org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter#attemptAuthentication(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
-     */
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 		Authentication auth = null;
 		Set<String> authProviders = authServiceLocator.registeredAuthenticationProviderIds();
@@ -152,7 +190,6 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
     }
 
     // private helpers
-    
     private Authentication getAuthentication() {
 		return SecurityContextHolder.getContext().getAuthentication();
 	}
@@ -218,7 +255,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 			String redirectUrl = authService.getConnectionAddedRedirectUrl(request, connection);
 			if (redirectUrl == null) {
 				// use default instead
-				redirectUrl = getConnectionAddedRedirectUrl();
+				redirectUrl = connectionAddedRedirectUrl;
 			}
 			throw new SocialAuthenticationRedirectException(redirectUrl);
 		}
@@ -234,17 +271,17 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 			return success;
 		} catch (BadCredentialsException e) {
 			// connection unknown, register new user?
-			if (getSignupUrl() != null) {
+			if (signupUrl != null) {
 				// store ConnectionData in session and redirect to register page
 				addSignInAttempt(request.getSession(), token.getConnection());
-				throw new SocialAuthenticationRedirectException(getSignupUrl());
+				throw new SocialAuthenticationRedirectException(signupUrl);
 			}
 			throw e;
 		}
 	}
 
 	private void updateConnections(SocialAuthenticationService<?> authService, SocialAuthenticationToken token, Authentication success) {
-		if (isUpdateConnections()) {
+		if (updateConnections) {
 			String userId = ((SocialUserDetails)success.getPrincipal()).getUserId();
 			Connection<?> connection = token.getConnection();
 			ConnectionRepository repo = getUsersConnectionRepository().createConnectionRepository(userId);
@@ -252,62 +289,6 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		}
 	}
 	
-	public String getSignupUrl() {
-		return signupUrl;
-	}
-
-	public void setSignupUrl(String signupUrl) {
-		this.signupUrl = signupUrl;
-	}
-
-	public String getConnectionAddedRedirectUrl() {
-		return connectionAddedRedirectUrl;
-	}
-
-	public void setConnectionAddedRedirectUrl(String connectionAddedRedirectUrl) {
-		this.connectionAddedRedirectUrl = connectionAddedRedirectUrl;
-	}
-
-	public boolean isUpdateConnections() {
-		return updateConnections;
-	}
-
-	public void setUpdateConnections(boolean updateConnections) {
-		this.updateConnections = updateConnections;
-	}
-
-	public void setPostLoginUrl(String postLoginUrl) {
-		AuthenticationSuccessHandler successHandler = getSuccessHandler();
-		if (successHandler instanceof AbstractAuthenticationTargetUrlRequestHandler) {
-			AbstractAuthenticationTargetUrlRequestHandler h = (AbstractAuthenticationTargetUrlRequestHandler) successHandler;
-			h.setDefaultTargetUrl(postLoginUrl);
-		} else {
-			throw new IllegalStateException("can't set postLoginUrl on unknown successHandler, type is " + successHandler.getClass().getName());
-		}
-	}
-
-	public void setPostFailureUrl(String postFailureUrl) {
-		AuthenticationFailureHandler failureHandler = getFailureHandler();
-		if (failureHandler instanceof SimpleUrlAuthenticationFailureHandler) {
-			SimpleUrlAuthenticationFailureHandler h = (SimpleUrlAuthenticationFailureHandler) failureHandler;
-			h.setDefaultFailureUrl(postFailureUrl);
-		} else {
-			throw new IllegalStateException("can't set postFailureUrl on unknown failureHandler, type is " + failureHandler.getClass().getName());
-		}
-	}
-	
-	public UserIdExtractor getUserIdExtractor() {
-		return userIdExtractor;
-	}
-
-	public UsersConnectionRepository getUsersConnectionRepository() {
-		return usersConnectionRepository;
-	}
-
-	public SocialAuthenticationServiceLocator getAuthServiceLocator() {
-		return authServiceLocator;
-	}
-
 	private void addSignInAttempt(HttpSession session, Connection<?> connection) {
 		session.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, new ProviderSignInAttempt(connection, authServiceLocator, usersConnectionRepository));
 	}
