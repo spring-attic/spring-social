@@ -141,6 +141,7 @@ project('spring-social-config') {
 project('spring-social-security') {
     description = 'Spring Security Integration'
     dependencies {
+        compile project (':spring-social-web')
         compile ("org.springframework:spring-web:$springVersion")
         compile ("org.springframework:spring-webmvc:$springVersion")
         compile ("org.springframework.security:spring-security-web:$springSecurityVersion")
