@@ -46,8 +46,7 @@ public class SocialAuthenticationServiceRegistry extends ConnectionFactoryRegist
 	 * Set the group of {@link SocialAuthenticationService}s registered in this registry. 
 	 * JavaBean setter that allows for this object to be more easily configured by tools. 
 	 * For programmatic configuration, prefer {@link #addAuthenticationService(SocialAuthenticationService)}.
-	 * 
-	 * @param connectionFactories the set of connection factories to register
+	 * @param authenticationServices the set of social authentication services to register
 	 */
 	public void setAuthenticationServices(Iterable<SocialAuthenticationService<?>> authenticationServices) {
 		for (SocialAuthenticationService<?> authenticationService : authenticationServices) {

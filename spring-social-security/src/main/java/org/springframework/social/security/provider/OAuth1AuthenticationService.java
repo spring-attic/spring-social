@@ -42,7 +42,7 @@ import org.springframework.util.StringUtils;
  */
 public class OAuth1AuthenticationService<S> extends AbstractSocialAuthenticationService<S> implements InitializingBean {
 
-	protected final Log logger = LogFactory.getLog(getClass());
+	private final Log logger = LogFactory.getLog(getClass());
 	
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
 
@@ -52,6 +52,26 @@ public class OAuth1AuthenticationService<S> extends AbstractSocialAuthentication
 
 	public OAuth1AuthenticationService(OAuth1ConnectionFactory<S> connectionFactory) {
 		setConnectionFactory(connectionFactory);
+	}
+	
+	public OAuth1ConnectionFactory<S> getConnectionFactory() {
+		return connectionFactory;
+	}
+
+	public void setConnectionFactory(OAuth1ConnectionFactory<S> connectionFactory) {
+		this.connectionFactory = connectionFactory;
+	}
+
+	public void setReturnToUrlParameters(Set<String> returnToUrlParameters) {
+		Assert.notNull(returnToUrlParameters, "returnToUrlParameters cannot be null");
+		this.returnToUrlParameters = returnToUrlParameters;
+	}
+
+	public Set<String> getReturnToUrlParameters() {
+		if (returnToUrlParameters == null) {
+			returnToUrlParameters = new HashSet<String>();
+		}
+		return returnToUrlParameters;
 	}
 
 	public void afterPropertiesSet() throws Exception {
@@ -67,7 +87,6 @@ public class OAuth1AuthenticationService<S> extends AbstractSocialAuthentication
 		if (!StringUtils.hasText(verifier)) {
 			// First phase: get a request token
 			OAuth1Operations ops = getConnectionFactory().getOAuthOperations();
-
 			String returnToUrl = buildReturnToUrl(request);
 			OAuthToken requestToken = ops.fetchRequestToken(returnToUrl, null);
 			request.getSession().setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken);
@@ -79,23 +98,16 @@ public class OAuth1AuthenticationService<S> extends AbstractSocialAuthentication
 				params.setCallbackUrl(returnToUrl);
 			} else {
 				params = OAuth1Parameters.NONE;
-			}
-			
-			String oAuthUrl = ops.buildAuthenticateUrl(requestToken.getValue(), params);
-			
-			throw new SocialAuthenticationRedirectException(oAuthUrl);
+			}			
+			throw new SocialAuthenticationRedirectException(ops.buildAuthenticateUrl(requestToken.getValue(), params));
 		} else {
 			// Second phase: request an access token
-			
 			OAuthToken requestToken = extractCachedRequestToken(request);
 			if (requestToken == null) {
 				logger.warn("requestToken unavailable for oauth_verifier");
 				return null;
 			}
-			
-			OAuthToken accessToken = getConnectionFactory().getOAuthOperations().exchangeForAccessToken(
-					new AuthorizedRequestToken(requestToken, verifier), null);
-
+			OAuthToken accessToken = getConnectionFactory().getOAuthOperations().exchangeForAccessToken(new AuthorizedRequestToken(requestToken, verifier), null);
 			// TODO avoid API call if possible (auth using token would be fine)
             Connection<S> connection = getConnectionFactory().createConnection(accessToken);
             return new SocialAuthenticationToken(connection, null);
@@ -126,26 +138,6 @@ public class OAuth1AuthenticationService<S> extends AbstractSocialAuthentication
 		OAuthToken requestToken = (OAuthToken) request.getSession().getAttribute(OAUTH_TOKEN_ATTRIBUTE);
 		request.getSession().removeAttribute(OAUTH_TOKEN_ATTRIBUTE);
 		return requestToken;
-	}
-
-	public OAuth1ConnectionFactory<S> getConnectionFactory() {
-		return connectionFactory;
-	}
-
-	public void setConnectionFactory(OAuth1ConnectionFactory<S> connectionFactory) {
-		this.connectionFactory = connectionFactory;
-	}
-
-	public void setReturnToUrlParameters(Set<String> returnToUrlParameters) {
-		Assert.notNull(returnToUrlParameters, "returnToUrlParameters cannot be null");
-		this.returnToUrlParameters = returnToUrlParameters;
-	}
-
-	public Set<String> getReturnToUrlParameters() {
-		if (returnToUrlParameters == null) {
-			returnToUrlParameters = new HashSet<String>();
-		}
-		return returnToUrlParameters;
 	}
 
 }
