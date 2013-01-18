@@ -113,12 +113,12 @@ project('spring-social-core') {
 project('spring-social-web') {
     description = 'Spring Web Integration'
     dependencies {
+        compile project (':spring-social-core')
         compile ("javax.inject:javax.inject:$javaxInjectVersion")
         compile ("org.springframework:spring-web:$springVersion")
         compile ("org.springframework:spring-webmvc:$springVersion")
         compile ("javax.servlet:servlet-api:$servletApiVersion", provided)
         compile ("javax.servlet.jsp:javax.servlet.jsp-api:$jspApiVersion", provided)
-        compile project (':spring-social-core')
         testCompile ("org.springframework:spring-test-mvc:$springTestMvcVersion")
         testCompile ("org.codehaus.jackson:jackson-mapper-asl:$jacksonVersion")
     }
@@ -129,6 +129,7 @@ project('spring-social-config') {
     description = 'Spring Social Config'
     dependencies {
       compile project (':spring-social-core')
+      compile project (':spring-social-security', optional)
       compile project (':spring-social-web')
       compile ("org.springframework.security:spring-security-core:$springSecurityVersion", optional)
       testCompile ("javax.servlet:servlet-api:$servletApiVersion", provided)
@@ -141,12 +142,12 @@ project('spring-social-config') {
 project('spring-social-security') {
     description = 'Spring Security Integration'
     dependencies {
+        compile project (':spring-social-core')
         compile project (':spring-social-web')
         compile ("org.springframework:spring-web:$springVersion")
         compile ("org.springframework:spring-webmvc:$springVersion")
         compile ("org.springframework.security:spring-security-web:$springSecurityVersion")
         compile ("javax.servlet:servlet-api:$servletApiVersion", provided)
-        compile project (':spring-social-core')
     }
 }
 

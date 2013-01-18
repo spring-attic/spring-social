@@ -46,7 +46,7 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 
 	private Set<String> returnToUrlParameters;
 	
-	private String scope;
+	private String scope = "";
 	
 	public OAuth2AuthenticationService(OAuth2ConnectionFactory<S> connectionFactory) {
 		setConnectionFactory(connectionFactory);
