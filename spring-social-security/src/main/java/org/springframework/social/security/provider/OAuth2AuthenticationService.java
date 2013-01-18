@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.GrantType;
@@ -51,63 +51,7 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 	public OAuth2AuthenticationService(OAuth2ConnectionFactory<S> connectionFactory) {
 		setConnectionFactory(connectionFactory);
 	}
-
-	public void afterPropertiesSet() throws Exception {
-		super.afterPropertiesSet();
-		Assert.notNull(getConnectionFactory(), "connectionFactory");
-	}
-
-	public SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response) throws SocialAuthenticationRedirectException {
-		String code = request.getParameter("code");
-
-		if (!StringUtils.hasText(code)) {
-			// First phase: get a request token
-			String returnToUrl = buildReturnToUrl(request);
-			String scope = getScope(); // TODO set scope
-			OAuth2Parameters params =  new OAuth2Parameters();
-			params.setRedirectUri(returnToUrl);
-			params.setScope(scope);
-			String redirect = getConnectionFactory().getOAuthOperations().buildAuthenticateUrl(
-					GrantType.AUTHORIZATION_CODE, params);
-			throw new SocialAuthenticationRedirectException(redirect);
-		} else if (StringUtils.hasText(code)) {
-			try {
-				String returnToUrl = buildReturnToUrl(request);
-				AccessGrant accessGrant = getConnectionFactory().getOAuthOperations().exchangeForAccess(code, returnToUrl,
-						null);
 	
-				// TODO avoid API call if possible (auth using token would be fine)
-				ConnectionData data = getConnectionFactory().createConnection(accessGrant).createData();
-				return new SocialAuthenticationToken(data, null);
-			} catch (RestClientException e) {
-				logger.debug("failed to exchange for access", e);
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
-
-	protected String buildReturnToUrl(HttpServletRequest request) {
-		StringBuffer sb = request.getRequestURL();
-		sb.append("?");
-
-		for (String name : getReturnToUrlParameters()) {
-			// Assume for simplicity that there is only one value
-			String value = request.getParameter(name);
-
-			if (value == null) {
-				continue;
-			}
-			sb.append(name).append("=").append(value).append("&");
-
-		}
-
-		sb.setLength(sb.length() - 1); // strip trailing ? or &
-
-		return sb.toString();
-	}
-
 	public OAuth2ConnectionFactory<S> getConnectionFactory() {
 		return connectionFactory;
 	}
@@ -128,10 +72,6 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 		return returnToUrlParameters;
 	}
 
-	public String getScope() {
-		return scope;
-	}
-
 	/**
 	 * @param scope OAuth scope to use, i.e. requested permissions
 	 */
@@ -139,5 +79,49 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 		this.scope = scope;
 	}
 
-	
+	public void afterPropertiesSet() throws Exception {
+		super.afterPropertiesSet();
+		Assert.notNull(getConnectionFactory(), "connectionFactory");
+	}
+
+	public SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response) throws SocialAuthenticationRedirectException {
+		String code = request.getParameter("code");
+		if (!StringUtils.hasText(code)) {
+			// First phase: get a request token
+			OAuth2Parameters params =  new OAuth2Parameters();
+			params.setRedirectUri(buildReturnToUrl(request));
+			params.setScope(scope);
+			throw new SocialAuthenticationRedirectException(getConnectionFactory().getOAuthOperations().buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, params));
+		} else if (StringUtils.hasText(code)) {
+			try {
+				String returnToUrl = buildReturnToUrl(request);
+				AccessGrant accessGrant = getConnectionFactory().getOAuthOperations().exchangeForAccess(code, returnToUrl, null);
+				// TODO avoid API call if possible (auth using token would be fine)
+                Connection<S> connection = getConnectionFactory().createConnection(accessGrant);
+                return new SocialAuthenticationToken(connection, null);
+			} catch (RestClientException e) {
+				logger.debug("failed to exchange for access", e);
+				return null;
+			}
+		} else {
+			return null;
+		}
+	}
+
+	protected String buildReturnToUrl(HttpServletRequest request) {
+		StringBuffer sb = request.getRequestURL();
+		sb.append("?");
+		for (String name : getReturnToUrlParameters()) {
+			// Assume for simplicity that there is only one value
+			String value = request.getParameter(name);
+
+			if (value == null) {
+				continue;
+			}
+			sb.append(name).append("=").append(value).append("&");
+		}
+		sb.setLength(sb.length() - 1); // strip trailing ? or &
+		return sb.toString();
+	}
+
 }

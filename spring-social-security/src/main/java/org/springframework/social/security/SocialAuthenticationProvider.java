@@ -16,8 +16,7 @@
 package org.springframework.social.security;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -27,13 +26,15 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.social.ServiceProvider;
-import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.util.Assert;
 
 /**
  * {@link AuthenticationProvider} for spring-social based {@link ServiceProvider}s
+ * 
  * @author Stefan Fussennegger
+ * @author Yuan Ji
  */
 public class SocialAuthenticationProvider implements AuthenticationProvider {
 
@@ -56,13 +57,11 @@ public class SocialAuthenticationProvider implements AuthenticationProvider {
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		Assert.isInstanceOf(SocialAuthenticationToken.class, authentication, "unsupported authentication type");
 		Assert.isTrue(!authentication.isAuthenticated(), "already authenticated");
-		Assert.isInstanceOf(ConnectionData.class, authentication.getPrincipal(), "unsupported principal type");
-
 		SocialAuthenticationToken authToken = (SocialAuthenticationToken) authentication;
 		String providerId = authToken.getProviderId();
-		ConnectionData principal = (ConnectionData) authToken.getPrincipal();
+		Connection<?> connection = authToken.getConnection();
 
-		String userId = toUserId(principal);
+		String userId = toUserId(connection);
 		if (userId == null) {
 			throw new BadCredentialsException("Unknown access token");
 		}
@@ -72,17 +71,14 @@ public class SocialAuthenticationProvider implements AuthenticationProvider {
 			throw new UsernameNotFoundException("Unknown connected account id");
 		}
 
-		return new SocialAuthenticationToken(providerId, userDetails, authToken.getProviderAccountData(), getAuthorities(providerId, userDetails));
+        return new SocialAuthenticationToken(connection, userDetails, authToken.getProviderAccountData(), getAuthorities(providerId, userDetails));
 	}
 
-	protected String toUserId(ConnectionData data) {
-		String providerId = data.getProviderId();
-		HashSet<String> providerUserIds = new HashSet<String>();
-		providerUserIds.add(data.getProviderUserId());
-		Set<String> userIds = usersConnectionRepository.findUserIdsConnectedTo(providerId, providerUserIds);
-		// only if a single userId is connected to this providerUserId
-		return (userIds.size() == 1) ? userIds.iterator().next() : null;
-	}
+    protected String toUserId(Connection<?> connection) {
+        List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
+        // only if a single userId is connected to this providerUserId
+        return (userIds.size() == 1) ? userIds.iterator().next() : null;
+    }
 
 	/**
 	 * Override to grant authorities based on {@link ServiceProvider} id and/or a user's account id
