@@ -18,15 +18,11 @@ package org.springframework.social.security;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-
-import javax.servlet.http.HttpSession;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +32,6 @@ import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockFilterConfig;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.GrantedAuthority;
@@ -46,7 +41,6 @@ import org.springframework.security.web.authentication.NullRememberMeServices;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactory;
-import org.springframework.social.connect.ConnectionKey;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.security.provider.SocialAuthenticationService;
@@ -80,7 +74,7 @@ public class SocialAuthenticationFilterTest {
 		when(authService.getAuthToken(env.req, env.res)).thenReturn(env.auth);
 		env.addAuthService(authService);
 
-		when(env.filter.getAuthManager().authenticate(env.auth)).thenReturn(env.authSuccess);
+		when(env.authManager.authenticate(env.auth)).thenReturn(env.authSuccess);
 
 		assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -123,45 +117,6 @@ public class SocialAuthenticationFilterTest {
 		verify(connectionRepository).addConnection(connection);
 	}
 	
-	@Test
-	public void addSignInAttempt() {
-		MockHttpSession session = new MockHttpSession();
-		assertFalse(addSignInAttempt(session, data("A", "a")));
-		assertTrue(addSignInAttempt(session, data("A", "a")));
-		assertFalse(addSignInAttempt(session, data("A", "b")));
-		assertFalse(addSignInAttempt(session, data("B", "a")));
-		assertEquals(3, getSignInAttempts(session).size());
-		removeSignInAttempt(session, getSignInAttempts(session).get(0));
-		assertEquals(2, getSignInAttempts(session).size());
-		clearSignInAttempts(session);
-		assertEquals(0, getSignInAttempts(session).size());
-	}
-	
-	private boolean removeSignInAttempt(HttpSession session, ConnectionKey key) {
-		return session != null ? SignInAttempts.remove(session, key) : false;
-	}
-	
-	private boolean removeSignInAttempt(HttpSession session, ConnectionData data) {
-		return removeSignInAttempt(session, SignInAttempts.key(data));
-	}
-	
-	private List<ConnectionData> getSignInAttempts(HttpSession session) {
-		if (session == null) {
-			return new ArrayList<ConnectionData>(0);
-		}
-		return new ArrayList<ConnectionData>(SignInAttempts.get(session));
-	}
-
-	private void clearSignInAttempts(HttpSession session) {
-		if (session != null) {
-			SignInAttempts.clear(session);
-		}
-	}
-
-	private boolean addSignInAttempt(HttpSession session, ConnectionData data) {
-		return session == null || data == null ? null : SignInAttempts.add(session, data);
-	}
-
 	private static <T> Set<T> empty(Class<T> cls) {
 		return Collections.emptySet();
 	}
@@ -170,10 +125,6 @@ public class SocialAuthenticationFilterTest {
 		return Collections.unmodifiableSet(new HashSet<T>(Arrays.asList(o)));
 	}
 
-	private static ConnectionData data(String providerId, String providerUserId) {
-		return new ConnectionData(providerId, providerUserId, null, null, null, null, null, null, null);
-	}
-	
 	private static class FilterTestEnv {
 		private final SocialAuthenticationFilter filter;
 		private final MockServletContext context;
@@ -183,25 +134,27 @@ public class SocialAuthenticationFilterTest {
 		private final MockFilterConfig config = new MockFilterConfig();
 		private final SocialAuthenticationToken auth;
 		private final SocialAuthenticationToken authSuccess;
+		private final AuthenticationManager authManager;
 
 		private FilterTestEnv(String method, String requestURI) {
 			context = new MockServletContext();
 			req = new MockHttpServletRequest(context, method, requestURI);
 			res = new MockHttpServletResponse();
 			chain = new MockFilterChain();
+			authManager = mock(AuthenticationManager.class);
 
-			filter = new SocialAuthenticationFilter(mock(AuthenticationManager.class), mock(UserIdExtractor.class), mock(UsersConnectionRepository.class), new SocialAuthenticationServiceRegistry());
+			filter = new SocialAuthenticationFilter(authManager, mock(UserIdExtractor.class), mock(UsersConnectionRepository.class), new SocialAuthenticationServiceRegistry());
 			filter.setServletContext(context);
 			filter.setRememberMeServices(new NullRememberMeServices());
 			
 			ConnectionRepository repo = mock(ConnectionRepository.class);
 			when(filter.getUsersConnectionRepository().createConnectionRepository(Mockito.anyString())).thenReturn(repo);
 			
-			auth = new SocialAuthenticationToken(DummyConnection.dummy("provider", "user").createData(), null);
+			auth = new SocialAuthenticationToken(DummyConnection.dummy("provider", "user"), null);
 
 			Collection<? extends GrantedAuthority> authorities = Collections.emptyList();
 			User user = new SocialUser("foo", "bar", authorities);
-			authSuccess = new SocialAuthenticationToken("mock", user, null, authorities);
+			authSuccess = new SocialAuthenticationToken(DummyConnection.dummy("provider", "user"), user, null, authorities);
 		}
 
 		private void addAuthService(SocialAuthenticationService<?> authenticationService) {

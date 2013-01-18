@@ -37,7 +37,7 @@ public class ProviderSignInAttempt implements Serializable {
 	/**
 	 * Name of the session attribute ProviderSignInAttempt instances are indexed under.
 	 */
-	static final String SESSION_ATTRIBUTE = ProviderSignInAttempt.class.getName();
+	public static final String SESSION_ATTRIBUTE = ProviderSignInAttempt.class.getName();
 
 	private final ConnectionData connectionData;
 	
