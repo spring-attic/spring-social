@@ -158,7 +158,8 @@ public class ConnectSupport {
 
 	private String buildOAuth2Url(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
 		OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-		OAuth2Parameters parameters = getOAuth2Parameters(request, additionalParameters);
+		String defaultScope = connectionFactory.getScope();
+		OAuth2Parameters parameters = getOAuth2Parameters(request, defaultScope, additionalParameters);
 		if (useAuthenticateUrl) { 
 			return oauthOperations.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters);						
 		} else {
@@ -166,12 +167,14 @@ public class ConnectSupport {
 		}
 	}
 
-	private OAuth2Parameters getOAuth2Parameters(NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
+	private OAuth2Parameters getOAuth2Parameters(NativeWebRequest request, String defaultScope, MultiValueMap<String, String> additionalParameters) {
 		OAuth2Parameters parameters = new OAuth2Parameters(additionalParameters);
 		parameters.setRedirectUri(callbackUrl(request));
 		String scope = request.getParameter("scope");
 		if (scope != null) {
 			parameters.setScope(scope);
+		} else if (defaultScope != null) {
+			parameters.setScope(defaultScope);
 		}
 		return parameters;
 	}

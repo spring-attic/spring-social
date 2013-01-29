@@ -32,6 +32,8 @@ import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
+import org.springframework.social.security.SocialAuthenticationServiceRegistry;
+import org.springframework.social.security.provider.SocialAuthenticationService;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -44,11 +46,12 @@ public class ProviderConfigSupport {
 	private final static Log logger = LogFactory.getLog(ProviderConfigSupport.class);
 
 	public static BeanDefinition registerConnectionFactoryLocatorBean(BeanDefinitionRegistry registry) {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Registering ConnectionFactoryLocator bean");
-		}		
+		Class<?> connectionFactoryRegistryClass = isSocialSecurityAvailable() ? SocialAuthenticationServiceRegistry.class : ConnectionFactoryRegistry.class;		
 		if (!registry.containsBeanDefinition(CONNECTION_FACTORY_LOCATOR_ID)) {		
-			BeanDefinitionHolder connFactoryLocatorBeanDefHolder = new BeanDefinitionHolder(BeanDefinitionBuilder.genericBeanDefinition(ConnectionFactoryRegistry.class).getBeanDefinition(), CONNECTION_FACTORY_LOCATOR_ID);			
+			if (logger.isDebugEnabled()) {
+				logger.debug("Registering ConnectionFactoryLocator bean (" + connectionFactoryRegistryClass.getName() + ")");
+			}
+			BeanDefinitionHolder connFactoryLocatorBeanDefHolder = new BeanDefinitionHolder(BeanDefinitionBuilder.genericBeanDefinition(connectionFactoryRegistryClass).getBeanDefinition(), CONNECTION_FACTORY_LOCATOR_ID);			
 			BeanDefinitionHolder scopedProxy = ScopedProxyUtils.createScopedProxy(connFactoryLocatorBeanDefHolder, registry, false);			
 			registry.registerBeanDefinition(scopedProxy.getBeanName(), scopedProxy.getBeanDefinition());
 		}
@@ -56,6 +59,18 @@ public class ProviderConfigSupport {
 		return connectionFactoryLocatorBD;
 	}
 
+
+	private static boolean isSocialSecurityAvailable() {
+		try {
+			Class.forName("org.springframework.social.security.SocialAuthenticationServiceLocator");
+			return true;
+		} catch (ClassNotFoundException cnfe) {
+			return false; 
+		}
+	}
+
+	
+	
 
 	public static BeanDefinition registerConnectionFactoryBean(BeanDefinition connectionFactoryLocatorBD, BeanDefinition connectionFactoryBD, Class<? extends ConnectionFactory<?>> connectionFactoryClass) {
 		if (logger.isDebugEnabled()) {
@@ -68,6 +83,19 @@ public class ProviderConfigSupport {
 		connectionFactoriesList.add(connectionFactoryBD);		
 		connectionFactoryLocatorBD.getPropertyValues().addPropertyValue(CONNECTION_FACTORIES, connectionFactoriesList);
 		return connectionFactoryBD;
+	}
+	
+	public static BeanDefinition registerAuthenticationServiceBean(BeanDefinition authenticationServiceLocatorBD, BeanDefinition authenticationServiceBD, Class<? extends SocialAuthenticationService<?>> socialAuthenticationServiceClass) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Registering SocialAuthenticationService for " + ClassUtils.getShortName(getApiBindingType(socialAuthenticationServiceClass)));
+		}
+		PropertyValue authenticationServicesPropertyValue = authenticationServiceLocatorBD.getPropertyValues().getPropertyValue(AUTHENTICATION_SERVICES);
+		@SuppressWarnings("unchecked")
+		List<BeanDefinition> authenticationServicesList = authenticationServicesPropertyValue != null ? 
+				(List<BeanDefinition>) authenticationServicesPropertyValue.getValue() : new ManagedList<BeanDefinition>();
+		authenticationServicesList.add(authenticationServiceBD);
+		authenticationServiceLocatorBD.getPropertyValues().addPropertyValue(AUTHENTICATION_SERVICES, authenticationServicesList);
+		return authenticationServiceBD;
 	}
 	
 	public static BeanDefinition registerApiBindingBean(BeanDefinitionRegistry registry, Class<? extends ApiHelper<?>> apiHelperClass, Class<?> apiBindingType) {
@@ -93,13 +121,15 @@ public class ProviderConfigSupport {
 
 
 
-	private static Class<?> getApiBindingType(Class<? extends ConnectionFactory<?>> connectionFactoryClass) {
+	private static Class<?> getApiBindingType(Class<?> connectionFactoryClass) {
 		return GenericTypeResolver.resolveTypeArgument(connectionFactoryClass, ConnectionFactory.class);
 	}
 
 	private static final String CONNECTION_FACTORY_LOCATOR_ID = "connectionFactoryLocator";
 
 	private static final String CONNECTION_FACTORIES = "connectionFactories";
+
+	private static final String AUTHENTICATION_SERVICES = "authenticationServices";
 
 }
 
