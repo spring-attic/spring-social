@@ -31,6 +31,8 @@ import org.springframework.social.oauth2.OAuth2ServiceProvider;
  */
 public class OAuth2ConnectionFactory<S> extends ConnectionFactory<S> {
 
+	private String scope = null;
+	
 	/**
 	 * Create a {@link OAuth2ConnectionFactory}.
 	 * @param providerId the provider id e.g. "facebook"
@@ -39,6 +41,19 @@ public class OAuth2ConnectionFactory<S> extends ConnectionFactory<S> {
 	 */
 	public OAuth2ConnectionFactory(String providerId, OAuth2ServiceProvider<S> serviceProvider, ApiAdapter<S> apiAdapter) {
 		super(providerId, serviceProvider, apiAdapter);
+	}
+	
+	/**
+	 * Sets the default value to send in the scope parameter during authorization.
+	 * Null by default, meaning that no scope parameter will be sent and the default scope will be determined by the provider.
+	 * @param scope The default value to send as scope during authorization.
+	 */
+	public void setScope(String scope) {
+		this.scope = scope;
+	}
+	
+	public String getScope() {
+		return scope;
 	}
 
 	/**
