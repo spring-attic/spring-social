@@ -19,6 +19,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.social.config.Fake;
 import org.springframework.social.config.FakeConnectionFactory;
+import org.springframework.social.config.FakeSocialAuthenticationService;
 import org.springframework.social.config.FakeTemplate;
 import org.springframework.social.config.xml.ApiHelper;
 import org.springframework.social.config.xml.UserIdSource;
@@ -28,7 +29,7 @@ import org.springframework.social.connect.UsersConnectionRepository;
 public class FakeProviderConfigRegistrar extends ProviderConfigRegistrarSupport {
 
 	public FakeProviderConfigRegistrar() {
-		super(EnableFake.class, FakeConnectionFactory.class, FakeApiHelper.class);
+		super(EnableFake.class, FakeConnectionFactory.class, FakeSocialAuthenticationService.class.getName(), FakeApiHelper.class);
 	}
 	
 	static class FakeApiHelper implements ApiHelper<Fake> {
