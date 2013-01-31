@@ -15,7 +15,7 @@
  */
 package org.springframework.social.config;
 
-import org.springframework.social.config.xml.UserIdSource;
+import org.springframework.social.UserIdSource;
 
 public class SimpleUserIdSource implements UserIdSource {
 

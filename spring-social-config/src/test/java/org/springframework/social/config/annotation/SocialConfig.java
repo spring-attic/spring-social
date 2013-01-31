@@ -24,8 +24,8 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
+import org.springframework.social.UserIdSource;
 import org.springframework.social.config.SimpleUserIdSource;
-import org.springframework.social.config.xml.UserIdSource;
 import org.springframework.stereotype.Component;
 
 @Component

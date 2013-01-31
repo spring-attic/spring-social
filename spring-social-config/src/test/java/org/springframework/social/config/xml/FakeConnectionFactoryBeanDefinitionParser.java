@@ -17,6 +17,7 @@ package org.springframework.social.config.xml;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.social.UserIdSource;
 import org.springframework.social.config.Fake;
 import org.springframework.social.config.FakeConnectionFactory;
 import org.springframework.social.config.FakeTemplate;

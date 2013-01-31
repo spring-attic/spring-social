@@ -36,6 +36,7 @@ import org.springframework.security.web.authentication.AbstractAuthenticationTar
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.social.UserIdSource;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionRepository;
@@ -62,14 +63,14 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 
 	private boolean updateConnections = true;
 
-	private UserIdExtractor userIdExtractor;
+	private UserIdSource userIdSource;
 
 	private UsersConnectionRepository usersConnectionRepository;
 
-	public SocialAuthenticationFilter(AuthenticationManager authManager, UserIdExtractor userIdExtractor, UsersConnectionRepository usersConnectionRepository, SocialAuthenticationServiceLocator authServiceLocator) {
+	public SocialAuthenticationFilter(AuthenticationManager authManager, UserIdSource userIdSource, UsersConnectionRepository usersConnectionRepository, SocialAuthenticationServiceLocator authServiceLocator) {
         super("/auth");
         setAuthenticationManager(authManager);
-		this.userIdExtractor = userIdExtractor;
+		this.userIdSource = userIdSource;
 		this.usersConnectionRepository = usersConnectionRepository;
 		this.authServiceLocator = authServiceLocator;
 	}
@@ -104,10 +105,6 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		} else {
 			throw new IllegalStateException("can't set postFailureUrl on unknown failureHandler, type is " + failureHandler.getClass().getName());
 		}
-	}
-	
-	public UserIdExtractor getUserIdExtractor() {
-		return userIdExtractor;
 	}
 
 	public UsersConnectionRepository getUsersConnectionRepository() {
@@ -246,7 +243,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 
 	private void addConnection(final SocialAuthenticationService<?> authService, HttpServletRequest request, SocialAuthenticationToken token, Authentication auth) {
 		// already authenticated - add connection instead
-		String userId = userIdExtractor.extractUserId(auth);
+		String userId = userIdSource.getUserId();
 		Object principal = token.getPrincipal();
 		if (userId == null || !(principal instanceof ConnectionData)) return;
 		
