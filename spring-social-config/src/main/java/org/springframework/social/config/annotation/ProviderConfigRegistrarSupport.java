@@ -29,17 +29,13 @@ import org.springframework.social.config.xml.ApiHelper;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.security.provider.SocialAuthenticationService;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Abstract base class for building provider-specific implementations of {@link ImportBeanDefinitionRegistrar} for configuring a connection factory and an API binding bean.
  * @author Craig Walls
  */
 public abstract class ProviderConfigRegistrarSupport implements ImportBeanDefinitionRegistrar {
-
-	public ProviderConfigRegistrarSupport(Class<? extends Annotation> providerConfigAnnotation, Class<? extends ConnectionFactory<?>> connectionFactoryClass,
-			Class<? extends ApiHelper<?>> apiHelperClass) {
-		this(providerConfigAnnotation, connectionFactoryClass, null, apiHelperClass);
-	}
 	
 	/**
 	 * Constructs 
@@ -47,22 +43,25 @@ public abstract class ProviderConfigRegistrarSupport implements ImportBeanDefini
 	 * @param apiHelperClass
 	 */
 	public ProviderConfigRegistrarSupport(Class<? extends Annotation> providerConfigAnnotation, Class<? extends ConnectionFactory<?>> connectionFactoryClass,
-			Class<?> socialAuthenticationServiceClass, Class<? extends ApiHelper<?>> apiHelperClass) {
+			Class<? extends ApiHelper<?>> apiHelperClass) {
 		// TODO: Does the above signature create a hard dependency on social security???
 		this.providerConfigAnnotation = providerConfigAnnotation;
 		this.connectionFactoryClass = connectionFactoryClass;
 		this.apiHelperClass = apiHelperClass;
 		this.apiBindingType = GenericTypeResolver.resolveTypeArgument(connectionFactoryClass, ConnectionFactory.class);
-		if (socialAuthenticationServiceClass != null) {
-			Assert.isAssignable(SocialAuthenticationService.class, socialAuthenticationServiceClass);
-			this.socialAuthenticationServiceClass = socialAuthenticationServiceClass; 
+	}
+	
+	public void setAuthenticationServiceClass(String authenticationServiceClassName) throws ClassNotFoundException {
+		if (isSocialSecurityAvailable()) {
+			this.authenticationServiceClass = ClassUtils.forName(authenticationServiceClassName, ProviderConfigRegistrarSupport.class.getClassLoader());
+			Assert.isAssignable(SocialAuthenticationService.class, authenticationServiceClass);
 		}
 	}
 	
 	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
 		Map<String, Object> allAttributes = metadata.getAnnotationAttributes(providerConfigAnnotation.getName());
 		
-		if (isSocialSecurityAvailable() && socialAuthenticationServiceClass != null) {
+		if (isSocialSecurityAvailable() && authenticationServiceClass != null) {
 			registerAuthenticationServiceBeanDefinitions(registry, allAttributes);						
 		} else {
 			registerConnectionFactoryBeanDefinitions(registry, allAttributes);			
@@ -86,7 +85,7 @@ public abstract class ProviderConfigRegistrarSupport implements ImportBeanDefini
 	}
 
 	private void registerAuthenticationServiceBeanDefinitions(BeanDefinitionRegistry registry, Map<String, Object> allAttributes) {
-		Class<? extends SocialAuthenticationService<?>> socialAuthenticationServiceClass = (Class<? extends SocialAuthenticationService<?>>) this.socialAuthenticationServiceClass;
+		Class<? extends org.springframework.social.security.provider.SocialAuthenticationService<?>> socialAuthenticationServiceClass = (Class<? extends org.springframework.social.security.provider.SocialAuthenticationService<?>>) this.authenticationServiceClass;
 		BeanDefinition authenticationServiceBD = getAuthenticationServiceBeanDefinition((String) allAttributes.get("appId"), (String) allAttributes.get("appSecret"), allAttributes);
 		BeanDefinition connectionFactoryLocatorBD = ProviderConfigSupport.registerConnectionFactoryLocatorBean(registry);
 		ProviderConfigSupport.registerAuthenticationServiceBean(connectionFactoryLocatorBD, authenticationServiceBD, socialAuthenticationServiceClass);
@@ -104,12 +103,12 @@ public abstract class ProviderConfigRegistrarSupport implements ImportBeanDefini
 	}
 	
 	protected BeanDefinition getAuthenticationServiceBeanDefinition(String appId, String appSecret, Map<String, Object> allAttributes) {
-		return BeanDefinitionBuilder.genericBeanDefinition(socialAuthenticationServiceClass).addConstructorArgValue(appId).addConstructorArgValue(appSecret).getBeanDefinition();
+		return BeanDefinitionBuilder.genericBeanDefinition(authenticationServiceClass).addConstructorArgValue(appId).addConstructorArgValue(appSecret).getBeanDefinition();
 	}
 
 	private final Class<? extends ConnectionFactory<?>> connectionFactoryClass;
 	
-	private Class<?> socialAuthenticationServiceClass;
+	private Class<?> authenticationServiceClass;
 
 	private final Class<? extends ApiHelper<?>> apiHelperClass;
 	

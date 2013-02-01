@@ -32,8 +32,6 @@ import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
-import org.springframework.social.security.SocialAuthenticationServiceRegistry;
-import org.springframework.social.security.provider.SocialAuthenticationService;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -46,7 +44,7 @@ public class ProviderConfigSupport {
 	private final static Log logger = LogFactory.getLog(ProviderConfigSupport.class);
 
 	public static BeanDefinition registerConnectionFactoryLocatorBean(BeanDefinitionRegistry registry) {
-		Class<?> connectionFactoryRegistryClass = isSocialSecurityAvailable() ? SocialAuthenticationServiceRegistry.class : ConnectionFactoryRegistry.class;		
+		Class<?> connectionFactoryRegistryClass = isSocialSecurityAvailable() ? org.springframework.social.security.SocialAuthenticationServiceRegistry.class : ConnectionFactoryRegistry.class;		
 		if (!registry.containsBeanDefinition(CONNECTION_FACTORY_LOCATOR_ID)) {		
 			if (logger.isDebugEnabled()) {
 				logger.debug("Registering ConnectionFactoryLocator bean (" + connectionFactoryRegistryClass.getName() + ")");
@@ -85,7 +83,7 @@ public class ProviderConfigSupport {
 		return connectionFactoryBD;
 	}
 	
-	public static BeanDefinition registerAuthenticationServiceBean(BeanDefinition authenticationServiceLocatorBD, BeanDefinition authenticationServiceBD, Class<? extends SocialAuthenticationService<?>> socialAuthenticationServiceClass) {
+	public static BeanDefinition registerAuthenticationServiceBean(BeanDefinition authenticationServiceLocatorBD, BeanDefinition authenticationServiceBD, Class<? extends org.springframework.social.security.provider.SocialAuthenticationService<?>> socialAuthenticationServiceClass) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Registering SocialAuthenticationService for " + ClassUtils.getShortName(getApiBindingType(socialAuthenticationServiceClass)));
 		}

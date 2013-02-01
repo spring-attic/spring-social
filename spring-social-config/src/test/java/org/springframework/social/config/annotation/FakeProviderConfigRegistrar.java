@@ -29,7 +29,11 @@ import org.springframework.social.connect.UsersConnectionRepository;
 public class FakeProviderConfigRegistrar extends ProviderConfigRegistrarSupport {
 
 	public FakeProviderConfigRegistrar() {
-		super(EnableFake.class, FakeConnectionFactory.class, FakeSocialAuthenticationService.class, FakeApiHelper.class);
+		super(EnableFake.class, FakeConnectionFactory.class, FakeApiHelper.class);
+		try {
+			setAuthenticationServiceClass(FakeSocialAuthenticationService.class.getName());
+		} catch (ClassNotFoundException shouldNotHappen) {
+		}
 	}
 	
 	static class FakeApiHelper implements ApiHelper<Fake> {
