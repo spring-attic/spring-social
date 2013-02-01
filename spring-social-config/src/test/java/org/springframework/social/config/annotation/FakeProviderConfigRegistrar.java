@@ -26,7 +26,7 @@ import org.springframework.social.config.xml.ApiHelper;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UsersConnectionRepository;
 
-public class FakeProviderConfigRegistrar extends ProviderConfigRegistrarSupport {
+public class FakeProviderConfigRegistrar extends AbstractProviderConfigRegistrarSupport {
 
 	public FakeProviderConfigRegistrar() {
 		super(EnableFake.class, FakeConnectionFactory.class, FakeApiHelper.class);
