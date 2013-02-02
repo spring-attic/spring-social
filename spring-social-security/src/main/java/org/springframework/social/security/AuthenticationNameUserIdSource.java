@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.config.xml;
+package org.springframework.social.security;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.social.UserIdSource;
 
 /**
  * Implementation of UserIdSource that returns the Spring Security {@link Authentication}'s name as the user ID.
  * @author Craig Walls
  */
-public class SpringSecurityAuthenticationNameUserIdSource implements UserIdSource {
+public class AuthenticationNameUserIdSource implements UserIdSource {
 
 	public String getUserId() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

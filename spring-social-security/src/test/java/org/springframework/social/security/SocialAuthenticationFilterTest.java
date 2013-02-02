@@ -38,6 +38,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.NullRememberMeServices;
+import org.springframework.social.UserIdSource;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactory;
@@ -143,7 +144,7 @@ public class SocialAuthenticationFilterTest {
 			chain = new MockFilterChain();
 			authManager = mock(AuthenticationManager.class);
 
-			filter = new SocialAuthenticationFilter(authManager, mock(UserIdExtractor.class), mock(UsersConnectionRepository.class), new SocialAuthenticationServiceRegistry());
+			filter = new SocialAuthenticationFilter(authManager, mock(UserIdSource.class), mock(UsersConnectionRepository.class), new SocialAuthenticationServiceRegistry());
 			filter.setServletContext(context);
 			filter.setRememberMeServices(new NullRememberMeServices());
 			

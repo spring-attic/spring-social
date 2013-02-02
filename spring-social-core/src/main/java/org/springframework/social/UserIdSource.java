@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.config.xml;
+package org.springframework.social;
 
-import org.springframework.social.connect.ConnectionRepository;
 
 /**
- * Strategy interface for determining a value that uniquely identifies a user within an application.
- * Used when creating a {@link ConnectionRepository} bean to manage connections for a user.
- *  
+ * Strategy interface used by {@link SocialAuthenticationFilter} to determine the account ID of the current user.
+ * @author Stefan Fussennegger
  * @author Craig Walls
  */
 public interface UserIdSource {
 
 	/**
-	 * @return A String that uniquely identifies a user within the application.
+	 * Returns an account ID.
 	 */
 	String getUserId();
 
