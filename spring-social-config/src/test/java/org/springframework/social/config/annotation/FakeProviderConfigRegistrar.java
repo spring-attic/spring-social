@@ -25,6 +25,7 @@ import org.springframework.social.config.FakeTemplate;
 import org.springframework.social.config.xml.ApiHelper;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.social.security.provider.SocialAuthenticationService;
 
 public class FakeProviderConfigRegistrar extends AbstractProviderConfigRegistrarSupport {
 
@@ -33,7 +34,7 @@ public class FakeProviderConfigRegistrar extends AbstractProviderConfigRegistrar
 	}
 	
 	@Override
-	protected Class<?> getAuthenticationServiceClass() {
+	protected Class<? extends SocialAuthenticationService<?>> getAuthenticationServiceClass() {
 		return FakeSocialAuthenticationService.class;
 	}
 	

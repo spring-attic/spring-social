@@ -24,6 +24,7 @@ import org.springframework.social.config.FakeSocialAuthenticationService;
 import org.springframework.social.config.FakeTemplate;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.social.security.provider.SocialAuthenticationService;
 
 /**
  * Implementation of {@link AbstractProviderConfigBeanDefinitionParser} that creates a FakeConnectionFactory.
@@ -63,7 +64,7 @@ class FakeConnectionFactoryBeanDefinitionParser extends AbstractProviderConfigBe
 	}
 
 	@Override
-	protected Class<?> getAuthenticationServiceClass() {
+	protected Class<? extends SocialAuthenticationService<?>> getAuthenticationServiceClass() {
 		return FakeSocialAuthenticationService.class;
 	}
 

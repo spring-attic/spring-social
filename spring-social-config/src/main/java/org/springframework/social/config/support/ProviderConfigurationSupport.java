@@ -16,6 +16,7 @@ import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.config.xml.ApiHelper;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
+import org.springframework.social.security.provider.SocialAuthenticationService;
 import org.springframework.util.ClassUtils;
 
 public abstract class ProviderConfigurationSupport {
@@ -27,12 +28,11 @@ public abstract class ProviderConfigurationSupport {
 		this.apiHelperClass = apiHelperClass;
 		this.apiBindingType = GenericTypeResolver.resolveTypeArgument(connectionFactoryClass, ConnectionFactory.class);
 		if (isSocialSecurityAvailable()) {
-			// TODO: Determine if the class is assignable to a SocialAuthenticationService 
 			this.authenticationServiceClass = getAuthenticationServiceClass();
 		}
 	}
 	
-	protected Class<?> getAuthenticationServiceClass() {
+	protected Class<? extends SocialAuthenticationService<?>> getAuthenticationServiceClass() {
 		return null;
 	}
 
