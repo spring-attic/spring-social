@@ -20,6 +20,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.social.UserIdSource;
 import org.springframework.social.config.Fake;
 import org.springframework.social.config.FakeConnectionFactory;
+import org.springframework.social.config.FakeSocialAuthenticationService;
 import org.springframework.social.config.FakeTemplate;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UsersConnectionRepository;
@@ -59,6 +60,11 @@ class FakeConnectionFactoryBeanDefinitionParser extends AbstractProviderConfigBe
 		
 		private final static Log logger = LogFactory.getLog(FakeApiHelper.class);
 
+	}
+
+	@Override
+	protected Class<?> getAuthenticationServiceClass() {
+		return FakeSocialAuthenticationService.class;
 	}
 
 }

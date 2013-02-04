@@ -30,10 +30,11 @@ public class FakeProviderConfigRegistrar extends AbstractProviderConfigRegistrar
 
 	public FakeProviderConfigRegistrar() {
 		super(EnableFake.class, FakeConnectionFactory.class, FakeApiHelper.class);
-		try {
-			setAuthenticationServiceClass(FakeSocialAuthenticationService.class.getName());
-		} catch (ClassNotFoundException shouldNotHappen) {
-		}
+	}
+	
+	@Override
+	protected Class<?> getAuthenticationServiceClass() {
+		return FakeSocialAuthenticationService.class;
 	}
 	
 	static class FakeApiHelper implements ApiHelper<Fake> {
