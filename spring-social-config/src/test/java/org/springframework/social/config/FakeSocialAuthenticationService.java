@@ -18,7 +18,6 @@ public class FakeSocialAuthenticationService implements SocialAuthenticationServ
 	}
 	
 	public org.springframework.social.security.provider.SocialAuthenticationService.ConnectionCardinality getConnectionCardinality() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -27,12 +26,10 @@ public class FakeSocialAuthenticationService implements SocialAuthenticationServ
 	}
 
 	public SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response) throws SocialAuthenticationRedirectException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String getConnectionAddedRedirectUrl(HttpServletRequest request, Connection<?> connection) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
