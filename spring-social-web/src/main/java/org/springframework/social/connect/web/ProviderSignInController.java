@@ -134,6 +134,7 @@ public class ProviderSignInController {
 		try {
 			return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request));
 		} catch (Exception e) {
+			logger.error("Exception while building authorization URL: ", e);
 			return redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "provider").build().toString());
 		}
 	}
@@ -154,6 +155,7 @@ public class ProviderSignInController {
 			Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
 			return handleSignIn(connection, request);
 		} catch (Exception e) {
+			logger.error("Exception while completing OAuth 1.0(a) connection: ", e);
 			return redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "provider").build().toString());
 		}
 	}
@@ -174,7 +176,7 @@ public class ProviderSignInController {
 			Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
 			return handleSignIn(connection, request);
 		} catch (Exception e) {
-			logger.warn("Exception while handling OAuth2 callback (" + e.getMessage() + "). Redirecting to " + signInUrl);
+			logger.error("Exception while completing OAuth 2 connection: ", e);
 			return redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "provider").build().toString());
 		}
 	}
