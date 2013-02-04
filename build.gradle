@@ -130,7 +130,6 @@ project('spring-social-config') {
       compile project (':spring-social-core')
       compile project (':spring-social-security'), optional
       compile project (':spring-social-web')
-//      compile ("org.springframework.social:spring-social-security:$version", optional)
       compile ("org.springframework.security:spring-security-core:$springSecurityVersion", optional)
       testCompile ("javax.servlet:servlet-api:$servletApiVersion", provided)
       testCompile ("com.h2database:h2:$h2Version")
