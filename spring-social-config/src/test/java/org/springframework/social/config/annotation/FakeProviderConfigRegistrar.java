@@ -25,15 +25,17 @@ import org.springframework.social.config.FakeTemplate;
 import org.springframework.social.config.xml.ApiHelper;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.social.security.provider.SocialAuthenticationService;
 
 public class FakeProviderConfigRegistrar extends AbstractProviderConfigRegistrarSupport {
 
 	public FakeProviderConfigRegistrar() {
 		super(EnableFake.class, FakeConnectionFactory.class, FakeApiHelper.class);
-		try {
-			setAuthenticationServiceClass(FakeSocialAuthenticationService.class.getName());
-		} catch (ClassNotFoundException shouldNotHappen) {
-		}
+	}
+	
+	@Override
+	protected Class<? extends SocialAuthenticationService<?>> getAuthenticationServiceClass() {
+		return FakeSocialAuthenticationService.class;
 	}
 	
 	static class FakeApiHelper implements ApiHelper<Fake> {

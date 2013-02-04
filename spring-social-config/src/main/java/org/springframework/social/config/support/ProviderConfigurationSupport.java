@@ -13,12 +13,10 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.ManagedList;
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.social.config.annotation.AbstractProviderConfigRegistrarSupport;
 import org.springframework.social.config.xml.ApiHelper;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
 import org.springframework.social.security.provider.SocialAuthenticationService;
-import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
 public abstract class ProviderConfigurationSupport {
@@ -26,19 +24,18 @@ public abstract class ProviderConfigurationSupport {
 	private final static Log logger = LogFactory.getLog(ProviderConfigurationSupport.class);	
 
 	public ProviderConfigurationSupport(Class<? extends ConnectionFactory<?>> connectionFactoryClass, Class<? extends ApiHelper<?>> apiHelperClass) {
-		// TODO: Does the above signature create a hard dependency on social security???
 		this.connectionFactoryClass = connectionFactoryClass;
 		this.apiHelperClass = apiHelperClass;
 		this.apiBindingType = GenericTypeResolver.resolveTypeArgument(connectionFactoryClass, ConnectionFactory.class);
-	}
-
-	public void setAuthenticationServiceClass(String authenticationServiceClassName) throws ClassNotFoundException {
 		if (isSocialSecurityAvailable()) {
-			this.authenticationServiceClass = ClassUtils.forName(authenticationServiceClassName, AbstractProviderConfigRegistrarSupport.class.getClassLoader());
-			Assert.isAssignable(SocialAuthenticationService.class, authenticationServiceClass);
+			this.authenticationServiceClass = getAuthenticationServiceClass();
 		}
 	}
 	
+	protected Class<? extends SocialAuthenticationService<?>> getAuthenticationServiceClass() {
+		return null;
+	}
+
 	protected static boolean isSocialSecurityAvailable() {
 		try {
 			Class.forName("org.springframework.social.security.SocialAuthenticationServiceLocator");
