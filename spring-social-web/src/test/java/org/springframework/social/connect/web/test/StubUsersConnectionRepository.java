@@ -41,7 +41,6 @@ public class StubUsersConnectionRepository implements UsersConnectionRepository 
 	}
 
 	public Set<String> findUserIdsConnectedTo(String providerId, Set<String> providerUserIds) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
