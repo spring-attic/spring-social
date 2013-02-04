@@ -51,6 +51,8 @@ public class ConnectSupport {
 
 	private String applicationUrl;
 
+	private String callbackUrl;
+	
 	/**
 	 * Flag indicating if this instance will support OAuth-based authentication instead of the traditional user authorization.
 	 * Some providers expose a special "authenticateUrl" the user should be redirected to as part of an OAuth-based authentication attempt.
@@ -74,6 +76,16 @@ public class ConnectSupport {
 	 */
 	public void setApplicationUrl(String applicationUrl) {
 		this.applicationUrl = applicationUrl;
+	}
+	
+	/**
+	 * Configures a specific callback URL that is to be used instead of calculating one based on the application URL or current request URL.
+	 * When set this URL will override the default behavior where the callback URL is derived from the current request and/or a specified application URL.
+	 * When set along with applicationUrl, the applicationUrl will be ignored.
+	 * @param callbackUrl the callback URL to send to providers during authorization. Default is null. 
+	 */
+	public void setCallbackUrl(String callbackUrl) {
+		this.callbackUrl = callbackUrl;
 	}
 
 	/**
@@ -136,6 +148,18 @@ public class ConnectSupport {
 		}
 	}
 
+	protected String callbackUrl(NativeWebRequest request) {
+		if (callbackUrl != null) {
+			return callbackUrl;
+		}
+		HttpServletRequest nativeRequest = request.getNativeRequest(HttpServletRequest.class);
+		if (applicationUrl != null) {
+			return applicationUrl + connectPath(nativeRequest);
+		} else {
+			return nativeRequest.getRequestURL().toString();
+		}
+	}
+
 	// internal helpers
 	
 	private String buildOAuth1Url(OAuth1ConnectionFactory<?> connectionFactory, NativeWebRequest request, MultiValueMap<String, String> additionalParameters) {
@@ -177,15 +201,6 @@ public class ConnectSupport {
 			parameters.setScope(defaultScope);
 		}
 		return parameters;
-	}
-
-	private String callbackUrl(NativeWebRequest request) {
-		HttpServletRequest nativeRequest = request.getNativeRequest(HttpServletRequest.class);
-		if (applicationUrl != null) {
-			return applicationUrl + connectPath(nativeRequest);
-		} else {
-			return nativeRequest.getRequestURL().toString();
-		}
 	}
 
 	private String connectPath(HttpServletRequest request) {
