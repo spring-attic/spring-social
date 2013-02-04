@@ -17,7 +17,7 @@ package org.springframework.social;
 
 
 /**
- * Strategy interface used by {@link SocialAuthenticationFilter} to determine the account ID of the current user.
+ * Strategy interface used to determine the account ID of the current user.
  * @author Stefan Fussennegger
  * @author Craig Walls
  */

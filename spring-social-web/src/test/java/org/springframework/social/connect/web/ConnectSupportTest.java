@@ -15,8 +15,7 @@
  */
 package org.springframework.social.connect.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.Map.Entry;
@@ -333,6 +332,46 @@ public class ConnectSupportTest {
 		assertEquals("http://someprovider.com/testuser", connection.getProfileUrl());
 	}
 
+	@Test
+	public void buildOAuthUrl_OAuth10_withCallbackUrl() throws Exception {
+		ConnectSupport support = new ConnectSupport();
+		support.setCallbackUrl("https://overridingcallbackurl.com:4321");
+		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
+		mockRequest.setScheme("http");
+		mockRequest.setServerName("somesite.com");
+		mockRequest.setServletPath("/connect/someprovider");
+		ServletWebRequest request = new ServletWebRequest(mockRequest);
+		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10), request);
+		assertEquals("https://serviceprovider.com/oauth/authorize?oauth_callback=https://overridingcallbackurl.com:4321", url);
+	}
+
+	@Test
+	public void buildOAuthUrl_OAuth10a_withCallbackUrl() throws Exception {
+		ConnectSupport support = new ConnectSupport();
+		support.setCallbackUrl("https://overridingcallbackurl.com:4321");
+		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
+		mockRequest.setScheme("http");
+		mockRequest.setServerName("somesite.com");
+		mockRequest.setServletPath("/connect/someprovider");
+		ServletWebRequest request = new ServletWebRequest(mockRequest);
+		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10_REVISION_A), request);
+		assertEquals("https://serviceprovider.com/oauth/authorize", url);
+	}
+
+	
+	@Test
+	public void buildOAuthUrl_OAuth2_withCallbackUrl() throws Exception {
+		ConnectSupport support = new ConnectSupport();
+		support.setCallbackUrl("https://overridingcallbackurl.com:4321");
+		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
+		mockRequest.setScheme("http");
+		mockRequest.setServerName("somesite.com");
+		mockRequest.setServletPath("/connect/someprovider");
+		ServletWebRequest request = new ServletWebRequest(mockRequest);
+		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
+		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://overridingcallbackurl.com:4321", url);
+	}
+	
 	// private helpers
 	
 	private static class TestOAuth1ConnectionFactory extends OAuth1ConnectionFactory<TestApi> {
