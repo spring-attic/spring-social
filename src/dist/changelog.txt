@@ -1,3 +1,19 @@
+Spring Social 1.1.0 Milestone 2 (February 12, 2012)
+===================================================
+ Bug Fixes
+  * Set character set to UTF-8 for string parts of multipart messages to allow for
+    Korean and other characters to be posted in status updates. (SOCIALTW-37)
+
+ Improvements
+  * Tighter integration with Spring Security with SocialAuthenticationFilter.
+    (SOCIAL-232)
+  * Support for non-standard parameters in request token and authorization URLs.
+    (SOCIAL-349)
+  * Interceptors in ProviderSignInController to allow for custom behavior in
+    authorization flow. (SOCIAL-255)
+  * Allow for more control in specifying a callback URL, both with an injectable
+    property and an overridable method. (SOCIAL-259)
+
 Spring Social 1.1.0 Milestone 1 (November 26, 2012)
 ===================================================
 Compatibility Notes
