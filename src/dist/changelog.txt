@@ -1,5 +1,9 @@
 Spring Social 1.1.0 Milestone 2 (February 12, 2012)
 ===================================================
+ Bug Fixes
+  * Set character set to UTF-8 for string parts of multipart messages to allow for
+    Korean and other characters to be posted in status updates. (SOCIALTW-37)
+
  Improvements
   * Tighter integration with Spring Security with SocialAuthenticationFilter.
     (SOCIAL-232)
