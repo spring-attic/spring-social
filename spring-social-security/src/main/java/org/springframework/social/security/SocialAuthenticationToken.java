@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.social.ServiceProvider;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
@@ -73,18 +72,9 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 	 * @param connection {@link Connection}
 	 * @param details user details, typically as returned by {@link SocialUserDetailsService}
 	 * @param providerAccountData optional extra account data
-	 */
-	public SocialAuthenticationToken(final Connection<?> connection, final UserDetails details, final Map<String, String> providerAccountData) {
-		this(connection, details, providerAccountData, details.getAuthorities());
-	}
-	
-	/**
-	 * @param connection {@link Connection}
-	 * @param details user details, typically as returned by {@link SocialUserDetailsService}
-	 * @param providerAccountData optional extra account data
 	 * @param authorities any {@link GrantedAuthority}s for this user
 	 */
-	public SocialAuthenticationToken(final Connection<?> connection, final UserDetails details, final Map<String, String> providerAccountData, final Collection<? extends GrantedAuthority> authorities) {
+	public SocialAuthenticationToken(final Connection<?> connection, final Serializable details, final Map<String, String> providerAccountData, final Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
 		Assert.notNull(connection);
         this.connection = connection;
@@ -118,7 +108,7 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 	}
 
 	/**
-	 * @return {@link ConnectionData} if not authenticated, {@link UserDetails} otherwise
+	 * @return The user's principal. Null if not authenticated.
 	 */
 	public Serializable getPrincipal() {
 		return principle;

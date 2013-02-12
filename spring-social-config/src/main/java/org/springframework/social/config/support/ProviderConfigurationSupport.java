@@ -81,6 +81,7 @@ public abstract class ProviderConfigurationSupport {
 		registerConnectionFactoryBean(connectionFactoryLocatorBD, connectionFactoryBD, connectionFactoryClass);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void registerAuthenticationServiceBeanDefinitions(BeanDefinitionRegistry registry, Map<String, Object> allAttributes) {
 		Class<? extends org.springframework.social.security.provider.SocialAuthenticationService<?>> socialAuthenticationServiceClass = (Class<? extends org.springframework.social.security.provider.SocialAuthenticationService<?>>) this.authenticationServiceClass;
 		BeanDefinition authenticationServiceBD = getAuthenticationServiceBeanDefinition(getAppId(allAttributes), getAppSecret(allAttributes), allAttributes);

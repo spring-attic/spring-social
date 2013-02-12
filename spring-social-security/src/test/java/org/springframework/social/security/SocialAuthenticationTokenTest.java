@@ -15,16 +15,11 @@
  */
 package org.springframework.social.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.security.test.DummyConnection;
-import org.springframework.social.security.test.DummyUserDetails;
 
 public class SocialAuthenticationTokenTest {
 
@@ -38,18 +33,6 @@ public class SocialAuthenticationTokenTest {
 		assertEquals(dummyConnection.createData().getProviderId(), token.getProviderId());
 		assertEquals(dummyConnection, token.getConnection());
 		assertEquals(0, token.getAuthorities().size());
-		assertEquals(0, token.getProviderAccountData().size());
-		assertNull(token.getCredentials());
-		assertNull(token.getDetails());
-	}
-
-	@Test
-	public void testAuthenticated() {
-		SocialAuthenticationToken token = new SocialAuthenticationToken(dummyConnection("user1"), new DummyUserDetails("user", "pass", "moderator"), null);
-
-		assertTrue(token.isAuthenticated());
-		assertTrue(token.getPrincipal() instanceof UserDetails);
-		assertEquals(1, token.getAuthorities().size());
 		assertEquals(0, token.getProviderAccountData().size());
 		assertNull(token.getCredentials());
 		assertNull(token.getDetails());

@@ -15,12 +15,10 @@
  */
 package org.springframework.social.security;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -73,6 +71,12 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		this.userIdSource = userIdSource;
 		this.usersConnectionRepository = usersConnectionRepository;
 		this.authServiceLocator = authServiceLocator;
+		super.setAuthenticationFailureHandler(new SocialAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler()));
+	}
+	
+	@Override
+	public void setAuthenticationFailureHandler(AuthenticationFailureHandler failureHandler) {
+		super.setAuthenticationFailureHandler(new SocialAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler()));
 	}
 	
 	public void setSignupUrl(String signupUrl) {
@@ -172,19 +176,6 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		return auth;
 	}
 
-    /**
-     * Override to handle redirect exception.
-     * 
-     * @see org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter#unsuccessfulAuthentication(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.springframework.security.core.AuthenticationException)
-     */
-    @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        if (failed instanceof SocialAuthenticationRedirectException){
-            response.sendRedirect(((SocialAuthenticationRedirectException)failed).getRedirectUrl()); 
-            return;
-        }
-        super.unsuccessfulAuthentication(request, response, failed);
-    }
 
     // private helpers
     private Authentication getAuthentication() {
