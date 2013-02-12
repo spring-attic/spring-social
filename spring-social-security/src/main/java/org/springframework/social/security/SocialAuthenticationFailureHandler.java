@@ -27,7 +27,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 /**
  * @author Craig Walls
  */
-class SocialAuthenticationFailureHandler implements AuthenticationFailureHandler {
+public class SocialAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
 	private AuthenticationFailureHandler delegate;
 
@@ -36,7 +36,7 @@ class SocialAuthenticationFailureHandler implements AuthenticationFailureHandler
 	}
 	
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-		if (failed instanceof SocialAuthenticationRedirectException){
+		if (failed instanceof SocialAuthenticationRedirectException) {
 		  response.sendRedirect(((SocialAuthenticationRedirectException)failed).getRedirectUrl()); 
 		  return;
 		}

@@ -74,11 +74,6 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		super.setAuthenticationFailureHandler(new SocialAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler()));
 	}
 	
-	@Override
-	public void setAuthenticationFailureHandler(AuthenticationFailureHandler failureHandler) {
-		super.setAuthenticationFailureHandler(new SocialAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler()));
-	}
-	
 	public void setSignupUrl(String signupUrl) {
 		this.signupUrl = signupUrl;
 	}
