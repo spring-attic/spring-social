@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.social.ApiBinding;
@@ -130,6 +131,13 @@ public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
 	protected FormHttpMessageConverter getFormMessageConverter() {
 		FormHttpMessageConverter converter = new FormHttpMessageConverter();
 		converter.setCharset(Charset.forName("UTF-8"));
+		List<HttpMessageConverter<?>> partConverters = new ArrayList<HttpMessageConverter<?>>();
+		partConverters.add(new ByteArrayHttpMessageConverter());
+		StringHttpMessageConverter stringHttpMessageConverter = new StringHttpMessageConverter(Charset.forName("UTF-8"));
+		stringHttpMessageConverter.setWriteAcceptCharset(false);
+		partConverters.add(stringHttpMessageConverter);
+		partConverters.add(new ResourceHttpMessageConverter());		
+		converter.setPartConverters(partConverters);
 		return converter;
 	}
 	

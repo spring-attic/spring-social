@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.social.config.xml;
+package org.springframework.social.security;
 
-import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
- * Strategy interface for determining a value that uniquely identifies a user within an application.
- * Used when creating a {@link ConnectionRepository} bean to manage connections for a user.
- *  
- * @author Craig Walls
+ * @author Stefan Fussennegger
  */
-public interface UserIdSource {
+public interface SocialUserDetails extends UserDetails {
 
 	/**
-	 * @return A String that uniquely identifies a user within the application.
+	 * The user's identity at the provider.
+	 * Might be same as {@link #getUsername()} if users are identified by username
+	 * @return user's id used to assign connections
 	 */
 	String getUserId();
-
+	
 }

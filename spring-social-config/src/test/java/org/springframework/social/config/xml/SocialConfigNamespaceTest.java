@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import static org.junit.Assert.*;
 import javax.inject.Inject;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
@@ -41,6 +42,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
+@Ignore
 public class SocialConfigNamespaceTest {
 
 	@Inject

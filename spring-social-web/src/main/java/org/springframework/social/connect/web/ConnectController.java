@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -178,6 +178,7 @@ public class ConnectController {
 		setNoCache(request);
 		processFlash(request, model);
 		List<Connection<?>> connections = connectionRepository.findConnections(providerId);
+		setNoCache(request);
 		if (connections.isEmpty()) {
 			return connectView(providerId); 
 		} else {
@@ -411,7 +412,7 @@ public class ConnectController {
 			response.addHeader("Cache-Control", "no-store");
 		}
 	}
-
+	
 	private static final String DUPLICATE_CONNECTION_ATTRIBUTE = "social.addConnection.duplicate";
 	
 	private static final String PROVIDER_ERROR_ATTRIBUTE = "social.provider.error";

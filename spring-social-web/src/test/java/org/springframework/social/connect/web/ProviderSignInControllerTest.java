@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@ package org.springframework.social.connect.web;
 
 import static java.util.Arrays.*;
 import static org.hamcrest.Matchers.*;
-import static org.springframework.test.web.server.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.server.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.server.setup.MockMvcBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 
 import java.util.Arrays;
 
@@ -35,7 +35,7 @@ import org.springframework.social.connect.web.test.StubUsersConnectionRepository
 import org.springframework.social.connect.web.test.TestApi1;
 import org.springframework.social.connect.web.test.TestApi2;
 import org.springframework.social.oauth1.OAuthToken;
-import org.springframework.test.web.server.MockMvc;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.request.NativeWebRequest;
 
 public class ProviderSignInControllerTest {

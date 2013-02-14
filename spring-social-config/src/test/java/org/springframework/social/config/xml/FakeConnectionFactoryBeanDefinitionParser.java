@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,14 @@ package org.springframework.social.config.xml;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.social.UserIdSource;
 import org.springframework.social.config.Fake;
 import org.springframework.social.config.FakeConnectionFactory;
+import org.springframework.social.config.FakeSocialAuthenticationService;
 import org.springframework.social.config.FakeTemplate;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.social.security.provider.SocialAuthenticationService;
 
 /**
  * Implementation of {@link AbstractProviderConfigBeanDefinitionParser} that creates a FakeConnectionFactory.
@@ -58,6 +61,11 @@ class FakeConnectionFactoryBeanDefinitionParser extends AbstractProviderConfigBe
 		
 		private final static Log logger = LogFactory.getLog(FakeApiHelper.class);
 
+	}
+
+	@Override
+	protected Class<? extends SocialAuthenticationService<?>> getAuthenticationServiceClass() {
+		return FakeSocialAuthenticationService.class;
 	}
 
 }

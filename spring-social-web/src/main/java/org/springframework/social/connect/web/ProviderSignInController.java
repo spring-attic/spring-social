@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,14 @@
  */
 package org.springframework.social.connect.web;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
 import org.springframework.social.connect.ConnectionFactoryLocator;
@@ -29,12 +31,15 @@ import org.springframework.social.connect.support.OAuth1ConnectionFactory;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
@@ -55,6 +60,8 @@ public class ProviderSignInController {
 
 	private final UsersConnectionRepository usersConnectionRepository;
 	
+	private final MultiValueMap<Class<?>, ProviderSignInInterceptor<?>> signInInterceptors = new LinkedMultiValueMap<Class<?>, ProviderSignInInterceptor<?>>();
+
 	private final SignInAdapter signInAdapter;
 
 	private String signInUrl = "/signin";
@@ -83,6 +90,17 @@ public class ProviderSignInController {
 		this.webSupport.setUseAuthenticateUrl(true);
 	}
 
+	/**
+	 * Configure the list of sign in interceptors that should receive callbacks during the sign in process.
+	 * Convenient when an instance of this class is configured using a tool that supports JavaBeans-based configuration.
+	 * @param interceptors the sign in interceptors to add
+	 */
+	public void setSignInInterceptors(List<ProviderSignInInterceptor<?>> interceptors) {
+		for (ProviderSignInInterceptor<?> interceptor : interceptors) {
+			addSignInInterceptor(interceptor);
+		}
+	}
+	
 	/**
 	 * Sets the URL of the application's sign in page.
 	 * Defaults to "/signin".
@@ -124,6 +142,16 @@ public class ProviderSignInController {
 	}
 
 	/**
+	 * Adds a ConnectInterceptor to receive callbacks during the connection process.
+	 * Useful for programmatic configuration.
+	 * @param interceptor the connect interceptor to add
+	 */
+	public void addSignInInterceptor(ProviderSignInInterceptor<?> interceptor) {
+		Class<?> serviceApiType = GenericTypeResolver.resolveTypeArgument(interceptor.getClass(), ProviderSignInInterceptor.class);
+		signInInterceptors.add(serviceApiType, interceptor);
+	}
+
+	/**
 	 * Process a sign-in form submission by commencing the process of establishing a connection to the provider on behalf of the user.
 	 * For OAuth1, fetches a new request token from the provider, temporarily stores it in the session, then redirects the user to the provider's site for authentication authorization.
 	 * For OAuth2, redirects the user to the provider's site for authentication authorization.
@@ -131,9 +159,12 @@ public class ProviderSignInController {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
 	public RedirectView signIn(@PathVariable String providerId, NativeWebRequest request) {
 		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
+		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>(); 
+		preSignIn(connectionFactory, parameters, request);
 		try {
 			return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request));
 		} catch (Exception e) {
+			logger.error("Exception while building authorization URL: ", e);
 			return redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "provider").build().toString());
 		}
 	}
@@ -152,8 +183,9 @@ public class ProviderSignInController {
 		try {
 			OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 			Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
-			return handleSignIn(connection, request);
+			return handleSignIn(connection, connectionFactory, request);
 		} catch (Exception e) {
+			logger.error("Exception while completing OAuth 1.0(a) connection: ", e);
 			return redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "provider").build().toString());
 		}
 	}
@@ -172,9 +204,9 @@ public class ProviderSignInController {
 		try {
 			OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 			Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
-			return handleSignIn(connection, request);
+			return handleSignIn(connection, connectionFactory, request);
 		} catch (Exception e) {
-			logger.warn("Exception while handling OAuth2 callback (" + e.getMessage() + "). Redirecting to " + signInUrl);
+			logger.error("Exception while completing OAuth 2 connection: ", e);
 			return redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "provider").build().toString());
 		}
 	}
@@ -190,7 +222,7 @@ public class ProviderSignInController {
 
 	// internal helpers
 
-	private RedirectView handleSignIn(Connection<?> connection, NativeWebRequest request) {
+	private RedirectView handleSignIn(Connection<?> connection, ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
 		List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
 		if (userIds.size() == 0) {
 			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, usersConnectionRepository);
@@ -199,6 +231,7 @@ public class ProviderSignInController {
 		} else if (userIds.size() == 1) {
 			usersConnectionRepository.createConnectionRepository(userIds.get(0)).updateConnection(connection);
 			String originalUrl = signInAdapter.signIn(userIds.get(0), connection, request);
+			postSignIn(connectionFactory, connection, (WebRequest) request);
 			return originalUrl != null ? redirect(originalUrl) : redirect(postSignInUrl);
 		} else {
 			return redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "multiple_users").build().toString());
@@ -207,6 +240,29 @@ public class ProviderSignInController {
 
 	private RedirectView redirect(String url) {
 		return new RedirectView(url, true);
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void preSignIn(ConnectionFactory<?> connectionFactory, MultiValueMap<String, String> parameters, WebRequest request) {
+		for (ProviderSignInInterceptor interceptor : interceptingSignInTo(connectionFactory)) {
+			interceptor.preSignIn(connectionFactory, parameters, request);
+		}
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void postSignIn(ConnectionFactory<?> connectionFactory, Connection<?> connection, WebRequest request) {
+		for (ProviderSignInInterceptor interceptor : interceptingSignInTo(connectionFactory)) {
+			interceptor.postSignIn(connection, request);
+		}
+	}
+
+	private List<ProviderSignInInterceptor<?>> interceptingSignInTo(ConnectionFactory<?> connectionFactory) {
+		Class<?> serviceType = GenericTypeResolver.resolveTypeArgument(connectionFactory.getClass(), ConnectionFactory.class);
+		List<ProviderSignInInterceptor<?>> typedInterceptors = signInInterceptors.get(serviceType);
+		if (typedInterceptors == null) {
+			typedInterceptors = Collections.emptyList();
+		}
+		return typedInterceptors;
 	}
 
 }

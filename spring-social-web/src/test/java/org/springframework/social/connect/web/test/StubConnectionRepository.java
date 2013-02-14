@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,32 +39,26 @@ public class StubConnectionRepository implements ConnectionRepository {
 	}
 
 	public <A> List<Connection<A>> findConnections(Class<A> apiType) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public MultiValueMap<String, Connection<?>> findConnectionsToUsers(MultiValueMap<String, String> providerUserIds) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public Connection<?> getConnection(ConnectionKey connectionKey) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public <A> Connection<A> getConnection(Class<A> apiType, String providerUserId) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public <A> Connection<A> getPrimaryConnection(Class<A> apiType) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	public <A> Connection<A> findPrimaryConnection(Class<A> apiType) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -74,8 +68,6 @@ public class StubConnectionRepository implements ConnectionRepository {
 	}
 
 	public void updateConnection(Connection<?> connection) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void removeConnections(String providerId) {

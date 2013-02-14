@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,25 @@ package org.springframework.social.config.annotation;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.social.UserIdSource;
 import org.springframework.social.config.Fake;
 import org.springframework.social.config.FakeConnectionFactory;
+import org.springframework.social.config.FakeSocialAuthenticationService;
 import org.springframework.social.config.FakeTemplate;
 import org.springframework.social.config.xml.ApiHelper;
-import org.springframework.social.config.xml.UserIdSource;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.social.security.provider.SocialAuthenticationService;
 
-public class FakeProviderConfigRegistrar extends ProviderConfigRegistrarSupport {
+public class FakeProviderConfigRegistrar extends AbstractProviderConfigRegistrarSupport {
 
 	public FakeProviderConfigRegistrar() {
 		super(EnableFake.class, FakeConnectionFactory.class, FakeApiHelper.class);
+	}
+	
+	@Override
+	protected Class<? extends SocialAuthenticationService<?>> getAuthenticationServiceClass() {
+		return FakeSocialAuthenticationService.class;
 	}
 	
 	static class FakeApiHelper implements ApiHelper<Fake> {
