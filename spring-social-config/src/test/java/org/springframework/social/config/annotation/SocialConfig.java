@@ -25,12 +25,14 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
 import org.springframework.social.UserIdSource;
+import org.springframework.social.config.FakeConnectionSignUp;
 import org.springframework.social.config.SimpleUserIdSource;
+import org.springframework.social.connect.ConnectionSignUp;
 import org.springframework.stereotype.Component;
 
 @Component
 @PropertySource("classpath:/org/springframework/social/config/fake.properties")
-@EnableJdbcConnectionRepository
+@EnableJdbcConnectionRepository(connectionSignUpRef="connectionSignUp")
 @EnableFake(appId="${fake.appId}", appSecret="${fake.appSecret}")
 public class SocialConfig {
 	
@@ -57,4 +59,7 @@ public class SocialConfig {
 		return new SimpleUserIdSource();
 	}
 	
+	@Bean ConnectionSignUp connectionSignUp() {
+		return new FakeConnectionSignUp();
+	}
 }

@@ -2,7 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:social="http://www.springframework.org/schema/social"
-	xmlns:socialfake="http://www.springframework.org/schema/social/fake"
+	xmlns:fake="http://www.springframework.org/schema/social/fake"
 	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util"
@@ -14,9 +14,9 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
 	<!-- SET UP SOME CONNECTION FACTORIES -->
- 	<social:jdbc-connection-repository />
+ 	<social:jdbc-connection-repository connection-signup-ref="connectionSignUp" />
 
-	<socialfake:fake app-id="${fake.appId}" app-secret="${fake.appSecret}" />
+	<fake:fake app-id="${fake.appId}" app-secret="${fake.appSecret}" />
 
     <!--  SUPPORTING BEANS  -->
 	<jdbc:embedded-database id="dataSource" type="H2">
@@ -34,4 +34,5 @@
 		<prop key="fake.appSecret">fakeAppSecret</prop>
 	</util:properties>
 
+    <bean id="connectionSignUp" class="org.springframework.social.config.FakeConnectionSignUp" />
 </beans>

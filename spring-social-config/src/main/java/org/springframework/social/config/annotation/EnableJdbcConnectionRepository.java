@@ -23,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
+import org.springframework.social.connect.ConnectionSignUp;
 import org.springframework.social.connect.jdbc.JdbcUsersConnectionRepository;
 
 /**
@@ -72,5 +73,13 @@ public @interface EnableJdbcConnectionRepository {
 	 * Defaults to "userIdSource". 
 	 */
 	String userIdSourceRef() default "userIdSource";
+	
+	
+	/**
+	 * Reference to {@link ConnectionSignUp} bean to execute to create a new local user profile in the event no user id could be mapped to a connection.
+	 * Allows for implicitly creating a user profile from connection data during a provider sign-in attempt.
+	 * Defaults to null, indicating explicit sign-up will be required to complete the provider sign-in attempt.
+	 */
+	String connectionSignUpRef() default "";
 	
 }

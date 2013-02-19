@@ -17,17 +17,20 @@ package org.springframework.social.config.xml;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.social.config.DummyConnection;
 import org.springframework.social.config.Fake;
 import org.springframework.social.config.FakeConnectionFactory;
+import org.springframework.social.config.FakeTemplate;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactory;
@@ -42,7 +45,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
-@Ignore
 public class SocialConfigNamespaceTest {
 
 	@Inject
@@ -78,7 +80,15 @@ public class SocialConfigNamespaceTest {
 		assertNotNull(context.getBean("usersConnectionRepository", UsersConnectionRepository.class));
 		assertNotNull(context.getBean("connectionRepository", ConnectionRepository.class));
 	}
-	
+
+	@Test
+	public void jdbcConnectionRepository_connectionSignUp() {
+		UsersConnectionRepository repository = context.getBean("usersConnectionRepository", UsersConnectionRepository.class);
+		Connection<Fake> connection = new DummyConnection<Fake>("fake", "fakeuser", new FakeTemplate());
+		List<String> users = repository.findUserIdsWithConnection(connection);
+		assertEquals(1, users.size());
+	}
+
 	@Test
 	public void jdbcConnectionRepository_addAndRemoveAConnection() {
 		ConnectionFactoryLocator cfl = context.getBean(ConnectionFactoryLocator.class);

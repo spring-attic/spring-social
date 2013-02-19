@@ -41,7 +41,8 @@ class JdbcConnectionRepositoryRegistrar extends JdbcConnectionRepositoryConfigSu
 		String dataSourceRef = attributes.getString("dataSourceRef");
 		String encryptorRef = attributes.getString("encryptorRef");
 		String userIdSourceRef = attributes.getString("userIdSourceRef");
-		registerJdbcConnectionRepositoryBeans(registry, connectionRepositoryId, usersConnectionRepositoryId, connectionFactoryLocatorRef, dataSourceRef, encryptorRef, userIdSourceRef);
+		String connectionSignUpRef = attributes.getString("connectionSignUpRef");
+		registerJdbcConnectionRepositoryBeans(registry, connectionRepositoryId, usersConnectionRepositoryId, connectionFactoryLocatorRef, dataSourceRef, encryptorRef, userIdSourceRef, connectionSignUpRef);
 	}
 
 }
