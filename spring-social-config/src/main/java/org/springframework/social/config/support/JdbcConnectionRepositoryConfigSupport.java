@@ -34,24 +34,26 @@ public abstract class JdbcConnectionRepositoryConfigSupport {
 	private final static Log logger = LogFactory.getLog(JdbcConnectionRepositoryConfigSupport.class);
 
 	public BeanDefinition registerJdbcConnectionRepositoryBeans(BeanDefinitionRegistry registry, String connectionRepositoryId, String usersConnectionRepositoryId, 
-			String connectionFactoryLocatorRef, String dataSourceRef, String encryptorRef, String userIdSourceRef) {
-		registerUsersConnectionRepositoryBeanDefinition(registry, usersConnectionRepositoryId, connectionFactoryLocatorRef, dataSourceRef, encryptorRef);
+			String connectionFactoryLocatorRef, String dataSourceRef, String encryptorRef, String userIdSourceRef, String connectionSignUpRef) {
+		registerUsersConnectionRepositoryBeanDefinition(registry, usersConnectionRepositoryId, connectionFactoryLocatorRef, dataSourceRef, encryptorRef, connectionSignUpRef);
 		registerUserIdBeanDefinition(registry, userIdSourceRef);
 		return registerConnectionRepository(registry, usersConnectionRepositoryId, connectionRepositoryId);		
 	}
 	
 	
 	private BeanDefinition registerUsersConnectionRepositoryBeanDefinition(BeanDefinitionRegistry registry, String usersConnectionRepositoryId, 
-			String connectionFactoryLocatorRef, String dataSourceRef, String encryptorRef) {
+			String connectionFactoryLocatorRef, String dataSourceRef, String encryptorRef, String connectionSignUpRef) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Registering JdbcUsersConnectionRepository bean");
 		}				
-
-		BeanDefinition usersConnectionRepositoryBD = BeanDefinitionBuilder.genericBeanDefinition(JdbcUsersConnectionRepository.class)
+		BeanDefinitionBuilder usersConnectionRepositoryBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(JdbcUsersConnectionRepository.class)
 				.addConstructorArgReference(dataSourceRef)
 				.addConstructorArgReference(connectionFactoryLocatorRef)
-				.addConstructorArgReference(encryptorRef)
-				.getBeanDefinition();
+				.addConstructorArgReference(encryptorRef);
+		if (connectionSignUpRef != null && connectionSignUpRef.length() > 0) {
+			usersConnectionRepositoryBeanBuilder.addPropertyReference("connectionSignUp", connectionSignUpRef);
+		}
+		BeanDefinition usersConnectionRepositoryBD = usersConnectionRepositoryBeanBuilder.getBeanDefinition();
 		BeanDefinition scopedProxyBean = decorateWithScopedProxy(usersConnectionRepositoryId, usersConnectionRepositoryBD, registry);
 		registry.registerBeanDefinition(usersConnectionRepositoryId, scopedProxyBean);
 		return scopedProxyBean;
