@@ -37,7 +37,8 @@ class JdbcConnectionRepositoryBeanDefinitionParser extends JdbcConnectionReposit
 		String dataSourceRef = element.getAttribute("data-source-ref");
 		String encryptorRef = element.getAttribute("encryptor-ref");
 		String userIdSourceRef = element.getAttribute("user-id-source-ref");
-		return registerJdbcConnectionRepositoryBeans(parserContext.getRegistry(), connectionRepositoryId, usersConnectionRepositoryId, connectionFactoryLocatorRef, dataSourceRef, encryptorRef, userIdSourceRef);
+		String connectionSignUpRef = element.getAttribute("connection-signup-ref");
+		return registerJdbcConnectionRepositoryBeans(parserContext.getRegistry(), connectionRepositoryId, usersConnectionRepositoryId, connectionFactoryLocatorRef, dataSourceRef, encryptorRef, userIdSourceRef, connectionSignUpRef);
 	}
 	
 }
