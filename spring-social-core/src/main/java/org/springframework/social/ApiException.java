@@ -22,12 +22,22 @@ package org.springframework.social;
 @SuppressWarnings("serial")
 public class ApiException extends SocialException {
 
-	public ApiException(String message) {
+	private String providerId;
+
+	public ApiException(String providerId, String message) {
 		super(message);
+		this.providerId = providerId;
 	}
 
-	public ApiException(String message, Throwable cause) {
+	public ApiException(String providerId, String message, Throwable cause) {
 		super(message, cause);
+	}
+	
+	/**
+	 * The ID of the provider for which the API exception occurred.
+	 */
+	public String getProviderId() {
+		return providerId;
 	}
 
 }

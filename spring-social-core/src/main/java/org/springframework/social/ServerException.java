@@ -22,8 +22,8 @@ package org.springframework.social;
 @SuppressWarnings("serial")
 public class ServerException extends ApiException {
 
-	public ServerException(String message) {
-		super(message);
+	public ServerException(String providerId, String message) {
+		super(providerId, message);
 	}
 	
 }
