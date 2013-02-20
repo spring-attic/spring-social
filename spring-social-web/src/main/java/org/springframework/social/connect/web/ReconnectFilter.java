@@ -49,6 +49,8 @@ import org.springframework.web.filter.GenericFilterBean;
  * </li>Handles its own redirect to /connect/{provider ID}?reconnect=true and converts the request to a POST request to {@link ConnectController} to kick of the authorization flow.
  * </ul>
  * 
+ * @since 1.1.0
+ * 
  * @author Craig Walls
  */
 public class ReconnectFilter extends GenericFilterBean {
