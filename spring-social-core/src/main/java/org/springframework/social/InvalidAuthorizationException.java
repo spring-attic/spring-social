@@ -23,8 +23,8 @@ package org.springframework.social;
 @SuppressWarnings("serial")
 public class InvalidAuthorizationException extends RejectedAuthorizationException {
 
-	public InvalidAuthorizationException(String message) {
-		super(message);
+	public InvalidAuthorizationException(String providerId, String message) {
+		super(providerId, message);
 	}
 	
 }

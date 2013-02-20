@@ -22,8 +22,8 @@ package org.springframework.social;
 @SuppressWarnings("serial")
 public class MissingAuthorizationException extends NotAuthorizedException {
 
-	public MissingAuthorizationException() {
-		super("Authorization is required for the operation, but the API binding was created without authorization.");
+	public MissingAuthorizationException(String providerId) {
+		super(providerId, "Authorization is required for the operation, but the API binding was created without authorization.");
 	}
 	
 }

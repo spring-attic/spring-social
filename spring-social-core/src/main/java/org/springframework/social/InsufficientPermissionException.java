@@ -25,13 +25,13 @@ public class InsufficientPermissionException extends OperationNotPermittedExcept
 	
 	private final String requiredPermission;
 	
-	public InsufficientPermissionException() {
-		super("Insufficient permission for this operation.");
+	public InsufficientPermissionException(String providerId) {
+		super(providerId, "Insufficient permission for this operation.");
 		this.requiredPermission = null;
 	}
 
-	public InsufficientPermissionException(String requiredPermission) {
-		super("The operation requires '" + requiredPermission + "' permission.");
+	public InsufficientPermissionException(String providerId, String requiredPermission) {
+		super(providerId, "The operation requires '" + requiredPermission + "' permission.");
 		this.requiredPermission = requiredPermission;
 	}
 
