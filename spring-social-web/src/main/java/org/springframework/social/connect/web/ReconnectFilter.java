@@ -40,11 +40,11 @@ import org.springframework.web.filter.GenericFilterBean;
  * problems by deleting the stale/revoked connection and walking the user through the connection process to obtain a new connection.
  * @author Craig Walls
  */
-public class ApiExceptionHandlingFilter extends GenericFilterBean {
+public class ReconnectFilter extends GenericFilterBean {
 
 	// TODO: There's a lot of URL manipulation in this case that could probably be broken down into reusable bits
 	
-	private final static Log logger = LogFactory.getLog(ApiExceptionHandlingFilter.class);
+	private final static Log logger = LogFactory.getLog(ReconnectFilter.class);
 
 	private ThrowableAnalyzer throwableAnalyzer = new ThrowableAnalyzer();
 
@@ -54,7 +54,7 @@ public class ApiExceptionHandlingFilter extends GenericFilterBean {
 
 	private UserIdSource userIdSource;
 
-	public ApiExceptionHandlingFilter(UsersConnectionRepository usersConnectionRepository, UserIdSource userIdSource) {
+	public ReconnectFilter(UsersConnectionRepository usersConnectionRepository, UserIdSource userIdSource) {
 		this.usersConnectionRepository = usersConnectionRepository;
 		this.userIdSource = userIdSource;
 	}
