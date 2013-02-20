@@ -22,8 +22,8 @@ package org.springframework.social;
 @SuppressWarnings("serial")
 public class ServerOverloadedException extends ServerException {
 
-	public ServerOverloadedException(String message) {
-		super(message);
+	public ServerOverloadedException(String providerId, String message) {
+		super(providerId, message);
 	}
 	
 }

@@ -145,7 +145,7 @@ public class OAuth2Connection<A> extends AbstractConnection<A> {
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			synchronized (getMonitor()) {
 				if (hasExpired()) {
-					throw new ExpiredAuthorizationException();
+					throw new ExpiredAuthorizationException(null); // TODO: Revisit this null as providerId
 				}
 				try {
 					return method.invoke(OAuth2Connection.this.api, args);
