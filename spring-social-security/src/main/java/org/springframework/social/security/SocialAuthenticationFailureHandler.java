@@ -34,13 +34,17 @@ public class SocialAuthenticationFailureHandler implements AuthenticationFailure
 	public SocialAuthenticationFailureHandler(AuthenticationFailureHandler delegate) {
 		this.delegate = delegate;
 	}
-	
+
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
 		if (failed instanceof SocialAuthenticationRedirectException) {
-		  response.sendRedirect(((SocialAuthenticationRedirectException)failed).getRedirectUrl()); 
+		  response.sendRedirect(((SocialAuthenticationRedirectException)failed).getRedirectUrl());
 		  return;
 		}
 		delegate.onAuthenticationFailure(request, response, failed);
+	}
+
+	public AuthenticationFailureHandler getDelegate() {
+		return delegate;
 	}
 
 }
