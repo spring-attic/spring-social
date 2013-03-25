@@ -162,7 +162,7 @@ public class ProviderSignInController {
 		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>(); 
 		preSignIn(connectionFactory, parameters, request);
 		try {
-			return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request));
+			return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request, parameters));
 		} catch (Exception e) {
 			logger.error("Exception while building authorization URL: ", e);
 			return redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "provider").build().toString());
