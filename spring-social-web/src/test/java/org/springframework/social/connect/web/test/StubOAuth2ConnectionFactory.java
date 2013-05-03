@@ -28,4 +28,8 @@ public class StubOAuth2ConnectionFactory extends OAuth2ConnectionFactory<TestApi
 		super("oauth2Provider", new StubOAuth2ServiceProvider(clientId, clientSecret, behavior), null);
 	}
 	
+	@Override
+	public String generateState() {
+		return "STATE";
+	}
 }

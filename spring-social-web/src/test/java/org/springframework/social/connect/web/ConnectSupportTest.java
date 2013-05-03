@@ -215,7 +215,7 @@ public class ConnectSupportTest {
 		mockRequest.setRequestURI("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
-		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=http://somesite.com/connect/someprovider", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=http://somesite.com/connect/someprovider&state=STATE", url);
 	}
 
 	@Test
@@ -228,7 +228,7 @@ public class ConnectSupportTest {
 		mockRequest.setServletPath("/appname/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
-		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://someothersite.com:1234/appname/connect/someprovider", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://someothersite.com:1234/appname/connect/someprovider&state=STATE", url);
 	}
 	
 	@Test
@@ -241,7 +241,7 @@ public class ConnectSupportTest {
 		mockRequest.setServletPath("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
-		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://someothersite.com:1234/connect/someprovider", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://someothersite.com:1234/connect/someprovider&state=STATE", url);
 	}
 	
 	@Test
@@ -255,7 +255,7 @@ public class ConnectSupportTest {
 		mockRequest.setPathInfo("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
-		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://someothersite.com:1234/spring-social-showcase/foo/connect/someprovider", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://someothersite.com:1234/spring-social-showcase/foo/connect/someprovider&state=STATE", url);
 	}
 
 	@Test
@@ -268,7 +268,7 @@ public class ConnectSupportTest {
 		mockRequest.setServletPath("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
-		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=http://ec2.instance.com:8080/spring-social/showcase/connect/someprovider", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=http://ec2.instance.com:8080/spring-social/showcase/connect/someprovider&state=STATE", url);
 	}
 
 	@Test
@@ -282,7 +282,7 @@ public class ConnectSupportTest {
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		TestOAuth2ConnectionFactory connectionFactory = new TestOAuth2ConnectionFactory();
 		String url = support.buildOAuthUrl(connectionFactory, request);
-		assertEquals("https://serviceprovider.com/oauth/authenticate?redirect_uri=http://somesite.com/connect/someprovider", url);
+		assertEquals("https://serviceprovider.com/oauth/authenticate?redirect_uri=http://somesite.com/connect/someprovider&state=STATE", url);
 	}
 
 	@Test
@@ -297,7 +297,7 @@ public class ConnectSupportTest {
 		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
 		additionalParameters.set("display", "popup");
 		String url = support.buildOAuthUrl(connectionFactory, request, additionalParameters);
-		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup&redirect_uri=http://somesite.com/connect/someprovider", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup&redirect_uri=http://somesite.com/connect/someprovider&state=STATE", url);
 	}
 
 	@Test
@@ -313,7 +313,7 @@ public class ConnectSupportTest {
 		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
 		additionalParameters.set("display", "popup");
 		String url = support.buildOAuthUrl(connectionFactory, request, additionalParameters);
-		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup&condiment=ketchup&redirect_uri=http://somesite.com/connect/someprovider", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup&condiment=ketchup&redirect_uri=http://somesite.com/connect/someprovider&state=STATE", url);
 	}
 
 	private static class PortAwareMockHttpServletRequest extends MockHttpServletRequest {
@@ -401,7 +401,7 @@ public class ConnectSupportTest {
 		mockRequest.setServletPath("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
-		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://overridingcallbackurl.com:4321", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://overridingcallbackurl.com:4321&state=STATE", url);
 	}
 	
 	// private helpers
@@ -471,6 +471,11 @@ public class ConnectSupportTest {
 			return new OAuth2Connection<TestApi>("someprovider", "providerUserId", accessGrant.getAccessToken(),
 					accessGrant.getRefreshToken(), accessGrant.getExpireTime(), SERVICE_PROVIDER, API_ADAPTER);		
 		}
+		
+		@Override
+		public String generateState() {
+			return "STATE";
+		}
 	}
 	
 	private static class TestOAuth2ServiceProvider implements OAuth2ServiceProvider<TestApi> {
@@ -509,7 +514,8 @@ public class ConnectSupportTest {
 
 		public TestApi getApi(final String accessToken) {
 			return null;
-		}		
+		}
+		
 	}
 	
 	public interface TestApi {

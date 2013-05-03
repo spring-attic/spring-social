@@ -15,6 +15,8 @@
  */
 package org.springframework.social.connect.support;
 
+import java.util.UUID;
+
 import org.springframework.social.connect.ApiAdapter;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
@@ -54,6 +56,22 @@ public class OAuth2ConnectionFactory<S> extends ConnectionFactory<S> {
 	
 	public String getScope() {
 		return scope;
+	}
+	
+	/**
+	 * Generates a value for the state parameter.
+	 * @return a random UUID by default. 
+	 */
+	public String generateState() {
+		return UUID.randomUUID().toString();
+	}
+
+	/**
+	 * Indicates that this provider supports the state parameter in callbacks to prevent against CSRF.
+	 * Default implementation returns true. 
+	 */
+	public boolean supportsStateParameter() {
+		return true;
 	}
 
 	/**
