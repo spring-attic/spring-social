@@ -177,7 +177,7 @@ public class ProviderSignInControllerTest {
 				new ConnectionData("oauth2Provider", "provider2User1", null, null, null, null, null, null, null)));
 		MockMvc mockMvc = standaloneSetup(new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null)).build();
 		mockMvc.perform(post("/signin/oauth2Provider"))
-			.andExpect(redirectedUrl("https://someprovider.com/oauth/authorize?client_id=clientId&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A80%2Fsignin%2Foauth2Provider"));
+			.andExpect(redirectedUrl("https://someprovider.com/oauth/authorize?client_id=clientId&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A80%2Fsignin%2Foauth2Provider&state=STATE"));
 	}
 
 	@Test

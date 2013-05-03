@@ -15,6 +15,7 @@
  */
 package org.springframework.social.oauth2;
 
+
 /**
  * Base class for ServiceProviders that use the OAuth2 protocol.
  * OAuth2-based ServiceProvider implementations should extend and implement {@link #getApi(String)}.
@@ -40,5 +41,5 @@ public abstract class AbstractOAuth2ServiceProvider<S> implements OAuth2ServiceP
 	}
 
 	public abstract S getApi(String accessToken);
-	
+
 }

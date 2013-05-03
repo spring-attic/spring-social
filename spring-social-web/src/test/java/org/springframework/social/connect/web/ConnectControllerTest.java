@@ -247,7 +247,7 @@ public class ConnectControllerTest {
 		connectController.setConnectInterceptors(interceptors);
 		MockMvc mockMvc = standaloneSetup(connectController).build();
 		mockMvc.perform(post("/connect/oauth2Provider"))
-			.andExpect(redirectedUrl(OAUTH2_AUTHORIZE_URL));
+			.andExpect(redirectedUrl(OAUTH2_AUTHORIZE_URL + "&state=STATE"));
 		// Check for preConnect() only. The postConnect() won't be invoked until after callback
 		assertFalse(((TestConnectInterceptor<?>)(interceptors.get(0))).preConnectInvoked);
 		TestConnectInterceptor<?> testInterceptor2 = (TestConnectInterceptor<?>)(interceptors.get(1));
@@ -262,7 +262,7 @@ public class ConnectControllerTest {
 		connectionFactoryLocator.addConnectionFactory(connectionFactory);
 		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, null)).build();
 		mockMvc.perform(post("/connect/oauth2Provider").param("scope", "read,write"))
-			.andExpect(redirectedUrl(OAUTH2_AUTHORIZE_URL + "&scope=read%2Cwrite"));
+			.andExpect(redirectedUrl(OAUTH2_AUTHORIZE_URL + "&scope=read%2Cwrite&state=STATE"));
 	}
 	
 	@Test
