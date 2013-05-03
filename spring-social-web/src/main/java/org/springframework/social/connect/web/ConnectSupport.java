@@ -143,6 +143,10 @@ public class ConnectSupport {
 	 * @return a new connection to the service provider
 	 */
 	public Connection<?> completeConnection(OAuth2ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
+		if (connectionFactory.supportsStateParameter()) {
+			verifyStateParameter(request);
+		}
+		
 		String code = request.getParameter("code");
 		try {
 			AccessGrant accessGrant = connectionFactory.getOAuthOperations().exchangeForAccess(code, callbackUrl(request), null);
@@ -151,6 +155,14 @@ public class ConnectSupport {
 			logger.warn("HttpClientErrorException while completing connection: " + e.getMessage());
 			logger.warn("      Response body: " + e.getResponseBodyAsString());
 			throw e;
+		}
+	}
+
+	private void verifyStateParameter(NativeWebRequest request) {
+		String state = request.getParameter("state");
+		String originalState = extractCachedOAuth2State(request);
+		if (state != null && !state.equals(originalState)) {
+			throw new IllegalStateException("The OAuth2 'state' parameter doesn't match.");
 		}
 	}
 
@@ -198,6 +210,9 @@ public class ConnectSupport {
 		OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
 		String defaultScope = connectionFactory.getScope();
 		OAuth2Parameters parameters = getOAuth2Parameters(request, defaultScope, additionalParameters);
+		String state = connectionFactory.generateState();
+		parameters.add("state", state);
+		request.setAttribute(OAUTH2_STATE_ATTRIBUTE, state, RequestAttributes.SCOPE_SESSION);
 		if (useAuthenticateUrl) { 
 			return oauthOperations.buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, parameters);						
 		} else {
@@ -237,6 +252,12 @@ public class ConnectSupport {
 		return requestToken;
 	}
 	
+	private String extractCachedOAuth2State(WebRequest request) {
+		String state = (String) request.getAttribute(OAUTH2_STATE_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
+		request.removeAttribute(OAUTH2_STATE_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
+		return state;		
+	}
+	
 	private MultiValueMap<String, String> getRequestParameters(NativeWebRequest request, String... ignoredParameters) {
 		List<String> ignoredParameterList = asList(ignoredParameters);
 		MultiValueMap<String, String> convertedMap = new LinkedMultiValueMap<String, String>();
@@ -249,5 +270,7 @@ public class ConnectSupport {
 	}
 
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
+	
+	private static final String OAUTH2_STATE_ATTRIBUTE = "oauth2State";
 
 }
