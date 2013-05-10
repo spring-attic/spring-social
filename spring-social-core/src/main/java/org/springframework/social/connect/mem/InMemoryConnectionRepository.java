@@ -107,7 +107,7 @@ class InMemoryConnectionRepository implements ConnectionRepository {
 		if (connections.containsKey(providerId)) {
 			return (Connection<A>) connections.get(providerId).get(0);
 		}
-		throw new NotConnectedException(providerId);
+		return null;
 	}
 
 	public void addConnection(Connection<?> connection) {
