@@ -15,4 +15,14 @@
 		</xs:complexType>
 	</xs:element>
 
+	<xs:element name="in-memory-connection-repository">
+		<xs:complexType>
+			<xs:attribute name="connection-repository-id" use="optional" type="xs:string" default="connectionRepository" />
+			<xs:attribute name="users-connection-repository-id" use="optional" type="xs:string" default="usersConnectionRepository" />
+			<xs:attribute name="connection-factory-locator-ref" use="optional" type="xs:string" default="connectionFactoryLocator" />
+			<xs:attribute name="user-id-source-ref" use="optional" type="xs:string" default="userIdSource" />
+			<xs:attribute name="connection-signup-ref" use="optional" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+
 </xs:schema>

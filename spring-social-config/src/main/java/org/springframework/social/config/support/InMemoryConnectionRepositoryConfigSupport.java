@@ -20,33 +20,32 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.social.connect.jdbc.JdbcUsersConnectionRepository;
+import org.springframework.social.config.annotation.EnableInMemoryConnectionRepository;
+import org.springframework.social.connect.mem.InMemoryUsersConnectionRepository;
 
 /**
- * Support class providing methods for configuring a singleton {@link JdbcUsersConnectionRepository} bean and a request-scoped JdbcConnectionRepository bean.
- * Used by JdbcConnectionRepositoryRegistrar (for EnableJdbcConnectionRepository) and JdbcConnectionRepositoryBeanDefinitionParser for XML configuration.
+ * Support class providing methods for configuring a singleton {@link InMemoryUsersConnectionRepository} bean and a request-scoped InMemoryConnectionRepository bean.
+ * Used by InMemoryConnectionRepositoryRegistrar (for {@link EnableInMemoryConnectionRepository}) and InMemoryConnectionRepositoryBeanDefinitionParser for XML configuration.
  * @author Craig Walls
  */
-public abstract class JdbcConnectionRepositoryConfigSupport extends AbstractConnectionRepositoryConfigSupport {
+public abstract class InMemoryConnectionRepositoryConfigSupport extends AbstractConnectionRepositoryConfigSupport {
 
-	private final static Log logger = LogFactory.getLog(JdbcConnectionRepositoryConfigSupport.class);
+	private final static Log logger = LogFactory.getLog(InMemoryConnectionRepositoryConfigSupport.class);
 
-	public BeanDefinition registerJdbcConnectionRepositoryBeans(BeanDefinitionRegistry registry, String connectionRepositoryId, String usersConnectionRepositoryId, 
-			String connectionFactoryLocatorRef, String dataSourceRef, String encryptorRef, String userIdSourceRef, String connectionSignUpRef) {
-		registerUsersConnectionRepositoryBeanDefinition(registry, usersConnectionRepositoryId, connectionFactoryLocatorRef, dataSourceRef, encryptorRef, connectionSignUpRef);
+	public BeanDefinition registerInMemoryConnectionRepositoryBeans(BeanDefinitionRegistry registry, String connectionRepositoryId, String usersConnectionRepositoryId, 
+			String connectionFactoryLocatorRef, String userIdSourceRef, String connectionSignUpRef) {
+		registerUsersConnectionRepositoryBeanDefinition(registry, usersConnectionRepositoryId, connectionFactoryLocatorRef, connectionSignUpRef);
 		return registerConnectionRepository(registry, usersConnectionRepositoryId, connectionRepositoryId, userIdSourceRef);		
 	}
 	
 	
 	private BeanDefinition registerUsersConnectionRepositoryBeanDefinition(BeanDefinitionRegistry registry, String usersConnectionRepositoryId, 
-			String connectionFactoryLocatorRef, String dataSourceRef, String encryptorRef, String connectionSignUpRef) {
+			String connectionFactoryLocatorRef, String connectionSignUpRef) {
 		if (logger.isDebugEnabled()) {
-			logger.debug("Registering JdbcUsersConnectionRepository bean");
+			logger.debug("Registering InMemoryUsersConnectionRepository bean");
 		}				
-		BeanDefinitionBuilder usersConnectionRepositoryBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(JdbcUsersConnectionRepository.class)
-				.addConstructorArgReference(dataSourceRef)
-				.addConstructorArgReference(connectionFactoryLocatorRef)
-				.addConstructorArgReference(encryptorRef);
+		BeanDefinitionBuilder usersConnectionRepositoryBeanBuilder = BeanDefinitionBuilder.genericBeanDefinition(InMemoryUsersConnectionRepository.class)
+				.addConstructorArgReference(connectionFactoryLocatorRef);
 		if (connectionSignUpRef != null && connectionSignUpRef.length() > 0) {
 			usersConnectionRepositoryBeanBuilder.addPropertyReference("connectionSignUp", connectionSignUpRef);
 		}
