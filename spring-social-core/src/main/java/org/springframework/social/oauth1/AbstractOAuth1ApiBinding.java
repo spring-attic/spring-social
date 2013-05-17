@@ -29,7 +29,7 @@ import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.ResourceHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.social.ApiBinding;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.web.client.RestTemplate;
@@ -109,7 +109,7 @@ public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
 	
 	/**
 	 * Returns a list of {@link HttpMessageConverter}s to be used by the internal {@link RestTemplate}.
-	 * By default, this includes a {@link StringHttpMessageConverter}, a {@link MappingJacksonHttpMessageConverter}, a {@link ByteArrayHttpMessageConverter}, and a {@link FormHttpMessageConverter}.
+	 * By default, this includes a {@link StringHttpMessageConverter}, a {@link MappingJackson2HttpMessageConverter}, a {@link ByteArrayHttpMessageConverter}, and a {@link FormHttpMessageConverter}.
 	 * The {@link FormHttpMessageConverter} is set to use "UTF-8" character encoding.
 	 * Override this method to add additional message converters or to replace the default list of message converters.
 	 */
@@ -142,12 +142,12 @@ public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
 	}
 	
 	/**
-	 * Returns a {@link MappingJacksonHttpMessageConverter} to be used by the internal {@link RestTemplate}.
+	 * Returns a {@link MappingJackson2HttpMessageConverter} to be used by the internal {@link RestTemplate}.
 	 * Override to customize the message converter (for example, to set a custom object mapper or supported media types).
 	 * To remove/replace this or any of the other message converters that are registered by default, override the getMessageConverters() method instead.
 	 */
-	protected MappingJacksonHttpMessageConverter getJsonMessageConverter() {
-		return new MappingJacksonHttpMessageConverter(); 
+	protected MappingJackson2HttpMessageConverter getJsonMessageConverter() {
+		return new MappingJackson2HttpMessageConverter(); 
 	}
 	
 	/**
