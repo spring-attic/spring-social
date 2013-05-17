@@ -26,7 +26,7 @@ import java.util.Map.Entry;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
@@ -191,7 +191,7 @@ public class OAuth2Template implements OAuth2Operations {
 	
 	/**
 	 * Creates the {@link RestTemplate} used to communicate with the provider's OAuth 2 API.
-	 * This implementation creates a RestTemplate with a minimal set of HTTP message converters ({@link FormHttpMessageConverter} and {@link MappingJacksonHttpMessageConverter}).
+	 * This implementation creates a RestTemplate with a minimal set of HTTP message converters ({@link FormHttpMessageConverter} and {@link MappingJackson2HttpMessageConverter}).
 	 * May be overridden to customize how the RestTemplate is created.
 	 * For example, if the provider returns data in some format other than JSON for form-encoded, you might override to register an appropriate message converter. 
 	 */
@@ -200,7 +200,7 @@ public class OAuth2Template implements OAuth2Operations {
 		RestTemplate restTemplate = new RestTemplate(requestFactory);
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>(2);
 		converters.add(new FormHttpMessageConverter());
-		converters.add(new MappingJacksonHttpMessageConverter());
+		converters.add(new MappingJackson2HttpMessageConverter());
 		restTemplate.setMessageConverters(converters);
 		return restTemplate;
 	}

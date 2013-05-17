@@ -28,7 +28,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.ResponseActions;
 
 public class OAuth2TemplateTest {
-	
+
 	private static final String AUTHORIZE_URL = "http://www.someprovider.com/oauth/authorize";
 
 	private static final String ACCESS_TOKEN_URL = "http://www.someprovider.com/oauth/accessToken";
