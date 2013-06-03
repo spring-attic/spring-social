@@ -1,3 +1,12 @@
+Spring Social 1.0.3 Release (June 6, 2013)
+==========================================
+This release was pushed to support Spring Social Twitter 1.0.4 so that a
+TwitterTemplate can be created using application-only authorization (e.g.,
+OAuth 2's client credentials grant).
+
+Improvements:
+  * Support OAuth 2's password grant and client credentials grant.
+
 Spring Social 1.0.2 Release (January 23, 2012)
 ==============================================
 Bug Fixes
