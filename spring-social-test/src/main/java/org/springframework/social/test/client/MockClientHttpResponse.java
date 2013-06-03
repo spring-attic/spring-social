@@ -61,6 +61,10 @@ public class MockClientHttpResponse implements ClientHttpResponse {
 		return headers;
 	}
 
+	public int getRawStatusCode() throws IOException {
+		return statusCode.value();
+	}
+
 	public HttpStatus getStatusCode() throws IOException {
 		return statusCode;
 	}

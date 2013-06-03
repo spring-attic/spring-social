@@ -51,6 +51,10 @@ final class HttpComponentsClientHttpResponse implements ClientHttpResponse {
 		this.httpResponse = httpResponse;
 	}
 
+	public int getRawStatusCode() throws IOException {
+		return httpResponse.getStatusLine().getStatusCode();
+	}
+
 	public HttpStatus getStatusCode() throws IOException {
 		return HttpStatus.valueOf(httpResponse.getStatusLine().getStatusCode());
 	}

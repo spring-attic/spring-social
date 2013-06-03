@@ -16,7 +16,6 @@
 
 rootProject.name = 'spring-social'
 
-include 'docs'
 include 'spring-social-core'
 include 'spring-social-web'
 include 'spring-social-test'
