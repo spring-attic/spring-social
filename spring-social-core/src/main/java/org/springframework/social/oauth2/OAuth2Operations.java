@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,12 +53,46 @@ public interface OAuth2Operations {
 	AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters);
 
 	/**
+	 * Exchanges user credentials for an access grant using OAuth2's Resource Owner Credentials Grant (aka, "password" grant).
+	 * @param username the user's username on the provider
+	 * @param password the user's password on the provider
+	 * @param additionalParameters any additional parameters to be sent when exchanging the credentials for an access grant. Should not be encoded. 
+	 * @return the access grant.
+	 */
+	AccessGrant exchangeCredentialsForAccess(String username, String password, MultiValueMap<String, String> additionalParameters);
+
+	/**
 	 * Refreshes a previous access grant.
 	 * @param refreshToken the refresh token from the previous access grant.
 	 * @param scope optional scope to narrow to when refreshing access; if null, the existing scope is preserved.
 	 * @param additionalParameters any additional parameters to be sent when refreshing a previous access grant. Should not be encoded. 
 	 * @return the access grant.
+	 * @deprecated Set the scope via additional parameters. This can be done conveniently user OAuth2Parameters.
 	 */
+	@Deprecated
 	AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters);
-	
+
+	/**
+	 * Refreshes a previous access grant.
+	 * @param refreshToken the refresh token from the previous access grant.
+	 * @param additionalParameters any additional parameters to be sent when refreshing a previous access grant. Should not be encoded. 
+	 * @return the access grant.
+	 */
+	AccessGrant refreshAccess(String refreshToken, MultiValueMap<String, String> additionalParameters);
+
+	/**
+	 * Retrieves the client access grant using OAuth 2 client password flow.
+	 * This is an access grant that is based on the client id and password (a.k.a. client secret).
+	 * @return the access grant of the client only (not user related)
+	 */
+	AccessGrant authenticateClient();
+
+	/**
+	 * Retrieves the client access grant using OAuth 2 client password flow.
+	 * This is an access grant that is based on the client id and password (a.k.a. client secret).
+	 * @param scope optional scope to get for the access grant
+	 * @return the access grant of the client only (not user related)
+	 */
+	AccessGrant authenticateClient(String scope);
+
 }

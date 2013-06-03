@@ -426,8 +426,20 @@ public class ConnectSupportTest {
 					assertNull(additionalParameters);
 					return new AccessGrant("access-token");
 				}
+				public AccessGrant exchangeCredentialsForAccess(String username, String password, MultiValueMap<String, String> additionalParameters) {
+					return new AccessGrant("12345", null, "23456", 3600);
+				}
+				public AccessGrant refreshAccess(String refreshToken, MultiValueMap<String, String> additionalParameters) {
+					return null;
+				}
 				public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
 					return null;
+				}
+				public AccessGrant authenticateClient() {
+					return new AccessGrant("12345", null,  null, 3600);
+				}
+				public AccessGrant authenticateClient(String scope) {
+					return new AccessGrant("12345", null,  null, 3600);
 				}
 			};
 		}

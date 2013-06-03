@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2013 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,11 +51,29 @@ public class OAuth2Template implements OAuth2Operations {
 	private String authenticateUrl;
 	
 	private final RestTemplate restTemplate;
+	
+	private boolean useParametersForClientAuthentication = true; // default to true for v1.0.3 
 
+	/**
+	 * Constructs an OAuth2Template for a given set of client credentials. 
+	 * Assumes that the authorization URL is the same as the authentication URL.
+	 * @param clientId the client ID
+	 * @param clientSecret the client secret
+	 * @param authorizeUrl the base URL to redirect to when doing authorization code or implicit grant authorization
+	 * @param accessTokenUrl the URL at which an authorization code, refresh token, or user credentials may be exchanged for an access token.
+	 */
 	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String accessTokenUrl) {
 		this(clientId, clientSecret, authorizeUrl, null, accessTokenUrl);
 	}
-	
+
+	/**
+	 * Constructs an OAuth2Template for a given set of client credentials. 
+	 * @param clientId the client ID
+	 * @param clientSecret the client secret
+	 * @param authorizeUrl the base URL to redirect to when doing authorization code or implicit grant authorization
+	 * @param authenticateUrl the URL to redirect to when doing authentication via authorization code grant
+	 * @param accessTokenUrl the URL at which an authorization code, refresh token, or user credentials may be exchanged for an access token
+	 */
 	public OAuth2Template(String clientId, String clientSecret, String authorizeUrl, String authenticateUrl, String accessTokenUrl) {
 		Assert.notNull(clientId, "The clientId property cannot be null");
 		Assert.notNull(clientSecret, "The clientSecret property cannot be null");
@@ -72,6 +90,17 @@ public class OAuth2Template implements OAuth2Operations {
 		}
 		this.accessTokenUrl = accessTokenUrl;
 		this.restTemplate = createRestTemplate();
+		if (!useParametersForClientAuthentication) {
+			restTemplate.getInterceptors().add(new PreemptiveBasicAuthClientHttpRequestInterceptor(clientId, clientSecret));
+		}
+	}
+	
+	/**
+	 * Set to true to pass client credentials to the provider as parameters instead of using HTTP Basic authentication.
+	 * @param useParametersForClientAuthentication
+	 */
+	public void setUseParametersForClientAuthentication(boolean useParametersForClientAuthentication) {
+		this.useParametersForClientAuthentication = useParametersForClientAuthentication;
 	}
 
 	/**
@@ -93,8 +122,10 @@ public class OAuth2Template implements OAuth2Operations {
 
 	public AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters) {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-		params.set("client_id", clientId);
-		params.set("client_secret", clientSecret);
+		if (useParametersForClientAuthentication) {
+			params.set("client_id", clientId);
+			params.set("client_secret", clientSecret);
+		}
 		params.set("code", authorizationCode);
 		params.set("redirect_uri", redirectUri);
 		params.set("grant_type", "authorization_code");
@@ -103,15 +134,41 @@ public class OAuth2Template implements OAuth2Operations {
 		}
 		return postForAccessGrant(accessTokenUrl, params);
 	}
+	
+
+	public AccessGrant exchangeCredentialsForAccess(String username, String password, MultiValueMap<String, String> additionalParameters) {
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+		if (useParametersForClientAuthentication) {
+			params.set("client_id", clientId);
+			params.set("client_secret", clientSecret);
+		}
+		params.set("username", username);
+		params.set("password", password);
+		params.set("grant_type", "password");
+		if (additionalParameters != null) {
+			params.putAll(additionalParameters);
+		}
+		return postForAccessGrant(accessTokenUrl, params);
+	}
 
 	public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
-		params.set("client_id", clientId);
-		params.set("client_secret", clientSecret);
-		params.set("refresh_token", refreshToken);
 		if (scope != null) {
 			params.set("scope", scope);
 		}
+		if (additionalParameters != null) {
+			params.putAll(additionalParameters);
+		}
+		return refreshAccess(refreshToken, params);
+	}
+	
+	public AccessGrant refreshAccess(String refreshToken, MultiValueMap<String, String> additionalParameters) {
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+		if (useParametersForClientAuthentication) {
+			params.set("client_id", clientId);
+			params.set("client_secret", clientSecret);
+		}
+		params.set("refresh_token", refreshToken);
 		params.set("grant_type", "refresh_token");
 		if (additionalParameters != null) {
 			params.putAll(additionalParameters);
@@ -119,7 +176,24 @@ public class OAuth2Template implements OAuth2Operations {
 		return postForAccessGrant(accessTokenUrl, params);
 	}
 
-	// subclassing hooks
+	public AccessGrant authenticateClient() {
+		return authenticateClient(null);
+	}
+	
+	public AccessGrant authenticateClient(String scope) {
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
+		if (useParametersForClientAuthentication) {
+			params.set("client_id", clientId);
+			params.set("client_secret", clientSecret);
+		}
+		params.set("grant_type", "client_credentials");
+		if (scope != null) {
+			params.set("scope", scope);
+		}
+		return postForAccessGrant(accessTokenUrl, params);
+	}
+
+    // subclassing hooks
 	
 	/**
 	 * Creates the {@link RestTemplate} used to communicate with the provider's OAuth 2 API.
@@ -128,7 +202,8 @@ public class OAuth2Template implements OAuth2Operations {
 	 * For example, if the provider returns data in some format other than JSON for form-encoded, you might override to register an appropriate message converter. 
 	 */
 	protected RestTemplate createRestTemplate() {
-		RestTemplate restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
+		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactorySelector.getRequestFactory();
+		RestTemplate restTemplate = new RestTemplate(requestFactory);
 		List<HttpMessageConverter<?>> converters = new ArrayList<HttpMessageConverter<?>>(2);
 		converters.add(new FormHttpMessageConverter());
 		converters.add(new MappingJacksonHttpMessageConverter());
