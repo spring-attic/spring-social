@@ -97,6 +97,8 @@ public class OAuth2Template implements OAuth2Operations {
 	
 	/**
 	 * Set to true to pass client credentials to the provider as parameters instead of using HTTP Basic authentication.
+	 * NOTE: For Spring Social v1.0.3, this will default to "true", as most OAuth2 providers do not yet support HTTP Basic for client authorization.
+	 * This default will change to false for Spring Social v1.1.0.
 	 * @param useParametersForClientAuthentication
 	 */
 	public void setUseParametersForClientAuthentication(boolean useParametersForClientAuthentication) {
