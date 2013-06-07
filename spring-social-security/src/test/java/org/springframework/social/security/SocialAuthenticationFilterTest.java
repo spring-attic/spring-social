@@ -64,7 +64,7 @@ public class SocialAuthenticationFilterTest {
 		FilterTestEnv env = new FilterTestEnv("GET", "/auth");
 		env.filter.setFilterProcessesUrl(env.req.getRequestURI());
 		env.filter.setPostLoginUrl("/success");
-		
+
 		ConnectionFactory<Object> factory = mock(MockConnectionFactory.class);
 		when(factory.getProviderId()).thenReturn("mock");
 		env.req.setRequestURI(env.req.getRequestURI() + "/" + factory.getProviderId());
@@ -82,7 +82,7 @@ public class SocialAuthenticationFilterTest {
 		env.doFilter();
 
 		assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-		
+
 		assertEquals("/success", env.res.getRedirectedUrl());
 	}
 
@@ -91,37 +91,37 @@ public class SocialAuthenticationFilterTest {
 	public void addConnection() {
 		UsersConnectionRepository usersConnectionRepository = mock(UsersConnectionRepository.class);
 		SocialAuthenticationFilter filter = new SocialAuthenticationFilter(null, null, usersConnectionRepository, null);
-		
+
 		SocialAuthenticationService<Object> authService = mock(SocialAuthenticationService.class);
 		ConnectionRepository connectionRepository = mock(ConnectionRepository.class);
 		ConnectionFactory<Object> connectionFactory = mock(MockConnectionFactory.class);
-		
+
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		ConnectionData data = new ConnectionData("dummyprovider", "1234", null, null, null, null, null, null, null);
 		String userId = "joe";
-		
+
 		DummyConnection<Object> connection = DummyConnection.dummy(data.getProviderId(), userId);
-		
+
 		when(usersConnectionRepository.findUserIdsConnectedTo(data.getProviderId(), set(data.getProviderUserId()))).thenReturn(empty(String.class));
 		when(usersConnectionRepository.createConnectionRepository(userId)).thenReturn(connectionRepository);
-		
+
 		when(authService.getConnectionCardinality()).thenReturn(ConnectionCardinality.ONE_TO_ONE);
 		when(authService.getConnectionFactory()).thenReturn(connectionFactory);
 		when(authService.getConnectionAddedRedirectUrl(request, connection)).thenReturn("/redirect");
-		
+
 		when(connectionFactory.createConnection(data)).thenReturn(connection);
-		
-		Connection<?> addedConnection = filter.addConnection(authService, userId, data);
+
+		Connection<?> addedConnection = filter.addConnection(authService, userId, connection);
 		assertNotNull(addedConnection);
 		assertSame(connection, addedConnection);
-		
+
 		verify(connectionRepository).addConnection(connection);
 	}
-	
+
 	private static <T> Set<T> empty(Class<T> cls) {
 		return Collections.emptySet();
 	}
-	
+
 	private static <T> Set<T> set(T ... o) {
 		return Collections.unmodifiableSet(new HashSet<T>(Arrays.asList(o)));
 	}
@@ -147,10 +147,10 @@ public class SocialAuthenticationFilterTest {
 			filter = new SocialAuthenticationFilter(authManager, mock(UserIdSource.class), mock(UsersConnectionRepository.class), new SocialAuthenticationServiceRegistry());
 			filter.setServletContext(context);
 			filter.setRememberMeServices(new NullRememberMeServices());
-			
+
 			ConnectionRepository repo = mock(ConnectionRepository.class);
 			when(filter.getUsersConnectionRepository().createConnectionRepository(Mockito.anyString())).thenReturn(repo);
-			
+
 			auth = new SocialAuthenticationToken(DummyConnection.dummy("provider", "user"), null);
 
 			Collection<? extends GrantedAuthority> authorities = Collections.emptyList();
@@ -161,7 +161,7 @@ public class SocialAuthenticationFilterTest {
 		private void addAuthService(SocialAuthenticationService<?> authenticationService) {
 			((SocialAuthenticationServiceRegistry)filter.getAuthServiceLocator()).addAuthenticationService(authenticationService);
 		}
-		
+
 		private void doFilter() throws Exception {
 
 			filter.init(config);
