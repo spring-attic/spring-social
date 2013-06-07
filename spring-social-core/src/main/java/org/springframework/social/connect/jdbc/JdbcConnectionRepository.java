@@ -171,16 +171,19 @@ class JdbcConnectionRepository implements ConnectionRepository {
 		}
 	}
 	
+	@Transactional
 	public void updateConnection(Connection<?> connection) {
 		ConnectionData data = connection.createData();
 		jdbcTemplate.update("update " + tablePrefix + "UserConnection set displayName = ?, profileUrl = ?, imageUrl = ?, accessToken = ?, secret = ?, refreshToken = ?, expireTime = ? where userId = ? and providerId = ? and providerUserId = ?",
 				data.getDisplayName(), data.getProfileUrl(), data.getImageUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime(), userId, data.getProviderId(), data.getProviderUserId());
 	}
 
+	@Transactional
 	public void removeConnections(String providerId) {
 		jdbcTemplate.update("delete from " + tablePrefix + "UserConnection where userId = ? and providerId = ?", userId, providerId);
 	}
 
+	@Transactional
 	public void removeConnection(ConnectionKey connectionKey) {
 		jdbcTemplate.update("delete from " + tablePrefix + "UserConnection where userId = ? and providerId = ? and providerUserId = ?", userId, connectionKey.getProviderId(), connectionKey.getProviderUserId());		
 	}
