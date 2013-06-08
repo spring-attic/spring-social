@@ -50,7 +50,7 @@ public class OAuth2Template implements OAuth2Operations {
 
 	private String authenticateUrl;
 	
-	private final RestTemplate restTemplate;
+	private RestTemplate restTemplate;
 	
 	private boolean useParametersForClientAuthentication; 
 
@@ -89,10 +89,6 @@ public class OAuth2Template implements OAuth2Operations {
 			this.authenticateUrl = null;
 		}
 		this.accessTokenUrl = accessTokenUrl;
-		this.restTemplate = createRestTemplate();
-		if (!useParametersForClientAuthentication) {
-			restTemplate.getInterceptors().add(new PreemptiveBasicAuthClientHttpRequestInterceptor(clientId, clientSecret));
-		}
 	}
 	
 	/**
@@ -109,7 +105,7 @@ public class OAuth2Template implements OAuth2Operations {
 	 */
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
 		Assert.notNull(requestFactory, "The requestFactory property cannot be null");
-		this.restTemplate.setRequestFactory(requestFactory);
+		getRestTemplate().setRequestFactory(requestFactory);
 	}
 
 	public String buildAuthorizeUrl(GrantType grantType, OAuth2Parameters parameters) {
@@ -202,6 +198,9 @@ public class OAuth2Template implements OAuth2Operations {
 		converters.add(new FormHttpMessageConverter());
 		converters.add(new MappingJackson2HttpMessageConverter());
 		restTemplate.setMessageConverters(converters);
+		if (!useParametersForClientAuthentication) {
+			restTemplate.getInterceptors().add(new PreemptiveBasicAuthClientHttpRequestInterceptor(clientId, clientSecret));
+		}
 		return restTemplate;
 	}
 
@@ -218,7 +217,7 @@ public class OAuth2Template implements OAuth2Operations {
 	 */
 	@SuppressWarnings("unchecked")
 	protected AccessGrant postForAccessGrant(String accessTokenUrl, MultiValueMap<String, String> parameters) {
-		return extractAccessGrant(restTemplate.postForObject(accessTokenUrl, parameters, Map.class));
+		return extractAccessGrant(getRestTemplate().postForObject(accessTokenUrl, parameters, Map.class));
 	}
 	
 	/**
@@ -238,6 +237,11 @@ public class OAuth2Template implements OAuth2Operations {
 	// testing hooks
 	
 	protected RestTemplate getRestTemplate() {
+		// Lazily create RestTemplate to make sure all parameters have had a chance to be set.
+		// Can't do this InitializingBean.afterPropertiesSet() because it will often be created directly and not as a bean.
+		if (restTemplate == null) {
+			restTemplate = createRestTemplate();
+		}
 		return restTemplate;
 	}
 	
