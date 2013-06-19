@@ -21,6 +21,7 @@ import java.util.List;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionKey;
 import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.connect.NoSuchConnectionException;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -47,7 +48,7 @@ public class StubConnectionRepository implements ConnectionRepository {
 	}
 
 	public Connection<?> getConnection(ConnectionKey connectionKey) {
-		return null;
+		throw new NoSuchConnectionException(connectionKey);
 	}
 
 	public <A> Connection<A> getConnection(Class<A> apiType, String providerUserId) {
