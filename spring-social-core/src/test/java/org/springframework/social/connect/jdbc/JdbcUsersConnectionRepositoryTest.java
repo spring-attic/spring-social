@@ -380,6 +380,16 @@ public class JdbcUsersConnectionRepositoryTest {
 		ConnectionData data = facebook.createData();
 		assertEquals("654321098", data.getRefreshToken());
 	}
+	
+	@Test
+	public void findPrimaryConnection_afterRemove() {
+		insertFacebookConnection();
+		insertFacebookConnection2();    
+		// 9 is the providerUserId of the first Facebook connection
+		connectionRepository.removeConnection(new ConnectionKey("facebook", "9"));
+		assertEquals(1, connectionRepository.findConnections(TestFacebookApi.class).size());
+		assertNotNull(connectionRepository.findPrimaryConnection(TestFacebookApi.class));
+	}
 
 	// subclassing hooks
 	
