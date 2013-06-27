@@ -288,7 +288,7 @@ public class InMemoryUsersConnectionRepositoryTest {
 	
 	@Test
 	public void addConnection() {
-		Connection<TestFacebookApi> connection = facebookConnectionFactory.createConnection(new AccessGrant("123456789", null, "987654321", 3600));
+		Connection<TestFacebookApi> connection = facebookConnectionFactory.createConnection(new AccessGrant("123456789", null, "987654321", 3600L));
 		connectionRepository.addConnection(connection);
 		Connection<TestFacebookApi> restoredConnection = connectionRepository.getPrimaryConnection(TestFacebookApi.class);
 		assertEquals(connection, restoredConnection);	
@@ -297,7 +297,7 @@ public class InMemoryUsersConnectionRepositoryTest {
 
 	@Test(expected=DuplicateConnectionException.class)
 	public void addConnectionDuplicate() {
-		Connection<TestFacebookApi> connection = facebookConnectionFactory.createConnection(new AccessGrant("123456789", null, "987654321", 3600));
+		Connection<TestFacebookApi> connection = facebookConnectionFactory.createConnection(new AccessGrant("123456789", null, "987654321", 3600L));
 		connectionRepository.addConnection(connection);
 		connectionRepository.addConnection(connection);
 	}
@@ -435,10 +435,10 @@ public class InMemoryUsersConnectionRepositoryTest {
 					return null;
 				}
 				public AccessGrant refreshAccess(String refreshToken, MultiValueMap<String, String> additionalParameters) {
-					return new AccessGrant("765432109", "read", "654321098", 3600);
+					return new AccessGrant("765432109", "read", "654321098", 3600L);
 				}
 				public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
-					return new AccessGrant("765432109", "read", "654321098", 3600);
+					return new AccessGrant("765432109", "read", "654321098", 3600L);
 				}
 				public AccessGrant authenticateClient() {
 					return null;
