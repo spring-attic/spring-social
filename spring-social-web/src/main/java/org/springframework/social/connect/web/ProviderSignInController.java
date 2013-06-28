@@ -210,7 +210,25 @@ public class ProviderSignInController {
 			return redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "provider").build().toString());
 		}
 	}
-	
+
+	/**
+	 * Process an error callback from an OAuth 2 authorization as described at http://tools.ietf.org/html/rfc6749#section-4.1.2.1.
+	 * Called after upon redirect from an OAuth 2 provider when there is some sort of error during authorization, typically because the user denied authorization.
+	 * Simply carries the error parameters through to the sign-in page.
+	 */
+	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="error")
+	public RedirectView oauth2ErrorCallback(@PathVariable String providerId, 
+			@RequestParam("error") String error, 
+			@RequestParam(value="error_description", required=false) String errorDescription,
+			@RequestParam(value="error_uri", required=false) String errorUri,
+			NativeWebRequest request) {
+		logger.warn("Error during authorization: " + error);
+		URIBuilder uriBuilder = URIBuilder.fromUri(signInUrl).queryParam("error", error);
+		if (errorDescription != null ) { uriBuilder.queryParam("error_description", errorDescription); }
+		if (errorUri != null ) { uriBuilder.queryParam("error_uri", errorUri); }
+		return redirect(uriBuilder.build().toString());
+	}
+
 	/**
 	 * Process the authentication callback when neither the oauth_token or code parameter is given, likely indicating that the user denied authorization with the provider.
 	 * Redirects to application's sign in URL, as set in the signInUrl property.
