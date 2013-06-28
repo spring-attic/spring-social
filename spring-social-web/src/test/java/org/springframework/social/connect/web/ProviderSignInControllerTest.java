@@ -209,6 +209,34 @@ public class ProviderSignInControllerTest {
 	}
 
 	@Test
+	public void oauth2ErrorCallback() throws Exception {
+		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
+		ConnectionFactory<TestApi2> connectionFactory2 = new StubOAuth2ConnectionFactory("clientId", "clientSecret");
+		connectionFactoryLocator.addConnectionFactory(connectionFactory2);
+		StubUsersConnectionRepository usersConnectionRepository = new StubUsersConnectionRepository();
+		ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
+		MockMvc mockMvc = standaloneSetup(controller).build();		
+		mockMvc.perform(get("/signin/oauth2Provider").param("error", "access_denied"))
+			.andExpect(redirectedUrl("/signin?error=access_denied"));
+		
+	}
+
+	@Test
+	public void oauth2ErrorCallback_withDescriptionAndUri() throws Exception {
+		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
+		ConnectionFactory<TestApi2> connectionFactory2 = new StubOAuth2ConnectionFactory("clientId", "clientSecret");
+		connectionFactoryLocator.addConnectionFactory(connectionFactory2);
+		StubUsersConnectionRepository usersConnectionRepository = new StubUsersConnectionRepository();
+		ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
+		MockMvc mockMvc = standaloneSetup(controller).build();		
+		mockMvc.perform(get("/signin/oauth2Provider")
+				.param("error", "access_denied")
+				.param("error_description", "The user said no.")
+				.param("error_uri", "http://provider.com/user/said/no"))
+			.andExpect(redirectedUrl("/signin?error=access_denied&error_description=The+user+said+no.&error_uri=http%3A%2F%2Fprovider.com%2Fuser%2Fsaid%2Fno"));
+	}
+
+	@Test
 	public void oauth2Callback_multipleMatchingUsers() throws Exception {
 		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
 		ConnectionFactory<TestApi2> connectionFactory2 = new StubOAuth2ConnectionFactory("clientId", "clientSecret");
