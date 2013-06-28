@@ -32,6 +32,7 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.social.ApiBinding;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
+import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -62,6 +63,10 @@ public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
 	 * @param accessTokenSecret the access token secret
 	 */
 	protected AbstractOAuth1ApiBinding(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret) {
+		Assert.notNull(consumerKey, "Constructor argument 'consumerKey' cannot be null.");
+		Assert.notNull(consumerSecret, "Constructor argument 'consumerSecret' cannot be null.");
+		Assert.notNull(accessToken, "Constructor argument 'accessToken' cannot be null.");
+		Assert.notNull(accessTokenSecret, "Constructor argument 'accessTokenSecret' cannot be null.");
 		credentials = new OAuth1Credentials(consumerKey, consumerSecret, accessToken, accessTokenSecret);
 		restTemplate = createRestTemplate(credentials);
 		restTemplate.setMessageConverters(getMessageConverters());
