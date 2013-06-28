@@ -17,6 +17,8 @@ Spring Social 1.1.0 Milestone 3 (July 8, 2012)
      sign-in. (SOCIAL-306)
    * Ability to set ConnectionSignUp for new XML and JavaConfig options.
      (SOCIAL-352)
+   * Handle OAuth 2 authorization callback errors per section 4.1.2.1 of
+     the OAuth 2 specification. (SOCIAL-358)
 
  New Features
    * New ReconnectFilter to automatically handle invalid tokens and
