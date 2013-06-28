@@ -1,3 +1,31 @@
+Spring Social 1.1.0 Milestone 3 (July 8, 2012)
+==============================================
+ Bug Fixes
+   * JdbcConnectionRepository's methods are now transactionl. (SOCIAL-335)
+   * Lazily create RestTemplate in OAuth2Template to ensure that
+     useParametersForClientAuthentication property is honored. (SOCIAL-338)
+   * Changed expiresIn parameter in AccessGrant to Long to avoid overflow
+     for expiration times far in the future. (SOCIAL-356)
+   * Primary connection is now chosen as the connection with the lowest
+     rank, instead of the one with rank=1 (SOCIAL-341)
+
+ Improvements
+   * Upgrade Jackson dependency to Jackson 2. (SOCIAL-362)
+   * Support OAuth 2's 'state' parameter to preference CSRF vulnerability.
+     (SOCIAL-299)
+   * Support non-standard, provider-specific parameters for provider
+     sign-in. (SOCIAL-306)
+   * Ability to set ConnectionSignUp for new XML and JavaConfig options.
+     (SOCIAL-352)
+   * Handle OAuth 2 authorization callback errors per section 4.1.2.1 of
+     the OAuth 2 specification. (SOCIAL-358)
+
+ New Features
+   * New ReconnectFilter to automatically handle invalid tokens and
+     attempt to obtain a new token. (SOCIAL-328)
+   * New in-memory ConnectionRepository implementation for testing and
+     sample application purposes. (SOCIAL-361)
+
 Spring Social 1.1.0 Milestone 2 (February 12, 2012)
 ===================================================
  Bug Fixes
