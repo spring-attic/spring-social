@@ -230,7 +230,7 @@ public class OAuth2Template implements OAuth2Operations {
 	 * @param response all parameters from the response received in the access token exchange.
 	 * @return an {@link AccessGrant}
 	 */
-	protected AccessGrant createAccessGrant(String accessToken, String scope, String refreshToken, Integer expiresIn, Map<String, Object> response) {
+	protected AccessGrant createAccessGrant(String accessToken, String scope, String refreshToken, Long expiresIn, Map<String, Object> response) {
 		return new AccessGrant(accessToken, scope, refreshToken, expiresIn);
 	}
 		
@@ -279,9 +279,9 @@ public class OAuth2Template implements OAuth2Operations {
 	}
 
 	// Retrieves object from map into an Integer, regardless of the object's actual type. Allows for flexibility in object type (eg, "3600" vs 3600).
-	private Integer getIntegerValue(Map<String, Object> map, String key) {
+	private Long getIntegerValue(Map<String, Object> map, String key) {
 		try {
-			return Integer.valueOf(String.valueOf(map.get(key))); // normalize to String before creating integer value;			
+			return Long.valueOf(String.valueOf(map.get(key))); // normalize to String before creating integer value;			
 		} catch (NumberFormatException e) {
 			return null;
 		}
