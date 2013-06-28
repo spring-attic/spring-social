@@ -16,6 +16,7 @@
 package org.springframework.social.connect.web;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +43,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
@@ -241,6 +243,24 @@ public class ConnectController {
 		}
 		return connectionStatusRedirect(providerId, request);
 	}
+	
+	/**
+	 * Process an error callback from an OAuth 2 authorization as described at http://tools.ietf.org/html/rfc6749#section-4.1.2.1.
+	 * Called after upon redirect from an OAuth 2 provider when there is some sort of error during authorization, typically because the user denied authorization.
+	 */
+	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="error")
+	public RedirectView oauth2ErrorCallback(@PathVariable String providerId, 
+			@RequestParam("error") String error, 
+			@RequestParam(value="error_description", required=false) String errorDescription,
+			@RequestParam(value="error_uri", required=false) String errorUri,
+			NativeWebRequest request) {
+		Map<String, String> errorMap = new HashMap<String, String>();
+		errorMap.put("error", error);
+		if (errorDescription != null) { errorMap.put("errorDescription", errorDescription); }
+		if (errorUri != null) { errorMap.put("errorUri", errorUri); }
+		request.setAttribute(AUTHORIZATION_ERROR_ATTRIBUTE, errorMap, RequestAttributes.SCOPE_SESSION);
+		return connectionStatusRedirect(providerId, request);
+	}
 
 	/**
 	 * Remove all provider connections for a user account.
@@ -394,6 +414,8 @@ public class ConnectController {
 	private void processFlash(WebRequest request, Model model) {
 		convertSessionAttributeToModelAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, request, model);
 		convertSessionAttributeToModelAttribute(PROVIDER_ERROR_ATTRIBUTE, request, model);
+		model.addAttribute(AUTHORIZATION_ERROR_ATTRIBUTE, request.getAttribute(AUTHORIZATION_ERROR_ATTRIBUTE, RequestAttributes.SCOPE_SESSION));
+		request.removeAttribute(AUTHORIZATION_ERROR_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
 	}
 
 	private void convertSessionAttributeToModelAttribute(String attributeName, WebRequest request, Model model) {
@@ -413,8 +435,10 @@ public class ConnectController {
 		}
 	}
 	
-	private static final String DUPLICATE_CONNECTION_ATTRIBUTE = "social.addConnection.duplicate";
+	private static final String DUPLICATE_CONNECTION_ATTRIBUTE = "social_addConnection_duplicate";
 	
-	private static final String PROVIDER_ERROR_ATTRIBUTE = "social.provider.error";
+	private static final String PROVIDER_ERROR_ATTRIBUTE = "social_provider_error";
+
+	private static final String AUTHORIZATION_ERROR_ATTRIBUTE = "social_authorization_error";
 
 }

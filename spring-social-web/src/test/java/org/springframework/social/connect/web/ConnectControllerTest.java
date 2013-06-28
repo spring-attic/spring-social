@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -301,6 +302,42 @@ public class ConnectControllerTest {
 		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
 	}
 	
+	@Test
+	public void oauth2ErrorCallback() throws Exception {
+		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
+		ConnectionFactory<TestApi2> connectionFactory = new StubOAuth2ConnectionFactory("clientId", "clientSecret", THROW_EXCEPTION);
+		connectionFactoryLocator.addConnectionFactory(connectionFactory);
+		StubConnectionRepository connectionRepository = new StubConnectionRepository();
+		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
+		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
+		HashMap<String, String> expectedError = new HashMap<String, String>();
+		expectedError.put("error", "access_denied");
+		expectedError.put("errorDescription", "The user said no.");
+		expectedError.put("errorUri", "http://provider.com/user/said/no");
+		mockMvc.perform(get("/connect/oauth2Provider").param("error", "access_denied")
+													  .param("error_description", "The user said no.")
+													  .param("error_uri", "http://provider.com/user/said/no"))
+			.andExpect(redirectedUrl("/connect/oauth2Provider"))
+			.andExpect(request().sessionAttribute("social_authorization_error", notNullValue()))
+			.andExpect(request().sessionAttribute("social_authorization_error", expectedError));
+	}
+
+	@Test
+	public void oauth2ErrorCallback_noDescriptionOrUri() throws Exception {
+		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
+		ConnectionFactory<TestApi2> connectionFactory = new StubOAuth2ConnectionFactory("clientId", "clientSecret", THROW_EXCEPTION);
+		connectionFactoryLocator.addConnectionFactory(connectionFactory);
+		StubConnectionRepository connectionRepository = new StubConnectionRepository();
+		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
+		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
+		HashMap<String, String> expectedError = new HashMap<String, String>();
+		expectedError.put("error", "access_denied");
+		mockMvc.perform(get("/connect/oauth2Provider").param("error", "access_denied"))
+			.andExpect(redirectedUrl("/connect/oauth2Provider"))
+			.andExpect(request().sessionAttribute("social_authorization_error", notNullValue()))
+			.andExpect(request().sessionAttribute("social_authorization_error", expectedError));
+	}
+
 	private List<ConnectInterceptor<?>> getConnectInterceptor() {
 		List<ConnectInterceptor<?>> interceptors = new ArrayList<ConnectInterceptor<?>>();
 		interceptors.add(new TestConnectInterceptor<TestApi1>() {});
