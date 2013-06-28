@@ -99,15 +99,15 @@ public class ConnectControllerTest {
 		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, connectionRepository)).build();
 		
 		// Should convert errors in "flash" scope to model attributes and remove them from "flash"
-		mockMvc.perform(get("/connect/oauth2Provider").sessionAttr("social.addConnection.duplicate", new DuplicateConnectionException(null)))
+		mockMvc.perform(get("/connect/oauth2Provider").sessionAttr("social_addConnection_duplicate", new DuplicateConnectionException(null)))
 			.andExpect(view().name("connect/oauth2ProviderConnect"))
-			.andExpect(request().sessionAttribute("social.addConnection.duplicate", nullValue()))
-			.andExpect(request().attribute("social.addConnection.duplicate", true));
+			.andExpect(request().sessionAttribute("social_addConnection_duplicate", nullValue()))
+			.andExpect(request().attribute("social_addConnection_duplicate", true));
 
-		mockMvc.perform(get("/connect/oauth2Provider").sessionAttr("social.provider.error", new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR)))
+		mockMvc.perform(get("/connect/oauth2Provider").sessionAttr("social_provider_error", new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR)))
 			.andExpect(view().name("connect/oauth2ProviderConnect"))
-			.andExpect(request().sessionAttribute("social.provider.error", nullValue()))
-			.andExpect(request().attribute("social.provider.error", true));
+			.andExpect(request().sessionAttribute("social_provider_error", nullValue()))
+			.andExpect(request().attribute("social_provider_error", true));
 }
 
 	@Test
@@ -191,7 +191,7 @@ public class ConnectControllerTest {
 		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, null)).build();
 		mockMvc.perform(post("/connect/oauth1Provider"))
 			.andExpect(redirectedUrl("/connect/oauth1Provider"))
-			.andExpect(request().sessionAttribute("social.provider.error", notNullValue()));
+			.andExpect(request().sessionAttribute("social_provider_error", notNullValue()));
 	}
 	
 	@Test
@@ -232,7 +232,7 @@ public class ConnectControllerTest {
 						.param("oauth_token", "requestToken")
 						.param("oauth_verifier", "verifier"))
 			.andExpect(redirectedUrl("/connect/oauth1Provider"))
-			.andExpect(request().sessionAttribute("social.provider.error", notNullValue()));
+			.andExpect(request().sessionAttribute("social_provider_error", notNullValue()));
 		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
 	}
 
@@ -298,7 +298,7 @@ public class ConnectControllerTest {
 		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
 		mockMvc.perform(get("/connect/oauth2Provider").param("code", "oauth2Code"))
 			.andExpect(redirectedUrl("/connect/oauth2Provider"))
-			.andExpect(request().sessionAttribute("social.provider.error", notNullValue()));
+			.andExpect(request().sessionAttribute("social_provider_error", notNullValue()));
 		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
 	}
 	
