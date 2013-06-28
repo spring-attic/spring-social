@@ -195,7 +195,7 @@ class JdbcConnectionRepository implements ConnectionRepository {
 	}
 	
 	private Connection<?> findPrimaryConnection(String providerId) {
-		List<Connection<?>> connections = jdbcTemplate.query(selectFromUserConnection() + " where userId = ? and providerId = ? and rank = 1", connectionMapper, userId, providerId);
+		List<Connection<?>> connections = jdbcTemplate.query(selectFromUserConnection() + " where userId = ? and providerId = ? order by rank", connectionMapper, userId, providerId);
 		if (connections.size() > 0) {
 			return connections.get(0);
 		} else {

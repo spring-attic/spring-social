@@ -32,25 +32,25 @@ class StubOAuth2Operations implements OAuth2Operations {
 	}
 
 	public AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri, MultiValueMap<String, String> additionalParameters) {
-		return new AccessGrant("12345", null, "23456", 3600);
+		return new AccessGrant("12345", null, "23456", 3600L);
 	}
 	
 	public AccessGrant exchangeCredentialsForAccess(String username, String password, MultiValueMap<String, String> additionalParameters) {
-		return new AccessGrant("12345", null, "23456", 3600);
+		return new AccessGrant("12345", null, "23456", 3600L);
 	}
 	
 	public AccessGrant refreshAccess(String refreshToken, MultiValueMap<String, String> additionalParameters) {
-		return new AccessGrant("12345", null,  "23456", 3600);
+		return new AccessGrant("12345", null,  "23456", 3600L);
 	}
 	
 	public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
-		return new AccessGrant("12345", null,  "23456", 3600);
+		return new AccessGrant("12345", null,  "23456", 3600L);
 	}
 	public AccessGrant authenticateClient() {
-		return new AccessGrant("12345", null,  null, 3600);
+		return new AccessGrant("12345", null,  null, 3600L);
 	}
 	public AccessGrant authenticateClient(String scope) {
-		return new AccessGrant("12345", null,  null, 3600);
+		return new AccessGrant("12345", null,  null, 3600L);
 	}
 
 }

@@ -36,7 +36,7 @@ public class AccessGrant implements Serializable {
 		this(accessToken, null, null, null);
 	}
 
-	public AccessGrant(String accessToken, String scope, String refreshToken, Integer expiresIn) {
+	public AccessGrant(String accessToken, String scope, String refreshToken, Long expiresIn) {
 		this.accessToken = accessToken;
 		this.scope = scope;
 		this.refreshToken = refreshToken;
