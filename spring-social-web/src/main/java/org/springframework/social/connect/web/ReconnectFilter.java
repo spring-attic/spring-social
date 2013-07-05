@@ -79,20 +79,20 @@ public class ReconnectFilter extends GenericFilterBean {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		if (shouldPerformRefreshPostRequest(httpRequest)) {
-			logger.info("Removing stale/revoked connection.");			
+			debug("Removing stale/revoked connection.");
 			String providerId = getProviderIdFromRequest(httpRequest);
 			String currentUserId = userIdSource.getUserId();
 			usersConnectionRepository.createConnectionRepository(currentUserId).removeConnections(providerId); 
-			logger.info("Initiating refresh request.");
+			debug("Initiating refresh request.");
 			HttpServletRequest newRequest = new ReconnectionPostRequest(httpRequest);
 			chain.doFilter(newRequest, httpResponse);
 		} else {
 			// Pass request through filter chain and handle any exceptions that come out of it.
 			try {
-				logger.info("Processing request");
+				debug("Processing request");
 				chain.doFilter(httpRequest, httpResponse);
 			} catch (IOException e) {
-				logger.info("IOException: " + e.getMessage());
+				debug("IOException: " + e.getMessage());
 				throw e;
 			} catch (Exception e) {
 				handleExceptionFromFilterChain(e, httpRequest, httpResponse);
@@ -140,9 +140,9 @@ public class ReconnectFilter extends GenericFilterBean {
 		RuntimeException ase = (ApiException) throwableAnalyzer.getFirstThrowableOfType(ApiException.class, throwableAnalyzer.determineCauseChain(e));
 		if (ase != null && ase instanceof ApiException) {
 			ApiException apiException = (ApiException) ase;
-			logger.info("API Exception: " + e.getMessage());
+			debug("API Exception: " + e.getMessage());
 			if (apiException instanceof NotAuthorizedException || apiException instanceof OperationNotPermittedException) {
-				logger.info("Redirecting for refresh of " + apiException.getProviderId() + " connection.");
+				debug("Redirecting for refresh of " + apiException.getProviderId() + " connection.");
 				httpResponse.sendRedirect(getRefreshUrl(httpRequest, apiException));
 				return;
 			}
@@ -158,6 +158,12 @@ public class ReconnectFilter extends GenericFilterBean {
 		// Wrap other Exceptions in a generic RuntimeException. This should never happen because
 		// we've already covered all the possibilities for doFilter
 		throw new RuntimeException(e);
+	}
+	
+	private static void debug(String message) {
+		if (logger.isDebugEnabled()) {
+			logger.debug(message);
+		}
 	}
 
 	/*
