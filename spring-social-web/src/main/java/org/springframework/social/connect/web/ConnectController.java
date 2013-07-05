@@ -33,6 +33,7 @@ import org.springframework.social.connect.ConnectionFactoryLocator;
 import org.springframework.social.connect.ConnectionKey;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.DuplicateConnectionException;
+import org.springframework.social.connect.NoSuchConnectionException;
 import org.springframework.social.connect.support.OAuth1ConnectionFactory;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.stereotype.Controller;
@@ -218,7 +219,7 @@ public class ConnectController {
 		try {
 			OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 			Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
-			addConnection(connection, connectionFactory, request);
+			addOrUpdateConnection(connection, connectionFactory, request);
 		} catch (Exception e) {
 			request.setAttribute(PROVIDER_ERROR_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);
 			logger.warn("Exception while handling OAuth1 callback (" + e.getMessage() + "). Redirecting to " + providerId +" connection status page.");
@@ -236,7 +237,7 @@ public class ConnectController {
 		try {
 			OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
 			Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
-			addConnection(connection, connectionFactory, request);
+			addOrUpdateConnection(connection, connectionFactory, request);
 		} catch (Exception e) {
 			request.setAttribute(PROVIDER_ERROR_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);
 			logger.warn("Exception while handling OAuth2 callback (" + e.getMessage() + "). Redirecting to " + providerId +" connection status page.");
@@ -356,13 +357,19 @@ public class ConnectController {
 		return "connect/";
 	}
 	
-	private void addConnection(Connection<?> connection, ConnectionFactory<?> connectionFactory, WebRequest request) {
-		try {
-			connectionRepository.addConnection(connection);
-			postConnect(connectionFactory, connection, request);
-		} catch (DuplicateConnectionException e) {
-			request.setAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);
-		}
+	private void addOrUpdateConnection(Connection<?> connection, ConnectionFactory<?> connectionFactory, WebRequest request) {
+	    	try {
+        		connectionRepository.getConnection(connection.getKey());
+        		connectionRepository.updateConnection(connection);
+        		postConnect(connectionFactory, connection, request);
+	    	} catch (NoSuchConnectionException ex) {
+			try {
+        			connectionRepository.addConnection(connection);
+        			postConnect(connectionFactory, connection, request);
+        		} catch (DuplicateConnectionException e) {
+        			request.setAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);
+        		}
+	    	}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
