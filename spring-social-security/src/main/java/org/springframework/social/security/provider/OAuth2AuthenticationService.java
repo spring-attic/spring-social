@@ -87,18 +87,18 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 	public SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response) throws SocialAuthenticationRedirectException {
 		String code = request.getParameter("code");
 		if (!StringUtils.hasText(code)) {
-			// First phase: get a request token
 			OAuth2Parameters params =  new OAuth2Parameters();
 			params.setRedirectUri(buildReturnToUrl(request));
 			params.setScope(scope);
+			params.add("state", connectionFactory.generateState()); // TODO: Verify the state value after callback
 			throw new SocialAuthenticationRedirectException(getConnectionFactory().getOAuthOperations().buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, params));
 		} else if (StringUtils.hasText(code)) {
 			try {
 				String returnToUrl = buildReturnToUrl(request);
 				AccessGrant accessGrant = getConnectionFactory().getOAuthOperations().exchangeForAccess(code, returnToUrl, null);
 				// TODO avoid API call if possible (auth using token would be fine)
-                Connection<S> connection = getConnectionFactory().createConnection(accessGrant);
-                return new SocialAuthenticationToken(connection, null);
+				Connection<S> connection = getConnectionFactory().createConnection(accessGrant);
+				return new SocialAuthenticationToken(connection, null);
 			} catch (RestClientException e) {
 				logger.debug("failed to exchange for access", e);
 				return null;
@@ -123,5 +123,6 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 		sb.setLength(sb.length() - 1); // strip trailing ? or &
 		return sb.toString();
 	}
+
 
 }

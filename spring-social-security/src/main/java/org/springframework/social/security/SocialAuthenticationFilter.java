@@ -65,17 +65,28 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 
 	private UsersConnectionRepository usersConnectionRepository;
 
+	private SimpleUrlAuthenticationFailureHandler delegateAuthenticationFailureHandler;
+
 	public SocialAuthenticationFilter(AuthenticationManager authManager, UserIdSource userIdSource, UsersConnectionRepository usersConnectionRepository, SocialAuthenticationServiceLocator authServiceLocator) {
-        super("/auth");
-        setAuthenticationManager(authManager);
+		super("/auth");
+		setAuthenticationManager(authManager);
 		this.userIdSource = userIdSource;
 		this.usersConnectionRepository = usersConnectionRepository;
 		this.authServiceLocator = authServiceLocator;
-		super.setAuthenticationFailureHandler(new SocialAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler()));
+		this.delegateAuthenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler(DEFAULT_FAILURE_URL);
+		super.setAuthenticationFailureHandler(new SocialAuthenticationFailureHandler(delegateAuthenticationFailureHandler));
 	}
 	
 	public void setSignupUrl(String signupUrl) {
 		this.signupUrl = signupUrl;
+	}
+	
+	/**
+	 * The URL to redirect to if authentication fails or if authorization is denied by the user.
+	 * @param defaultFailureUrl The failure URL. Defaults to "/signin" (relative to the servlet context).
+	 */
+	public void setDefaultFailureUrl(String defaultFailureUrl) {
+		delegateAuthenticationFailureHandler.setDefaultFailureUrl(defaultFailureUrl);
 	}
 
 	public void setConnectionAddedRedirectUrl(String connectionAddedRedirectUrl) {
@@ -114,20 +125,56 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		return authServiceLocator;
 	}
 	
-    /**
-     * Indicates whether this filter should attempt to process a social network login request for the current invocation.
-     * <p>Check if request URL matches filterProcessesUrl with valid providerId. 
-     * The URL must be like {filterProcessesUrl}/{providerId}. 
-     * @return <code>true</code> if the filter should attempt authentication, <code>false</code> otherwise.
-     */
-    protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        String providerId = getRequestedProviderId(request);
-        if (providerId != null){
-            Set<String> authProviders = authServiceLocator.registeredAuthenticationProviderIds();
-            return authProviders.contains(providerId);
-        }
-        return false;
-    }
+	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+		if (detectRejection(request)) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("A rejection was detected. Failing authentication.");
+			}
+			throw new SocialAuthenticationException("Authentication failed because user rejected authorization.");
+		}
+		
+		Authentication auth = null;
+		Set<String> authProviders = authServiceLocator.registeredAuthenticationProviderIds();
+		String authProviderId = getRequestedProviderId(request);
+		if (!authProviders.isEmpty() && authProviderId != null && authProviders.contains(authProviderId)) {
+			SocialAuthenticationService<?> authService = authServiceLocator.getAuthenticationService(authProviderId);
+			auth = attemptAuthService(authService, request, response);
+			if (auth == null) {
+				throw new AuthenticationServiceException("authentication failed");
+			}
+		}
+		return auth;
+	}
+
+	/**
+	 * Detects a callback request after a user rejects authorization to prevent a never-ending redirect loop.
+	 * Default implementation detects a rejection as a request that has one or more parameters, but none of the expected parameters (oauth_token, code, scope).
+	 * May be overridden to customize rejection detection.
+	 * @param request the request to check for rejection.
+	 * @return true if the request appears to be the result of a rejected authorization; false otherwise.
+	 */
+	protected boolean detectRejection(HttpServletRequest request) {
+		Set<?> parameterKeys = request.getParameterMap().keySet();
+		return parameterKeys.size() > 0 
+				&& !parameterKeys.contains("oauth_token") 
+				&& !parameterKeys.contains("code") 
+				&& !parameterKeys.contains("scope");
+	}
+
+	/**
+	 * Indicates whether this filter should attempt to process a social network login request for the current invocation.
+	 * <p>Check if request URL matches filterProcessesUrl with valid providerId. 
+	 * The URL must be like {filterProcessesUrl}/{providerId}. 
+	 * @return <code>true</code> if the filter should attempt authentication, <code>false</code> otherwise.
+	 */
+	protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
+		String providerId = getRequestedProviderId(request);
+		if (providerId != null){
+			Set<String> authProviders = authServiceLocator.registeredAuthenticationProviderIds();
+			return authProviders.contains(providerId);
+		}
+		return false;
+	}
 
 	protected Connection<?> addConnection(SocialAuthenticationService<?> authService, String userId, ConnectionData data) {
 		HashSet<String> userIdSet = new HashSet<String>();
@@ -157,33 +204,18 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		return connection;
 	}
 
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-		Authentication auth = null;
-		Set<String> authProviders = authServiceLocator.registeredAuthenticationProviderIds();
-		String authProviderId = getRequestedProviderId(request);
-		if (!authProviders.isEmpty() && authProviderId != null && authProviders.contains(authProviderId)) {
-			SocialAuthenticationService<?> authService = authServiceLocator.getAuthenticationService(authProviderId);
-			auth = attemptAuthService(authService, request, response);
-			if (auth == null) {
-				throw new AuthenticationServiceException("authentication failed");
-			}
-		}
-		return auth;
-	}
-
-
-    // private helpers
-    private Authentication getAuthentication() {
+	// private helpers
+	private Authentication getAuthentication() {
 		return SecurityContextHolder.getContext().getAuthentication();
 	}
 
-    /*
-     * Call SocialAuthenticationService.getAuthToken() to get SocialAuthenticationToken:
-     *     If first phase, throw AuthenticationRedirectException to redirect to provider website.
-     *     If second phase, get token/code from request parameter and call provider API to get accessToken/accessGrant.
-     * Check Authentication object in spring security context, if null or not authenticated,  call doAuthentication()
-     * Otherwise, it is already authenticated, add this connection.
-     */
+	/*
+	 * Call SocialAuthenticationService.getAuthToken() to get SocialAuthenticationToken:
+	 *     If first phase, throw AuthenticationRedirectException to redirect to provider website.
+	 *     If second phase, get token/code from request parameter and call provider API to get accessToken/accessGrant.
+	 * Check Authentication object in spring security context, if null or not authenticated,  call doAuthentication()
+	 * Otherwise, it is already authenticated, add this connection.
+	 */
 	private Authentication attemptAuthService(final SocialAuthenticationService<?> authService, final HttpServletRequest request, HttpServletResponse response) 
 			throws SocialAuthenticationRedirectException, AuthenticationException {
 
@@ -249,7 +281,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 			if (!authService.getConnectionCardinality().isAuthenticatePossible()) return null;
 			token.setDetails(authenticationDetailsSource.buildDetails(request));
 			Authentication success = getAuthenticationManager().authenticate(token);
-			Assert.isInstanceOf(SocialUserDetails.class, success.getPrincipal(), "unexpected principle type");			
+			Assert.isInstanceOf(SocialUserDetails.class, success.getPrincipal(), "unexpected principle type");
 			updateConnections(authService, token, success);			
 			return success;
 		} catch (BadCredentialsException e) {
@@ -275,5 +307,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	private void addSignInAttempt(HttpSession session, Connection<?> connection) {
 		session.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, new ProviderSignInAttempt(connection, authServiceLocator, usersConnectionRepository));
 	}
+
+	private static final String DEFAULT_FAILURE_URL = "/signin";
 
 }

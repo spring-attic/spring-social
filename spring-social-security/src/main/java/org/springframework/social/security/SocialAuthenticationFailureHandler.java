@@ -37,8 +37,8 @@ public class SocialAuthenticationFailureHandler implements AuthenticationFailure
 	
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
 		if (failed instanceof SocialAuthenticationRedirectException) {
-		  response.sendRedirect(((SocialAuthenticationRedirectException)failed).getRedirectUrl()); 
-		  return;
+			response.sendRedirect(((SocialAuthenticationRedirectException) failed).getRedirectUrl()); 
+			return;
 		}
 		delegate.onAuthenticationFailure(request, response, failed);
 	}
