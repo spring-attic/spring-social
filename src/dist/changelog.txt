@@ -1,5 +1,18 @@
 Spring Social 1.1.0 Milestone 3 (July 8, 2012)
 ==============================================
+Bug Fixes
+   * SocialAuthenticationFilter now fails authentication when the user
+     denies authorization on the provider. This avoids an endless redirect
+     loop. (SOCIAL-387)
+
+Improvement
+   * ProviderSignInController passes "scope" parameter from request into
+     OAuth 2 authorization URL. (SOCIAL-319)
+   * Ability to set ConnectController's base view path as a property.
+     (SOCIAL-371)
+
+Spring Social 1.1.0 Milestone 3 (July 8, 2012)
+==============================================
  Bug Fixes
    * JdbcConnectionRepository's methods are now transactionl. (SOCIAL-335)
    * Lazily create RestTemplate in OAuth2Template to ensure that

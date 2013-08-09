@@ -81,6 +81,8 @@ public class ConnectController {
 	private final ConnectSupport webSupport = new ConnectSupport();
 	
 	private final UrlPathHelper urlPathHelper = new UrlPathHelper();
+	
+	private String viewPath = "connect/";
 
 	/**
 	 * Constructs a ConnectController.
@@ -137,6 +139,16 @@ public class ConnectController {
 	 */
 	public void setApplicationUrl(String applicationUrl) {
 		webSupport.setApplicationUrl(applicationUrl);
+	}
+	
+	/**
+	 * Sets the path to connection status views.
+	 * Prepended to provider-specific views (e.g., "connect/facebookConnected") to create the complete view name.
+	 * Defaults to "connect/".
+	 * @param viewPath The path to connection status views.
+	 */
+	public void setViewPath(String viewPath) {
+		this.viewPath = viewPath;
 	}
 	
 	/**
@@ -353,7 +365,7 @@ public class ConnectController {
 	}
 
 	private String getViewPath() {
-		return "connect/";
+		return viewPath;
 	}
 	
 	private void addConnection(Connection<?> connection, ConnectionFactory<?> connectionFactory, WebRequest request) {
