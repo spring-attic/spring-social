@@ -1,9 +1,12 @@
-Spring Social 1.1.0 Milestone 3 (July 8, 2012)
-==============================================
+Spring Social 1.1.0 Milestone 4 (August 19, 2012)
+=================================================
 Bug Fixes
    * SocialAuthenticationFilter now fails authentication when the user
      denies authorization on the provider. This avoids an endless redirect
      loop. (SOCIAL-387)
+   * SocialAuthenticationFilter now accepts and passes along the value of
+     a 'scope' parameter when doing authorization for an OAuth 2 provider.
+     (SOCIAL-389)
 
 Improvement
    * ProviderSignInController passes "scope" parameter from request into

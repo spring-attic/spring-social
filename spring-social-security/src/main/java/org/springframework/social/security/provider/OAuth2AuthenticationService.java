@@ -46,7 +46,7 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 
 	private Set<String> returnToUrlParameters;
 	
-	private String scope = "";
+	private String defaultScope = "";
 	
 	public OAuth2AuthenticationService(OAuth2ConnectionFactory<S> connectionFactory) {
 		setConnectionFactory(connectionFactory);
@@ -73,10 +73,10 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 	}
 
 	/**
-	 * @param scope OAuth scope to use, i.e. requested permissions
+	 * @param defaultScope OAuth scope to use, i.e. requested permissions
 	 */
-	public void setScope(String scope) {
-		this.scope = scope;
+	public void setDefaultScope(String defaultScope) {
+		this.defaultScope = defaultScope;
 	}
 
 	public void afterPropertiesSet() throws Exception {
@@ -89,7 +89,7 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 		if (!StringUtils.hasText(code)) {
 			OAuth2Parameters params =  new OAuth2Parameters();
 			params.setRedirectUri(buildReturnToUrl(request));
-			params.setScope(scope);
+			setScope(request, params);
 			params.add("state", connectionFactory.generateState()); // TODO: Verify the state value after callback
 			throw new SocialAuthenticationRedirectException(getConnectionFactory().getOAuthOperations().buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, params));
 		} else if (StringUtils.hasText(code)) {
@@ -124,5 +124,13 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 		return sb.toString();
 	}
 
+	private void setScope(HttpServletRequest request, OAuth2Parameters params) {
+		String requestedScope = request.getParameter("scope");
+		if (StringUtils.hasLength(requestedScope)) {
+			params.setScope(requestedScope);
+		} else {
+			params.setScope(defaultScope);
+		}
+	}
 
 }
