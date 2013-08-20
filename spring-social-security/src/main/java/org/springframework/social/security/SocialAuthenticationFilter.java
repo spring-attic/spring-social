@@ -42,6 +42,7 @@ import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.connect.web.ProviderSignInAttempt;
 import org.springframework.social.security.provider.SocialAuthenticationService;
 import org.springframework.util.Assert;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * Filter for handling the provider sign-in flow within the Spring Security filter chain.
@@ -77,6 +78,11 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		super.setAuthenticationFailureHandler(new SocialAuthenticationFailureHandler(delegateAuthenticationFailureHandler));
 	}
 	
+	/**
+	 * Sets the signup URL; the URL to redirect to if authentication fails so that the user can register with the application.
+	 * May be fully-qualified URL (e.g., "http://somehost/somepath/signup") or a path relative to application's servlet context path (e.g., "/signup").
+	 * @param signupUrl The signup URL
+	 */
 	public void setSignupUrl(String signupUrl) {
 		this.signupUrl = signupUrl;
 	}
@@ -289,10 +295,20 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 			if (signupUrl != null) {
 				// store ConnectionData in session and redirect to register page
 				addSignInAttempt(request.getSession(), token.getConnection());
-				throw new SocialAuthenticationRedirectException(signupUrl);
+				throw new SocialAuthenticationRedirectException(buildSignupUrl(request));
 			}
 			throw e;
 		}
+	}
+
+	private String buildSignupUrl(HttpServletRequest request) {
+		if (signupUrl.startsWith("http://") || signupUrl.startsWith("https://"))  {
+			return signupUrl;
+		}
+		if (!signupUrl.startsWith("/")) {
+			return ServletUriComponentsBuilder.fromContextPath(request).path("/" + signupUrl).build().toUriString();
+		}
+		return ServletUriComponentsBuilder.fromContextPath(request).path(signupUrl).build().toUriString();
 	}
 
 	private void updateConnections(SocialAuthenticationService<?> authService, SocialAuthenticationToken token, Authentication success) {

@@ -34,6 +34,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -61,7 +62,7 @@ public class SocialAuthenticationFilterTest {
 	@Test
 	public void testExplicitAuth() throws Exception {
 
-		FilterTestEnv env = new FilterTestEnv("GET", "/auth");
+		FilterTestEnv env = new FilterTestEnv("GET", "/auth", null);
 		env.filter.setFilterProcessesUrl(env.req.getRequestURI());
 		env.filter.setPostLoginUrl("/success");
 		
@@ -86,6 +87,50 @@ public class SocialAuthenticationFilterTest {
 		assertEquals("/success", env.res.getRedirectedUrl());
 	}
 
+	@Test
+	public void testFailedAuth_slashRegister() throws Exception {
+		FilterTestEnv env = new FilterTestEnv("GET", "/auth", "/register");
+		testFailedAuth(env);
+	}
+
+	@Test
+	public void testFailedAuth_register() throws Exception {
+		FilterTestEnv env = new FilterTestEnv("GET", "/auth", "register");
+		testFailedAuth(env);
+	}
+
+	@Test
+	public void testFailedAuth_fullyQualifiedUrlRegister() throws Exception {
+		FilterTestEnv env = new FilterTestEnv("GET", "/auth", "http://localhost/register");
+		testFailedAuth(env);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void testFailedAuth(FilterTestEnv env) throws Exception {
+		env.filter.setFilterProcessesUrl(env.req.getRequestURI());
+		env.filter.setPostLoginUrl("/success");
+		
+		ConnectionFactory<Object> factory = mock(MockConnectionFactory.class);
+		when(factory.getProviderId()).thenReturn("mock");
+		env.req.setRequestURI(env.req.getRequestURI() + "/" + factory.getProviderId());
+
+		SocialAuthenticationService<Object> authService = mock(SocialAuthenticationService.class);
+		when(authService.getConnectionCardinality()).thenReturn(ConnectionCardinality.ONE_TO_ONE);
+		when(authService.getConnectionFactory()).thenReturn(factory);
+		when(authService.getAuthToken(env.req, env.res)).thenReturn(env.auth);
+		env.addAuthService(authService);
+
+		when(env.authManager.authenticate(env.auth)).thenThrow(new BadCredentialsException("Failed"));
+
+		assertNull(SecurityContextHolder.getContext().getAuthentication());
+
+		env.doFilter();
+
+		assertNull(SecurityContextHolder.getContext().getAuthentication());
+		
+		assertEquals("http://localhost/register", env.res.getRedirectedUrl());
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void addConnection() {
@@ -137,7 +182,7 @@ public class SocialAuthenticationFilterTest {
 		private final SocialAuthenticationToken authSuccess;
 		private final AuthenticationManager authManager;
 
-		private FilterTestEnv(String method, String requestURI) {
+		private FilterTestEnv(String method, String requestURI, String signupUrl) {
 			context = new MockServletContext();
 			req = new MockHttpServletRequest(context, method, requestURI);
 			res = new MockHttpServletResponse();
@@ -147,6 +192,7 @@ public class SocialAuthenticationFilterTest {
 			filter = new SocialAuthenticationFilter(authManager, mock(UserIdSource.class), mock(UsersConnectionRepository.class), new SocialAuthenticationServiceRegistry());
 			filter.setServletContext(context);
 			filter.setRememberMeServices(new NullRememberMeServices());
+			filter.setSignupUrl(signupUrl);
 			
 			ConnectionRepository repo = mock(ConnectionRepository.class);
 			when(filter.getUsersConnectionRepository().createConnectionRepository(Mockito.anyString())).thenReturn(repo);
