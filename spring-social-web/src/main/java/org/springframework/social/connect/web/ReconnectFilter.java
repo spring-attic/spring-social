@@ -54,7 +54,7 @@ import org.springframework.web.filter.GenericFilterBean;
  * @author Craig Walls
  */
 public class ReconnectFilter extends GenericFilterBean {
-	
+
 	private final static Log logger = LogFactory.getLog(ReconnectFilter.class);
 
 	private ThrowableAnalyzer throwableAnalyzer = new ThrowableAnalyzer();
@@ -79,20 +79,28 @@ public class ReconnectFilter extends GenericFilterBean {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		if (shouldPerformRefreshPostRequest(httpRequest)) {
-			debug("Removing stale/revoked connection.");
+			if (logger.isDebugEnabled()) {
+				logger.debug("Removing stale/revoked connection.");
+			}
 			String providerId = getProviderIdFromRequest(httpRequest);
 			String currentUserId = userIdSource.getUserId();
-			usersConnectionRepository.createConnectionRepository(currentUserId).removeConnections(providerId); 
-			debug("Initiating refresh request.");
+			usersConnectionRepository.createConnectionRepository(currentUserId).removeConnections(providerId);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Initiating refresh request.");
+			}
 			HttpServletRequest newRequest = new ReconnectionPostRequest(httpRequest);
 			chain.doFilter(newRequest, httpResponse);
 		} else {
 			// Pass request through filter chain and handle any exceptions that come out of it.
 			try {
-				debug("Processing request");
+				if (logger.isDebugEnabled()) {
+					logger.debug("Processing request");
+				}
 				chain.doFilter(httpRequest, httpResponse);
 			} catch (IOException e) {
-				debug("IOException: " + e.getMessage());
+				if (logger.isDebugEnabled()) {
+					logger.debug("IOException: " + e.getMessage());
+				}
 				throw e;
 			} catch (Exception e) {
 				handleExceptionFromFilterChain(e, httpRequest, httpResponse);
@@ -111,8 +119,13 @@ public class ReconnectFilter extends GenericFilterBean {
 	 * @return the URL to redirect to if a connection needs to be renewed.
 	 */
 	protected String getRefreshUrl(HttpServletRequest request, ApiException apiException) {
-		String scopeNeeded = getRequiredScope(apiException);				
-		return request.getContextPath() + "/connect/" + apiException.getProviderId() + "?reconnect=true" + (scopeNeeded != null ? "&scope=" + scopeNeeded : "");
+		String scopeNeeded = getRequiredScope(apiException);
+		StringBuilder sb = new StringBuilder(request.getContextPath() + CONNECT_PATH + apiException.getProviderId())
+			.append(RECONNECT_PARAMETER_EQUALS_TRUE);
+		if (scopeNeeded != null) {
+			sb.append(SCOPE_PARAMETER_EQUALS + scopeNeeded);
+		}
+		return sb.toString();
 	}
 
 	/**
@@ -124,7 +137,7 @@ public class ReconnectFilter extends GenericFilterBean {
 	 */
 	protected boolean shouldPerformRefreshPostRequest(HttpServletRequest request) {
 		String servletPath = request.getServletPath();
-		return request.getMethod().equalsIgnoreCase("GET") && servletPath != null && servletPath.startsWith("/connect/") && request.getParameter("reconnect") != null;
+		return request.getMethod().equalsIgnoreCase(GET) && servletPath != null && servletPath.startsWith(CONNECT_PATH) && request.getParameter(RECONNECT_PARAMETER) != null;
 	}
 
 	// private helpers
@@ -133,16 +146,20 @@ public class ReconnectFilter extends GenericFilterBean {
 	}
 
 	private String getProviderIdFromRequest(HttpServletRequest httpRequest) {
-		return httpRequest.getServletPath().substring("connect/".length()+1);  // TODO: Seems hackish
+		return httpRequest.getServletPath().substring(CONNECT_PATH_LENGTH);
 	}
 	
 	private void handleExceptionFromFilterChain(Exception e, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException, ServletException {
 		RuntimeException ase = (ApiException) throwableAnalyzer.getFirstThrowableOfType(ApiException.class, throwableAnalyzer.determineCauseChain(e));
 		if (ase != null && ase instanceof ApiException) {
 			ApiException apiException = (ApiException) ase;
-			debug("API Exception: " + e.getMessage());
+			if (logger.isDebugEnabled()) {
+				logger.debug("API Exception: " + e.getMessage());
+			}
 			if (apiException instanceof NotAuthorizedException || apiException instanceof OperationNotPermittedException) {
-				debug("Redirecting for refresh of " + apiException.getProviderId() + " connection.");
+				if (logger.isDebugEnabled()) {
+					logger.debug("Redirecting for refresh of " + apiException.getProviderId() + " connection.");
+				}
 				httpResponse.sendRedirect(getRefreshUrl(httpRequest, apiException));
 				return;
 			}
@@ -159,12 +176,6 @@ public class ReconnectFilter extends GenericFilterBean {
 		// we've already covered all the possibilities for doFilter
 		throw new RuntimeException(e);
 	}
-	
-	private static void debug(String message) {
-		if (logger.isDebugEnabled()) {
-			logger.debug(message);
-		}
-	}
 
 	/*
 	 * Request wrapper that converts existing request into a POST request to ConnectController
@@ -176,8 +187,22 @@ public class ReconnectFilter extends GenericFilterBean {
 		
 		@Override
 		public String getMethod() {
-			return "POST";
+			return POST;
 		}
 	}
+	
+	private static final String CONNECT_PATH = "/connect/";
+
+	private static final int CONNECT_PATH_LENGTH = CONNECT_PATH.length()+1;
+
+	private static final String RECONNECT_PARAMETER = "reconnect";
+
+	private static final String RECONNECT_PARAMETER_EQUALS_TRUE = "?" + RECONNECT_PARAMETER +"=true";
+
+	private static final String SCOPE_PARAMETER_EQUALS = "&scope=";
+	
+	private static final String POST = "POST";
+	
+	private static final String GET = "GET";
 
 }
