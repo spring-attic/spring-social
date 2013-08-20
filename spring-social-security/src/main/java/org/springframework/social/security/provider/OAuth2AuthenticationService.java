@@ -108,7 +108,13 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 	}
 
 	protected String buildReturnToUrl(HttpServletRequest request) {
-		StringBuffer sb = request.getRequestURL();
+		StringBuffer sb;
+        if (null == getApplicationUrl()){
+            sb = request.getRequestURL();
+        } else {
+            sb = new StringBuffer(getApplicationUrl());
+        }
+
 		sb.append("?");
 		for (String name : getReturnToUrlParameters()) {
 			// Assume for simplicity that there is only one value

@@ -30,7 +30,17 @@ public abstract class AbstractSocialAuthenticationService<S> implements SocialAu
 
 	private String connectionAddedRedirectUrl;
 
-	public void afterPropertiesSet() throws Exception {
+    private String applicationUrl;
+
+    public String getApplicationUrl() {
+        return applicationUrl;
+    }
+
+    public void setApplicationUrl(String applicationUrl) {
+        this.applicationUrl = applicationUrl;
+    }
+
+    public void afterPropertiesSet() throws Exception {
 	}
 
 	public ConnectionCardinality getConnectionCardinality() {
