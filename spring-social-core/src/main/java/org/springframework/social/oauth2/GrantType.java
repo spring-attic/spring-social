@@ -19,7 +19,10 @@ package org.springframework.social.oauth2;
  * OAuth2 supports two types of authorization flow, typically referred to as
  * "Client-side" and "Server-side".
  * @author Roy Clarkson
+ * @deprecated Use of implicit grant doesn't make sense in any of the contexts where Spring Social is supported (web server or mobile Android client).
+ *             Therefore, the GrantType enum and methods that accept it do not make sense.
  */
+@Deprecated
 public enum GrantType {
 	
 	/**

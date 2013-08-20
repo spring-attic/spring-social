@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Parameters;
 import org.springframework.social.security.SocialAuthenticationRedirectException;
 import org.springframework.social.security.SocialAuthenticationToken;
@@ -91,7 +90,7 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 			params.setRedirectUri(buildReturnToUrl(request));
 			setScope(request, params);
 			params.add("state", connectionFactory.generateState()); // TODO: Verify the state value after callback
-			throw new SocialAuthenticationRedirectException(getConnectionFactory().getOAuthOperations().buildAuthenticateUrl(GrantType.AUTHORIZATION_CODE, params));
+			throw new SocialAuthenticationRedirectException(getConnectionFactory().getOAuthOperations().buildAuthenticateUrl(params));
 		} else if (StringUtils.hasText(code)) {
 			try {
 				String returnToUrl = buildReturnToUrl(request);

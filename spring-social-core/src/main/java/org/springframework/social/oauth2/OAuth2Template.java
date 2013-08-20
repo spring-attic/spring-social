@@ -116,6 +116,14 @@ public class OAuth2Template implements OAuth2Operations {
 		return authenticateUrl != null ? buildAuthUrl(authenticateUrl, grantType, parameters) : buildAuthorizeUrl(grantType, parameters);
 	}
 
+	public String buildAuthorizeUrl(OAuth2Parameters parameters) {
+		return buildAuthUrl(authorizeUrl, GrantType.AUTHORIZATION_CODE, parameters);
+	}
+	
+	public String buildAuthenticateUrl(OAuth2Parameters parameters) {
+		return authenticateUrl != null ? buildAuthUrl(authenticateUrl, GrantType.AUTHORIZATION_CODE, parameters) : buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, parameters);
+	}
+
 	public AccessGrant exchangeForAccess(String authorizationCode, String redirectUri, MultiValueMap<String, String> additionalParameters) {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 		if (useParametersForClientAuthentication) {

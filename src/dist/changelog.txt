@@ -1,4 +1,14 @@
-Spring Social 1.1.0 Milestone 4 (August 19, 2012)
+Spring Social 1.1.0 Release Candidate 1 (September 2, 2013)
+===========================================================
+Compatibility Notes:
+   * The GrantType enum and the buildAuthorizeUrl()/buildAuthenticateUrl()
+     methods in OAuth2Operations that accept it as a parameter have been
+     deprecated and will be removed in Spring Social 1.2.0.
+     This enum exists to support OAuth 2's Implicit Grant, which doesn't
+     make sense in any of the contexts supported by Spring Social (e.g.,
+     web server and native Android client).
+
+Spring Social 1.1.0 Milestone 4 (August 19, 2013)
 =================================================
 Bug Fixes
    * SocialAuthenticationFilter now fails authentication when the user
@@ -14,7 +24,7 @@ Improvement
    * Ability to set ConnectController's base view path as a property.
      (SOCIAL-371)
 
-Spring Social 1.1.0 Milestone 3 (July 8, 2012)
+Spring Social 1.1.0 Milestone 3 (July 8, 2013)
 ==============================================
  Bug Fixes
    * JdbcConnectionRepository's methods are now transactionl. (SOCIAL-335)
@@ -42,7 +52,7 @@ Spring Social 1.1.0 Milestone 3 (July 8, 2012)
    * New in-memory ConnectionRepository implementation for testing and
      sample application purposes. (SOCIAL-361)
 
-Spring Social 1.1.0 Milestone 2 (February 12, 2012)
+Spring Social 1.1.0 Milestone 2 (February 12, 2013)
 ===================================================
  Bug Fixes
   * Set character set to UTF-8 for string parts of multipart messages to allow for

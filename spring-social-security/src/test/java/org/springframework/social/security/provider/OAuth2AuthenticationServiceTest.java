@@ -16,7 +16,6 @@
 package org.springframework.social.security.provider;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.social.security.test.ArgMatchers.*;
 
@@ -28,7 +27,6 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.GrantType;
 import org.springframework.social.oauth2.OAuth2Operations;
 import org.springframework.social.security.SocialAuthenticationRedirectException;
 import org.springframework.social.security.SocialAuthenticationToken;
@@ -59,8 +57,7 @@ public class OAuth2AuthenticationServiceTest {
 		when(factory.createConnection(accessGrant)).thenReturn(connection);
 
 		when(
-				operations.buildAuthenticateUrl(eq(GrantType.AUTHORIZATION_CODE),
-						oAuth2Parameters("http://example.com:80/auth/foo?param=param_value"))).thenReturn(
+				operations.buildAuthenticateUrl(oAuth2Parameters("http://example.com:80/auth/foo?param=param_value"))).thenReturn(
 				"http://facebook.com/auth");
 		when(operations.exchangeForAccess(code, "http://example.com:80/auth/foo", null)).thenReturn(accessGrant);
 

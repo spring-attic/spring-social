@@ -488,6 +488,12 @@ public class ConnectSupportTest {
 				public String buildAuthenticateUrl(GrantType grantType, OAuth2Parameters params) {
 					return "https://serviceprovider.com/oauth/authenticate" + additionalParametersQuery(params, false);
 				}
+				public String buildAuthorizeUrl(OAuth2Parameters params) {
+					return "https://serviceprovider.com/oauth/authorize" + additionalParametersQuery(params, false);
+				}
+				public String buildAuthenticateUrl(OAuth2Parameters params) {
+					return "https://serviceprovider.com/oauth/authenticate" + additionalParametersQuery(params, false);
+				}
 				public AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri, MultiValueMap<String, String> additionalParameters) {
 					assertEquals("authorization-grant", authorizationGrant);
 					assertEquals("http://somesite.com/connect/someprovider", redirectUri);

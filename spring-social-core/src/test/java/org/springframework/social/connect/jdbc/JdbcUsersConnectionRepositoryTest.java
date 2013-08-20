@@ -485,6 +485,12 @@ public class JdbcUsersConnectionRepositoryTest {
 				public String buildAuthenticateUrl(GrantType grantType, OAuth2Parameters params) {
 					return null;
 				}
+				public String buildAuthorizeUrl(OAuth2Parameters params) {
+					return null;
+				}
+				public String buildAuthenticateUrl(OAuth2Parameters params) {
+					return null;
+				}
 				public AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri, MultiValueMap<String, String> additionalParameters) {
 					return null;
 				}				
