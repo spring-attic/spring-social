@@ -63,7 +63,7 @@ public class ConnectSupport {
 	 * Some providers expose a special "authenticateUrl" the user should be redirected to as part of an OAuth-based authentication attempt.
 	 * Setting this flag to true has {@link #buildOAuthUrl(ConnectionFactory, NativeWebRequest) oauthUrl} return this authenticate URL.
 	 * @param useAuthenticateUrl whether to use the authenticat url or not
-	 * @see OAuth1Operations#buildAuthenticateUrl(OAuth1Parameters)
+	 * @see OAuth1Operations#buildAuthenticateUrl(String, OAuth1Parameters)
 	 * @see OAuth2Operations#buildAuthenticateUrl(OAuth2Parameters)
 	 */
 	public void setUseAuthenticateUrl(boolean useAuthenticateUrl) {

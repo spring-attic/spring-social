@@ -25,27 +25,53 @@ import org.springframework.social.connect.UsersConnectionRepository;
 
 /**
  * Configurer that adds {@link SocialAuthenticationFilter} to Spring Security's filter chain.
+ * Used with Spring Security 3.2's Java-based configuration support, when overriding WebSecurityConfigurerAdapter#configure(HttpSecurity):
+ * 
+ * <pre>
+ * protected void configure(HttpSecurity http) throws Exception {
+ *   http.
+ *     // HTTP security configuration details snipped
+ *     .and()
+ *        .apply(
+ *            new SpringSocialHttpConfigurer(userIdSource(), usersConnectionRepository, authenticationServiceLocator)
+ *         );
+ * }
+ * </pre>
+ * 
  * @author Craig Walls
  */
-public class SpringSocialHttpConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
+public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
-	private UserIdSource userIdSource;
-	private UsersConnectionRepository usersConnectionRepository;
-	private SocialAuthenticationServiceLocator authServiceLocator;
+	private final UserIdSource userIdSource;
+	
+	private final UsersConnectionRepository usersConnectionRepository;
+	
+	private final SocialAuthenticationServiceLocator authServiceLocator;
 
-	public SpringSocialHttpConfigurer(
+	private SocialUserDetailsService socialUsersDetailsService;
+
+	/**
+	 * Constructs a SpringSocialHttpConfigurer.
+	 * @param userIdSource A {@link UserIdSource}.
+	 * @param usersConnectionRepository A {@link UsersConnectionRepository}.
+	 * @param authServiceLocator A {@link SocialAuthenticationServiceLocator}.
+	 */
+	public SpringSocialConfigurer(
 			UserIdSource userIdSource, 
 			UsersConnectionRepository usersConnectionRepository, 
-			SocialAuthenticationServiceLocator authServiceLocator) {
+			SocialAuthenticationServiceLocator authServiceLocator,
+			SocialUserDetailsService socialUsersDetailsService) {
 		this.userIdSource = userIdSource;
 		this.usersConnectionRepository = usersConnectionRepository;
 		this.authServiceLocator = authServiceLocator;
-		
+		this.socialUsersDetailsService = socialUsersDetailsService;
 	}
 	
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.addFilterBefore(
+		http.authenticationProvider(
+				new SocialAuthenticationProvider(usersConnectionRepository, socialUsersDetailsService))
+			.addFilterBefore(
 				new SocialAuthenticationFilter(http.getSharedObject(AuthenticationManager.class), userIdSource, usersConnectionRepository, authServiceLocator), 
 				AbstractPreAuthenticatedProcessingFilter.class);
 	}
