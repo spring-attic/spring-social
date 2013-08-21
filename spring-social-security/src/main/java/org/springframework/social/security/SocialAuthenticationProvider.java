@@ -71,14 +71,14 @@ public class SocialAuthenticationProvider implements AuthenticationProvider {
 			throw new UsernameNotFoundException("Unknown connected account id");
 		}
 
-        return new SocialAuthenticationToken(connection, userDetails, authToken.getProviderAccountData(), getAuthorities(providerId, userDetails));
+		return new SocialAuthenticationToken(connection, userDetails, authToken.getProviderAccountData(), getAuthorities(providerId, userDetails));
 	}
 
-    protected String toUserId(Connection<?> connection) {
-        List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
-        // only if a single userId is connected to this providerUserId
-        return (userIds.size() == 1) ? userIds.iterator().next() : null;
-    }
+	protected String toUserId(Connection<?> connection) {
+		List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
+		// only if a single userId is connected to this providerUserId
+		return (userIds.size() == 1) ? userIds.iterator().next() : null;
+	}
 
 	/**
 	 * Override to grant authorities based on {@link ServiceProvider} id and/or a user's account id

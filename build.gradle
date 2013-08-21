@@ -27,7 +27,7 @@ configure(allprojects) {
       mockitoVersion = '1.9.5'
       servletApiVersion = '2.5'
       springVersion = '3.2.3.RELEASE'
-      springSecurityVersion = '3.1.4.RELEASE'
+      springSecurityVersion = '3.2.0.RC1'
       jspApiVersion = '2.2.1'
     }
 
@@ -144,6 +144,7 @@ project('spring-social-security') {
         compile project (':spring-social-web')
         compile ("org.springframework:spring-web:$springVersion")
         compile ("org.springframework:spring-webmvc:$springVersion")
+        compile ("org.springframework.security:spring-security-config:$springSecurityVersion", optional)
         compile ("org.springframework.security:spring-security-web:$springSecurityVersion")
         compile ("javax.servlet:servlet-api:$servletApiVersion", provided)
     }
