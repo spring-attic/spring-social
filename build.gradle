@@ -18,7 +18,7 @@ configure(allprojects) {
     targetCompatibility=1.5
 
     ext {
-      h2Version = '1.3.172'
+      h2Version = '1.3.173'
       hamcrestVersion = '1.3'
       httpComponentsVersion = '4.2.5'
       jacksonVersion = '2.2.2'
