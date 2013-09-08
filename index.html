@@ -1,0 +1,115 @@
+---
+---
+<!DOCTYPE HTML>
+<html lang="en-US">
+
+{% capture head_links %}
+<link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/springsocial.css.css" /> 
+{% endcapture %}
+
+
+{% capture billboard_description %}
+Connect your Spring application with Software-as-a-Service (SaaS) API providers such as Facebook, Twitter, and LinkedIn.
+{% endcapture %}
+
+
+{% capture main_projects %}
+## Main Projects
+
+{% capture project_description %}
+A framework for creating connections between a Spring application and an API. Also includes support for "Sign in With [Provider]" for authenticating
+via an API provider.
+{% endcapture %}
+{% include project_block.md site_url="/spring-social/core.html" repo_url="http://github.com/springsource/spring-social" project_title="Spring Social Core" project_description=project_description %}
+
+{% capture project_description %}
+A provider extension for Spring Social to enable connectivity with Facebook and an API binding for Facebook's Graph API.
+{% endcapture %}
+{% include project_block.md site_url="/spring-social-facebook/" repo_url="http://github.com/springsource/spring-social-facebook" project_title="Spring Social Facebook" project_description=project_description %}
+
+{% capture project_description %}
+A provider extension for Spring Social to enable connectivity with Twitter and an API binding for Twitter's REST API.
+{% endcapture %}
+{% include project_block.md site_url="/spring-social-twitter/" repo_url="http://github.com/springsource/spring-social-twitter" project_title="Spring Social Twitter" project_description=project_description %}
+
+{% capture project_description %}
+A provider extension for Spring Social to enable connectivity with LinkedIn and an API binding for LinkedIn's REST API.
+{% endcapture %}
+{% include project_block.md site_url="/spring-social-linkedin/" repo_url="http://github.com/springsource/spring-social-linkedin" project_title="Spring Social LinkedIn" project_description=project_description %}
+{% endcapture %}
+
+
+{% capture incubator_projects %}
+## Incubator Projects
+
+{% capture project_description %}
+A provider extension for Spring Social to enable connectivity with GitHub and an API binding for GitHub's REST API.
+{% endcapture %}
+{% include project_block.md site_url="/spring-social-github/" repo_url="http://github.com/springsource/spring-social-github" project_title="Spring Social GitHub" project_description=project_description %}
+
+{% capture project_description %}
+A provider extension for Spring Social to enable connectivity with TripIt and an API binding for TripIt's REST API.
+{% endcapture %}
+{% include project_block.md site_url="/spring-social-tripit/" repo_url="http://github.com/springsource/spring-social-tripit" project_title="Spring Social TripIt" project_description=project_description %}
+{% endcapture %}
+
+
+{% capture community_projects %}
+## Community Projects
+
+* [Spring Social 500px](https://github.com/sachin-handiekar/spring-social-500px)
+* [Spring Social Alfresco](https://github.com/Alfresco/spring-social-alfresco)
+* [Spring Social App.net](https://github.com/arikg/spring-social-appdotnet)
+* [Spring Social BitBucket](https://github.com/ericbottard/spring-social-bitbucket)
+* [Spring Social Daum](https://code.google.com/p/spring-social-daum/)
+* [Spring Social Digg](https://github.com/gnp/spring-social-digg)
+* [Spring Social Dropbox](https://github.com/vbfischer/spring-social-dropbox)
+* [Spring Social Flattr](https://github.com/shred/flattr4j)
+* [Spring Social Flickr](https://github.com/ranjan-rk/spring-social-flickr)
+* [Spring Social Foursquare](https://github.com/mattupstate/spring-social-foursquare)
+* [Spring Social Geeklist](https://github.com/robhinds/spring-social-geeklist)
+* [Spring Social Google](https://github.com/GabiAxel/spring-social-google)
+* [Spring Social Instagram](https://github.com/mattupstate/spring-social-instagram)
+* [Spring Social Intuit (QuickBooks Online)](https://github.com/jeffxor/spring-social-intuit)
+* [Spring Social Khan Academy](https://github.com/nerdability/spring-social-khan-academy)
+* [Spring Social Last.fm](https://github.com/michaellavelle/spring-social-lastfm)
+* [Spring Social Live (Windows Live)](https://github.com/sachin-handiekar/spring-social-live)
+* [Spring Social Miso](https://github.com/mfirry/spring-social-miso)
+* [Spring Social Mixcloud](https://github.com/michaellavelle/spring-social-mixcloud)
+* [Spring Social Nk](https://github.com/karpaczio/spring-social-nk)
+* [Spring Social Salesforce](https://github.com/umut/spring-social-salesforce)
+* [Spring Social SoundCloud](https://github.com/michaellavelle/spring-social-soundcloud)
+* [Spring Social Tumblr](https://github.com/sdouglass/spring-social-tumblr)
+* [Spring Social Viadeo](https://github.com/Treydone/spring-social-viadeo)
+* [Spring Social Vkontakte](https://github.com/vkolodrevskiy/spring-social-vkontakte)
+* [Spring Social Weibo](https://github.com/vergnes/spring-social-weibo)
+* [Spring Social Xing](https://github.com/jonnybbb/spring-social-xing)
+* [Spring Social Yammer](https://github.com/magott/spring-social-yammer)
+{% endcapture %}
+
+{% capture main_content %}
+
+<div class="minimal-bottom-padding">
+<div class="projects--wrapper project-aggregator">
+{{ main_projects | markdownify }}
+</div>
+</div>
+
+<div class="minimal-bottom-padding">
+<div class="projects--wrapper project-aggregator">
+{{ incubator_projects | markdownify }}
+</div>
+</div>
+
+<div class="minimal-bottom-padding">
+<div class="projects--wrapper project-aggregator">
+{{ community_projects | markdownify }}
+</div>
+</div>
+
+{% endcapture %}
+
+
+
+{% include project_group_page.html %}
+</html>

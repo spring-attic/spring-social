@@ -1,0 +1,82 @@
+---
+title: Spring Social
+
+badges:
+  twitter: SpringSocial
+
+  custom:
+    - name: Source (GitHub)
+      url:  https://github.com/spring-projects/spring-social
+      icon: github
+
+    - name: Issues (JIRA)
+      url:  https://jira.springsource.org/browse/SOCIAL
+      icon: tracking
+
+    - name: CI (Bamboo)
+      url:  https://build.springsource.org/browse/SOCIAL
+      icon: ci
+
+    - name: Forum
+      url:  http://forum.stage.springsource.org/forum/spring-projects/web/social
+      icon: forum
+
+    - name: StackOverflow
+      image_url: http://myrrix.com/wp-content/uploads/2012/06/stackoverflow.png
+      url:  http://stackoverflow.com/questions/tagged/spring-social
+      icon: stackoverflow
+
+---
+<!DOCTYPE HTML>
+<html lang="en-US">
+
+<!-- Specify the parent of this project (or delete if none) to influence the rendering of the breadcrumb -->
+{% capture parent_link %}
+[Spring Social]({{ site.projects_site_url }}/spring-social)
+{% endcapture %}
+
+{% capture billboard_description %}
+
+Connect your Spring application with Software-as-a-Service (SaaS) API providers such as Facebook, Twitter, and LinkedIn.
+
+{% endcapture %}
+
+{% capture main_content %}
+
+Spring Social is an extension of the Spring Framework that allows you to connect your applications with Software-as-a-Service (SaaS) API providers such as Facebook, Twitter, and LinkedIn.
+
+## Features
+
+* An extensible service provider framework that greatly simplifies the process of connecting local user accounts to hosted provider accounts.
+* A connect controller that handles the authorization flow between your Java/Spring web application, a service provider, and your users.
+* Java bindings to popular service provider APIs such as Facebook, Twitter, LinkedIn, TripIt, and GitHub.
+* A sign-in controller that enables users to authenticate with your application by signing in through a service provider.
+* Much more...
+
+<span id="quick-start"></span>
+## Quick Start
+
+{% include download_widget.md %}
+
+{% endcapture %}
+
+{% capture related_resources %}
+
+### Spring Sample Projects
+
+* [Spring Social Showcase](https://github.com/SpringSource/spring-social-samples/tree/master/spring-social-showcase)
+* [Spring Social Quickstart](https://github.com/SpringSource/spring-social-samples/tree/master/spring-social-quickstart)
+* [Spring Social Canvas](https://github.com/SpringSource/spring-social-samples/tree/master/spring-social-canvas)
+
+### Getting Started Guides
+
+* [Accessing Twitter Data]({{site.main_site_url}}/guides/gs/accessing-twitter/)
+* [Accessing Facebook Data]({{site.main_site_url}}/guides/gs/accessing-facebook/)
+* [Registering an Application with Twitter]({{site.main_site_url}}/guides/gs/register-twitter-app/)
+* [Registering an Application with Facebook]({{site.main_site_url}}/guides/gs/register-facebook-app/)
+
+{% endcapture %}
+
+
+{% include project_page.html %}
+</html>

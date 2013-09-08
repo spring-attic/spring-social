@@ -1,0 +1,8 @@
+.minimal-bottom-padding {
+	padding-bottom: 40px;
+}
+
+.minimal-bottom-padding ul li {
+	display: inline-block;
+	width: 30%;
+}
