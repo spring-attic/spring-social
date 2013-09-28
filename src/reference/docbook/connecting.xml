@@ -521,7 +521,7 @@ public class SocialConfig {
 				To delete a connection via <classname>ConnectController</classname>, submit a DELETE request to "/connect/{provider}".
 			</para>
 			<para>
-				In order to support this through a form in a web browser, you'll need to have Spring's <ulink url="http://static.springsource.org/spring/docs/3.0.x/javadoc-api/org/springframework/web/filter/HiddenHttpMethodFilter.html"><classname>HiddenHttpMethodFilter</classname></ulink> configured in your application's web.xml. 
+				In order to support this through a form in a web browser, you'll need to have Spring's <ulink url="http://docs.spring.io/spring/docs/3.0.x/javadoc-api/org/springframework/web/filter/HiddenHttpMethodFilter.html"><classname>HiddenHttpMethodFilter</classname></ulink> configured in your application's web.xml. 
 				Then you can provide a disconnect button via a form like this:
 			</para>
 			<programlisting language="xml"><![CDATA[
