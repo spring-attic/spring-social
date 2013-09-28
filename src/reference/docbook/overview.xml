@@ -122,7 +122,7 @@
 <repository>
     <id>org.springframework.maven.milestone</id>
     <name>Spring Maven Milestone Repository</name>
-		<url>http://repo.springsource.org/libs-milestone-local</url>
+		<url>http://repo.spring.io/libs-milestone-local</url>
 </repository>]]>
 		</programlisting>		
 		<para>
@@ -132,7 +132,7 @@
 <repository>
     <id>org.springframework.maven.snapshot</id>
     <name>Spring Maven Snapshot Repository</name>
-		<url>http://repo.springsource.org/libs-snapshot-local</url>
+		<url>http://repo.spring.io/libs-snapshot-local</url>
 </repository>]]>
 		</programlisting>
 		<section id="overview-client-modules">
@@ -157,27 +157,27 @@
 					</thead>
 					<tbody>
 						<row>
-						  <entry><ulink url="http://static.springsource.org/spring-social-facebook/docs/1.0.x/reference/html/">Spring Social Facebook</ulink></entry>
+						  <entry><ulink url="http://docs.spring.io/spring-social-facebook/docs/1.0.x/reference/html/">Spring Social Facebook</ulink></entry>
 						  <entry>org.springframework.social</entry>
 						  <entry>spring-social-facebook</entry>
 						</row>
 						<row>
-						  <entry><ulink url="http://static.springsource.org/spring-social-twitter/docs/1.0.x/reference/html/">Spring Social Twitter</ulink></entry>
+						  <entry><ulink url="http://docs.spring.io/spring-social-twitter/docs/1.0.x/reference/html/">Spring Social Twitter</ulink></entry>
 						  <entry>org.springframework.social</entry>
 						  <entry>spring-social-twitter</entry>
 						</row>
 						<row>
-						  <entry><ulink url="http://static.springsource.org/spring-social-linkedin/docs/1.0.x/reference/html/">Spring Social LinkedIn</ulink></entry>
+						  <entry><ulink url="http://docs.spring.io/spring-social-linkedin/docs/1.0.x/reference/html/">Spring Social LinkedIn</ulink></entry>
 						  <entry>org.springframework.social</entry>
 						  <entry>spring-social-linkedin</entry>
 						</row>
 						<row>
-						  <entry><ulink url="http://static.springsource.org/spring-social-tripit/docs/1.0.x/reference/html/">Spring Social TripIt</ulink></entry>
+						  <entry><ulink url="http://docs.spring.io/spring-social-tripit/docs/1.0.x/reference/html/">Spring Social TripIt</ulink></entry>
 						  <entry>org.springframework.social</entry>
 						  <entry>spring-social-tripit</entry>
 						</row>
 						<row>
-						  <entry><ulink url="http://static.springsource.org/spring-social-github/docs/1.0.x/reference/html/">Spring Social GitHub</ulink></entry>
+						  <entry><ulink url="http://docs.spring.io/spring-social-github/docs/1.0.x/reference/html/">Spring Social GitHub</ulink></entry>
 						  <entry>org.springframework.social</entry>
 						  <entry>spring-social-github</entry>
 						</row>
