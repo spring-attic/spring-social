@@ -24,15 +24,16 @@ import java.lang.annotation.Target;
 
 import org.springframework.context.annotation.Import;
 
+/**
+ * Add this annotation to an {@code @Configuration} class to have the Spring MVC
+ * configuration defined in {@link SocialConfiguration} imported.
+ * 
+ * @author Craig Walls
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Import(FakeProviderConfigRegistrar.class)
-public @interface EnableFake {
-
-	String appId();
-	
-	String appSecret();
-	
+@Import(SocialConfiguration.class)
+public @interface EnableSocial {
 }

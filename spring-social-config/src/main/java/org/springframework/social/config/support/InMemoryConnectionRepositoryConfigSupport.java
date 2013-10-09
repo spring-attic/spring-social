@@ -20,7 +20,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.social.config.annotation.EnableInMemoryConnectionRepository;
 import org.springframework.social.connect.mem.InMemoryUsersConnectionRepository;
 
 /**
