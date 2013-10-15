@@ -47,7 +47,7 @@ public class GenericOAuth2ConnectionFactory extends OAuth2ConnectionFactory<Rest
 			String authorizeUrl,
 			String accessTokenUrl,
 			ApiAdapter<RestOperations> apiAdapter) {
-		super(providerId, new GenericOAuth2ServiceProvider(appId, appSecret, authorizeUrl, null, accessTokenUrl, false), apiAdapter);
+		this(providerId, appId, appSecret, authorizeUrl, authorizeUrl, accessTokenUrl, false, apiAdapter);
 	}
 
 	/**
@@ -68,7 +68,7 @@ public class GenericOAuth2ConnectionFactory extends OAuth2ConnectionFactory<Rest
 			String authenticateUrl,
 			String accessTokenUrl,
 			ApiAdapter<RestOperations> apiAdapter) {
-		super(providerId, new GenericOAuth2ServiceProvider(appId, appSecret, authorizeUrl, authenticateUrl, accessTokenUrl, false), apiAdapter);
+		this(providerId, appId, appSecret, authorizeUrl, authenticateUrl, accessTokenUrl, false, apiAdapter);
 	}
 
 	/**
@@ -89,7 +89,7 @@ public class GenericOAuth2ConnectionFactory extends OAuth2ConnectionFactory<Rest
 			String accessTokenUrl,
 			boolean useParametersForClientCredentials,
 			ApiAdapter<RestOperations> apiAdapter) {
-		super(providerId, new GenericOAuth2ServiceProvider(appId, appSecret, authorizeUrl, null, accessTokenUrl, useParametersForClientCredentials), apiAdapter);
+		this(providerId, appId, appSecret, authorizeUrl, authorizeUrl, accessTokenUrl, useParametersForClientCredentials, apiAdapter);
 	}
 
 	/**

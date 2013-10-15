@@ -37,15 +37,17 @@ public class GenericOAuth1ServiceProvider extends AbstractOAuth1ServiceProvider<
 	 * @param authorizeUrl The API's OAuth 1.0/1.0a authorization URL.
 	 * @param authenticateUrl The API's OAuth 1.0/1.0a authentication URL. If null, then the authorization URL will be used by default.
 	 * @param accessTokenUrl The API's OAuth 1.0/1.0a access token URL.
+	 * @param oauth1Version The version of OAuth 1 (OAuth 1.0 or OAuth 1.0a) supported by the provider.
 	 */
-	public GenericOAuth1ServiceProvider(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String authenticateUrl, String accessTokenUrl) {
+	public GenericOAuth1ServiceProvider(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String authenticateUrl, String accessTokenUrl, OAuth1Version oauth1Version) {
 		super(consumerKey, consumerSecret, new OAuth1Template(
 				consumerKey, 
 				consumerSecret, 
 				requestTokenUrl, 
 				authorizeUrl, 
 				authenticateUrl != null ? authenticateUrl : authorizeUrl, 
-				accessTokenUrl));
+				accessTokenUrl,
+				oauth1Version));
 	}
 
 	@Override
