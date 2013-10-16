@@ -59,12 +59,21 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 	 * @param accessToken the access token
 	 */
 	protected AbstractOAuth2ApiBinding(String accessToken) {
+		this(accessToken, TokenStrategy.AUTHORIZATION_HEADER);
+	}
+
+	/**
+	 * Constructs the API template with OAuth credentials necessary to perform operations on behalf of a user.
+	 * @param accessToken the access token
+	 * @param tokenStrategy Specifies how access tokens are sent on API requests. Defaults to sending them in Authorization header.
+	 */
+	protected AbstractOAuth2ApiBinding(String accessToken, TokenStrategy tokenStrategy) {
 		this.accessToken = accessToken;
-		restTemplate = createRestTemplate(accessToken, getOAuth2Version());
+		restTemplate = createRestTemplate(accessToken, getOAuth2Version(), tokenStrategy);
 		restTemplate.setMessageConverters(getMessageConverters());
 		configureRestTemplate(restTemplate);
 	}
-	
+
 	/**
 	 * Set the ClientHttpRequestFactory. This is useful when custom configuration of the request factory is required, such as configuring custom SSL details.
 	 * @param requestFactory the request factory
@@ -111,7 +120,7 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 	 * Note that this method is called after the RestTemplate has been configured with the message converters returned from getMessageConverters().
 	 * @param restTemplate the RestTemplate to configure.
 	 */
-	protected void configureRestTemplate(RestTemplate restTemplate) {		
+	protected void configureRestTemplate(RestTemplate restTemplate) {
 	}
 
 	/**
@@ -169,12 +178,13 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 		return converter;
 	}
 
-	private RestTemplate createRestTemplate(String accessToken, OAuth2Version version) {
+	private RestTemplate createRestTemplate(String accessToken, OAuth2Version version, TokenStrategy tokenStrategy) {
 		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
-		OAuth2RequestInterceptor interceptor = new OAuth2RequestInterceptor(accessToken, version);
+		ClientHttpRequestInterceptor interceptor = tokenStrategy.interceptor(accessToken, version);
 		List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
 		interceptors.add(interceptor);
 		client.setInterceptors(interceptors);
 		return client;
 	}
+
 }

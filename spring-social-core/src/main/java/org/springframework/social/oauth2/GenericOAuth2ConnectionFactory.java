@@ -33,10 +33,12 @@ public class GenericOAuth2ConnectionFactory extends OAuth2ConnectionFactory<Rest
 
 	/**
 	 * Creates an instance of GenericOAuth2ConnectionFactory.
+	 * Defaults to use the authorization URL as the authentication URL, to send client credentials via HTTP Basic, and to send the access token
+	 * in the Authorization header for API requests.
 	 * @param providerId Some String that acts as the unique ID for the API provider.
 	 * @param appId The application's ID/key for the API.
 	 * @param appSecret The application's secret for the API.
-	 * @param authorizeUrl The API's OAuth 2 authorization URL.
+	 * @param authorizeUrl The API's OAuth 2 authorization URL. Will also be used as the default authentication URL.
 	 * @param accessTokenUrl The API's OAuth 2 access token URL.
 	 * @param apiAdapter A custom implementation of {@link ApiAdapter} used to fetch data when creating the connection.
 	 */
@@ -47,7 +49,7 @@ public class GenericOAuth2ConnectionFactory extends OAuth2ConnectionFactory<Rest
 			String authorizeUrl,
 			String accessTokenUrl,
 			ApiAdapter<RestOperations> apiAdapter) {
-		this(providerId, appId, appSecret, authorizeUrl, authorizeUrl, accessTokenUrl, false, apiAdapter);
+		this(providerId, appId, appSecret, authorizeUrl, authorizeUrl, accessTokenUrl, false, TokenStrategy.AUTHORIZATION_HEADER, apiAdapter);
 	}
 
 	/**
@@ -58,6 +60,7 @@ public class GenericOAuth2ConnectionFactory extends OAuth2ConnectionFactory<Rest
 	 * @param authorizeUrl The API's OAuth 2 authorization URL.
 	 * @param authenticateUrl The API's OAuth 2 authentication URL.
 	 * @param accessTokenUrl The API's OAuth2 access token URL.
+	 * @param sendClientCredentialsAsParameters If true, send client credentials as query parameter. If false, use HTTP Basic.
 	 * @param apiAdapter A custom implementation of {@link ApiAdapter} used to fetch data when creating the connection.
 	 */
 	public GenericOAuth2ConnectionFactory(
@@ -67,51 +70,9 @@ public class GenericOAuth2ConnectionFactory extends OAuth2ConnectionFactory<Rest
 			String authorizeUrl,
 			String authenticateUrl,
 			String accessTokenUrl,
+			boolean sendClientCredentialsAsParameters,
+			TokenStrategy tokenStrategy,
 			ApiAdapter<RestOperations> apiAdapter) {
-		this(providerId, appId, appSecret, authorizeUrl, authenticateUrl, accessTokenUrl, false, apiAdapter);
-	}
-
-	/**
-	 * Creates an instance of GenericOAuth2ConnectionFactory.
-	 * @param providerId Some String that acts as the unique ID for the API provider.
-	 * @param appId The application's ID/key for the API.
-	 * @param appSecret The application's secret for the API.
-	 * @param authorizeUrl The API's OAuth 2 authorization URL.
-	 * @param accessTokenUrl The API's OAuth 2 access token URL.
-	 * @param useParametersForClientCredentials
-	 * @param apiAdapter A custom implementation of {@link ApiAdapter} used to fetch data when creating the connection.
-	 */
-	public GenericOAuth2ConnectionFactory(
-			String providerId, 
-			String appId, 
-			String appSecret,
-			String authorizeUrl,
-			String accessTokenUrl,
-			boolean useParametersForClientCredentials,
-			ApiAdapter<RestOperations> apiAdapter) {
-		this(providerId, appId, appSecret, authorizeUrl, authorizeUrl, accessTokenUrl, useParametersForClientCredentials, apiAdapter);
-	}
-
-	/**
-	 * Creates an instance of GenericOAuth2ConnectionFactory for a provider that offers a separate authentication URL.
-	 * @param providerId Some String that acts as the unique ID for the API provider.
-	 * @param appId The application's ID/key for the API.
-	 * @param appSecret The application's secret for the API.
-	 * @param authorizeUrl The API's OAuth 2 authorization URL.
-	 * @param authenticateUrl The API's OAuth 2 authentication URL.
-	 * @param accessTokenUrl The API's OAuth2 access token URL.
-	 * @param useParametersForClientCredentials
-	 * @param apiAdapter A custom implementation of {@link ApiAdapter} used to fetch data when creating the connection.
-	 */
-	public GenericOAuth2ConnectionFactory(
-			String providerId, 
-			String appId, 
-			String appSecret,
-			String authorizeUrl,
-			String authenticateUrl,
-			String accessTokenUrl,
-			boolean useParametersForClientCredentials,
-			ApiAdapter<RestOperations> apiAdapter) {
-		super(providerId, new GenericOAuth2ServiceProvider(appId, appSecret, authorizeUrl, authenticateUrl, accessTokenUrl, useParametersForClientCredentials), apiAdapter);
+		super(providerId, new GenericOAuth2ServiceProvider(appId, appSecret, authorizeUrl, authenticateUrl, accessTokenUrl, sendClientCredentialsAsParameters, tokenStrategy), apiAdapter);
 	}
 }

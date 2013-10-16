@@ -29,6 +29,8 @@ import org.springframework.web.client.RestTemplate;
  */
 public class GenericOAuth2ServiceProvider extends AbstractOAuth2ServiceProvider<RestOperations> {
 
+	private TokenStrategy tokenStrategy;
+
 	/**
 	 * Creates an instance of GenericOAuth1ServiceProvider for a provider that offers a separate authentication URL.
 	 * @param appId The application's ID/key for the API.
@@ -38,13 +40,14 @@ public class GenericOAuth2ServiceProvider extends AbstractOAuth2ServiceProvider<
 	 * @param accessTokenUrl The API's OAuth 2 access token URL.
 	 * @param useParametersForClientCredentials If true, client credentials will be sent as parameters. If false, the client with be authenticated via HTTP Basic
 	 */
-	public GenericOAuth2ServiceProvider(String appId, String appSecret, String authorizeUrl, String authenticateUrl, String accessTokenUrl, boolean useParametersForClientCredentials) {
+	public GenericOAuth2ServiceProvider(String appId, String appSecret, String authorizeUrl, String authenticateUrl, String accessTokenUrl, boolean useParametersForClientCredentials, TokenStrategy tokenStrategy) {
 		super(getOAuth2Template(appId, appSecret, authorizeUrl, authenticateUrl, accessTokenUrl, useParametersForClientCredentials));
+		this.tokenStrategy = tokenStrategy;
 	}
-
+	
 	@Override
 	public RestOperations getApi(String accessToken) {
-		return new GenericApiBinding(accessToken).getRestTemplate();
+		return new GenericApiBinding(accessToken, tokenStrategy).getRestTemplate();
 	}
 
 	private static OAuth2Template getOAuth2Template(String appId, String appSecret, String authorizeUrl, String authenticateUrl, String accessTokenUrl, boolean useParameters) {
@@ -54,8 +57,8 @@ public class GenericOAuth2ServiceProvider extends AbstractOAuth2ServiceProvider<
 	}
 	
 	private static class GenericApiBinding extends AbstractOAuth2ApiBinding {
-		public GenericApiBinding(String accessToken) {
-			super(accessToken);
+		public GenericApiBinding(String accessToken, TokenStrategy tokenStrategy) {
+			super(accessToken, tokenStrategy);
 		}
 	}
 

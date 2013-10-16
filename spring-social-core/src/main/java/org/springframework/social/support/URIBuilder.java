@@ -48,7 +48,14 @@ public class URIBuilder {
 	public static URIBuilder fromUri(String baseUri) {
 		return new URIBuilder(baseUri);
 	}
-	
+
+	/**
+	 * Creates a URIBuilder with a base URI string as the starting point
+	 */
+	public static URIBuilder fromUri(URI baseUri) {
+		return new URIBuilder(baseUri.toString());
+	}
+
 	/**
 	 * Adds a query parameter to the URI
 	 */
