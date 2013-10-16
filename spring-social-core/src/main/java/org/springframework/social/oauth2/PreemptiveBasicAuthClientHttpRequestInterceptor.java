@@ -27,7 +27,7 @@ import org.springframework.security.crypto.codec.Base64;
 /**
  * Client request interceptor that does preemptive HTTP Basic authentication by ensuring that an Authorization
  * header with HTTP Basic credentials is always included in the request headers.
- * @author habuma
+ * @author Craig Walls
  */
 class PreemptiveBasicAuthClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
 	

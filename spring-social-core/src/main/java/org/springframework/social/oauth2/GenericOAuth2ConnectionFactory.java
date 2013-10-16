@@ -61,6 +61,7 @@ public class GenericOAuth2ConnectionFactory extends OAuth2ConnectionFactory<Rest
 	 * @param authenticateUrl The API's OAuth 2 authentication URL.
 	 * @param accessTokenUrl The API's OAuth2 access token URL.
 	 * @param sendClientCredentialsAsParameters If true, send client credentials as query parameter. If false, use HTTP Basic.
+	 * @param tokenStrategy The token strategy indicating how the access token should be carried on API requests.
 	 * @param apiAdapter A custom implementation of {@link ApiAdapter} used to fetch data when creating the connection.
 	 */
 	public GenericOAuth2ConnectionFactory(
@@ -73,6 +74,8 @@ public class GenericOAuth2ConnectionFactory extends OAuth2ConnectionFactory<Rest
 			boolean sendClientCredentialsAsParameters,
 			TokenStrategy tokenStrategy,
 			ApiAdapter<RestOperations> apiAdapter) {
-		super(providerId, new GenericOAuth2ServiceProvider(appId, appSecret, authorizeUrl, authenticateUrl, accessTokenUrl, sendClientCredentialsAsParameters, tokenStrategy), apiAdapter);
+		super(providerId, 
+			  new GenericOAuth2ServiceProvider(appId, appSecret, authorizeUrl, authenticateUrl, accessTokenUrl, sendClientCredentialsAsParameters, tokenStrategy), 
+			  apiAdapter);
 	}
 }

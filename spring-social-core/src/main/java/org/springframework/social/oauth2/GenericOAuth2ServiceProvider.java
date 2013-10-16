@@ -39,6 +39,7 @@ public class GenericOAuth2ServiceProvider extends AbstractOAuth2ServiceProvider<
 	 * @param authenticateUrl The API's OAuth 2 authentication URL. If null, then the authorization URL will be used by default.
 	 * @param accessTokenUrl The API's OAuth 2 access token URL.
 	 * @param useParametersForClientCredentials If true, client credentials will be sent as parameters. If false, the client with be authenticated via HTTP Basic
+	 * @param tokenStrategy The token strategy indicating how the access token should be carried on API requests.
 	 */
 	public GenericOAuth2ServiceProvider(String appId, String appSecret, String authorizeUrl, String authenticateUrl, String accessTokenUrl, boolean useParametersForClientCredentials, TokenStrategy tokenStrategy) {
 		super(getOAuth2Template(appId, appSecret, authorizeUrl, authenticateUrl, accessTokenUrl, useParametersForClientCredentials));

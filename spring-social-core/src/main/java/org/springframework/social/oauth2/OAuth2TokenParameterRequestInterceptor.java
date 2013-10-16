@@ -33,10 +33,19 @@ class OAuth2TokenParameterRequestInterceptor implements ClientHttpRequestInterce
 	
 	private final String accessToken;
 	
+	/**
+	 * Creates an instance of the interceptor, defaulting to use a parameter named "access_token".
+	 * @param accessToken The access token.
+	 */
 	public OAuth2TokenParameterRequestInterceptor(String accessToken) {
 		this(accessToken, "access_token");
 	}
 
+	/**
+	 * Creates an instance of the interceptor, using a parameter with the specified name.
+	 * @param accessToken The access token.
+	 * @param parameterName The name of the query parameter that will carry the access token. 
+	 */
 	public OAuth2TokenParameterRequestInterceptor(String accessToken, String parameterName) {
 		this.accessToken = accessToken;
 		this.parameterName = parameterName;
