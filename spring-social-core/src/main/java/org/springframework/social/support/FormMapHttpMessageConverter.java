@@ -82,6 +82,7 @@ public class FormMapHttpMessageConverter implements HttpMessageConverter<Map<Str
 
 	public Map<String, String> read(Class<? extends Map<String, String>> clazz, HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
 		LinkedMultiValueMap<String, String> lmvm = new LinkedMultiValueMap<String, String>();
+		@SuppressWarnings("unchecked")
 		Class<LinkedMultiValueMap<String, String>> mvmClazz = (Class<LinkedMultiValueMap<String, String>>) lmvm.getClass();
 		MultiValueMap<String, String> mvm = delegate.read(mvmClazz, inputMessage);
 

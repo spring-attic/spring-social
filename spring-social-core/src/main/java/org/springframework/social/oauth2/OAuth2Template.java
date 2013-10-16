@@ -109,18 +109,20 @@ public class OAuth2Template implements OAuth2Operations {
 		getRestTemplate().setRequestFactory(requestFactory);
 	}
 
-	public String buildAuthorizeUrl(GrantType grantType, OAuth2Parameters parameters) {
+	public String buildAuthorizeUrl(@SuppressWarnings("deprecation") GrantType grantType, OAuth2Parameters parameters) {
 		return buildAuthUrl(authorizeUrl, grantType, parameters);
 	}
 	
-	public String buildAuthenticateUrl(GrantType grantType, OAuth2Parameters parameters) {
+	public String buildAuthenticateUrl(@SuppressWarnings("deprecation") GrantType grantType, OAuth2Parameters parameters) {
 		return authenticateUrl != null ? buildAuthUrl(authenticateUrl, grantType, parameters) : buildAuthorizeUrl(grantType, parameters);
 	}
 
+	@SuppressWarnings("deprecation")
 	public String buildAuthorizeUrl(OAuth2Parameters parameters) {
 		return buildAuthUrl(authorizeUrl, GrantType.AUTHORIZATION_CODE, parameters);
 	}
 	
+	@SuppressWarnings("deprecation") 
 	public String buildAuthenticateUrl(OAuth2Parameters parameters) {
 		return authenticateUrl != null ? buildAuthUrl(authenticateUrl, GrantType.AUTHORIZATION_CODE, parameters) : buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, parameters);
 	}
@@ -257,6 +259,7 @@ public class OAuth2Template implements OAuth2Operations {
 	
 	// internal helpers
 
+	@SuppressWarnings("deprecation") 
 	private String buildAuthUrl(String baseAuthUrl, GrantType grantType, OAuth2Parameters parameters) {
 		StringBuilder authUrl = new StringBuilder(baseAuthUrl);
 		if (grantType == GrantType.AUTHORIZATION_CODE) {
