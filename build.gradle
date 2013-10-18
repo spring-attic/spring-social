@@ -28,6 +28,7 @@ configure(allprojects) {
       servletApiVersion = '2.5'
       springVersion = '3.2.3.RELEASE'
       springSecurityVersion = '3.2.0.RC1'
+      thymeleafVersion = '2.0.19'
       jspApiVersion = '2.2.1'
     }
 
@@ -118,6 +119,8 @@ project('spring-social-web') {
         compile ("org.springframework:spring-webmvc:$springVersion")
         compile ("javax.servlet:servlet-api:$servletApiVersion", provided)
         compile ("javax.servlet.jsp:javax.servlet.jsp-api:$jspApiVersion", provided)
+        compile ("org.thymeleaf:thymeleaf:2.0.19", optional)
+        compile ("org.thymeleaf:thymeleaf-spring3:2.0.19", optional)
         testCompile ("org.springframework:spring-test:$springVersion")
         testCompile ("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     }
