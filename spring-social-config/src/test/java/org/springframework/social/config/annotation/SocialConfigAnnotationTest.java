@@ -45,8 +45,7 @@ import org.springframework.web.context.request.RequestScope;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=SocialConfig.class)
-@Ignore
+@ContextConfiguration(classes=MyAwesomeSocialConfig.class)
 public class SocialConfigAnnotationTest {
 
 	@Inject
@@ -72,18 +71,13 @@ public class SocialConfigAnnotationTest {
 	}
 
 	@Test
-	public void userIdString() {
-		String userId = context.getBean("__userIdString", String.class);
-		assertEquals("habuma", userId);
-	}
-	
-	@Test
 	public void jdbcConnectionRepository() {
 		assertNotNull(context.getBean("usersConnectionRepository", UsersConnectionRepository.class));
 		assertNotNull(context.getBean("connectionRepository", ConnectionRepository.class));
 	}
-
+	
 	@Test
+	@Ignore
 	public void jdbcConnectionRepository_connectionSignUp() {
 		UsersConnectionRepository repository = context.getBean("usersConnectionRepository", UsersConnectionRepository.class);
 		Connection<Fake> connection = new DummyConnection<Fake>("fake", "fakeuser", new FakeTemplate());
@@ -92,7 +86,7 @@ public class SocialConfigAnnotationTest {
 	}
 
 	@Test
-	public void jdbcConnectionRepository_addAndRemoveAConnection() {
+	public void jdbcConnectionRepository_addConnection() {
 		ConnectionFactoryLocator cfl = context.getBean(ConnectionFactoryLocator.class);
 		ConnectionRepository connectionRepository = context.getBean(ConnectionRepository.class);
 		testConnectionRepository(cfl, connectionRepository);

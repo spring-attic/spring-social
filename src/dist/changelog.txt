@@ -12,6 +12,8 @@ New Features/Improvements:
    * Generic/configurable connection factory and service provider implementations
      to allow for easy connectivity with a provider for which no dedicated
      connection or API binding support has been created. (SOCIAL-396)
+   * Redesigned Java configuration support to be more flexible with regard
+     to custom connection repositories and connection factories. (SOCIAL-399)
 
 Spring Social 1.1.0 Milestone 4 (August 19, 2013)
 =================================================
