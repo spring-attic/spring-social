@@ -18,12 +18,10 @@ package org.springframework.social.oauth1;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -68,7 +66,26 @@ public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
 		Assert.notNull(accessToken, "Constructor argument 'accessToken' cannot be null.");
 		Assert.notNull(accessTokenSecret, "Constructor argument 'accessTokenSecret' cannot be null.");
 		credentials = new OAuth1Credentials(consumerKey, consumerSecret, accessToken, accessTokenSecret);
-		restTemplate = createRestTemplate(credentials);
+		restTemplate = ProtectedResourceClientFactory.create(credentials);
+		restTemplate.setMessageConverters(getMessageConverters());
+		configureRestTemplate(restTemplate);
+	}
+	
+	/**
+	 * Constructs the API template with OAuth credentials necessary to perform operations on behalf of a user.
+	 * @param consumerKey the application's consumer key
+	 * @param consumerSecret the application's consumer secret
+	 * @param accessToken the access token
+	 * @param accessTokenSecret the access token secret
+	 * @param requestSigner signer for the request
+	 */
+	protected AbstractOAuth1ApiBinding(String consumerKey, String consumerSecret, String accessToken, String accessTokenSecret, RequestSigner requestSigner) {
+		Assert.notNull(consumerKey, "Constructor argument 'consumerKey' cannot be null.");
+		Assert.notNull(consumerSecret, "Constructor argument 'consumerSecret' cannot be null.");
+		Assert.notNull(accessToken, "Constructor argument 'accessToken' cannot be null.");
+		Assert.notNull(accessTokenSecret, "Constructor argument 'accessTokenSecret' cannot be null.");
+		credentials = new OAuth1Credentials(consumerKey, consumerSecret, accessToken, accessTokenSecret);
+		restTemplate = ProtectedResourceClientFactory.create(credentials, requestSigner);
 		restTemplate.setMessageConverters(getMessageConverters());
 		configureRestTemplate(restTemplate);
 	}
@@ -166,14 +183,5 @@ public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
 		converter.setSupportedMediaTypes(Arrays.asList(MediaType.IMAGE_JPEG, MediaType.IMAGE_GIF, MediaType.IMAGE_PNG));
 		return converter;
 	}
-	
-	private RestTemplate createRestTemplate(OAuth1Credentials credentials) {
-		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
-		OAuth1RequestInterceptor interceptor = new OAuth1RequestInterceptor(credentials);
-		List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
-		interceptors.add(interceptor);
-		client.setInterceptors(interceptors);
-		return client;
-	}
-	
+
 }

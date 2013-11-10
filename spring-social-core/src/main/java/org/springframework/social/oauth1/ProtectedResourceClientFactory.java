@@ -53,4 +53,15 @@ class ProtectedResourceClientFactory {
 		return client;
 	}
 	
+	/**
+	 * Constructs a RestTemplate that adds the OAuth1 Authorization header to each request before it is executed.
+	 */
+	public static RestTemplate create(OAuth1Credentials credentials, RequestSigner requestSigner) {
+		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
+		OAuth1RequestInterceptor interceptor = new OAuth1RequestInterceptor(credentials, requestSigner);
+		List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
+		interceptors.add(interceptor);
+		client.setInterceptors(interceptors);
+		return client;
+	}
 }

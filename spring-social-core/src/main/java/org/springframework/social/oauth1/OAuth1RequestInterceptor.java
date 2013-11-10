@@ -38,8 +38,27 @@ class OAuth1RequestInterceptor implements ClientHttpRequestInterceptor {
 	 * @param accessToken the access token and secret
 	 */
 	public OAuth1RequestInterceptor(OAuth1Credentials oauth1Credentials) {
+		this(oauth1Credentials, new SigningSupport());
+	}
+
+	/**
+	 * Creates an OAuth 1.0 protected resource request interceptor.
+	 * @param accessToken the access token and secret
+	 * @param requestSigner the request signer to use
+	 */
+	public OAuth1RequestInterceptor(OAuth1Credentials oauth1Credentials, RequestSigner requestSigner) {
+		this(oauth1Credentials, new SigningSupport(requestSigner));
+	}
+	
+	/**
+	 * Creates an OAuth 1.0 protected resource request interceptor.
+	 * 
+	 * @param accessToken the access token and secret 
+	 * @param signing preconfigured signing to use
+	 */
+	private OAuth1RequestInterceptor(OAuth1Credentials oauth1Credentials, SigningSupport signingSupport) {
 		this.oauth1Credentials = oauth1Credentials;
-		this.signingUtils = new SigningSupport();
+		this.signingUtils = signingSupport;
 	}
 
 	public ClientHttpResponse intercept(final HttpRequest request, final byte[] body, ClientHttpRequestExecution execution) throws IOException {

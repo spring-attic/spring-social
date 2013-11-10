@@ -20,8 +20,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
@@ -33,22 +31,28 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 class SigningSupport {
-	
+
 	private TimestampGenerator timestampGenerator = new DefaultTimestampGenerator();
-	
+
+	private RequestSigner requestSigner;
+
+	public SigningSupport() {
+	    this(new HMACRequestSigner());
+	}
+
+	public SigningSupport(RequestSigner requestSigner) {
+	    this.requestSigner = requestSigner == null ? new HMACRequestSigner() : requestSigner;
+	}
+
 	/**
 	 * Builds the authorization header.
 	 * The elements in additionalParameters are expected to not be encoded.
@@ -63,7 +67,7 @@ class SigningSupport {
 		collectedParameters.setAll(oauthParameters);
 		collectedParameters.putAll(additionalParameters);		
 		String baseString = buildBaseString(method, getBaseStringUri(targetUrl), collectedParameters);
-		String signature = calculateSignature(baseString, consumerSecret, tokenSecret);
+		String signature = requestSigner.calculateSignature(baseString, consumerSecret, tokenSecret);
 		header.append(oauthEncode("oauth_signature")).append("=\"").append(oauthEncode(signature)).append("\"");
 		return header.toString();
 	}
@@ -82,7 +86,7 @@ class SigningSupport {
 	Map<String, String> commonOAuthParameters(String consumerKey) {
 		Map<String, String> oauthParameters = new HashMap<String, String>();
 		oauthParameters.put("oauth_consumer_key", consumerKey);
-		oauthParameters.put("oauth_signature_method", HMAC_SHA1_SIGNATURE_NAME);
+		oauthParameters.put("oauth_signature_method", requestSigner.getSignatureMethod());
 		long timestamp = timestampGenerator.generateTimestamp();
 		oauthParameters.put("oauth_timestamp", Long.toString(timestamp));
 		oauthParameters.put("oauth_nonce", Long.toString(timestampGenerator.generateNonce(timestamp)));
@@ -161,30 +165,6 @@ class SigningSupport {
 			}
 		}
 		return paramsBuilder.toString();
-	}
-
-	private String calculateSignature(String baseString, String consumerSecret, String tokenSecret) {
-		String key = oauthEncode(consumerSecret) + "&" + (tokenSecret != null ? oauthEncode(tokenSecret) : "");
-		return sign(baseString, key);
-	}
-
-	private String sign(String signatureBaseString, String key) {
-		try {
-			Mac mac = Mac.getInstance(HMAC_SHA1_MAC_NAME);
-			SecretKeySpec spec = new SecretKeySpec(key.getBytes(), HMAC_SHA1_MAC_NAME);
-			mac.init(spec);
-			byte[] text = signatureBaseString.getBytes(UTF8_CHARSET_NAME);
-			byte[] signatureBytes = mac.doFinal(text);
-			signatureBytes = Base64.encode(signatureBytes);
-			String signature = new String(signatureBytes, UTF8_CHARSET_NAME);
-			return signature;
-		} catch (NoSuchAlgorithmException e) {
-			throw new IllegalStateException(e);
-		} catch (InvalidKeyException e) {
-			throw new IllegalStateException(e);
-		} catch (UnsupportedEncodingException shouldntHappen) {
-			throw new IllegalStateException(shouldntHappen);
-		} 
 	}
 
 	private MultiValueMap<String, String> readFormParameters(MediaType bodyType, byte[] bodyBytes) {
@@ -277,7 +257,7 @@ class SigningSupport {
 		UNRESERVED = unreserved;		
 	}
 	
-	private static String oauthEncode(String param) {
+	public static String oauthEncode(String param) {
 		try {
 			// See http://tools.ietf.org/html/rfc5849#section-3.6
 			byte[] bytes = encode(param.getBytes(UTF8_CHARSET_NAME), UNRESERVED);
@@ -317,10 +297,6 @@ class SigningSupport {
 		}
 	}
 
-	private static final String HMAC_SHA1_SIGNATURE_NAME = "HMAC-SHA1";
-
-	private static final String HMAC_SHA1_MAC_NAME = "HmacSHA1";
-
-	private static final String UTF8_CHARSET_NAME = "UTF-8";
+	public static final String UTF8_CHARSET_NAME = "UTF-8";
 
 }

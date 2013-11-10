@@ -76,6 +76,10 @@ public class OAuth1Template implements OAuth1Operations {
 	}
 	
 	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String authenticateUrl, String accessTokenUrl, OAuth1Version version) {
+		this(consumerKey, consumerSecret, requestTokenUrl, authorizeUrl, authenticateUrl, accessTokenUrl, version, new HMACRequestSigner());
+	}
+
+	public OAuth1Template(String consumerKey, String consumerSecret, String requestTokenUrl, String authorizeUrl, String authenticateUrl, String accessTokenUrl, OAuth1Version version, RequestSigner requestSigner) {
 		Assert.notNull(consumerKey, "The consumerKey property cannot be null");
 		Assert.notNull(consumerSecret, "The consumerSecret property cannot be null");
 		Assert.notNull(requestTokenUrl, "The requestTokenUrl property cannot be null");
@@ -89,7 +93,7 @@ public class OAuth1Template implements OAuth1Operations {
 		this.accessTokenUrl = encodeTokenUri(accessTokenUrl);
 		this.version = version;
 		this.restTemplate = createRestTemplate();
-		this.signingUtils = new SigningSupport();
+		this.signingUtils = new SigningSupport(requestSigner);
 	}
 
 	/**
