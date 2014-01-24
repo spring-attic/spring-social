@@ -51,7 +51,7 @@ import org.springframework.web.context.request.WebRequest;
 
 public class ConnectControllerTest {
 	
-	private static final String OAUTH2_AUTHORIZE_URL = "https://someprovider.com/oauth/authorize?client_id=clientId&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A80%2Fconnect%2Foauth2Provider";
+	private static final String OAUTH2_AUTHORIZE_URL = "https://someprovider.com/oauth/authorize?client_id=clientId&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%2Fconnect%2Foauth2Provider";
 
 	@Test
 	@Ignore("Revisit this and assert/fix expectations")

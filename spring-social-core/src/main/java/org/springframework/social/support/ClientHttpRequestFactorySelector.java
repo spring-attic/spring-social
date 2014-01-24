@@ -17,13 +17,15 @@ package org.springframework.social.support;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.net.URI;
 import java.util.Properties;
 
 import org.apache.http.HttpHost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.protocol.HttpContext;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -71,18 +73,27 @@ public class ClientHttpRequestFactorySelector {
 	public static class HttpComponentsClientRequestFactoryCreator {
 		
 		public static ClientHttpRequestFactory createRequestFactory(String proxyHost, int proxyPort) {
+			
 			HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory() {
 				@Override
-				protected void postProcessHttpRequest(HttpUriRequest request) {
-					HttpProtocolParams.setUseExpectContinue(request.getParams(), false);				}
+				protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
+					HttpClientContext context = new HttpClientContext();
+					context.setAttribute("http.protocol.expect-continue", false);
+					return context;
+				}
 			};
+			
+			
 			if (proxyHost != null) {
-				DefaultHttpClient httpClient = new DefaultHttpClient();
 				HttpHost proxy = new HttpHost(proxyHost, proxyPort);
-				httpClient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+				CloseableHttpClient httpClient = HttpClients.custom()
+						.setProxy(proxy)
+						.build();
 				requestFactory.setHttpClient(httpClient);
 			}
-			return requestFactory;			
+			
+			return requestFactory;
+			
 		}
 	}
 
