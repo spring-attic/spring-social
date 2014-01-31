@@ -35,14 +35,9 @@ import org.springframework.social.connect.UsersConnectionRepository;
  *   http.
  *     // HTTP security configuration details snipped
  *     .and()
- *        .apply(new SpringSocialHttpConfigurer())
- *        .and().setSharedObject(ApplicationContext.class, context);
+ *        .apply(new SpringSocialHttpConfigurer());
  * }
  * </pre>
- * 
- * Note that when using with Spring Security 3.2.0.RC1, it's important to set the ApplicationContext as a shared object,
- * as shown above. Later RCs and the GA release of Spring Security will automatically set the ApplicationContext as a
- * shared object, making this step unnecessary. 
  * 
  * @author Craig Walls
  */
