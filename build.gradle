@@ -28,7 +28,7 @@ configure(allprojects) {
       servletApiVersion = '3.0.1'
       springVersion = '4.0.1.RELEASE'
       springSecurityVersion = '3.2.0.RELEASE'
-      thymeleafVersion = '2.0.19'
+      thymeleafVersion = '2.1.2.RELEASE'
       jspApiVersion = '2.2.1'
     }
 
@@ -39,6 +39,7 @@ configure(allprojects) {
     test.systemProperty("java.awt.headless", "true")
 
     repositories {
+        mavenCentral()
         maven { url "http://repo.spring.io/libs-snapshot" }
     }
 
@@ -119,8 +120,9 @@ project('spring-social-web') {
         compile ("org.springframework:spring-webmvc:$springVersion")
         compile ("javax.servlet:javax.servlet-api:$servletApiVersion", provided)
         compile ("javax.servlet.jsp:javax.servlet.jsp-api:$jspApiVersion", provided)
-        compile ("org.thymeleaf:thymeleaf:2.0.19", optional)
-        compile ("org.thymeleaf:thymeleaf-spring3:2.0.19", optional)
+        compile ("org.thymeleaf:thymeleaf:$thymeleafVersion", optional)
+        compile ("org.thymeleaf:thymeleaf-spring3:$thymeleafVersion", optional)
+        compile ("org.thymeleaf:thymeleaf-spring4:$thymeleafVersion", optional)
         testCompile ("org.springframework:spring-test:$springVersion")
         testCompile ("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     }
