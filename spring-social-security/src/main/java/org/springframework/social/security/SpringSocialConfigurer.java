@@ -49,8 +49,6 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 	 * Constructs a SpringSocialHttpConfigurer.
 	 * Requires that {@link UsersConnectionRepository}, {@link SocialAuthenticationServiceLocator}, and
 	 * {@link SocialUserDetailsService} beans be available in the application context.
-	 * If using with Spring Security 3.2.0.RC1, then you must also set the ApplicationContext as a shared object
-	 * (this is unnecessary for later release candidates and the GA release of Spring Security 3.2.0).
 	 */
 	public SpringSocialConfigurer() {
 	}
