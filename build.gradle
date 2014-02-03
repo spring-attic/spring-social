@@ -20,6 +20,7 @@ configure(allprojects) {
     ext.mockitoVersion          = "1.9.5"
     ext.servletApiVersion       = "3.0.1"
     ext.springVersion           = "4.0.1.RELEASE"
+    ext.springSnapshotVersion   = "4.0.2.BUILD-SNAPSHOT"
     ext.springSecurityVersion   = "3.2.0.RELEASE"
     ext.thymeleafVersion        = "2.1.2.RELEASE"
     ext.jspApiVersion           = "2.2.1"
@@ -106,6 +107,30 @@ configure(subprojects) { subproject ->
     artifacts {
         archives sourcesJar
         archives javadocJar
+    }
+
+    configurations { 
+        springSnapshotTestRuntime.extendsFrom testRuntime 
+    }
+
+    configurations.springSnapshotTestRuntime {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'org.springframework') {
+                details.useVersion springSnapshotVersion
+            }
+        }
+    }
+
+    task springSnapshotTest(type: Test) {
+//      jvmArgs = ['-ea', '-Xmx500m', '-XX:MaxPermSize=128M']
+        classpath = sourceSets.test.output + sourceSets.main.output + configurations.springSnapshotTestRuntime
+        getReports().getJunitXml().setDestination(file("$buildDir/spring-snapshot-test-results/"))
+        getReports().getHtml().setDestination(file("$buildDir/reports/spring-snapshot-tests/"))
+    }
+    check.dependsOn springSnapshotTest
+
+    configure([test, springSnapshotTest]) {
+        systemProperties['springVersion'] = springVersion
     }
 }
 
