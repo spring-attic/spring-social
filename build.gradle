@@ -3,16 +3,29 @@ buildscript {
         maven { url 'http://repo.spring.io/plugins-release' }
     }
     dependencies {
-        classpath 'org.springframework.build.gradle:docbook-reference-plugin:0.2.8'
+        classpath('org.springframework.build.gradle:docbook-reference-plugin:0.2.8')
     }
 }
 
 configure(allprojects) {
+    group = 'org.springframework.social'
+
+    ext.h2Version               = '1.3.173'
+    ext.hamcrestVersion         = '1.3'
+    ext.httpComponentsVersion   = '4.3.1'
+    ext.jacksonVersion          = '2.2.2'
+    ext.javaxInjectVersion      = '1'
+    ext.junitVersion            = '4.11'
+    ext.mockitoVersion          = '1.9.5'
+    ext.servletApiVersion       = '3.0.1'
+    ext.springVersion           = '4.0.1.RELEASE'
+    ext.springSecurityVersion   = '3.2.0.RELEASE'
+    ext.thymeleafVersion        = '2.1.2.RELEASE'
+    ext.jspApiVersion           = '2.2.1'
+
     apply plugin: 'java'
     apply plugin: 'eclipse'
     apply plugin: 'idea'
-
-    group = 'org.springframework.social'
 
     compileJava {
         sourceCompatibility=1.5
@@ -23,37 +36,25 @@ configure(allprojects) {
         targetCompatibility=1.7
     }
 
-    ext {
-      h2Version = '1.3.173'
-      hamcrestVersion = '1.3'
-      httpComponentsVersion = '4.3.1'
-      jacksonVersion = '2.2.2'
-      javaxInjectVersion = '1'
-      junitVersion = '4.11'
-      mockitoVersion = '1.9.5'
-      servletApiVersion = '3.0.1'
-      springVersion = '4.0.1.RELEASE'
-      springSecurityVersion = '3.2.0.RELEASE'
-      thymeleafVersion = '2.1.2.RELEASE'
-      jspApiVersion = '2.2.1'
-    }
-
     [compileJava, compileTestJava]*.options*.compilerArgs = ['-Xlint:none']
 
-    sourceSets.test.resources.srcDirs = ['src/test/resources', 'src/test/java']
+    sourceSets.test.resources.srcDirs = [
+        'src/test/resources', 
+        'src/test/java'
+    ]
 
     test.systemProperty("java.awt.headless", "true")
 
     repositories {
-        mavenCentral()
+//        mavenCentral()
         maven { url "http://repo.spring.io/libs-snapshot" }
     }
 
     dependencies {
-		    testCompile "org.hamcrest:hamcrest-library:$hamcrestVersion"
-        testCompile "junit:junit-dep:$junitVersion"
-        testCompile "org.mockito:mockito-core:$mockitoVersion"
-        testCompile "org.springframework:spring-test:$springVersion"
+        testCompile("org.springframework:spring-test:${springVersion}")
+        testCompile("junit:junit-dep:${junitVersion}")
+        testCompile("org.hamcrest:hamcrest-library:${hamcrestVersion}")
+        testCompile("org.mockito:mockito-core:${mockitoVersion}")
     }
 
     // servlet-api (2.5) and tomcat-servlet-api (3.0) classpath entries should not be
@@ -63,6 +64,10 @@ configure(allprojects) {
         classpath.entries.findAll { entry -> entry.path.contains('servlet-api') }*.exported = false
     }
 }
+
+ext.javadocLinks = [
+    "http://docs.jboss.org/jbossas/javadoc/4.0.5/connector"
+] as String[]
 
 configure(subprojects) { subproject ->
     apply from: "${rootProject.projectDir}/publish-maven.gradle"
@@ -106,31 +111,31 @@ configure(subprojects) { subproject ->
 project('spring-social-core') {
     description = 'Foundational module containing the ServiceProvider Connect Framework and Service API invocation support.'
     dependencies {
-        compile ("org.springframework:spring-jdbc:$springVersion", optional)
-        compile ("org.springframework:spring-web:$springVersion")
-        compile ("org.springframework.security:spring-security-crypto:$springSecurityVersion", optional)
-        compile ("org.apache.httpcomponents:httpclient:$httpComponentsVersion", optional)
-        testCompile ("com.h2database:h2:$h2Version")
-        testCompile ("org.springframework:spring-test:$springVersion")
-        testCompile ("javax.servlet:javax.servlet-api:$servletApiVersion", provided)
-        testCompile ("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+        compile("org.springframework:spring-jdbc:$springVersion", optional)
+        compile("org.springframework:spring-web:$springVersion")
+        compile("org.springframework.security:spring-security-crypto:$springSecurityVersion", optional)
+        compile("org.apache.httpcomponents:httpclient:$httpComponentsVersion", optional)
+        testCompile("com.h2database:h2:$h2Version")
+        testCompile("org.springframework:spring-test:$springVersion")
+        testCompile("javax.servlet:javax.servlet-api:$servletApiVersion", provided)
+        testCompile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     }
 }
 
 project('spring-social-web') {
     description = 'Spring Web Integration'
     dependencies {
-        compile project (':spring-social-core')
-        compile ("javax.inject:javax.inject:$javaxInjectVersion")
-        compile ("org.springframework:spring-web:$springVersion")
-        compile ("org.springframework:spring-webmvc:$springVersion")
-        compile ("javax.servlet:javax.servlet-api:$servletApiVersion", provided)
-        compile ("javax.servlet.jsp:javax.servlet.jsp-api:$jspApiVersion", provided)
-        compile ("org.thymeleaf:thymeleaf:$thymeleafVersion", optional)
-        compile ("org.thymeleaf:thymeleaf-spring3:$thymeleafVersion", optional)
-        compile ("org.thymeleaf:thymeleaf-spring4:$thymeleafVersion", optional)
-        testCompile ("org.springframework:spring-test:$springVersion")
-        testCompile ("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+        compile project(':spring-social-core')
+        compile("javax.inject:javax.inject:$javaxInjectVersion")
+        compile("org.springframework:spring-web:$springVersion")
+        compile("org.springframework:spring-webmvc:$springVersion")
+        compile("javax.servlet:javax.servlet-api:$servletApiVersion", provided)
+        compile("javax.servlet.jsp:javax.servlet.jsp-api:$jspApiVersion", provided)
+        compile("org.thymeleaf:thymeleaf:$thymeleafVersion", optional)
+        compile("org.thymeleaf:thymeleaf-spring3:$thymeleafVersion", optional)
+        compile("org.thymeleaf:thymeleaf-spring4:$thymeleafVersion", optional)
+        testCompile("org.springframework:spring-test:$springVersion")
+        testCompile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     }
     metaInf << files("src/main/resources/tld/spring-social.tld")
 }
@@ -138,26 +143,26 @@ project('spring-social-web') {
 project('spring-social-config') {
     description = 'Spring Social Config'
     dependencies {
-      compile project (':spring-social-core')
-      compile project (':spring-social-security'), optional
-      compile project (':spring-social-web')
-      compile ("org.springframework.security:spring-security-core:$springSecurityVersion", optional)
-      testCompile ("javax.servlet:javax.servlet-api:$servletApiVersion", provided)
-      testCompile ("com.h2database:h2:$h2Version")
-      testCompile ("org.springframework:spring-jdbc:$springVersion")
+      compile project(':spring-social-core')
+      compile project(':spring-social-security'), optional
+      compile project(':spring-social-web')
+      compile("org.springframework.security:spring-security-core:$springSecurityVersion", optional)
+      testCompile("javax.servlet:javax.servlet-api:$servletApiVersion", provided)
+      testCompile("com.h2database:h2:$h2Version")
+      testCompile("org.springframework:spring-jdbc:$springVersion")
     }
 }
 
 project('spring-social-security') {
     description = 'Spring Security Integration'
     dependencies {
-        compile project (':spring-social-core')
-        compile project (':spring-social-web')
-        compile ("org.springframework:spring-web:$springVersion")
-        compile ("org.springframework:spring-webmvc:$springVersion")
-        compile ("org.springframework.security:spring-security-config:$springSecurityVersion", optional)
-        compile ("org.springframework.security:spring-security-web:$springSecurityVersion")
-        compile ("javax.servlet:javax.servlet-api:$servletApiVersion", provided)
+        compile project(':spring-social-core')
+        compile project(':spring-social-web')
+        compile("org.springframework:spring-web:$springVersion")
+        compile("org.springframework:spring-webmvc:$springVersion")
+        compile("org.springframework.security:spring-security-config:$springSecurityVersion", optional)
+        compile("org.springframework.security:spring-security-web:$springSecurityVersion")
+        compile("javax.servlet:javax.servlet-api:$servletApiVersion", provided)
     }
 }
 
@@ -184,17 +189,18 @@ configure(rootProject) {
         options.author = true
         options.header = rootProject.description
         options.overview = 'src/api/overview.html'
-        options.links(
-            'http://docs.jboss.org/jbossas/javadoc/4.0.5/connector'
-        )
+        options.links(project.ext.javadocLinks)
+
         source subprojects.collect { project ->
             project.sourceSets.main.allJava
         }
-        destinationDir = new File(buildDir, "api")
+
         classpath = files(subprojects.collect { project ->
             project.sourceSets.main.compileClasspath
         })
+
         maxMemory = '1024m'
+        destinationDir = new File(buildDir, "api")
     }
 
     task docsZip(type: Zip) {
