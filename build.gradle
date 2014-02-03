@@ -14,8 +14,14 @@ configure(allprojects) {
 
     group = 'org.springframework.social'
 
-    sourceCompatibility=1.5
-    targetCompatibility=1.5
+    compileJava {
+        sourceCompatibility=1.5
+        targetCompatibility=1.5
+    }
+    compileTestJava {
+        sourceCompatibility=1.7
+        targetCompatibility=1.7
+    }
 
     ext {
       h2Version = '1.3.173'
