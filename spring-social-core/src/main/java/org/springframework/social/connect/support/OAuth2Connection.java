@@ -39,7 +39,7 @@ import org.springframework.social.oauth2.OAuth2ServiceProvider;
  */
 public class OAuth2Connection<A> extends AbstractConnection<A> {
 
-	private final OAuth2ServiceProvider<A> serviceProvider;
+	private transient final OAuth2ServiceProvider<A> serviceProvider;
 
 	private String accessToken;
 	
@@ -47,9 +47,9 @@ public class OAuth2Connection<A> extends AbstractConnection<A> {
 	
 	private Long expireTime;
 
-	private A api;
+	private transient A api;
 	
-	private A apiProxy;
+	private transient A apiProxy;
 
 	/**
 	 * Creates a new {@link OAuth2Connection} from a access grant response.

@@ -30,7 +30,7 @@ import org.springframework.social.connect.UserProfile;
  */
 public abstract class AbstractConnection<A> implements Connection<A> {
 
-	private final ApiAdapter<A> apiAdapter;
+	private transient final ApiAdapter<A> apiAdapter;
 
 	private ConnectionKey key;
 
@@ -42,7 +42,7 @@ public abstract class AbstractConnection<A> implements Connection<A> {
 
 	private boolean valuesInitialized;
 
-	private final Object monitor = new Object();
+	private transient final Object monitor = new Object();
 
 	/**
 	 * Creates a new connection.
