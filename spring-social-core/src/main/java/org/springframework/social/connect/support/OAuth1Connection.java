@@ -30,13 +30,13 @@ import org.springframework.social.oauth1.OAuth1ServiceProvider;
  */
 public class OAuth1Connection<A> extends AbstractConnection<A> {
 
-	private final OAuth1ServiceProvider<A> serviceProvider;
+	private transient final OAuth1ServiceProvider<A> serviceProvider;
 	
 	private String accessToken;
 	
 	private String secret;
 
-	private A api;
+	private transient A api;
 
 	/**
 	 * Creates a new {@link OAuth1Connection} from a OAuth1 access token response.
