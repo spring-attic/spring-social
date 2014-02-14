@@ -1,24 +1,18 @@
 package org.springframework.social.connect.jdbc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.hamcrest.Matchers.hasItems;
-import java.sql.SQLException;
-import java.sql.Statement;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.sql.DataSource;
-
-import org.h2.Driver;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.jdbc.datasource.embedded.ConnectionProperties;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseConfigurer;
 import org.springframework.social.connect.ApiAdapter;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
@@ -594,27 +588,6 @@ public abstract class AbstractUsersConnectionRepositoryTest {
 			public void updateStatus(TestTwitterApi api, String message) {
 			}
 			
-		}
-
-	protected static class MySqlCompatibleH2DatabaseConfigurer implements EmbeddedDatabaseConfigurer {
-			@Override
-			public void shutdown(DataSource dataSource, String databaseName) {
-				try {
-					java.sql.Connection connection = dataSource.getConnection();
-					Statement stmt = connection.createStatement();
-					stmt.execute("SHUTDOWN");
-				}
-				catch (SQLException ex) {
-				}
-			}
-			
-			@Override
-			public void configureConnectionProperties(ConnectionProperties properties, String databaseName) {
-				properties.setDriverClass(Driver.class);
-				properties.setUrl(String.format("jdbc:h2:mem:%s;MODE=MYSQL;DB_CLOSE_DELAY=-1", databaseName));
-				properties.setUsername("sa");
-				properties.setPassword("");
-			}
 		}
 
 	public AbstractUsersConnectionRepositoryTest() {

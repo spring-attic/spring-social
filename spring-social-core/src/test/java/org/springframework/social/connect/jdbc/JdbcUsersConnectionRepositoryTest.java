@@ -15,12 +15,20 @@
  */
 package org.springframework.social.connect.jdbc;
 
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.sql.DataSource;
+
+import org.h2.Driver;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.ConnectionProperties;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseConfigurer;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseFactory;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -31,6 +39,27 @@ import org.springframework.social.connect.UsersConnectionRepository;
 
 public class JdbcUsersConnectionRepositoryTest extends AbstractUsersConnectionRepositoryTest {
 
+	protected static class MySqlCompatibleH2DatabaseConfigurer implements EmbeddedDatabaseConfigurer {
+		@Override
+		public void shutdown(DataSource dataSource, String databaseName) {
+			try {
+				java.sql.Connection connection = dataSource.getConnection();
+				Statement stmt = connection.createStatement();
+				stmt.execute("SHUTDOWN");
+			}
+			catch (SQLException ex) {
+			}
+		}
+		
+		@Override
+		public void configureConnectionProperties(ConnectionProperties properties, String databaseName) {
+			properties.setDriverClass(Driver.class);
+			properties.setUrl(String.format("jdbc:h2:mem:%s;MODE=MYSQL;DB_CLOSE_DELAY=-1", databaseName));
+			properties.setUsername("sa");
+			properties.setPassword("");
+		}
+	}
+	
 	private EmbeddedDatabase database;
 
 	private boolean testMySqlCompatiblity;
