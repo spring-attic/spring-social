@@ -30,6 +30,8 @@ import org.springframework.social.connect.UserProfile;
  */
 public abstract class AbstractConnection<A> implements Connection<A> {
 
+	private static final long serialVersionUID = 7330875324290049412L;
+
 	private transient final ApiAdapter<A> apiAdapter;
 
 	private ConnectionKey key;
