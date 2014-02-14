@@ -51,10 +51,6 @@ public class SpringSocialDialect extends AbstractDialect {
 		return "social";
 	}
 
-	public boolean isLenient() {
-		return false;
-	}
-
 	@Override
 	public Set<IProcessor> getProcessors() {
 		final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
