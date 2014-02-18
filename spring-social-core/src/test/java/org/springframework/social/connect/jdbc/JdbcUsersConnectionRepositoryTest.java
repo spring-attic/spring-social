@@ -98,7 +98,7 @@ public class JdbcUsersConnectionRepositoryTest extends AbstractUsersConnectionRe
 		if (!getTablePrefix().equals("")) {
 			usersConnectionRepository.setTablePrefix(getTablePrefix());
 		}
-		connectionRepository = usersConnectionRepository.createConnectionRepository("1");
+		connectionRepository = usersConnectionRepository.createConnectionRepository(getUserId1());
 	}
 	
 	@After
@@ -110,7 +110,7 @@ public class JdbcUsersConnectionRepositoryTest extends AbstractUsersConnectionRe
 	
 	protected void insertFooConnection() {
 		dataAccessor.update("insert into " + getTablePrefix() + "UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-				"1", "foo", "123", 1, "james", null, null, "234", "123", null, System.currentTimeMillis() + 3600000);
+				getUserId1(), "foo", "123", 1, "james", null, null, "234", "123", null, System.currentTimeMillis() + 3600000);
 	}
 	
 	private void insertConnection(ConnectionData data, String userId, int rank) {
@@ -119,28 +119,38 @@ public class JdbcUsersConnectionRepositoryTest extends AbstractUsersConnectionRe
 	}
 	
 	@Override
+	protected String getUserId1() {
+		return "1";
+	}
+
+	@Override
+	protected String getUserId2() {
+		return "2";
+	}
+
+	@Override
 	protected void insertTwitterConnection() {
-		insertConnection(TWITTER_DATA, "1", 1);
+		insertConnection(TWITTER_DATA, getUserId1(), 1);
 	}
 
 	@Override
 	protected void insertFacebookConnection1() {
-		insertConnection(FACEBOOK_DATA_1, "1", 1);
+		insertConnection(FACEBOOK_DATA_1, getUserId1(), 1);
 	}
 	
 	@Override
 	protected void insertFacebookConnection2() {
-		insertConnection(FACEBOOK_DATA_2, "1", 2);
+		insertConnection(FACEBOOK_DATA_2, getUserId1(), 2);
 	}
 
 	@Override
 	protected void insertFacebookConnection3() {
-		insertConnection(FACEBOOK_DATA_3, "2", 2);
+		insertConnection(FACEBOOK_DATA_3, getUserId2(), 2);
 	}
 
 	@Override
 	protected void insertFacebookConnectionSameFacebookUser() {
-		insertConnection(FACEBOOK_DATA_1, "2", 1);
+		insertConnection(FACEBOOK_DATA_1, getUserId2(), 1);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)

@@ -31,7 +31,7 @@ public class InMemoryUsersConnectionRepositoryTest extends AbstractUsersConnecti
 	@Before
 	public void setUp() {
 		usersConnectionRepository = new InMemoryUsersConnectionRepository(getConnectionFactoryRegistry());
-		connectionRepository = usersConnectionRepository.createConnectionRepository("1");
+		connectionRepository = usersConnectionRepository.createConnectionRepository(getUserId1());
 	}
 	
 
@@ -61,21 +61,31 @@ public class InMemoryUsersConnectionRepositoryTest extends AbstractUsersConnecti
 
 	@Override
 	protected void insertFacebookConnection1() {
-		insertFacebookConnection(FACEBOOK_DATA_1, "1");
+		insertFacebookConnection(FACEBOOK_DATA_1, getUserId1());
 	}
 
 	@Override
 	protected void insertFacebookConnection2() {
-		insertFacebookConnection(FACEBOOK_DATA_2, "1");
+		insertFacebookConnection(FACEBOOK_DATA_2, getUserId1());
 	}
 
 	@Override
 	protected void insertFacebookConnection3() {
-		insertFacebookConnection(FACEBOOK_DATA_3, "2");
+		insertFacebookConnection(FACEBOOK_DATA_3, getUserId2());
 	}
 
 	@Override
 	protected void insertFacebookConnectionSameFacebookUser() {
-		insertFacebookConnection(FACEBOOK_DATA_1, "2");
+		insertFacebookConnection(FACEBOOK_DATA_1, getUserId2());
+	}
+
+	@Override
+	protected String getUserId1() {
+		return "1";
+	}
+
+	@Override
+	protected String getUserId2() {
+		return "2";
 	}
 }
