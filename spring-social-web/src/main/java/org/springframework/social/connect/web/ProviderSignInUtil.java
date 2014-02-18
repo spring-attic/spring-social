@@ -20,11 +20,19 @@ import org.springframework.web.context.request.RequestAttributes;
 
 /**
  * Helper methods that support provider user sign-in scenarios.
- * @author Keith Donald
- * @deprecated use {@link ProviderSignInUtil} instead
+ * @author Craig Walls
  */
-@Deprecated
-public class ProviderSignInUtils {
+public class ProviderSignInUtil {
+	
+	private SessionStrategy sessionStrategy;
+
+	public ProviderSignInUtil() {
+		this(new HttpSessionSessionStrategy());
+	}
+	
+	public ProviderSignInUtil(SessionStrategy sessionStrategy) {
+		this.sessionStrategy = sessionStrategy;
+	}
 	
 	/**
 	 * Get the connection to the provider user the client attempted to sign-in as.
@@ -34,7 +42,7 @@ public class ProviderSignInUtils {
 	 * Returns null if no provider sign-in has been attempted for the current user session.
 	 * @param request the current request attributes, used to extract sign-in attempt information from the current user session
 	 */
-	public static Connection<?> getConnection(RequestAttributes request) {
+	public Connection<?> getConnection(RequestAttributes request) {
 		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
 		return signInAttempt != null ? signInAttempt.getConnection() : null;
 	}
@@ -47,21 +55,17 @@ public class ProviderSignInUtils {
 	 * Does nothing if no provider sign-in was attempted for the current user session (is safe to call in that case).
 	 * @param request the current request attributes, used to extract sign-in attempt information from the current user session
 	 */
-	public static void handlePostSignUp(String userId, RequestAttributes request) {
+	public void handlePostSignUp(String userId, RequestAttributes request) {
 		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
 		if (signInAttempt != null) {
 			signInAttempt.addConnection(userId);
-			request.removeAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
+			sessionStrategy.removeAttribute(request, ProviderSignInAttempt.SESSION_ATTRIBUTE);
 		}		
 	}
 
 	// internal helpers
-	
-	private ProviderSignInUtils() {	
-	}
-	
-	private static ProviderSignInAttempt getProviderUserSignInAttempt(RequestAttributes request) {
-		return (ProviderSignInAttempt) request.getAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
+	private ProviderSignInAttempt getProviderUserSignInAttempt(RequestAttributes request) {
+		return (ProviderSignInAttempt) sessionStrategy.getAttribute(request, ProviderSignInAttempt.SESSION_ATTRIBUTE);
 	}
 	
 }

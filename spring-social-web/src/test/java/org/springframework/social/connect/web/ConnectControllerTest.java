@@ -172,6 +172,7 @@ public class ConnectControllerTest {
 		ConnectController connectController = new ConnectController(connectionFactoryLocator, null);
 		List<ConnectInterceptor<?>> interceptors = getConnectInterceptor();
 		connectController.setConnectInterceptors(interceptors);
+		connectController.afterPropertiesSet();
 		MockMvc mockMvc = standaloneSetup(connectController).build();
 		mockMvc.perform(post("/connect/oauth1Provider"))
 			.andExpect(redirectedUrl("https://someprovider.com/oauth/authorize?oauth_token=requestToken"))
@@ -203,6 +204,7 @@ public class ConnectControllerTest {
 		ConnectController connectController = new ConnectController(connectionFactoryLocator, connectionRepository);
 		List<ConnectInterceptor<?>> interceptors = getConnectInterceptor();
 		connectController.setConnectInterceptors(interceptors);
+		connectController.afterPropertiesSet();
 		MockMvc mockMvc = standaloneSetup(connectController).build();
 		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
 		mockMvc.perform(get("/connect/oauth1Provider")
@@ -246,6 +248,7 @@ public class ConnectControllerTest {
 		ConnectController connectController = new ConnectController(connectionFactoryLocator, null);
 		List<ConnectInterceptor<?>> interceptors = getConnectInterceptor();
 		connectController.setConnectInterceptors(interceptors);
+		connectController.afterPropertiesSet();
 		MockMvc mockMvc = standaloneSetup(connectController).build();
 		mockMvc.perform(post("/connect/oauth2Provider"))
 			.andExpect(redirectedUrl(OAUTH2_AUTHORIZE_URL + "&state=STATE"));
@@ -261,7 +264,9 @@ public class ConnectControllerTest {
 		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
 		ConnectionFactory<TestApi2> connectionFactory = new StubOAuth2ConnectionFactory("clientId", "clientSecret");
 		connectionFactoryLocator.addConnectionFactory(connectionFactory);
-		MockMvc mockMvc = standaloneSetup(new ConnectController(connectionFactoryLocator, null)).build();
+		ConnectController connectController = new ConnectController(connectionFactoryLocator, null);
+		connectController.afterPropertiesSet();
+		MockMvc mockMvc = standaloneSetup(connectController).build();
 		mockMvc.perform(post("/connect/oauth2Provider").param("scope", "read,write"))
 			.andExpect(redirectedUrl(OAUTH2_AUTHORIZE_URL + "&scope=read%2Cwrite&state=STATE"));
 	}
@@ -275,6 +280,7 @@ public class ConnectControllerTest {
 		ConnectController connectController = new ConnectController(connectionFactoryLocator, connectionRepository);
 		List<ConnectInterceptor<?>> interceptors = getConnectInterceptor();
 		connectController.setConnectInterceptors(interceptors);
+		connectController.afterPropertiesSet();
 		MockMvc mockMvc = standaloneSetup(connectController).build();
 		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
 		mockMvc.perform(get("/connect/oauth2Provider").param("code", "oauth2Code"))

@@ -50,7 +50,9 @@ public class ProviderSignInControllerTest {
 		StubUsersConnectionRepository usersConnectionRepository = new StubUsersConnectionRepository();
 		usersConnectionRepository.createConnectionRepository("habuma").addConnection(connectionFactory1.createConnection(
 				new ConnectionData("oauth1Provider", "provider1User1", null, null, null, null, null, null, null)));
-		MockMvc mockMvc = standaloneSetup(new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null)).build();
+		ProviderSignInController providerSignInController = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
+		providerSignInController.afterPropertiesSet();
+		MockMvc mockMvc = standaloneSetup(providerSignInController).build();
 		mockMvc.perform(post("/signin/oauth1Provider"))
 			.andExpect(redirectedUrl("https://someprovider.com/oauth/authorize?oauth_token=requestToken"))
 			.andExpect(request().sessionAttribute("oauthToken", samePropertyValuesAs(new OAuthToken("requestToken", "requestTokenSecret"))));
@@ -64,7 +66,9 @@ public class ProviderSignInControllerTest {
 		StubUsersConnectionRepository usersConnectionRepository = new StubUsersConnectionRepository();
 		usersConnectionRepository.createConnectionRepository("habuma").addConnection(connectionFactory1.createConnection(
 				new ConnectionData("oauth1Provider", "provider1User1", null, null, null, null, null, null, null)));
-		MockMvc mockMvc = standaloneSetup(new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null)).build();
+		ProviderSignInController providerSignInController = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
+		providerSignInController.afterPropertiesSet();
+		MockMvc mockMvc = standaloneSetup(providerSignInController).build();
 		mockMvc.perform(post("/signin/oauth1Provider"))
 			.andExpect(redirectedUrl("/signin?error=provider"));
 	}
@@ -75,7 +79,9 @@ public class ProviderSignInControllerTest {
 		ConnectionFactory<TestApi1> connectionFactory1 = new StubOAuth1ConnectionFactory("clientId", "clientSecret");
 		connectionFactoryLocator.addConnectionFactory(connectionFactory1);				
 		StubUsersConnectionRepository usersConnectionRepository = new StubUsersConnectionRepository();
-		MockMvc mockMvc = standaloneSetup(new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null)).build();		
+		ProviderSignInController providerSignInController = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
+		providerSignInController.afterPropertiesSet();
+		MockMvc mockMvc = standaloneSetup(providerSignInController).build();		
 		mockMvc.perform(get("/signin/oauth1Provider").param("verifier", "verifier").param("oauth_token", "requestToken"))
 			.andExpect(redirectedUrl("/signup"))
 			.andExpect(request().sessionAttribute(ProviderSignInAttempt.class.getName(), notNullValue()));
@@ -90,6 +96,7 @@ public class ProviderSignInControllerTest {
 		StubUsersConnectionRepository usersConnectionRepository = new StubUsersConnectionRepository();
 		ProviderSignInController providerSignInController = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
 		providerSignInController.setSignUpUrl("/register");
+		providerSignInController.afterPropertiesSet();
 		MockMvc mockMvc = standaloneSetup(providerSignInController).build();		
 		mockMvc.perform(get("/signin/oauth1Provider").param("verifier", "verifier").param("oauth_token", "requestToken"))
 			.andExpect(redirectedUrl("/register"))
@@ -103,7 +110,9 @@ public class ProviderSignInControllerTest {
 		ConnectionFactory<TestApi1> connectionFactory1 = new StubOAuth1ConnectionFactory("clientId", "clientSecret");
 		connectionFactoryLocator.addConnectionFactory(connectionFactory1);				
 		StubUsersConnectionRepository usersConnectionRepository = new StubUsersConnectionRepository(Arrays.asList("testuser1", "testuser2"));
-		MockMvc mockMvc = standaloneSetup(new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null)).build();		
+		ProviderSignInController providerSignInController = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
+		providerSignInController.afterPropertiesSet();
+		MockMvc mockMvc = standaloneSetup(providerSignInController).build();		
 		mockMvc.perform(get("/signin/oauth1Provider").param("verifier", "verifier").param("oauth_token", "requestToken"))
 			.andExpect(redirectedUrl("/signin?error=multiple_users"));
 	}
@@ -116,6 +125,7 @@ public class ProviderSignInControllerTest {
 		StubUsersConnectionRepository usersConnectionRepository = new StubUsersConnectionRepository(Arrays.asList("testuser1", "testuser2"));
 		ProviderSignInController providerSignInController = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
 		providerSignInController.setSignInUrl("/customsignin?param=1234");
+		providerSignInController.afterPropertiesSet();
 		MockMvc mockMvc = standaloneSetup(providerSignInController).build();		
 		mockMvc.perform(get("/signin/oauth1Provider").param("verifier", "verifier").param("oauth_token", "requestToken"))
 			.andExpect(redirectedUrl("/customsignin?param=1234&error=multiple_users"));
@@ -157,6 +167,7 @@ public class ProviderSignInControllerTest {
 		if (postSignInUrl != null) {
 			controller.setPostSignInUrl(postSignInUrl);
 		}
+		controller.afterPropertiesSet();
 		
 		String expectedRedirectUrl = calculateExpectedRedirectUrl(originalUrl, postSignInUrl);
 		MockMvc mockMvc = standaloneSetup(controller).build();		
@@ -175,7 +186,9 @@ public class ProviderSignInControllerTest {
 		StubUsersConnectionRepository usersConnectionRepository = new StubUsersConnectionRepository();
 		usersConnectionRepository.createConnectionRepository("habuma").addConnection(connectionFactory2.createConnection(
 				new ConnectionData("oauth2Provider", "provider2User1", null, null, null, null, null, null, null)));
-		MockMvc mockMvc = standaloneSetup(new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null)).build();
+		ProviderSignInController providerSignInController = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
+		providerSignInController.afterPropertiesSet();
+		MockMvc mockMvc = standaloneSetup(providerSignInController).build();
 		mockMvc.perform(post("/signin/oauth2Provider"))
 			.andExpect(redirectedUrl("https://someprovider.com/oauth/authorize?client_id=clientId&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%2Fsignin%2Foauth2Provider&state=STATE"));
 	}
@@ -186,7 +199,9 @@ public class ProviderSignInControllerTest {
 		ConnectionFactory<TestApi2> connectionFactory2 = new StubOAuth2ConnectionFactory("clientId", "clientSecret");
 		connectionFactoryLocator.addConnectionFactory(connectionFactory2);				
 		StubUsersConnectionRepository usersConnectionRepository = new StubUsersConnectionRepository();
-		MockMvc mockMvc = standaloneSetup(new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null)).build();		
+		ProviderSignInController providerSignInController = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
+		providerSignInController.afterPropertiesSet();
+		MockMvc mockMvc = standaloneSetup(providerSignInController).build();		
 		mockMvc.perform(get("/signin/oauth2Provider").param("code", "authcode"))
 			.andExpect(redirectedUrl("/signup"))
 			.andExpect(request().sessionAttribute(ProviderSignInAttempt.class.getName(), notNullValue()));
@@ -201,6 +216,7 @@ public class ProviderSignInControllerTest {
 		StubUsersConnectionRepository usersConnectionRepository = new StubUsersConnectionRepository();
 		ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
 		controller.setSignUpUrl("/register");
+		controller.afterPropertiesSet();
 		MockMvc mockMvc = standaloneSetup(controller).build();		
 		mockMvc.perform(get("/signin/oauth2Provider").param("code", "authcode"))
 			.andExpect(redirectedUrl("/register"))
@@ -242,7 +258,9 @@ public class ProviderSignInControllerTest {
 		ConnectionFactory<TestApi2> connectionFactory2 = new StubOAuth2ConnectionFactory("clientId", "clientSecret");
 		connectionFactoryLocator.addConnectionFactory(connectionFactory2);				
 		StubUsersConnectionRepository usersConnectionRepository = new StubUsersConnectionRepository(asList("testuser1", "testuser2"));
-		MockMvc mockMvc = standaloneSetup(new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null)).build();		
+		ProviderSignInController providerSignInController = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
+		providerSignInController.afterPropertiesSet();
+		MockMvc mockMvc = standaloneSetup(providerSignInController).build();		
 		mockMvc.perform(get("/signin/oauth2Provider").param("code", "authcode"))
 			.andExpect(redirectedUrl("/signin?error=multiple_users"));
 	}
@@ -254,6 +272,7 @@ public class ProviderSignInControllerTest {
 		connectionFactoryLocator.addConnectionFactory(connectionFactory2);				
 		StubUsersConnectionRepository usersConnectionRepository = new StubUsersConnectionRepository(asList("testuser1", "testuser2"));
 		ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
+		controller.afterPropertiesSet();
 		controller.setSignInUrl("/customsignin?someparameter=1234");
 		MockMvc mockMvc = standaloneSetup(controller).build();		
 		mockMvc.perform(get("/signin/oauth2Provider").param("code", "authcode"))
@@ -293,6 +312,7 @@ public class ProviderSignInControllerTest {
 		StubUsersConnectionRepository usersConnectionRepository = new StubUsersConnectionRepository(asList("testuser"));
 		SignInAdapter signInAdapter = new TestSignInAdapter(originalUrl);
 		ProviderSignInController controller = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, signInAdapter);
+		controller.afterPropertiesSet();
 		if (postSignInUrl != null) {
 			controller.setPostSignInUrl(postSignInUrl);
 		}

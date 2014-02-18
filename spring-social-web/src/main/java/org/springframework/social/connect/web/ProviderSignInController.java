@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
@@ -38,7 +39,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -52,7 +52,7 @@ import org.springframework.web.servlet.view.RedirectView;
  */
 @Controller
 @RequestMapping("/signin")
-public class ProviderSignInController {
+public class ProviderSignInController implements InitializingBean {
 
 	private final static Log logger = LogFactory.getLog(ProviderSignInController.class);
 	
@@ -70,7 +70,9 @@ public class ProviderSignInController {
 
 	private String postSignInUrl = "/";
 
-	private final ConnectSupport webSupport = new ConnectSupport();
+	private ConnectSupport connectSupport;
+	
+	private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
 
 	/**
 	 * Creates a new provider sign-in controller.
@@ -87,7 +89,6 @@ public class ProviderSignInController {
 		this.connectionFactoryLocator = connectionFactoryLocator;
 		this.usersConnectionRepository = usersConnectionRepository;
 		this.signInAdapter = signInAdapter;
-		this.webSupport.setUseAuthenticateUrl(true);
 	}
 
 	/**
@@ -138,7 +139,16 @@ public class ProviderSignInController {
 	 * @param applicationUrl the application URL value
 	 */
 	public void setApplicationUrl(String applicationUrl) {
-		webSupport.setApplicationUrl(applicationUrl);
+		connectSupport.setApplicationUrl(applicationUrl);
+	}
+
+	/**
+	 * Sets a strategy to use when persisting information that is to survive past the boundaries of a request.
+	 * The default strategy is to set the data as attributes in the HTTP Session.
+	 * @param sessionStrategy the session strategy.
+	 */
+	public void setSessionStrategy(SessionStrategy sessionStrategy) {
+		this.sessionStrategy = sessionStrategy;
 	}
 
 	/**
@@ -162,7 +172,7 @@ public class ProviderSignInController {
 		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>(); 
 		preSignIn(connectionFactory, parameters, request);
 		try {
-			return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request, parameters));
+			return new RedirectView(connectSupport.buildOAuthUrl(connectionFactory, request, parameters));
 		} catch (Exception e) {
 			logger.error("Exception while building authorization URL: ", e);
 			return redirect(URIBuilder.fromUri(signInUrl).queryParam("error", "provider").build().toString());
@@ -182,7 +192,7 @@ public class ProviderSignInController {
 	public RedirectView oauth1Callback(@PathVariable String providerId, NativeWebRequest request) {
 		try {
 			OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
-			Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
+			Connection<?> connection = connectSupport.completeConnection(connectionFactory, request);
 			return handleSignIn(connection, connectionFactory, request);
 		} catch (Exception e) {
 			logger.error("Exception while completing OAuth 1.0(a) connection: ", e);
@@ -203,7 +213,7 @@ public class ProviderSignInController {
 	public RedirectView oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, NativeWebRequest request) {
 		try {
 			OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
-			Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
+			Connection<?> connection = connectSupport.completeConnection(connectionFactory, request);
 			return handleSignIn(connection, connectionFactory, request);
 		} catch (Exception e) {
 			logger.error("Exception while completing OAuth 2 connection: ", e);
@@ -238,13 +248,19 @@ public class ProviderSignInController {
 		return redirect(signInUrl);
 	}
 
+	// From InitializingBean
+	public void afterPropertiesSet() throws Exception {
+		this.connectSupport = new ConnectSupport(sessionStrategy);
+		this.connectSupport.setUseAuthenticateUrl(true);
+	};
+	
 	// internal helpers
 
 	private RedirectView handleSignIn(Connection<?> connection, ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
 		List<String> userIds = usersConnectionRepository.findUserIdsWithConnection(connection);
 		if (userIds.size() == 0) {
 			ProviderSignInAttempt signInAttempt = new ProviderSignInAttempt(connection, connectionFactoryLocator, usersConnectionRepository);
-			request.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt, RequestAttributes.SCOPE_SESSION);
+			sessionStrategy.setAttribute(request, ProviderSignInAttempt.SESSION_ATTRIBUTE, signInAttempt);
 			return redirect(signUpUrl);
 		} else if (userIds.size() == 1) {
 			usersConnectionRepository.createConnectionRepository(userIds.get(0)).updateConnection(connection);
