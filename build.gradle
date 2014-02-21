@@ -20,7 +20,8 @@ configure(allprojects) {
     ext.mockitoVersion          = "1.9.5"
     ext.servletApiVersion       = "3.0.1"
     ext.springVersion           = "4.0.1.RELEASE"
-    ext.springSnapshotVersion   = "4.0.2.BUILD-SNAPSHOT"
+    ext.springReleaseVersion    = "latest.release"
+    ext.springSnapshotVersion   = "latest.integration"
     ext.springSecurityVersion   = "3.2.0.RELEASE"
     ext.thymeleafVersion        = "2.1.2.RELEASE"
     ext.jspApiVersion           = "2.2.1"
@@ -129,9 +130,20 @@ configure(subprojects) { subproject ->
     }
 
     configurations { 
-        springSnapshotTestRuntime.extendsFrom testRuntime 
+        springReleaseTestRuntime.extendsFrom testRuntime
+        springSnapshotTestRuntime.extendsFrom testRuntime
     }
 
+    // Test against latest Spring Framework release
+    configurations.springReleaseTestRuntime {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'org.springframework') {
+                details.useVersion springReleaseVersion
+            }
+        }
+    }
+
+    // Test against latest Spring Framework snapshot
     configurations.springSnapshotTestRuntime {
         resolutionStrategy.eachDependency { DependencyResolveDetails details ->
             if (details.requested.group == 'org.springframework') {
@@ -140,15 +152,21 @@ configure(subprojects) { subproject ->
         }
     }
 
+    task springReleaseTest(type: Test) {
+        classpath = sourceSets.test.output + sourceSets.main.output + configurations.springReleaseTestRuntime
+        getReports().getJunitXml().setDestination(file("$buildDir/spring-release-test-results/"))
+        getReports().getHtml().setDestination(file("$buildDir/reports/spring-release-tests/"))
+    }
+    check.dependsOn springReleaseTest
+
     task springSnapshotTest(type: Test) {
-//      jvmArgs = ['-ea', '-Xmx500m', '-XX:MaxPermSize=128M']
         classpath = sourceSets.test.output + sourceSets.main.output + configurations.springSnapshotTestRuntime
         getReports().getJunitXml().setDestination(file("$buildDir/spring-snapshot-test-results/"))
         getReports().getHtml().setDestination(file("$buildDir/reports/spring-snapshot-tests/"))
     }
     check.dependsOn springSnapshotTest
 
-    configure([test, springSnapshotTest]) {
+    configure([test, springReleaseTest, springSnapshotTest]) {
         systemProperties['springVersion'] = springVersion
     }
 }
