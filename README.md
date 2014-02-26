@@ -63,15 +63,15 @@ See [downloading Spring artifacts] for Maven repository information. Unable to u
 
 The core [Spring Social] project does not contain provider modules. Each of the provider modules is in its own project. This enables those modules to progress and release on a separate schedule than Spring Social and be able to react more quickly to changes in the provider's API without the need to wait for a Spring Social release. The SaaS provider-specific projects can be cloned from the following GitHub URLs:
 
-- Twitter: https://github.com/spring-projects/spring-social-twitter
+- Twitter: [GitHub][twitter-gh] | [Reference][twitter-ref] | [API][twitter-api]
 
-- Facebook: https://github.com/spring-projects/spring-social-facebook
+- Facebook: [GitHub][facebook-gh] | [Reference][facebook-ref] | [API][facebook-api]
 
-- LinkedIn: https://github.com/spring-projects/spring-social-linkedin
+- LinkedIn: [GitHub][linkedin-gh] | [Reference][linkedin-ref] | [API][linkedin-api]
 
-- TripIt: https://github.com/spring-projects/spring-social-tripit
+- TripIt: [GitHub][tripit-gh] | [Reference][tripit-ref] | [API][tripit-api]
 
-- GitHub: https://github.com/spring-projects/spring-social-github
+- GitHub: [GitHub][github-gh] | [Reference][github-ref] | [API][github-api]
 
 
 ## Documentation
@@ -157,6 +157,21 @@ $ ./gradlew idea
 [Spring Framework]: http://projects.spring.io/spring-framework
 [downloading Spring artifacts]: https://github.com/spring-projects/spring-framework/wiki/Downloading-Spring-artifacts
 [building a distribution with dependencies]: https://github.com/spring-projects/spring-framework/wiki/Building-a-distribution-with-dependencies
+[twitter-gh]: https://github.com/spring-projects/spring-social-twitter
+[twitter-ref]: http://docs.spring.io/spring-social-twitter/docs/current/reference/html
+[twitter-api]: http://docs.spring.io/spring-social-twitter/docs/current/api
+[facebook-gh]: https://github.com/spring-projects/spring-social-facebook
+[facebook-ref]: http://docs.spring.io/spring-social-facebook/docs/current/reference/html
+[facebook-api]: http://docs.spring.io/spring-social-facebook/docs/current/api
+[linkedin-gh]: https://github.com/spring-projects/spring-social-linkedin
+[linkedin-ref]: http://docs.spring.io/spring-social-linkedin/docs/current/reference/html
+[linkedin-api]: http://docs.spring.io/spring-social-linkedin/docs/current/api
+[tripit-gh]: https://github.com/spring-projects/spring-social-tripit
+[tripit-ref]: http://docs.spring.io/spring-social-tripit/docs/current/reference/html
+[tripit-api]: http://docs.spring.io/spring-social-tripit/docs/current/api
+[github-gh]: https://github.com/spring-projects/spring-social-github
+[github-ref]: http://docs.spring.io/spring-social-github/docs/current/reference/html
+[github-api]: http://docs.spring.io/spring-social-github/docs/current/api
 [Javadoc]: http://docs.spring.io/spring-social/docs/current/api/
 [reference docs]: http://docs.spring.io/spring-social/docs/current/reference/html/
 [samples repository]: https://github.com/spring-projects/spring-social-samples
