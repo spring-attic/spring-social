@@ -23,6 +23,16 @@ import org.springframework.web.context.request.RequestAttributes;
  * @author Keith Donald
  */
 public class ProviderSignInUtils {
+
+	private SessionStrategy sessionStrategy;
+
+	public ProviderSignInUtils() {
+		this(new HttpSessionSessionStrategy());
+	}
+	
+	public ProviderSignInUtils(SessionStrategy sessionStrategy) {
+		this.sessionStrategy = sessionStrategy;
+	}
 	
 	/**
 	 * Get the connection to the provider user the client attempted to sign-in as.
@@ -31,8 +41,22 @@ public class ProviderSignInUtils {
 	 * Must be called before handlePostSignUp() or else the sign-in attempt will have been cleared from the session.
 	 * Returns null if no provider sign-in has been attempted for the current user session.
 	 * @param request the current request attributes, used to extract sign-in attempt information from the current user session
+	 * @deprecated User instance method {@link #getConnectionFromSession(RequestAttributes)} instead.
 	 */
 	public static Connection<?> getConnection(RequestAttributes request) {
+		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
+		return signInAttempt != null ? signInAttempt.getConnection() : null;
+	}
+
+	/**
+	 * Get the connection to the provider user the client attempted to sign-in as.
+	 * Using this connection you may fetch a {@link Connection#fetchUserProfile() provider user profile} and use that to pre-populate a local user registration/signup form.
+	 * You can also lookup the id of the provider and use that to display a provider-specific user-sign-in-attempt flash message e.g. "Your Facebook Account is not connected to a Local account. Please sign up."
+	 * Must be called before handlePostSignUp() or else the sign-in attempt will have been cleared from the session.
+	 * Returns null if no provider sign-in has been attempted for the current user session.
+	 * @param request the current request attributes, used to extract sign-in attempt information from the current user session
+	 */
+	public Connection<?> getConnectionFromSession(RequestAttributes request) {
 		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
 		return signInAttempt != null ? signInAttempt.getConnection() : null;
 	}
@@ -44,6 +68,7 @@ public class ProviderSignInUtils {
 	 * Ensures provider sign-in attempt session context is cleaned up.
 	 * Does nothing if no provider sign-in was attempted for the current user session (is safe to call in that case).
 	 * @param request the current request attributes, used to extract sign-in attempt information from the current user session
+	 * @deprecated Use instance method {@link #doPostSignUp(String, RequestAttributes)} instead.
 	 */
 	public static void handlePostSignUp(String userId, RequestAttributes request) {
 		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
@@ -52,11 +77,24 @@ public class ProviderSignInUtils {
 			request.removeAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
 		}		
 	}
+	
+	/**
+	 * Add the connection to the provider user the client attempted to sign-in with to the new local user's set of connections.
+	 * Should be called after signing-up a new user in the context of a provider sign-in attempt.
+	 * In this context, the user did not yet have a local account but attempted to sign-in using one of his or her existing provider accounts.
+	 * Ensures provider sign-in attempt session context is cleaned up.
+	 * Does nothing if no provider sign-in was attempted for the current user session (is safe to call in that case).
+	 * @param request the current request attributes, used to extract sign-in attempt information from the current user session
+	 */
+	public void doPostSignUp(String userId, RequestAttributes request) {
+		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
+		if (signInAttempt != null) {
+			signInAttempt.addConnection(userId);
+			request.removeAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
+		}		
+	}
 
 	// internal helpers
-	
-	private ProviderSignInUtils() {	
-	}
 	
 	private static ProviderSignInAttempt getProviderUserSignInAttempt(RequestAttributes request) {
 		return (ProviderSignInAttempt) request.getAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);

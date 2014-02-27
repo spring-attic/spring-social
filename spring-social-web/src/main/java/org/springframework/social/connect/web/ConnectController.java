@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactory;
@@ -45,7 +46,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.view.RedirectView;
@@ -66,7 +66,7 @@ import org.springframework.web.util.WebUtils;
  */
 @Controller
 @RequestMapping("/connect")
-public class ConnectController {
+public class ConnectController implements InitializingBean {
 	
 	private final static Log logger = LogFactory.getLog(ConnectController.class);
 	
@@ -78,12 +78,14 @@ public class ConnectController {
 
 	private final MultiValueMap<Class<?>, DisconnectInterceptor<?>> disconnectInterceptors = new LinkedMultiValueMap<Class<?>, DisconnectInterceptor<?>>();
 
-	private final ConnectSupport webSupport = new ConnectSupport();
+	private ConnectSupport connectSupport;
 	
 	private final UrlPathHelper urlPathHelper = new UrlPathHelper();
 	
 	private String viewPath = "connect/";
 
+	private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
+	
 	/**
 	 * Constructs a ConnectController.
 	 * @param connectionFactoryLocator the locator for {@link ConnectionFactory} instances needed to establish connections
@@ -138,7 +140,7 @@ public class ConnectController {
 	 * @param applicationUrl the application URL value
 	 */
 	public void setApplicationUrl(String applicationUrl) {
-		webSupport.setApplicationUrl(applicationUrl);
+		connectSupport.setApplicationUrl(applicationUrl);
 	}
 	
 	/**
@@ -149,6 +151,15 @@ public class ConnectController {
 	 */
 	public void setViewPath(String viewPath) {
 		this.viewPath = viewPath;
+	}
+	
+	/**
+	 * Sets a strategy to use when persisting information that is to survive past the boundaries of a request.
+	 * The default strategy is to set the data as attributes in the HTTP Session.
+	 * @param sessionStrategy the session strategy.
+	 */
+	public void setSessionStrategy(SessionStrategy sessionStrategy) {
+		this.sessionStrategy = sessionStrategy;
 	}
 	
 	/**
@@ -212,9 +223,9 @@ public class ConnectController {
 		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>(); 
 		preConnect(connectionFactory, parameters, request);
 		try {
-			return new RedirectView(webSupport.buildOAuthUrl(connectionFactory, request, parameters));
+			return new RedirectView(connectSupport.buildOAuthUrl(connectionFactory, request, parameters));
 		} catch (Exception e) {
-			request.setAttribute(PROVIDER_ERROR_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);
+			sessionStrategy.setAttribute(request, PROVIDER_ERROR_ATTRIBUTE, e);
 			return connectionStatusRedirect(providerId, request);
 		}
 	}
@@ -229,10 +240,10 @@ public class ConnectController {
 	public RedirectView oauth1Callback(@PathVariable String providerId, NativeWebRequest request) {
 		try {
 			OAuth1ConnectionFactory<?> connectionFactory = (OAuth1ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
-			Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
+			Connection<?> connection = connectSupport.completeConnection(connectionFactory, request);
 			addConnection(connection, connectionFactory, request);
 		} catch (Exception e) {
-			request.setAttribute(PROVIDER_ERROR_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);
+			sessionStrategy.setAttribute(request, PROVIDER_ERROR_ATTRIBUTE, e);
 			logger.warn("Exception while handling OAuth1 callback (" + e.getMessage() + "). Redirecting to " + providerId +" connection status page.");
 		}
 		return connectionStatusRedirect(providerId, request);
@@ -247,10 +258,10 @@ public class ConnectController {
 	public RedirectView oauth2Callback(@PathVariable String providerId, NativeWebRequest request) {
 		try {
 			OAuth2ConnectionFactory<?> connectionFactory = (OAuth2ConnectionFactory<?>) connectionFactoryLocator.getConnectionFactory(providerId);
-			Connection<?> connection = webSupport.completeConnection(connectionFactory, request);
+			Connection<?> connection = connectSupport.completeConnection(connectionFactory, request);
 			addConnection(connection, connectionFactory, request);
 		} catch (Exception e) {
-			request.setAttribute(PROVIDER_ERROR_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);
+			sessionStrategy.setAttribute(request, PROVIDER_ERROR_ATTRIBUTE, e);
 			logger.warn("Exception while handling OAuth2 callback (" + e.getMessage() + "). Redirecting to " + providerId +" connection status page.");
 		}
 		return connectionStatusRedirect(providerId, request);
@@ -270,7 +281,7 @@ public class ConnectController {
 		errorMap.put("error", error);
 		if (errorDescription != null) { errorMap.put("errorDescription", errorDescription); }
 		if (errorUri != null) { errorMap.put("errorUri", errorUri); }
-		request.setAttribute(AUTHORIZATION_ERROR_ATTRIBUTE, errorMap, RequestAttributes.SCOPE_SESSION);
+		sessionStrategy.setAttribute(request, AUTHORIZATION_ERROR_ATTRIBUTE, errorMap);
 		return connectionStatusRedirect(providerId, request);
 	}
 
@@ -346,6 +357,11 @@ public class ConnectController {
 		}
 		return new RedirectView(path, true);
 	}
+	
+	// From InitializingBean
+	public void afterPropertiesSet() throws Exception {
+		this.connectSupport = new ConnectSupport(sessionStrategy);
+	}
 
 	// internal helpers
 
@@ -373,7 +389,7 @@ public class ConnectController {
 			connectionRepository.addConnection(connection);
 			postConnect(connectionFactory, connection, request);
 		} catch (DuplicateConnectionException e) {
-			request.setAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, e, RequestAttributes.SCOPE_SESSION);
+			sessionStrategy.setAttribute(request, DUPLICATE_CONNECTION_ATTRIBUTE, e);
 		}
 	}
 
@@ -426,14 +442,14 @@ public class ConnectController {
 	private void processFlash(WebRequest request, Model model) {
 		convertSessionAttributeToModelAttribute(DUPLICATE_CONNECTION_ATTRIBUTE, request, model);
 		convertSessionAttributeToModelAttribute(PROVIDER_ERROR_ATTRIBUTE, request, model);
-		model.addAttribute(AUTHORIZATION_ERROR_ATTRIBUTE, request.getAttribute(AUTHORIZATION_ERROR_ATTRIBUTE, RequestAttributes.SCOPE_SESSION));
-		request.removeAttribute(AUTHORIZATION_ERROR_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
+		model.addAttribute(AUTHORIZATION_ERROR_ATTRIBUTE, sessionStrategy.getAttribute(request, AUTHORIZATION_ERROR_ATTRIBUTE));
+		sessionStrategy.removeAttribute(request, AUTHORIZATION_ERROR_ATTRIBUTE);
 	}
 
 	private void convertSessionAttributeToModelAttribute(String attributeName, WebRequest request, Model model) {
-		if (request.getAttribute(attributeName, RequestAttributes.SCOPE_SESSION) != null) {
+		if (sessionStrategy.getAttribute(request, attributeName) != null) {
 			model.addAttribute(attributeName, Boolean.TRUE);
-			request.removeAttribute(attributeName, RequestAttributes.SCOPE_SESSION);			
+			sessionStrategy.removeAttribute(request, attributeName);
 		}
 	}
 

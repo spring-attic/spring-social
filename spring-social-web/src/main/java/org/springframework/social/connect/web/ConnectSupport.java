@@ -40,7 +40,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.WebRequest;
 
 /**
@@ -57,6 +56,16 @@ public class ConnectSupport {
 	private String applicationUrl;
 
 	private String callbackUrl;
+	
+	private SessionStrategy sessionStrategy;
+	
+	public ConnectSupport() {
+		this(new HttpSessionSessionStrategy());
+	}
+	
+	public ConnectSupport(SessionStrategy sessionStrategy) {
+		this.sessionStrategy = sessionStrategy;
+	}
 	
 	/**
 	 * Flag indicating if this instance will support OAuth-based authentication instead of the traditional user authorization.
@@ -188,7 +197,7 @@ public class ConnectSupport {
 			parameters.setCallbackUrl(callbackUrl(request));
 		}
 		OAuthToken requestToken = fetchRequestToken(request, requestParameters, oauthOperations);
-		request.setAttribute(OAUTH_TOKEN_ATTRIBUTE, requestToken, RequestAttributes.SCOPE_SESSION);
+		sessionStrategy.setAttribute(request, OAUTH_TOKEN_ATTRIBUTE, requestToken);
 		return buildOAuth1Url(oauthOperations, requestToken.getValue(), parameters);
 	}
 
@@ -211,7 +220,7 @@ public class ConnectSupport {
 		OAuth2Parameters parameters = getOAuth2Parameters(request, defaultScope, additionalParameters);
 		String state = connectionFactory.generateState();
 		parameters.add("state", state);
-		request.setAttribute(OAUTH2_STATE_ATTRIBUTE, state, RequestAttributes.SCOPE_SESSION);
+		sessionStrategy.setAttribute(request, OAUTH2_STATE_ATTRIBUTE, state);
 		if (useAuthenticateUrl) { 
 			return oauthOperations.buildAuthenticateUrl(parameters);
 		} else {
@@ -246,14 +255,14 @@ public class ConnectSupport {
 	}
 
 	private OAuthToken extractCachedRequestToken(WebRequest request) {
-		OAuthToken requestToken = (OAuthToken) request.getAttribute(OAUTH_TOKEN_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
-		request.removeAttribute(OAUTH_TOKEN_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
+		OAuthToken requestToken = (OAuthToken) sessionStrategy.getAttribute(request, OAUTH_TOKEN_ATTRIBUTE);
+		sessionStrategy.removeAttribute(request, OAUTH_TOKEN_ATTRIBUTE);
 		return requestToken;
 	}
 	
 	private String extractCachedOAuth2State(WebRequest request) {
-		String state = (String) request.getAttribute(OAUTH2_STATE_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
-		request.removeAttribute(OAUTH2_STATE_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
+		String state = (String) sessionStrategy.getAttribute(request, OAUTH2_STATE_ATTRIBUTE);
+		sessionStrategy.removeAttribute(request, OAUTH2_STATE_ATTRIBUTE);
 		return state;		
 	}
 	
