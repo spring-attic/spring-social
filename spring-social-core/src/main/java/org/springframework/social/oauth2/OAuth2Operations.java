@@ -26,37 +26,21 @@ import org.springframework.util.MultiValueMap;
 public interface OAuth2Operations {
 
 	/**
-	 * Construct the URL to redirect the user to for authorization.
-	 * @param grantType specifies whether to use client-side or server-side OAuth flow
-	 * @param parameters authorization parameters needed to build the URL
-	 * @return the absolute authorize URL to redirect the user to for authorization
-	 * @deprecated Use of implicit grant doesn't make sense in any of the contexts where Spring Social is supported (web server or mobile Android client).
-	 *             Therefore, the GrantType enum and methods that accept it do not make sense.
-	 *             Use {@link #buildAuthorizeUrl(OAuth2Parameters)} instead.
-	 */ 
-	@Deprecated
-	String buildAuthorizeUrl(GrantType grantType, OAuth2Parameters parameters);
-
-	/**
-	 * Construct the URL to redirect the user to for authentication.
-	 * The authenticate URL differs from the authorizationUrl slightly in that it does not require the user to authorize the app multiple times.
-	 * This provides a better user experience for "Sign in with Provider" scenarios.
-	 * @param grantType specifies whether to use client-side or server-side OAuth flow
-	 * @param parameters authorization parameters needed to build the URL 
-	 * @return the absolute authenticate URL to redirect the user to for authorization
-	 * @deprecated Use of implicit grant doesn't make sense in any of the contexts where Spring Social is supported (web server or mobile Android client).
-	 *             Therefore, the GrantType enum and methods that accept it do not make sense.
-	 *             Use {@link #buildAuthenticateUrl(OAuth2Parameters)} instead.
-	 */ 
-	@Deprecated
-	String buildAuthenticateUrl(GrantType grantType, OAuth2Parameters parameters);
-	
-	/**
 	 * Construct the URL to redirect the user to for authorization via OAuth2's "Authorization Code Grant".
 	 * @param parameters authorization parameters needed to build the URL
 	 * @return the absolute authorize URL to redirect the user to for authorization
 	 */ 
 	String buildAuthorizeUrl(OAuth2Parameters parameters);
+
+	/**
+	 * Construct the URL to redirect the user to for authorization. Use of implicit grant
+	 * is discouraged unless there is no other option available. Use
+	 * {@link #buildAuthorizeUrl(OAuth2Parameters)} instead.
+	 * @param grantType specifies whether to use client-side or server-side OAuth flow
+	 * @param parameters authorization parameters needed to build the URL
+	 * @return the absolute authorize URL to redirect the user to for authorization
+	 */
+	String buildAuthorizeUrl(GrantType grantType, OAuth2Parameters parameters);
 
 	/**
 	 * Construct the URL to redirect the user to for authentication via OAuth2's "Authorization Code Grant".
@@ -66,7 +50,20 @@ public interface OAuth2Operations {
 	 * @return the absolute authenticate URL to redirect the user to for authorization
 	 */ 
 	String buildAuthenticateUrl(OAuth2Parameters parameters);
-	
+
+	/**
+	 * Construct the URL to redirect the user to for authentication. The authenticate URL
+	 * differs from the authorizationUrl slightly in that it does not require the user to
+	 * authorize the app multiple times. This provides a better user experience for
+	 * "Sign in with Provider" scenarios. Use of implicit grant is discouraged unless
+	 * there is no other option available. Use
+	 * {@link #buildAuthenticateUrl(OAuth2Parameters)} instead.
+	 * @param grantType specifies whether to use client-side or server-side OAuth flow
+	 * @param parameters authorization parameters needed to build the URL
+	 * @return the absolute authenticate URL to redirect the user to for authorization
+	 */
+	String buildAuthenticateUrl(GrantType grantType, OAuth2Parameters parameters);
+
 	/**
 	 * Exchange the authorization code for an access grant.
 	 * @param authorizationCode the authorization code returned by the provider upon user authorization

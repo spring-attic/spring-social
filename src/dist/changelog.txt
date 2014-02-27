@@ -1,13 +1,5 @@
 Spring Social 1.1.0 Milestone 5 (October 28, 2013)
 ==================================================
-Compatibility Notes:
-   * The GrantType enum and the buildAuthorizeUrl()/buildAuthenticateUrl()
-     methods in OAuth2Operations that accept it as a parameter have been
-     deprecated and will be removed in Spring Social 1.2.0.
-     This enum exists to support OAuth 2's Implicit Grant, which doesn't
-     make sense in any of the contexts supported by Spring Social (e.g.,
-     web server and native Android client).
-
 New Features/Improvements:
    * Generic/configurable connection factory and service provider implementations
      to allow for easy connectivity with a provider for which no dedicated

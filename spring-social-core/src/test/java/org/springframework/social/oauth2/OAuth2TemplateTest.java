@@ -15,10 +15,15 @@
  */
 package org.springframework.social.oauth2;
 
-import static org.junit.Assert.*;
-import static org.springframework.http.HttpMethod.*;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.*;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -54,11 +59,34 @@ public class OAuth2TemplateTest {
 	}
 
 	@Test
+	public void buildAuthorizeUrl_tokenResponseType() {
+		OAuth2Parameters parameters = new OAuth2Parameters();
+		parameters.setRedirectUri("http://www.someclient.com/connect/foo");
+		parameters.setScope("read,write");
+		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=token&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&scope=read%2Cwrite";
+		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, parameters);
+		assertEquals(expected, actual);
+	}
+
+	@Test
 	public void buildAuthorizeUrl_noScopeInParameters() {
 		OAuth2Parameters parameters = new OAuth2Parameters();
 		parameters.setRedirectUri("http://www.someclient.com/connect/foo");
 		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=code&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo";
 		String actual = oAuth2Template.buildAuthorizeUrl(parameters);
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void buildAuthorizeUrl_additionalParameters() {
+		OAuth2Parameters parameters = new OAuth2Parameters();
+		parameters.setRedirectUri("http://www.someclient.com/connect/foo");
+		parameters.setScope("read,write");
+		parameters.add("display", "touch");
+		parameters.add("anotherparam", "somevalue1");
+		parameters.add("anotherparam", "somevalue2");
+		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=token&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&scope=read%2Cwrite&display=touch&anotherparam=somevalue1&anotherparam=somevalue2";
+		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, parameters);
 		assertEquals(expected, actual);
 	}
 
