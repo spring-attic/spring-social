@@ -5,8 +5,14 @@ buildscript {
     dependencies {
         classpath("org.springframework.build.gradle:docbook-reference-plugin:0.2.8")
         classpath("me.champeau.gradle:gradle-javadoc-hotfix-plugin:0.1")
+        classpath('org.asciidoctor:asciidoctor-gradle-plugin:0.7.0')
+        classpath('org.asciidoctor:asciidoctor-java-integration:0.1.4.preview.1')
     }
 }
+
+// Set up different subproject lists for individual configuration
+ext.javaProjects = subprojects.findAll { project -> project.name != 'docs' && project.name != 'manual' }
+ext.coreModuleProjects = javaProjects
 
 configure(allprojects) {
     group = "org.springframework.social"
@@ -267,94 +273,35 @@ configure(rootProject) {
         destinationDir = new File(buildDir, "api")
     }
 
-    task docsZip(type: Zip) {
-        group = "Distribution"
-        classifier = "docs"
-        description = "Builds -${classifier} archive containing api and reference " +
-            "for deployment at static.springframework.org/spring-social/docs."
+// Task for creating the distro zip
 
-        from("src/dist") {
-            include "changelog.txt"
+task dist(type: Zip) {
+    dependsOn subprojects*.tasks*.matching { task -> task.name == 'assemble' || task.name.endsWith('Zip') || task.name.endsWith('generatePom') }
+    classifier = 'dist'
+
+    evaluationDependsOn(':docs')
+    evaluationDependsOn(':docs:manual')
+
+    def zipRootDir = "${project.name}-$version"
+    into(zipRootDir) {
+        from(rootDir) {
+            include '*.txt'
         }
-
-        from (api) {
-            into "api"
+        into('docs') {
+            with(project(':docs').apiSpec)
+            with(project(':docs:manual').spec)
         }
-
-        from (reference) {
-            into "reference"
-        }
-    }
-
-    task schemaZip(type: Zip) {
-        group = "Distribution"
-        classifier = "schema"
-        description = "Builds -${classifier} archive containing all " +
-            "XSDs for deployment at static.springframework.org/schema."
-
-        subprojects.each { subproject ->
-            def Properties schemas = new Properties();
-
-            subproject.sourceSets.main.resources.find {
-                it.path.endsWith("META-INF/spring.schemas")
-            }?.withInputStream { schemas.load(it) }
-
-            for (def key : schemas.keySet()) {
-                def shortName = key.replaceAll(/http.*schema.(.*).spring-.*/, '$1')
-                assert shortName != key
-                File xsdFile = subproject.sourceSets.main.resources.find {
-                    it.path.endsWith(schemas.get(key))
-                }
-                assert xsdFile != null
-                into (shortName) {
-                    from xsdFile.path
-                }
-            }
+        into('dist') {
+            from coreModuleProjects.collect {project -> project.libsDir }
         }
     }
+}
 
-    task distZip(type: Zip, dependsOn: [docsZip, schemaZip]) {
-        group = "Distribution"
-        classifier = "dist"
-        description = "Builds -${classifier} archive, containing all jars and docs, " +
-                      "suitable for community download page."
-
-        ext.baseDir = "${project.name}-${project.version}";
-
-        from("src/dist") {
-            include "readme.txt"
-            include "license.txt"
-            include "notice.txt"
-            into "${baseDir}"
-            expand(copyright: new Date().format("yyyy"), version: project.version)
-        }
-
-        from(zipTree(docsZip.archivePath)) {
-            into "${baseDir}/docs"
-        }
-
-        from(zipTree(schemaZip.archivePath)) {
-            into "${baseDir}/schema"
-        }
-
-        subprojects.each { subproject ->
-            into ("${baseDir}/libs") {
-                from subproject.jar
-                if (subproject.tasks.findByPath("sourcesJar")) {
-                    from subproject.sourcesJar
-                }
-                if (subproject.tasks.findByPath("javadocJar")) {
-                    from subproject.javadocJar
-                }
-            }
-        }
-    }
-
-    artifacts {
-        archives docsZip
-        archives schemaZip
-        archives distZip
-    }
+artifacts {
+    archives dist
+    archives project(':docs').docsZip
+    archives project(':docs').schemaZip
+}    
 
     task wrapper(type: Wrapper) {
         gradleVersion = "1.11"

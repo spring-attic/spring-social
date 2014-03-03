@@ -29,7 +29,7 @@ public interface OAuth1Operations {
 	 * @see OAuth1Version#CORE_10
 	 * @see OAuth1Version#CORE_10_REVISION_A
 	 */
-	public OAuth1Version getVersion();
+	OAuth1Version getVersion();
 	
 	/**
 	 * Begin a new authorization flow by fetching a new request token from this service provider.

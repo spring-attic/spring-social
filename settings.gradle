@@ -16,6 +16,10 @@
 
 rootProject.name = 'spring-social'
 
+include 'docs', 'docs:manual'
+def docs = findProject(':docs')
+docs.buildFileName = 'docs.gradle'
+
 include 'spring-social-core'
 include 'spring-social-web'
 include 'spring-social-config'
