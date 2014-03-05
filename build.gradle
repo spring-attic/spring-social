@@ -25,7 +25,7 @@ configure(allprojects) {
     ext.junitVersion            = "4.11"
     ext.mockitoVersion          = "1.9.5"
     ext.servletApiVersion       = "3.0.1"
-    ext.springVersion           = "4.0.1.RELEASE"
+    ext.springVersion           = "4.0.2.RELEASE"
     ext.springReleaseVersion    = "latest.release"
     ext.springSnapshotVersion   = "latest.integration"
     ext.springSecurityVersion   = "3.2.0.RELEASE"

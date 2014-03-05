@@ -50,8 +50,7 @@ public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
 	 */
 	protected AbstractOAuth1ApiBinding() {
 		credentials = null;
-		restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
-		restTemplate.setMessageConverters(getMessageConverters());
+		restTemplate = createRestTemplateWithCulledMessageConverters();
 		configureRestTemplate(restTemplate);
 	}
 
@@ -69,7 +68,6 @@ public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
 		Assert.notNull(accessTokenSecret, "Constructor argument 'accessTokenSecret' cannot be null.");
 		credentials = new OAuth1Credentials(consumerKey, consumerSecret, accessToken, accessTokenSecret);
 		restTemplate = createRestTemplate(credentials);
-		restTemplate.setMessageConverters(getMessageConverters());
 		configureRestTemplate(restTemplate);
 	}
 	
@@ -168,7 +166,7 @@ public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
 	}
 	
 	private RestTemplate createRestTemplate(OAuth1Credentials credentials) {
-		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
+		RestTemplate client = createRestTemplateWithCulledMessageConverters();
 		OAuth1RequestInterceptor interceptor = new OAuth1RequestInterceptor(credentials);
 		List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
 		interceptors.add(interceptor);
@@ -176,4 +174,18 @@ public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
 		return client;
 	}
 	
+	// Temporary: The RestTemplate that accepts a list of message converters wasn't added until Spring 3.2.7.
+	//            Remove this method and use that constructor exclusively when 3.1.x support is no longer necessary (Spring Social 2.0).
+	private RestTemplate createRestTemplateWithCulledMessageConverters() {
+		RestTemplate client;
+		List<HttpMessageConverter<?>> messageConverters = getMessageConverters();
+		try {
+			client = new RestTemplate(messageConverters);
+		} catch (NoSuchMethodError e) {
+			client = new RestTemplate();
+			client.setMessageConverters(messageConverters);
+		}
+		client.setRequestFactory(ClientHttpRequestFactorySelector.getRequestFactory());
+		return client;
+	}
 }

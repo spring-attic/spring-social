@@ -49,8 +49,7 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 	 */
 	protected AbstractOAuth2ApiBinding() {
 		accessToken = null;
-		restTemplate = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
-		restTemplate.setMessageConverters(getMessageConverters());
+		restTemplate = createRestTemplateWithCulledMessageConverters();
 		configureRestTemplate(restTemplate);
 	}
 	
@@ -70,7 +69,6 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 	protected AbstractOAuth2ApiBinding(String accessToken, TokenStrategy tokenStrategy) {
 		this.accessToken = accessToken;
 		restTemplate = createRestTemplate(accessToken, getOAuth2Version(), tokenStrategy);
-		restTemplate.setMessageConverters(getMessageConverters());
 		configureRestTemplate(restTemplate);
 	}
 
@@ -179,11 +177,26 @@ public abstract class AbstractOAuth2ApiBinding implements ApiBinding {
 	}
 
 	private RestTemplate createRestTemplate(String accessToken, OAuth2Version version, TokenStrategy tokenStrategy) {
-		RestTemplate client = new RestTemplate(ClientHttpRequestFactorySelector.getRequestFactory());
+		RestTemplate client = createRestTemplateWithCulledMessageConverters();
 		ClientHttpRequestInterceptor interceptor = tokenStrategy.interceptor(accessToken, version);
 		List<ClientHttpRequestInterceptor> interceptors = new LinkedList<ClientHttpRequestInterceptor>();
 		interceptors.add(interceptor);
 		client.setInterceptors(interceptors);
+		return client;
+	}
+
+	// Temporary: The RestTemplate that accepts a list of message converters wasn't added until Spring 3.2.7.
+	//            Remove this method and use that constructor exclusively when 3.1.x support is no longer necessary (Spring Social 2.0).
+	private RestTemplate createRestTemplateWithCulledMessageConverters() {
+		RestTemplate client;
+		List<HttpMessageConverter<?>> messageConverters = getMessageConverters();
+		try {
+			client = new RestTemplate(messageConverters);
+		} catch (NoSuchMethodError e) {
+			client = new RestTemplate();
+			client.setMessageConverters(messageConverters);
+		}
+		client.setRequestFactory(ClientHttpRequestFactorySelector.getRequestFactory());
 		return client;
 	}
 
