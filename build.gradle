@@ -17,10 +17,10 @@ ext.coreModuleProjects = javaProjects
 configure(allprojects) {
     group = "org.springframework.social"
 
-    ext.h2Version               = "1.3.173"
+    ext.h2Version               = "1.3.175"
     ext.hamcrestVersion         = "1.3"
     ext.httpComponentsVersion   = "4.3.1"
-    ext.jacksonVersion          = "2.2.2"
+    ext.jacksonVersion          = "2.3.0"
     ext.javaxInjectVersion      = "1"
     ext.junitVersion            = "4.11"
     ext.mockitoVersion          = "1.9.5"
