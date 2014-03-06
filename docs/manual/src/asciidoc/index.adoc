@@ -5,7 +5,7 @@ The Spring Social project enables your applications to establish
 Connections with Software-as-a-Service (SaaS) Providers such as Facebook
 and Twitter to invoke APIs on behalf of Users.
 
-== Overview
+== Introduction
 
 [[section_preface]]
 === Socializing applications
@@ -81,7 +81,7 @@ extend Spring Social to enable integration with popular SaaS providers,
 including Facebook and Twitter.
 
 [[section_how-to-get]]
-=== How to get
+=== Getting Spring Social
 The core Spring Social project consists of the modules described in <<table_modules>>.
 
 [[table_modules]]
@@ -96,75 +96,166 @@ The core Spring Social project consists of the modules described in <<table_modu
 |=======================================================================
 
 Which of these modules your application needs will largely depend on
-what facets of Spring Social you intend to use. At very minimum, you'll
-need the core module in your application's classpath (as a Maven `<dependency>`):
+what facets of Spring Social you intend to use. 
 
-```xml
-<dependency>
-    <groupId>org.springframework.social</groupId>
-    <artifactId>spring-social-core</artifactId>
-    <version>${spring-social.version}</version>
-</dependency>
-```
+==== Gradle
+
+At very minimum, you'll need the core module in your application's classpath:
+
+.build.gradle
+[source,groovy,subs="attributes,verbatim"]
+----
+compile "org.springframework.social:spring-social-core:{spring-social-version}"
+----
 
 To let Spring Social handle the back-and-forth authorization handshake
 between your web application and a service provider, you'll need the web
 module:
 
-```xml
-<dependency>
-    <groupId>org.springframework.social</groupId>
-    <artifactId>spring-social-web</artifactId>
-    <version>${spring-social.version}</version>
-</dependency>
-```
+.build.gradle
+[source,groovy,subs="attributes,verbatim"]
+----
+compile "org.springframework.social:spring-social-web:{spring-social-version}"
+----
 
 You'll probably want to take advantage of Spring Social's simplified configuration
 support for XML and/or Java configuration. If so, you'll need the config module:
 
-```xml
-<dependency>
-    <groupId>org.springframework.social</groupId>
-    <artifactId>spring-social-config</artifactId>
-    <version>${spring-social.version}</version>
-</dependency>
-```
+.build.gradle
+[source,groovy,subs="attributes,verbatim"]
+----
+compile "org.springframework.social:spring-social-config:{spring-social-version}"
+----
 
 If you want to integrate Spring Social with Spring Security to enable users to sign
 into your application via Facebook, Twitter, or another provider, you'll need the
 security module:
 
-```xml
+.build.gradle
+[source,groovy,subs="attributes,verbatim"]
+----
+compile "org.springframework.social:spring-social-security:{spring-social-version}"
+----
+
+Final GA releases of Spring Social will be available in the Maven Central repository.
+But if you are developing against a milestone or release candidate version,
+such as 1.1.0.M1 or 1.1.0.RC1, then you will need to add Spring's milestone
+repository to your build in order to resolve the artifacts:
+
+.build.gradle
+[source,groovy,subs="attributes,verbatim"]
+----
+repositories {
+  mavenLocal()
+  maven { url 'http://maven.springframework.org/milestone' }
+  mavenCentral()
+}
+----
+
+Similarly, if you are trying out the latest nightly build version (e.g.
+1.1.0.BUILD-SNAPSHOT), you will need to add Spring's snapshot repository:
+
+.build.gradle
+[source,groovy,subs="attributes,verbatim"]
+----
+repositories {
+  mavenLocal()
+  maven { url 'http://maven.springframework.org/snapshot' }
+  mavenCentral()
+}
+----
+
+==== Maven
+
+At very minimum, you'll
+need the core module in your application's classpath (as a Maven `<dependency>`):
+
+.pom.xml
+[source,xml,subs="attributes,verbatim"]
+----
+<dependency>
+    <groupId>org.springframework.social</groupId>
+    <artifactId>spring-social-core</artifactId>
+    <version>{spring-social-version}</version>
+</dependency>
+----
+
+Or, if you're using Gradle to build your project:
+
+.build.gradle
+[source,groovy,subs="attributes,verbatim"]
+----
+compile "org.springframework.social:spring-social-core:{spring-social-version}"
+----
+
+To let Spring Social handle the back-and-forth authorization handshake
+between your web application and a service provider, you'll need the web
+module:
+
+.pom.xml
+[source,xml,subs="attributes,verbatim"]
+----
+<dependency>
+    <groupId>org.springframework.social</groupId>
+    <artifactId>spring-social-web</artifactId>
+    <version>{spring-social-version}</version>
+</dependency>
+----
+
+You'll probably want to take advantage of Spring Social's simplified configuration
+support for XML and/or Java configuration. If so, you'll need the config module:
+
+.pom.xml
+[source,xml,subs="attributes,verbatim"]
+----
+<dependency>
+    <groupId>org.springframework.social</groupId>
+    <artifactId>spring-social-config</artifactId>
+    <version>{spring-social-version}</version>
+</dependency>
+----
+
+If you want to integrate Spring Social with Spring Security to enable users to sign
+into your application via Facebook, Twitter, or another provider, you'll need the
+security module:
+
+.pom.xml
+[source,xml,subs="attributes,verbatim"]
+----
 <dependency>
     <groupId>org.springframework.social</groupId>
     <artifactId>spring-social-security</artifactId>
-    <version>${spring-social.version}</version>
+    <version>{spring-social-version}</version>
 </dependency>
-```
+----
 
-Final GA releases of Spring Social will be availale in the Maven Central repository.
+Final GA releases of Spring Social will be available in the Maven Central repository.
 But if you are developing against a milestone or release candidate version,
 such as 1.1.0.M1 or 1.1.0.RC1, then you will need to add the following
 repository to your build in order to resolve the artifacts:
 
-```xml
+.pom.xml
+[source,xml,subs="attributes,verbatim"]
+----
 <repository>
     <id>org.springframework.maven.milestone</id>
     <name>Spring Maven Milestone Repository</name>
-        <url>http://repo.spring.io/libs-milestone-local</url>
+        <url>http://repo.spring.io/milestone</url>
 </repository>
-```
+----
 
 Similarly, if you are trying out the latest nightly build version (e.g.
 1.1.0.BUILD-SNAPSHOT), you will need to add the following repository:
 
-```xml
+.pom.xml
+[source,xml,subs="attributes,verbatim"]
+----
 <repository>
     <id>org.springframework.maven.snapshot</id>
     <name>Spring Maven Snapshot Repository</name>
-        <url>http://repo.spring.io/libs-snapshot-local</url>
+        <url>http://repo.spring.io/snapshot</url>
 </repository>
-```
+----
 
 [[section_client-modules]]
 ==== Client modules
@@ -178,24 +269,35 @@ providers. These client modules are listed in <<table_clientModules>>.
 [options="header"]
 |=======================================================================
 |Name |Maven group ID |Maven artifact ID
-|http://docs.spring.io/spring-social-facebook/docs/1.0.x/reference/html/[Spring Social Facebook] |org.springframework.social |spring-social-facebook
-|http://docs.spring.io/spring-social-twitter/docs/1.0.x/reference/html/[Spring Social Twitter] |org.springframework.social |spring-social-twitter
-|http://docs.spring.io/spring-social-linkedin/docs/1.0.x/reference/html/[Spring Social LinkedIn] |org.springframework.social |spring-social-linkedin
-|http://docs.spring.io/spring-social-github/docs/1.0.x/reference/html/[Spring Social GitHub] |org.springframework.social |spring-social-github
-|http://docs.spring.io/spring-social-tripit/docs/1.0.x/reference/html/[Spring Social TripIt] |org.springframework.social |spring-social-tripit
+|http://docs.spring.io/spring-social-facebook/site/docs/1.1.0.RC1/reference/htmlsingle/[Spring Social Facebook] |org.springframework.social |spring-social-facebook
+|http://docs.spring.io/spring-social-twitter/site/docs/1.1.0.RC1/reference/htmlsingle/[Spring Social Twitter] |org.springframework.social |spring-social-twitter
+|http://docs.spring.io/spring-social-linkedin/site/docs/1.1.0.RC1/reference/htmlsingle/[Spring Social LinkedIn] |org.springframework.social |spring-social-linkedin
+|Spring Social GitHub |org.springframework.social |spring-social-github
+|Spring Social TripIt |org.springframework.social |spring-social-tripit
 |=======================================================================
 
 All of these modules are optional, depending on the connectivity needs
 of your application. For instance, if your application will connect with
-Facebook, you'll want to add the Facebook module to your project:
+Facebook, you'll want to add the Facebook module to your project.
+In Gradle:
 
-```xml
+.build.gradle
+[source,groovy,subs="attributes,verbatim"]
+----
+compile "org.springframework.social:spring-social-facebook:{spring-social-version}"
+----
+
+Or in Maven:
+
+.pom.xml
+[source,xml,subs="attributes,verbatim"]
+----
 <dependency>
     <groupId>org.springframework.social</groupId>
     <artifactId>spring-social-facebook</artifactId>
-    <version>${spring-social-facebook.version}</version>
+    <version>{spring-social-version}</version>
 </dependency>
-```
+----
 
 Note that each of the client modules will progress and release on a
 different schedule than Spring Social. Consequently, the version numbers
@@ -219,7 +321,7 @@ The Spring Social web support requires Java Servlet 2.5 or greater
 (Tomcat 6+). We recommend, however, that you use Java Servlet 3.0 or greater.
 
 ===== Spring Framework
-Spring Social depends on RestTemplate provided by the core
+Spring Social depends on `RestTemplate` provided by the core
 http://www.springsource.org/documentation[Spring Framework] in the
 spring-web module. It requires Spring Framework version 3.1 or above, although
 Spring Framework 4.0 is recommended.
@@ -228,16 +330,18 @@ Spring Framework 4.0 is recommended.
 If you're not already using Spring Security to secure your application,
 you'll need to add the standalone crypto module. This is required for
 OAuth1 request signing and encrypting credentials when persisting
-Connection data. If you're already using Spring Security, there is
+connection data. If you're already using Spring Security, there is
 nothing for you to do because the crypto library comes included.
 
-```xml
+.pom.xml
+[source,xml,subs="attributes,verbatim"]
+----
 <dependency>
     <groupId>org.springframework.security</groupId>
     <artifactId>spring-security-crypto</artifactId>
-    <version>3.2.1.RELEASE</version>
+    <version>{spring-security-version}</version>
 </dependency>
-```
+----
 
 ===== Apache HttpComponents
 Spring Social has an optional dependency on
@@ -246,19 +350,23 @@ the HttpComponents HttpClient library is present, it will use it as the
 HTTP client (which is generally recommended). Otherwise, it will fall
 back on standard J2SE facilities.
 
-```xml
+.pom.xml
+[source,xml,subs="attributes,verbatim"]
+----
 <dependency>
     <groupId>org.apache.httpcomponents</groupId>
     <artifactId>httpclient</artifactId>
-    <version>4.3.3</version>
+    <version>{httpComponentsVersion}</version>
 </dependency>
-```
+----
+
+Even thought HttpComponents is an optional dependency, we strongly recommend it over the fallback option.
 
 ===== Jackson JSON Processor
 Spring Social's provider API bindings rely on the
 http://jackson.codehaus.org/[Jackson JSON Processor] to map JSON
 responses to Java objects. Each binding, such as Facebook or Twitter,
-transitively depends on Jackson 2.3.2, so there's nothing special to do
+transitively depends on Jackson {jacksonVersion}, so there's nothing special to do
 to add Jackson to your project's Maven or Gradle build.
 
 ==== Sample Code
@@ -278,7 +386,7 @@ The Spring Social Samples project includes the following samples:
 * spring-social-showcase-sec - Illustrates most of Spring Social's features,
 including Spring Security integration.
 * spring-social-movies - Shows how to extend Spring Social to implement
-a new ServiceProvider and API binding.
+a new `ServiceProvider` and API binding.
 * spring-social-twitter4j - Shows how to extend Spring Social and re-use
 an existing API binding.
 * spring-social-popup - Shows how to use Spring Social to drive a
@@ -286,7 +394,7 @@ browser popup-based connection flow.
 * spring-social-canvas - Demonstrates how to use Spring Social within a
 Facebook Canvas application.
 
-[[section_connectFramework]]
+[[connectFramework]]
 == Service Provider 'Connect' Framework
 The `spring-social-core` module includes a _Service Provider Connect Framework_ 
 for managing connections to Software-as-a-Service (SaaS)
@@ -340,12 +448,12 @@ public interface Connection<A> extends Serializable {
 }
 ```
 
-Each connection is uniquely identified by a composite key consisting of
+Each `Connection` is uniquely identified by a composite key consisting of
 a `providerId` (e.g. 'facebook') and connected `providerUserId` (e.g.
 '738140579', for Craig Walls' Facebook ID). This key tells you what
 provider user the connection is connected to.
 
-A connection has a number of meta-properties that can be used to render
+A `Connection` has a number of meta-properties that can be used to render
 it on a screen, including a `displayName`, `profileUrl`, and `imageUrl`. As an
 example, the following HTML template snippet could be used to generate a
 link to the connected user's profile on the provider's site:
@@ -358,21 +466,21 @@ The value of these properties may depend on the state of the provider
 user's profile. In this case, `sync()` can be called to synchronize these
 values if the user's profile is updated.
 
-A connection can be tested to determine if its authorization credentials
+A `Connection` can be tested to determine if its authorization credentials
 are valid. If invalid, the connection may have expired or been revoked
 by the provider. If the connection has expired, a connection may be
 refreshed to renew its authorization credentials.
 
-A connection provides several operations that allow the client
-application to invoke the ServiceProvider's API in a uniform way. This
+A `Connection` provides several operations that allow the client
+application to invoke the `ServiceProvider`'s API in a uniform way. This
 includes the ability to fetch a model of the user's profile and update
 the user's status in the provider's system.
 
-A connection's parameterized type `<A>` represents the Java binding to the
-ServiceProvider's native API. An instance of this API binding can be
+A `Connection`'s parameterized type `<A>` represents the Java binding to the
+`ServiceProvider`'s native API. An instance of this API binding can be
 obtained by calling `getApi()`. As an example, a Facebook connection
 instance would be parameterized as `Connection<Facebook>`. `getApi()`
-would return a Facebook instance that provides a Java binding to
+would return a `Facebook` instance that provides a Java binding to
 Facebook's graph API for a specific Facebook user.
 
 Finally, the internal state of a connection can be captured for transfer
@@ -384,31 +492,31 @@ To put this model into action, suppose we have a reference to a
 `Connection<Twitter>` instance. Suppose the connected user is the Twitter
 user with screen name 'jbauer'.
 
-1.  Connection#getKey() would return ('twitter', '14710604') where
+1.  `Connection#getKey()` would return ('twitter', '14710604') where
 '14710604' is @jbauer's Twitter-assigned user id that never changes.
-2.  Connection#getDisplayName() would return '@jbauer'.
-3.  Connection#getProfileUrl() would return
+2.  `Connection#getDisplayName()` would return '@jbauer'.
+3.  `Connection#getProfileUrl()` would return
 'http://twitter.com/jbauer'.
-4.  Connection#getImageUrl() would return
+4.  `Connection#getImageUrl()` would return
 'http://a0.twimg.com/profile_images/105951287/IMG_5863_2_normal.jpg'.
-5.  Connection#sync() would synchronize the state of the connection with
+5.  `Connection#sync()` would synchronize the state of the connection with
 @jbauer's profile.
-6.  Connection#test() would return true indicating the authorization
+6.  `Connection#test()` would return `true` indicating the authorization
 credentials associated with the Twitter connection are valid. This
 assumes Twitter has not revoked the AcmeApp client application, and
 @jbauer has not reset his authorization credentials (Twitter
 connections do not expire).
-7.  Connection#hasExpired() would return false.
-8.  Connection#refresh() would not do anything since connections to
+7.  `Connection#hasExpired()` would return `false`.
+8.  `Connection#refresh()` would not do anything since connections to
 Twitter do not expire.
-9.  Connection#fetchUserProfile() would make a remote API call to
+9.  `Connection#fetchUserProfile()` would make a remote API call to
 Twitter to get @jbauer's profile data and normalize it into a
-UserProfile model.
-10. Connection#updateStatus(String) would post a status update to
+`UserProfile` model.
+10. `Connection#updateStatus(String)` would post a status update to
 @jbauer's timeline.
-11. Connection#getApi() would return a Twitter giving the client
+11. `Connection#getApi()` would return a Twitter giving the client
 application access to the full capabilities of Twitter's native API.
-12. Connection#createData() would return ConnectionData that could be
+12. `Connection#createData()` would return `ConnectionData` that could be
 serialized and used to restore the connection at a later time.
 
 [[section_establishingConnections]]
@@ -417,7 +525,7 @@ So far we have discussed how existing connections are modeled, but we
 have not yet discussed how new connections are established. The manner
 in which connections between local users and provider users are
 established varies based on the authorization protocol used by the
-ServiceProvider. Some service providers use OAuth, others use Basic
+`ServiceProvider`. Some service providers use OAuth, others use HTTP Basic
 Auth, others may use something else. Spring Social currently provides
 native support for OAuth-based service providers, including support for
 OAuth 1 and OAuth 2. This covers the leading social networks, such as
@@ -427,9 +535,9 @@ framework.
 
 Each authorization protocol is treated as an implementation detail where
 protocol-specifics are kept out of the core Connection API. A
-ConnectionFactory abstraction encapsulates the construction of
+`ConnectionFactory` abstraction encapsulates the construction of
 connections that use a specific authorization protocol. In the following
-sections, we will discuss the major ConnectionFactory classes provided
+sections, we will discuss the major `ConnectionFactory` classes provided
 by the framework. Each section will also describe the protocol-specific
 flow required to establish a new connection.
 
@@ -462,8 +570,8 @@ public class OAuth2ConnectionFactory<A> extends ConnectionFactory<A> {
 
 `getOAuthOperations()` returns an API to use to conduct the authorization
 flow, or "OAuth Dance", with a service provider. The result of this flow
-is an AccessGrant that can be used to establish a connection with a
-local user account by calling createConnection. The OAuth2Operations
+is an `AccessGrant` that can be used to establish a connection with a
+local user account by calling `createConnection()`. The `OAuth2Operations`
 interface is shown below:
 
 ```java
@@ -519,12 +627,12 @@ grant.
 5.  The service provider issues the access grant to the application. The
 grant includes an access token and a refresh token. One receipt of these
 tokens, the "OAuth dance" is complete.
-6.  The application uses the AccessGrant to establish a connection
+6.  The application uses the `AccessGrant` to establish a connection
 between the local user account and the external provider account. With
 the connection established, the application can now obtain a reference
 to the Service API and invoke the provider on behalf of the user.
 
-The example code below shows use of a FacebookConnectionFactory to
+The example code below shows use of a `FacebookConnectionFactory` to
 create a connection to Facebook using the OAuth2 server-side flow
 illustrated above. Here, `FacebookConnectionFactory` is a subclass of
 `OAuth2ConnectionFactory`:
@@ -572,7 +680,7 @@ OAuth 1 is the previous version of the OAuth protocol. It is more
 complex OAuth 2, and sufficiently different that it is supported
 separately. Twitter, Linked In, and TripIt are some of the well-known
 ServiceProviders that use OAuth 1. In Spring Social, the
-OAuth1ConnectionFactory allows you to create connections to a
+`OAuth1ConnectionFactory` allows you to create connections to a
 OAuth1-based Service Provider:
 
 ```java
@@ -587,7 +695,7 @@ public class OAuth1ConnectionFactory<A> extends ConnectionFactory<A> {
 }
 ```
 
-Like a OAuth2-based provider, getOAuthOperations() returns an API to use
+Like a OAuth2-based provider, `getOAuthOperations()` returns an API to use
 to conduct the authorization flow, or "OAuth Dance". The result of the
 OAuth 1 flow is an `OAuthToken` that can be used to establish a connection
 with a local user account by calling `createConnection()`. The
@@ -645,10 +753,10 @@ between the local user account and the external provider account. With
 the connection established, the application can now obtain a reference
 to the Service API and invoke the provider on behalf of the user.
 
-The example code below shows use of a TwitterConnectionFactory to create
-a connection to Facebook using the OAuth1 server-side flow illustrated
-above. Here, TwitterConnectionFactory is a subclass of
-OAuth1ConnectionFactory:
+The example code below shows use of a `TwitterConnectionFactory` to create
+a connection to Twitter using the OAuth1 server-side flow illustrated
+above. Here, `TwitterConnectionFactory` is a subclass of
+`OAuth1ConnectionFactory`:
 
 ```java
 TwitterConnectionFactory connectionFactory = 
@@ -863,634 +971,17 @@ ConnectionRepository repository = usersConnectionRepository.createConnectionRepo
 Connection<Facebook> connection = repository.findPrimaryConnection(Facebook.class);
 ```
 
-
-[[section_implementing]]
-== Adding Support for a New Service Provider
-Spring Social makes it easy to add support for service providers that
-are not already supported by the framework. If you review the existing
-client modules, such as spring-social-twitter and
-spring-social-facebook, you will discover they are implemented in a
-consistent manner and they apply a set of well-defined extension points.
-In this chapter, you will learn how to add support for new service
-providers you wish to integrate into your applications.
-
-The process of adding support for a new service provider consists of
-several steps:
-
-1.  Create a source project for the client code e.g.
-`spring-social-twitter`.
-2.  Develop or integrate a Java binding to the provider's API e.g.
-`Twitter`.
-3.  Create a ServiceProvider model that allows users to authorize with
-the remote provider and obtain authorized API instances e.g.
-`TwitterServiceProvider`.
-4.  Create an ApiAdapter that maps the provider's native API onto the
-uniform Connection model e.g. `TwitterAdapter`.
-5.  Finally, create a ConnectionFactory that wraps the other artifacts
-up and provides a simple interface for establishing connections e.g.
-`TwitterConnectionFactory`.
-
-The following sections of this chapter walk you through each of the
-steps with examples.
-
-[[section_creatingAProviderProject]]
-=== Creating a source project for the provider client code
-
-A Spring Social client module is a standard Java project that builds a
-single jar artifact e.g. spring-social-twitter.jar. We recommend the
-code structure of a client module follow the guidelines described below.
-
-[[section_codeStructureGuidelines]]
-==== Code structure guidelines
-We recommend the code for a new Spring Social client module reside
-within the `org.springframework.social.{providerId}` base package, where
-\{providerId} is a unique identifier you assign to the service provider
-you are adding support for. Consider some of the providers already
-supported by the framework as examples:
-
-.Spring Social Client Modules
-[options="header",]
-|=====================================================================
-|Provider ID |Artifact Name |Base Package
-|facebook |spring-social-facebook |org.springframework.social.facebook
-|twitter |spring-social-twitter |org.springframework.social.twitter
-|linkedin |spring-social-linkedin |org.springframework.social.linkedin
-|=====================================================================
-
-Within the base package, we recommend the following subpackage
-structure:
-
-.Module Structure
-[options="header",]
-|=======================================================================
-|Subpackage |Description
-|api |The public interface that defines the API binding.
-|api.impl |The implementation of the API binding.
-|connect |The types necessary to establish connections to the service provider.
-|=======================================================================
-
-You can see this recommended structure in action by reviewing one of the
-other client modules such as spring-social-twitter:
-
-Here, the central service API type, Twitter, is located in the api
-package along with its supporting operations types and data transfer
-object types. The primary implementation of that interface,
-TwitterTemplate, is located in the api.impl package (along with other
-package-private impl types have that been excluded from this view).
-Finally, the connect package contains the implementations of various
-connect SPIs that enable connections to Twitter to be established and
-persisted.
-
-[[]]
-=== Developing a Java binding to the provider's API
-
-Spring Social favors the development of strongly-typed Java bindings to
-external service provider APIs. This provides a simple, domain-oriented
-interface for Java applications to use to consume the API. When adding
-support for a new service provider, if no suitable Java binding already
-exists you'll need to develop one. If one already exists, such as
-Twitter4j for example, it is possible to integrate it into the
-framework.
-
-[[]]
-==== Designing a new Java API binding
-
-API developers retain full control over the design and implementation of
-their Java bindings. That said, we offer several design guidelines in an
-effort to improve overall consistency and quality:
-
-* _Favor separating the API binding interface from the implementation._
-This is illustrated in the spring-social-twitter example in the previous
-section. There, "Twitter" is the central API binding type and it is
-declared in the org.springframework.social.twitter.api package with
-other public types. "TwitterTemplate" is the primary implementation of
-this interface and is located in the
-org.springframework.social.twitter.api.impl subpackage along with other
-package-private implementation types.
-* _Favor organizing the API binding hierarchically by RESTful resource._
-REST-based APIs typically expose access to a number of resources in an
-hierarchical manner. For example, Twitter's API provides access to
-"status timelines", "searches", "lists", "direct messages", "friends",
-"geo location", and "users". Rather than add all operations across these
-resources to a single flat "Twitter" interface, the Twitter interface is
-organized hierarchically:
-
-```java
-public interface Twitter extends ApiBinding {
-    
-    BlockOperations blockOperations();
-
-    DirectMessageOperations directMessageOperations();
-
-    FriendOperations friendOperations();
-
-    GeoOperations geoOperations();
-
-    ListOperations listOperations();
-
-    SearchOperations searchOperations();
-    
-    StreamingOperations streamingOperations();
-
-    TimelineOperations timelineOperations();
-
-    UserOperations userOperations();
-
-    RestOperations restOperations();
-
-}
-```
-
-DirectMessageOperations, for example, contains API bindings to Twitter's
-"direct_messages" resource:
-
-```java
-public interface DirectMessageOperations {
-
-    List<DirectMessage> getDirectMessagesReceived();
-
-    List<DirectMessage> getDirectMessagesReceived(int page, int pageSize);
-
-    List<DirectMessage> getDirectMessagesReceived(int page, int pageSize, long sinceId, long maxId);
-
-    List<DirectMessage> getDirectMessagesSent();
-
-    List<DirectMessage> getDirectMessagesSent(int page, int pageSize);
-
-    List<DirectMessage> getDirectMessagesSent(int page, int pageSize, long sinceId, long maxId);
-
-    DirectMessage getDirectMessage(long id);
-
-    void sendDirectMessage(String toScreenName, String text);
-
-    void sendDirectMessage(long toUserId, String text);
-    
-    void deleteDirectMessage(long messageId);
-}
-```
-
-[[]]
-==== Implementing a new Java API binding
-
-API developers are free to implement their Java API binding with
-whatever REST/HTTP client they see fit. That said, Spring Social's
-existing API bindings such as spring-social-twitter all use Spring
-Framework's RestTemplate in conjunction with the Jackson JSON
-ObjectMapper and Apache HttpComponents HTTP client. RestTemplate is a
-popular REST client that provides a uniform object mapping interface
-across a variety of data exchange formats (JSON, XML, etc). Jackson is
-the leading Java-based JSON marshalling technology. Apache
-HttpComponents has proven to be the most robust HTTP client (if it is
-not available on the classpath Spring Social will fallback to standard
-J2SE facilities, however). To help promote consistency across Spring
-Social's supported bindings, we do recommend you consider these
-implementation technologies (and please let us know if they do not meet
-your needs).
-
-Spring Social has adopted a convention where each API implementation
-class is named "\{ProviderId}Template" e.g. TwitterTemplate. We favor
-this convention unless there is a good reason to deviate from it. As
-discussed in the previous section, we recommend keeping implementation
-types separate from the public API types. We also recommend keeping
-internal implementation details package-private.
-
-The way in which an API binding implementation is constructed will vary
-based on the API's authorization protocol. For APIs secured with OAuth1,
-the consumerKey, consumerSecret, accessToken, and accessTokenSecret will
-be required for construction:
-
-```java
-public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, 
-    String accessTokenSecret) { ... }
-```
-
-For OAuth2, only the access token should be required:
-
-```java
-public FacebookTemplate(String accessToken) { ... }
-```
-
-Each request made to the API server needs to be signed with the
-authorization credentials provided during construction of the binding.
-This signing process consists of adding an "Authorization" header to
-each client request before it is executed. For OAuth1, the process is
-quite complicated, and is used to support an elaborate request signature
-verification algorithm between the client and server. For OAuth2, it is
-a lot simpler, but does still vary across the various drafts of the
-OAuth2 specification.
-
-To encapsulate this complexity, for each authorization protocol Spring
-Social provides a `ApiTemplate` base class you may extend from to
-construct a pre-configured RestTemplate instance that performs the
-request signing for you. For OAuth1:
-
-```java
-public class TwitterTemplate extends AbstractOAuth1ApiBinding {
-    public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, 
-            String accessTokenSecret) {
-        super(consumerKey, consumerSecret, accessToken, accessTokenSecret);
-    }
-}            
-```
-
-An OAuth2 example:
-
-```java
-public class FacebookTemplate extends AbstractOAuth2ApiBinding {
-    public FacebookTemplate(String accessToken) {
-        super(accessToken);
-    }
-}
-```
-
-Once configured as shown above, you simply call
-`getRestTemplate()` and implement the various API operations. The existing
-Spring Social client modules all invoke their RestTemplate instances in
-a standard manner:
-
-```java
-public TwitterProfile getUserProfile() {
-    return getRestTemplate().getForObject(buildUri("account/verify_credentials.json"),
-        TwitterProfile.class);
-}
-```
-
-A note on `RestTemplate` usage: we do favor the `RestTemplate` methods that
-accept a URI object instead of a uri `String`. This ensures we always
-properly encode client data submitted in URI query parameters, such as
-screen_name below:
-
-```java
-public TwitterProfile getUserProfile(String screenName) {
-    return getRestTemplate().getForObject(buildUri("users/show.json", 
-        Collections.singletonMap("screen_name", screenName)), TwitterProfile.class);
-}
-```
-
-For complete implementation examples, consult the source of the existing
-API bindings included in Spring Social. The `spring-social-twitter` and
-`spring-social-facebook` modules provide particularly good references.
-
-[[]]
-==== Testing a new Java API binding
-We recommend that you use Spring's REST client testing support, including
-`MockRestServiceServer` to test your API bindings.
-
-First create an instance of `MockRestServiceServer` against the `RestTemplate`
-instance used by your API implementation:
-
-```java
-TwitterTemplate twitter = new TwitterTemplate("consumerKey", "consumerSecret", "accessToken",
-    "accessTokenSecret");
-MockRestServer mockServer = MockRestServiceServer.createServer(twitter.getRestTemplate());
-```
-
-Then, for each test case, record expectations about how the server
-should be invoked and answer what it should respond with:
-
-```java
-@Test
-public void getUserProfile() {
-    HttpHeaders responseHeaders = new HttpHeaders();
-    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-    
-    mockServer.expect(requestTo("https://api.twitter.com/1.1/account/verify_credentials.json"))
-              .andExpect(method(GET))
-              .andRespond(withSuccess(jsonResource("twitter-profile"), APPLICATION_JSON));
-
-    TwitterProfile profile = twitter.userOperations().getUserProfile();
-    assertEquals(161064614, profile.getId());
-    assertEquals("jbauer", profile.getScreenName());
-}
-```
-
-In the example above the response body is written from a
-twitter-profile.json file located in the same package as the test
-class:
-
-```java
-private Resource jsonResource(String filename) {
-    return new ClassPathResource(filename + ".json", getClass());
-}
-```
-
-The content of the file should mirror the content the remote service
-provider would return, allowing the client JSON deserialization behavior
-to be fully tested:
-
-```java
-{
-    "id":161064614,
-    "screen_name":"jbauer"
-}
-```
-
-For complete test examples, consult the source of the existing API
-bindings included in Spring Social. The `spring-social-twitter` and
-`spring-social-facebook` modules provide particularly good references.
-
-[[]]
-==== Integrating an existing Java API binding
-If you are adding support for a popular service provider, chances are a
-Java binding to the provider's API may already exist. For example, the
-Twitter4j library has been around for awhile and provides a complete
-binding to Twitter's API. Instead of developing your own binding, you
-may simply wish to integrate what already exists. Spring Social's
-connect framework has been carefully designed to support this scenario.
-
-To integrate an existing API binding, simply note the binding's primary
-API interface and implementation. For example, in Twitter4j the main API
-interface is named "Twitter" and instances are constructed by a
-TwitterFactory. You can always construct such an API instance directly,
-and you'll see in the following sections how to expose an instance as
-part of a Connection.
-
-[[]]
-=== Creating a ServiceProvider model
-As described in the previous section, a client binding to a secure API
-such as Facebook or Twitter requires valid user authorization
-credentials to work. Such credentials are generally obtained by having
-your application conduct an authorization "dance" or handshake with the
-service provider. Spring Social provides the ServiceProvider<A>
-abstraction to handle this "authorization dance". The abstraction also
-acts as a factory for native API (A) instances.
-
-Since the authorization dance is protocol-specific, a ServiceProvider
-specialization exists for each authorization protocol. For example, if
-you are connecting to a OAuth2-based provider, you would implement
-OAuth2ServiceProvider. After you've done this, your implementation can
-be used to conduct the OAuth2 dance and obtain an authorized API
-instance. This is typically done in the context of a ConnectionFactory
-as part of establishing a new connection to the provider. The following
-sections describe the implementation steps for each ServiceProvider
-type.
-
-[[]]
-==== OAuth2
-To implement an OAuth2-based ServiceProvider, first create a subclass of
-AbstractOAuth2ServiceProvider named \{ProviderId}ServiceProvider.
-Parameterize <A> to be the Java binding to the ServiceProvider's's API.
-Define a single constructor that accepts an clientId and clientSecret.
-Finally, implement getApi(String) to return a new API instance.
-
-See
-`org.springframework.social.facebook.connect.FacebookServiceProvider` as
-an example OAuth2ServiceProvider:
-
-```java
-public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<Facebook> {
-
-    public FacebookServiceProvider(String clientId, String clientSecret) {
-        super(new OAuth2Template(clientId, clientSecret,
-            "https://graph.facebook.com/oauth/authorize",
-            "https://graph.facebook.com/oauth/access_token"));
-    }
-
-    public Facebook getApi(String accessToken) {
-        return new FacebookTemplate(accessToken);
-    }
-
-}
-```
-
-In the constructor, you should call super, passing up the configured
-OAuth2Template that implements OAuth2Operations. The OAuth2Template will
-handle the "OAuth dance" with the provider, and should be configured
-with the provided clientId and clientSecret, along with the
-provider-specific authorizeUrl and accessTokenUrl.
-
-Some providers support provider sign-in (see <<section_signin>>) through an
-authentication URL that is distinct from the authorization URL. Using
-the OAuth2Template constructor as shown above will assume that the
-authentication URL is the same as the authorization URL. But you may
-specify a different authentication URL by using OAuth2Template's other
-constructor. Facebook does not have a separate authentication URL, but
-for the sake of the example, suppose that Facebook's authentication URL
-is "https://graph.facebook.com/oauth/authenticate". The following
-implementation of the FacebookServiceProvider constructor configures the
-OAuth2Template for that case:
-
-```java
-public FacebookServiceProvider(String clientId, String clientSecret) {
-    super(new OAuth2Template(clientId, clientSecret,
-        "https://graph.facebook.com/oauth/authorize",
-        "https://graph.facebook.com/oauth/authenticate",
-        "https://graph.facebook.com/oauth/access_token"));
-}
-```
-
-In getApi(String), you should construct your API implementation, passing
-it the access token needed to make authorized requests for protected
-resources.
-
-[[]]
-==== OAuth1
-To implement an OAuth1-based ServiceProvider, first create a subclass of
-AbstractOAuth1ServiceProvider named \{ProviderId}ServiceProvider.
-Parameterize <A> to be the Java binding to the ServiceProvider's API.
-Define a single constructor that accepts a consumerKey and
-consumerSecret. Finally, implement getApi(String, String) to return a
-new API instance.
-
-See `org.springframework.social.twitter.connect.TwitterServiceProvider`
-as an example OAuth1ServiceProvider:
-
-```java
-public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<Twitter> {
-
-    public TwitterServiceProvider(String consumerKey, String consumerSecret) {
-        super(consumerKey, consumerSecret, new OAuth1Template(consumerKey, consumerSecret, 
-            "https://twitter.com/oauth/request_token",
-            "https://twitter.com/oauth/authorize",
-            "https://twitter.com/oauth/authenticate",
-            "https://twitter.com/oauth/access_token"));
-    }
-
-    public Twitter getApi(String accessToken, String secret) {
-        return new TwitterTemplate(getConsumerKey(), getConsumerSecret(), accessToken, secret);
-    }
-
-}
-```
-
-In the constructor, you should call super, passing up the the
-consumerKey, secret, and configured OAuth1Template. The OAuth1Template
-will handle the "OAuth dance" with the provider. It should be configured
-with the provided consumerKey and consumerSecret, along with the
-provider-specific requestTokenUrl, authorizeUrl, authenticateUrl, and
-accessTokenUrl. The authenticateUrl parameter is optional and may be
-left out if the provider doesn't have an authentication URL that is
-different than the authorization URL.
-
-As you can see here, OAuth1Template is constructed with Twitter's
-authentication URL (used for provider sign-in; see <<section_signin>>), which is distinct
-from their authorization URL. Some providers don't have separate URLs
-for authentication and authorization. In those cases, you can use
-OAuth1Template's other constructor which doesn't take the authentication
-URL as a parameter. For example, here's how the TwitterServiceProvider
-constructor would look without configuring the authentication URL:
-
-```java
-public TwitterServiceProvider(String consumerKey, String consumerSecret) {
-    super(consumerKey, consumerSecret, new OAuth1Template(consumerKey, consumerSecret, 
-        "https://twitter.com/oauth/request_token",
-        "https://twitter.com/oauth/authorize",
-        "https://twitter.com/oauth/access_token"));
-}
-```
-
-In getApi(String, String), you should construct your API implementation,
-passing it the four tokens needed to make authorized requests for
-protected resources.
-
-Consult the JavaDoc API of the various service provider types for more
-information and subclassing options.
-
-[[]]
-=== Creating an ApiAdapter
-As discussed in the previous chapter, one of the roles of a Connection
-is to provide a common abstraction for a linked user account that is
-applied across all service providers. The role of the ApiAdapter is to
-map a provider's native API interface onto this uniform Connection
-model. A connection delegates to its adapter to perform operations such
-as testing the validity of its API credentials, setting metadata values,
-fetching a user profile, and updating user status:
-
-```java
-public interface ApiAdapter<A> {
-
-    boolean test(A api);
-            
-    void setConnectionValues(A api, ConnectionValues values);
-
-    UserProfile fetchUserProfile(A api);
-    
-    void updateStatus(A api, String message);
-    
-}
-```
-
-Consider `org.springframework.social.twitter.connect.TwitterAdapter` as
-an example implementation:
-
-```java
-public class TwitterAdapter implements ApiAdapter<Twitter> {
-
-    public boolean test(Twitter twitter) {
-        try {
-            twitter.userOperations().getUserProfile();
-            return true;
-        } catch (ApiException e) {
-            return false;
-        }
-    }
-
-    public void setConnectionValues(Twitter twitter, ConnectionValues values) {
-        TwitterProfile profile = twitter.userOperations().getUserProfile();
-        values.setProviderUserId(Long.toString(profile.getId()));
-        values.setDisplayName("@" + profile.getScreenName());
-        values.setProfileUrl(profile.getProfileUrl());
-        values.setImageUrl(profile.getProfileImageUrl());
-    }
-    
-    public UserProfile fetchUserProfile(Twitter twitter) {
-        TwitterProfile profile = twitter.userOperations().getUserProfile();
-        return new UserProfileBuilder().setName(profile.getName()).setUsername(
-            profile.getScreenName()).build();
-    }
-    
-    public void updateStatus(Twitter twitter, String message) {
-        twitter.timelineOperations().updateStatus(message); 
-    }
-    
-}
-```
-
-As you can see, test(...) returns true if the API instance is functional
-and false if it is not. setConnectionValues(...) sets the connection's
-providerUserId, displayName, profileUrl, and imageUrl properties from
-TwitterProfile data. fetchUserProfile(...) maps a TwitterProfile onto
-the normalized UserProfile model. updateStatus(...) update's the user's
-Twitter status. Consult the JavaDoc for ApiAdapter and Connection for
-more information and implementation guidance. We also recommend
-reviewing the other ApiAdapter implementations for additional examples.
-
-[[]]
-=== Creating a ConnectionFactory
-By now, you should have an API binding to the provider's API, a
-ServiceProvider<A> implementation for conducting the "authorization
-dance", and an ApiAdapter<A> implementation for mapping onto the uniform
-Connection model. The last step in adding support for a new service
-provider is to create a ConnectionFactory that wraps up these artifacts
-and provides a simple interface for establishing Connections. After this
-is done, you may use your connection factory directly, or you may add it
-to a registry where it can be used by the framework to establish
-connections in a dynamic, self-service manner.
-
-Like a ServiceProvider<A>, a ConnectionFactory specialization exists for
-each authorization protocol. For example, if you are adding support for
-a OAuth2-based provider, you would extend from OAuth2ConnectionFactory.
-Implementation guidelines for each type are provided below.
-
-[[]]
-==== OAuth2
-Create a subclass of OAuth2ConnectionFactory<A> named
-\{ProviderId}ConnectionFactory and parameterize A to be the Java binding
-to the service provider's API. Define a single constructor that accepts
-a clientId and clientSecret. Within the constructor call super, passing
-up the assigned providerId, a new \{ProviderId}ServiceProvider instance
-configured with the clientId/clientSecret, and a new \{Provider}Adapter
-instance.
-
-See
-`org.springframework.social.facebook.connect.FacebookConnectionFactory`
-as an example OAuth2ConnectionFactory:
-
-```java
-public class FacebookConnectionFactory extends OAuth2ConnectionFactory<Facebook> {
-    public FacebookConnectionFactory(String clientId, String clientSecret) {
-        super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookAdapter());
-    }
-}
-```
-
-[[]]
-==== OAuth1
-Create a subclass of OAuth1ConnectionFactory<A> named
-\{ProviderId}ConnectionFactory and parameterize A to be the Java binding
-to the service provider's API. Define a single constructor that accepts
-a consumerKey and consumerSecret. Within the constructor call super,
-passing up the assigned providerId, a new \{ProviderId}ServiceProvider
-instance configured with the consumerKey/consumerSecret, and a new
-\{Provider}Adapter instance.
-
-See
-`org.springframework.social.twitter.connect.TwitterConnectionFactory` as
-an example OAuth1ConnectionFactory:
-
-```java
-public class TwitterConnectionFactory extends OAuth1ConnectionFactory<Facebook> {
-    public TwitterConnectionFactory(String consumerKey, String consumerSecret) {
-        super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterAdapter());
-    }
-}
-```
-
-Consult the source and JavaDoc API for ConnectionFactory and its
-subclasses more information, examples, and advanced customization
-options.
-
-[[section_connecting]]
+[[connecting]]
 == Connecting to Service Providers
-In <<section_connectFramework>>, you learned how Spring Social's _Service Provider 'Connect'
+In <<connectFramework>>, you learned how Spring Social's _Service Provider 'Connect'
 Framework_ can be used to manage user connections that link your
 application's user accounts with accounts on external service providers.
 In this chapter, you'll learn how to control the connect flow in a web
 application environment.
 
-Spring Social's `spring-social-web` module includes ConnectController, a
+Spring Social's `spring-social-web` module includes `ConnectController`, a
 Spring MVC controller that coordinates the connection flow between an
-application and service providers. ConnectController takes care of
+application and service providers. `ConnectController` takes care of
 redirecting the user to the service provider for authorization and
 responding to the callback after authorization.
 
@@ -1665,17 +1156,17 @@ configure ConnectController like this:
 </bean>
 ```
 
-ConnectController supports authorization flows for OAuth 1 and OAuth 2,
-relying on OAuth1Operations or OAuth2Operations to handle the specifics
-for each protocol. ConnectController will obtain the appropriate OAuth
+`ConnectController` supports authorization flows for OAuth 1 and OAuth 2,
+relying on `OAuth1Operations` or `OAuth2Operations` to handle the specifics
+for each protocol. `ConnectController` will obtain the appropriate OAuth
 operations interface from one of the provider connection factories
-registered with ConnectionFactoryRegistry. It will select a specific
-ConnectionFactory to use by matching the connection factory's ID with
+registered with `ConnectionFactoryRegistry`. It will select a specific
+`ConnectionFactory` to use by matching the connection factory's ID with
 the URL path. The path pattern that ConnectController handles is
-"/connect/\{providerId}". Therefore, if ConnectController is handling a
-request for "/connect/twitter", then the ConnectionFactory whose
-getProviderId() returns "twitter" will be used. (As configured in the
-previous section, TwitterConnectionFactory will be chosen.)
+"/connect/\{providerId}". Therefore, if `ConnectController` is handling a
+request for "/connect/twitter", then the `ConnectionFactory` whose
+`getProviderId()` returns "twitter" will be used. (As configured in the
+previous section, `TwitterConnectionFactory` will be chosen.)
 
 When coordinating a connection with a service provider,
 `ConnectController` constructs a callback URL for the provider to redirect
@@ -2417,4 +1908,620 @@ public UsersConnectionRepository usersConnectionRepository(AccountRepository acc
     return repository;
 }
 ```
+
+[[section_implementing]]
+== Adding Support for a New Service Provider
+Spring Social makes it easy to add support for service providers that
+are not already supported by the framework. If you review the existing
+client modules, such as spring-social-twitter and
+spring-social-facebook, you will discover they are implemented in a
+consistent manner and they apply a set of well-defined extension points.
+In this chapter, you will learn how to add support for new service
+providers you wish to integrate into your applications.
+
+The process of adding support for a new service provider consists of
+several steps:
+
+1.  Create a source project for the client code e.g.
+`spring-social-twitter`.
+2.  Develop or integrate a Java binding to the provider's API e.g.
+`Twitter`.
+3.  Create a `ServiceProvider` model that allows users to authorize with
+the remote provider and obtain authorized API instances e.g.
+`TwitterServiceProvider`.
+4.  Create an ApiAdapter that maps the provider's native API onto the
+uniform Connection model e.g. `TwitterAdapter`.
+5.  Finally, create a ConnectionFactory that wraps the other artifacts
+up and provides a simple interface for establishing connections e.g.
+`TwitterConnectionFactory`.
+
+The following sections of this chapter walk you through each of the
+steps with examples.
+
+[[section_creatingAProviderProject]]
+=== Creating a source project for the provider client code
+
+A Spring Social client module is a standard Java project that builds a
+single jar artifact e.g. spring-social-twitter.jar. We recommend the
+code structure of a client module follow the guidelines described below.
+
+[[section_codeStructureGuidelines]]
+==== Code structure guidelines
+We recommend the code for a new Spring Social client module reside
+within the `org.springframework.social.{providerId}` base package, where
+\{providerId} is a unique identifier you assign to the service provider
+you are adding support for. Consider some of the providers already
+supported by the framework as examples:
+
+.Spring Social Client Modules
+[options="header",]
+|=====================================================================
+|Provider ID |Artifact Name |Base Package
+|facebook |spring-social-facebook |org.springframework.social.facebook
+|twitter |spring-social-twitter |org.springframework.social.twitter
+|linkedin |spring-social-linkedin |org.springframework.social.linkedin
+|=====================================================================
+
+Within the base package, we recommend the following subpackage
+structure:
+
+.Module Structure
+[options="header",]
+|=======================================================================
+|Subpackage |Description
+|api |The public interface that defines the API binding.
+|api.impl |The implementation of the API binding.
+|connect |The types necessary to establish connections to the service provider.
+|=======================================================================
+
+You can see this recommended structure in action by reviewing one of the
+other client modules such as spring-social-twitter:
+
+Here, the central service API type, Twitter, is located in the api
+package along with its supporting operations types and data transfer
+object types. The primary implementation of that interface,
+TwitterTemplate, is located in the api.impl package (along with other
+package-private impl types have that been excluded from this view).
+Finally, the connect package contains the implementations of various
+connect SPIs that enable connections to Twitter to be established and
+persisted.
+
+[[]]
+=== Developing a Java binding to the provider's API
+
+Spring Social favors the development of strongly-typed Java bindings to
+external service provider APIs. This provides a simple, domain-oriented
+interface for Java applications to use to consume the API. When adding
+support for a new service provider, if no suitable Java binding already
+exists you'll need to develop one. If one already exists, such as
+Twitter4j for example, it is possible to integrate it into the
+framework.
+
+[[]]
+==== Designing a new Java API binding
+
+API developers retain full control over the design and implementation of
+their Java bindings. That said, we offer several design guidelines in an
+effort to improve overall consistency and quality:
+
+* _Favor separating the API binding interface from the implementation._
+This is illustrated in the spring-social-twitter example in the previous
+section. There, "Twitter" is the central API binding type and it is
+declared in the org.springframework.social.twitter.api package with
+other public types. "TwitterTemplate" is the primary implementation of
+this interface and is located in the
+org.springframework.social.twitter.api.impl subpackage along with other
+package-private implementation types.
+* _Favor organizing the API binding hierarchically by RESTful resource._
+REST-based APIs typically expose access to a number of resources in an
+hierarchical manner. For example, Twitter's API provides access to
+"status timelines", "searches", "lists", "direct messages", "friends",
+"geo location", and "users". Rather than add all operations across these
+resources to a single flat "Twitter" interface, the Twitter interface is
+organized hierarchically:
+
+```java
+public interface Twitter extends ApiBinding {
+    
+    BlockOperations blockOperations();
+
+    DirectMessageOperations directMessageOperations();
+
+    FriendOperations friendOperations();
+
+    GeoOperations geoOperations();
+
+    ListOperations listOperations();
+
+    SearchOperations searchOperations();
+    
+    StreamingOperations streamingOperations();
+
+    TimelineOperations timelineOperations();
+
+    UserOperations userOperations();
+
+    RestOperations restOperations();
+
+}
+```
+
+DirectMessageOperations, for example, contains API bindings to Twitter's
+"direct_messages" resource:
+
+```java
+public interface DirectMessageOperations {
+
+    List<DirectMessage> getDirectMessagesReceived();
+
+    List<DirectMessage> getDirectMessagesReceived(int page, int pageSize);
+
+    List<DirectMessage> getDirectMessagesReceived(int page, int pageSize, long sinceId, long maxId);
+
+    List<DirectMessage> getDirectMessagesSent();
+
+    List<DirectMessage> getDirectMessagesSent(int page, int pageSize);
+
+    List<DirectMessage> getDirectMessagesSent(int page, int pageSize, long sinceId, long maxId);
+
+    DirectMessage getDirectMessage(long id);
+
+    void sendDirectMessage(String toScreenName, String text);
+
+    void sendDirectMessage(long toUserId, String text);
+    
+    void deleteDirectMessage(long messageId);
+}
+```
+
+[[]]
+==== Implementing a new Java API binding
+
+API developers are free to implement their Java API binding with
+whatever REST/HTTP client they see fit. That said, Spring Social's
+existing API bindings such as spring-social-twitter all use Spring
+Framework's RestTemplate in conjunction with the Jackson JSON
+ObjectMapper and Apache HttpComponents HTTP client. RestTemplate is a
+popular REST client that provides a uniform object mapping interface
+across a variety of data exchange formats (JSON, XML, etc). Jackson is
+the leading Java-based JSON marshalling technology. Apache
+HttpComponents has proven to be the most robust HTTP client (if it is
+not available on the classpath Spring Social will fallback to standard
+J2SE facilities, however). To help promote consistency across Spring
+Social's supported bindings, we do recommend you consider these
+implementation technologies (and please let us know if they do not meet
+your needs).
+
+Spring Social has adopted a convention where each API implementation
+class is named "\{ProviderId}Template" e.g. TwitterTemplate. We favor
+this convention unless there is a good reason to deviate from it. As
+discussed in the previous section, we recommend keeping implementation
+types separate from the public API types. We also recommend keeping
+internal implementation details package-private.
+
+The way in which an API binding implementation is constructed will vary
+based on the API's authorization protocol. For APIs secured with OAuth1,
+the consumerKey, consumerSecret, accessToken, and accessTokenSecret will
+be required for construction:
+
+```java
+public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, 
+    String accessTokenSecret) { ... }
+```
+
+For OAuth2, only the access token should be required:
+
+```java
+public FacebookTemplate(String accessToken) { ... }
+```
+
+Each request made to the API server needs to be signed with the
+authorization credentials provided during construction of the binding.
+This signing process consists of adding an "Authorization" header to
+each client request before it is executed. For OAuth1, the process is
+quite complicated, and is used to support an elaborate request signature
+verification algorithm between the client and server. For OAuth2, it is
+a lot simpler, but does still vary across the various drafts of the
+OAuth2 specification.
+
+To encapsulate this complexity, for each authorization protocol Spring
+Social provides a `ApiTemplate` base class you may extend from to
+construct a pre-configured RestTemplate instance that performs the
+request signing for you. For OAuth1:
+
+```java
+public class TwitterTemplate extends AbstractOAuth1ApiBinding {
+    public TwitterTemplate(String consumerKey, String consumerSecret, String accessToken, 
+            String accessTokenSecret) {
+        super(consumerKey, consumerSecret, accessToken, accessTokenSecret);
+    }
+}            
+```
+
+An OAuth2 example:
+
+```java
+public class FacebookTemplate extends AbstractOAuth2ApiBinding {
+    public FacebookTemplate(String accessToken) {
+        super(accessToken);
+    }
+}
+```
+
+Once configured as shown above, you simply call
+`getRestTemplate()` and implement the various API operations. The existing
+Spring Social client modules all invoke their RestTemplate instances in
+a standard manner:
+
+```java
+public TwitterProfile getUserProfile() {
+    return getRestTemplate().getForObject(buildUri("account/verify_credentials.json"),
+        TwitterProfile.class);
+}
+```
+
+A note on `RestTemplate` usage: we do favor the `RestTemplate` methods that
+accept a URI object instead of a uri `String`. This ensures we always
+properly encode client data submitted in URI query parameters, such as
+screen_name below:
+
+```java
+public TwitterProfile getUserProfile(String screenName) {
+    return getRestTemplate().getForObject(buildUri("users/show.json", 
+        Collections.singletonMap("screen_name", screenName)), TwitterProfile.class);
+}
+```
+
+For complete implementation examples, consult the source of the existing
+API bindings included in Spring Social. The `spring-social-twitter` and
+`spring-social-facebook` modules provide particularly good references.
+
+[[]]
+==== Testing a new Java API binding
+We recommend that you use Spring's REST client testing support, including
+`MockRestServiceServer` to test your API bindings.
+
+First create an instance of `MockRestServiceServer` against the `RestTemplate`
+instance used by your API implementation:
+
+```java
+TwitterTemplate twitter = new TwitterTemplate("consumerKey", "consumerSecret", "accessToken",
+    "accessTokenSecret");
+MockRestServer mockServer = MockRestServiceServer.createServer(twitter.getRestTemplate());
+```
+
+Then, for each test case, record expectations about how the server
+should be invoked and answer what it should respond with:
+
+```java
+@Test
+public void getUserProfile() {
+    HttpHeaders responseHeaders = new HttpHeaders();
+    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+    
+    mockServer.expect(requestTo("https://api.twitter.com/1.1/account/verify_credentials.json"))
+              .andExpect(method(GET))
+              .andRespond(withSuccess(jsonResource("twitter-profile"), APPLICATION_JSON));
+
+    TwitterProfile profile = twitter.userOperations().getUserProfile();
+    assertEquals(161064614, profile.getId());
+    assertEquals("jbauer", profile.getScreenName());
+}
+```
+
+In the example above the response body is written from a
+twitter-profile.json file located in the same package as the test
+class:
+
+```java
+private Resource jsonResource(String filename) {
+    return new ClassPathResource(filename + ".json", getClass());
+}
+```
+
+The content of the file should mirror the content the remote service
+provider would return, allowing the client JSON deserialization behavior
+to be fully tested:
+
+```java
+{
+    "id":161064614,
+    "screen_name":"jbauer"
+}
+```
+
+For complete test examples, consult the source of the existing API
+bindings included in Spring Social. The `spring-social-twitter` and
+`spring-social-facebook` modules provide particularly good references.
+
+[[]]
+==== Integrating an existing Java API binding
+If you are adding support for a popular service provider, chances are a
+Java binding to the provider's API may already exist. For example, the
+Twitter4j library has been around for awhile and provides a complete
+binding to Twitter's API. Instead of developing your own binding, you
+may simply wish to integrate what already exists. Spring Social's
+connect framework has been carefully designed to support this scenario.
+
+To integrate an existing API binding, simply note the binding's primary
+API interface and implementation. For example, in Twitter4j the main API
+interface is named "Twitter" and instances are constructed by a
+TwitterFactory. You can always construct such an API instance directly,
+and you'll see in the following sections how to expose an instance as
+part of a Connection.
+
+[[]]
+=== Creating a `ServiceProvider` model
+As described in the previous section, a client binding to a secure API
+such as Facebook or Twitter requires valid user authorization
+credentials to work. Such credentials are generally obtained by having
+your application conduct an authorization "dance" or handshake with the
+service provider. Spring Social provides the ServiceProvider<A>
+abstraction to handle this "authorization dance". The abstraction also
+acts as a factory for native API (A) instances.
+
+Since the authorization dance is protocol-specific, a ServiceProvider
+specialization exists for each authorization protocol. For example, if
+you are connecting to a OAuth2-based provider, you would implement
+OAuth2ServiceProvider. After you've done this, your implementation can
+be used to conduct the OAuth2 dance and obtain an authorized API
+instance. This is typically done in the context of a ConnectionFactory
+as part of establishing a new connection to the provider. The following
+sections describe the implementation steps for each ServiceProvider
+type.
+
+[[]]
+==== OAuth2
+To implement an OAuth2-based ServiceProvider, first create a subclass of
+AbstractOAuth2ServiceProvider named \{ProviderId}ServiceProvider.
+Parameterize <A> to be the Java binding to the ServiceProvider's's API.
+Define a single constructor that accepts an clientId and clientSecret.
+Finally, implement getApi(String) to return a new API instance.
+
+See
+`org.springframework.social.facebook.connect.FacebookServiceProvider` as
+an example OAuth2ServiceProvider:
+
+```java
+public final class FacebookServiceProvider extends AbstractOAuth2ServiceProvider<Facebook> {
+
+    public FacebookServiceProvider(String clientId, String clientSecret) {
+        super(new OAuth2Template(clientId, clientSecret,
+            "https://graph.facebook.com/oauth/authorize",
+            "https://graph.facebook.com/oauth/access_token"));
+    }
+
+    public Facebook getApi(String accessToken) {
+        return new FacebookTemplate(accessToken);
+    }
+
+}
+```
+
+In the constructor, you should call super, passing up the configured
+OAuth2Template that implements OAuth2Operations. The OAuth2Template will
+handle the "OAuth dance" with the provider, and should be configured
+with the provided clientId and clientSecret, along with the
+provider-specific authorizeUrl and accessTokenUrl.
+
+Some providers support provider sign-in (see <<section_signin>>) through an
+authentication URL that is distinct from the authorization URL. Using
+the OAuth2Template constructor as shown above will assume that the
+authentication URL is the same as the authorization URL. But you may
+specify a different authentication URL by using OAuth2Template's other
+constructor. Facebook does not have a separate authentication URL, but
+for the sake of the example, suppose that Facebook's authentication URL
+is "https://graph.facebook.com/oauth/authenticate". The following
+implementation of the FacebookServiceProvider constructor configures the
+OAuth2Template for that case:
+
+```java
+public FacebookServiceProvider(String clientId, String clientSecret) {
+    super(new OAuth2Template(clientId, clientSecret,
+        "https://graph.facebook.com/oauth/authorize",
+        "https://graph.facebook.com/oauth/authenticate",
+        "https://graph.facebook.com/oauth/access_token"));
+}
+```
+
+In getApi(String), you should construct your API implementation, passing
+it the access token needed to make authorized requests for protected
+resources.
+
+[[]]
+==== OAuth1
+To implement an OAuth1-based ServiceProvider, first create a subclass of
+AbstractOAuth1ServiceProvider named \{ProviderId}ServiceProvider.
+Parameterize <A> to be the Java binding to the ServiceProvider's API.
+Define a single constructor that accepts a consumerKey and
+consumerSecret. Finally, implement getApi(String, String) to return a
+new API instance.
+
+See `org.springframework.social.twitter.connect.TwitterServiceProvider`
+as an example OAuth1ServiceProvider:
+
+```java
+public final class TwitterServiceProvider extends AbstractOAuth1ServiceProvider<Twitter> {
+
+    public TwitterServiceProvider(String consumerKey, String consumerSecret) {
+        super(consumerKey, consumerSecret, new OAuth1Template(consumerKey, consumerSecret, 
+            "https://twitter.com/oauth/request_token",
+            "https://twitter.com/oauth/authorize",
+            "https://twitter.com/oauth/authenticate",
+            "https://twitter.com/oauth/access_token"));
+    }
+
+    public Twitter getApi(String accessToken, String secret) {
+        return new TwitterTemplate(getConsumerKey(), getConsumerSecret(), accessToken, secret);
+    }
+
+}
+```
+
+In the constructor, you should call super, passing up the the
+consumerKey, secret, and configured OAuth1Template. The OAuth1Template
+will handle the "OAuth dance" with the provider. It should be configured
+with the provided consumerKey and consumerSecret, along with the
+provider-specific requestTokenUrl, authorizeUrl, authenticateUrl, and
+accessTokenUrl. The authenticateUrl parameter is optional and may be
+left out if the provider doesn't have an authentication URL that is
+different than the authorization URL.
+
+As you can see here, OAuth1Template is constructed with Twitter's
+authentication URL (used for provider sign-in; see <<section_signin>>), which is distinct
+from their authorization URL. Some providers don't have separate URLs
+for authentication and authorization. In those cases, you can use
+OAuth1Template's other constructor which doesn't take the authentication
+URL as a parameter. For example, here's how the TwitterServiceProvider
+constructor would look without configuring the authentication URL:
+
+```java
+public TwitterServiceProvider(String consumerKey, String consumerSecret) {
+    super(consumerKey, consumerSecret, new OAuth1Template(consumerKey, consumerSecret, 
+        "https://twitter.com/oauth/request_token",
+        "https://twitter.com/oauth/authorize",
+        "https://twitter.com/oauth/access_token"));
+}
+```
+
+In getApi(String, String), you should construct your API implementation,
+passing it the four tokens needed to make authorized requests for
+protected resources.
+
+Consult the JavaDoc API of the various service provider types for more
+information and subclassing options.
+
+[[]]
+=== Creating an ApiAdapter
+As discussed in the previous chapter, one of the roles of a Connection
+is to provide a common abstraction for a linked user account that is
+applied across all service providers. The role of the ApiAdapter is to
+map a provider's native API interface onto this uniform Connection
+model. A connection delegates to its adapter to perform operations such
+as testing the validity of its API credentials, setting metadata values,
+fetching a user profile, and updating user status:
+
+```java
+public interface ApiAdapter<A> {
+
+    boolean test(A api);
+            
+    void setConnectionValues(A api, ConnectionValues values);
+
+    UserProfile fetchUserProfile(A api);
+    
+    void updateStatus(A api, String message);
+    
+}
+```
+
+Consider `org.springframework.social.twitter.connect.TwitterAdapter` as
+an example implementation:
+
+```java
+public class TwitterAdapter implements ApiAdapter<Twitter> {
+
+    public boolean test(Twitter twitter) {
+        try {
+            twitter.userOperations().getUserProfile();
+            return true;
+        } catch (ApiException e) {
+            return false;
+        }
+    }
+
+    public void setConnectionValues(Twitter twitter, ConnectionValues values) {
+        TwitterProfile profile = twitter.userOperations().getUserProfile();
+        values.setProviderUserId(Long.toString(profile.getId()));
+        values.setDisplayName("@" + profile.getScreenName());
+        values.setProfileUrl(profile.getProfileUrl());
+        values.setImageUrl(profile.getProfileImageUrl());
+    }
+    
+    public UserProfile fetchUserProfile(Twitter twitter) {
+        TwitterProfile profile = twitter.userOperations().getUserProfile();
+        return new UserProfileBuilder().setName(profile.getName()).setUsername(
+            profile.getScreenName()).build();
+    }
+    
+    public void updateStatus(Twitter twitter, String message) {
+        twitter.timelineOperations().updateStatus(message); 
+    }
+    
+}
+```
+
+As you can see, test(...) returns true if the API instance is functional
+and false if it is not. setConnectionValues(...) sets the connection's
+providerUserId, displayName, profileUrl, and imageUrl properties from
+TwitterProfile data. fetchUserProfile(...) maps a TwitterProfile onto
+the normalized UserProfile model. updateStatus(...) update's the user's
+Twitter status. Consult the JavaDoc for ApiAdapter and Connection for
+more information and implementation guidance. We also recommend
+reviewing the other ApiAdapter implementations for additional examples.
+
+[[]]
+=== Creating a ConnectionFactory
+By now, you should have an API binding to the provider's API, a
+ServiceProvider<A> implementation for conducting the "authorization
+dance", and an ApiAdapter<A> implementation for mapping onto the uniform
+Connection model. The last step in adding support for a new service
+provider is to create a ConnectionFactory that wraps up these artifacts
+and provides a simple interface for establishing Connections. After this
+is done, you may use your connection factory directly, or you may add it
+to a registry where it can be used by the framework to establish
+connections in a dynamic, self-service manner.
+
+Like a ServiceProvider<A>, a ConnectionFactory specialization exists for
+each authorization protocol. For example, if you are adding support for
+a OAuth2-based provider, you would extend from OAuth2ConnectionFactory.
+Implementation guidelines for each type are provided below.
+
+[[]]
+==== OAuth2
+Create a subclass of OAuth2ConnectionFactory<A> named
+\{ProviderId}ConnectionFactory and parameterize A to be the Java binding
+to the service provider's API. Define a single constructor that accepts
+a clientId and clientSecret. Within the constructor call super, passing
+up the assigned providerId, a new \{ProviderId}ServiceProvider instance
+configured with the clientId/clientSecret, and a new \{Provider}Adapter
+instance.
+
+See
+`org.springframework.social.facebook.connect.FacebookConnectionFactory`
+as an example OAuth2ConnectionFactory:
+
+```java
+public class FacebookConnectionFactory extends OAuth2ConnectionFactory<Facebook> {
+    public FacebookConnectionFactory(String clientId, String clientSecret) {
+        super("facebook", new FacebookServiceProvider(clientId, clientSecret), new FacebookAdapter());
+    }
+}
+```
+
+[[]]
+==== OAuth1
+Create a subclass of OAuth1ConnectionFactory<A> named
+\{ProviderId}ConnectionFactory and parameterize A to be the Java binding
+to the service provider's API. Define a single constructor that accepts
+a consumerKey and consumerSecret. Within the constructor call super,
+passing up the assigned providerId, a new \{ProviderId}ServiceProvider
+instance configured with the consumerKey/consumerSecret, and a new
+\{Provider}Adapter instance.
+
+See
+`org.springframework.social.twitter.connect.TwitterConnectionFactory` as
+an example OAuth1ConnectionFactory:
+
+```java
+public class TwitterConnectionFactory extends OAuth1ConnectionFactory<Facebook> {
+    public TwitterConnectionFactory(String consumerKey, String consumerSecret) {
+        super("twitter", new TwitterServiceProvider(consumerKey, consumerSecret), new TwitterAdapter());
+    }
+}
+```
+
+Consult the source and JavaDoc API for ConnectionFactory and its
+subclasses more information, examples, and advanced customization
+options.
 

@@ -239,12 +239,6 @@ project("spring-social-security") {
 configure(rootProject) {
     description = "Spring Social"
 
-    apply plugin: "docbook-reference"
-
-    reference {
-        ext.sourceDir = file("src/reference/docbook")
-    }
-
     // don"t publish the default jar for the root project
     configurations.archives.artifacts.clear()
 

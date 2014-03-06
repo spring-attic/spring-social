@@ -26,6 +26,9 @@ project('manual') {
               numbered: '',
               'spring-social-version' : project.version,
               'spring-version' : springVersion,
+              'spring-security-version' : springSecurityVersion,
+              'httpComponentsVersion' : httpComponentsVersion,
+              'jacksonVersion' : jacksonVersion,
               revnumber : project.version
           ]
         ]
