@@ -22,6 +22,7 @@ import java.util.Set;
 
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.connect.ConnectionSignUp;
 import org.springframework.social.connect.UsersConnectionRepository;
 
 public class StubUsersConnectionRepository implements UsersConnectionRepository {
@@ -46,6 +47,11 @@ public class StubUsersConnectionRepository implements UsersConnectionRepository 
 
 	public ConnectionRepository createConnectionRepository(String userId) {
 		return new StubConnectionRepository();
+	}
+
+	@Override
+	public void setConnectionSignUp(ConnectionSignUp connectionSignUp) {
+		
 	}
 
 }
