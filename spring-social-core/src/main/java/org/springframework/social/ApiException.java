@@ -25,12 +25,12 @@ public class ApiException extends SocialException {
 	private String providerId;
 
 	public ApiException(String providerId, String message) {
-		super(message);
-		this.providerId = providerId;
+		this(providerId, message, null);
 	}
 
 	public ApiException(String providerId, String message, Throwable cause) {
 		super(message, cause);
+		this.providerId = providerId;
 	}
 	
 	/**
