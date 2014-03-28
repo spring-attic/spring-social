@@ -15,11 +15,6 @@
  */
 package org.springframework.social.connect.support;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.social.ExpiredAuthorizationException;
 import org.springframework.social.ServiceProvider;
@@ -28,6 +23,11 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.oauth2.AccessGrant;
 import org.springframework.social.oauth2.OAuth2ServiceProvider;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 /**
  * An OAuth2-based Connection implementation.
@@ -39,7 +39,7 @@ import org.springframework.social.oauth2.OAuth2ServiceProvider;
  */
 public class OAuth2Connection<A> extends AbstractConnection<A> {
 
-	private final OAuth2ServiceProvider<A> serviceProvider;
+	private transient final OAuth2ServiceProvider<A> serviceProvider;
 
 	private String accessToken;
 	
@@ -47,9 +47,9 @@ public class OAuth2Connection<A> extends AbstractConnection<A> {
 	
 	private Long expireTime;
 
-	private A api;
+	private transient A api;
 	
-	private A apiProxy;
+	private transient A apiProxy;
 
 	/**
 	 * Creates a new {@link OAuth2Connection} from a access grant response.

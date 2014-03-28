@@ -15,13 +15,9 @@
  */
 package org.springframework.social.connect.web;
 
-import java.io.Serializable;
+import org.springframework.social.connect.*;
 
-import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.ConnectionData;
-import org.springframework.social.connect.ConnectionFactoryLocator;
-import org.springframework.social.connect.DuplicateConnectionException;
-import org.springframework.social.connect.UsersConnectionRepository;
+import java.io.Serializable;
 
 /**
  * Models an attempt to sign-in to the application using a provider user identity.
@@ -42,7 +38,7 @@ public class ProviderSignInAttempt implements Serializable {
 	private final ConnectionData connectionData;
 	
 	private final ConnectionFactoryLocator connectionFactoryLocator;
-	
+
 	private final UsersConnectionRepository connectionRepository;
 		
 	public ProviderSignInAttempt(Connection<?> connection, ConnectionFactoryLocator connectionFactoryLocator, UsersConnectionRepository connectionRepository) {

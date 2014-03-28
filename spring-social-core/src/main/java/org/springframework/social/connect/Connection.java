@@ -15,6 +15,8 @@
  */
 package org.springframework.social.connect;
 
+import java.io.Serializable;
+
 /**
  * A link to a service provider user.
  * Allows the client application to access or update user information using the provider's API.
@@ -23,7 +25,7 @@ package org.springframework.social.connect;
  * @author Keith Donald
  * @param <A> a strongly-typed binding to the service provider's API
  */
-public interface Connection<A> {
+public interface Connection<A> extends Serializable {
 
 	/**
 	 * The key identifying this connection.
