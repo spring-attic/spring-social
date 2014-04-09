@@ -321,7 +321,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	}
 	
 	private void addSignInAttempt(HttpSession session, Connection<?> connection) {
-		session.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, new ProviderSignInAttempt(connection, authServiceLocator, usersConnectionRepository));
+		session.setAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, new ProviderSignInAttempt(connection));
 	}
 
 	private static final String DEFAULT_FAILURE_URL = "/signin";

@@ -27,7 +27,7 @@ import org.springframework.social.connect.UsersConnectionRepository;
  * Models an attempt to sign-in to the application using a provider user identity.
  * Instances are created when the provider sign-in process could not be completed because no local user is associated with the provider user.
  * This could happen because the user has not yet signed up with the application, or has not yet connected their local application identity with the their provider identity.
- * For the former scenario, callers should invoke {@link #addConnection(String)} post-signup to establish a connection between a new user account and the provider account.
+ * For the former scenario, callers should invoke {@link #addConnection(String,ConnectionFactoryLocator,UsersConnectionRepository)} post-signup to establish a connection between a new user account and the provider account.
  * For the latter, existing users should sign-in using their local application credentials and formally connect to the provider they also wish to authenticate with.
  * @author Keith Donald
  */
@@ -40,15 +40,9 @@ public class ProviderSignInAttempt implements Serializable {
 	public static final String SESSION_ATTRIBUTE = ProviderSignInAttempt.class.getName();
 
 	private final ConnectionData connectionData;
-	
-	private final ConnectionFactoryLocator connectionFactoryLocator;
-	
-	private final UsersConnectionRepository connectionRepository;
 		
-	public ProviderSignInAttempt(Connection<?> connection, ConnectionFactoryLocator connectionFactoryLocator, UsersConnectionRepository connectionRepository) {
-		this.connectionData = connection.createData();
-		this.connectionFactoryLocator = connectionFactoryLocator;
-		this.connectionRepository = connectionRepository;		
+	public ProviderSignInAttempt(Connection<?> connection) {
+		this.connectionData = connection.createData();	
 	}
 	
 	/**
@@ -56,7 +50,7 @@ public class ProviderSignInAttempt implements Serializable {
 	 * Using this connection you may fetch a {@link Connection#fetchUserProfile() provider user profile} and use that to pre-populate a local user registration/signup form.
 	 * You can also lookup the id of the provider and use that to display a provider-specific user-sign-in-attempt flash message e.g. "Your Facebook Account is not connected to a Local account. Please sign up."
 	 */
-	public Connection<?> getConnection() {
+	public Connection<?> getConnection(ConnectionFactoryLocator connectionFactoryLocator) {
 		return connectionFactoryLocator.getConnectionFactory(connectionData.getProviderId()).createConnection(connectionData);
 	}
 	
@@ -64,8 +58,8 @@ public class ProviderSignInAttempt implements Serializable {
 	 * Connect the new local user to the provider.
 	 * @throws DuplicateConnectionException if the user already has this connection
 	 */
-	void addConnection(String userId) {
-		connectionRepository.createConnectionRepository(userId).addConnection(getConnection());
+	void addConnection(String userId, ConnectionFactoryLocator connectionFactoryLocator, UsersConnectionRepository connectionRepository) {
+		connectionRepository.createConnectionRepository(userId).addConnection(getConnection(connectionFactoryLocator));
 	}
 
 }
