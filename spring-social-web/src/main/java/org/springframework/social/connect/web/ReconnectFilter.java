@@ -146,7 +146,7 @@ public class ReconnectFilter extends GenericFilterBean {
 	}
 
 	private String getProviderIdFromRequest(HttpServletRequest httpRequest) {
-		return httpRequest.getServletPath().substring(CONNECT_PATH_LENGTH);
+		return httpRequest.getServletPath().substring(CONNECT_PATH_LENGTH).replace("/", "");
 	}
 	
 	private void handleExceptionFromFilterChain(Exception e, HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException, ServletException {
@@ -193,7 +193,7 @@ public class ReconnectFilter extends GenericFilterBean {
 	
 	private static final String CONNECT_PATH = "/connect/";
 
-	private static final int CONNECT_PATH_LENGTH = CONNECT_PATH.length()+1;
+	private static final int CONNECT_PATH_LENGTH = CONNECT_PATH.length();
 
 	private static final String RECONNECT_PARAMETER = "reconnect";
 
