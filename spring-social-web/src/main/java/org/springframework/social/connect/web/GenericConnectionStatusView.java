@@ -94,8 +94,11 @@ public class GenericConnectionStatusView extends AbstractView {
 			builder.append(profile.getName());
 			builder.append("!</p><p>You are now connected to ");
 			builder.append(providerDisplayName);
-			builder.append(" as ");
-			builder.append(profile.getUsername());
+			String username = profile.getUsername();
+			if (username !=null) {
+				builder.append(" as ");
+				builder.append(username);
+			}
 			builder.append(".</p>");
 		}
 		return builder.toString();
