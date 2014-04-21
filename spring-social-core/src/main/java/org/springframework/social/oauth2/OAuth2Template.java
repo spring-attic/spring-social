@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -210,7 +211,12 @@ public class OAuth2Template implements OAuth2Operations {
 		converters.add(new MappingJackson2HttpMessageConverter());
 		restTemplate.setMessageConverters(converters);
 		if (!useParametersForClientAuthentication) {
-			restTemplate.getInterceptors().add(new PreemptiveBasicAuthClientHttpRequestInterceptor(clientId, clientSecret));
+			List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
+			if (interceptors == null) {   // defensively initialize list if it is null. (See SOCIAL-430)
+				interceptors = new ArrayList<ClientHttpRequestInterceptor>();
+				restTemplate.setInterceptors(interceptors);
+			}
+			interceptors.add(new PreemptiveBasicAuthClientHttpRequestInterceptor(clientId, clientSecret));
 		}
 		return restTemplate;
 	}
