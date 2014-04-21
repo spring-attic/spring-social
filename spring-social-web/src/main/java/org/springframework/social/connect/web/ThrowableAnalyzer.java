@@ -143,10 +143,11 @@ class ThrowableAnalyzer {
      *
      * @return the types for which extractors are registered
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     final Class<? extends Throwable>[] getRegisteredTypes() {
         Set<Class<? extends Throwable>> typeList = this.extractorMap.keySet();
-        return typeList.toArray(new Class[typeList.size()]);
+        Class[] a = new Class[typeList.size()];
+		return typeList.toArray(a);
     }
 
     /**

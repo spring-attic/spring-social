@@ -23,6 +23,7 @@ import org.springframework.social.connect.ConnectionKey;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.UserProfileBuilder;
 
+@SuppressWarnings("serial")
 public class DummyConnection<T> implements Connection<T> {
 
 	private final ConnectionKey _key;

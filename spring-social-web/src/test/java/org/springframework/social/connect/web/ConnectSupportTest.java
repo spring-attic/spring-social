@@ -503,6 +503,7 @@ public class ConnectSupportTest {
 				public AccessGrant exchangeCredentialsForAccess(String username, String password, MultiValueMap<String, String> additionalParameters) {
 					return null;
 				}				
+				@Deprecated
 				public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
 					return null;
 				}

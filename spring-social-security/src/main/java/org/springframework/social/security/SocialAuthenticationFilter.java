@@ -173,6 +173,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	 * The URL must be like {filterProcessesUrl}/{providerId}. 
 	 * @return <code>true</code> if the filter should attempt authentication, <code>false</code> otherwise.
 	 */
+	@Deprecated
 	protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
 		String providerId = getRequestedProviderId(request);
 		if (providerId != null){
@@ -239,6 +240,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		}		
 	}	
 	
+	@SuppressWarnings("deprecation")
 	private String getRequestedProviderId(HttpServletRequest request) {
 		String uri = request.getRequestURI();
 		int pathParamIndex = uri.indexOf(';');

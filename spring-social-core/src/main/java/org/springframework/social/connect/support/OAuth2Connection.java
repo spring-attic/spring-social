@@ -138,7 +138,7 @@ public class OAuth2Connection<A> extends AbstractConnection<A> {
 	private void initApiProxy() {
 		Class<?> apiType = GenericTypeResolver.resolveTypeArgument(serviceProvider.getClass(), ServiceProvider.class);
 		if (apiType.isInterface()) {
-			apiProxy = (A) Proxy.newProxyInstance(apiType.getClassLoader(), new Class[] { apiType }, new ApiInvocationHandler());
+			apiProxy = (A) Proxy.newProxyInstance(apiType.getClassLoader(), new Class<?>[] { apiType }, new ApiInvocationHandler());
 		}		
 	}
 	
@@ -174,6 +174,7 @@ public class OAuth2Connection<A> extends AbstractConnection<A> {
 		if (this == obj) return true;
 		if (!super.equals(obj)) return false;
 		if (getClass() != obj.getClass()) return false;
+		@SuppressWarnings("rawtypes")
 		OAuth2Connection other = (OAuth2Connection) obj;
 		
 		if (accessToken == null) {

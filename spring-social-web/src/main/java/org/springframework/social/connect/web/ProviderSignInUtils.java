@@ -43,6 +43,7 @@ public class ProviderSignInUtils {
 	 * @param request the current request attributes, used to extract sign-in attempt information from the current user session
 	 * @deprecated User instance method {@link #getConnectionFromSession(RequestAttributes)} instead.
 	 */
+	@Deprecated
 	public static Connection<?> getConnection(RequestAttributes request) {
 		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
 		return signInAttempt != null ? signInAttempt.getConnection() : null;
@@ -70,6 +71,7 @@ public class ProviderSignInUtils {
 	 * @param request the current request attributes, used to extract sign-in attempt information from the current user session
 	 * @deprecated Use instance method {@link #doPostSignUp(String, RequestAttributes)} instead.
 	 */
+	@Deprecated
 	public static void handlePostSignUp(String userId, RequestAttributes request) {
 		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
 		if (signInAttempt != null) {

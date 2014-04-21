@@ -58,7 +58,7 @@ public class SocialAuthenticationFilterTest {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	@Test
 	public void testExplicitAuth() throws Exception {
 
@@ -105,7 +105,7 @@ public class SocialAuthenticationFilterTest {
 		testFailedAuth(env);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	private void testFailedAuth(FilterTestEnv env) throws Exception {
 		env.filter.setFilterProcessesUrl(env.req.getRequestURI());
 		env.filter.setPostLoginUrl("/success");
@@ -167,8 +167,8 @@ public class SocialAuthenticationFilterTest {
 		return Collections.emptySet();
 	}
 	
-	private static <T> Set<T> set(T ... o) {
-		return Collections.unmodifiableSet(new HashSet<T>(Arrays.asList(o)));
+	private static Set<String> set(String ... o) {
+		return Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(o)));
 	}
 
 	private static class FilterTestEnv {

@@ -15,20 +15,13 @@
  */
 package org.springframework.social.security;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -37,7 +30,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.security.test.DummyConnection;
 import org.springframework.social.security.test.DummyUserDetails;
@@ -121,19 +113,11 @@ public class SocialAuthenticationProviderTest {
 		}
 	}
 
-	private static ConnectionData data(String providerUserId) {
-		return new ConnectionData("provider", providerUserId, null, null, null, null, null, null, null);
-	}
-
     private static Connection<Object> dummyConnection(String providerUserId) {
         return DummyConnection.dummy("provider", providerUserId);
     }
 
-	private static <T> Set<T> set(T... t) {
-		return Collections.unmodifiableSet(new HashSet<T>(Arrays.asList(t)));
-	}
-
-    private static <T> List<T> list(T... t) {
-        return Collections.unmodifiableList((List<? extends T>) new ArrayList<T>(Arrays.asList(t)));
+    private static List<String> list(String... t) {
+        return Collections.unmodifiableList(new ArrayList<String>(Arrays.asList(t)));
     }
 }

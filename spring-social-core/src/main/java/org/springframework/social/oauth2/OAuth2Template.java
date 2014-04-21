@@ -156,6 +156,7 @@ public class OAuth2Template implements OAuth2Operations {
 		return postForAccessGrant(accessTokenUrl, params);
 	}
 
+	@Deprecated
 	public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
 		additionalParameters.set("scope", scope);
 		return refreshAccess(refreshToken, additionalParameters);

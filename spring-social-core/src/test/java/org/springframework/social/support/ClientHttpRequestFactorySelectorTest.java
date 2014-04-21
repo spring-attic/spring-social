@@ -15,15 +15,12 @@
  */
 package org.springframework.social.support;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 
-import org.apache.http.HttpHost;
-import org.apache.http.conn.params.ConnRoutePNames;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,7 +29,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 public class ClientHttpRequestFactorySelectorTest {
 
@@ -45,32 +41,32 @@ public class ClientHttpRequestFactorySelectorTest {
 	@Test
 	@Ignore("It's unclear how to read proxy settings from the request factory in HttpClient 4.3.x")
 	public void getRequestFactory_noProxy() {
-		HttpComponentsClientHttpRequestFactory requestFactory = (HttpComponentsClientHttpRequestFactory) ClientHttpRequestFactorySelector.getRequestFactory();
-		HttpHost proxy = (HttpHost) requestFactory.getHttpClient().getParams().getParameter(ConnRoutePNames.DEFAULT_PROXY);
-		assertNull(proxy);
+//		HttpComponentsClientHttpRequestFactory requestFactory = (HttpComponentsClientHttpRequestFactory) ClientHttpRequestFactorySelector.getRequestFactory();
+//		HttpHost proxy = (HttpHost) requestFactory.getHttpClient().getParams().getParameter(ConnRoutePNames.DEFAULT_PROXY);
+//		assertNull(proxy);
 	}
 
 	@Test
 	@Ignore("It's unclear how to read proxy settings from the request factory in HttpClient 4.3.x")
 	public void getRequestFactory_withProxy() {
-		System.getProperties().setProperty("http.proxyHost", "someproxyhost");
-		System.getProperties().setProperty("http.proxyPort", "8080");		
-		HttpComponentsClientHttpRequestFactory requestFactory = (HttpComponentsClientHttpRequestFactory) ClientHttpRequestFactorySelector.getRequestFactory();
-		HttpHost proxy = (HttpHost) requestFactory.getHttpClient().getParams().getParameter(ConnRoutePNames.DEFAULT_PROXY);
-		assertNotNull(proxy);
-		assertEquals("someproxyhost", proxy.getHostName());
-		assertEquals(8080, proxy.getPort());
+//		System.getProperties().setProperty("http.proxyHost", "someproxyhost");
+//		System.getProperties().setProperty("http.proxyPort", "8080");		
+//		HttpComponentsClientHttpRequestFactory requestFactory = (HttpComponentsClientHttpRequestFactory) ClientHttpRequestFactorySelector.getRequestFactory();
+//		HttpHost proxy = (HttpHost) requestFactory.getHttpClient().getParams().getParameter(ConnRoutePNames.DEFAULT_PROXY);
+//		assertNotNull(proxy);
+//		assertEquals("someproxyhost", proxy.getHostName());
+//		assertEquals(8080, proxy.getPort());
 	}
 
 	@Test
 	@Ignore("It's unclear how to read proxy settings from the request factory in HttpClient 4.3.x")
 	public void getRequestFactory_withDefaultProxyPort() {
-		System.getProperties().setProperty("http.proxyHost", "someproxyhost");
-		HttpComponentsClientHttpRequestFactory requestFactory = (HttpComponentsClientHttpRequestFactory) ClientHttpRequestFactorySelector.getRequestFactory();
-		HttpHost proxy = (HttpHost) requestFactory.getHttpClient().getParams().getParameter(ConnRoutePNames.DEFAULT_PROXY);
-		assertNotNull(proxy);
-		assertEquals("someproxyhost", proxy.getHostName());
-		assertEquals(80, proxy.getPort());
+//		System.getProperties().setProperty("http.proxyHost", "someproxyhost");
+//		HttpComponentsClientHttpRequestFactory requestFactory = (HttpComponentsClientHttpRequestFactory) ClientHttpRequestFactorySelector.getRequestFactory();
+//		HttpHost proxy = (HttpHost) requestFactory.getHttpClient().getParams().getParameter(ConnRoutePNames.DEFAULT_PROXY);
+//		assertNotNull(proxy);
+//		assertEquals("someproxyhost", proxy.getHostName());
+//		assertEquals(80, proxy.getPort());
 	}
 
 	@Test

@@ -38,7 +38,7 @@ import org.springframework.web.servlet.view.AbstractView;
  * </p>
  * 
  * <code>
- * @Bean(name={"connect/facebookConnect", "connect/facebookConnected"})
+ * &#064;Bean(name={"connect/facebookConnect", "connect/facebookConnected"})
  * public View facebookConnectView() {
  * 	return new GenericConnectionStatusView("facebook", "Facebook");
  * }
