@@ -44,6 +44,12 @@ import org.springframework.social.connect.UsersConnectionRepository;
 public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
 	private UserIdSource userIdSource;
+	
+	private String postLoginUrl;
+	
+	private String postFailureUrl;
+
+	private boolean alwaysUsePostLoginUrl = false;
 
 	/**
 	 * Constructs a SpringSocialHttpConfigurer.
@@ -65,11 +71,21 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 				userIdSource != null ? userIdSource : new AuthenticationNameUserIdSource(), 
 				usersConnectionRepository, 
 				authServiceLocator);
-
+		
 		RememberMeServices rememberMe = http.getSharedObject(RememberMeServices.class);
-		if(rememberMe != null) {
+		if (rememberMe != null) {
 			filter.setRememberMeServices(rememberMe);
 		}
+		
+		if (postLoginUrl != null) {
+			filter.setPostLoginUrl(postLoginUrl);
+			filter.setAlwaysUsePostLoginUrl(alwaysUsePostLoginUrl);
+		}
+		
+		if (postFailureUrl != null) {
+			filter.setPostFailureUrl(postFailureUrl);
+		}
+		
 		http.authenticationProvider(
 				new SocialAuthenticationProvider(usersConnectionRepository, socialUsersDetailsService))
 			.addFilterBefore(postProcess(filter), AbstractPreAuthenticatedProcessingFilter.class);
@@ -89,6 +105,30 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 	 */
 	public SpringSocialConfigurer userIdSource(UserIdSource userIdSource) {
 		this.userIdSource = userIdSource;
+		return this;
+	}
+	
+	/**
+	 * Sets the URL to land on after a successful login.
+	 */
+	public SpringSocialConfigurer postLoginUrl(String postLoginUrl) {
+		this.postLoginUrl = postLoginUrl;
+		return this;
+	}
+	
+	/**
+	 * If true, always redirect to postLoginUrl, even if a pre-signin target is in the request cache.
+	 */
+	public SpringSocialConfigurer alwaysUsePostLoginUrl(boolean alwaysUsePostLoginUrl) {
+		this.alwaysUsePostLoginUrl = alwaysUsePostLoginUrl;
+		return this;
+	}
+	
+	/**
+	 * Sets the URL to land on after a failed login.
+	 */
+	public SpringSocialConfigurer postFailureUrl(String postFailureUrl) {
+		this.postFailureUrl = postFailureUrl;
 		return this;
 	}
 	

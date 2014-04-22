@@ -113,6 +113,16 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		}
 	}
 
+	public void setAlwaysUsePostLoginUrl(boolean alwaysUsePostLoginUrl) {
+		AuthenticationSuccessHandler successHandler = getSuccessHandler();
+		if (successHandler instanceof AbstractAuthenticationTargetUrlRequestHandler) {
+			AbstractAuthenticationTargetUrlRequestHandler h = (AbstractAuthenticationTargetUrlRequestHandler) successHandler;
+			h.setAlwaysUseDefaultTargetUrl(alwaysUsePostLoginUrl);
+		} else {
+			throw new IllegalStateException("can't set alwaysUsePostLoginUrl on unknown successHandler, type is " + successHandler.getClass().getName());
+		}
+	}
+	
 	public void setPostFailureUrl(String postFailureUrl) {
 		AuthenticationFailureHandler failureHandler = getFailureHandler();
 		if (failureHandler instanceof SimpleUrlAuthenticationFailureHandler) {
