@@ -6,6 +6,7 @@ task docs {
 }
 
 project('manual') {
+    description = "Spring Social Documentation"
     apply plugin: 'base'
     apply plugin: 'asciidoctor'
 
