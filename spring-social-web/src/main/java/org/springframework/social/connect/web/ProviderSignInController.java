@@ -55,23 +55,25 @@ import org.springframework.web.servlet.view.RedirectView;
 public class ProviderSignInController implements InitializingBean {
 
 	private final static Log logger = LogFactory.getLog(ProviderSignInController.class);
-	
+
 	private final ConnectionFactoryLocator connectionFactoryLocator;
 
 	private final UsersConnectionRepository usersConnectionRepository;
-	
+
 	private final MultiValueMap<Class<?>, ProviderSignInInterceptor<?>> signInInterceptors = new LinkedMultiValueMap<Class<?>, ProviderSignInInterceptor<?>>();
 
 	private final SignInAdapter signInAdapter;
 
+        private String applicationUrl;
+
 	private String signInUrl = "/signin";
-	
+
 	private String signUpUrl = "/signup";
 
 	private String postSignInUrl = "/";
 
 	private ConnectSupport connectSupport;
-	
+
 	private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
 
 	/**
@@ -101,7 +103,7 @@ public class ProviderSignInController implements InitializingBean {
 			addSignInInterceptor(interceptor);
 		}
 	}
-	
+
 	/**
 	 * Sets the URL of the application's sign in page.
 	 * Defaults to "/signin".
@@ -110,14 +112,14 @@ public class ProviderSignInController implements InitializingBean {
 	public void setSignInUrl(String signInUrl) {
 		this.signInUrl = signInUrl;
 	}
-	
+
 	/**
 	 * Sets the URL to redirect the user to if no local user account can be mapped when signing in using a provider.
-	 * Defaults to "/signup". 
+	 * Defaults to "/signup".
 	 * @param signUpUrl the signUp URL
 	 */
 	public void setSignUpUrl(String signUpUrl) {
-		this.signUpUrl = signUpUrl; 
+		this.signUpUrl = signUpUrl;
 	}
 
 	/**
@@ -139,7 +141,7 @@ public class ProviderSignInController implements InitializingBean {
 	 * @param applicationUrl the application URL value
 	 */
 	public void setApplicationUrl(String applicationUrl) {
-		connectSupport.setApplicationUrl(applicationUrl);
+		this.applicationUrl = applicationUrl;
 	}
 
 	/**
@@ -169,7 +171,7 @@ public class ProviderSignInController implements InitializingBean {
 	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
 	public RedirectView signIn(@PathVariable String providerId, NativeWebRequest request) {
 		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
-		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>(); 
+		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
 		preSignIn(connectionFactory, parameters, request);
 		try {
 			return new RedirectView(connectSupport.buildOAuthUrl(connectionFactory, request, parameters));
@@ -186,7 +188,7 @@ public class ProviderSignInController implements InitializingBean {
 	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, NativeWebRequest)}
 	 * If not, redirects the user to a signup page to create a new account with {@link ProviderSignInAttempt} context exposed in the HttpSession.
 	 * @see ProviderSignInAttempt
-	 * @see ProviderSignInUtils 
+	 * @see ProviderSignInUtils
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="oauth_token")
 	public RedirectView oauth1Callback(@PathVariable String providerId, NativeWebRequest request) {
@@ -207,7 +209,7 @@ public class ProviderSignInController implements InitializingBean {
 	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, NativeWebRequest)}.
 	 * If not, redirects the user to a signup page to create a new account with {@link ProviderSignInAttempt} context exposed in the HttpSession.
 	 * @see ProviderSignInAttempt
-	 * @see ProviderSignInUtils 
+	 * @see ProviderSignInUtils
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public RedirectView oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, NativeWebRequest request) {
@@ -227,8 +229,8 @@ public class ProviderSignInController implements InitializingBean {
 	 * Simply carries the error parameters through to the sign-in page.
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="error")
-	public RedirectView oauth2ErrorCallback(@PathVariable String providerId, 
-			@RequestParam("error") String error, 
+	public RedirectView oauth2ErrorCallback(@PathVariable String providerId,
+			@RequestParam("error") String error,
 			@RequestParam(value="error_description", required=false) String errorDescription,
 			@RequestParam(value="error_uri", required=false) String errorUri,
 			NativeWebRequest request) {
@@ -252,8 +254,11 @@ public class ProviderSignInController implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		this.connectSupport = new ConnectSupport(sessionStrategy);
 		this.connectSupport.setUseAuthenticateUrl(true);
+		if (this.applicationUrl != null) {
+			this.connectSupport.setApplicationUrl(applicationUrl);
+		}
 	};
-	
+
 	// internal helpers
 
 	private RedirectView handleSignIn(Connection<?> connection, ConnectionFactory<?> connectionFactory, NativeWebRequest request) {
@@ -275,14 +280,14 @@ public class ProviderSignInController implements InitializingBean {
 	private RedirectView redirect(String url) {
 		return new RedirectView(url, true);
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void preSignIn(ConnectionFactory<?> connectionFactory, MultiValueMap<String, String> parameters, WebRequest request) {
 		for (ProviderSignInInterceptor interceptor : interceptingSignInTo(connectionFactory)) {
 			interceptor.preSignIn(connectionFactory, parameters, request);
 		}
 	}
-	
+
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void postSignIn(ConnectionFactory<?> connectionFactory, Connection<?> connection, WebRequest request) {
 		for (ProviderSignInInterceptor interceptor : interceptingSignInTo(connectionFactory)) {
