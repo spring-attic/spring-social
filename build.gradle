@@ -7,6 +7,7 @@ buildscript {
         classpath("me.champeau.gradle:gradle-javadoc-hotfix-plugin:0.1")
         classpath('org.asciidoctor:asciidoctor-gradle-plugin:0.7.0')
         classpath('org.asciidoctor:asciidoctor-java-integration:0.1.4.preview.1')
+        classpath('org.springframework.build.gradle:spring-io-plugin:0.0.3.RELEASE')
     }
 }
 
@@ -16,8 +17,6 @@ ext.coreModuleProjects = javaProjects
 
 configure(allprojects) {
     group = "org.springframework.social"
-
-
 
     apply plugin: "java"
     apply plugin: "eclipse"
@@ -87,6 +86,18 @@ ext.javadocLinks = [
 
 configure(subprojects) { subproject ->
     apply from: "${rootProject.projectDir}/publish-maven.gradle"
+
+    if (project.hasProperty('platformVersion')) {
+        apply plugin: 'spring-io'
+
+        repositories {
+            maven { url "https://repo.spring.io/libs-snapshot" }
+        }
+
+        dependencies {
+            springIoVersions "io.spring.platform:platform-versions:${platformVersion}@properties"
+        }
+    }
 
     jar {
         manifest.attributes["Implementation-Title"] = subproject.name
