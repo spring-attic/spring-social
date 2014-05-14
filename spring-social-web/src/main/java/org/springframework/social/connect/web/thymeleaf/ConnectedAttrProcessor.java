@@ -17,12 +17,12 @@ package org.springframework.social.connect.web.thymeleaf;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.social.connect.ConnectionRepository;
-import org.springframework.util.ClassUtils;
 import org.thymeleaf.Arguments;
 import org.thymeleaf.context.IContext;
 import org.thymeleaf.dom.Element;
 import org.thymeleaf.exceptions.ConfigurationException;
 import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
+import org.thymeleaf.spring4.context.SpringWebContext;
 
 /**
  * Implementation of the Spring Social Thymeleaf dialect's <code>social:connected</code> attribute.
@@ -31,14 +31,8 @@ import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
  */
 class ConnectedAttrProcessor extends AbstractConditionalVisibilityAttrProcessor {
 
-	private final boolean thymeleaf3Present;
-
-	private final boolean thymeleaf4Present;
-
 	public ConnectedAttrProcessor() {
 		super("connected");
-		thymeleaf3Present = ClassUtils.isPresent("org.thymeleaf.spring3.context.SpringWebContext", ConnectedAttrProcessor.class.getClassLoader());
-		thymeleaf4Present = ClassUtils.isPresent("org.thymeleaf.spring4.context.SpringWebContext", ConnectedAttrProcessor.class.getClassLoader());
 	}
 
 	@Override
@@ -57,38 +51,19 @@ class ConnectedAttrProcessor extends AbstractConditionalVisibilityAttrProcessor 
 	}
 
 	private ConnectionRepository getConnectionRepository(final IContext context) {
-		ApplicationContext applicationContext = null;
-		if (thymeleaf4Present) {
-			applicationContext = getSpringApplicationContextForThymeleaf4(context);
-		} else if (thymeleaf3Present) {
-			applicationContext = getSpringApplicationContextForThymeleaf3(context);
-		} else {
-			throw new ConfigurationException("Neither Thymeleaf 3 SpringWebContext nor Thymeleaf 4 SpringWebContext is in "
-					+ "the application classpath.");
-		}
+		ApplicationContext applicationContext = getSpringApplicationContextFromThymeleafContext(context);
 		ConnectionRepository connectionRepository = applicationContext.getBean(ConnectionRepository.class);
 		return connectionRepository;
 	}
 
-	private ApplicationContext getSpringApplicationContextForThymeleaf3(final IContext context) {
-		if (!(context instanceof org.thymeleaf.spring3.context.SpringWebContext)) {
+	private ApplicationContext getSpringApplicationContextFromThymeleafContext(final IContext context) {
+		if (!(context instanceof SpringWebContext)) {
 			throw new ConfigurationException(
 					"Thymeleaf execution context is not a Spring web context (implementation of " +
-							org.thymeleaf.spring3.context.SpringWebContext.class.getName() + ". Spring Social integration can only be used in " +
+					SpringWebContext.class.getName() + ". Spring Social integration can only be used in " +
 					"web environements with a Spring application context.");
 		}
-		final org.thymeleaf.spring3.context.SpringWebContext springContext = (org.thymeleaf.spring3.context.SpringWebContext) context;		
-		return springContext.getApplicationContext();
-	}
-
-	private ApplicationContext getSpringApplicationContextForThymeleaf4(final IContext context) {
-		if (!(context instanceof org.thymeleaf.spring4.context.SpringWebContext)) {
-			throw new ConfigurationException(
-					"Thymeleaf execution context is not a Spring web context (implementation of " +
-					org.thymeleaf.spring4.context.SpringWebContext.class.getName() + ". Spring Social integration can only be used in " +
-					"web environements with a Spring application context.");
-		}
-		final org.thymeleaf.spring4.context.SpringWebContext springContext = (org.thymeleaf.spring4.context.SpringWebContext) context;		
+		final SpringWebContext springContext = (SpringWebContext) context;
 		return springContext.getApplicationContext();
 	}
 
