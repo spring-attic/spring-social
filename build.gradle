@@ -189,7 +189,6 @@ project("spring-social-web") {
         compile("javax.servlet:javax.servlet-api:$servletApiVersion", provided)
         compile("javax.servlet.jsp:javax.servlet.jsp-api:$jspApiVersion", provided)
         compile("org.thymeleaf:thymeleaf:$thymeleafVersion", optional)
-        compile("org.thymeleaf:thymeleaf-spring3:$thymeleafVersion", optional)
         compile("org.thymeleaf:thymeleaf-spring4:$thymeleafVersion", optional)
         testCompile("org.springframework:spring-test:$springVersion")
         testCompile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
