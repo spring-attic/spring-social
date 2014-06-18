@@ -18,6 +18,9 @@ package org.springframework.social.oauth1;
 import static org.junit.Assert.*;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -69,17 +72,6 @@ public class SigningSupportTest {
 		request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		String authorizationHeader = signingUtils.buildAuthorizationHeaderValue(request, "c2&a3=2+q".getBytes(), new OAuth1Credentials("9djdj82h48djs9d2", "con+sumer=secret", "kkk9d7dh3k39sjv7", "token+secret="));
 		assertAuthorizationHeader(authorizationHeader, "7VuTmiewi5yudNuXhlZvT1UI53w%3D");
-	}
-
-	private void assertAuthorizationHeader(String authorizationHeader, String expectedSignature) {
-		String[] headerElements = authorizationHeader.split(", ");
-		assertEquals("OAuth oauth_version=\"1.0\"", headerElements[0]);
-		assertEquals("oauth_nonce=\"987654321\"", headerElements[1]);
-		assertEquals("oauth_signature_method=\"HMAC-SHA1\"", headerElements[2]);		
-		assertEquals("oauth_consumer_key=\"9djdj82h48djs9d2\"", headerElements[3]);
-		assertEquals("oauth_token=\"kkk9d7dh3k39sjv7\"", headerElements[4]);
-		assertEquals("oauth_timestamp=\"123456789\"", headerElements[5]);
-		assertEquals("oauth_signature=\""+expectedSignature+"\"", headerElements[6]);
 	}
 
 	/*
@@ -151,4 +143,28 @@ public class SigningSupportTest {
 		assertEquals("oauth_timestamp%3D2468013579", parameterParts[4]);
 		assertEquals("oauth_version%3D1.0", parameterParts[5]);
 	}
+	
+	private void assertAuthorizationHeader(String authorizationHeader, String expectedSignature) {
+		List<String> headerElements = normalizedHeaderElements(authorizationHeader);
+		assertEquals("OAuth", headerElements.get(0));
+		assertEquals("oauth_consumer_key=\"9djdj82h48djs9d2\"", headerElements.get(1));
+		assertEquals("oauth_nonce=\"987654321\"", headerElements.get(2));
+		assertEquals("oauth_signature=\""+expectedSignature+"\"", headerElements.get(3));
+		assertEquals("oauth_signature_method=\"HMAC-SHA1\"", headerElements.get(4));
+		assertEquals("oauth_timestamp=\"123456789\"", headerElements.get(5));
+		assertEquals("oauth_token=\"kkk9d7dh3k39sjv7\"", headerElements.get(6));
+		assertEquals("oauth_version=\"1.0\"", headerElements.get(7));
+	}
+
+	private List<String> normalizedHeaderElements(String authorizationHeader) {
+		List<String> headerElements = new ArrayList<>();
+		for (String element : authorizationHeader.split("[,\\s]")) {
+			if (element.trim().length() > 0) {
+				headerElements.add(element.trim());
+			}
+		}
+		Collections.sort(headerElements);
+		return headerElements;
+	}
+
 }

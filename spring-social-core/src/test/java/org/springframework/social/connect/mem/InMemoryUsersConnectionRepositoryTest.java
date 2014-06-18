@@ -95,8 +95,8 @@ public class InMemoryUsersConnectionRepositoryTest {
 		insertFacebookConnectionSameFacebookUser();
 		List<String> localUserIds = usersConnectionRepository.findUserIdsWithConnection(connectionRepository.getPrimaryConnection(TestFacebookApi.class));
 		assertEquals(2, localUserIds.size());
-		assertEquals("2", localUserIds.get(0));
-		assertEquals("1", localUserIds.get(1));
+		assertTrue(localUserIds.contains("1"));
+		assertTrue(localUserIds.contains("2"));
 	}
 
 	@Test
