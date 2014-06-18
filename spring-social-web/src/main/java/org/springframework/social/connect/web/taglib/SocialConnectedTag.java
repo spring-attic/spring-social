@@ -21,23 +21,23 @@ package org.springframework.social.connect.web.taglib;
  * Sample usages in JSP:
  *
  * Include at top of JSP:
- * <%@ taglib prefix="social" uri="http://org.springframework/social" %>
+ * &lt;%@ taglib prefix="social" uri="http://org.springframework/social" %&gt;
  *
- * <social:connected provider="facebook">
+ * &lt;social:connected provider="facebook"&gt;
  * 	    [ show some FB profile info ]
- * </social:connected>
+ * &lt;/social:connected&gt;
  *
  * OR another usage, more suitable for if you need to toggle on a page a connect check
  * or multiple checks need to be made:
  *
- * <c:set var="connectedToFB" value="false"/>
- * <social:connected provider="facebook">
- * 	    <c:set var="connectedToFB" value="true"/>
+ * &lt;c:set var="connectedToFB" value="false"/&gt;
+ * &lt;social:connected provider="facebook"&gt;
+ * 	    &lt;c:set var="connectedToFB" value="true"/&gt;
  * 	    [ Show Disconnect link ]
- * </social:connected>
- * <c:if test="${!connectedToFB}">
+ * &lt;/social:connected&gt;
+ * &lt;c:if test="${!connectedToFB}"&gt;
  *  	[ Show Connect Button/link/form ]
- * </c:if>
+ * &lt;/c:if&gt;
  *
  * Note: You could use social:notConnected tag in place of using c:if and having to set the page scoped
  * connectedToFB var, but it's a bit more efficient to not have to make the FB connection more than once

@@ -32,8 +32,8 @@ import org.thymeleaf.processor.IProcessor;
  * </p>
  * 
  * <code>
- *   &lt;div social:connected="facebook"&gt;<br/>
- *   &nbsp;&nbsp;Only rendered if connected to Facebook<br/>
+ *   &lt;div social:connected="facebook"&gt;<br>
+ *   &nbsp;&nbsp;Only rendered if connected to Facebook<br>
  *   &lt;/div&gt;
  * </code>
  * 

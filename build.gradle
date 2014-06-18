@@ -72,6 +72,13 @@ configure(allprojects) {
         testCompile("org.mockito:mockito-core:${mockitoVersion}")
     }
 
+    ext.javadocLinks = [
+        "http://docs.oracle.com/javase/7/docs/api/",
+        "http://docs.oracle.com/javaee/7/api/",
+        "http://docs.spring.io/spring/docs/${springVersion}/javadoc-api/",
+        "http://docs.jboss.org/jbossas/javadoc/4.0.5/connector/"
+    ] as String[]
+
     // servlet-api (2.5) and tomcat-servlet-api (3.0) classpath entries should not be
     // exported to dependent projects in Eclipse to avoid false compilation errors due
     // to changing APIs across these versions
@@ -79,10 +86,6 @@ configure(allprojects) {
         classpath.entries.findAll { entry -> entry.path.contains("servlet-api") }*.exported = false
     }
 }
-
-ext.javadocLinks = [
-    "http://docs.jboss.org/jbossas/javadoc/4.0.5/connector"
-] as String[]
 
 configure(subprojects) { subproject ->
     apply from: "${rootProject.projectDir}/publish-maven.gradle"
@@ -112,9 +115,15 @@ configure(subprojects) { subproject ->
     }
 
     javadoc {
+        description = "Generates project-level javadoc for use in -javadoc jar"
+
         options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PROTECTED
         options.author = true
         options.header = project.name
+        options.links(project.ext.javadocLinks)
+        if (JavaVersion.current().isJava8Compatible()) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
         //options.overview = "${projectDir}/src/main/java/overview.html"
     }
 
@@ -251,6 +260,9 @@ configure(rootProject) {
         options.header = rootProject.description
         options.overview = "src/api/overview.html"
         options.links(project.ext.javadocLinks)
+        if (JavaVersion.current().isJava8Compatible()) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
 
         source subprojects.collect { project ->
             project.sourceSets.main.allJava

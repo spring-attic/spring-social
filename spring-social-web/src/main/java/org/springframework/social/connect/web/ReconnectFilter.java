@@ -46,7 +46,7 @@ import org.springframework.web.filter.GenericFilterBean;
  * 
  * <ul>
  * <li>If an exception is thrown, redirects to /connect/{provider ID}?reconnect=true</li>
- * </li>Handles its own redirect to /connect/{provider ID}?reconnect=true and converts the request to a POST request to {@link ConnectController} to kick of the authorization flow.
+ * <li>Handles its own redirect to /connect/{provider ID}?reconnect=true and converts the request to a POST request to {@link ConnectController} to kick of the authorization flow.</li>
  * </ul>
  * 
  * @since 1.1.0

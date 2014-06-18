@@ -31,7 +31,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /**
- * Message converter that reads form-encoded data into a flat Map<String, String>.
+ * Message converter that reads form-encoded data into a flat Map&lt;String, String&gt;.
  * In contrast to FormHttpMessageConverter which reads form-encoded data into a {@link MultiValueMap}.
  * Created primarily for use by {@link OAuth2Template} to handle cases where access token is returned as form-encoded data.
  * @author Craig Walls

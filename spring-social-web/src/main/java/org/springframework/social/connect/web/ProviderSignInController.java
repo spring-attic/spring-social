@@ -46,7 +46,7 @@ import org.springframework.web.servlet.view.RedirectView;
  * Spring MVC Controller for handling the provider user sign-in flow.
  * <ul>
  * <li>POST /signin/{providerId}  - Initiate user sign-in with {providerId}.</li>
- * <li>GET /signin/{providerId}?oauth_token&oauth_verifier||code - Receive {providerId} authentication callback and establish the connection.</li>
+ * <li>GET /signin/{providerId}?oauth_token&amp;oauth_verifier||code - Receive {providerId} authentication callback and establish the connection.</li>
  * </ul>
  * @author Keith Donald
  */
@@ -207,7 +207,11 @@ public class ProviderSignInController implements InitializingBean {
 	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, NativeWebRequest)}.
 	 * If not, redirects the user to a signup page to create a new account with {@link ProviderSignInAttempt} context exposed in the HttpSession.
 	 * @see ProviderSignInAttempt
-	 * @see ProviderSignInUtils 
+	 * @see ProviderSignInUtils
+	 * @param providerId the provider ID
+	 * @param code the OAuth 2 authorization code
+	 * @param request the web request
+	 * @return A RedirectView to the target page or the signInUrl if an error occurs
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="code")
 	public RedirectView oauth2Callback(@PathVariable String providerId, @RequestParam("code") String code, NativeWebRequest request) {
@@ -225,6 +229,12 @@ public class ProviderSignInController implements InitializingBean {
 	 * Process an error callback from an OAuth 2 authorization as described at http://tools.ietf.org/html/rfc6749#section-4.1.2.1.
 	 * Called after upon redirect from an OAuth 2 provider when there is some sort of error during authorization, typically because the user denied authorization.
 	 * Simply carries the error parameters through to the sign-in page.
+	 * @param providerId The Provider ID
+	 * @param error An error parameter sent on the redirect from the provider
+	 * @param errorDescription An optional error description sent from the provider
+	 * @param errorUri An optional error URI sent from the provider
+	 * @param request The web request
+	 * @return a RedirectView to the signInUrl
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET, params="error")
 	public RedirectView oauth2ErrorCallback(@PathVariable String providerId, 
@@ -242,6 +252,7 @@ public class ProviderSignInController implements InitializingBean {
 	/**
 	 * Process the authentication callback when neither the oauth_token or code parameter is given, likely indicating that the user denied authorization with the provider.
 	 * Redirects to application's sign in URL, as set in the signInUrl property.
+	 * @return A RedirectView to the sign in URL
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.GET)
 	public RedirectView canceledAuthorizationCallback() {
