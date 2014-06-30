@@ -58,7 +58,7 @@ public class ProviderSignInUtils {
 	 * @param request the current request attributes, used to extract sign-in attempt information from the current user session
 	 */
 	public Connection<?> getConnectionFromSession(RequestAttributes request) {
-		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
+		ProviderSignInAttempt signInAttempt = (ProviderSignInAttempt) sessionStrategy.getAttribute(request, ProviderSignInAttempt.SESSION_ATTRIBUTE);
 		return signInAttempt != null ? signInAttempt.getConnection() : null;
 	}
 
@@ -89,10 +89,10 @@ public class ProviderSignInUtils {
 	 * @param request the current request attributes, used to extract sign-in attempt information from the current user session
 	 */
 	public void doPostSignUp(String userId, RequestAttributes request) {
-		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
+		ProviderSignInAttempt signInAttempt = (ProviderSignInAttempt) sessionStrategy.getAttribute(request, ProviderSignInAttempt.SESSION_ATTRIBUTE);
 		if (signInAttempt != null) {
 			signInAttempt.addConnection(userId);
-			request.removeAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
+			sessionStrategy.removeAttribute(request, ProviderSignInAttempt.SESSION_ATTRIBUTE);
 		}		
 	}
 
