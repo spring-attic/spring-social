@@ -50,7 +50,9 @@ class SecurityEnabledConnectionFactoryConfigurer implements ConnectionFactoryCon
 		if (cf instanceof OAuth1ConnectionFactory) {
 			return new OAuth1AuthenticationService<A>((OAuth1ConnectionFactory<A>) cf);
 		} else if (cf instanceof OAuth2ConnectionFactory) {
-			return new OAuth2AuthenticationService<A>((OAuth2ConnectionFactory<A>) cf);
+			final OAuth2AuthenticationService<A> authService = new OAuth2AuthenticationService<A>((OAuth2ConnectionFactory<A>) cf);
+			authService.setDefaultScope(((OAuth2ConnectionFactory<A>) cf).getScope());
+			return authService;
 		}
 		throw new IllegalArgumentException("The connection factory must be one of OAuth1ConnectionFactory or OAuth2ConnectionFactory");
 	}
