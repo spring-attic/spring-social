@@ -62,6 +62,7 @@ public interface SocialAuthenticationService<S> {
 
 		/**
 		 * allow many userIds per providerUserId. If true, authentication is not possible
+		 * @return true if multiple local users are allowed per provider user ID
 		 */
 		public boolean isMultiUserId() {
 			return multiUserId;
@@ -69,6 +70,7 @@ public interface SocialAuthenticationService<S> {
 
 		/**
 		 * allow many providerUserIds per userId
+		 * @return true if users are allowed multiple connections to a provider
 		 */
 		public boolean isMultiProviderUserId() {
 			return multiProviderUserId;
@@ -102,8 +104,8 @@ public interface SocialAuthenticationService<S> {
 
 	/**
 	 * 
-	 * @param request
-	 * @param connection
+	 * @param request current {@link HttpServletRequest}
+	 * @param connection the connection from which to calculate the redirect URL
 	 * @return null to use filter default
 	 */
 	String getConnectionAddedRedirectUrl(HttpServletRequest request, Connection<?> connection);

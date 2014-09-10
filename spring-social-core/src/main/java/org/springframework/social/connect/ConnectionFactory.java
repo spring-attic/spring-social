@@ -48,6 +48,7 @@ public abstract class ConnectionFactory<A> {
 	/**
 	 * The unique id of the provider this factory creates connections to.
 	 * Used to index this {@link ConnectionFactory} in a registry to support dynamic lookup operations.
+	 * @return the provider ID
 	 */
 	public String getProviderId() {
 		return providerId;
@@ -55,6 +56,7 @@ public abstract class ConnectionFactory<A> {
 
 	/**
 	 * Exposes the ServiceProvider instance to subclasses.
+	 * @return the service provider
 	 */
 	protected ServiceProvider<A> getServiceProvider() {
 		return serviceProvider;
@@ -62,6 +64,7 @@ public abstract class ConnectionFactory<A> {
 
 	/**
 	 * Exposes the ApiAdapter to subclasses.
+	 * @return the ApiAdapter
 	 */
 	protected ApiAdapter<A> getApiAdapter() {
 		return apiAdapter;

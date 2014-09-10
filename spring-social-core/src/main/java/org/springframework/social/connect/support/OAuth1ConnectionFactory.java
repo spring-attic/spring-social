@@ -42,7 +42,7 @@ public class OAuth1ConnectionFactory<A> extends ConnectionFactory<A> {
 	}
 
 	/**
-	 * Get the ServiceProvider's {@link OAuth1Operations} that allows the client application to conduct the OAuth1 flow with the provider.
+	 * @return the ServiceProvider's {@link OAuth1Operations} that allows the client application to conduct the OAuth1 flow with the provider.
 	 */
 	public OAuth1Operations getOAuthOperations() {
 		return getOAuth1ServiceProvider().getOAuthOperations();
@@ -72,6 +72,8 @@ public class OAuth1ConnectionFactory<A> extends ConnectionFactory<A> {
 	 * Hook for extracting the providerUserId from the returned access token response, if it is available.
 	 * Default implementation returns null, indicating it is not exposed and another remote API call will be required to obtain it.
 	 * Subclasses may override.
+	 * @param accessToken an access token
+	 * @return the providerId associated with an access token, if that information is available.
 	 */
 	protected String extractProviderUserId(OAuthToken accessToken) {
 		return null;

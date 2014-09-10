@@ -32,12 +32,17 @@ public interface ConnectInterceptor<S> {
 	/**
 	 * Called during connection initiation, immediately before user authorization.
 	 * May be used to store custom connection attributes in the session before redirecting the user to the provider's site or to contribute parameters to the authorization URL.
+	 * @param connectionFactory the connection factory in play for this connection
+	 * @param parameters parameters being sent to the provider during authorization
+	 * @param request the request
 	 */
 	void preConnect(ConnectionFactory<S> connectionFactory, MultiValueMap<String, String> parameters, WebRequest request);
 
 	/**
 	 * Called immediately after the connection is established.
 	 * Used to invoke the service API on behalf of the user upon connecting.
+	 * @param connection the connection that was just established
+	 * @param request the request
 	 */
 	void postConnect(Connection<S> connection, WebRequest request);
 	

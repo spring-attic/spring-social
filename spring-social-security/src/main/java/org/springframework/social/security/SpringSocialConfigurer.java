@@ -102,6 +102,8 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 	
 	/**
 	 * Sets the {@link UserIdSource} to use for authentication. Defaults to {@link AuthenticationNameUserIdSource}.
+	 * @param userIdSource the UserIdSource to use when authenticating
+	 * @return this SpringSocialConfigurer for chained configuration
 	 */
 	public SpringSocialConfigurer userIdSource(UserIdSource userIdSource) {
 		this.userIdSource = userIdSource;
@@ -110,6 +112,8 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 	
 	/**
 	 * Sets the URL to land on after a successful login.
+	 * @param postLoginUrl the URL to redirect to after a successful login
+     * @return this SpringSocialConfigurer for chained configuration
 	 */
 	public SpringSocialConfigurer postLoginUrl(String postLoginUrl) {
 		this.postLoginUrl = postLoginUrl;
@@ -118,6 +122,8 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 	
 	/**
 	 * If true, always redirect to postLoginUrl, even if a pre-signin target is in the request cache.
+	 * @param alwaysUsePostLoginUrl if true, always redirect to the postLoginUrl
+     * @return this SpringSocialConfigurer for chained configuration
 	 */
 	public SpringSocialConfigurer alwaysUsePostLoginUrl(boolean alwaysUsePostLoginUrl) {
 		this.alwaysUsePostLoginUrl = alwaysUsePostLoginUrl;
@@ -126,6 +132,8 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 	
 	/**
 	 * Sets the URL to land on after a failed login.
+	 * @param postFailureUrl the URL to redirect to after a failed login
+     * @return this SpringSocialConfigurer for chained configuration
 	 */
 	public SpringSocialConfigurer postFailureUrl(String postFailureUrl) {
 		this.postFailureUrl = postFailureUrl;

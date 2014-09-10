@@ -55,6 +55,7 @@ public class ProviderSignInAttempt implements Serializable {
 	 * Get the connection to the provider user account the client attempted to sign-in as.
 	 * Using this connection you may fetch a {@link Connection#fetchUserProfile() provider user profile} and use that to pre-populate a local user registration/signup form.
 	 * You can also lookup the id of the provider and use that to display a provider-specific user-sign-in-attempt flash message e.g. "Your Facebook Account is not connected to a Local account. Please sign up."
+	 * @return the connection
 	 */
 	public Connection<?> getConnection() {
 		return connectionFactoryLocator.getConnectionFactory(connectionData.getProviderId()).createConnection(connectionData);
@@ -62,6 +63,7 @@ public class ProviderSignInAttempt implements Serializable {
 	
 	/**
 	 * Connect the new local user to the provider.
+	 * @param userId the local user ID
 	 * @throws DuplicateConnectionException if the user already has this connection
 	 */
 	void addConnection(String userId) {

@@ -31,6 +31,7 @@ public interface ConnectionFactoryConfigurer {
 	/**
 	 * Add a connection factory registry.
 	 * If Spring Social's security module is available, the given connection factory will be wrapped as a SocialAuthenticationService.
+	 * @param connectionFactory the ConnectionFactory to register
 	 */
 	void addConnectionFactory(ConnectionFactory<?> connectionFactory);
 

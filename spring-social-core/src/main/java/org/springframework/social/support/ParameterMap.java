@@ -45,7 +45,8 @@ public class ParameterMap implements MultiValueMap<String, String> {
 	/**
 	 * Wraps the provided Map&lt;String, List&lt;String&gt;&gt; as a MultiValueMap&lt;String, String&gt;.
 	 * The map passed in is stored internally.
-	 * No copy is created.
+	 * No copy is created
+	 * @param parameters the parameters as a Map.
 	 */
 	protected ParameterMap(Map<String, List<String>> parameters) {
 		if (parameters != null) {

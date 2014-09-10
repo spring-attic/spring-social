@@ -36,6 +36,7 @@ public class SocialAuthenticationServiceRegistry extends ConnectionFactoryRegist
 
 	/**
 	 * Add a {@link SocialAuthenticationService} to this registry.
+	 * @param authenticationService a SocialAuthenticationService to register
 	 */
 	public void addAuthenticationService(SocialAuthenticationService<?> authenticationService) {
 		addConnectionFactory(authenticationService.getConnectionFactory());

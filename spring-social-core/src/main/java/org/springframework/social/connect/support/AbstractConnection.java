@@ -141,6 +141,7 @@ public abstract class AbstractConnection<A> implements Connection<A> {
 
 	/**
 	 * Provides subclasses with access to a monitor that can be used to synchronize access to this connection.
+	 * @return the monitor object
 	 */
 	protected Object getMonitor() {
 		return monitor;

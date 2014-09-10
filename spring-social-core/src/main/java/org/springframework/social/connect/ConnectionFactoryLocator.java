@@ -29,6 +29,8 @@ public interface ConnectionFactoryLocator {
 	 * Lookup a ConnectionFactory by providerId; for example, "facebook".
 	 * The returned factory can be used to create connections to the provider.
 	 * Used to support connection creation in a dynamic manner across the set of registered providers.
+	 * @param providerId the provider ID used to look up the ConnectionFactory.
+	 * @return the requested ConnectionFactory
 	 */
 	ConnectionFactory<?> getConnectionFactory(String providerId);
 
@@ -36,6 +38,9 @@ public interface ConnectionFactoryLocator {
 	 * Lookup a ConnectionFactory by apiType; for example, FacebookApi.class.
 	 * The returned factory can be used to create connections to the provider.
 	 * Primarily used in support of connection restoration requested by application code.
+	 * @param apiType the Java type of the API binding used to lookup a matching ConnectionFactory
+	 * @param <A> the API binding type
+     * @return the requested ConnectionFactory
 	 * @see ConnectionRepository#getPrimaryConnection(Class)
 	 */
 	<A> ConnectionFactory<A> getConnectionFactory(Class<A> apiType);
@@ -43,6 +48,7 @@ public interface ConnectionFactoryLocator {
 	/**
 	 * Returns the set of providerIds for which a {@link ConnectionFactory} is registered; for example, <code>{ "twitter", "facebook", "foursquare" }</code>
 	 * Elements in this set can be passed to {@link #getConnectionFactory(String)} to fetch a specific factory instance.
+	 * @return a Set of String containing all of the provider IDs registered with this ConnectionFactoryLocator.
 	 */
 	Set<String> registeredProviderIds();
 	

@@ -167,6 +167,9 @@ public class ProviderSignInController implements InitializingBean {
 	 * Process a sign-in form submission by commencing the process of establishing a connection to the provider on behalf of the user.
 	 * For OAuth1, fetches a new request token from the provider, temporarily stores it in the session, then redirects the user to the provider's site for authentication authorization.
 	 * For OAuth2, redirects the user to the provider's site for authentication authorization.
+	 * @param providerId the provider ID to authorize against
+	 * @param request the request
+	 * @return a RedirectView to the provider's authorization page or to the application's signin page if there is an error
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
 	public RedirectView signIn(@PathVariable String providerId, NativeWebRequest request) {
@@ -187,6 +190,9 @@ public class ProviderSignInController implements InitializingBean {
 	 * Handles the provider sign-in callback by first determining if a local user account is associated with the connected provider account.
 	 * If so, signs the local user in by delegating to {@link SignInAdapter#signIn(String, Connection, NativeWebRequest)}
 	 * If not, redirects the user to a signup page to create a new account with {@link ProviderSignInAttempt} context exposed in the HttpSession.
+	 * @param providerId the provider ID to authorize against
+	 * @param request the request
+	 * @return a RedirectView to the provider's authorization page or to the application's signin page if there is an error
 	 * @see ProviderSignInAttempt
 	 * @see ProviderSignInUtils
 	 */
@@ -210,7 +216,7 @@ public class ProviderSignInController implements InitializingBean {
 	 * If not, redirects the user to a signup page to create a new account with {@link ProviderSignInAttempt} context exposed in the HttpSession.
 	 * @see ProviderSignInAttempt
 	 * @see ProviderSignInUtils
-	 * @param providerId the provider ID
+	 * @param providerId the provider ID to authorize against
 	 * @param code the OAuth 2 authorization code
 	 * @param request the web request
 	 * @return A RedirectView to the target page or the signInUrl if an error occurs

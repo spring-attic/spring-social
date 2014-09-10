@@ -44,6 +44,8 @@ public class URIBuilder {
 	
 	/**
 	 * Creates a URIBuilder with a base URI string as the starting point
+	 * @param baseUri a String URI to use as a starting point for the builder
+	 * @return the URIBuilder
 	 */
 	public static URIBuilder fromUri(String baseUri) {
 		return new URIBuilder(baseUri);
@@ -51,6 +53,8 @@ public class URIBuilder {
 
 	/**
 	 * Creates a URIBuilder with a base URI string as the starting point
+	 * @param baseUri a URI to use as a starting point for the builder
+	 * @return the URIBuilder
 	 */
 	public static URIBuilder fromUri(URI baseUri) {
 		return new URIBuilder(baseUri.toString());
@@ -58,6 +62,9 @@ public class URIBuilder {
 
 	/**
 	 * Adds a query parameter to the URI
+	 * @param name the parameter name
+	 * @param value the parameter value
+	 * @return the URIBuilder
 	 */
 	public URIBuilder queryParam(String name, String value) {
 		parameters.add(name, value);
@@ -66,6 +73,8 @@ public class URIBuilder {
 
 	/**
 	 * Adds a query parameters to the URI
+	 * @param params a Map of parameters to add the the URI
+	 * @return the URIBuilder
 	 */
 	public URIBuilder queryParams(MultiValueMap<String, String> params) {
 		parameters.putAll(params);
@@ -74,6 +83,7 @@ public class URIBuilder {
 
 	/**
 	 * Builds the URI
+	 * @return the URI
 	 */
 	public URI build() {
 		try {

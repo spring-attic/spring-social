@@ -24,12 +24,15 @@ public interface SocialAuthenticationServiceLocator extends ConnectionFactoryLoc
 
 	/**
 	 * Lookup a {@link SocialAuthenticationService} by providerId; for example, "facebook".
+	 * @param providerId the provider ID used to find an authentication service
+	 * @return a SocialAuthenticationServer for the given provider ID
 	 */
 	SocialAuthenticationService<?> getAuthenticationService(String providerId);
 
 	/**
 	 * Returns the set of providerIds for which a {@link SocialAuthenticationService} is registered; for example, <code>{"twitter", "facebook", "foursquare" }</code>.
 	 * Elements in this set can be passed to {@link #getAuthenticationService(String)} to fetch a specific authentication service.
+	 * @return a Set of provider IDs for which a SocialAuthenticationService has been registered with this provider.
 	 */
 	Set<String> registeredAuthenticationProviderIds();
 

@@ -24,7 +24,7 @@ package org.springframework.social;
 public interface UserIdSource {
 
 	/**
-	 * Returns an account ID.
+	 * @return an account ID.
 	 */
 	String getUserId();
 

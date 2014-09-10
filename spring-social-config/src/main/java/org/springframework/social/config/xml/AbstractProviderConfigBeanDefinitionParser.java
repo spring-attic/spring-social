@@ -40,6 +40,7 @@ public abstract class AbstractProviderConfigBeanDefinitionParser extends Provide
 	/**
 	 * Constructs a connection factory-creating {@link BeanDefinitionParser}.
 	 * @param connectionFactoryClass The type of {@link ConnectionFactory} to create. Must have a two-argument constructor taking an application's ID and secret as Strings.
+	 * @param apiHelperClass the API helper class
 	 */
 	protected AbstractProviderConfigBeanDefinitionParser(Class<? extends ConnectionFactory<?>> connectionFactoryClass, Class<? extends ApiHelper<?>> apiHelperClass) {
 		super(connectionFactoryClass, apiHelperClass);

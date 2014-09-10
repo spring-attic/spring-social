@@ -35,6 +35,7 @@ public interface ProviderSignInInterceptor<S> {
 	 * Called during sign in initiation, immediately before user authorization.
 	 * May be used to store custom connection attributes in the session before redirecting the user to the provider's site or to contribute parameters to the authorization URL.
 	 * @param connectionFactory The connection factory
+	 * @param parameters the parameters to be sent to the provider during authentication
 	 * @param request The web request
 	 */
 	void preSignIn(ConnectionFactory<S> connectionFactory, MultiValueMap<String, String> parameters, WebRequest request);
@@ -42,6 +43,8 @@ public interface ProviderSignInInterceptor<S> {
 	/**
 	 * Called immediately after the sign in is complete.
 	 * Used to invoke the service API on behalf of the user upon signing in.
+	 * @param connection the connection that was created in the course of provider sign-in
+	 * @param request the request
 	 */
 	void postSignIn(Connection<S> connection, WebRequest request);
 	

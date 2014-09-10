@@ -28,6 +28,8 @@ public interface SocialUserDetailsService {
 	
 	/**
 	 * @see UserDetailsService#loadUserByUsername(String)
+	 * @param userId the user ID used to lookup the user details
+	 * @return the SocialUserDetails requested
 	 */
 	SocialUserDetails loadUserByUserId(String userId) throws UsernameNotFoundException, DataAccessException;
 }

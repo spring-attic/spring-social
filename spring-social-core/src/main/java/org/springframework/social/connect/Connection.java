@@ -29,7 +29,7 @@ public interface Connection<A> extends Serializable {
 
 	/**
 	 * The key identifying this connection.
-	 * A composite key that consists of the "providerId" plus "providerUserId"; for example, "facebook" and "125660". 
+	 * @return A composite key that consists of the "providerId" plus "providerUserId"; for example, "facebook" and "125660". 
 	 */
 	ConnectionKey getKey();
 	
@@ -39,6 +39,7 @@ public interface Connection<A> extends Serializable {
 	 * Generally the full name or screen name of the connected provider user e.g. "Keith Donald" or "@kdonald".
 	 * May be null if this information is not public or not provided.
 	 * The value of this property may change if the user updates his or her profile.
+	 * @return the displayable name for the connection
 	 * @see #sync()
 	 */
 	String getDisplayName();
@@ -48,6 +49,7 @@ public interface Connection<A> extends Serializable {
 	 * A client application may use this value along with the displayName to generate a link to the user's profile on the provider's system.
 	 * May be null if this information is not public or not provided.
 	 * The value of this property may change if the user updates his or her profile.
+	 * @return the public URL for the connected user
 	 * @see #sync()
 	 */
 	String getProfileUrl();
@@ -58,6 +60,7 @@ public interface Connection<A> extends Serializable {
 	 * Generally the small/thumbnail version of the connected provider user's profile picture.
 	 * May be null if this information is not public or not provided.
 	 * The value of this property may change if the user updates his or her profile.
+	 * @return a String containing the URL to the connection image
 	 * @see #sync()
 	 */
 	String getImageUrl();
@@ -72,6 +75,7 @@ public interface Connection<A> extends Serializable {
 	 * Test this connection.
 	 * If false, indicates calls to the {@link #getApi() api} will fail.
 	 * Used to proactively test authorization credentials such as an API access token before invoking the service API.
+	 * @return true if the connection is valid
 	 */
 	boolean test();
 	
@@ -80,6 +84,7 @@ public interface Connection<A> extends Serializable {
 	 * An expired connection cannot be used; calls to {@link #test()} return false, and any service API invocations fail.
 	 * If expired, you may call {@link #refresh()} to renew the connection.
 	 * Not supported by all Connection implementations; always returns false if not supported.
+	 * @return true if the connection has expired
 	 */
 	boolean hasExpired();
 
@@ -95,6 +100,7 @@ public interface Connection<A> extends Serializable {
 	 * Fetch a normalized model of the user's profile on the provider system.
 	 * Capable of exposing the user's name, email, and username.
 	 * What is actually exposed depends on the provider and scope of this connection.
+	 * @return a normalized user profile associated with this connection.
 	 */
 	UserProfile fetchUserProfile();
 	
@@ -107,12 +113,14 @@ public interface Connection<A> extends Serializable {
 	
 	/**
 	 * A Java binding to the service provider's native API.
+	 * @return the provider-specific API binding
 	 */
 	A getApi();
 
 	/**
 	 * Creates a data transfer object that can be used to persist the state of this connection.
 	 * Used to support the transfer of connection state between layers of the application, such as to the database layer.
+	 * @return a data transfer object containing details about the connection.
 	 */
 	ConnectionData createData();
 

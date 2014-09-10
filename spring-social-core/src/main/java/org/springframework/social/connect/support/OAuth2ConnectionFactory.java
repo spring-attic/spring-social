@@ -69,6 +69,7 @@ public class OAuth2ConnectionFactory<S> extends ConnectionFactory<S> {
 	/**
 	 * Indicates that this provider supports the state parameter in callbacks to prevent against CSRF.
 	 * Default implementation returns true. 
+	 * @return true if the provider supports the state parameter
 	 */
 	public boolean supportsStateParameter() {
 		return true;
@@ -76,6 +77,7 @@ public class OAuth2ConnectionFactory<S> extends ConnectionFactory<S> {
 
 	/**
 	 * Get the ServiceProvider's {@link OAuth2Operations} that allows the client application to conduct the OAuth2 flow with the provider.
+	 * @return an OAuth2Operations
 	 */
 	public OAuth2Operations getOAuthOperations() {
 		return getOAuth2ServiceProvider().getOAuthOperations();
@@ -94,6 +96,7 @@ public class OAuth2ConnectionFactory<S> extends ConnectionFactory<S> {
 
 	/**
 	 * Create a OAuth2-based {@link Connection} from the connection data.
+	 * @param data connection data from which to create the connection
 	 */
 	public Connection<S> createConnection(ConnectionData data) {
 		return new OAuth2Connection<S>(data, getOAuth2ServiceProvider(), getApiAdapter());
@@ -105,6 +108,8 @@ public class OAuth2ConnectionFactory<S> extends ConnectionFactory<S> {
 	 * Hook for extracting the providerUserId from the returned {@link AccessGrant}, if it is available.
 	 * Default implementation returns null, indicating it is not exposed and another remote API call will be required to obtain it.
 	 * Subclasses may override.
+	 * @param accessGrant an AccessGrant from which to extract the provider ID
+	 * @return the pvodier ID, if available
 	 */
 	protected String extractProviderUserId(AccessGrant accessGrant) {
 		return null;
