@@ -140,11 +140,11 @@ public class ClientHttpRequestFactorySelector {
 			}
 			return null;
 		}
-
-		public static void setAllTrust(boolean isAllTrust) {
-			HttpComponentsClientRequestFactoryCreator.isAllTrust = isAllTrust;
-		}
 		
+	}
+
+	public static void setAllTrust(boolean isAllTrust) {
+		HttpComponentsClientRequestFactoryCreator.isAllTrust = isAllTrust;
 	}
 
 }
