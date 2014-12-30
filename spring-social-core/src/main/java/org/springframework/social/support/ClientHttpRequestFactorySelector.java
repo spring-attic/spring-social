@@ -124,13 +124,13 @@ public class ClientHttpRequestFactorySelector {
 		private static SSLContext getSSLContext() {
 			try {
 				KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-			    TrustStrategy allTrust = new TrustStrategy() {
-			        @Override
-			        public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-			            return true;
-			        }
-			    };
-			    return SSLContexts.custom().useSSL().loadTrustMaterial(trustStore, allTrust).build();
+				TrustStrategy allTrust = new TrustStrategy() {
+					@Override
+					public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+						return true;
+					}
+				};
+				return SSLContexts.custom().useSSL().loadTrustMaterial(trustStore, allTrust).build();
 			} catch (KeyStoreException e) {
 				e.printStackTrace();
 			} catch (KeyManagementException e) {
@@ -143,6 +143,11 @@ public class ClientHttpRequestFactorySelector {
 		
 	}
 
+	/**
+	 * Trust all SSL certificates.
+	 * For use when using {@link HttpComponentsClientHttpRequestFactory} in a test environment. Not recommended for general use.
+	 * @param isAllTrust if true, all certificates will be trusted.
+	 */
 	public static void setAllTrust(boolean isAllTrust) {
 		HttpComponentsClientRequestFactoryCreator.isAllTrust = isAllTrust;
 	}
