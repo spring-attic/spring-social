@@ -85,6 +85,8 @@ public class ConnectController implements InitializingBean {
 	private String viewPath = "connect/";
 
 	private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
+
+	private String applicationUrl = null;
 	
 	/**
 	 * Constructs a ConnectController.
@@ -140,7 +142,7 @@ public class ConnectController implements InitializingBean {
 	 * @param applicationUrl the application URL value
 	 */
 	public void setApplicationUrl(String applicationUrl) {
-		connectSupport.setApplicationUrl(applicationUrl);
+		this.applicationUrl = applicationUrl;
 	}
 	
 	/**
@@ -394,6 +396,9 @@ public class ConnectController implements InitializingBean {
 	// From InitializingBean
 	public void afterPropertiesSet() throws Exception {
 		this.connectSupport = new ConnectSupport(sessionStrategy);
+		if (applicationUrl != null) {
+			this.connectSupport.setApplicationUrl(applicationUrl);
+		}
 	}
 
 	// internal helpers

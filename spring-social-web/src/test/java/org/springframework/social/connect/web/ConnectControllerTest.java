@@ -34,7 +34,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionFactory;
+import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.DuplicateConnectionException;
+import org.springframework.social.connect.mem.InMemoryUsersConnectionRepository;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
 import org.springframework.social.connect.web.test.StubConnectionRepository;
 import org.springframework.social.connect.web.test.StubOAuth1ConnectionFactory;
@@ -63,6 +65,14 @@ public class ConnectControllerTest {
 		mockMvc.perform(post("/connect/noSuchProvider"));
 	}
 
+	@Test
+	public void createConnectController_setApplicationUrl() throws Exception {
+		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
+		ConnectionRepository connectionRepository = new InMemoryUsersConnectionRepository(connectionFactoryLocator).createConnectionRepository("userid");
+		ConnectController controller = new ConnectController(connectionFactoryLocator, connectionRepository);
+		controller.setApplicationUrl("http://baseurl.com/");
+	}
+	
 	@Test
 	public void connectionStatus() throws Exception {
 		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
