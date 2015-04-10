@@ -68,6 +68,8 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 
 	private SimpleUrlAuthenticationFailureHandler delegateAuthenticationFailureHandler;
 
+	private String filterProcessesUrl;
+
 	public SocialAuthenticationFilter(AuthenticationManager authManager, UserIdSource userIdSource, UsersConnectionRepository usersConnectionRepository, SocialAuthenticationServiceLocator authServiceLocator) {
 		super("/auth");
 		setAuthenticationManager(authManager);
@@ -151,7 +153,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		
 		Authentication auth = null;
 		Set<String> authProviders = authServiceLocator.registeredAuthenticationProviderIds();
-		String authProviderId = getRequestedProviderId(request);
+		String authProviderId = getRequestedProviderId(request, response);
 		if (!authProviders.isEmpty() && authProviderId != null && authProviders.contains(authProviderId)) {
 			SocialAuthenticationService<?> authService = authServiceLocator.getAuthenticationService(authProviderId);
 			auth = attemptAuthService(authService, request, response);
@@ -183,9 +185,8 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	 * The URL must be like {filterProcessesUrl}/{providerId}. 
 	 * @return <code>true</code> if the filter should attempt authentication, <code>false</code> otherwise.
 	 */
-	@Deprecated
 	protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
-		String providerId = getRequestedProviderId(request);
+		String providerId = getRequestedProviderId(request, response);
 		if (providerId != null){
 			Set<String> authProviders = authServiceLocator.registeredAuthenticationProviderIds();
 			return authProviders.contains(providerId);
@@ -250,8 +251,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		}		
 	}	
 	
-	@SuppressWarnings("deprecation")
-	private String getRequestedProviderId(HttpServletRequest request) {
+	private String getRequestedProviderId(HttpServletRequest request, HttpServletResponse response) {
 		String uri = request.getRequestURI();
 		int pathParamIndex = uri.indexOf(';');
 
@@ -264,10 +264,10 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		uri = uri.substring(request.getContextPath().length());
 
 		// remaining uri must start with filterProcessesUrl
-		if (!uri.startsWith(getFilterProcessesUrl())) {
+		if (!uri.startsWith(filterProcessesUrl)) {
 			return null;
 		}
-		uri = uri.substring(getFilterProcessesUrl().length());
+		uri = uri.substring(filterProcessesUrl.length());
 
 		// expect /filterprocessesurl/provider, not /filterprocessesurlproviderr
 		if (uri.startsWith("/")) {
@@ -275,6 +275,12 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public void setFilterProcessesUrl(String filterProcessesUrl) {
+		super.setFilterProcessesUrl(filterProcessesUrl);
+		this.filterProcessesUrl = filterProcessesUrl;
 	}
 
 	private void addConnection(final SocialAuthenticationService<?> authService, HttpServletRequest request, SocialAuthenticationToken token, Authentication auth) {
