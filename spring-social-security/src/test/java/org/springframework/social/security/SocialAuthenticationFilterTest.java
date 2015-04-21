@@ -58,7 +58,7 @@ public class SocialAuthenticationFilterTest {
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testExplicitAuth() throws Exception {
 

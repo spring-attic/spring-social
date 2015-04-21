@@ -68,6 +68,8 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 
 	private SimpleUrlAuthenticationFailureHandler delegateAuthenticationFailureHandler;
 
+	private String filterProcessesUrl;
+
 	public SocialAuthenticationFilter(AuthenticationManager authManager, UserIdSource userIdSource, UsersConnectionRepository usersConnectionRepository, SocialAuthenticationServiceLocator authServiceLocator) {
 		super("/auth");
 		setAuthenticationManager(authManager);
@@ -220,6 +222,12 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		repo.addConnection(connection);
 		return connection;
 	}
+	
+	@Override
+	public void setFilterProcessesUrl(String filterProcessesUrl) {
+		this.filterProcessesUrl = filterProcessesUrl;
+		super.setFilterProcessesUrl(filterProcessesUrl);
+	}
 
 	// private helpers
 	private Authentication getAuthentication() {
@@ -250,7 +258,6 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		}		
 	}	
 	
-	@SuppressWarnings("deprecation")
 	private String getRequestedProviderId(HttpServletRequest request) {
 		String uri = request.getRequestURI();
 		int pathParamIndex = uri.indexOf(';');
@@ -264,10 +271,10 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		uri = uri.substring(request.getContextPath().length());
 
 		// remaining uri must start with filterProcessesUrl
-		if (!uri.startsWith(getFilterProcessesUrl())) {
+		if (!uri.startsWith(filterProcessesUrl)) {
 			return null;
 		}
-		uri = uri.substring(getFilterProcessesUrl().length());
+		uri = uri.substring(filterProcessesUrl.length());
 
 		// expect /filterprocessesurl/provider, not /filterprocessesurlproviderr
 		if (uri.startsWith("/")) {

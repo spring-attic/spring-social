@@ -127,7 +127,7 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 		String requestedScope = request.getParameter("scope");
 		if (StringUtils.hasLength(requestedScope)) {
 			params.setScope(requestedScope);
-		} else {
+		} else if (StringUtils.hasLength(defaultScope)) {
 			params.setScope(defaultScope);
 		}
 	}

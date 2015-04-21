@@ -33,6 +33,7 @@ import org.springframework.social.support.FormMapHttpMessageConverter;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -264,7 +265,6 @@ public class OAuth2Template implements OAuth2Operations {
 	
 	// internal helpers
 
-	@SuppressWarnings("deprecation") 
 	private String buildAuthUrl(String baseAuthUrl, GrantType grantType, OAuth2Parameters parameters) {
 		StringBuilder authUrl = new StringBuilder(baseAuthUrl);
 		if (grantType == GrantType.AUTHORIZATION_CODE) {
@@ -276,7 +276,11 @@ public class OAuth2Template implements OAuth2Operations {
 			Entry<String, List<String>> param = additionalParams.next();
 			String name = formEncode(param.getKey());
 			for (Iterator<String> values = param.getValue().iterator(); values.hasNext();) {
-				authUrl.append('&').append(name).append('=').append(formEncode(values.next()));
+				authUrl.append('&').append(name);
+				String value = values.next();
+				if (StringUtils.hasLength(value)) {
+					authUrl.append('=').append(formEncode(value));
+				}
 			}
 		}
 		return authUrl.toString();		
