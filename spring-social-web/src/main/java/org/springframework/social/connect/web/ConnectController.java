@@ -501,10 +501,10 @@ public class ConnectController implements InitializingBean {
 		}
 	}
 	
-	private static final String DUPLICATE_CONNECTION_ATTRIBUTE = "social_addConnection_duplicate";
+	protected static final String DUPLICATE_CONNECTION_ATTRIBUTE = "social_addConnection_duplicate";
 	
-	private static final String PROVIDER_ERROR_ATTRIBUTE = "social_provider_error";
+	protected static final String PROVIDER_ERROR_ATTRIBUTE = "social_provider_error";
 
-	private static final String AUTHORIZATION_ERROR_ATTRIBUTE = "social_authorization_error";
+	protected static final String AUTHORIZATION_ERROR_ATTRIBUTE = "social_authorization_error";
 
 }
