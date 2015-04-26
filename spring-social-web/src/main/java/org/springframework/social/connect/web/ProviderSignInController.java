@@ -173,10 +173,10 @@ public class ProviderSignInController implements InitializingBean {
 	 */
 	@RequestMapping(value="/{providerId}", method=RequestMethod.POST)
 	public RedirectView signIn(@PathVariable String providerId, NativeWebRequest request) {
-		ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
-		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
-		preSignIn(connectionFactory, parameters, request);
 		try {
+			ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(providerId);
+			MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
+			preSignIn(connectionFactory, parameters, request);
 			return new RedirectView(connectSupport.buildOAuthUrl(connectionFactory, request, parameters));
 		} catch (Exception e) {
 			logger.error("Exception while building authorization URL: ", e);
