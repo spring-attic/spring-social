@@ -30,6 +30,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.social.support.FormMapHttpMessageConverter;
+import org.springframework.social.support.LoggingErrorHandler;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -211,6 +212,7 @@ public class OAuth2Template implements OAuth2Operations {
 		converters.add(new FormMapHttpMessageConverter());
 		converters.add(new MappingJackson2HttpMessageConverter());
 		restTemplate.setMessageConverters(converters);
+		restTemplate.setErrorHandler(new LoggingErrorHandler());
 		if (!useParametersForClientAuthentication) {
 			List<ClientHttpRequestInterceptor> interceptors = restTemplate.getInterceptors();
 			if (interceptors == null) {   // defensively initialize list if it is null. (See SOCIAL-430)

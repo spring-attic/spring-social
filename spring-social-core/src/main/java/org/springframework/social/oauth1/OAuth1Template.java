@@ -34,6 +34,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
+import org.springframework.social.support.LoggingErrorHandler;
 import org.springframework.util.Assert;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -173,6 +174,7 @@ public class OAuth1Template implements OAuth1Operations {
 			}
 		});
 		restTemplate.setMessageConverters(converters);
+		restTemplate.setErrorHandler(new LoggingErrorHandler());
 		return restTemplate;
 	}
 	
