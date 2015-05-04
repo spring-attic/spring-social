@@ -70,6 +70,9 @@ configure(allprojects) {
         testCompile("junit:junit-dep:${junitVersion}")
         testCompile("org.hamcrest:hamcrest-library:${hamcrestVersion}")
         testCompile("org.mockito:mockito-core:${mockitoVersion}")
+        testCompile("org.springframework:spring-aop:${springVersion}")
+        testCompile("org.aspectj:aspectjrt:${aspectjVersion}")
+        testCompile("org.aspectj:aspectjweaver:${aspectjVersion}")
     }
 
     ext.javadocLinks = [
