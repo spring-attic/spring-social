@@ -54,6 +54,21 @@ public class ProviderSignInControllerTest {
 	// OAuth 1
 
 	@Test
+	public void signIn_nonExistentProvider() throws Exception {
+		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
+		ConnectionFactory<TestApi1> connectionFactory1 = new StubOAuth1ConnectionFactory("clientId", "clientSecret");
+		connectionFactoryLocator.addConnectionFactory(connectionFactory1);
+		StubUsersConnectionRepository usersConnectionRepository = new StubUsersConnectionRepository();
+		usersConnectionRepository.createConnectionRepository("habuma").addConnection(connectionFactory1.createConnection(
+			new ConnectionData("oauth1Provider", "provider1User1", null, null, null, null, null, null, null)));
+		ProviderSignInController providerSignInController = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
+		providerSignInController.afterPropertiesSet();
+		MockMvc mockMvc = standaloneSetup(providerSignInController).build();
+		mockMvc.perform(post("/signin/nonExistentOAuth1Provider"))
+			.andExpect(redirectedUrl("/signin?error=provider"));
+	}
+
+	@Test
 	public void signIn_OAuth1Provider() throws Exception {
 		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
 		ConnectionFactory<TestApi1> connectionFactory1 = new StubOAuth1ConnectionFactory("clientId", "clientSecret");
