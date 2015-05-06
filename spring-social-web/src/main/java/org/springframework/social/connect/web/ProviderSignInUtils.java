@@ -16,6 +16,8 @@
 package org.springframework.social.connect.web;
 
 import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionFactoryLocator;
+import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.web.context.request.RequestAttributes;
 
 /**
@@ -25,15 +27,20 @@ import org.springframework.web.context.request.RequestAttributes;
 public class ProviderSignInUtils {
 
 	private SessionStrategy sessionStrategy;
+	private ConnectionFactoryLocator connectionFactoryLocator;
+	private UsersConnectionRepository connectionRepository;
 
-	public ProviderSignInUtils() {
-		this(new HttpSessionSessionStrategy());
+
+	public ProviderSignInUtils( ConnectionFactoryLocator connectionFactoryLocator,UsersConnectionRepository connectionRepository) {
+		this(new HttpSessionSessionStrategy(),connectionFactoryLocator,connectionRepository);
 	}
 	
-	public ProviderSignInUtils(SessionStrategy sessionStrategy) {
+	public ProviderSignInUtils(SessionStrategy sessionStrategy,ConnectionFactoryLocator connectionFactoryLocator,UsersConnectionRepository connectionRepository) {
 		this.sessionStrategy = sessionStrategy;
+		this.connectionFactoryLocator = connectionFactoryLocator;
+		this.connectionRepository = connectionRepository;
 	}
-	
+
 	/**
 	 * Get the connection to the provider user the client attempted to sign-in as.
 	 * Using this connection you may fetch a {@link Connection#fetchUserProfile() provider user profile} and use that to pre-populate a local user registration/signup form.
@@ -44,8 +51,8 @@ public class ProviderSignInUtils {
 	 * @return the connection
 	 */
 	public Connection<?> getConnectionFromSession(RequestAttributes request) {
-		ProviderSignInAttempt signInAttempt = (ProviderSignInAttempt) sessionStrategy.getAttribute(request, ProviderSignInAttempt.SESSION_ATTRIBUTE);
-		return signInAttempt != null ? signInAttempt.getConnection() : null;
+		ProviderSignInAttempt signInAttempt = getProviderUserSignInAttempt(request);
+		return signInAttempt != null ? signInAttempt.getConnection(connectionFactoryLocator) : null;
 	}
 	
 	/**
@@ -60,15 +67,15 @@ public class ProviderSignInUtils {
 	public void doPostSignUp(String userId, RequestAttributes request) {
 		ProviderSignInAttempt signInAttempt = (ProviderSignInAttempt) sessionStrategy.getAttribute(request, ProviderSignInAttempt.SESSION_ATTRIBUTE);
 		if (signInAttempt != null) {
-			signInAttempt.addConnection(userId);
-			sessionStrategy.removeAttribute(request, ProviderSignInAttempt.SESSION_ATTRIBUTE);
+			signInAttempt.addConnection(userId,connectionFactoryLocator,connectionRepository);
+			sessionStrategy.removeAttribute(request,ProviderSignInAttempt.SESSION_ATTRIBUTE);
 		}		
 	}
 
 	// internal helpers
 	
-	private static ProviderSignInAttempt getProviderUserSignInAttempt(RequestAttributes request) {
-		return (ProviderSignInAttempt) request.getAttribute(ProviderSignInAttempt.SESSION_ATTRIBUTE, RequestAttributes.SCOPE_SESSION);
+	private ProviderSignInAttempt getProviderUserSignInAttempt(RequestAttributes request) {
+		return (ProviderSignInAttempt)sessionStrategy.getAttribute(request, ProviderSignInAttempt.SESSION_ATTRIBUTE);
 	}
 	
 }
