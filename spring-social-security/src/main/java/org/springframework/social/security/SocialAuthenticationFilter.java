@@ -68,10 +68,10 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 
 	private SimpleUrlAuthenticationFailureHandler delegateAuthenticationFailureHandler;
 
-	private String filterProcessesUrl;
+	private String filterProcessesUrl = DEFAULT_FILTER_PROCESSES_URL;
 
 	public SocialAuthenticationFilter(AuthenticationManager authManager, UserIdSource userIdSource, UsersConnectionRepository usersConnectionRepository, SocialAuthenticationServiceLocator authServiceLocator) {
-		super("/auth");
+		super(DEFAULT_FILTER_PROCESSES_URL);
 		setAuthenticationManager(authManager);
 		this.userIdSource = userIdSource;
 		this.usersConnectionRepository = usersConnectionRepository;
@@ -225,8 +225,8 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	
 	@Override
 	public void setFilterProcessesUrl(String filterProcessesUrl) {
-		this.filterProcessesUrl = filterProcessesUrl;
 		super.setFilterProcessesUrl(filterProcessesUrl);
+		this.filterProcessesUrl = filterProcessesUrl;
 	}
 
 	// private helpers
@@ -344,5 +344,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	}
 
 	private static final String DEFAULT_FAILURE_URL = "/signin";
+	
+	private static final String DEFAULT_FILTER_PROCESSES_URL = "/auth";
 
 }
