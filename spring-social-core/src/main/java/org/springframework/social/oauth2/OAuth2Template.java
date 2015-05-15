@@ -97,7 +97,7 @@ public class OAuth2Template implements OAuth2Operations {
 	
 	/**
 	 * Set to true to pass client credentials to the provider as parameters instead of using HTTP Basic authentication.
-	 * @param useParametersForClientAuthentication
+	 * @param useParametersForClientAuthentication true if the client credentials should be passed as parameters; false if passed via HTTP Basic
 	 */
 	public void setUseParametersForClientAuthentication(boolean useParametersForClientAuthentication) {
 		this.useParametersForClientAuthentication = useParametersForClientAuthentication;
@@ -106,6 +106,7 @@ public class OAuth2Template implements OAuth2Operations {
 	/**
 	 * Set the request factory on the underlying RestTemplate.
 	 * This can be used to plug in a different HttpClient to do things like configure custom SSL settings.
+	 * @param requestFactory the request factory used by the underlying RestTemplate
 	 */
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
 		Assert.notNull(requestFactory, "The requestFactory property cannot be null");
@@ -202,7 +203,8 @@ public class OAuth2Template implements OAuth2Operations {
 	 * Creates the {@link RestTemplate} used to communicate with the provider's OAuth 2 API.
 	 * This implementation creates a RestTemplate with a minimal set of HTTP message converters ({@link FormHttpMessageConverter} and {@link MappingJackson2HttpMessageConverter}).
 	 * May be overridden to customize how the RestTemplate is created.
-	 * For example, if the provider returns data in some format other than JSON for form-encoded, you might override to register an appropriate message converter. 
+	 * For example, if the provider returns data in some format other than JSON for form-encoded, you might override to register an appropriate message converter.
+	 * @return a {@link RestTemplate} used to communicate with the provider's OAuth 2 API 
 	 */
 	protected RestTemplate createRestTemplate() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactorySelector.getRequestFactory();

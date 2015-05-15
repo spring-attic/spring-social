@@ -45,6 +45,7 @@ public class AccessGrant implements Serializable {
 
 	/**
 	 * The access token value.
+	 * @return The access token value.
 	 */
 	public String getAccessToken() {
 		return accessToken;
@@ -53,6 +54,7 @@ public class AccessGrant implements Serializable {
 	/**
 	 * The scope of the access grant.
 	 * May be null if the provider doesn't return the granted scope in the response.
+	 * @return The scope of the access grant.
 	 */
 	public String getScope() {
 		return scope;
@@ -61,6 +63,7 @@ public class AccessGrant implements Serializable {
 	/**
 	 * The refresh token that can be used to renew the access token.
 	 * May be null if the provider does not support refresh tokens.
+	 * @return The refresh token that can be used to renew the access token.
 	 */
 	public String getRefreshToken() {
 		return refreshToken;
@@ -69,6 +72,7 @@ public class AccessGrant implements Serializable {
 	/**
 	 * The time (in milliseconds since Jan 1, 1970 UTC) when this access grant will expire.
 	 * May be null if the token is non-expiring.
+	 * @return The time (in milliseconds since Jan 1, 1970 UTC) when this access grant will expire.
 	 */
 	public Long getExpireTime() {
 		return expireTime;

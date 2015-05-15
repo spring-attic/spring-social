@@ -27,6 +27,7 @@ public interface OAuth1ServiceProvider<A> extends ServiceProvider<A> {
 	/**
 	 * Get the service interface for carrying out the "OAuth dance" with this provider.
 	 * The result of the OAuth dance is an access token that can be used to obtain a {@link #getApi(String, String) API binding}.
+	 * @return the service interface for carrying out the "OAuth dance" with this provider.
 	 */
 	OAuth1Operations getOAuthOperations();
 

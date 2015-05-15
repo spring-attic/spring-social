@@ -41,6 +41,7 @@ public interface ConnectionRepository {
 	 * </pre>
 	 * The returned map is sorted by providerId and entry values are ordered by rank.
 	 * Returns an empty map if the user has no connections.
+	 * @return all connections the current user has across all providers.
 	 */
 	MultiValueMap<String, Connection<?>> findAllConnections();
 	

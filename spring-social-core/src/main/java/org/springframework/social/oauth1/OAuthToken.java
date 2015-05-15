@@ -31,6 +31,8 @@ public class OAuthToken implements Serializable {
 	
 	/**
 	 * Create a new OAuth token with a token value and secret.
+	 * @param value the token value
+	 * @param secret the token secret
 	 */
 	public OAuthToken(String value, String secret) {
 		this.value = value;
@@ -39,6 +41,7 @@ public class OAuthToken implements Serializable {
 
 	/**
 	 * The token value.
+	 * @return The token value.
 	 */
 	public String getValue() {
 		return value;
@@ -46,6 +49,7 @@ public class OAuthToken implements Serializable {
 
 	/**
 	 * The token secret.
+	 * @return The token secret.
 	 */
 	public String getSecret() {
 		return secret;

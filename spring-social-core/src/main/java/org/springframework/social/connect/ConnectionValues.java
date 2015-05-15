@@ -28,21 +28,25 @@ public interface ConnectionValues {
 
 	/**
 	 * Sets value mapped to {@link ConnectionKey#getProviderUserId()}.
+	 * @param providerUserId the user's identity on the provider
 	 */
 	public void setProviderUserId(String providerUserId);
 
 	/**
 	 * Sets value mapped to {@link Connection#getDisplayName()}.
+	 * @param displayName the user's display name
 	 */
 	public void setDisplayName(String displayName);
 	
 	/**
 	 * Sets value mapped to {@link Connection#getProfileUrl()}
+	 * @param profileUrl the user's profile URL
 	 */
 	public void setProfileUrl(String profileUrl);
 
 	/**
 	 * Sets value mapped to {@link Connection#getImageUrl()}
+	 * @param imageUrl the user's image URL
 	 */
 	public void setImageUrl(String imageUrl);
 

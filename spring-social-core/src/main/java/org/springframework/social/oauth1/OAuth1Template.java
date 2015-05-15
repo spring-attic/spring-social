@@ -96,6 +96,7 @@ public class OAuth1Template implements OAuth1Operations {
 	/**
 	 * Set the request factory on the underlying RestTemplate.
 	 * This can be used to plug in a different HttpClient to do things like configure custom SSL settings.
+	 * @param requestFactory the request factory on the underlying RestTemplate.
 	 */
 	public void setRequestFactory(ClientHttpRequestFactory requestFactory) {
 		Assert.notNull(requestFactory, "The requestFactory property cannot be null");
@@ -138,6 +139,7 @@ public class OAuth1Template implements OAuth1Operations {
 	/**
 	 * Exposes the consumer key to be read by subclasses.
 	 * This may be useful when overriding {@link #addCustomAuthorizationParameters(MultiValueMap)} and the consumer key is required in the authorization request.
+	 * @return the consumer key to be read by subclasses.
 	 */
 	protected String getConsumerKey() {
 		return consumerKey;
@@ -158,6 +160,7 @@ public class OAuth1Template implements OAuth1Operations {
 	/**
 	 * Subclassing hook to add custom authorization parameters to the authorization URL.
 	 * Default implementation adds no parameters.
+	 * @param parameters custom parameters for authorization
 	 */
 	protected void addCustomAuthorizationParameters(MultiValueMap<String, String> parameters) {
 	}

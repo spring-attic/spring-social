@@ -62,6 +62,7 @@ public class ConnectionData implements Serializable {
 
 	/**
 	 * The id of the provider the connection is associated with.
+	 * @return The id of the provider the connection is associated with.
 	 */
 	public String getProviderId() {
 		return providerId;
@@ -69,6 +70,7 @@ public class ConnectionData implements Serializable {
 
 	/**
 	 * The id of the provider user this connection is connected to.
+	 * @return The id of the provider user this connection is connected to.
 	 */
 	public String getProviderUserId() {
 		return providerUserId;
@@ -76,6 +78,7 @@ public class ConnectionData implements Serializable {
 
 	/**
 	 * A display name for the connection.
+	 * @return A display name for the connection.
 	 */
 	public String getDisplayName() {
 		return displayName;
@@ -83,6 +86,7 @@ public class ConnectionData implements Serializable {
 
 	/**
 	 * A link to the provider's user profile page.
+	 * @return A link to the provider's user profile page.
 	 */
 	public String getProfileUrl() {
 		return profileUrl;
@@ -90,6 +94,7 @@ public class ConnectionData implements Serializable {
 
 	/**
 	 * An image visualizing the connection.
+	 * @return An image visualizing the connection.
 	 */
 	public String getImageUrl() {
 		return imageUrl;
@@ -97,6 +102,7 @@ public class ConnectionData implements Serializable {
 
 	/**
 	 * The access token required to make authorized API calls.
+	 * @return The access token required to make authorized API calls.
 	 */
 	public String getAccessToken() {
 		return accessToken;
@@ -105,6 +111,7 @@ public class ConnectionData implements Serializable {
 	/**
 	 * The secret token needed to make authorized API calls.
 	 * Required for OAuth1-based connections.
+	 * @return The secret token needed to make authorized API calls.
 	 */
 	public String getSecret() {
 		return secret;
@@ -113,6 +120,7 @@ public class ConnectionData implements Serializable {
 	/**
 	 * A token use to renew this connection. Optional.
 	 * Always null for OAuth1-based connections.
+	 * @return A token use to renew this connection. Optional.
 	 */
 	public String getRefreshToken() {
 		return refreshToken;
@@ -121,6 +129,7 @@ public class ConnectionData implements Serializable {
 	/**
 	 * The time the connection expires. Optional.
 	 * Always null for OAuth1-based connections.
+	 * @return The time the connection expires. Optional.
 	 */
 	public Long getExpireTime() {
 		return expireTime;

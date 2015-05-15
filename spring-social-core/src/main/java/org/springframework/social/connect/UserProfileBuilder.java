@@ -37,6 +37,8 @@ public class UserProfileBuilder {
 	/**
 	 * Sets the profile name field.
 	 * Note: parses the name string and sets the individual firstName and lastName fields as well.
+	 * @param name the user's name
+	 * @return this {@link UserProfileBuilder} for setting more properties
 	 */
 	public UserProfileBuilder setName(String name) {
 		this.name = name;
@@ -48,6 +50,8 @@ public class UserProfileBuilder {
 
 	/**
 	 * Sets the profile firstName field.
+	 * @param firstName the user's first name
+	 * @return this {@link UserProfileBuilder} for setting more properties
 	 */
 	public UserProfileBuilder setFirstName(String firstName) {
 		this.firstName = firstName;
@@ -56,6 +60,8 @@ public class UserProfileBuilder {
 
 	/**
 	 * Sets the profile lastName field.
+	 * @param lastName the user's last name
+	 * @return this {@link UserProfileBuilder} for setting more properties
 	 */
 	public UserProfileBuilder setLastName(String lastName) {
 		this.lastName = lastName;
@@ -64,6 +70,8 @@ public class UserProfileBuilder {
 
 	/**
 	 * Sets the profile email field.
+	 * @param email the user's email address
+	 * @return this {@link UserProfileBuilder} for setting more properties
 	 */
 	public UserProfileBuilder setEmail(String email) {
 		this.email = email;
@@ -72,6 +80,8 @@ public class UserProfileBuilder {
 
 	/**
 	 * Sets the profile username field.
+	 * @param username the user's username
+	 * @return this {@link UserProfileBuilder} for setting more properties
 	 */
 	public UserProfileBuilder setUsername(String username) {
 		this.username = username;
@@ -81,6 +91,7 @@ public class UserProfileBuilder {
 	/**
 	 * Builds the user profile.
 	 * Call this method after setting all profile field values.
+	 * @return the {@link UserProfile}
 	 */
 	public UserProfile build() {
 		return new UserProfile(name, firstName, lastName, email, username);

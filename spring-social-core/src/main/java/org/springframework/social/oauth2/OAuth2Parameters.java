@@ -59,7 +59,8 @@ public final class OAuth2Parameters extends ParameterMap {
 	/**
 	 * The authorization callback url.
 	 * This value must match the redirectUri registered with the provider.
-	 * This is optional per the OAuth 2 spec, but required by most OAuth 2 providers. 
+	 * This is optional per the OAuth 2 spec, but required by most OAuth 2 providers.
+	 * @return The authorization callback url. 
 	 */
 	public String getRedirectUri() {
 		return getFirst(REDIRECT_URI);
@@ -69,6 +70,7 @@ public final class OAuth2Parameters extends ParameterMap {
 	 * Sets the authorization callback url.
 	 * This value must match the redirectUri registered with the provider.
 	 * This is optional per the OAuth 2 spec, but required by most OAuth 2 providers.
+	 * @param redirectUri the authorization callback URL
 	 */
 	public void setRedirectUri(String redirectUri) {
 		set(REDIRECT_URI, redirectUri);
@@ -76,6 +78,7 @@ public final class OAuth2Parameters extends ParameterMap {
 
 	/**
 	 * The permissions the application is seeking with the authorization (optional).
+	 * @return the permissions the application is seeking with the authorization.
 	 */
 	public String getScope() {
 		return getFirst(SCOPE);
@@ -83,6 +86,7 @@ public final class OAuth2Parameters extends ParameterMap {
 	
 	/**
 	 * Sets the permissions the application is seeking with the authorization (optional).
+	 * @param scope sets the permissions the application is seeking with the authorization.
 	 */
 	public void setScope(String scope) {
 		set(SCOPE, scope);
@@ -90,6 +94,7 @@ public final class OAuth2Parameters extends ParameterMap {
 
 	/**
 	 * An opaque key that must be included in the provider's authorization callback (optional).
+	 * @return an opaque key that must be included in the provider's authorization callback.
 	 */
 	public String getState() {
 		return getFirst(STATE);
@@ -97,6 +102,7 @@ public final class OAuth2Parameters extends ParameterMap {
 	
 	/**
 	 * Sets an opaque key that must be included in the provider's authorization callback (optional).
+	 * @param state an opaque key that must be included in the provider's authorization callback
 	 */
 	public void setState(String state) {
 		set(STATE, state);

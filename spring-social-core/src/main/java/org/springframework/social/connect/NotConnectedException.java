@@ -32,6 +32,7 @@ public class NotConnectedException extends ConnectionRepositoryException {
 
 	/**
 	 * The id of the provider the current user is not connected to.
+	 * @return The id of the provider the current user is not connected to.
 	 */
 	public String getProviderId() {
 		return providerId;

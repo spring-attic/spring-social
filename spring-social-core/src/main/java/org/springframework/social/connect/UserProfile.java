@@ -46,6 +46,7 @@ public class UserProfile implements Serializable {
 	/**
 	 * The user's registered full name e.g. Keith Donald.
 	 * May be null if not exposed/supported by the provider. 
+	 * @return the user's registered full name
 	 */
 	public String getName() {
 		return name;
@@ -54,6 +55,7 @@ public class UserProfile implements Serializable {
 	/**
 	 * The user's registered first name e.g. Keith.
 	 * May be null if not exposed/supported by the provider.
+	 * @return The user's registered first name
 	 */
 	public String getFirstName() {
 		return firstName;
@@ -62,6 +64,7 @@ public class UserProfile implements Serializable {
 	/**
 	 * The user's registered last name e.g. Donald.
 	 * May be null if not exposed/supported by the provider.
+	 * @return The user's registered last name
 	 */
 	public String getLastName() {
 		return lastName;
@@ -70,6 +73,7 @@ public class UserProfile implements Serializable {
 	/**
 	 * The user's registered email address.
 	 * May be null if not exposed/supported by the provider.
+	 * @return The user's registered email address.
 	 */
 	public String getEmail() {
 		return email;
@@ -78,6 +82,7 @@ public class UserProfile implements Serializable {
 	/**
 	 * The user's registered username e.g. kdonald.
 	 * May be null if not exposed/supported by the provider.
+	 * @return The user's registered username
 	 */
 	public String getUsername() {
 		return username;

@@ -32,6 +32,7 @@ public final class NoSuchConnectionException extends ConnectionRepositoryExcepti
 
 	/**
 	 * The invalid key value.
+	 * @return The invalid key value.
 	 */
 	public ConnectionKey getConnectionKey() {
 		return connectionKey;

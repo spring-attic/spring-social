@@ -57,6 +57,7 @@ public abstract class AbstractOAuth1ServiceProvider<S> implements OAuth1ServiceP
 	 * The consumer (or client) key assigned to the application by the provider.
 	 * Exposed to subclasses to support constructing service API instances.
 	 * @see #getApi(String, String)
+	 * @return The consumer (or client) key assigned to the application by the provider.
 	 */
 	protected final String getConsumerKey() {
 		return consumerKey;
@@ -66,6 +67,7 @@ public abstract class AbstractOAuth1ServiceProvider<S> implements OAuth1ServiceP
 	 * The consumer (or client) secret assigned to the application by the provider.
 	 * Exposed to subclasses to support constructing service API instances.
 	 * @see #getApi(String, String)
+	 * @return The consumer (or client) secret assigned to the application by the provider.
 	 */
 	protected final String getConsumerSecret() {
 		return consumerSecret;

@@ -35,6 +35,7 @@ public class ApiException extends SocialException {
 	
 	/**
 	 * The ID of the provider for which the API exception occurred.
+	 * @return The ID of the provider for which the API exception occurred.
 	 */
 	public String getProviderId() {
 		return providerId;

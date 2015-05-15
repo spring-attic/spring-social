@@ -105,7 +105,7 @@ public class SocialAuthenticationFilterTest {
 		testFailedAuth(env);
 	}
 
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings("unchecked")
 	private void testFailedAuth(FilterTestEnv env) throws Exception {
 		env.filter.setFilterProcessesUrl(env.req.getRequestURI());
 		env.filter.setPostLoginUrl("/success");

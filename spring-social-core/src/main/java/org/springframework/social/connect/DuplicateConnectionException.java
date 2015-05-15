@@ -32,6 +32,7 @@ public final class DuplicateConnectionException extends ConnectionRepositoryExce
 
 	/**
 	 * The connection key that already exists.
+	 * @return The connection key that already exists.
 	 */
 	public ConnectionKey getConnectionKey() {
 		return connectionKey;

@@ -38,6 +38,7 @@ public class InsufficientPermissionException extends OperationNotPermittedExcept
 	/**
 	 * The permission required to access the resource.
 	 * May be null if the required permission is unknown.
+	 * @return the permission required to access the resource
 	 */
 	public String getRequiredPermission() {
 		return requiredPermission;

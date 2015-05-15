@@ -28,6 +28,7 @@ public interface ApiBinding {
 	 * If not, API calls do not contain any user authorization information.
 	 * Callers can use this status flag to determine if API operations requiring authorization can be invoked.
 	 * @see MissingAuthorizationException
+	 * @return true if this API binding has been authorized on behalf of a specific user.
 	 */
 	public boolean isAuthorized();
 	

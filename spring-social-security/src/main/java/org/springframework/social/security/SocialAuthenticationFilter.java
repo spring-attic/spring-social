@@ -223,6 +223,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		return connection;
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void setFilterProcessesUrl(String filterProcessesUrl) {
 		super.setFilterProcessesUrl(filterProcessesUrl);

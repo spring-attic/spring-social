@@ -28,6 +28,7 @@ public interface OAuth1Operations {
 	 * The version of OAuth1 implemented by this operations instance.
 	 * @see OAuth1Version#CORE_10
 	 * @see OAuth1Version#CORE_10_REVISION_A
+	 * @return The version of OAuth1 implemented by this operations instance.
 	 */
 	OAuth1Version getVersion();
 	
