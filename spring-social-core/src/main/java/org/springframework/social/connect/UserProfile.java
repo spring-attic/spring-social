@@ -87,10 +87,8 @@ public class UserProfile implements Serializable {
 	public String getUsername() {
 		return username;
 	}
-
-	// builder only
 	
-	UserProfile(String name, String firstName, String lastName, String email, String username) {
+	public UserProfile(String name, String firstName, String lastName, String email, String username) {
 		this.name = name;
 		this.firstName = firstName;
 		this.lastName = lastName;
