@@ -45,6 +45,15 @@ public class UserProfile implements Serializable {
 
 	private final String username;
 
+	public UserProfile(String id, String name, String firstName, String lastName, String email, String username) {
+		this.id = id;
+		this.name = name;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.username = username;
+	}
+
 	/**
 	 * The user's id in the provider
 	 * May be null if not exposed/supported by the provider.
@@ -97,17 +106,6 @@ public class UserProfile implements Serializable {
 	 */
 	public String getUsername() {
 		return username;
-	}
-
-	// builder only
-
-	UserProfile(String id, String name, String firstName, String lastName, String email, String username) {
-		this.id = id;
-		this.name = name;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.email = email;
-		this.username = username;
 	}
 
 }
