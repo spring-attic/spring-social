@@ -24,16 +24,28 @@ package org.springframework.social.connect;
  */
 public class UserProfileBuilder {
 
+	private String id;
+
 	private String name;
-	
+
 	private String firstName;
-	
+
 	private String lastName;
-	
+
 	private String email;
-	
+
 	private String username;
-	
+
+	/**
+	 * Sets the profile id field.
+	 * @param id the user's id in the provider
+	 * @return this {@link UserProfileBuilder} for setting more properties
+	 */
+	public UserProfileBuilder setId(String id) {
+		this.id = id;
+		return this;
+	}
+
 	/**
 	 * Sets the profile name field.
 	 * Note: parses the name string and sets the individual firstName and lastName fields as well.
@@ -75,7 +87,7 @@ public class UserProfileBuilder {
 	 */
 	public UserProfileBuilder setEmail(String email) {
 		this.email = email;
-		return this;		
+		return this;
 	}
 
 	/**
@@ -85,7 +97,7 @@ public class UserProfileBuilder {
 	 */
 	public UserProfileBuilder setUsername(String username) {
 		this.username = username;
-		return this;		
+		return this;
 	}
 
 	/**
@@ -94,11 +106,11 @@ public class UserProfileBuilder {
 	 * @return the {@link UserProfile}
 	 */
 	public UserProfile build() {
-		return new UserProfile(name, firstName, lastName, email, username);
+		return new UserProfile(id, name, firstName, lastName, email, username);
 	}
-	
+
 	// internal helpers
-	
+
 	private String[] firstAndLastName(String name) {
 		if (name == null) {
 			return EMPTY_FIRST_AND_LAST_NAME_ARRAY;
@@ -110,7 +122,7 @@ public class UserProfileBuilder {
 			return new String[] { nameParts[0], nameParts[nameParts.length - 1] };
 		}
 	}
-	
+
 	private String[] EMPTY_FIRST_AND_LAST_NAME_ARRAY = new String[] { null, null };
 
 }
