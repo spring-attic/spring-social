@@ -393,6 +393,11 @@ public class ConnectController implements InitializingBean {
 		return new RedirectView(path, true);
 	}
 	
+	/**
+	 * May be overridden to allow custom processing of DuplicateConnectionException. 
+	 */
+	protected void handleDuplicateConnectionException(DuplicateConnectionException e, Connection<?> connection, ConnectionFactory<?> connectionFactory, WebRequest request) {}
+	
 	// From InitializingBean
 	public void afterPropertiesSet() throws Exception {
 		this.connectSupport = new ConnectSupport(sessionStrategy);
@@ -428,9 +433,10 @@ public class ConnectController implements InitializingBean {
 			postConnect(connectionFactory, connection, request);
 		} catch (DuplicateConnectionException e) {
 			sessionStrategy.setAttribute(request, DUPLICATE_CONNECTION_ATTRIBUTE, e);
+			handleDuplicateConnectionException(e, connection, connectionFactory, request);
 		}
 	}
-
+	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void preConnect(ConnectionFactory<?> connectionFactory, MultiValueMap<String, String> parameters, WebRequest request) {
 		for (ConnectInterceptor interceptor : interceptingConnectionsTo(connectionFactory)) {
