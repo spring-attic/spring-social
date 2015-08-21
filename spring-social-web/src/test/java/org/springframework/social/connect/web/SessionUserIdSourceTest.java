@@ -43,10 +43,4 @@ public class SessionUserIdSourceTest {
 		assertEquals("535510n1D", source.getUserId());
 	}
 
-	@Test(expected=IllegalStateException.class)
-	public void getUserId_noRequestAttributesInCurrentThread() throws Exception {
-		SessionUserIdSource source = new SessionUserIdSource();
-		source.getUserId();
-	}
-
 }
