@@ -15,7 +15,6 @@
  */
 package org.springframework.social.security;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
@@ -31,5 +30,5 @@ public interface SocialUserDetailsService {
 	 * @param userId the user ID used to lookup the user details
 	 * @return the SocialUserDetails requested
 	 */
-	SocialUserDetails loadUserByUserId(String userId) throws UsernameNotFoundException, DataAccessException;
+	SocialUserDetails loadUserByUserId(String userId) throws UsernameNotFoundException;
 }
