@@ -180,13 +180,17 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 
 	/**
 	 * Detects a callback request after a user rejects authorization to prevent a never-ending redirect loop.
-	 * Default implementation detects a rejection as a request that has one or more parameters, but none of the expected parameters (oauth_token, code, scope).
+	 * Default implementation detects a rejection as a request that has one or more parameters
+	 * (except 'state' parameter which can be used by application), but none of the expected parameters (oauth_token, code, scope).
 	 * May be overridden to customize rejection detection.
 	 * @param request the request to check for rejection.
 	 * @return true if the request appears to be the result of a rejected authorization; false otherwise.
 	 */
 	protected boolean detectRejection(HttpServletRequest request) {
 		Set<?> parameterKeys = request.getParameterMap().keySet();
+		if ((parameterKeys.size() == 1) && (parameterKeys.contains("state"))) {
+		    return false;
+		}
 		return parameterKeys.size() > 0 
 				&& !parameterKeys.contains("oauth_token") 
 				&& !parameterKeys.contains("code") 

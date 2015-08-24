@@ -89,7 +89,7 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 			OAuth2Parameters params =  new OAuth2Parameters();
 			params.setRedirectUri(buildReturnToUrl(request));
 			setScope(request, params);
-			params.add("state", connectionFactory.generateState()); // TODO: Verify the state value after callback
+			params.add("state", generateState(connectionFactory, request));
 			addCustomParameters(params);
 			throw new SocialAuthenticationRedirectException(getConnectionFactory().getOAuthOperations().buildAuthenticateUrl(params));
 		} else if (StringUtils.hasText(code)) {
@@ -106,6 +106,11 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 		} else {
 			return null;
 		}
+	}
+
+	private String generateState(OAuth2ConnectionFactory<?> connectionFactory, HttpServletRequest request) {
+	    final String state = request.getParameter("state");
+	    return (state != null) ? state : connectionFactory.generateState();
 	}
 
 	protected String buildReturnToUrl(HttpServletRequest request) {
