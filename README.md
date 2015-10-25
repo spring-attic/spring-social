@@ -69,9 +69,9 @@ The core [Spring Social] project does not contain provider modules. Each of the 
 
 - LinkedIn: [GitHub][linkedin-gh] | [Reference][linkedin-ref] | [API][linkedin-api]
 
-- TripIt: [GitHub][tripit-gh] | [Reference][tripit-ref] | [API][tripit-api]
+- TripIt: [GitHub][tripit-gh]
 
-- GitHub: [GitHub][github-gh] | [Reference][github-ref] | [API][github-api]
+- GitHub: [GitHub][github-gh]
 
 
 ## Documentation
@@ -158,20 +158,16 @@ $ ./gradlew idea
 [downloading Spring artifacts]: https://github.com/spring-projects/spring-framework/wiki/Downloading-Spring-artifacts
 [building a distribution with dependencies]: https://github.com/spring-projects/spring-framework/wiki/Building-a-distribution-with-dependencies
 [twitter-gh]: https://github.com/spring-projects/spring-social-twitter
-[twitter-ref]: http://docs.spring.io/spring-social-twitter/docs/current/reference/html
-[twitter-api]: http://docs.spring.io/spring-social-twitter/docs/current/api
+[twitter-ref]: http://docs.spring.io/spring-social-twitter/docs/current/reference/htmlsingle/
+[twitter-api]: http://docs.spring.io/spring-social-twitter/docs/current/apidocs/
 [facebook-gh]: https://github.com/spring-projects/spring-social-facebook
-[facebook-ref]: http://docs.spring.io/spring-social-facebook/docs/current/reference/html
-[facebook-api]: http://docs.spring.io/spring-social-facebook/docs/current/api
+[facebook-ref]: http://docs.spring.io/spring-social-facebook/docs/current/reference/htmlsingle/
+[facebook-api]: http://docs.spring.io/spring-social-facebook/docs/current/apidocs/
 [linkedin-gh]: https://github.com/spring-projects/spring-social-linkedin
-[linkedin-ref]: http://docs.spring.io/spring-social-linkedin/docs/current/reference/html
-[linkedin-api]: http://docs.spring.io/spring-social-linkedin/docs/current/api
+[linkedin-ref]: http://docs.spring.io/spring-social-linkedin/docs/1.0.x/reference/htmlsingle/
+[linkedin-api]: http://docs.spring.io/spring-social-linkedin/docs/1.0.x/api/
 [tripit-gh]: https://github.com/spring-projects/spring-social-tripit
-[tripit-ref]: http://docs.spring.io/spring-social-tripit/docs/current/reference/html
-[tripit-api]: http://docs.spring.io/spring-social-tripit/docs/current/api
 [github-gh]: https://github.com/spring-projects/spring-social-github
-[github-ref]: http://docs.spring.io/spring-social-github/docs/current/reference/html
-[github-api]: http://docs.spring.io/spring-social-github/docs/current/api
 [Javadoc]: http://docs.spring.io/spring-social/docs/current/api/
 [reference docs]: http://docs.spring.io/spring-social/docs/current/reference/html/
 [samples repository]: https://github.com/spring-projects/spring-social-samples
