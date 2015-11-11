@@ -354,9 +354,11 @@ public class ConnectSupportTest {
 		ConnectSupport support = new ConnectSupport();
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.addParameter("code", "authorization-grant");
+		mockRequest.addParameter("state", "STATE");
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setRequestURI("/connect/someprovider");
+		mockRequest.getSession().setAttribute("oauth2State", "STATE");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		Connection<?> connection = support.completeConnection(new TestOAuth2ConnectionFactory(), request);
 		assertEquals("TestUser", connection.getDisplayName());
@@ -465,6 +467,11 @@ public class ConnectSupportTest {
 		public TestOAuth2ConnectionFactory() {
 			super("someprovider", SERVICE_PROVIDER, API_ADAPTER);
 		}
+		
+//		@Override
+//		public boolean supportsStateParameter() {
+//			return false;
+//		}
 		
 		@Override
 		public Connection<TestApi> createConnection(AccessGrant accessGrant) {

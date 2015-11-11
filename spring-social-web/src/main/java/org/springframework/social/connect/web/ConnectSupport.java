@@ -169,8 +169,8 @@ public class ConnectSupport {
 	private void verifyStateParameter(NativeWebRequest request) {
 		String state = request.getParameter("state");
 		String originalState = extractCachedOAuth2State(request);
-		if (state != null && !state.equals(originalState)) {
-			throw new IllegalStateException("The OAuth2 'state' parameter doesn't match.");
+		if (state == null || !state.equals(originalState)) {
+			throw new IllegalStateException("The OAuth2 'state' parameter is missing or doesn't match.");
 		}
 	}
 

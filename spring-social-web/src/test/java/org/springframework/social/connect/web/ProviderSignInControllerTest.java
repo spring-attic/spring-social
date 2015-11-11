@@ -19,6 +19,7 @@ import static java.util.Arrays.*;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 
 import java.util.Arrays;
@@ -227,7 +228,8 @@ public class ProviderSignInControllerTest {
 		ProviderSignInController providerSignInController = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
 		providerSignInController.afterPropertiesSet();
 		MockMvc mockMvc = standaloneSetup(providerSignInController).build();
-		mockMvc.perform(get("/signin/oauth2Provider").param("code", "authcode"))
+		mockMvc.perform(get("/signin/oauth2Provider").param("code", "authcode").param("state", "STATE")
+				.sessionAttr("oauth2State", "STATE"))
 			.andExpect(redirectedUrl("/signup"))
 			.andExpect(request().sessionAttribute(ProviderSignInAttempt.class.getName(), notNullValue()));
 		// TODO: Assert attempt contents
@@ -243,7 +245,8 @@ public class ProviderSignInControllerTest {
 		controller.setSignUpUrl("/register");
 		controller.afterPropertiesSet();
 		MockMvc mockMvc = standaloneSetup(controller).build();
-		mockMvc.perform(get("/signin/oauth2Provider").param("code", "authcode"))
+		mockMvc.perform(get("/signin/oauth2Provider").param("code", "authcode").param("state", "STATE")
+				.sessionAttr("oauth2State", "STATE"))
 			.andExpect(redirectedUrl("/register"))
 			.andExpect(request().sessionAttribute(ProviderSignInAttempt.class.getName(), notNullValue()));
 		// TODO: Assert attempt contents
@@ -286,7 +289,8 @@ public class ProviderSignInControllerTest {
 		ProviderSignInController providerSignInController = new ProviderSignInController(connectionFactoryLocator, usersConnectionRepository, null);
 		providerSignInController.afterPropertiesSet();
 		MockMvc mockMvc = standaloneSetup(providerSignInController).build();
-		mockMvc.perform(get("/signin/oauth2Provider").param("code", "authcode"))
+		mockMvc.perform(get("/signin/oauth2Provider").param("code", "authcode").param("state", "STATE")
+				.sessionAttr("oauth2State", "STATE"))
 			.andExpect(redirectedUrl("/signin?error=multiple_users"));
 	}
 
@@ -300,7 +304,8 @@ public class ProviderSignInControllerTest {
 		controller.afterPropertiesSet();
 		controller.setSignInUrl("/customsignin?someparameter=1234");
 		MockMvc mockMvc = standaloneSetup(controller).build();
-		mockMvc.perform(get("/signin/oauth2Provider").param("code", "authcode"))
+		mockMvc.perform(get("/signin/oauth2Provider").param("code", "authcode").param("state", "STATE")
+				.sessionAttr("oauth2State", "STATE"))
 			.andExpect(redirectedUrl("/customsignin?someparameter=1234&error=multiple_users"));
 	}
 
@@ -342,7 +347,8 @@ public class ProviderSignInControllerTest {
 			controller.setPostSignInUrl(postSignInUrl);
 		}
 		MockMvc mockMvc = standaloneSetup(controller).build();
-		mockMvc.perform(get("/signin/oauth2Provider").param("code", "authcode"))
+		mockMvc.perform(get("/signin/oauth2Provider").param("code", "authcode").param("state", "STATE")
+				.sessionAttr("oauth2State", "STATE"))
 			.andExpect(redirectedUrl(calculateExpectedRedirectUrl(originalUrl, postSignInUrl)));
 		// TODO: Verify that the connection is updated (connectionRepository.updateConnection() is called)
 	}
