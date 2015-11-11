@@ -67,7 +67,7 @@ configure(allprojects) {
 
     dependencies {
         testCompile("org.springframework:spring-test:${springVersion}")
-        testCompile("junit:junit-dep:${junitVersion}")
+        testCompile("junit:junit:${junitVersion}")
         testCompile("org.hamcrest:hamcrest-library:${hamcrestVersion}")
         testCompile("org.mockito:mockito-core:${mockitoVersion}")
     }

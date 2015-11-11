@@ -21,6 +21,7 @@ import static org.junit.Assert.*;
 import static org.springframework.social.connect.web.test.StubOAuthTemplateBehavior.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 
 import java.util.ArrayList;
@@ -291,9 +292,10 @@ public class ConnectControllerTest {
 		List<ConnectInterceptor<?>> interceptors = getConnectInterceptor();
 		connectController.setConnectInterceptors(interceptors);
 		connectController.afterPropertiesSet();
-		MockMvc mockMvc = standaloneSetup(connectController).build();
+		MockMvc mockMvc = standaloneSetup(connectController)
+				.build();
 		assertEquals(0, connectionRepository.findConnections("oauth2Provider").size());		
-		mockMvc.perform(get("/connect/oauth2Provider").param("code", "oauth2Code"))
+		mockMvc.perform(get("/connect/oauth2Provider").param("code", "oauth2Code").param("state", "STATE").sessionAttr("oauth2State", "STATE"))
 			.andExpect(redirectedUrl("/connect/oauth2Provider"));
 		List<Connection<?>> connections = connectionRepository.findConnections("oauth2Provider");
 		assertEquals(1, connections.size());
