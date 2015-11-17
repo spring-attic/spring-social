@@ -18,29 +18,24 @@ package org.springframework.social.support;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URI;
-import java.security.GeneralSecurityException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Properties;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpHost;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -119,31 +114,31 @@ public class ClientHttpRequestFactorySelector {
 		}
 
 		private static CloseableHttpClient getAllTrustClient(HttpHost proxy) {
+			return HttpClients.custom()
+					.setProxy(proxy)
+					.setSslcontext(getSSLContext())
+					.setHostnameVerifier(SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER)
+					.build();
+		}
+
+		private static SSLContext getSSLContext() {
 			try {
-				HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-				SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+				KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+				TrustStrategy allTrust = new TrustStrategy() {
+					@Override
 					public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
 						return true;
 					}
-				}).build();
-				clientBuilder.setSSLContext(sslContext);
-				
-				HostnameVerifier hostnameVerifier = new NoopHostnameVerifier();
-	
-				SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
-				Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-						.register("http", PlainConnectionSocketFactory.getSocketFactory())
-						.register("https", sslSocketFactory)
-						.build();
-			 
-				PoolingHttpClientConnectionManager connMgr = new PoolingHttpClientConnectionManager( socketFactoryRegistry);
-				clientBuilder.setConnectionManager(connMgr);
-			 
-				return clientBuilder.build();
-			} catch (GeneralSecurityException e) {
-				// shouldn't happen
-				throw new RuntimeException(e);
+				};
+				return SSLContexts.custom().useSSL().loadTrustMaterial(trustStore, allTrust).build();
+			} catch (KeyStoreException e) {
+				e.printStackTrace();
+			} catch (KeyManagementException e) {
+				e.printStackTrace();
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
 			}
+			return null;
 		}
 		
 	}
