@@ -45,6 +45,29 @@ public class UserProfile implements Serializable {
 
 	private final String username;
 
+	/**
+	 * Creates an instance of a UserProfile.
+	 * @param name The user's full name
+	 * @param firstName The user's first name
+	 * @param lastName The user's last name
+	 * @param email The user's email address
+	 * @param username The user's username
+	 * @deprecated Use other constructor instead
+	 */
+	@Deprecated
+	public UserProfile(String name, String firstName, String lastName, String email, String username) {
+		this(null, name, firstName, lastName, email, username);
+	}
+	
+	/**
+	 * Creates an instance of a UserProfile.
+	 * @param id The user ID
+	 * @param name The user's full name
+	 * @param firstName The user's first name
+	 * @param lastName The user's last name
+	 * @param email The user's email address
+	 * @param username The user's username
+	 */
 	public UserProfile(String id, String name, String firstName, String lastName, String email, String username) {
 		this.id = id;
 		this.name = name;
