@@ -89,19 +89,18 @@ configure(allprojects) {
 
 configure(subprojects) { subproject ->
     apply from: "${rootProject.projectDir}/publish-maven.gradle"
+    apply plugin: 'spring-io'
 
-    if (project.hasProperty('platformVersion')) {
-        apply plugin: 'spring-io'
+    ext.springIoVersion = project.hasProperty('platformVersion') ? platformVersion : 'latest.integration'
 
-        repositories {
-            maven { url "https://repo.spring.io/libs-snapshot" }
-        }
+    repositories {
+        maven { url "https://repo.spring.io/libs-snapshot" }
+    }
 
-        dependencyManagement {
-            springIoTestRuntime {
-                imports {
-                    mavenBom "io.spring.platform:platform-bom:${platformVersion}"
-                }
+    dependencyManagement {
+        springIoTestRuntime {
+            imports {
+                mavenBom "io.spring.platform:platform-bom:${springIoVersion}"
             }
         }
     }
