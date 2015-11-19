@@ -29,10 +29,14 @@ import java.util.Properties;
 import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLContexts;
 import org.apache.http.conn.ssl.TrustStrategy;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
@@ -42,6 +46,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 
 /**
@@ -100,6 +105,8 @@ public class ClientHttpRequestFactorySelector {
 			if (proxyHost != null) {
 				HttpHost proxy = new HttpHost(proxyHost, proxyPort);
 				CloseableHttpClient httpClient = isAllTrust ? getAllTrustClient(proxy) : getClient(proxy);
+				
+				
 				requestFactory.setHttpClient(httpClient);
 			}
 			
@@ -110,12 +117,14 @@ public class ClientHttpRequestFactorySelector {
 		private static CloseableHttpClient getClient(HttpHost proxy) {
 			return HttpClients.custom()
 					.setProxy(proxy)
+					.setDefaultCredentialsProvider(getProxyCredentials(proxy))
 					.build();
 		}
 
 		private static CloseableHttpClient getAllTrustClient(HttpHost proxy) {
 			return HttpClients.custom()
 					.setProxy(proxy)
+					.setDefaultCredentialsProvider(getProxyCredentials(proxy))
 					.setSslcontext(getSSLContext())
 					.setHostnameVerifier(SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER)
 					.build();
@@ -141,6 +150,23 @@ public class ClientHttpRequestFactorySelector {
 			return null;
 		}
 		
+		private static CredentialsProvider getProxyCredentials(HttpHost proxy) {
+		    Properties properties = System.getProperties();
+		    String proxyUser = properties.getProperty("http.proxyUser");
+		    String proxyPassword = properties.getProperty("http.proxyPassword");
+		    
+		    if(!StringUtils.isEmpty(proxyUser)) {
+			CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+			credentialsProvider.setCredentials(
+				new AuthScope(proxy), 
+				new UsernamePasswordCredentials(proxyUser, proxyPassword));
+			
+			return credentialsProvider;
+		    }
+		    
+		    return null;
+		}
+		
 	}
 
 	/**
@@ -151,5 +177,7 @@ public class ClientHttpRequestFactorySelector {
 	public static void setAllTrust(boolean isAllTrust) {
 		HttpComponentsClientRequestFactoryCreator.isAllTrust = isAllTrust;
 	}
+	
 
 }
+ 
