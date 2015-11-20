@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -39,11 +40,11 @@ import org.springframework.web.client.RestTemplate;
  * Base class for OAuth 1-based provider API bindings.
  * @author Craig Walls
  */
-public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
+public abstract class AbstractOAuth1ApiBinding implements ApiBinding, InitializingBean {
 
 	private final OAuth1Credentials credentials;
 
-	private final RestTemplate restTemplate;
+	private RestTemplate restTemplate;
 
 	/**
 	 * Constructs the API template without user authorization. This is useful for accessing operations on a provider's API that do not require user authorization.
@@ -177,6 +178,36 @@ public abstract class AbstractOAuth1ApiBinding implements ApiBinding {
 		interceptors.add(interceptor);
 		client.setInterceptors(interceptors);
 		return client;
+	}
+	
+	/**
+	 * After construction, include option to decorate the {@link RestTemplate} followed by an optional
+	 * configuration step. Many providers initialize sub-APIs, and this provides a convenient hook.
+	 * @throws Exception if any error occurs decorating the RestTemplate
+	 */
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.restTemplate = postProcess(this.restTemplate);
+		postConstructionConfiguration();
+	}
+	
+	/**
+	 * Extensible hook to decorate {@link RestTemplate} or wrap it with a proxy of any type. By default, it just passes it through with no changes.
+	 *
+	 * @param restTemplate the RestTemplate to decorate
+	 * @return the decorated RestTemplate
+	 */
+	protected RestTemplate postProcess(RestTemplate restTemplate) {
+		return restTemplate;
+	}
+
+	/**
+	 * An extension point to perform key initialization after everything is configured. Existing providers
+	 * are encouraged to migrate any form of constructor-based initialization into this method.
+	 *
+	 * NOTE: To not break backwards compatibility, this method defaults to doing nothing.
+	 */
+	protected void postConstructionConfiguration() {
 	}
 	
 	// Temporary: The RestTemplate that accepts a list of message converters wasn't added until Spring 3.2.7.

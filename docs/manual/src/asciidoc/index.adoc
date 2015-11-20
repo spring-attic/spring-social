@@ -1,5 +1,5 @@
 = Spring Social Reference
-Craig Walls; Keith Donald; Roy Clarkson
+Craig Walls; Keith Donald; Roy Clarkson; Greg Turnquist
 
 The Spring Social project enables your applications to establish
 Connections with Software-as-a-Service (SaaS) Providers such as Facebook
@@ -2527,4 +2527,62 @@ public class TwitterConnectionFactory extends OAuth1ConnectionFactory<Facebook> 
 Consult the source and JavaDoc API for ConnectionFactory and its
 subclasses more information, examples, and advanced customization
 options.
+
+[[section_creatingAProviderProject]]
+=== Extending an existing Service Provider
+
+Are you already using an existing provider like Spring Social GitHub? You may run into the situation where the Spring Social API doesn't cover every operation you need. Or you may wish to apply extra behavior like caching certain operations. This section explores extension points Spring Social's core includes.
+
+[[]]
+==== Adding extra operations
+
+If you look at the implementation you are using, it probably has a core template, like GitHubTemplate. But what if it doesn't have the operation you are looking for? You can either wait for the team to develop it, or write it yourself.
+
+To write your own extension, simply extend the core class and add your own implementation:
+
+[source,java]
+----
+public class ExtendedGitHubTemplate extends GitHubTemplate {
+
+    public static final String API_URL_BASE = "https://api.github.com";
+
+    public ExtendedGitHubTemplate(String githubToken) {
+        super(githubToken);
+    }
+
+    public List<GitHubRepo> findAllRepositories(String type, String name) {
+        return asList(this.getRestTemplate().getForObject(
+                API_URL_BASE + "/{type}/{name}/repos?per_page=100",
+                GitHubRepo[].class, type, name));
+    }
+----
+
+This fragment extends Spring Social GitHub's `GitHubTemplate`. It adds a new method, `findAllRepositories`. By extending the core template, you are granted access to an already-connected `RestTemplate` via `getRestTemplate()`. You have to assemble the URI yourself, but online documentation from the provider puts the power in your hands.
+
+[[]]
+==== Augmenting Spring Social's RestTemplate
+
+By design, Spring Social uses an embedded `RestTemplate` to do the legwork of interacting with the provider. That way, if you are using more than one Spring Social project, each one's individual instance won't collide with other. As a side effect, it may seem hard to apply something like caching. It's not.
+
+Spring Social's `AbstractOAuth2ApiBinding`, the root of all OAuth2-based provider templates, provides a hook ot post process the `RestTemplate` when it gets created.
+
+[source,java]
+----
+public class ExtendedGitHubTemplate extends GitHubTemplate {
+
+    ...
+
+    @Override
+    protected RestTemplate postProcess(RestTemplate restTemplate) {
+        AspectJProxyFactory factory = new AspectJProxyFactory(restTemplate);
+        factory.addAspect(RestTemplateAspect.class);
+        factory.setProxyTargetClass(true);
+        return factory.getProxy()
+    }
+----
+
+In this example, the code extends `GitHubTemplate` and then overrides sthe `postProcess()` method. In Spring Social core, the *restTemplate* is simply passed through during creation and nothing is changed. In this example, the code creates an AspectJ proxy, adds some `RestTemplateAspect` advice, sets the factory to proxy the class and not its interface, and then returns back a proxy.
+
+You can already do things like wrap `GitHubTemplate` operations with caching. This hook enables you to apply any type of advice directly to the `RestTemplate`.
+
 
