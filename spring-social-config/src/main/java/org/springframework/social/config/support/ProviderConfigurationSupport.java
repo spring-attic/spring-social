@@ -78,9 +78,9 @@ public abstract class ProviderConfigurationSupport {
 	
 	protected BeanDefinition registerBeanDefinitions(BeanDefinitionRegistry registry, Map<String, Object> allAttributes) {
 		if (isSocialSecurityAvailable() && authenticationServiceClass != null) {
-			registerAuthenticationServiceBeanDefinitions(registry, allAttributes);						
+			registerAuthenticationServiceBeanDefinitions(registry, allAttributes);
 		} else {
-			registerConnectionFactoryBeanDefinitions(registry, allAttributes);			
+			registerConnectionFactoryBeanDefinitions(registry, allAttributes);
 		}
 		
 		return registerApiBindingBean(registry, apiHelperClass, apiBindingType,allAttributes);
@@ -131,7 +131,9 @@ public abstract class ProviderConfigurationSupport {
 		return connectionFactoryBD;
 	}
 	
-	private BeanDefinition registerAuthenticationServiceBean(BeanDefinition authenticationServiceLocatorBD, BeanDefinition authenticationServiceBD, Class<? extends org.springframework.social.security.provider.SocialAuthenticationService<?>> socialAuthenticationServiceClass) {
+	private BeanDefinition registerAuthenticationServiceBean(BeanDefinition authenticationServiceLocatorBD, 
+			BeanDefinition authenticationServiceBD, 
+			Class<? extends org.springframework.social.security.provider.SocialAuthenticationService<?>> socialAuthenticationServiceClass) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Registering SocialAuthenticationService: " + socialAuthenticationServiceClass.getName());
 		}
@@ -144,7 +146,8 @@ public abstract class ProviderConfigurationSupport {
 		return authenticationServiceBD;
 	}
 	
-	private BeanDefinition registerApiBindingBean(BeanDefinitionRegistry registry, Class<? extends ApiHelper<?>> apiHelperClass, Class<?> apiBindingType,Map<String, Object> allAttributes) {
+	private BeanDefinition registerApiBindingBean(BeanDefinitionRegistry registry, Class<? extends ApiHelper<?>> apiHelperClass, 
+			Class<?> apiBindingType,Map<String, Object> allAttributes) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Registering API Helper bean for " + ClassUtils.getShortName(apiBindingType));
 		}		
@@ -160,17 +163,22 @@ public abstract class ProviderConfigurationSupport {
 		bindingBD.setFactoryBeanName(helperId);
 		bindingBD.setFactoryMethodName("getApi");
 		bindingBD.setScope("request");
-		BeanDefinitionHolder scopedProxyBDH = ScopedProxyUtils.createScopedProxy(new BeanDefinitionHolder(bindingBD, ClassUtils.getShortNameAsProperty(apiBindingType)), registry, false);
+		BeanDefinitionHolder scopedProxyBDH = ScopedProxyUtils.createScopedProxy(
+				new BeanDefinitionHolder(bindingBD, ClassUtils.getShortNameAsProperty(apiBindingType)), registry, false);
 		registry.registerBeanDefinition(scopedProxyBDH.getBeanName(), scopedProxyBDH.getBeanDefinition());
 		return scopedProxyBDH.getBeanDefinition();
 	}
 	
 	/**
 	 * Subclassing hook to allow api helper bean to be configured with attributes from annotation
+	 * @param allAttributes additional attributes that may be used when creating the API helper bean.
+	 * @return a {@link BeanDefinitionBuilder} for the API Helper
 	 */
 	protected BeanDefinitionBuilder getApiHelperBeanDefinitionBuilder(Map<String, Object> allAttributes)
 	{
-		return BeanDefinitionBuilder.genericBeanDefinition(apiHelperClass).addConstructorArgReference("usersConnectionRepository").addConstructorArgReference("userIdSource");
+		return BeanDefinitionBuilder.genericBeanDefinition(apiHelperClass)
+				.addConstructorArgReference("usersConnectionRepository")
+				.addConstructorArgReference("userIdSource");
 	}
 
 	protected final Class<? extends ConnectionFactory<?>> connectionFactoryClass;
