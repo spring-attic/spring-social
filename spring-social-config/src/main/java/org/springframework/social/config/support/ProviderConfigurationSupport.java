@@ -83,7 +83,7 @@ public abstract class ProviderConfigurationSupport {
 			registerConnectionFactoryBeanDefinitions(registry, allAttributes);			
 		}
 		
-		return registerApiBindingBean(registry, apiHelperClass, apiBindingType);
+		return registerApiBindingBean(registry, apiHelperClass, apiBindingType,allAttributes);
 	}
 	
 	protected abstract String getAppId(Map<String, Object> allAttributes);
@@ -144,13 +144,13 @@ public abstract class ProviderConfigurationSupport {
 		return authenticationServiceBD;
 	}
 	
-	private BeanDefinition registerApiBindingBean(BeanDefinitionRegistry registry, Class<? extends ApiHelper<?>> apiHelperClass, Class<?> apiBindingType) {
+	private BeanDefinition registerApiBindingBean(BeanDefinitionRegistry registry, Class<? extends ApiHelper<?>> apiHelperClass, Class<?> apiBindingType,Map<String, Object> allAttributes) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Registering API Helper bean for " + ClassUtils.getShortName(apiBindingType));
 		}		
 		String helperId = "__" + ClassUtils.getShortNameAsProperty(apiBindingType) + "ApiHelper";
 		// TODO: Make the bean IDs here configurable.
-		BeanDefinition helperBD = BeanDefinitionBuilder.genericBeanDefinition(apiHelperClass).addConstructorArgReference("usersConnectionRepository").addConstructorArgReference("userIdSource").getBeanDefinition();
+		BeanDefinition helperBD = getApiHelperBeanDefinitionBuilder(allAttributes).getBeanDefinition();
 		registry.registerBeanDefinition(helperId, helperBD);
 		
 		if (logger.isDebugEnabled()) {
@@ -163,6 +163,14 @@ public abstract class ProviderConfigurationSupport {
 		BeanDefinitionHolder scopedProxyBDH = ScopedProxyUtils.createScopedProxy(new BeanDefinitionHolder(bindingBD, ClassUtils.getShortNameAsProperty(apiBindingType)), registry, false);
 		registry.registerBeanDefinition(scopedProxyBDH.getBeanName(), scopedProxyBDH.getBeanDefinition());
 		return scopedProxyBDH.getBeanDefinition();
+	}
+	
+	/**
+	 * Subclassing hook to allow api helper bean to be configured with attributes from annotation
+	 */
+	protected BeanDefinitionBuilder getApiHelperBeanDefinitionBuilder(Map<String, Object> allAttributes)
+	{
+		return BeanDefinitionBuilder.genericBeanDefinition(apiHelperClass).addConstructorArgReference("usersConnectionRepository").addConstructorArgReference("userIdSource");
 	}
 
 	protected final Class<? extends ConnectionFactory<?>> connectionFactoryClass;
