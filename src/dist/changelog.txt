@@ -1,3 +1,69 @@
+Spring Social 1.1.4 Release (November 24, 2015)
+===============================================
+New Features/Improvements
+   * Add subclassing hok to ProviderConfigurationSupport to
+     allow flexibility in construction of ApiHelper bean.
+     (GitHub PR #113)
+   * Add extension point in AbstractOAuth2Api to decorate RestTemplate in an API
+     binding. (GitHub PR #158)
+   * Enable proxy user authentication with http.proxyUser
+     and http.proxyPassword. (GitHub PR #177)
+   * Add support for app-provided `state` parameter.
+     (GitHub PR #180)
+   * Remove DataAccessException from throws clause of 
+     SocialUserDetailsService#loadUserByUserId(). DataAccessException
+     is a RuntimeException, so this should not be a breaking change.
+     (GitHub PR #173)
+   * Add template method to allow for additional parameters when
+     doing OAuth 2 authorization. (GitHub PR #152, GitHub issue #151)
+   * Add support for session strategy in SocialAuthenticationFilter.
+     (GitHub PR #164)
+   * Add ID field to UserProfile. (GitHub PR #168)
+   * Add a session-based User ID source. (SOCIAL-468)
+
+Bug fixes
+   * Revert some dependency changes from 1.1.3 to versions
+     that don't break backward compatibility. Specifically
+     Apache HttpComponents is now at version 4.3.6 and
+     Spring Security is now at version 3.2.9.RELEASE.
+   * Fix broken links in README. (GitHub PR #182)
+   * Reintroduced a constructor to UserProfile that does not
+     require the user ID in order to preserve backward compatibility.
+     (GitHub PR #166)
+   * Fix documentation concerning ProviderSignInUtils use of
+     non-static methods. (GitHub PR #171)
+   * Fix documentation to reflect current state of DB schema.
+     (GitHub PR #163)
+
+Miscellaneous
+   * Default to latest Spring IO snapshot when running Spring IO checks.
+
+
+
+Spring Social 1.1.3 Release (November 11, 2015)
+===============================================
+Bug fixes
+   * Address CSRF issue when using `state` parameter
+     in OAuth 2 authorization flow. See https://pivotal.io/security/cve-2015-5258
+   * Update dependencies on HttpComponents and Spring Security.
+
+Spring Social 1.1.2 Release (May 19, 2015)
+===========================================
+Bug fixes
+   * Fixed dependency on Spring Framework 4.1.6.BUILD-SNAPSHOT 
+     to depend on 4.1.6.RELEASE.
+
+
+Spring Social 1.1.1 Release (May 15, 2015)
+==========================================
+See https://jira.spring.io/jira/secure/ReleaseNote.jspa?projectId=10481&version=14658
+
+
+Spring Social 1.1.0 Release (April 24, 2014)
+============================================
+See https://jira.spring.io/browse/SOCIAL/fixforversion/12740/?selectedTab=com.atlassian.jira.plugins.jira-development-integration-plugin:release-report-tabpanel
+
+
 Spring Social 1.1.0 Milestone 5 (October 28, 2013)
 ==================================================
 New Features/Improvements:
