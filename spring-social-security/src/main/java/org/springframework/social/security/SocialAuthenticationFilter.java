@@ -273,7 +273,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 			return doAuthentication(authService, request, token);
 		} else {
 			addConnection(authService, request, token, auth);
-			return null;
+			return auth;
 		}		
 	}	
 	
