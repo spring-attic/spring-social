@@ -15,15 +15,6 @@
  */
 package org.springframework.social.connect.web;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -51,6 +42,14 @@ import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UrlPathHelper;
 import org.springframework.web.util.WebUtils;
+
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Generic UI controller for managing the account-to-service-provider connection flow.
@@ -83,6 +82,8 @@ public class ConnectController implements InitializingBean {
 	private final UrlPathHelper urlPathHelper = new UrlPathHelper();
 	
 	private String viewPath = "connect/";
+
+	private String viewUrl = "/connect/";
 
 	private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
 
@@ -128,7 +129,7 @@ public class ConnectController implements InitializingBean {
 	 */
 	public void setDisconnectInterceptors(List<DisconnectInterceptor<?>> interceptors) {
 		for (DisconnectInterceptor<?> interceptor : interceptors) {
-			addDisconnectInterceptor(interceptor);
+			addDisconnectInterceptor( interceptor );
 		}
 	}
 
@@ -153,6 +154,15 @@ public class ConnectController implements InitializingBean {
 	 */
 	public void setViewPath(String viewPath) {
 		this.viewPath = viewPath;
+	}
+
+	/**
+	 * Sets the url to return on successfull connect.
+	 *
+	 * @param viewUrl The url to return to.
+	 */
+	public void setViewUrl(String viewUrl) {
+		this.viewUrl = viewUrl;
 	}
 	
 	/**
@@ -353,6 +363,16 @@ public class ConnectController implements InitializingBean {
 	protected String connectView() {
 		return getViewPath() + "status";
 	}
+
+
+	/**
+	 * Returns the view to return on successfull connect.
+	 *
+	 * @return the view url to return on successfull connect.
+	 */
+	protected String getViewUrl() {
+		return viewUrl;
+	}
 	
 	/**
 	 * Returns the view name of a page to display for a provider when the user is not connected to the provider.
@@ -386,7 +406,7 @@ public class ConnectController implements InitializingBean {
 	 */
 	protected RedirectView connectionStatusRedirect(String providerId, NativeWebRequest request) {
 		HttpServletRequest servletRequest = request.getNativeRequest(HttpServletRequest.class);
-		String path = "/connect/" + providerId + getPathExtension(servletRequest);
+		String path = getViewUrl() + providerId + getPathExtension(servletRequest);
 		if (prependServletPath(servletRequest)) {
 			path = servletRequest.getServletPath() + path;
 		}
