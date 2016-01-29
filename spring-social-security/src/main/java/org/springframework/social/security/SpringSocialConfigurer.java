@@ -53,8 +53,6 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 
 	private String connectionAddedRedirectUrl;
 
-	private String defaultFailureUrl;
-
 	private boolean alwaysUsePostLoginUrl = false;
 
 	/**
@@ -98,10 +96,6 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 
 		if (connectionAddedRedirectUrl != null) {
 			filter.setConnectionAddedRedirectUrl(connectionAddedRedirectUrl);
-		}
-
-		if (defaultFailureUrl != null) {
-			filter.setDefaultFailureUrl(defaultFailureUrl);
 		}
 		
 		http.authenticationProvider(
@@ -149,9 +143,9 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 	}
 	
 	/**
-	 * Sets the URL to land on after a failed login.
-	 * @param postFailureUrl the URL to redirect to after a failed login
-     * @return this SpringSocialConfigurer for chained configuration
+	 * Sets the URL to redirect to if authentication fails or if authorization is denied by the user.
+	 * @param postFailureUrl the URL to redirect to after an authentication fail or authorization deny
+	 * @return this SpringSocialConfigurer for chained configuration
 	 */
 	public SpringSocialConfigurer postFailureUrl(String postFailureUrl) {
 		this.postFailureUrl = postFailureUrl;
@@ -179,12 +173,11 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 	}
 
 	/**
-	 * Sets the URL to redirect to if authentication fails or if authorization is denied by the user.
-	 * @param defaultFailureUrl the URL to redirect to after an authentication fail or authorization deny
-	 * @return this SpringSocialConfigurer for chained configuration
+	 * @deprecated use {@link #postFailureUrl(String)} instead
 	 */
+	@Deprecated
 	public SpringSocialConfigurer defaultFailureUrl(String defaultFailureUrl) {
-		this.defaultFailureUrl = defaultFailureUrl;
+		postFailureUrl(defaultFailureUrl);
 		return this;
 	}
 	

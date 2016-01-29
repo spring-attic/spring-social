@@ -21,7 +21,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -69,8 +68,6 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 
 	private UsersConnectionRepository usersConnectionRepository;
 
-	private SimpleUrlAuthenticationFailureHandler delegateAuthenticationFailureHandler;
-	
 	private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();	
 
 	private String filterProcessesUrl = DEFAULT_FILTER_PROCESSES_URL;
@@ -81,8 +78,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		this.userIdSource = userIdSource;
 		this.usersConnectionRepository = usersConnectionRepository;
 		this.authServiceLocator = authServiceLocator;
-		this.delegateAuthenticationFailureHandler = new SimpleUrlAuthenticationFailureHandler(DEFAULT_FAILURE_URL);
-		super.setAuthenticationFailureHandler(new SocialAuthenticationFailureHandler(delegateAuthenticationFailureHandler));
+		super.setAuthenticationFailureHandler(new SocialAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler(DEFAULT_FAILURE_URL)));
 	}
 	
 	/**
@@ -95,11 +91,11 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	}
 	
 	/**
-	 * The URL to redirect to if authentication fails or if authorization is denied by the user.
-	 * @param defaultFailureUrl The failure URL. Defaults to "/signin" (relative to the servlet context).
+	 * @deprecated use {@link #setPostFailureUrl(String)} instead
 	 */
+	@Deprecated
 	public void setDefaultFailureUrl(String defaultFailureUrl) {
-		delegateAuthenticationFailureHandler.setDefaultFailureUrl(defaultFailureUrl);
+		setPostFailureUrl(defaultFailureUrl);
 	}
 
 	public void setConnectionAddedRedirectUrl(String connectionAddedRedirectUrl) {
@@ -129,9 +125,18 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 			throw new IllegalStateException("can't set alwaysUsePostLoginUrl on unknown successHandler, type is " + successHandler.getClass().getName());
 		}
 	}
-	
+
+	/**
+	 * The URL to redirect to if authentication fails or if authorization is denied by the user.
+	 * @param postFailureUrl The failure URL. Defaults to "/signin" (relative to the servlet context).
+	 */
 	public void setPostFailureUrl(String postFailureUrl) {
 		AuthenticationFailureHandler failureHandler = getFailureHandler();
+
+		if (failureHandler instanceof SocialAuthenticationFailureHandler) {
+			failureHandler = ((SocialAuthenticationFailureHandler)failureHandler).getDelegate();
+		}
+
 		if (failureHandler instanceof SimpleUrlAuthenticationFailureHandler) {
 			SimpleUrlAuthenticationFailureHandler h = (SimpleUrlAuthenticationFailureHandler) failureHandler;
 			h.setDefaultFailureUrl(postFailureUrl);

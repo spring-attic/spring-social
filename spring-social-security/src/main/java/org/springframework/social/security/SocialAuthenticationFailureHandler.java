@@ -43,4 +43,8 @@ public class SocialAuthenticationFailureHandler implements AuthenticationFailure
 		delegate.onAuthenticationFailure(request, response, failed);
 	}
 
+	public AuthenticationFailureHandler getDelegate() {
+		return delegate;
+	}
+
 }
