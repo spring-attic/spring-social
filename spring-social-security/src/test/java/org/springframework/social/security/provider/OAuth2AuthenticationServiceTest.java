@@ -72,9 +72,11 @@ public class OAuth2AuthenticationServiceTest {
 			SocialAuthenticationToken token = authSvc.getAuthToken(request, response);
 			fail("redirect expected, was token " + token);
 		} catch (SocialAuthenticationRedirectException e) {
-			// expect redirect to service url including token
-			// assertEquals(serviceUrl + "?oauth_token=" +
-			// oAuthToken.getValue(), e.getRedirectUrl());
+			// TODO: This isn't the complete redirect URL, but it's sufficient to verify that the redirect URL was drawn from the request.
+			//       Ultimately the OAuth2Template creates the redirect URL, but since that's mocked out in this test, that won't be easily
+			//       done without recreating the functionality of a real OAuth2Template. Instead, we can feel confident that if the redirect
+			//       URL is what we told the mock to return, then the mock must have been given the proper return URL.
+			assertEquals("http://facebook.com/auth", e.getRedirectUrl());
 		}
 
 		// second phase
@@ -89,4 +91,67 @@ public class OAuth2AuthenticationServiceTest {
 		assertTrue(token.getConnection() instanceof Connection);
 		assertFalse(token.isAuthenticated());
 	}
+	
+	@Test
+	public void test_withProxyHeaders() throws Exception {
+		@SuppressWarnings("unchecked")
+		final OAuth2ConnectionFactory<Object> factory = mock(OAuth2ConnectionFactory.class);
+		final OAuth2Operations operations = mock(OAuth2Operations.class);
+		final String serverName = "example.com";
+		final AccessGrant accessGrant = new AccessGrant("my_token");
+		final String code = "code";
+		final Connection<Object> connection = DummyConnection.dummy("provider", "user");
+
+		final OAuth2AuthenticationService<Object> authSvc = new OAuth2AuthenticationService<Object>(factory);
+		authSvc.getReturnToUrlParameters().add("param");
+		authSvc.afterPropertiesSet();
+
+		final MockServletContext context = new MockServletContext();
+		final MockHttpSession session = new MockHttpSession(context);
+
+		// mock definitions
+		when(factory.getProviderId()).thenReturn(connection.getKey().getProviderId());
+		when(factory.getOAuthOperations()).thenReturn(operations);
+		when(factory.createConnection(accessGrant)).thenReturn(connection);
+
+		when(
+				operations.buildAuthenticateUrl(oAuth2Parameters("http://x.com/auth/foo?param=param_value"))).thenReturn(
+				"http://facebook.com/auth");
+		when(operations.exchangeForAccess(code, "http://example.com/auth/foo", null)).thenReturn(accessGrant);
+
+		// first phase
+		MockHttpServletRequest request = new MockHttpServletRequest(context, "GET", "/auth/foo");
+		request.setServerName(serverName);
+		request.setSession(session);
+		request.addParameter("param", "param_value");
+		request.addHeader("Host", "x.com");
+		request.addHeader("X-Forwarded-Proto", "http");
+		request.addHeader("X-Forwarded-Port", "80");
+		MockHttpServletResponse response = new MockHttpServletResponse();
+
+		try {
+			SocialAuthenticationToken token = authSvc.getAuthToken(request, response);
+			fail("redirect expected, was token " + token);
+		} catch (SocialAuthenticationRedirectException e) {
+			// TODO: This isn't the complete redirect URL, but it's sufficient to verify that the redirect URL was drawn from the request's
+			//       proxy headers.
+			//       Ultimately the OAuth2Template creates the redirect URL, but since that's mocked out in this test, that won't be easily
+			//       done without recreating the functionality of a real OAuth2Template. Instead, we can feel confident that if the redirect
+			//       URL is what we told the mock to return, then the mock must have been given the proper return URL.
+			assertEquals("http://facebook.com/auth", e.getRedirectUrl());
+		}
+
+		// second phase
+		request = new MockHttpServletRequest(context, "GET", "/auth/foo");
+		request.setServerName(serverName);
+		request.setSession(session);
+		request.addParameter("code", code);
+		response = new MockHttpServletResponse();
+
+		SocialAuthenticationToken token = authSvc.getAuthToken(request, response);
+		assertNotNull(token);
+		assertTrue(token.getConnection() instanceof Connection);
+		assertFalse(token.isAuthenticated());
+	}
+
 }
