@@ -38,13 +38,13 @@ import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionData;
 import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.UsersConnectionRepository;
+import org.springframework.social.connect.web.HttpSessionSessionStrategy;
 import org.springframework.social.connect.web.ProviderSignInAttempt;
 import org.springframework.social.connect.web.SessionStrategy;
-import org.springframework.social.connect.web.HttpSessionSessionStrategy;
 import org.springframework.social.security.provider.SocialAuthenticationService;
 import org.springframework.util.Assert;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * Filter for handling the provider sign-in flow within the Spring Security filter chain.
@@ -194,7 +194,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	protected boolean detectRejection(HttpServletRequest request) {
 		Set<?> parameterKeys = request.getParameterMap().keySet();
 		if ((parameterKeys.size() == 1) && (parameterKeys.contains("state"))) {
-		    return false;
+			return false;
 		}
 		return parameterKeys.size() > 0 
 				&& !parameterKeys.contains("oauth_token") 
