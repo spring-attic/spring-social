@@ -62,6 +62,8 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 
 	private String connectionAddedRedirectUrl = "/";
 
+	private String connectionAddingFailureRedirectUrl = "/";
+
 	private boolean updateConnections = true;
 
 	private UserIdSource userIdSource;
@@ -99,8 +101,21 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		setPostFailureUrl(defaultFailureUrl);
 	}
 
+	/**
+	 * an authenticated user can add additional connections. after successfully authorizing, the user
+	 * will be redirected to this URL
+	 */
 	public void setConnectionAddedRedirectUrl(String connectionAddedRedirectUrl) {
 		this.connectionAddedRedirectUrl = connectionAddedRedirectUrl;
+	}
+
+	/**
+	 * redirect the user after an attempt to add an additional authentication failed. After the failure
+	 * the user is still authenticated, so redirecting to something like {@value #DEFAULT_FAILURE_URL} might
+	 * not make sense
+	 */
+	public void setConnectionAddingFailureRedirectUrl(String connectionAddingFailureRedirectUrl) {
+		this.connectionAddingFailureRedirectUrl = connectionAddingFailureRedirectUrl;
 	}
 
 	public void setUpdateConnections(boolean updateConnections) {
@@ -267,15 +282,21 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		return SecurityContextHolder.getContext().getAuthentication();
 	}
 
-	/*
-	 * Call SocialAuthenticationService.getAuthToken() to get SocialAuthenticationToken:
-	 *     If first phase, throw AuthenticationRedirectException to redirect to provider website.
-	 *     If second phase, get token/code from request parameter and call provider API to get accessToken/accessGrant.
-	 * Check Authentication object in spring security context, if null or not authenticated,  call doAuthentication()
-	 * Otherwise, it is already authenticated, add this connection.
+	/**
+	 * @return the authenticated user token, or null if authentication is incomplete.
+	 * @throws AuthenticationException if authentication fails.
+	 * @see AbstractAuthenticationProcessingFilter#attemptAuthentication(HttpServletRequest, HttpServletResponse)
 	 */
-	private Authentication attemptAuthService(final SocialAuthenticationService<?> authService, final HttpServletRequest request, HttpServletResponse response) 
+	private Authentication attemptAuthService(final SocialAuthenticationService<?> authService, final HttpServletRequest request, HttpServletResponse response)
 			throws SocialAuthenticationRedirectException, AuthenticationException {
+
+		/*
+		 * Call SocialAuthenticationService.getAuthToken() to get SocialAuthenticationToken:
+		 *     If first phase, throw AuthenticationRedirectException to redirect to provider website.
+		 *     If second phase, get token/code from request parameter and call provider API to get accessToken/accessGrant.
+		 * Check Authentication object in spring security context, if null or not authenticated,  call doAuthentication()
+		 * Otherwise, it is already authenticated, add this connection.
+		 */
 
 		final SocialAuthenticationToken token = authService.getAuthToken(request, response);
 		if (token == null) return null;
@@ -334,6 +355,8 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 				redirectUrl = connectionAddedRedirectUrl;
 			}
 			throw new SocialAuthenticationRedirectException(redirectUrl);
+		} else {
+			throw new SocialAuthenticationRedirectException(connectionAddingFailureRedirectUrl);
 		}
 	}
 
