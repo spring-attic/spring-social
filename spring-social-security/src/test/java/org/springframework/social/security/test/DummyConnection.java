@@ -29,6 +29,8 @@ public class DummyConnection<T> implements Connection<T> {
 	private final ConnectionKey _key;
 	private final T _api;
 
+	private long expireTime = System.currentTimeMillis() + 3_600_000;
+
 	public static DummyConnection<Object> dummy(String provider, String user) {
 		return new DummyConnection<Object>(provider, user, new Object());
 	}
@@ -81,7 +83,7 @@ public class DummyConnection<T> implements Connection<T> {
 
 	public ConnectionData createData() {
 		return new ConnectionData(_key.getProviderId(), _key.getProviderUserId(), getDisplayName(),
-				getProfileUrl(), getImageUrl(), "access_token", "secret", "refresh_token", System.currentTimeMillis() + 10000);
+				getProfileUrl(), getImageUrl(), "access_token", "secret", "refresh_token", expireTime);
 	}
 
 	public static Answer<DummyConnection<Object>> answer() {
