@@ -163,6 +163,94 @@ public class SocialAuthenticationFilterTest {
 		verify(connectionRepository).addConnection(connection);
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Test
+	public void addConnection_authenticated() throws Exception {
+
+		FilterTestEnv env = new FilterTestEnv("GET", "/auth", null);
+		env.filter.setFilterProcessesUrl(env.req.getRequestURI());
+		env.filter.setPostLoginUrl("/success");
+		env.filter.setConnectionAddedRedirectUrl("/added");
+		env.filter.setConnectionAddingFailureRedirectUrl("/add-failed");
+
+		Connection<?> connection = env.auth.getConnection();
+		ConnectionData data = connection.createData();
+		String userId = "joe";
+
+		ConnectionFactory<Object> factory = mock(MockConnectionFactory.class);
+		when(factory.getProviderId()).thenReturn("mock");
+		when(factory.createConnection(data)).thenReturn((Connection<Object>) connection);
+		env.req.setRequestURI(env.req.getRequestURI() + "/" + factory.getProviderId());
+
+		SocialAuthenticationService<Object> authService = mock(SocialAuthenticationService.class);
+		when(authService.getConnectionCardinality()).thenReturn(ConnectionCardinality.ONE_TO_ONE);
+		when(authService.getConnectionFactory()).thenReturn(factory);
+		when(authService.getAuthToken(env.req, env.res)).thenReturn(env.auth);
+		env.addAuthService(authService);
+
+		when(env.userIdSource.getUserId()).thenReturn(userId);
+
+		when(env.usersConnectionRepository.findUserIdsConnectedTo(data.getProviderId(), set(data.getProviderUserId()))).thenReturn(empty(String.class));
+
+		// fallback to default /added
+		when(authService.getConnectionAddedRedirectUrl(env.req, connection)).thenReturn(null);
+
+		// already authenticated
+		SecurityContextHolder.getContext().setAuthentication(env.authSuccess);
+
+		env.doFilter();
+
+		// still authenticated
+		assertSame(env.authSuccess, SecurityContextHolder.getContext().getAuthentication());
+
+		assertEquals("/added", env.res.getRedirectedUrl());
+
+		verify(env.connectionRepository).addConnection(env.auth.getConnection());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	public void addConnection_authenticated_failed() throws Exception {
+
+		FilterTestEnv env = new FilterTestEnv("GET", "/auth", null);
+		env.filter.setFilterProcessesUrl(env.req.getRequestURI());
+		env.filter.setPostLoginUrl("/success");
+		env.filter.setConnectionAddedRedirectUrl("/added");
+		env.filter.setConnectionAddingFailureRedirectUrl("/add-failed");
+
+		Connection<?> connection = env.auth.getConnection();
+		ConnectionData data = connection.createData();
+		String userId = "joe";
+
+		ConnectionFactory<Object> factory = mock(MockConnectionFactory.class);
+		when(factory.getProviderId()).thenReturn("mock");
+		when(factory.createConnection(data)).thenReturn((Connection<Object>) connection);
+		env.req.setRequestURI(env.req.getRequestURI() + "/" + factory.getProviderId());
+
+		SocialAuthenticationService<Object> authService = mock(SocialAuthenticationService.class);
+		when(authService.getConnectionCardinality()).thenReturn(ConnectionCardinality.ONE_TO_ONE);
+		when(authService.getConnectionFactory()).thenReturn(factory);
+		when(authService.getAuthToken(env.req, env.res)).thenReturn(env.auth);
+		env.addAuthService(authService);
+
+		when(env.userIdSource.getUserId()).thenReturn(userId);
+
+		// already connected
+		when(env.usersConnectionRepository.findUserIdsConnectedTo(data.getProviderId(), set(data.getProviderUserId()))).thenReturn(set(userId));
+
+		// already authenticated
+		SecurityContextHolder.getContext().setAuthentication(env.authSuccess);
+
+		env.doFilter();
+
+		// still authenticated
+		assertSame(env.authSuccess, SecurityContextHolder.getContext().getAuthentication());
+
+		assertEquals("/add-failed", env.res.getRedirectedUrl());
+
+		verify(env.connectionRepository, times(0)).addConnection(env.auth.getConnection());
+	}
+
 	private static <T> Set<T> empty(Class<T> cls) {
 		return Collections.emptySet();
 	}
@@ -181,6 +269,9 @@ public class SocialAuthenticationFilterTest {
 		private final SocialAuthenticationToken auth;
 		private final SocialAuthenticationToken authSuccess;
 		private final AuthenticationManager authManager;
+		private final UserIdSource userIdSource;
+		private final UsersConnectionRepository usersConnectionRepository;
+		private final ConnectionRepository connectionRepository;
 
 		private FilterTestEnv(String method, String requestURI, String signupUrl) {
 			context = new MockServletContext();
@@ -188,14 +279,16 @@ public class SocialAuthenticationFilterTest {
 			res = new MockHttpServletResponse();
 			chain = new MockFilterChain();
 			authManager = mock(AuthenticationManager.class);
+			userIdSource = mock(UserIdSource.class);
+			usersConnectionRepository = mock(UsersConnectionRepository.class);
+			connectionRepository = mock(ConnectionRepository.class);
 
-			filter = new SocialAuthenticationFilter(authManager, mock(UserIdSource.class), mock(UsersConnectionRepository.class), new SocialAuthenticationServiceRegistry());
+			filter = new SocialAuthenticationFilter(authManager, userIdSource, usersConnectionRepository, new SocialAuthenticationServiceRegistry());
 			filter.setServletContext(context);
 			filter.setRememberMeServices(new NullRememberMeServices());
 			filter.setSignupUrl(signupUrl);
 			
-			ConnectionRepository repo = mock(ConnectionRepository.class);
-			when(filter.getUsersConnectionRepository().createConnectionRepository(Mockito.anyString())).thenReturn(repo);
+			when(filter.getUsersConnectionRepository().createConnectionRepository(Mockito.anyString())).thenReturn(connectionRepository);
 			
 			auth = new SocialAuthenticationToken(DummyConnection.dummy("provider", "user"), null);
 
