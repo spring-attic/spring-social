@@ -1072,7 +1072,7 @@ In this case, we're returning an instance of `AuthenticationNameUserIdSource`.
 This implementation of the `UserIdSource` interface assumes that the application is secured with Spring Security.
 It uses the `SecurityContextHolder` to lookup a `SecurityContext`, and from that return the `name` property of the `Authentication` object.
 
-If your application isn't secured with Spring Security, you'll need to implement the `UserIdSource` interface as approprate for your application's security mechanism.
+If your application isn't secured with Spring Security, you'll need to implement the `UserIdSource` interface as appropriate for your application's security mechanism.
 The `UserIdSource` interface looks like this:
 
 ```java
