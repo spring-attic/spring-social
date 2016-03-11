@@ -30,23 +30,23 @@ import org.springframework.social.connect.support.OAuth2Connection;
 @SuppressWarnings("serial")
 public class ConnectionData implements Serializable {
 	
-	private String providerId;
+	private final String providerId;
 	
-	private String providerUserId;
+	private final String providerUserId;
 	
-	private String displayName;
+	private final String displayName;
 	
-	private String profileUrl;
+	private final String profileUrl;
 	
-	private String imageUrl;
+	private final String imageUrl;
 	
-	private String accessToken;
+	private final String accessToken;
 	
-	private String secret;
+	private final String secret;
 	
-	private String refreshToken;
+	private final String refreshToken;
 	
-	private Long expireTime;
+	private final Long expireTime;
 
 	public ConnectionData(String providerId, String providerUserId, String displayName, String profileUrl, String imageUrl, String accessToken, String secret, String refreshToken, Long expireTime) {
 		this.providerId = providerId;
@@ -134,5 +134,96 @@ public class ConnectionData implements Serializable {
 	public Long getExpireTime() {
 		return expireTime;
 	}
-		
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((accessToken == null) ? 0 : accessToken.hashCode());
+		result = prime * result
+				+ ((displayName == null) ? 0 : displayName.hashCode());
+		result = prime * result
+				+ ((expireTime == null) ? 0 : expireTime.hashCode());
+		result = prime * result
+				+ ((imageUrl == null) ? 0 : imageUrl.hashCode());
+		result = prime * result
+				+ ((profileUrl == null) ? 0 : profileUrl.hashCode());
+		result = prime * result
+				+ ((providerId == null) ? 0 : providerId.hashCode());
+		result = prime * result
+				+ ((providerUserId == null) ? 0 : providerUserId.hashCode());
+		result = prime * result
+				+ ((refreshToken == null) ? 0 : refreshToken.hashCode());
+		result = prime * result + ((secret == null) ? 0 : secret.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof ConnectionData))
+			return false;
+		ConnectionData other = (ConnectionData) obj;
+		if (accessToken == null) {
+			if (other.accessToken != null)
+				return false;
+		} else if (!accessToken.equals(other.accessToken))
+			return false;
+		if (displayName == null) {
+			if (other.displayName != null)
+				return false;
+		} else if (!displayName.equals(other.displayName))
+			return false;
+		if (expireTime == null) {
+			if (other.expireTime != null)
+				return false;
+		} else if (!expireTime.equals(other.expireTime))
+			return false;
+		if (imageUrl == null) {
+			if (other.imageUrl != null)
+				return false;
+		} else if (!imageUrl.equals(other.imageUrl))
+			return false;
+		if (profileUrl == null) {
+			if (other.profileUrl != null)
+				return false;
+		} else if (!profileUrl.equals(other.profileUrl))
+			return false;
+		if (providerId == null) {
+			if (other.providerId != null)
+				return false;
+		} else if (!providerId.equals(other.providerId))
+			return false;
+		if (providerUserId == null) {
+			if (other.providerUserId != null)
+				return false;
+		} else if (!providerUserId.equals(other.providerUserId))
+			return false;
+		if (refreshToken == null) {
+			if (other.refreshToken != null)
+				return false;
+		} else if (!refreshToken.equals(other.refreshToken))
+			return false;
+		if (secret == null) {
+			if (other.secret != null)
+				return false;
+		} else if (!secret.equals(other.secret))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "ConnectionData [providerId=" + providerId + ", providerUserId="
+				+ providerUserId + ", displayName=" + displayName
+				+ ", profileUrl=" + profileUrl + ", imageUrl=" + imageUrl
+				+ ", accessToken=" + accessToken + ", secret=" + secret
+				+ ", refreshToken=" + refreshToken + ", expireTime="
+				+ expireTime + "]";
+	}
+
 }
