@@ -14,91 +14,82 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.security.crypto.encrypt.Encryptors;
-import org.springframework.social.connect.Connection;
 import org.springframework.social.connect.ConnectionFactoryLocator;
-import org.springframework.social.connect.NotConnectedException;
+import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.redis.data.SocialRedisConnectionRepository;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.MultiValueMap;
 import redis.clients.jedis.JedisShardInfo;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
 @RedisAvailable
-public class RedisConnectionRepositoryIntegrationTests {
+public class RedisUsersConnectionRepositoryIntegrationTests {
 
     private static final String REDIS_HOST = "127.0.0.1";
     private static final int REDIS_PORT = 6379;
-
-    @ClassRule
-    public static TestRule redisAvailableRule = new RedisAvailableRule(REDIS_HOST, REDIS_PORT);
 
     @Autowired
     @SuppressWarnings("SpringJavaAutowiringInspection")
     private SocialRedisConnectionRepository socialRedisConnectionRepository;
 
+    @ClassRule
+    public static TestRule redisAvailableRule = new RedisAvailableRule(REDIS_HOST, REDIS_PORT);
+
     @Autowired
     private ConnectionFactoryLocator connectionFactoryLocator;
 
-    private RedisConnectionRepository redisConnectionRepository;
+    private RedisUsersConnectionRepository redisUsersConnectionRepository;
 
-    private RedisUtils.TestConnection testConnection;
+    private RedisUtils.TestConnection connectionForDhubau;
+    private RedisUtils.TestConnection connectionForMyBuddy;
 
     @Before
     public void init() {
-        redisConnectionRepository = new RedisConnectionRepository(connectionFactoryLocator, Encryptors.noOpText(), socialRedisConnectionRepository, "Turbots");
-        testConnection = new RedisUtils.TestConnection(new RedisUtils.TestTwitterApiAdapter(), "twitter:dhubau");
+        redisUsersConnectionRepository = new RedisUsersConnectionRepository(connectionFactoryLocator, Encryptors.noOpText(), socialRedisConnectionRepository);
+        connectionForDhubau = new RedisUtils.TestConnection(new RedisUtils.TestTwitterApiAdapter(), "twitter:dhubau");
+        connectionForMyBuddy = new RedisUtils.TestConnection(new RedisUtils.TestTwitterApiAdapter(), "twitter:buddy");
         socialRedisConnectionRepository.deleteAll();
     }
 
     @Test
-    public void addConnection() {
-        redisConnectionRepository.addConnection(testConnection);
+    public void findUserIdsWithConnectionNoUsers() {
+        List<String> userIds = redisUsersConnectionRepository.findUserIdsWithConnection(connectionForDhubau);
 
-        MultiValueMap<String, Connection<?>> map = redisConnectionRepository.findAllConnections();
-
-        assertEquals(1, map.get("twitter").size());
+        assertEquals(0, userIds.size());
     }
 
     @Test
-    public void removeConnections() {
-        redisConnectionRepository.addConnection(testConnection);
+    public void findUserIdsWithConnectionOneUser() {
+        ConnectionRepository connectionRepository = redisUsersConnectionRepository.createConnectionRepository("dhubau");
+        connectionRepository.addConnection(connectionForDhubau);
+        connectionRepository.addConnection(connectionForMyBuddy);
 
-        redisConnectionRepository.removeConnections("twitter");
+        List<String> userIds = redisUsersConnectionRepository.findUserIdsWithConnection(connectionForDhubau);
 
-        MultiValueMap<String, Connection<?>> map = redisConnectionRepository.findAllConnections();
-
-        assertEquals(0, map.get("twitter").size());
+        assertEquals(1, userIds.size());
     }
 
     @Test
-    public void getPrimaryConnectionOK() {
-        redisConnectionRepository.addConnection(testConnection);
+    public void findUserIdsConnectedToWithTwoUsers() {
+        ConnectionRepository connectionRepository = redisUsersConnectionRepository.createConnectionRepository("dhubau");
+        connectionRepository.addConnection(connectionForDhubau);
+        connectionRepository = redisUsersConnectionRepository.createConnectionRepository("buddy");
+        connectionRepository.addConnection(connectionForMyBuddy);
 
-        Connection<RedisUtils.TestTwitterApi> connection = redisConnectionRepository.getPrimaryConnection(RedisUtils.TestTwitterApi.class);
+        Set<String> providerUserIds = new HashSet<>();
+        Collections.addAll(providerUserIds, "twitter:dhubau", "twitter:buddy");
+        Set<String> userIds = redisUsersConnectionRepository.findUserIdsConnectedTo("twitter", providerUserIds);
 
-        assertNotNull(connection);
-        assertEquals(connection.getDisplayName(), "displayName");
-    }
-
-    @Test(expected = NotConnectedException.class)
-    public void getPrimaryConnectionException() throws NotConnectedException {
-        redisConnectionRepository.getPrimaryConnection(RedisUtils.TestTwitterApi.class);
-    }
-
-    @Test
-    public void findPrimaryConnection() {
-        redisConnectionRepository.addConnection(testConnection);
-
-        Connection<RedisUtils.TestTwitterApi> connection = redisConnectionRepository.findPrimaryConnection(RedisUtils.TestTwitterApi.class);
-
-        assertNotNull(connection);
-        assertEquals(connection.getDisplayName(), "displayName");
+        assertEquals(2, userIds.size());
     }
 
     @Configuration

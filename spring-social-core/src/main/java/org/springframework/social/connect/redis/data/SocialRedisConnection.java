@@ -8,6 +8,7 @@ import org.springframework.data.redis.core.index.Indexed;
 public class SocialRedisConnection {
 
     @Id
+    @Indexed
     private String providerUserId;
 
     @Indexed

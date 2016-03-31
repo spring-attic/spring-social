@@ -12,10 +12,9 @@ public interface SocialRedisConnectionRepository extends CrudRepository<SocialRe
 
     SocialRedisConnection findOneByUserIdAndProviderIdAndProviderUserId(String userId, String providerId, String providerUserId);
 
-    void deleteByUserIdAndProviderId(final String userId, final String providerId);
-
     void deleteByUserIdAndProviderIdAndProviderUserId(final String userId, final String providerId, final String providerUserId);
 
     Iterable<SocialRedisConnection> findByUserId(final String userId);
 
+    Iterable<SocialRedisConnection> findByProviderIdAndProviderUserId(final String providerId, final String providerUserId);
 }
