@@ -12,6 +12,7 @@ public interface SocialRedisConnectionRepository extends CrudRepository<SocialRe
 
     SocialRedisConnection findOneByUserIdAndProviderIdAndProviderUserId(String userId, String providerId, String providerUserId);
 
+    // TODO: will be available once DATAKV-135 is finished
     void deleteByUserIdAndProviderIdAndProviderUserId(final String userId, final String providerId, final String providerUserId);
 
     Iterable<SocialRedisConnection> findByUserId(final String userId);

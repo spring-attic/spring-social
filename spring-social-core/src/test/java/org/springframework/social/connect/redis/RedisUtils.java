@@ -13,14 +13,18 @@ class RedisUtils {
         private String providerUserId;
 
         TestConnection(final ApiAdapter apiAdapter, final String providerUserId) {
-            //noinspection unchecked
             super(apiAdapter);
             this.providerUserId = providerUserId;
         }
 
         @Override
         public Object getApi() {
-            return "twitter";
+            return new TestTwitterApi() {
+                @Override
+                public String getAccessToken() {
+                    return "accessToken-123";
+                }
+            };
         }
 
         @Override

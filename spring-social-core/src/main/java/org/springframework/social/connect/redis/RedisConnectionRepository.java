@@ -127,7 +127,12 @@ public class RedisConnectionRepository implements ConnectionRepository {
     }
 
     public void removeConnection(ConnectionKey connectionKey) {
-        socialRedisConnectionRepository.deleteByUserIdAndProviderIdAndProviderUserId(userId, connectionKey.getProviderId(), connectionKey.getProviderUserId());
+        // TODO: Wait for DATAKV-135 in order to use this:
+        // socialRedisConnectionRepository.deleteByUserIdAndProviderIdAndProviderUserId
+        // (userId, connectionKey.getProviderId(), connectionKey.getProviderUserId());
+
+        SocialRedisConnection socialRedisConnection = socialRedisConnectionRepository.findOneByUserIdAndProviderIdAndProviderUserId(userId, connectionKey.getProviderId(), connectionKey.getProviderUserId());
+        socialRedisConnectionRepository.delete(socialRedisConnection);
     }
 
     private final RedisConnectionMapper connectionMapper = new RedisConnectionMapper();
@@ -135,6 +140,9 @@ public class RedisConnectionRepository implements ConnectionRepository {
     private final class RedisConnectionMapper {
 
         Connection<?> mapConnection(final SocialRedisConnection redisConnection) {
+            if (redisConnection == null) {
+                throw new EmptyResultDataAccessException(1);
+            }
             ConnectionData connectionData = mapConnectionData(redisConnection);
             ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(connectionData.getProviderId());
             return connectionFactory.createConnection(connectionData);

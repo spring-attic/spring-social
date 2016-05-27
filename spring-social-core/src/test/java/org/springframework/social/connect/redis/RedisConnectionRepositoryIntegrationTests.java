@@ -14,9 +14,7 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 import org.springframework.security.crypto.encrypt.Encryptors;
-import org.springframework.social.connect.Connection;
-import org.springframework.social.connect.ConnectionFactoryLocator;
-import org.springframework.social.connect.NotConnectedException;
+import org.springframework.social.connect.*;
 import org.springframework.social.connect.redis.data.SocialRedisConnectionRepository;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,8 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.MultiValueMap;
 import redis.clients.jedis.JedisShardInfo;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
@@ -74,6 +71,44 @@ public class RedisConnectionRepositoryIntegrationTests {
         MultiValueMap<String, Connection<?>> map = redisConnectionRepository.findAllConnections();
 
         assertEquals(0, map.get("twitter").size());
+    }
+
+    @Test
+    public void removeConnection() {
+        redisConnectionRepository.addConnection(testConnection);
+
+        redisConnectionRepository.removeConnection(testConnection.getKey());
+
+        MultiValueMap<String, Connection<?>> map = redisConnectionRepository.findAllConnections();
+
+        assertEquals(0, map.get("twitter").size());
+    }
+
+    @Test
+    public void getConnectionWhenFound() {
+        redisConnectionRepository.addConnection(testConnection);
+
+        Connection<?> socialRedisConnection = redisConnectionRepository.getConnection(testConnection.getKey());
+        assertNotNull(socialRedisConnection);
+        assertEquals(testConnection.getKey().getProviderUserId(), socialRedisConnection.getKey().getProviderUserId());
+    }
+
+    @Test(expected = NoSuchConnectionException.class)
+    public void getConnectionWhenNotFound() {
+        ConnectionKey connectionKey = new ConnectionKey("foo", "bar");
+        redisConnectionRepository.getConnection(connectionKey);
+    }
+
+    @Test
+    public void updateConnection() {
+        assertNull(testConnection.getDisplayName());
+        redisConnectionRepository.addConnection(testConnection);
+
+        redisConnectionRepository.updateConnection(testConnection);
+
+        Connection<?> socialRedisConnection = redisConnectionRepository.getConnection(testConnection.getKey());
+        assertNotNull(socialRedisConnection);
+        assertEquals("displayName", socialRedisConnection.getDisplayName());
     }
 
     @Test
