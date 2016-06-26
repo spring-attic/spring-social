@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 the original author or authors.
+ * Copyright 2016 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,38 +15,39 @@
  */
 package org.springframework.social.connect.web.thymeleaf;
 
+import org.thymeleaf.context.IContext;
+import org.thymeleaf.context.ITemplateContext;
+import org.thymeleaf.engine.AttributeName;
+import org.thymeleaf.exceptions.ConfigurationException;
+import org.thymeleaf.model.IProcessableElementTag;
+import org.thymeleaf.processor.IProcessor;
+import org.thymeleaf.standard.processor
+		.AbstractStandardConditionalVisibilityTagProcessor;
+import org.thymeleaf.templatemode.TemplateMode;
+
 import org.springframework.context.ApplicationContext;
 import org.springframework.social.connect.ConnectionRepository;
-import org.thymeleaf.Arguments;
-import org.thymeleaf.context.IContext;
-import org.thymeleaf.dom.Element;
-import org.thymeleaf.exceptions.ConfigurationException;
-import org.thymeleaf.processor.attr.AbstractConditionalVisibilityAttrProcessor;
-import org.thymeleaf.spring4.context.SpringWebContext;
 
 /**
  * Implementation of the Spring Social Thymeleaf dialect's <code>social:connected</code> attribute.
  * Conditionally renders content based on whether or not the current user is connected to the provider whose ID is given as the attribute value.
  * @author Craig Walls
+ * @author Eddú Meléndez
  */
-class ConnectedAttrProcessor extends AbstractConditionalVisibilityAttrProcessor {
+class ConnectedAttrProcessor extends AbstractStandardConditionalVisibilityTagProcessor
+		implements IProcessor {
 
-	public ConnectedAttrProcessor() {
-		super("connected");
+	public ConnectedAttrProcessor(TemplateMode templateMode, String dialectPrefix) {
+		super(templateMode, dialectPrefix, "connected", 300);
 	}
 
 	@Override
-	public int getPrecedence() {
-		return 300;
-	}
-
-	@Override
-	protected boolean isVisible(Arguments arguments, Element element, String attributeName) {
-		final String providerId = element.getAttributeValue(attributeName);
+	protected boolean isVisible(ITemplateContext context, IProcessableElementTag tag, AttributeName attributeName, String attributeValue) {
+		final String providerId = tag.getAttributeValue(attributeName);
 		if (providerId == null || providerId.trim().equals("")) {
 			return false;
 		}
-		ConnectionRepository connectionRepository = getConnectionRepository(arguments.getContext());
+		ConnectionRepository connectionRepository = getConnectionRepository(context);
 		return connectionRepository.findConnections(providerId).size() > 0;
 	}
 
@@ -57,14 +58,13 @@ class ConnectedAttrProcessor extends AbstractConditionalVisibilityAttrProcessor 
 	}
 
 	private ApplicationContext getSpringApplicationContextFromThymeleafContext(final IContext context) {
-		if (!(context instanceof SpringWebContext)) {
+		if (!(context instanceof ApplicationContext)) {
 			throw new ConfigurationException(
 					"Thymeleaf execution context is not a Spring web context (implementation of " +
-					SpringWebContext.class.getName() + ". Spring Social integration can only be used in " +
-					"web environements with a Spring application context.");
+							ApplicationContext.class.getName() + ". Spring Social integration can only be used in " +
+					"web environments with a Spring application context.");
 		}
-		final SpringWebContext springContext = (SpringWebContext) context;
-		return springContext.getApplicationContext();
+		return (ApplicationContext) context;
 	}
 
 }
