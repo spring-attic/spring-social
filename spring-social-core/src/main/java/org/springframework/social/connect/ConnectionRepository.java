@@ -35,12 +35,14 @@ public interface ConnectionRepository {
 	 * For example, if the user is connected once to Facebook and twice to Twitter, the returned map would contain two entries with the following structure:
 	 * <pre>
 	 * { 
-	 *     "facebook" -&gt; Connection("Keith Donald") ,
-	 *     "twitter"  -&gt; Connection("kdonald"), Connection("springsource")
+	 *     "facebook" -&gt; [ Connection("Keith Donald") ] ,
+	 *     "github"   -&gt; [ ]
+	 *     "twitter"  -&gt; [ Connection("kdonald"), Connection("springsource") ]
 	 * }
 	 * </pre>
 	 * The returned map is sorted by providerId and entry values are ordered by rank.
-	 * Returns an empty map if the user has no connections.
+	 * The method always returns a map with keys representing all registered providers.
+	 * For providers with no connection, a map contains an empty list as a value.
 	 * @return all connections the current user has across all providers.
 	 */
 	MultiValueMap<String, Connection<?>> findAllConnections();
