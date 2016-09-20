@@ -168,8 +168,8 @@ $ ./gradlew idea
 [linkedin-api]: http://docs.spring.io/spring-social-linkedin/docs/1.0.x/api/
 [tripit-gh]: https://github.com/spring-projects/spring-social-tripit
 [github-gh]: https://github.com/spring-projects/spring-social-github
-[Javadoc]: http://docs.spring.io/spring-social/docs/current/api/
-[reference docs]: http://docs.spring.io/spring-social/docs/current/reference/html/
+[Javadoc]: http://docs.spring.io/spring-social/docs/current/apidocs/
+[reference docs]: http://docs.spring.io/spring-social/docs/current-SNAPSHOT/reference/htmlsingle/
 [samples repository]: https://github.com/spring-projects/spring-social-samples
 [Quick Start]: https://github.com/spring-projects/spring-social/wiki/Quick-Start
 [Spring Social JIRA]: http://jira.springsource.org/browse/SOCIAL
