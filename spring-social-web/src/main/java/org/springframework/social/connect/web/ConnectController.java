@@ -426,7 +426,7 @@ public class ConnectController implements InitializingBean {
 	 * This makes it possible to append the returned value to a path even if there is no extension.
 	 */
 	private String getPathExtension(HttpServletRequest request) {
-		String extension = UriUtils.extractFileExtension(request.getRequestURI());
+		String extension = UriUtils.extractFileExtension(request.getRequestURI());		
 		return extension != null ? "." + extension : "";
 	}
 
