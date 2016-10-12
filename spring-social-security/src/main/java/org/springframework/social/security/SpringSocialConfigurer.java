@@ -35,7 +35,7 @@ import org.springframework.social.connect.UsersConnectionRepository;
  *   http.
  *     // HTTP security configuration details snipped
  *     .and()
- *        .apply(new SpringSocialHttpConfigurer());
+ *        .apply(new SpringSocialConfigurer());
  * }
  * </pre>
  * 
@@ -56,7 +56,7 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 	private boolean alwaysUsePostLoginUrl = false;
 
 	/**
-	 * Constructs a SpringSocialHttpConfigurer.
+	 * Constructs a SpringSocialConfigurer.
 	 * Requires that {@link UsersConnectionRepository}, {@link SocialAuthenticationServiceLocator}, and
 	 * {@link SocialUserDetailsService} beans be available in the application context.
 	 */
