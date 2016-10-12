@@ -104,6 +104,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	/**
 	 * an authenticated user can add additional connections. after successfully authorizing, the user
 	 * will be redirected to this URL
+	 * @param connectionAddedRedirectUrl The URL to redirect to after adding connections following authorization
 	 */
 	public void setConnectionAddedRedirectUrl(String connectionAddedRedirectUrl) {
 		this.connectionAddedRedirectUrl = connectionAddedRedirectUrl;
@@ -111,8 +112,9 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 
 	/**
 	 * redirect the user after an attempt to add an additional authentication failed. After the failure
-	 * the user is still authenticated, so redirecting to something like {@value #DEFAULT_FAILURE_URL} might
+	 * the user is still authenticated, so redirecting to the default failure URL might
 	 * not make sense
+	 * @param connectionAddingFailureRedirectUrl The URL to redirect to after a failing connection following authorization
 	 */
 	public void setConnectionAddingFailureRedirectUrl(String connectionAddingFailureRedirectUrl) {
 		this.connectionAddingFailureRedirectUrl = connectionAddingFailureRedirectUrl;
