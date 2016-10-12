@@ -49,6 +49,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriUtils;
 import org.springframework.web.util.UrlPathHelper;
 import org.springframework.web.util.WebUtils;
 
@@ -425,8 +426,7 @@ public class ConnectController implements InitializingBean {
 	 * This makes it possible to append the returned value to a path even if there is no extension.
 	 */
 	private String getPathExtension(HttpServletRequest request) {
-		String fileName = WebUtils.extractFullFilenameFromUrlPath(request.getRequestURI());		
-		String extension = StringUtils.getFilenameExtension(fileName);
+		String extension = UriUtils.extractFileExtension(request.getRequestURI());
 		return extension != null ? "." + extension : "";
 	}
 

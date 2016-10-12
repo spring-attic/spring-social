@@ -173,6 +173,8 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 	}
 
 	/**
+	 * @param defaultFailureUrl The failure URL to use by default
+	 * @return this SpringSocialConfigurer for chained configuration
 	 * @deprecated use {@link #postFailureUrl(String)} instead
 	 */
 	@Deprecated

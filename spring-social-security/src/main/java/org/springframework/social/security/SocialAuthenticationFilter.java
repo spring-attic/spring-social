@@ -91,6 +91,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	}
 	
 	/**
+	 * @param defaultFailureUrl The failure URL to use by default
 	 * @deprecated use {@link #setPostFailureUrl(String)} instead
 	 */
 	@Deprecated
