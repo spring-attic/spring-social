@@ -19,7 +19,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.thymeleaf.dialect.AbstractDialect;
+import org.thymeleaf.dialect.IProcessorDialect;
 import org.thymeleaf.processor.IProcessor;
+import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  * <p>
@@ -38,23 +40,32 @@ import org.thymeleaf.processor.IProcessor;
  * </code>
  * 
  * @author Craig Walls
+ * @author Eddú Meléndez
  */
-public class SpringSocialDialect extends AbstractDialect {
+public class SpringSocialDialect extends AbstractDialect implements IProcessorDialect {
+
+	public static final String SOCIAL_DIALECT_PREFIX = "social";
+
+
 	// TODO: Consider implementing IExpressionEnhancingDialect and throwing some social stuff into context
 	//       for use in standard/spring dialect expressions
 
 	public SpringSocialDialect() {
-		super();
-	}
-	
-	public String getPrefix() {
-		return "social";
+		super("Social");
 	}
 
-	@Override
-	public Set<IProcessor> getProcessors() {
+	public String getPrefix() {
+		return SOCIAL_DIALECT_PREFIX;
+	}
+
+	public int getDialectProcessorPrecedence() {
+		return 0;
+	}
+
+	public Set<IProcessor> getProcessors(String dialectPrefix) {
 		final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
-		processors.add(new ConnectedAttrProcessor());
+		processors.add(new ConnectedAttrProcessor(TemplateMode.HTML, SOCIAL_DIALECT_PREFIX));
+		processors.add(new ConnectedAttrProcessor(TemplateMode.XML, SOCIAL_DIALECT_PREFIX));
 		return processors;
 	}
 
