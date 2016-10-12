@@ -7,7 +7,8 @@ buildscript {
         classpath("me.champeau.gradle:gradle-javadoc-hotfix-plugin:0.1")
         classpath('org.asciidoctor:asciidoctor-gradle-plugin:0.7.0')
         classpath('org.asciidoctor:asciidoctor-java-integration:0.1.4.preview.1')
-        classpath('io.spring.gradle:spring-io-plugin:0.0.4.RELEASE')
+        classpath('io.spring.gradle:spring-io-plugin:0.0.5.RELEASE')
+        classpath('io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE')
     }
 }
 
@@ -219,7 +220,6 @@ project("spring-social-web") {
         testCompile("org.springframework:spring-test:$springVersion")
         testCompile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     }
-    metaInf << files("src/main/resources/tld/spring-social.tld")
 }
 
 project("spring-social-config") {
