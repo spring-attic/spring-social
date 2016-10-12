@@ -54,7 +54,7 @@ configure(allprojects) {
     ]
 
     sourceSets.test.resources.srcDirs = [
-        "src/test/resources", 
+        "src/test/resources",
         "src/test/java"
     ]
 
@@ -148,7 +148,7 @@ configure(subprojects) { subproject ->
         archives javadocJar
     }
 
-    configurations { 
+    configurations {
         springReleaseTestRuntime.extendsFrom testRuntime
         springSnapshotTestRuntime.extendsFrom testRuntime
     }
@@ -195,6 +195,7 @@ project("spring-social-core") {
     description = "Foundational module containing the ServiceProvider Connect Framework and Service API invocation support."
     dependencies {
         compile("org.springframework:spring-jdbc:$springVersion", optional)
+        compile("org.springframework.data:spring-data-redis:$springDataRedisVersion", optional)
         compile("org.springframework:spring-web:$springVersion")
         compile("org.springframework.security:spring-security-crypto:$springSecurityVersion", optional)
         compile("org.apache.httpcomponents:httpclient:$httpComponentsVersion", optional)
@@ -202,6 +203,8 @@ project("spring-social-core") {
         testCompile("org.springframework:spring-test:$springVersion")
         testCompile("javax.servlet:javax.servlet-api:$servletApiVersion", provided)
         testCompile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+        testCompile("org.apache.commons:commons-pool2:$apacheCommonsPoolVersion")
+        testCompile("redis.clients:jedis:2.8.1")
     }
 }
 
@@ -256,7 +259,7 @@ configure(rootProject) {
 
     dependencies { // for integration tests
     }
-    
+
     task api(type: Javadoc) {
         group = "Documentation"
         description = "Generates aggregated Javadoc API documentation."
@@ -310,7 +313,7 @@ artifacts {
     archives dist
     archives project(':docs').docsZip
     archives project(':docs').schemaZip
-}    
+}
 
     task wrapper(type: Wrapper) {
         gradleVersion = "1.12"
