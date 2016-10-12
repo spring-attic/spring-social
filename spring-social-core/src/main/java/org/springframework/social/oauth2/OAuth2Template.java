@@ -35,6 +35,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -239,7 +240,11 @@ public class OAuth2Template implements OAuth2Operations {
 	 */
 	@SuppressWarnings("unchecked")
 	protected AccessGrant postForAccessGrant(String accessTokenUrl, MultiValueMap<String, String> parameters) {
-		return extractAccessGrant(getRestTemplate().postForObject(accessTokenUrl, parameters, Map.class));
+		Map<String, Object> result = getRestTemplate().postForObject(accessTokenUrl, parameters, Map.class);
+		if (result == null) {
+			throw new RestClientException("access token endpoint returned empty result");
+		}
+		return extractAccessGrant(result);
 	}
 	
 	/**
