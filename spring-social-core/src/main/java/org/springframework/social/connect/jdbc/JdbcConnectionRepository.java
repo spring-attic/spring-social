@@ -45,7 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-class JdbcConnectionRepository implements ConnectionRepository {
+public class JdbcConnectionRepository implements ConnectionRepository {
 
 	private final String userId;
 	
