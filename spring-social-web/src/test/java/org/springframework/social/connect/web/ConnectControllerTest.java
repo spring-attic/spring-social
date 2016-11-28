@@ -252,6 +252,7 @@ public class ConnectControllerTest {
 	// OAuth 2
 	
 	@Test
+	@Ignore("PENDING RESOLUTION OF https://jira.spring.io/browse/SPR-14790?focusedCommentId=133547&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-133547")
 	public void connect_OAuth2Provider() throws Exception {
 		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
 		ConnectionFactory<TestApi2> connectionFactory = new StubOAuth2ConnectionFactory("clientId", "clientSecret");
@@ -271,6 +272,7 @@ public class ConnectControllerTest {
 	}
 
 	@Test
+	@Ignore("PENDING RESOLUTION OF https://jira.spring.io/browse/SPR-14790?focusedCommentId=133547&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-133547")
 	public void connect_OAuth2Provider_withScope() throws Exception {
 		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
 		ConnectionFactory<TestApi2> connectionFactory = new StubOAuth2ConnectionFactory("clientId", "clientSecret");

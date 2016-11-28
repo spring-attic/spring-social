@@ -16,7 +16,7 @@
 package org.springframework.social.security.test;
 
 import org.mockito.ArgumentMatcher;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.springframework.social.oauth1.AuthorizedRequestToken;
 import org.springframework.social.oauth1.OAuthToken;
 import org.springframework.social.oauth2.OAuth2Parameters;
@@ -31,15 +31,11 @@ public class ArgMatchers {
 	}
 
 	public static OAuth2Parameters oAuth2Parameters(final String redirectUri, final String scope, final String state) {
-		return Matchers.argThat(new ArgumentMatcher<OAuth2Parameters>() {
+		return ArgumentMatchers.argThat(new ArgumentMatcher<OAuth2Parameters>() {
 
-			public boolean matches(Object item) {
-				if (item instanceof OAuth2Parameters) {
-					OAuth2Parameters params = (OAuth2Parameters) item;
-					return eq(state, params.getState()) && eq(scope, params.getScope())
-							&& eq(redirectUri, params.getRedirectUri());
-				}
-				return false;
+			public boolean matches(OAuth2Parameters params) {
+				return eq(state, params.getState()) && eq(scope, params.getScope())
+						&& eq(redirectUri, params.getRedirectUri());
 			}
 
 		});
@@ -50,14 +46,10 @@ public class ArgMatchers {
 	}
 
 	public static OAuthToken oAuthToken(final String value, final String secret) {
-		return Matchers.argThat(new ArgumentMatcher<OAuthToken>() {
+		return ArgumentMatchers.argThat(new ArgumentMatcher<OAuthToken>() {
 
-			public boolean matches(Object item) {
-				if (item instanceof OAuthToken) {
-					OAuthToken token = (OAuthToken) item;
-					return eq(value, token.getValue()) && eq(secret, token.getSecret());
-				}
-				return false;
+			public boolean matches(OAuthToken token) {
+				return eq(value, token.getValue()) && eq(secret, token.getSecret());
 			}
 
 		});
@@ -69,15 +61,11 @@ public class ArgMatchers {
 
 	public static AuthorizedRequestToken authorizedRequestToken(final String value, final String secret,
 			final String verifier) {
-		return Matchers.argThat(new ArgumentMatcher<AuthorizedRequestToken>() {
+		return ArgumentMatchers.argThat(new ArgumentMatcher<AuthorizedRequestToken>() {
 
-			public boolean matches(Object item) {
-				if (item instanceof AuthorizedRequestToken) {
-					AuthorizedRequestToken token = (AuthorizedRequestToken) item;
-					return eq(value, token.getValue()) && eq(secret, token.getSecret())
-							&& eq(verifier, token.getVerifier());
-				}
-				return false;
+			public boolean matches(AuthorizedRequestToken token) {
+				return eq(value, token.getValue()) && eq(secret, token.getSecret())
+						&& eq(verifier, token.getVerifier());
 			}
 
 		});

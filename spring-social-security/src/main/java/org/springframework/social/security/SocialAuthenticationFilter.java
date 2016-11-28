@@ -92,20 +92,6 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		this.signupUrl = signupUrl;
 	}
 	
-	/**
-	 * @param defaultFailureUrl The failure URL to use by default
-	 * @deprecated use {@link #setPostFailureUrl(String)} instead
-	 */
-	@Deprecated
-	public void setDefaultFailureUrl(String defaultFailureUrl) {
-		setPostFailureUrl(defaultFailureUrl);
-	}
-
-	/**
-	 * an authenticated user can add additional connections. after successfully authorizing, the user
-	 * will be redirected to this URL
-	 * @param connectionAddedRedirectUrl The URL to redirect to after adding connections following authorization
-	 */
 	public void setConnectionAddedRedirectUrl(String connectionAddedRedirectUrl) {
 		this.connectionAddedRedirectUrl = connectionAddedRedirectUrl;
 	}

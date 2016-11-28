@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.Test;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
@@ -63,7 +63,7 @@ public class OAuth1AuthenticationServiceTest {
 		
 		when(operations.getVersion()).thenReturn(OAuth1Version.CORE_10_REVISION_A);
 		when(operations.fetchRequestToken("http://"+serverName+"/auth/foo?param=param_value", null)).thenReturn(oAuthToken);
-		when(operations.exchangeForAccessToken(ArgMatchers.authorizedRequestToken(oAuthToken, verifier), Matchers.same((MultiValueMap<String, String>) null))).thenReturn(oAuthToken);
+		when(operations.exchangeForAccessToken(ArgMatchers.authorizedRequestToken(oAuthToken, verifier), ArgumentMatchers.same((MultiValueMap<String, String>) null))).thenReturn(oAuthToken);
 		when(operations.buildAuthenticateUrl(oAuthToken.getValue(), OAuth1Parameters.NONE)).thenReturn(serviceUrl + "?oauth_token=" + oAuthToken.getValue());
 		
 		// first phase
