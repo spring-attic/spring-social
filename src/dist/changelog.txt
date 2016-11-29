@@ -1,3 +1,23 @@
+Spring Social 2.0.0.M1 (November 29, 2016)
+==========================================
+The primary purpose of this release is to build and test
+Spring Social against Spring Framework 5.0.0.M3 to ensure
+compatibility. Additionally, a few minor features and bug
+fixes are included:
+
+   * Ability to override ConnectController's success URL
+     (SOCIAL-373)
+   * Support SocialAuthenticationFailureHandler in
+     setPostFailureUrl(). (Pull request #190)
+   * Fix OAuth2 redirect URL when behind a proxy. (SOCIAL-447)
+   * Fix potential for AuthenticationServiceException when user
+     is already authenticated.
+   * Fix some incorrect JavaDoc (Issue #210 and Pull request #212)
+   * Handle empty result in access token endpoint.. (Issue #203) 
+   * Add hashCode(), equals(), and toString() for ConnectionData
+
+
+
 Spring Social 1.1.4 Release (November 24, 2015)
 ===============================================
 New Features/Improvements
