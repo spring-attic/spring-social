@@ -30,7 +30,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-class InMemoryConnectionRepository implements ConnectionRepository {
+public class InMemoryConnectionRepository implements ConnectionRepository {
 
 	// <providerId, Connection<provider API>>
 	private MultiValueMap<String, Connection<?>> connections;
