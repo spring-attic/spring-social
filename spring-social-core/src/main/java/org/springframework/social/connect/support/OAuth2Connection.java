@@ -126,8 +126,10 @@ public class OAuth2Connection<A> extends AbstractConnection<A> {
 	
 	private void initAccessTokens(String accessToken, String refreshToken, Long expireTime) {
 		this.accessToken = accessToken;
-		this.refreshToken = refreshToken;
 		this.expireTime = expireTime;		
+		if (refreshToken != null) {
+			this.refreshToken = refreshToken;
+		}
 	}
 	
 	private void initApi() {
