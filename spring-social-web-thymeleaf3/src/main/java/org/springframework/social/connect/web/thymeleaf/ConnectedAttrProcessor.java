@@ -48,21 +48,10 @@ class ConnectedAttrProcessor extends AbstractStandardConditionalVisibilityTagPro
 		return connectionRepository.findConnections(providerId).size() > 0;
 	}
 
-	private ConnectionRepository getConnectionRepository(final ITemplateContext context) {
-		ApplicationContext applicationContext = getSpringApplicationContextFromThymeleafContext(context);
+	private ConnectionRepository getConnectionRepository(final ITemplateContext templateContext) {
+		ApplicationContext applicationContext = SpringContextUtils.getApplicationContext(templateContext);
 		ConnectionRepository connectionRepository = applicationContext.getBean(ConnectionRepository.class);
 		return connectionRepository;
-	}
-
-	private ApplicationContext getSpringApplicationContextFromThymeleafContext(final ITemplateContext templateContext) {
-		ApplicationContext springContext = SpringContextUtils.getApplicationContext(templateContext);
-		if (!(springContext instanceof ApplicationContext)) {
-			throw new ConfigurationException(
-					"Thymeleaf execution context is not a Spring web context (implementation of " +
-							ApplicationContext.class.getName() + ". Spring Social integration can only be used in " +
-					"web environements with a Spring application context.");
-		}
-		return springContext;
 	}
 
 }
