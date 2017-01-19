@@ -17,6 +17,7 @@ package org.springframework.social.connect.mem;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.springframework.social.connect.Connection;
@@ -43,7 +44,16 @@ public class InMemoryConnectionRepository implements ConnectionRepository {
 	}
 	
 	public MultiValueMap<String, Connection<?>> findAllConnections() {
-		return connections;
+		if (connections.isEmpty()) {
+			MultiValueMap<String, Connection<?>> result = new LinkedMultiValueMap<String, Connection<?>>();
+			Set<String> registeredProviderIds = connectionFactoryLocator.registeredProviderIds();
+			for (String registeredProviderId : registeredProviderIds) {
+				result.put(registeredProviderId, Collections.<Connection<?>>emptyList());
+			}
+			return result;
+		} else {
+			return connections;
+		}
 	}
 
 	public List<Connection<?>> findConnections(String providerId) {

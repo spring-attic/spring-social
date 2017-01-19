@@ -54,4 +54,11 @@ public interface UsersConnectionRepository {
 	 */
 	ConnectionRepository createConnectionRepository(String userId);
 	
+	/**
+	 * The command to execute to create a new local user profile in the event no user id could be mapped to a connection.
+	 * Allows for implicitly creating a user profile from connection data during a provider sign-in attempt.
+	 * Defaults to null, indicating explicit sign-up will be required to complete the provider sign-in attempt.
+	 * @see #findUserIdsWithConnection(Connection)
+	 */
+	void setConnectionSignUp(ConnectionSignUp connectionSignUp);
 }
