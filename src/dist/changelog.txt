@@ -1,3 +1,20 @@
+Spring Social 2.0.0.M2 (January 20, 2017)
+=========================================
+This release primarily addresses Thymeleaf 3 compatibility.
+In addition, a few other enhancements and bug fixes
+have been applied:
+
+  * Extract Thymeleaf 2 support from spring-social-web
+    module into spring-social-web-thymeleaf2 module.
+  * Thymeleaf 3 support is in new spring-social-web-thymeleaf3
+    module.
+  * Only set refresh token if given refresh token is non-null,
+    thereby avoiding loss of refresh token during connection
+    refresh. (Issue #21, Pull request #218)
+  * Make JdbcConnectionRepository and InMemoryConnectionRepository
+    public so that they behave correctly when working with 
+    Spring Boot DevTools. (Pull request #215)
+
 Spring Social 2.0.0.M1 (November 29, 2016)
 ==========================================
 The primary purpose of this release is to build and test
