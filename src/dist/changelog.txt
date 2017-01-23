@@ -1,3 +1,7 @@
+Spring Social 2.0.0.M3 (? ?, 2017)
+==================================
+  * Remove Thymeleaf 2 support.
+
 Spring Social 2.0.0.M2 (January 20, 2017)
 =========================================
 This release primarily addresses Thymeleaf 3 compatibility.

@@ -222,16 +222,6 @@ project("spring-social-web") {
     }
 }
 
-project("spring-social-web-thymeleaf2") {
-    description = "Spring Web Integration"
-    dependencies {
-        compile project(":spring-social-core")
-        compile("org.thymeleaf:thymeleaf:$thymeleaf2Version")
-        compile("org.thymeleaf:thymeleaf-spring4:$thymeleaf2Version")
-        testCompile("org.springframework:spring-test:$springVersion")
-    }
-}
-
 project("spring-social-web-thymeleaf3") {
     description = "Spring Web Integration"
     dependencies {
