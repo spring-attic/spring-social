@@ -56,7 +56,7 @@ configure(allprojects) {
     ]
 
     sourceSets.test.resources.srcDirs = [
-        "src/test/resources", 
+        "src/test/resources",
         "src/test/java"
     ]
 
@@ -151,7 +151,7 @@ configure(subprojects) { subproject ->
         archives javadocJar
     }
 
-    configurations { 
+    configurations {
         springReleaseTestRuntime.extendsFrom testRuntime
         springSnapshotTestRuntime.extendsFrom testRuntime
     }
@@ -227,7 +227,7 @@ project("spring-social-web-thymeleaf3") {
     dependencies {
         compile project(":spring-social-core")
         compile("org.thymeleaf:thymeleaf:$thymeleaf3Version")
-        compile("org.thymeleaf:thymeleaf-spring4:$thymeleaf3Version")
+        compile("org.thymeleaf:thymeleaf-spring5:$thymeleafSpring5Version")
         testCompile("org.springframework:spring-test:$springVersion")
     }
 }
@@ -266,7 +266,7 @@ configure(rootProject) {
 
     dependencies { // for integration tests
     }
-    
+
     task api(type: Javadoc) {
         group = "Documentation"
         description = "Generates aggregated Javadoc API documentation."
@@ -320,7 +320,7 @@ artifacts {
     archives dist
     archives project(':docs').docsZip
     archives project(':docs').schemaZip
-}    
+}
 
     task wrapper(type: Wrapper) {
         gradleVersion = "3.0"
