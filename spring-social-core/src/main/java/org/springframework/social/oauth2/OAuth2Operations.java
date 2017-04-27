@@ -85,17 +85,6 @@ public interface OAuth2Operations {
 	/**
 	 * Refreshes a previous access grant.
 	 * @param refreshToken the refresh token from the previous access grant.
-	 * @param scope optional scope to narrow to when refreshing access; if null, the existing scope is preserved.
-	 * @param additionalParameters any additional parameters to be sent when refreshing a previous access grant. Should not be encoded. 
-	 * @return the access grant.
-	 * @deprecated Set the scope via additional parameters. This can be done conveniently user OAuth2Parameters.
-	 */
-	@Deprecated
-	AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters);
-
-	/**
-	 * Refreshes a previous access grant.
-	 * @param refreshToken the refresh token from the previous access grant.
 	 * @param additionalParameters any additional parameters to be sent when refreshing a previous access grant. Should not be encoded. 
 	 * @return the access grant.
 	 */
