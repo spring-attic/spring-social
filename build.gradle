@@ -217,18 +217,10 @@ project("spring-social-web") {
         compile("org.springframework:spring-webmvc:$springVersion")
         compile("javax.servlet:javax.servlet-api:$servletApiVersion", provided)
         compile("javax.servlet.jsp:javax.servlet.jsp-api:$jspApiVersion", provided)
+        compile("org.thymeleaf:thymeleaf:$thymeleaf3Version", optional)
+        compile("org.thymeleaf:thymeleaf-spring5:$thymeleafSpring5Version", optional)
         testCompile("org.springframework:spring-test:$springVersion")
         testCompile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    }
-}
-
-project("spring-social-web-thymeleaf3") {
-    description = "Spring Web Integration"
-    dependencies {
-        compile project(":spring-social-core")
-        compile("org.thymeleaf:thymeleaf:$thymeleaf3Version")
-        compile("org.thymeleaf:thymeleaf-spring5:$thymeleafSpring5Version")
-        testCompile("org.springframework:spring-test:$springVersion")
     }
 }
 

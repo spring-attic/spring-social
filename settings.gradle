@@ -22,6 +22,5 @@ docs.buildFileName = 'docs.gradle'
 
 include 'spring-social-core'
 include 'spring-social-web'
-include 'spring-social-web-thymeleaf3'
 include 'spring-social-config'
 include 'spring-social-security'
