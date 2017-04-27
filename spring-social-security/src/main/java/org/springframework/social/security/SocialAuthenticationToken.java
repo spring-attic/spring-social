@@ -51,9 +51,9 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 	 */
 	public SocialAuthenticationToken(final Connection<?> connection, Map<String, String> providerAccountData) {
 		super(null);
-		Assert.notNull(connection);
+		Assert.notNull(connection, "Connection must not be null");
 		ConnectionData connectionData = connection.createData();
-		Assert.notNull(connectionData.getProviderId());
+		Assert.notNull(connectionData.getProviderId(), "Connection's provider ID must not be null");
 		if (connectionData.getExpireTime() != null && connectionData.getExpireTime() < System.currentTimeMillis()) {
 			throw new IllegalArgumentException("connection.expireTime < currentTime");
 		}
@@ -76,10 +76,10 @@ public class SocialAuthenticationToken extends AbstractAuthenticationToken {
 	 */
 	public SocialAuthenticationToken(final Connection<?> connection, final Serializable details, final Map<String, String> providerAccountData, final Collection<? extends GrantedAuthority> authorities) {
 		super(authorities);
-		Assert.notNull(connection);
+		Assert.notNull(connection, "Connection must not be null");
         this.connection = connection;
         ConnectionData connectionData = connection.createData();
-        Assert.notNull(connectionData.getProviderId());
+        Assert.notNull(connectionData.getProviderId(), "Connection's provider ID must not be null");
         this.providerId = connectionData.getProviderId();
         if (details == null) {
 			throw new NullPointerException("details");

@@ -258,7 +258,6 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		return connection;
 	}
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public void setFilterProcessesUrl(String filterProcessesUrl) {
 		super.setFilterProcessesUrl(filterProcessesUrl);
@@ -289,7 +288,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		final SocialAuthenticationToken token = authService.getAuthToken(request, response);
 		if (token == null) return null;
 		
-		Assert.notNull(token.getConnection());
+		Assert.notNull(token.getConnection(), "Token connection must not be null.");
 		
 		Authentication auth = getAuthentication();
 		if (auth == null || !auth.isAuthenticated()) {

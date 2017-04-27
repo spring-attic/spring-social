@@ -120,6 +120,17 @@ public class ParameterMap implements MultiValueMap<String, String> {
 		values.add(value);
 	}
 
+	@Override
+	public void addAll(String key, List<String> newValues) {
+		List<String> values = parameters.get(key);
+		if (values == null) {
+			values = new LinkedList<String>();
+			this.parameters.put(key, values);
+		}
+		values.addAll(newValues);
+	}
+
+
 	public void set(String key, String value) {
 		List<String> values = new LinkedList<String>();
 		values.add(value);

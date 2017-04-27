@@ -452,10 +452,6 @@ public abstract class AbstractUsersConnectionRepositoryTest {
 						return new AccessGrant("765432109", "read", "654321098", 3600L);
 					}
 					@Override
-					public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
-						return new AccessGrant("765432109", "read", "654321098", 3600L);
-					}
-					@Override
 					public AccessGrant authenticateClient() {
 						return null;
 					}

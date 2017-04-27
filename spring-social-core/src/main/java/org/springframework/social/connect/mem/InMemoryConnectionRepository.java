@@ -68,7 +68,7 @@ public class InMemoryConnectionRepository implements ConnectionRepository {
 	}
 
 	public MultiValueMap<String, Connection<?>> findConnectionsToUsers(MultiValueMap<String, String> providerUserIds) {
-		Assert.notEmpty(providerUserIds);
+		Assert.notEmpty(providerUserIds, "Provider user IDs cannot be empty.");
 		MultiValueMap<String, Connection<?>> connectionsToUsers = new LinkedMultiValueMap<String, Connection<?>>(providerUserIds.size());
 		for (Entry<String, List<String>> providerConnectionEntry : providerUserIds.entrySet()) {
 			String providerId = providerConnectionEntry.getKey();

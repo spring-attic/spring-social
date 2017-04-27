@@ -200,7 +200,6 @@ public class OAuth1TemplateTest {
 	
 
 	// private helper
-	@SuppressWarnings("unchecked")
 	private RequestMatcher headerContains(String name, String substring) {
 		return header(name, containsString(substring));
 	}

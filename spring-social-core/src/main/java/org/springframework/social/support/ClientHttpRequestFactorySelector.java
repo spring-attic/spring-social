@@ -30,12 +30,12 @@ import javax.net.ssl.SSLContext;
 
 import org.apache.http.HttpHost;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContexts;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.protocol.HttpContext;
+import org.apache.http.ssl.SSLContexts;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -116,8 +116,8 @@ public class ClientHttpRequestFactorySelector {
 		private static CloseableHttpClient getAllTrustClient(HttpHost proxy) {
 			return HttpClients.custom()
 					.setProxy(proxy)
-					.setSslcontext(getSSLContext())
-					.setHostnameVerifier(SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER)
+					.setSSLContext(getSSLContext())
+					.setSSLHostnameVerifier(new NoopHostnameVerifier())
 					.build();
 		}
 
@@ -130,7 +130,7 @@ public class ClientHttpRequestFactorySelector {
 						return true;
 					}
 				};
-				return SSLContexts.custom().useSSL().loadTrustMaterial(trustStore, allTrust).build();
+				return SSLContexts.custom().useProtocol("SSL").loadTrustMaterial(trustStore, allTrust).build();
 			} catch (KeyStoreException e) {
 				e.printStackTrace();
 			} catch (KeyManagementException e) {

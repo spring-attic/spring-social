@@ -41,6 +41,11 @@ class EmptyMultiValueMap<K, V> implements MultiValueMap<K, V> {
 		throw new UnsupportedOperationException("This empty MultiValueMap is not modifiable");
 	}
 
+	@Override
+	public void addAll(K key, List<V> values) {
+		throw new UnsupportedOperationException("This empty MultiValueMap is not modifiable");
+	}
+
 	public V getFirst(K key) {
 		return null;
 	}
@@ -122,6 +127,5 @@ class EmptyMultiValueMap<K, V> implements MultiValueMap<K, V> {
 	public String toString() {
 		return this.targetMap.toString();
 	}
-
 
 }
