@@ -26,12 +26,12 @@ configure(allprojects) {
     apply plugin: "maven"
 
     compileJava {
-        sourceCompatibility=1.7
-        targetCompatibility=1.7
+        sourceCompatibility=1.8
+        targetCompatibility=1.8
     }
     compileTestJava {
-        sourceCompatibility=1.7
-        targetCompatibility=1.7
+        sourceCompatibility=1.8
+        targetCompatibility=1.8
     }
 
     [compileJava, compileTestJava]*.options*.compilerArgs = [
