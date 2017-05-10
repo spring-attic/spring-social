@@ -17,12 +17,12 @@ package org.springframework.social.oauth2;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Base64;
 
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.security.crypto.codec.Base64;
 
 /**
  * Client request interceptor that does preemptive HTTP Basic authentication by ensuring that an Authorization
@@ -48,7 +48,7 @@ class PreemptiveBasicAuthClientHttpRequestInterceptor implements ClientHttpReque
 	}
 
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-		request.getHeaders().set("Authorization", "Basic " + new String(Base64.encode((username + ":" + password).getBytes(charset)), charset));
+		request.getHeaders().set("Authorization", "Basic " + new String(Base64.getEncoder().encode((username + ":" + password).getBytes(charset)), charset));
 		return execution.execute(request, body);
 	}
 

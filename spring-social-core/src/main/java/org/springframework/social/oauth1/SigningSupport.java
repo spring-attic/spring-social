@@ -23,6 +23,7 @@ import java.net.URLDecoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,7 +40,6 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.codec.Base64;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -175,7 +175,7 @@ class SigningSupport {
 			mac.init(spec);
 			byte[] text = signatureBaseString.getBytes(UTF8_CHARSET_NAME);
 			byte[] signatureBytes = mac.doFinal(text);
-			signatureBytes = Base64.encode(signatureBytes);
+			signatureBytes = Base64.getEncoder().encode(signatureBytes);
 			String signature = new String(signatureBytes, UTF8_CHARSET_NAME);
 			return signature;
 		} catch (NoSuchAlgorithmException e) {
