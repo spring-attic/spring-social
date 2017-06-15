@@ -52,15 +52,23 @@ class TreeMultiValueMap<K, V> implements MultiValueMap<K, V>, Serializable {
 	}
 
 	@Override
-	public void addAll(K key, List<V> newValues) {
+	public void addAll(K key, List<? extends V> newValues) {
 		List<V> values = this.targetMap.get(key);
 		if (values == null) {
-			values = new LinkedList<V>();
-			this.targetMap.put(key, values);
+			values = new LinkedList<>();
+			values.addAll(newValues);
 		}
-		values.addAll(newValues);
+		this.targetMap.put(key, values);
 	}
 
+	@Override
+	public void addAll(MultiValueMap<K, V> values) {
+		Set<java.util.Map.Entry<K, List<V>>> entries = values.entrySet();
+		for (Entry<K, List<V>> entry : entries) {
+			this.addAll(entry.getKey(), entry.getValue());
+		}
+	}
+	
 	public V getFirst(K key) {
 		List<V> values = this.targetMap.get(key);
 		return (values != null ? values.get(0) : null);

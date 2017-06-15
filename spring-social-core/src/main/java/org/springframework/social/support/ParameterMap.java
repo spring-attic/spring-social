@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -121,15 +122,22 @@ public class ParameterMap implements MultiValueMap<String, String> {
 	}
 
 	@Override
-	public void addAll(String key, List<String> newValues) {
-		List<String> values = parameters.get(key);
+	public void addAll(String key, List<? extends String> newValues) {
+		List<String> values = this.parameters.get(key);
 		if (values == null) {
-			values = new LinkedList<String>();
-			this.parameters.put(key, values);
+			values = new LinkedList<>();
+			values.addAll(newValues);
 		}
-		values.addAll(newValues);
+		this.parameters.put(key, values);
 	}
 
+	@Override
+	public void addAll(MultiValueMap<String, String> values) {
+		Set<java.util.Map.Entry<String, List<String>>> entries = values.entrySet();
+		for (Entry<String, List<String>> entry : entries) {
+			this.addAll(entry.getKey(), entry.getValue());
+		}
+	}
 
 	public void set(String key, String value) {
 		List<String> values = new LinkedList<String>();
