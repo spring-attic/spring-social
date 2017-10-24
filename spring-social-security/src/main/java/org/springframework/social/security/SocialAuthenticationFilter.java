@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.AuthenticationTrustResolverImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -73,6 +74,8 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();	
 
 	private String filterProcessesUrl = DEFAULT_FILTER_PROCESSES_URL;
+
+	private AuthenticationTrustResolverImpl authenticationTrustResolver = new AuthenticationTrustResolverImpl();
 
 	public SocialAuthenticationFilter(AuthenticationManager authManager, UserIdSource userIdSource, UsersConnectionRepository usersConnectionRepository, SocialAuthenticationServiceLocator authServiceLocator) {
 		super(DEFAULT_FILTER_PROCESSES_URL);
@@ -291,7 +294,8 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		Assert.notNull(token.getConnection(), "Token connection must not be null.");
 		
 		Authentication auth = getAuthentication();
-		if (auth == null || !auth.isAuthenticated()) {
+		// Check if not already authenticated or is already logged in anonymous.
+		if (auth == null || !auth.isAuthenticated() || authenticationTrustResolver.isAnonymous(auth)) {
 			return doAuthentication(authService, request, token);
 		} else {
 			addConnection(authService, request, token, auth);
