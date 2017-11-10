@@ -250,6 +250,16 @@ project("spring-social-security") {
     }
 }
 
+project("spring-social-autoconfigure") {
+    description = "Spring Social Boot Auto-Configuration"
+    dependencies {
+      compile project(":spring-social-config")
+      compile project(":spring-social-core")
+      compile project(":spring-social-web")
+      compile("org.springframework.boot:spring-boot-autoconfigure:$springBootVersion")
+    }
+}
+
 configure(rootProject) {
     description = "Spring Social"
 

@@ -1,0 +1,8 @@
+{"properties": [
+  {
+    "name": "spring.social.auto-connection-views",
+    "type": "java.lang.Boolean",
+    "description": "Enable the connection status view for supported providers.",
+    "defaultValue": false
+  }
+]}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 the original author or authors.
+ * Copyright 2012-2017 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-rootProject.name = 'spring-social'
-
-include 'docs', 'docs:manual'
-def docs = findProject(':docs')
-docs.buildFileName = 'docs.gradle'
-
-include 'spring-social-core'
-include 'spring-social-web'
-include 'spring-social-config'
-include 'spring-social-security'
-include 'spring-social-autoconfigure'
+/**
+ * Auto-configuration for Spring Social.
+ */
+ package org.springframework.social.autoconfigure;
