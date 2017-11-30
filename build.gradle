@@ -7,8 +7,8 @@ buildscript {
         classpath("me.champeau.gradle:gradle-javadoc-hotfix-plugin:0.1")
         classpath('org.asciidoctor:asciidoctor-gradle-plugin:0.7.0')
         classpath('org.asciidoctor:asciidoctor-java-integration:0.1.4.preview.1')
-        classpath('io.spring.gradle:spring-io-plugin:0.0.4.RELEASE')
-    }
+        classpath('io.spring.gradle:spring-io-plugin:0.0.5.RELEASE')
+        classpath('io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE')    }
 }
 
 // Set up different subproject lists for individual configuration
@@ -54,7 +54,7 @@ configure(allprojects) {
     ]
 
     sourceSets.test.resources.srcDirs = [
-        "src/test/resources", 
+        "src/test/resources",
         "src/test/java"
     ]
 
@@ -148,7 +148,7 @@ configure(subprojects) { subproject ->
         archives javadocJar
     }
 
-    configurations { 
+    configurations {
         springReleaseTestRuntime.extendsFrom testRuntime
         springSnapshotTestRuntime.extendsFrom testRuntime
     }
@@ -219,7 +219,7 @@ project("spring-social-web") {
         testCompile("org.springframework:spring-test:$springVersion")
         testCompile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     }
-    metaInf << files("src/main/resources/tld/spring-social.tld")
+//    metaInf << files("src/main/resources/tld/spring-social.tld")
 }
 
 project("spring-social-config") {
@@ -256,7 +256,7 @@ configure(rootProject) {
 
     dependencies { // for integration tests
     }
-    
+
     task api(type: Javadoc) {
         group = "Documentation"
         description = "Generates aggregated Javadoc API documentation."
@@ -310,10 +310,10 @@ artifacts {
     archives dist
     archives project(':docs').docsZip
     archives project(':docs').schemaZip
-}    
+}
 
     task wrapper(type: Wrapper) {
-        gradleVersion = "1.12"
+        gradleVersion = "3.0"
     }
 
 }
