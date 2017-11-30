@@ -50,7 +50,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.view.RedirectView;
 import org.springframework.web.util.UrlPathHelper;
-import org.springframework.web.util.WebUtils;
 
 /**
  * Generic UI controller for managing the account-to-service-provider connection flow.
@@ -413,9 +412,23 @@ public class ConnectController implements InitializingBean {
 	 * This makes it possible to append the returned value to a path even if there is no extension.
 	 */
 	private String getPathExtension(HttpServletRequest request) {
-		String fileName = WebUtils.extractFullFilenameFromUrlPath(request.getRequestURI());		
+		String fileName = extractFullFilenameFromUrlPath(request.getRequestURI());		
 		String extension = StringUtils.getFilenameExtension(fileName);
 		return extension != null ? "." + extension : "";
+	}
+	
+	private String extractFullFilenameFromUrlPath(String urlPath) {
+		int end = urlPath.indexOf('?');
+		if (end == -1) {
+			end = urlPath.indexOf('#');
+			if (end == -1) {
+				end = urlPath.length();
+			}
+		}
+		int begin = urlPath.lastIndexOf('/', end) + 1;
+		int paramIndex = urlPath.indexOf(';', begin);
+		end = (paramIndex != -1 && paramIndex < end ? paramIndex : end);
+		return urlPath.substring(begin, end);
 	}
 
 	private String getViewPath() {
