@@ -219,7 +219,12 @@ project("spring-social-web") {
         testCompile("org.springframework:spring-test:$springVersion")
         testCompile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     }
-//    metaInf << files("src/main/resources/tld/spring-social.tld")
+
+    jar {
+      from ('./src/main/resources') {
+        include 'META-INF/services/org.example.plugins.PluginService'
+      }
+    }
 }
 
 project("spring-social-config") {
