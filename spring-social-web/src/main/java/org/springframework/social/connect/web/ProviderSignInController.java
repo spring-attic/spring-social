@@ -51,7 +51,7 @@ import org.springframework.web.servlet.view.RedirectView;
  * @author Keith Donald
  */
 @Controller
-@RequestMapping("/signin")
+@RequestMapping("${spring.social.signin.url:/signin}")
 public class ProviderSignInController implements InitializingBean {
 
 	private final static Log logger = LogFactory.getLog(ProviderSignInController.class);
