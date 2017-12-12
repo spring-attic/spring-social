@@ -19,6 +19,7 @@ configure(allprojects) {
     group = "org.springframework.social"
 
     apply plugin: "java"
+    apply plugin: "merge"
     apply plugin: "eclipse"
     apply plugin: "idea"
     apply plugin: "javadocHotfix"
@@ -214,8 +215,8 @@ project("spring-social-web") {
         compile("org.springframework:spring-webmvc:$springVersion")
         compile("javax.servlet:javax.servlet-api:$servletApiVersion", provided)
         compile("javax.servlet.jsp:javax.servlet.jsp-api:$jspApiVersion", provided)
-        compile("org.thymeleaf:thymeleaf:$thymeleafVersion", optional)
-        compile("org.thymeleaf:thymeleaf-spring4:$thymeleafVersion", optional)
+        compile("org.thymeleaf:thymeleaf:$thymeleaf2Version", optional)
+        compile("org.thymeleaf:thymeleaf-spring4:$thymeleaf2Version", optional)
         testCompile("org.springframework:spring-test:$springVersion")
         testCompile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     }
@@ -225,6 +226,21 @@ project("spring-social-web") {
         include 'META-INF/services/org.example.plugins.PluginService'
       }
     }
+}
+
+project("spring-social-thymeleaf3") {
+    description = "Spring Thymeleaf 3 Integration"
+
+    merge.into = project(":spring-social-web")
+
+    dependencies {
+        compile(project(":spring-social-core"), provided)
+        compile("org.springframework:spring-web:$springVersion", provided)
+        compile("org.thymeleaf:thymeleaf:$thymeleaf3Version", provided)
+        compile("org.thymeleaf:thymeleaf-spring4:$thymeleaf3Version", provided)
+        testCompile("org.springframework:spring-test:$springVersion")
+    }
+
 }
 
 project("spring-social-config") {
@@ -318,7 +334,7 @@ artifacts {
 }
 
     task wrapper(type: Wrapper) {
-        gradleVersion = "3.0"
+        gradleVersion = "4.4"
     }
 
 }

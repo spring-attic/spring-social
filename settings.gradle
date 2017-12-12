@@ -12,8 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ 
  */
-
 rootProject.name = 'spring-social'
 
 include 'docs', 'docs:manual'
@@ -22,5 +22,6 @@ docs.buildFileName = 'docs.gradle'
 
 include 'spring-social-core'
 include 'spring-social-web'
+include 'spring-social-thymeleaf3'
 include 'spring-social-config'
 include 'spring-social-security'
