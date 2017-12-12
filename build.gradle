@@ -13,7 +13,7 @@ buildscript {
 }
 
 // Set up different subproject lists for individual configuration
-ext.javaProjects = subprojects.findAll { project -> project.name != 'docs' && project.name != 'manual' }
+ext.javaProjects = subprojects.findAll { project -> project.name != 'spring-build-src' && project.name != 'docs' && project.name != 'manual' }
 ext.coreModuleProjects = javaProjects
 
 configure(allprojects) {
