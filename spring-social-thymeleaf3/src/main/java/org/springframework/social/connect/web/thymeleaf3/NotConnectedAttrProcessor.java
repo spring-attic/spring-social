@@ -29,10 +29,10 @@ import org.thymeleaf.templatemode.TemplateMode;
  * Conditionally renders content based on whether or not the current user is connected to the provider whose ID is given as the attribute value.
  * @author Craig Walls
  */
-class ConnectedAttrProcessor extends AbstractStandardConditionalVisibilityTagProcessor {
+class NotConnectedAttrProcessor extends AbstractStandardConditionalVisibilityTagProcessor {
 
-	public ConnectedAttrProcessor() {
-		super(TemplateMode.HTML, "social", "connected", 300);
+	public NotConnectedAttrProcessor() {
+		super(TemplateMode.HTML, "social", "not-connected", 300);
 	}
 
 	@Override
@@ -42,7 +42,7 @@ class ConnectedAttrProcessor extends AbstractStandardConditionalVisibilityTagPro
 			return false;
 		}
 		ConnectionRepository connectionRepository = getConnectionRepository(context);
-		return connectionRepository.findConnections(providerId).size() > 0;
+		return connectionRepository.findConnections(providerId).size() == 0;
 	}
 
 	private ConnectionRepository getConnectionRepository(final ITemplateContext context) {

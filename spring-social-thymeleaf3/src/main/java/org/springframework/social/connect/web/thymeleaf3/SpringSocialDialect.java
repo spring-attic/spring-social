@@ -44,11 +44,12 @@ public class SpringSocialDialect extends AbstractProcessorDialect {
 	public SpringSocialDialect() {
 		super("social", "social", 300);
 	}
-	
+
 	@Override
 	public Set<IProcessor> getProcessors(String dialectPrefix) {
 		final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
 		processors.add(new ConnectedAttrProcessor());
+		processors.add(new NotConnectedAttrProcessor());
 		return processors;
 	}
 

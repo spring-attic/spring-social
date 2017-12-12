@@ -237,7 +237,7 @@ project("spring-social-thymeleaf3") {
         compile(project(":spring-social-core"), provided)
         compile("org.springframework:spring-web:$springVersion", provided)
         compile("org.thymeleaf:thymeleaf:$thymeleaf3Version", provided)
-        compile("org.thymeleaf:thymeleaf-spring4:$thymeleaf3Version", provided)
+        compile("org.thymeleaf:thymeleaf-spring5:$thymeleaf3Version", provided)
         testCompile("org.springframework:spring-test:$springVersion")
     }
 

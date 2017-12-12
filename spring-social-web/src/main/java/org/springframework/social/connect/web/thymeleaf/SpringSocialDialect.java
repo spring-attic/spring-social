@@ -55,6 +55,7 @@ public class SpringSocialDialect extends AbstractDialect {
 	public Set<IProcessor> getProcessors() {
 		final Set<IProcessor> processors = new LinkedHashSet<IProcessor>();
 		processors.add(new ConnectedAttrProcessor());
+		processors.add(new NotConnectedAttrProcessor());
 		return processors;
 	}
 
