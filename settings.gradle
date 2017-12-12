@@ -12,7 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- 
+
  */
 rootProject.name = 'spring-social'
 
@@ -25,3 +25,6 @@ include 'spring-social-web'
 include 'spring-social-thymeleaf3'
 include 'spring-social-config'
 include 'spring-social-security'
+
+include "buildSrc"
+rootProject.children.find{ it.name == "buildSrc" }.name = "spring-build-src"

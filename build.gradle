@@ -91,7 +91,7 @@ configure(allprojects) {
     }
 }
 
-configure(subprojects) { subproject ->
+configure(subprojects - project(":spring-build-src")) { subproject ->
     apply from: "${rootProject.projectDir}/publish-maven.gradle"
     apply plugin: 'spring-io'
     apply plugin: 'propdeps'
@@ -196,6 +196,19 @@ configure(subprojects) { subproject ->
     }
 }
 
+
+project("spring-build-src") {
+	description = "Exposes gradle buildSrc for IDE support"
+
+	apply plugin: "groovy"
+
+	dependencies {
+		compile gradleApi()
+		compile localGroovy()
+	}
+
+	configurations.archives.artifacts.clear()
+}
 
 project("spring-social-core") {
     description = "Foundational module containing the ServiceProvider Connect Framework and Service API invocation support."
