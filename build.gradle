@@ -8,6 +8,7 @@ buildscript {
         classpath('org.asciidoctor:asciidoctor-gradle-plugin:0.7.0')
         classpath('org.asciidoctor:asciidoctor-java-integration:0.1.4.preview.1')
         classpath('io.spring.gradle:spring-io-plugin:0.0.5.RELEASE')
+        classpath('io.spring.gradle:propdeps-plugin:0.0.9.RELEASE')
         classpath('io.spring.gradle:dependency-management-plugin:0.6.0.RELEASE')    }
 }
 
@@ -19,6 +20,10 @@ configure(allprojects) {
     group = "org.springframework.social"
 
     apply plugin: "java"
+    apply plugin: 'propdeps'
+    apply plugin: 'propdeps-maven'
+    apply plugin: 'propdeps-idea'
+    apply plugin: 'propdeps-eclipse'
     apply plugin: "merge"
     apply plugin: "eclipse"
     apply plugin: "idea"
@@ -234,10 +239,10 @@ project("spring-social-thymeleaf3") {
     merge.into = project(":spring-social-web")
 
     dependencies {
-        compile(project(":spring-social-core"), provided)
-        compile("org.springframework:spring-web:$springVersion", provided)
-        compile("org.thymeleaf:thymeleaf:$thymeleaf3Version", provided)
-        compile("org.thymeleaf:thymeleaf-spring5:$thymeleaf3Version", provided)
+        compile(project(":spring-social-core"))
+        compile("org.springframework:spring-web:$springVersion")
+        compile("org.thymeleaf:thymeleaf:$thymeleaf3Version", optional)
+        compile("org.thymeleaf:thymeleaf-spring5:$thymeleaf3Version", optional)
         testCompile("org.springframework:spring-test:$springVersion")
     }
 
