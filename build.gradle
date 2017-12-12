@@ -20,11 +20,6 @@ configure(allprojects) {
     group = "org.springframework.social"
 
     apply plugin: "java"
-    apply plugin: 'propdeps'
-    apply plugin: 'propdeps-maven'
-    apply plugin: 'propdeps-idea'
-    apply plugin: 'propdeps-eclipse'
-    apply plugin: "merge"
     apply plugin: "eclipse"
     apply plugin: "idea"
     apply plugin: "javadocHotfix"
@@ -99,6 +94,11 @@ configure(allprojects) {
 configure(subprojects) { subproject ->
     apply from: "${rootProject.projectDir}/publish-maven.gradle"
     apply plugin: 'spring-io'
+    apply plugin: 'propdeps'
+    apply plugin: 'propdeps-maven'
+    apply plugin: 'propdeps-idea'
+    apply plugin: 'propdeps-eclipse'
+    apply plugin: "merge"
 
     ext.springIoVersion = project.hasProperty('platformVersion') ? platformVersion : 'latest.integration'
 
