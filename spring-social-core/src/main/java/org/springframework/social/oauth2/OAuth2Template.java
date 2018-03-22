@@ -31,6 +31,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.social.support.ClientHttpRequestFactorySelector;
 import org.springframework.social.support.FormMapHttpMessageConverter;
 import org.springframework.social.support.LoggingErrorHandler;
+import org.springframework.social.support.URIBuilder;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -85,10 +86,9 @@ public class OAuth2Template implements OAuth2Operations {
 		Assert.notNull(accessTokenUrl, "The accessTokenUrl property cannot be null");
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
-		String clientInfo = "?client_id=" + formEncode(clientId);
-		this.authorizeUrl = authorizeUrl + clientInfo;
+		this.authorizeUrl = URIBuilder.fromUri(authorizeUrl).queryParam("client_id", clientId).build().toString();
 		if (authenticateUrl != null) {
-			this.authenticateUrl = authenticateUrl + clientInfo;
+			this.authenticateUrl = URIBuilder.fromUri(authenticateUrl).queryParam("client_id", clientId).build().toString();
 		} else {
 			this.authenticateUrl = null;
 		}
