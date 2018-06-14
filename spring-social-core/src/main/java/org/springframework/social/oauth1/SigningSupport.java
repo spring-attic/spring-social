@@ -45,6 +45,10 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
+/**
+  * @Author Michael Wirth
+  */
+
 class SigningSupport {
 	
 	private TimestampGenerator timestampGenerator = new DefaultTimestampGenerator();
@@ -188,7 +192,7 @@ class SigningSupport {
 	}
 
 	private MultiValueMap<String, String> readFormParameters(MediaType bodyType, byte[] bodyBytes) {
-		if (bodyType != null && bodyType.equals(MediaType.APPLICATION_FORM_URLENCODED)) {
+		if (MediaType.APPLICATION_FORM_URLENCODED.isCompatibleWith(bodyType)) {
 			String body;
 			try {
 				body = new String(bodyBytes, UTF8_CHARSET_NAME);
@@ -200,7 +204,7 @@ class SigningSupport {
 			return EmptyMultiValueMap.instance();
 		}
 	}
-	
+
 	private MultiValueMap<String, String> parseFormParameters(String parameterString) {
 		if (parameterString == null || parameterString.length() == 0) {
 			return EmptyMultiValueMap.instance();

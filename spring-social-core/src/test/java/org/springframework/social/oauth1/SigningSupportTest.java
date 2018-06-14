@@ -18,6 +18,7 @@ package org.springframework.social.oauth1;
 import static org.junit.Assert.*;
 
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -62,6 +63,31 @@ public class SigningSupportTest {
 		assertAuthorizationHeader(authorizationHeader, "qz6HT3AG1Z9J%2BP99O4HeMtClGeY%3D");
 	}
 
+    @Test
+    public void buildAuthorizationHeaderValue_Request_With_Encoding() throws Exception {
+        SigningSupport signingUtils = new SigningSupport();
+        signingUtils.setTimestampGenerator(new MockTimestampGenerator(123456789, 987654321));
+        URI uri = URIBuilder.fromUri("http://example.com/request").queryParam("b5", "=%3D").queryParam("a3", "a").queryParam("c@", "")
+                .queryParam("a2", "r b").build();
+        HttpRequest request = new SimpleClientHttpRequestFactory().createRequest(uri, HttpMethod.POST);
+        request.getHeaders().setContentType(new MediaType(MediaType.APPLICATION_FORM_URLENCODED, StandardCharsets.UTF_8));
+        String authorizationHeader = signingUtils.buildAuthorizationHeaderValue(request, "c2&a3=2+q".getBytes(), new OAuth1Credentials("9djdj82h48djs9d2", "consumer_secret", "kkk9d7dh3k39sjv7", "token_secret"));
+        assertAuthorizationHeader(authorizationHeader, "qz6HT3AG1Z9J%2BP99O4HeMtClGeY%3D");
+    }
+
+    @Test
+    public void buildAuthorizationHeaderValue_Request_With_JSON() throws Exception {
+        SigningSupport signingUtils = new SigningSupport();
+        signingUtils.setTimestampGenerator(new MockTimestampGenerator(123456789, 987654321));
+        URI uri = URIBuilder.fromUri("http://example.com/request").queryParam("b5", "=%3D").queryParam("a3", "a").queryParam("c@", "")
+                .queryParam("a2", "r b").build();
+        HttpRequest request = new SimpleClientHttpRequestFactory().createRequest(uri, HttpMethod.POST);
+        request.getHeaders().setContentType(MediaType.APPLICATION_JSON_UTF8);
+        // body will be ignored for creating signing key
+        String authorizationHeader = signingUtils.buildAuthorizationHeaderValue(request, "{\"key\"=\"value\"}".getBytes(), new OAuth1Credentials("9djdj82h48djs9d2", "consumer_secret", "kkk9d7dh3k39sjv7", "token_secret"));
+        assertAuthorizationHeader(authorizationHeader, "1dvGWdWo3vDTgKEcXzEMkbjKDwg%3D");
+    }
+
 	@Test
 	public void buildAuthorizationHeaderValue_oauthEncodedSecrets() throws Exception {
 		SigningSupport signingUtils = new SigningSupport();
@@ -93,12 +119,12 @@ public class SigningSupportTest {
 		collectedParameters.add("a3", "2 q");
 		collectedParameters.setAll(oauthParameters);
 		String baseString = signingUtils.buildBaseString(HttpMethod.POST, "http://example.com/request", collectedParameters);
-		
+
 		String[] baseStringParts = baseString.split("&");
 		assertEquals(3, baseStringParts.length);
 		assertEquals("POST", baseStringParts[0]);
 		assertEquals("http%3A%2F%2Fexample.com%2Frequest", baseStringParts[1]);
-			
+
 		String[] parameterParts = baseStringParts[2].split("%26");
 		assertEquals(12, parameterParts.length);
 		assertEquals("a2%3Dr%2520b", parameterParts[0]);
@@ -114,7 +140,7 @@ public class SigningSupportTest {
 		assertEquals("oauth_token%3Dkkk9d7dh3k39sjv7", parameterParts[10]);
 		assertEquals("oauth_version%3D1.0", parameterParts[11]);
 	}
-	
+
 	/*
 	 * Tests the buildBaseString() method using the example given at http://dev.twitter.com/pages/auth#signing-requests
 	 * as the test data.
@@ -128,12 +154,12 @@ public class SigningSupportTest {
 		LinkedMultiValueMap<String, String> collectedParameters = new LinkedMultiValueMap<String, String>();
 		collectedParameters.setAll(oauthParameters);
 		String baseString = signingUtils.buildBaseString(HttpMethod.POST, "https://api.twitter.com/oauth/request_token", collectedParameters);
-		
+
 		String[] baseStringParts = baseString.split("&");
 		assertEquals(3, baseStringParts.length);
 		assertEquals("POST", baseStringParts[0]);
 		assertEquals("https%3A%2F%2Fapi.twitter.com%2Foauth%2Frequest_token", baseStringParts[1]);
-		
+
 		String[] parameterParts = baseStringParts[2].split("%26");
 		assertEquals(6, parameterParts.length);
 		assertEquals("oauth_callback%3Dhttp%253A%252F%252Flocalhost%253A3005%252Fthe_dance%252Fprocess_callback%253Fservice_provider_id%253D11", parameterParts[0]);
@@ -143,7 +169,7 @@ public class SigningSupportTest {
 		assertEquals("oauth_timestamp%3D2468013579", parameterParts[4]);
 		assertEquals("oauth_version%3D1.0", parameterParts[5]);
 	}
-	
+
 	private void assertAuthorizationHeader(String authorizationHeader, String expectedSignature) {
 		List<String> headerElements = normalizedHeaderElements(authorizationHeader);
 		assertEquals("OAuth", headerElements.get(0));
