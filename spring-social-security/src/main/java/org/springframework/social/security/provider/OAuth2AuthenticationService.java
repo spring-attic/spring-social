@@ -138,7 +138,7 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 		String schemeHeader = request.getHeader("X-Forwarded-Proto");
 		String portHeader = request.getHeader("X-Forwarded-Port");
 		String scheme = StringUtils.isEmpty(schemeHeader) ? "http" : schemeHeader;
-		String port = StringUtils.isEmpty(portHeader) ? "80" : portHeader;
+		String port = StringUtils.isEmpty(portHeader) ? "" : portHeader;
 		if (scheme.equals("http") && port.equals("80")){
 			port = "";
 		}
