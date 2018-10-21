@@ -95,7 +95,7 @@ public abstract class AbstractSocialAuthenticationService<S> implements SocialAu
 		StringBuffer sb = new StringBuffer();
 		String schemeHeader = request.getHeader("X-Forwarded-Proto");
 		String portHeader = request.getHeader("X-Forwarded-Port");
-		String scheme = StringUtils.isEmpty(schemeHeader) ? "http" : schemeHeader;
+		String scheme = StringUtils.isEmpty(schemeHeader) ? request.getScheme()  : schemeHeader;
 		String port = StringUtils.isEmpty(portHeader) ? "" : portHeader;
 		if (scheme.equals("http") && port.equals("80")) {
 			port = "";
