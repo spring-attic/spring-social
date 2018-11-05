@@ -66,7 +66,7 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 	}
 	
 	public MultiValueMap<String, Connection<?>> findAllConnections() {
-		List<Connection<?>> resultList = jdbcTemplate.query(selectFromUserConnection() + " where userId = ? order by providerId, rank", connectionMapper, userId);
+		List<Connection<?>> resultList = jdbcTemplate.query(selectFromUserConnection() + " where userId = ? order by providerId, `rank`", connectionMapper, userId);
 		MultiValueMap<String, Connection<?>> connections = new LinkedMultiValueMap<String, Connection<?>>();
 		Set<String> registeredProviderIds = connectionFactoryLocator.registeredProviderIds();
 		for (String registeredProviderId : registeredProviderIds) {
@@ -83,7 +83,7 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 	}
 
 	public List<Connection<?>> findConnections(String providerId) {
-		return jdbcTemplate.query(selectFromUserConnection() + " where userId = ? and providerId = ? order by rank", connectionMapper, userId, providerId);
+		return jdbcTemplate.query(selectFromUserConnection() + " where userId = ? and providerId = ? order by `rank`", connectionMapper, userId, providerId);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -109,7 +109,7 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 				providerUsersCriteriaSql.append(" or " );
 			}
 		}
-		List<Connection<?>> resultList = new NamedParameterJdbcTemplate(jdbcTemplate).query(selectFromUserConnection() + " where userId = :userId and " + providerUsersCriteriaSql + " order by providerId, rank", parameters, connectionMapper);
+		List<Connection<?>> resultList = new NamedParameterJdbcTemplate(jdbcTemplate).query(selectFromUserConnection() + " where userId = :userId and " + providerUsersCriteriaSql + " order by providerId, `rank`", parameters, connectionMapper);
 		MultiValueMap<String, Connection<?>> connectionsForUsers = new LinkedMultiValueMap<String, Connection<?>>();
 		for (Connection<?> connection : resultList) {
 			String providerId = connection.getKey().getProviderId();
@@ -163,8 +163,8 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 	public void addConnection(Connection<?> connection) {
 		try {
 			ConnectionData data = connection.createData();
-			int rank = jdbcTemplate.queryForObject("select coalesce(max(rank) + 1, 1) as rank from " + tablePrefix + "UserConnection where userId = ? and providerId = ?", new Object[]{ userId, data.getProviderId() }, Integer.class);
-			jdbcTemplate.update("insert into " + tablePrefix + "UserConnection (userId, providerId, providerUserId, rank, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+			int rank = jdbcTemplate.queryForObject("select coalesce(max(`rank`) + 1, 1) as `rank` from " + tablePrefix + "UserConnection where userId = ? and providerId = ?", new Object[]{ userId, data.getProviderId() }, Integer.class);
+			jdbcTemplate.update("insert into " + tablePrefix + "UserConnection (userId, providerId, providerUserId, `rank`, displayName, profileUrl, imageUrl, accessToken, secret, refreshToken, expireTime) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 					userId, data.getProviderId(), data.getProviderUserId(), rank, data.getDisplayName(), data.getProfileUrl(), data.getImageUrl(), encrypt(data.getAccessToken()), encrypt(data.getSecret()), encrypt(data.getRefreshToken()), data.getExpireTime());
 		} catch (DuplicateKeyException e) {
 			throw new DuplicateConnectionException(connection.getKey());
@@ -195,7 +195,7 @@ public class JdbcConnectionRepository implements ConnectionRepository {
 	}
 	
 	private Connection<?> findPrimaryConnection(String providerId) {
-		List<Connection<?>> connections = jdbcTemplate.query(selectFromUserConnection() + " where userId = ? and providerId = ? order by rank", connectionMapper, userId, providerId);
+		List<Connection<?>> connections = jdbcTemplate.query(selectFromUserConnection() + " where userId = ? and providerId = ? order by `rank`", connectionMapper, userId, providerId);
 		if (connections.size() > 0) {
 			return connections.get(0);
 		} else {
