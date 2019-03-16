@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-        maven { url "http://repo.spring.io/plugins-release" }
+        maven { url "https://repo.spring.io/plugins-release" }
     }
     dependencies {
         classpath("org.springframework.build.gradle:docbook-reference-plugin:0.2.8")
@@ -62,8 +62,8 @@ configure(allprojects) {
     test.systemProperty("java.awt.headless", "true")
 
     repositories {
-        maven { url "http://repo.spring.io/libs-snapshot" }
-        maven { url "http://repo.spring.io/libs-milestone" }
+        maven { url "https://repo.spring.io/libs-snapshot" }
+        maven { url "https://repo.spring.io/libs-milestone" }
         mavenLocal()
     }
 
@@ -78,10 +78,10 @@ configure(allprojects) {
     }
 
     ext.javadocLinks = [
-        "http://docs.oracle.com/javase/7/docs/api/",
-        "http://docs.oracle.com/javaee/7/api/",
-        "http://docs.spring.io/spring/docs/${springVersion}/javadoc-api/",
-        "http://docs.jboss.org/jbossas/javadoc/4.0.5/connector/"
+        "https://docs.oracle.com/javase/7/docs/api/",
+        "https://docs.oracle.com/javaee/7/api/",
+        "https://docs.spring.io/spring/docs/${springVersion}/javadoc-api/",
+        "https://docs.jboss.org/jbossas/javadoc/4.0.5/connector/"
     ] as String[]
 
     // servlet-api (2.5) and tomcat-servlet-api (3.0) classpath entries should not be
