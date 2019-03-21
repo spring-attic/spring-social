@@ -88,7 +88,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	
 	/**
 	 * Sets the signup URL; the URL to redirect to if authentication fails so that the user can register with the application.
-	 * May be fully-qualified URL (e.g., "http://somehost/somepath/signup") or a path relative to application's servlet context path (e.g., "/signup").
+	 * May be fully-qualified URL (e.g., "https://somehost/somepath/signup") or a path relative to application's servlet context path (e.g., "/signup").
 	 * @param signupUrl The signup URL
 	 */
 	public void setSignupUrl(String signupUrl) {

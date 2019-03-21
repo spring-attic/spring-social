@@ -78,9 +78,9 @@ public class ClientHttpRequestFactorySelectorTest {
 		when(mockRequest.getBody()).thenReturn(new ByteArrayOutputStream());
 		when(mockRequest.execute()).thenReturn(mockResponse);
 		ClientHttpRequestFactory mockRequestFactory = mock(ClientHttpRequestFactory.class);
-		when(mockRequestFactory.createRequest(new URI("http://somehost.com/test"), HttpMethod.GET)).thenReturn(mockRequest);
+		when(mockRequestFactory.createRequest(new URI("/VNVOZ/test"), HttpMethod.GET)).thenReturn(mockRequest);
 		ClientHttpRequestFactory bufferingRequestFactory = ClientHttpRequestFactorySelector.bufferRequests(mockRequestFactory);
-		ClientHttpRequest request = bufferingRequestFactory.createRequest(new URI("http://somehost.com/test"), HttpMethod.GET);
+		ClientHttpRequest request = bufferingRequestFactory.createRequest(new URI("/VNVOZ/test"), HttpMethod.GET);
 		ClientHttpResponse response = request.execute();
 		response.getBody();
 		response.getBody();
