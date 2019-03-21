@@ -25,7 +25,7 @@ class FakeServiceProvider implements OAuth1ServiceProvider<FakeApi> {
 	private OAuth1Template oAuth1Template;
 
 	public FakeServiceProvider(String clientId, String clientSecret) {
-		oAuth1Template = new OAuth1Template(clientId, clientSecret, "http://fake/request", "http://fake/auth", "http://fake/token");
+		oAuth1Template = new OAuth1Template(clientId, clientSecret, "https://fake/request", "https://fake/auth", "https://fake/token");
 	}
 	
 	public OAuth1Operations getOAuthOperations() {

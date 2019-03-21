@@ -20,7 +20,7 @@
 -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:xslthl="http://xslthl.sf.net"
+                xmlns:xslthl="http://xslthl.sourceforge.net/"
                 exclude-result-prefixes="xslthl"
                 version='1.0'>
 
@@ -115,7 +115,7 @@
     <xsl:template name="user.head.content">
 <xsl:comment>Begin Google Analytics code</xsl:comment>
 <script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "https://www.");
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
 </script>
 <script type="text/javascript">

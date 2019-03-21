@@ -25,7 +25,7 @@ class FakeServiceProvider implements OAuth2ServiceProvider<FakeApi> {
 	private OAuth2Template oAuth2Template;
 
 	public FakeServiceProvider(String clientId, String clientSecret) {
-		oAuth2Template = new OAuth2Template(clientId, clientSecret, "http://fake/auth", "http://fake/access");
+		oAuth2Template = new OAuth2Template(clientId, clientSecret, "https://fake/auth", "https://fake/access");
 		
 	}
 	

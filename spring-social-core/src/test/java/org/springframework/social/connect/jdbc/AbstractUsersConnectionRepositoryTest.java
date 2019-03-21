@@ -47,7 +47,7 @@ public abstract class AbstractUsersConnectionRepositoryTest {
 	protected static final String FACEBOOK_CONNECTION_3_PROVIDER_USER_ID = "11";
 	
 	protected static final ConnectionData TWITTER_DATA =
-			new ConnectionData("twitter", TWITTER_CONNECTION_1_PROVIDER_USER_ID, "@kdonald", "http://twitter.com/kdonald", "http://twitter.com/kdonald/picture", "123456789", "987654321", "refresh_token", System.currentTimeMillis() + 3600000);
+			new ConnectionData("twitter", TWITTER_CONNECTION_1_PROVIDER_USER_ID, "@kdonald", "https://twitter.com/kdonald", "https://twitter.com/kdonald/picture", "123456789", "987654321", "refresh_token", System.currentTimeMillis() + 3600000);
 	protected static final ConnectionData FACEBOOK_DATA_1 =
 			new ConnectionData("facebook", FACEBOOK_CONNECTION_1_PROVIDER_USER_ID, null, null, null, "234567890", null, "345678901", System.currentTimeMillis() + 3600000);
 	protected static final ConnectionData FACEBOOK_DATA_2 =
@@ -340,12 +340,12 @@ public abstract class AbstractUsersConnectionRepositoryTest {
 	public void updateConnectionProfileFields() {
 		insertTwitterConnection();
 		Connection<TestTwitterApi> twitter = getConnectionRepository().getPrimaryConnection(TestTwitterApi.class);
-		assertEquals("http://twitter.com/kdonald/picture", twitter.getImageUrl());
+		assertEquals("https://twitter.com/kdonald/picture", twitter.getImageUrl());
 		twitter.sync();
-		assertEquals("http://twitter.com/kdonald/a_new_picture", twitter.getImageUrl());
+		assertEquals("https://twitter.com/kdonald/a_new_picture", twitter.getImageUrl());
 		getConnectionRepository().updateConnection(twitter);
 		Connection<TestTwitterApi> twitter2 = getConnectionRepository().getPrimaryConnection(TestTwitterApi.class);
-		assertEquals("http://twitter.com/kdonald/a_new_picture", twitter2.getImageUrl());
+		assertEquals("https://twitter.com/kdonald/a_new_picture", twitter2.getImageUrl());
 	}
 
 	@Test
@@ -383,8 +383,8 @@ public abstract class AbstractUsersConnectionRepositoryTest {
 		assertEquals("facebook", connection.getKey().getProviderId());
 		assertEquals(FACEBOOK_CONNECTION_1_PROVIDER_USER_ID, connection.getKey().getProviderUserId());
 		assertEquals("Keith Donald", connection.getDisplayName());
-		assertEquals("http://facebook.com/keith.donald", connection.getProfileUrl());
-		assertEquals("http://facebook.com/keith.donald/picture", connection.getImageUrl());
+		assertEquals("https://facebook.com/keith.donald", connection.getProfileUrl());
+		assertEquals("https://facebook.com/keith.donald/picture", connection.getImageUrl());
 		assertTrue(connection.test());
 		TestFacebookApi api = connection.getApi();
 		assertNotNull(api);
@@ -396,13 +396,13 @@ public abstract class AbstractUsersConnectionRepositoryTest {
 	private void assertTwitterConnection(Connection<TestTwitterApi> twitter) {
 		assertEquals(new ConnectionKey("twitter", TWITTER_CONNECTION_1_PROVIDER_USER_ID), twitter.getKey());
 		assertEquals("@kdonald", twitter.getDisplayName());
-		assertEquals("http://twitter.com/kdonald", twitter.getProfileUrl());
-		assertEquals("http://twitter.com/kdonald/picture", twitter.getImageUrl());
+		assertEquals("https://twitter.com/kdonald", twitter.getProfileUrl());
+		assertEquals("https://twitter.com/kdonald/picture", twitter.getImageUrl());
 		TestTwitterApi twitterApi = twitter.getApi();
 		assertEquals("123456789", twitterApi.getAccessToken());		
 		assertEquals("987654321", twitterApi.getSecret());
 		twitter.sync();
-		assertEquals("http://twitter.com/kdonald/a_new_picture", twitter.getImageUrl());
+		assertEquals("https://twitter.com/kdonald/a_new_picture", twitter.getImageUrl());
 	}
 
 	private void assertFacebookConnection(Connection<TestFacebookApi> facebook) {
@@ -414,8 +414,8 @@ public abstract class AbstractUsersConnectionRepositoryTest {
 		assertEquals("234567890", facebookApi.getAccessToken());
 		facebook.sync();
 		assertEquals("Keith Donald", facebook.getDisplayName());
-		assertEquals("http://facebook.com/keith.donald", facebook.getProfileUrl());
-		assertEquals("http://facebook.com/keith.donald/picture", facebook.getImageUrl());		
+		assertEquals("https://facebook.com/keith.donald", facebook.getProfileUrl());
+		assertEquals("https://facebook.com/keith.donald/picture", facebook.getImageUrl());		
 	}
 
 	protected static class TestFacebookServiceProvider implements OAuth2ServiceProvider<TestFacebookApi> {
@@ -486,9 +486,9 @@ public abstract class AbstractUsersConnectionRepositoryTest {
 			
 			private final String name = "Keith Donald";
 			
-			private final String profileUrl = "http://facebook.com/keith.donald";
+			private final String profileUrl = "https://facebook.com/keith.donald";
 			
-			private final String profilePictureUrl = "http://facebook.com/keith.donald/picture";
+			private final String profilePictureUrl = "https://facebook.com/keith.donald/picture";
 			
 			@Override
 			public boolean test(TestFacebookApi api) {
@@ -560,9 +560,9 @@ public abstract class AbstractUsersConnectionRepositoryTest {
 			
 			private final String name = "@kdonald";
 			
-			private final String profileUrl = "http://twitter.com/kdonald";
+			private final String profileUrl = "https://twitter.com/kdonald";
 			
-			private final String profilePictureUrl = "http://twitter.com/kdonald/a_new_picture";
+			private final String profilePictureUrl = "https://twitter.com/kdonald/a_new_picture";
 			
 			@Override
 			public boolean test(TestTwitterApi api) {
