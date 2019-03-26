@@ -41,7 +41,7 @@ public class FakeConnectionFactory extends OAuth2ConnectionFactory<Fake> {
 	
 	public static final class FakeServiceProvider extends AbstractOAuth2ServiceProvider<Fake> {
 		public FakeServiceProvider(String appId, String appSecret) {
-			super(new OAuth2Template(appId, appSecret, "http://fake.com/auth", "http://fake.com/token"));
+			super(new OAuth2Template(appId, appSecret, "https://fake.com/auth", "https://fake.com/token"));
 		}
 		
 		@Override
