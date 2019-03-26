@@ -57,9 +57,9 @@ public class OAuth2AuthenticationServiceTest {
 		when(factory.createConnection(accessGrant)).thenReturn(connection);
 
 		when(
-				operations.buildAuthenticateUrl(oAuth2Parameters("http://example.com/auth/foo?param=param_value"))).thenReturn(
-				"http://facebook.com/auth");
-		when(operations.exchangeForAccess(code, "http://example.com/auth/foo", null)).thenReturn(accessGrant);
+				operations.buildAuthenticateUrl(oAuth2Parameters("https://example.com/auth/foo?param=param_value"))).thenReturn(
+				"https://facebook.com/auth");
+		when(operations.exchangeForAccess(code, "https://example.com/auth/foo", null)).thenReturn(accessGrant);
 
 		// first phase
 		MockHttpServletRequest request = new MockHttpServletRequest(context, "GET", "/auth/foo");

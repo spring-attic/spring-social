@@ -24,7 +24,7 @@ import org.springframework.util.MultiValueMap;
 class StubOAuth2Operations implements OAuth2Operations {
 
 	public String buildAuthorizeUrl(GrantType grantType, OAuth2Parameters parameters) {
-		return "http://springsource.org/oauth/authorize?scope=" + parameters.getScope();
+		return "https://springsource.org/oauth/authorize?scope=" + parameters.getScope();
 	}
 	
 	public String buildAuthenticateUrl(GrantType grantType, OAuth2Parameters parameters) {
@@ -32,7 +32,7 @@ class StubOAuth2Operations implements OAuth2Operations {
 	}
 
 	public String buildAuthorizeUrl(OAuth2Parameters parameters) {
-		return "http://springsource.org/oauth/authorize?scope=" + parameters.getScope();
+		return "https://springsource.org/oauth/authorize?scope=" + parameters.getScope();
 	}
 	
 	public String buildAuthenticateUrl(OAuth2Parameters parameters) {

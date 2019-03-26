@@ -95,7 +95,7 @@ public class SocialConfigAnnotationTest {
 	private void testConnectionRepository(ConnectionFactoryLocator cfl, ConnectionRepository connectionRepository) {
 		assertNull(connectionRepository.findPrimaryConnection(Fake.class));
 		ConnectionFactory<Fake> fakeCF = cfl.getConnectionFactory(Fake.class);
-		Connection<Fake> connection = fakeCF.createConnection(new ConnectionData("fake", "bob", "Bob McBob", "http://www.twitter.com/mcbob", null, "someToken", "someSecret", null, null));
+		Connection<Fake> connection = fakeCF.createConnection(new ConnectionData("fake", "bob", "Bob McBob", "https://www.twitter.com/mcbob", null, "someToken", "someSecret", null, null));
 		connectionRepository.addConnection(connection);
 		assertNotNull(connectionRepository.findPrimaryConnection(Fake.class));
 		assertTrue(context.getBean(Fake.class).isAuthorized());
