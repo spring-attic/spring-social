@@ -101,14 +101,14 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth10_withApplicationUrlHavingDeepPath() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl("http://ec2.instance.com:8080/spring-social/showcase");
+		support.setApplicationUrl("https://ec2.instance.com:8080/spring-social/showcase");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setServletPath("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10), request);
-		assertEquals("https://serviceprovider.com/oauth/authorize?oauth_callback=http://ec2.instance.com:8080/spring-social/showcase/connect/someprovider", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?oauth_callback=https://ec2.instance.com:8080/spring-social/showcase/connect/someprovider", url);
 	}
 	
 	@Test
@@ -261,14 +261,14 @@ public class ConnectSupportTest {
 	@Test
 	public void buildOAuthUrl_OAuth2_withApplicationUrlHavingDeepPath() throws Exception {
 		ConnectSupport support = new ConnectSupport();
-		support.setApplicationUrl("http://ec2.instance.com:8080/spring-social/showcase");
+		support.setApplicationUrl("https://ec2.instance.com:8080/spring-social/showcase");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.setScheme("http");
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setServletPath("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
-		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=http://ec2.instance.com:8080/spring-social/showcase/connect/someprovider&state=STATE", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://ec2.instance.com:8080/spring-social/showcase/connect/someprovider&state=STATE", url);
 	}
 
 	@Test
@@ -345,7 +345,7 @@ public class ConnectSupportTest {
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		Connection<?> connection = support.completeConnection(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10_REVISION_A), request);
 		assertEquals("TestUser", connection.getDisplayName());
-		assertEquals("http://someprovider.com/images/testuser.jpg", connection.getImageUrl());
+		assertEquals("http://someprovider.com/?f", connection.getImageUrl());
 		assertEquals("http://someprovider.com/testuser", connection.getProfileUrl());
 	}
 
@@ -362,7 +362,7 @@ public class ConnectSupportTest {
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		Connection<?> connection = support.completeConnection(new TestOAuth2ConnectionFactory(), request);
 		assertEquals("TestUser", connection.getDisplayName());
-		assertEquals("http://someprovider.com/images/testuser.jpg", connection.getImageUrl());
+		assertEquals("http://someprovider.com/?f", connection.getImageUrl());
 		assertEquals("http://someprovider.com/testuser", connection.getProfileUrl());
 	}
 
@@ -543,7 +543,7 @@ public class ConnectSupportTest {
 
 		public void setConnectionValues(TestApi api, ConnectionValues values) {
 			values.setDisplayName("TestUser");
-			values.setImageUrl("http://someprovider.com/images/testuser.jpg");
+			values.setImageUrl("http://someprovider.com/?f");
 			values.setProfileUrl("http://someprovider.com/testuser");
 			values.setProviderUserId("testuser");
 		}

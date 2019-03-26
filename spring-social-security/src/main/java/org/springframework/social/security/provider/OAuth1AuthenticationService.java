@@ -81,7 +81,7 @@ public class OAuth1AuthenticationService<S> extends AbstractSocialAuthentication
 
 	public SocialAuthenticationToken getAuthToken(HttpServletRequest request, HttpServletResponse response) throws SocialAuthenticationRedirectException {
 		/**
-		 * OAuth Authentication flow: See http://dev.twitter.com/pages/auth
+		 * OAuth Authentication flow: See https://dev.twitter.com/pages/auth
 		 */
 		String verifier = request.getParameter("oauth_verifier");
 		if (!StringUtils.hasText(verifier)) {
