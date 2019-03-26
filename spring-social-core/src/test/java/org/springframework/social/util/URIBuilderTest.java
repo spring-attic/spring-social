@@ -26,63 +26,63 @@ public class URIBuilderTest {
 	
 	@Test
 	public void buildSimpleURI() {
-		URI uri = URIBuilder.fromUri("http://example.com").build();
-		assertEquals("http://example.com", uri.toString());		
+		URI uri = URIBuilder.fromUri("https://example.com").build();
+		assertEquals("https://example.com", uri.toString());		
 	}
 	
 	@Test
 	public void buildURIWithExistingParameters() {
-		URI uri = URIBuilder.fromUri("http://example.com?foo=bar").build();
-		assertEquals("http://example.com?foo=bar", uri.toString());				
+		URI uri = URIBuilder.fromUri("https://example.com?foo=bar").build();
+		assertEquals("https://example.com?foo=bar", uri.toString());				
 	}
 
 	@Test
 	public void buildURIWithExistingAndNewParameters() {
-		URI uri = URIBuilder.fromUri("http://example.com?foo=bar&x=1").queryParam("salt", "NaCl").build();
-		assertEquals("http://example.com?foo=bar&x=1&salt=NaCl", uri.toString());				
+		URI uri = URIBuilder.fromUri("https://example.com?foo=bar&x=1").queryParam("salt", "NaCl").build();
+		assertEquals("https://example.com?foo=bar&x=1&salt=NaCl", uri.toString());				
 	}
 
 	@Test
 	public void buildURIWithOneParameter() {
-		URI uri = URIBuilder.fromUri("http://example.com").queryParam("foo", "bar").build();
-		assertEquals("http://example.com?foo=bar", uri.toString());		
+		URI uri = URIBuilder.fromUri("https://example.com").queryParam("foo", "bar").build();
+		assertEquals("https://example.com?foo=bar", uri.toString());		
 	}
 	
 	@Test
 	public void buildURIWithMultipleParameters() {
-		URI uri = URIBuilder.fromUri("http://example.com").queryParam("foo", "bar").queryParam("abc", "123")
+		URI uri = URIBuilder.fromUri("https://example.com").queryParam("foo", "bar").queryParam("abc", "123")
 			.queryParam("xyz", "987").build();
-		assertEquals("http://example.com?foo=bar&abc=123&xyz=987", uri.toString());		
+		assertEquals("https://example.com?foo=bar&abc=123&xyz=987", uri.toString());		
 	}
 	
 	@Test
 	public void buildURIWithSameNamedParameters() {
-		URI uri = URIBuilder.fromUri("http://example.com").queryParam("foo", "bar").queryParam("foo", "123")
+		URI uri = URIBuilder.fromUri("https://example.com").queryParam("foo", "bar").queryParam("foo", "123")
 			.queryParam("foo", "987").build();
-		assertEquals("http://example.com?foo=bar&foo=123&foo=987", uri.toString());		
+		assertEquals("https://example.com?foo=bar&foo=123&foo=987", uri.toString());		
 	}
 	
 	@Test
 	public void buildURIWithEmptyParameter() {
-		URI uri = URIBuilder.fromUri("http://example.com").queryParam("foo", "").build();
-		assertEquals("http://example.com?foo=", uri.toString());		
+		URI uri = URIBuilder.fromUri("https://example.com").queryParam("foo", "").build();
+		assertEquals("https://example.com?foo=", uri.toString());		
 	}
 	
 	@Test
 	public void buildURIWithNullParameter() {
-		URI uri = URIBuilder.fromUri("http://example.com").queryParam("foo", null).build();
-		assertEquals("http://example.com?foo=", uri.toString());		
+		URI uri = URIBuilder.fromUri("https://example.com").queryParam("foo", null).build();
+		assertEquals("https://example.com?foo=", uri.toString());		
 	}
 	
 	@Test
 	public void buildURIWithFormEncodedParameterValue() {
-		URI uri = URIBuilder.fromUri("http://example.com").queryParam("foo", "2 + 3 = 5").build();
-		assertEquals("http://example.com?foo=2+%2B+3+%3D+5", uri.toString());		
+		URI uri = URIBuilder.fromUri("https://example.com").queryParam("foo", "2 + 3 = 5").build();
+		assertEquals("https://example.com?foo=2+%2B+3+%3D+5", uri.toString());		
 	}
 	
 	@Test
 	public void buildURIWithFormEncodedParameterName() {
-		URI uri = URIBuilder.fromUri("http://example.com").queryParam("f@@", "2 + 3 = 5").build();
-		assertEquals("http://example.com?f%40%40=2+%2B+3+%3D+5", uri.toString());		
+		URI uri = URIBuilder.fromUri("https://example.com").queryParam("f@@", "2 + 3 = 5").build();
+		assertEquals("https://example.com?f%40%40=2+%2B+3+%3D+5", uri.toString());		
 	}
 }

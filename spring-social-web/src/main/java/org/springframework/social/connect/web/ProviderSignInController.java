@@ -234,7 +234,7 @@ public class ProviderSignInController implements InitializingBean {
 	}
 
 	/**
-	 * Process an error callback from an OAuth 2 authorization as described at http://tools.ietf.org/html/rfc6749#section-4.1.2.1.
+	 * Process an error callback from an OAuth 2 authorization as described at https://tools.ietf.org/html/rfc6749#section-4.1.2.1.
 	 * Called after upon redirect from an OAuth 2 provider when there is some sort of error during authorization, typically because the user denied authorization.
 	 * Simply carries the error parameters through to the sign-in page.
 	 * @param providerId The Provider ID
