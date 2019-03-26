@@ -46,7 +46,7 @@ public class SigningSupportTest {
 		additionalParameters.add("a3", "a"); // query parameter
 		additionalParameters.add("c@", ""); // query parameter
 		additionalParameters.add("a2", "r b"); // query parameter
-		String authorizationHeader = signingUtils.buildAuthorizationHeaderValue(HttpMethod.POST, new URI("http://example.com/request"), oauthParameters, additionalParameters, "consumer_secret", "token_secret");
+		String authorizationHeader = signingUtils.buildAuthorizationHeaderValue(HttpMethod.POST, new URI("https://example.com/request"), oauthParameters, additionalParameters, "consumer_secret", "token_secret");
 		assertAuthorizationHeader(authorizationHeader, "qz6HT3AG1Z9J%2BP99O4HeMtClGeY%3D");
 	}
 
@@ -54,7 +54,7 @@ public class SigningSupportTest {
 	public void buildAuthorizationHeaderValue_Request() throws Exception {
 		SigningSupport signingUtils = new SigningSupport();
 		signingUtils.setTimestampGenerator(new MockTimestampGenerator(123456789, 987654321));
-		URI uri = URIBuilder.fromUri("http://example.com/request").queryParam("b5", "=%3D").queryParam("a3", "a").queryParam("c@", "")
+		URI uri = URIBuilder.fromUri("https://example.com/request").queryParam("b5", "=%3D").queryParam("a3", "a").queryParam("c@", "")
 			.queryParam("a2", "r b").build();
 		HttpRequest request = new SimpleClientHttpRequestFactory().createRequest(uri, HttpMethod.POST);
 		request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -66,7 +66,7 @@ public class SigningSupportTest {
 	public void buildAuthorizationHeaderValue_oauthEncodedSecrets() throws Exception {
 		SigningSupport signingUtils = new SigningSupport();
 		signingUtils.setTimestampGenerator(new MockTimestampGenerator(123456789, 987654321));
-		URI uri = URIBuilder.fromUri("http://example.com/request").queryParam("b5", "=%3D").queryParam("a3", "a").queryParam("c@", "")
+		URI uri = URIBuilder.fromUri("https://example.com/request").queryParam("b5", "=%3D").queryParam("a3", "a").queryParam("c@", "")
 			.queryParam("a2", "r b").build();
 		HttpRequest request = new SimpleClientHttpRequestFactory().createRequest(uri, HttpMethod.POST);
 		request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -76,7 +76,7 @@ public class SigningSupportTest {
 
 	/*
 	 * Tests the buildBaseString() method using the example given in the OAuth 1 spec
-	 * at http://tools.ietf.org/html/rfc5849#section-3.4.1 as the test data.
+	 * at https://tools.ietf.org/html/rfc5849#section-3.4.1 as the test data.
 	 */
 	@Test
 	public void buildBaseString_specificationExample() {
@@ -92,7 +92,7 @@ public class SigningSupportTest {
 		collectedParameters.add("c2", "");
 		collectedParameters.add("a3", "2 q");
 		collectedParameters.setAll(oauthParameters);
-		String baseString = signingUtils.buildBaseString(HttpMethod.POST, "http://example.com/request", collectedParameters);
+		String baseString = signingUtils.buildBaseString(HttpMethod.POST, "https://example.com/request", collectedParameters);
 		
 		String[] baseStringParts = baseString.split("&");
 		assertEquals(3, baseStringParts.length);
@@ -116,7 +116,7 @@ public class SigningSupportTest {
 	}
 	
 	/*
-	 * Tests the buildBaseString() method using the example given at http://dev.twitter.com/pages/auth#signing-requests
+	 * Tests the buildBaseString() method using the example given at https://dev.twitter.com/pages/auth#signing-requests
 	 * as the test data.
 	 */
 	@Test
