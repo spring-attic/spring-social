@@ -42,19 +42,19 @@ See [downloading Spring artifacts] for Maven repository information. Unable to u
 <repository>
     <id>spring-repo</id>
     <name>Spring Repository</name>
-    <url>http://repo.spring.io/release</url>
+    <url>https://repo.spring.io/release</url>
 </repository>   
     
 <repository>
     <id>spring-milestone</id>
     <name>Spring Milestone Repository</name>
-    <url>http://repo.spring.io/milestone</url>
+    <url>https://repo.spring.io/milestone</url>
 </repository>
 
 <repository>
     <id>spring-snapshot</id>
     <name>Spring Snapshot Repository</name>
-    <url>http://repo.spring.io/snapshot</url>
+    <url>https://repo.spring.io/snapshot</url>
 </repository>
 ```
 
@@ -153,30 +153,30 @@ $ ./gradlew idea
 [Spring Social] is released under version 2.0 of the [Apache License].
 
 
-[Spring Social]: http://projects.spring.io/spring-social
-[Spring Framework]: http://projects.spring.io/spring-framework
+[Spring Social]: https://projects.spring.io/spring-social
+[Spring Framework]: https://projects.spring.io/spring-framework
 [downloading Spring artifacts]: https://github.com/spring-projects/spring-framework/wiki/Downloading-Spring-artifacts
 [building a distribution with dependencies]: https://github.com/spring-projects/spring-framework/wiki/Building-a-distribution-with-dependencies
 [twitter-gh]: https://github.com/spring-projects/spring-social-twitter
-[twitter-ref]: http://docs.spring.io/spring-social-twitter/docs/current/reference/htmlsingle/
-[twitter-api]: http://docs.spring.io/spring-social-twitter/docs/current/apidocs/
+[twitter-ref]: https://docs.spring.io/spring-social-twitter/docs/current/reference/htmlsingle/
+[twitter-api]: https://docs.spring.io/spring-social-twitter/docs/current/apidocs/
 [facebook-gh]: https://github.com/spring-projects/spring-social-facebook
-[facebook-ref]: http://docs.spring.io/spring-social-facebook/docs/current/reference/htmlsingle/
-[facebook-api]: http://docs.spring.io/spring-social-facebook/docs/current/apidocs/
+[facebook-ref]: https://docs.spring.io/spring-social-facebook/docs/current/reference/htmlsingle/
+[facebook-api]: https://docs.spring.io/spring-social-facebook/docs/current/apidocs/
 [linkedin-gh]: https://github.com/spring-projects/spring-social-linkedin
-[linkedin-ref]: http://docs.spring.io/spring-social-linkedin/docs/1.0.x/reference/htmlsingle/
-[linkedin-api]: http://docs.spring.io/spring-social-linkedin/docs/1.0.x/api/
+[linkedin-ref]: https://docs.spring.io/spring-social-linkedin/docs/1.0.x/reference/htmlsingle/
+[linkedin-api]: https://docs.spring.io/spring-social-linkedin/docs/1.0.x/api/
 [tripit-gh]: https://github.com/spring-projects/spring-social-tripit
 [github-gh]: https://github.com/spring-projects/spring-social-github
-[Javadoc]: http://docs.spring.io/spring-social/docs/current/apidocs/
-[reference docs]: http://docs.spring.io/spring-social/docs/current-SNAPSHOT/reference/htmlsingle/
+[Javadoc]: https://docs.spring.io/spring-social/docs/current/apidocs/
+[reference docs]: https://docs.spring.io/spring-social/docs/current-SNAPSHOT/reference/htmlsingle/
 [samples repository]: https://github.com/spring-projects/spring-social-samples
 [Quick Start]: https://github.com/spring-projects/spring-social/wiki/Quick-Start
-[Spring Social JIRA]: http://jira.springsource.org/browse/SOCIAL
+[Spring Social JIRA]: https://jira.springsource.org/browse/SOCIAL
 [GitHub issues]: https://github.com/spring-projects/spring-social/issues
 [the lifecycle of an issue]: https://github.com/spring-projects/spring-framework/wiki/The-Lifecycle-of-an-Issue
-[Gradle]: http://gradle.org
+[Gradle]: https://gradle.org
 [sts]: https://spring.io/tools
-[Pull requests]: http://help.github.com/send-pull-requests
+[Pull requests]: https://help.github.com/send-pull-requests
 [contributor guidelines]: https://github.com/spring-projects/spring-framework/blob/master/CONTRIBUTING.md
 [Apache License]: https://www.apache.org/licenses/LICENSE-2.0
