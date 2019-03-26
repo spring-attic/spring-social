@@ -57,9 +57,9 @@ public class OAuth2AuthenticationServiceTest {
 		when(factory.createConnection(accessGrant)).thenReturn(connection);
 
 		when(
-				operations.buildAuthenticateUrl(oAuth2Parameters("http://example.com/auth/foo?param=param_value"))).thenReturn(
-				"http://facebook.com/auth");
-		when(operations.exchangeForAccess(code, "http://example.com/auth/foo", null)).thenReturn(accessGrant);
+				operations.buildAuthenticateUrl(oAuth2Parameters("https://example.com/auth/foo?param=param_value"))).thenReturn(
+				"https://facebook.com/auth");
+		when(operations.exchangeForAccess(code, "https://example.com/auth/foo", null)).thenReturn(accessGrant);
 
 		// first phase
 		MockHttpServletRequest request = new MockHttpServletRequest(context, "GET", "/auth/foo");
@@ -76,7 +76,7 @@ public class OAuth2AuthenticationServiceTest {
 			//       Ultimately the OAuth2Template creates the redirect URL, but since that's mocked out in this test, that won't be easily
 			//       done without recreating the functionality of a real OAuth2Template. Instead, we can feel confident that if the redirect
 			//       URL is what we told the mock to return, then the mock must have been given the proper return URL.
-			assertEquals("http://facebook.com/auth", e.getRedirectUrl());
+			assertEquals("https://facebook.com/auth", e.getRedirectUrl());
 		}
 
 		// second phase
@@ -116,8 +116,8 @@ public class OAuth2AuthenticationServiceTest {
 
 		when(
 				operations.buildAuthenticateUrl(oAuth2Parameters("http://x.com/auth/foo?param=param_value"))).thenReturn(
-				"http://facebook.com/auth");
-		when(operations.exchangeForAccess(code, "http://example.com/auth/foo", null)).thenReturn(accessGrant);
+				"https://facebook.com/auth");
+		when(operations.exchangeForAccess(code, "https://example.com/auth/foo", null)).thenReturn(accessGrant);
 
 		// first phase
 		MockHttpServletRequest request = new MockHttpServletRequest(context, "GET", "/auth/foo");
@@ -138,7 +138,7 @@ public class OAuth2AuthenticationServiceTest {
 			//       Ultimately the OAuth2Template creates the redirect URL, but since that's mocked out in this test, that won't be easily
 			//       done without recreating the functionality of a real OAuth2Template. Instead, we can feel confident that if the redirect
 			//       URL is what we told the mock to return, then the mock must have been given the proper return URL.
-			assertEquals("http://facebook.com/auth", e.getRedirectUrl());
+			assertEquals("https://facebook.com/auth", e.getRedirectUrl());
 		}
 
 		// second phase
