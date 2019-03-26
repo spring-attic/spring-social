@@ -49,11 +49,11 @@ public class DummyConnection<T> implements Connection<T> {
 	}
 
 	public String getProfileUrl() {
-		return "http://www.example.com/" + _key.getProviderUserId();
+		return "https://www.example.com/" + _key.getProviderUserId();
 	}
 
 	public String getImageUrl() {
-		return "http://www.example.com/img/" + _key.getProviderUserId() + ".jpg";
+		return "https://www.example.com/img/" + _key.getProviderUserId() + ".jpg";
 	}
 
 	public void sync() {

@@ -61,7 +61,7 @@ public class OAuth1TemplateTest {
 	@Test
 	public void buildAuthorizeUrl() {
 		OAuth1Parameters parameters = new OAuth1Parameters(null);
-		parameters.setCallbackUrl("http://www.someclient.com/oauth/callback");
+		parameters.setCallbackUrl("https://www.someclient.com/oauth/callback");
 		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token",
 				oauth10a.buildAuthorizeUrl("request_token", OAuth1Parameters.NONE));
 		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token&oauth_callback=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback",
@@ -71,7 +71,7 @@ public class OAuth1TemplateTest {
 	@Test
 	public void buildAuthorizeUrl_customAuthorizeParameters() {
 		OAuth1Parameters parameters = new OAuth1Parameters(null);
-		parameters.setCallbackUrl("http://www.someclient.com/oauth/callback");
+		parameters.setCallbackUrl("https://www.someclient.com/oauth/callback");
 		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token&oauth_callback=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback&custom_parameter=custom_parameter_value",
 				customOauth10.buildAuthorizeUrl("request_token", parameters));
 	}
@@ -94,7 +94,7 @@ public class OAuth1TemplateTest {
 				.andExpect(headerContains("Authorization", "oauth_timestamp=\""))
 				.andRespond(withSuccess(new ClassPathResource("requestToken.formencoded", getClass()), MediaType.APPLICATION_FORM_URLENCODED));
 
-		OAuthToken requestToken = oauth10a.fetchRequestToken("http://www.someclient.com/oauth/callback", null);
+		OAuthToken requestToken = oauth10a.fetchRequestToken("https://www.someclient.com/oauth/callback", null);
 		assertEquals("1234567890", requestToken.getValue());
 		assertEquals("abcdefghijklmnop", requestToken.getSecret());
 	}
@@ -114,7 +114,7 @@ public class OAuth1TemplateTest {
 				.andExpect(headerContains("Authorization", "oauth_timestamp=\""))
 				.andRespond(withSuccess(new ClassPathResource("requestToken.formencoded", getClass()), MediaType.APPLICATION_FORM_URLENCODED));
 
-		OAuthToken requestToken = oauth10.fetchRequestToken("http://www.someclient.com/oauth/callback", null);
+		OAuthToken requestToken = oauth10.fetchRequestToken("https://www.someclient.com/oauth/callback", null);
 		assertEquals("1234567890", requestToken.getValue());
 		assertEquals("abcdefghijklmnop", requestToken.getSecret());
 	}
