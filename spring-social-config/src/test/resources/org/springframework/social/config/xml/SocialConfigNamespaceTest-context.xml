@@ -6,12 +6,12 @@
 	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd
-		http://www.springframework.org/schema/social http://www.springframework.org/schema/social/spring-social.xsd
-		http://www.springframework.org/schema/social/fake http://www.springframework.org/schema/social/spring-social-fake.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc https://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util-3.1.xsd
+		http://www.springframework.org/schema/social https://www.springframework.org/schema/social/spring-social.xsd
+		http://www.springframework.org/schema/social/fake https://www.springframework.org/schema/social/spring-social-fake.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context-3.1.xsd">
 
 	<!-- SET UP SOME CONNECTION FACTORIES -->
  	<social:jdbc-connection-repository connection-signup-ref="connectionSignUp" />
