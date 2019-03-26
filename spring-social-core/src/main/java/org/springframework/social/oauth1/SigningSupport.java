@@ -130,7 +130,7 @@ class SigningSupport {
 	// internal helpers
 	
 	private String normalizeParameters(MultiValueMap<String, String> collectedParameters) {
-		// Normalizes the collected parameters for baseString calculation, per http://tools.ietf.org/html/rfc5849#section-3.4.1.3.2
+		// Normalizes the collected parameters for baseString calculation, per https://tools.ietf.org/html/rfc5849#section-3.4.1.3.2
 		MultiValueMap<String, String> sortedEncodedParameters = new TreeMultiValueMap<String, String>();
 		for (Iterator<Entry<String, List<String>>> entryIt = collectedParameters.entrySet().iterator(); entryIt.hasNext();) {
 			Entry<String, List<String>> entry = entryIt.next();
@@ -223,7 +223,7 @@ class SigningSupport {
 
 	private String getBaseStringUri(URI uri) {
 		try {
-			// see: http://tools.ietf.org/html/rfc5849#section-3.4.1.2
+			// see: https://tools.ietf.org/html/rfc5849#section-3.4.1.2
 			return new URI(uri.getScheme(), null, uri.getHost(), getPort(uri), uri.getPath(), null, null).toString();
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException(e);
@@ -279,7 +279,7 @@ class SigningSupport {
 	
 	private static String oauthEncode(String param) {
 		try {
-			// See http://tools.ietf.org/html/rfc5849#section-3.6
+			// See https://tools.ietf.org/html/rfc5849#section-3.6
 			byte[] bytes = encode(param.getBytes(UTF8_CHARSET_NAME), UNRESERVED);
 			return new String(bytes, "US-ASCII");
 		} catch (Exception shouldntHappen) {
