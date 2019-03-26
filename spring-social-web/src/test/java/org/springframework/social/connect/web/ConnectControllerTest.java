@@ -71,7 +71,7 @@ public class ConnectControllerTest {
 		ConnectionFactoryRegistry connectionFactoryLocator = new ConnectionFactoryRegistry();
 		ConnectionRepository connectionRepository = new InMemoryUsersConnectionRepository(connectionFactoryLocator).createConnectionRepository("userid");
 		ConnectController controller = new ConnectController(connectionFactoryLocator, connectionRepository);
-		controller.setApplicationUrl("http://baseurl.com/");
+		controller.setApplicationUrl("http://baseurl.com/?folio=9PO6Z3MVF&_glst=0&rfolio=9POV2OOG7");
 	}
 	
 	@Test
@@ -331,10 +331,10 @@ public class ConnectControllerTest {
 		HashMap<String, String> expectedError = new HashMap<String, String>();
 		expectedError.put("error", "access_denied");
 		expectedError.put("errorDescription", "The user said no.");
-		expectedError.put("errorUri", "http://provider.com/user/said/no");
+		expectedError.put("errorUri", "https://provider.com/user/said/no");
 		mockMvc.perform(get("/connect/oauth2Provider").param("error", "access_denied")
 													  .param("error_description", "The user said no.")
-													  .param("error_uri", "http://provider.com/user/said/no"))
+													  .param("error_uri", "https://provider.com/user/said/no"))
 			.andExpect(redirectedUrl("/connect/oauth2Provider"))
 			.andExpect(request().sessionAttribute("social_authorization_error", notNullValue()))
 			.andExpect(request().sessionAttribute("social_authorization_error", expectedError));

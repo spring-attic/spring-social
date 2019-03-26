@@ -44,7 +44,7 @@ public class OAuth1AuthenticationServiceTest {
 		final OAuth1ConnectionFactory<Object> factory = mock(OAuth1ConnectionFactory.class);
 		final OAuth1Operations operations = mock(OAuth1Operations.class);
 		final String serverName = "example.com";
-		final String serviceUrl = "http://twitter.com/auth";
+		final String serviceUrl = "https://twitter.com/auth";
 		final OAuthToken oAuthToken = new OAuthToken("my_token", "my_secret");
 		final String verifier = "my_verifier";
 		final Connection<Object> connection = DummyConnection.dummy("provider", "user");
