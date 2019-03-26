@@ -306,12 +306,12 @@ public class InMemoryUsersConnectionRepositoryTest {
 	public void updateConnectionProfileFields() {
 		insertTwitterConnection();
 		Connection<TestTwitterApi> twitter = connectionRepository.getPrimaryConnection(TestTwitterApi.class);
-		assertEquals("http://twitter.com/habuma/picture", twitter.getImageUrl());
+		assertEquals("https://twitter.com/habuma/picture", twitter.getImageUrl());
 		twitter.sync();
-		assertEquals("http://twitter.com/habuma/a_new_picture", twitter.getImageUrl());
+		assertEquals("https://twitter.com/habuma/a_new_picture", twitter.getImageUrl());
 		connectionRepository.updateConnection(twitter);
 		Connection<TestTwitterApi> twitter2 = connectionRepository.getPrimaryConnection(TestTwitterApi.class);
-		assertEquals("http://twitter.com/habuma/a_new_picture", twitter2.getImageUrl());
+		assertEquals("https://twitter.com/habuma/a_new_picture", twitter2.getImageUrl());
 	}
 	
 	@Test
@@ -337,27 +337,27 @@ public class InMemoryUsersConnectionRepositoryTest {
 	}
 
 	private void insertFacebookConnection() {
-		Connection<TestFacebookApi> facebookConnection = facebookConnectionFactory.createConnection(new ConnectionData("facebook", "12345", "Craig Walls", "http://facebook.com/habuma", "http://facebook.com/habuma/picture", "ACCESS_TOKEN", "SECRET", null, null));		
+		Connection<TestFacebookApi> facebookConnection = facebookConnectionFactory.createConnection(new ConnectionData("facebook", "12345", "Craig Walls", "https://facebook.com/habuma", "https://facebook.com/habuma/picture", "ACCESS_TOKEN", "SECRET", null, null));		
 		connectionRepository.addConnection(facebookConnection);
 	}
 
 	private void insertFacebookConnection2() {
-		Connection<TestFacebookApi> facebookConnection = facebookConnectionFactory.createConnection(new ConnectionData("facebook", "54321", "Chuck Wagon", "http://facebook.com/cwagon", "http://facebook.com/cwagon/picture", "ACCESS_TOKEN2", "SECRET", null, null));		
+		Connection<TestFacebookApi> facebookConnection = facebookConnectionFactory.createConnection(new ConnectionData("facebook", "54321", "Chuck Wagon", "https://facebook.com/cwagon", "https://facebook.com/cwagon/picture", "ACCESS_TOKEN2", "SECRET", null, null));		
 		connectionRepository.addConnection(facebookConnection);
 	}
 
 	private void insertFacebookConnection3() {
-		Connection<TestFacebookApi> facebookConnection = facebookConnectionFactory.createConnection(new ConnectionData("facebook", "45678", "Art Names", "http://facebook.com/art", "http://facebook.com/art/picture", "ACCESS_TOKEN3", "SECRET", null, null));		
+		Connection<TestFacebookApi> facebookConnection = facebookConnectionFactory.createConnection(new ConnectionData("facebook", "45678", "Art Names", "https://facebook.com/art", "https://facebook.com/art/picture", "ACCESS_TOKEN3", "SECRET", null, null));		
 		usersConnectionRepository.createConnectionRepository("2").addConnection(facebookConnection);
 	}
 
 	private void insertFacebookConnectionSameFacebookUser() {
-		Connection<TestFacebookApi> facebookConnection = facebookConnectionFactory.createConnection(new ConnectionData("facebook", "12345", "Craig Walls", "http://facebook.com/habuma", "http://facebook.com/habuma/picture", "ACCESS_TOKEN", "SECRET", null, null));		
+		Connection<TestFacebookApi> facebookConnection = facebookConnectionFactory.createConnection(new ConnectionData("facebook", "12345", "Craig Walls", "https://facebook.com/habuma", "https://facebook.com/habuma/picture", "ACCESS_TOKEN", "SECRET", null, null));		
 		usersConnectionRepository.createConnectionRepository("2").addConnection(facebookConnection);
 	}
 
 	private void insertTwitterConnection() {
-		Connection<TestTwitterApi> twitterConnection = twitterConnectionFactory.createConnection(new ConnectionData("twitter", "habuma", "@habuma", "http://twitter.com/habuma", "http://twitter.com/habuma/picture", "ACCESS_TOKEN", "SECRET", "REFRESH_TOKEN", null));
+		Connection<TestTwitterApi> twitterConnection = twitterConnectionFactory.createConnection(new ConnectionData("twitter", "habuma", "@habuma", "https://twitter.com/habuma", "https://twitter.com/habuma/picture", "ACCESS_TOKEN", "SECRET", "REFRESH_TOKEN", null));
 		connectionRepository.addConnection(twitterConnection);
 	}
 
@@ -371,34 +371,34 @@ public class InMemoryUsersConnectionRepositoryTest {
 	private void assertTwitterConnection(Connection<TestTwitterApi> twitter) {
 		assertEquals(new ConnectionKey("twitter", "habuma"), twitter.getKey());
 		assertEquals("@habuma", twitter.getDisplayName());
-		assertEquals("http://twitter.com/habuma", twitter.getProfileUrl());
-		assertEquals("http://twitter.com/habuma/picture", twitter.getImageUrl());
+		assertEquals("https://twitter.com/habuma", twitter.getProfileUrl());
+		assertEquals("https://twitter.com/habuma/picture", twitter.getImageUrl());
 		TestTwitterApi twitterApi = twitter.getApi();
 		assertEquals("ACCESS_TOKEN", twitterApi.getAccessToken());		
 		assertEquals("SECRET", twitterApi.getSecret());
 		twitter.sync();
-		assertEquals("http://twitter.com/habuma/a_new_picture", twitter.getImageUrl());
+		assertEquals("https://twitter.com/habuma/a_new_picture", twitter.getImageUrl());
 	}
 	
 	private void assertFacebookConnection(Connection<TestFacebookApi> facebook) {
 		assertEquals(new ConnectionKey("facebook", "12345"), facebook.getKey());
 		assertEquals("Craig Walls", facebook.getDisplayName());
-		assertEquals("http://facebook.com/habuma", facebook.getProfileUrl());
-		assertEquals("http://facebook.com/habuma/picture", facebook.getImageUrl());
+		assertEquals("https://facebook.com/habuma", facebook.getProfileUrl());
+		assertEquals("https://facebook.com/habuma/picture", facebook.getImageUrl());
 		TestFacebookApi facebookApi = facebook.getApi();
 		assertEquals("ACCESS_TOKEN", facebookApi.getAccessToken());
 		facebook.sync();
 		assertEquals("Craig Walls", facebook.getDisplayName());
-		assertEquals("http://facebook.com/habuma", facebook.getProfileUrl());
-		assertEquals("http://facebook.com/habuma/picture", facebook.getImageUrl());		
+		assertEquals("https://facebook.com/habuma", facebook.getProfileUrl());
+		assertEquals("https://facebook.com/habuma/picture", facebook.getImageUrl());		
 	}
 
 	private void assertNewConnection(Connection<TestFacebookApi> connection) {
 		assertEquals("facebook", connection.getKey().getProviderId());
 		assertEquals("12345", connection.getKey().getProviderUserId());
 		assertEquals("Craig Walls", connection.getDisplayName());
-		assertEquals("http://facebook.com/habuma", connection.getProfileUrl());
-		assertEquals("http://facebook.com/habuma/picture", connection.getImageUrl());
+		assertEquals("https://facebook.com/habuma", connection.getProfileUrl());
+		assertEquals("https://facebook.com/habuma/picture", connection.getImageUrl());
 		assertTrue(connection.test());
 		TestFacebookApi api = connection.getApi();
 		assertNotNull(api);
@@ -478,9 +478,9 @@ public class InMemoryUsersConnectionRepositoryTest {
 		
 		private String name = "Craig Walls";
 		
-		private String profileUrl = "http://facebook.com/habuma";
+		private String profileUrl = "https://facebook.com/habuma";
 		
-		private String profilePictureUrl = "http://facebook.com/habuma/picture";
+		private String profilePictureUrl = "https://facebook.com/habuma/picture";
 		
 		public boolean test(TestFacebookApi api) {
 			return true;
@@ -546,9 +546,9 @@ public class InMemoryUsersConnectionRepositoryTest {
 		
 		private String name = "@habuma";
 		
-		private String profileUrl = "http://twitter.com/habuma";
+		private String profileUrl = "https://twitter.com/habuma";
 		
-		private String profilePictureUrl = "http://twitter.com/habuma/a_new_picture";
+		private String profilePictureUrl = "https://twitter.com/habuma/a_new_picture";
 		
 		public boolean test(TestTwitterApi api) {
 			return true;
