@@ -147,7 +147,7 @@ repository to your build in order to resolve the artifacts:
 ----
 repositories {
   mavenLocal()
-  maven { url 'http://maven.springframework.org/milestone' }
+  maven { url 'https://maven.springframework.org/milestone' }
   mavenCentral()
 }
 ----
@@ -160,7 +160,7 @@ Similarly, if you are trying out the latest nightly build version (e.g.
 ----
 repositories {
   mavenLocal()
-  maven { url 'http://maven.springframework.org/snapshot' }
+  maven { url 'https://maven.springframework.org/snapshot' }
   mavenCentral()
 }
 ----
@@ -240,7 +240,7 @@ repository to your build in order to resolve the artifacts:
 <repository>
     <id>org.springframework.maven.milestone</id>
     <name>Spring Maven Milestone Repository</name>
-        <url>http://repo.spring.io/milestone</url>
+        <url>https://repo.spring.io/milestone</url>
 </repository>
 ----
 
@@ -253,7 +253,7 @@ Similarly, if you are trying out the latest nightly build version (e.g.
 <repository>
     <id>org.springframework.maven.snapshot</id>
     <name>Spring Maven Snapshot Repository</name>
-        <url>http://repo.spring.io/snapshot</url>
+        <url>https://repo.spring.io/snapshot</url>
 </repository>
 ----
 
@@ -269,9 +269,9 @@ providers. These client modules are listed in <<table_clientModules>>.
 [options="header"]
 |=======================================================================
 |Name |Maven group ID |Maven artifact ID
-|http://docs.spring.io/spring-social-facebook/site/docs/1.1.0.RC1/reference/htmlsingle/[Spring Social Facebook] |org.springframework.social |spring-social-facebook
-|http://docs.spring.io/spring-social-twitter/site/docs/1.1.0.RC1/reference/htmlsingle/[Spring Social Twitter] |org.springframework.social |spring-social-twitter
-|http://docs.spring.io/spring-social-linkedin/site/docs/1.1.0.RC1/reference/htmlsingle/[Spring Social LinkedIn] |org.springframework.social |spring-social-linkedin
+|https://docs.spring.io/spring-social-facebook/site/docs/1.1.0.RC1/reference/htmlsingle/[Spring Social Facebook] |org.springframework.social |spring-social-facebook
+|https://docs.spring.io/spring-social-twitter/site/docs/1.1.0.RC1/reference/htmlsingle/[Spring Social Twitter] |org.springframework.social |spring-social-twitter
+|https://docs.spring.io/spring-social-linkedin/site/docs/1.1.0.RC1/reference/htmlsingle/[Spring Social LinkedIn] |org.springframework.social |spring-social-linkedin
 |Spring Social GitHub |org.springframework.social |spring-social-github
 |Spring Social TripIt |org.springframework.social |spring-social-tripit
 |=======================================================================
@@ -322,7 +322,7 @@ The Spring Social web support requires Java Servlet 2.5 or greater
 
 ===== Spring Framework
 Spring Social depends on `RestTemplate` provided by the core
-http://www.springsource.org/documentation[Spring Framework] in the
+https://www.springsource.org/documentation[Spring Framework] in the
 spring-web module. It requires Spring Framework version 3.1 or above, although
 Spring Framework 4.0 is recommended.
 
@@ -345,7 +345,7 @@ nothing for you to do because the crypto library comes included.
 
 ===== Apache HttpComponents
 Spring Social has an optional dependency on
-http://hc.apache.org/httpcomponents-client-ga[Apache HttpComponents]. If
+https://hc.apache.org/httpcomponents-client-ga[Apache HttpComponents]. If
 the HttpComponents HttpClient library is present, it will use it as the
 HTTP client (which is generally recommended). Otherwise, it will fall
 back on standard J2SE facilities.
@@ -364,7 +364,7 @@ Even thought HttpComponents is an optional dependency, we strongly recommend it 
 
 ===== Jackson JSON Processor
 Spring Social's provider API bindings rely on the
-http://jackson.codehaus.org/[Jackson JSON Processor] to map JSON
+https://jackson.codehaus.org/[Jackson JSON Processor] to map JSON
 responses to Java objects. Each binding, such as Facebook or Twitter,
 transitively depends on Jackson {jacksonVersion}, so there's nothing special to do
 to add Jackson to your project's Maven or Gradle build.
@@ -496,9 +496,9 @@ user with screen name 'jbauer'.
 '14710604' is @jbauer's Twitter-assigned user id that never changes.
 2.  `Connection#getDisplayName()` would return '@jbauer'.
 3.  `Connection#getProfileUrl()` would return
-'http://twitter.com/jbauer'.
+'https://twitter.com/jbauer'.
 4.  `Connection#getImageUrl()` would return
-'http://a0.twimg.com/profile_images/105951287/IMG_5863_2_normal.jpg'.
+'https://a0.twimg.com/profile_images/105951287/IMG_5863_2_normal.jpg'.
 5.  `Connection#sync()` would synchronize the state of the connection with
 @jbauer's profile.
 6.  `Connection#test()` would return `true` indicating the authorization
@@ -1307,7 +1307,7 @@ In contrast, Facebook is an OAuth 2 provider, so its authorization URL takes a s
 https://graph.facebook.com/oauth/authorize?client_id={clientId}&redirect_uri={redirectUri}
 ------------------------------------------------------------------------------------------
 
-Thus, if the application's Facebook client ID is "0b754" and it's redirect URI is "http://www.mycoolapp.com/connect/facebook", then the browser would be redirected to https://graph.facebook.com/oauth/authorize?client_id=0b754&redirect_uri=http://www.mycoolapp.com/connect/facebook and Facebook would display the following authorization page to the user:
+Thus, if the application's Facebook client ID is "0b754" and it's redirect URI is "https://www.hugedomains.com/domain_profile.cfm?d=mycoolapp&e=com", then the browser would be redirected to https://graph.facebook.com/oauth/authorize?client_id=0b754&redirect_uri=https://www.hugedomains.com/domain_profile.cfm?d=mycoolapp&e=com and Facebook would display the following authorization page to the user:
 
 image:resources/images/facebook-authorize-basic.png[image]
 
@@ -1364,7 +1364,7 @@ When asking for "publish_stream,offline_access" authorization, the user will be 
 image:resources/images/facebook-authorize-scoped.png[image]
 
 Scope values are provider-specific, so check with the service provider's documentation for the available scopes. 
-Facebook scopes are documented at http://developers.facebook.com/docs/authentication/permissions[].
+Facebook scopes are documented at https://developers.facebook.com/docs/authentication/permissions[].
 
 [[]]
 ==== Responding to the authorization callback
@@ -1381,7 +1381,7 @@ The last thing that `ConnectController` does is to hand off the access token to 
 ==== Disconnecting
 To delete a connection via `ConnectController`, submit a DELETE request to "/connect/\{provider}".
 
-In order to support this through a form in a web browser, you'll need to have Spring's http://docs.spring.io/spring/docs/3.0.x/javadoc-api/org/springframework/web/filter/HiddenHttpMethodFilter.html[HiddenHttpMethodFilter] configured in your application's web.xml. 
+In order to support this through a form in a web browser, you'll need to have Spring's https://docs.spring.io/spring/docs/3.0.x/javadoc-api/org/springframework/web/filter/HiddenHttpMethodFilter.html[HiddenHttpMethodFilter] configured in your application's web.xml. 
 Then you can provide a disconnect button via a form like this:
 
 ```html

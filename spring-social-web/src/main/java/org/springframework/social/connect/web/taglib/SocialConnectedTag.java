@@ -21,7 +21,7 @@ package org.springframework.social.connect.web.taglib;
  * Sample usages in JSP:
  *
  * Include at top of JSP:
- * &lt;%@ taglib prefix="social" uri="http://org.springframework/social" %&gt;
+ * &lt;%@ taglib prefix="social" uri="https://org.springframework/social" %&gt;
  *
  * &lt;social:connected provider="facebook"&gt;
  * 	    [ show some FB profile info ]
