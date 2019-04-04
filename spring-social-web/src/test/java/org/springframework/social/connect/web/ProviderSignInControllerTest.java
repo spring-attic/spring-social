@@ -218,7 +218,7 @@ public class ProviderSignInControllerTest {
 		providerSignInController.afterPropertiesSet();
 		MockMvc mockMvc = standaloneSetup(providerSignInController).build();
 		mockMvc.perform(post("/signin/oauth2Provider"))
-			.andExpect(redirectedUrl("https://someprovider.com/oauth/authorize?client_id=clientId&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%2Fsignin%2Foauth2Provider&state=STATE"));
+			.andExpect(redirectedUrl("https://someprovider.com/oauth/authorize?client_id=clientId&response_type=code&redirect_uri=https%3A%2F%2Flocalhost%2Fsignin%2Foauth2Provider&state=STATE"));
 	}
 
 	@Test
@@ -281,7 +281,7 @@ public class ProviderSignInControllerTest {
 			.param("error", "access_denied")
 			.param("error_description", "The user said no.")
 			.param("error_uri", "https://provider.com/user/said/no"))
-			.andExpect(redirectedUrl("/signin?error=access_denied&error_description=The+user+said+no.&error_uri=http%3A%2F%2Fprovider.com%2Fuser%2Fsaid%2Fno"));
+			.andExpect(redirectedUrl("/signin?error=access_denied&error_description=The+user+said+no.&error_uri=https%3A%2F%2Fprovider.com%2Fuser%2Fsaid%2Fno"));
 	}
 
 	@Test

@@ -31,19 +31,19 @@ import org.springframework.test.web.client.RequestMatcher;
 import org.springframework.util.MultiValueMap;
 
 public class OAuth1TemplateTest {
-	
-	private static final String ACCESS_TOKEN_URL = "http://www.someprovider.com/oauth/accessToken";
-	
+
+	private static final String ACCESS_TOKEN_URL = "https://www.someprovider.com/oauth/accessToken";
+
 	private static final String AUTHENTICATE_URL = "https://www.someprovider.com/oauth/authenticate";
 
 	private static final String AUTHORIZE_URL = "https://www.someprovider.com/oauth/authorize";
 
 	private static final String REQUEST_TOKEN_URL = "https://www.someprovider.com/oauth/requestToken";
-	
+
 	private OAuth1Template oauth10a;
-	
+
 	private OAuth1Template oauth10;
-	
+
 	private OAuth1Template customOauth10;
 
 	@Before
@@ -64,15 +64,15 @@ public class OAuth1TemplateTest {
 		parameters.setCallbackUrl("https://www.someclient.com/oauth/callback");
 		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token",
 				oauth10a.buildAuthorizeUrl("request_token", OAuth1Parameters.NONE));
-		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token&oauth_callback=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback",
+		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token&oauth_callback=https%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback",
 				oauth10.buildAuthorizeUrl("request_token", parameters));
 	}
-	
+
 	@Test
 	public void buildAuthorizeUrl_customAuthorizeParameters() {
 		OAuth1Parameters parameters = new OAuth1Parameters(null);
 		parameters.setCallbackUrl("https://www.someclient.com/oauth/callback");
-		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token&oauth_callback=http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback&custom_parameter=custom_parameter_value",
+		assertEquals(AUTHORIZE_URL + "?oauth_token=request_token&oauth_callback=https%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback&custom_parameter=custom_parameter_value",
 				customOauth10.buildAuthorizeUrl("request_token", parameters));
 	}
 
@@ -81,11 +81,11 @@ public class OAuth1TemplateTest {
 		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauth10a.getRestTemplate());
 		HttpHeaders responseHeaders = new HttpHeaders();
 		responseHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-		
+
 		mockServer
 				.expect(requestTo(REQUEST_TOKEN_URL))
 				.andExpect(method(POST))
-				.andExpect(headerContains("Authorization", "oauth_callback=\"http%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback\""))
+				.andExpect(headerContains("Authorization", "oauth_callback=\"https%3A%2F%2Fwww.someclient.com%2Foauth%2Fcallback\""))
 				.andExpect(headerContains("Authorization", "oauth_version=\"1.0\""))
 				.andExpect(headerContains("Authorization", "oauth_signature_method=\"HMAC-SHA1\""))
 				.andExpect(headerContains("Authorization", "oauth_consumer_key=\"consumer_key\""))
@@ -165,14 +165,14 @@ public class OAuth1TemplateTest {
 		assertEquals("9876543210", accessToken.getValue());
 		assertEquals("ponmlkjihgfedcba", accessToken.getSecret());
 	}
-	
+
 	// parameter assertion tests
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void construct_nullConsumerKey() {
 		new OAuth1Template(null, "secret", REQUEST_TOKEN_URL, AUTHORIZE_URL, ACCESS_TOKEN_URL);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void construct_nullConsumerSecret() {
 		new OAuth1Template("key", null, REQUEST_TOKEN_URL, AUTHORIZE_URL, ACCESS_TOKEN_URL);
@@ -182,12 +182,12 @@ public class OAuth1TemplateTest {
 	public void construct_nullRequestTokenUrl() {
 		new OAuth1Template("key", "secret", null, AUTHORIZE_URL, ACCESS_TOKEN_URL);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void construct_nullAuthorizeUrl() {
 		new OAuth1Template("key", "secret", REQUEST_TOKEN_URL, null, ACCESS_TOKEN_URL);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void construct_nullAcessTokenUrl() {
 		new OAuth1Template("key", "secret", REQUEST_TOKEN_URL, AUTHORIZE_URL, null);
@@ -197,7 +197,7 @@ public class OAuth1TemplateTest {
 	public void setRequestFactory_null() {
 		oauth10a.setRequestFactory(null);
 	}
-	
+
 
 	// private helper
 	private RequestMatcher headerContains(String name, String substring) {

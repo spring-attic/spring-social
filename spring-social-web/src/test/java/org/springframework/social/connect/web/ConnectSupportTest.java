@@ -51,26 +51,28 @@ public class ConnectSupportTest {
 	public void buildOAuthUrl_OAuth10() {
 		ConnectSupport support = new ConnectSupport();
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setRequestURI("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10), request);
-		assertEquals("https://serviceprovider.com/oauth/authorize?oauth_callback=http://somesite.com/connect/someprovider", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?oauth_callback=https://somesite.com/connect/someprovider", url);
 	}
 
 	@Test
 	public void buildOAuthUrl_OAuth10_withContextPath() {
 		ConnectSupport support = new ConnectSupport();
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setRequestURI("/appname/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10), request);
-		assertEquals("https://serviceprovider.com/oauth/authorize?oauth_callback=http://somesite.com/appname/connect/someprovider", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?oauth_callback=https://somesite.com/appname/connect/someprovider", url);
 	}
-	
+
 	@Test
 	public void buildOAuthUrl_OAuth10_withApplicationUrl() throws Exception {
 		ConnectSupport support = new ConnectSupport();
@@ -83,7 +85,7 @@ public class ConnectSupportTest {
 		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10), request);
 		assertEquals("https://serviceprovider.com/oauth/authorize?oauth_callback=https://someothersite.com:1234/connect/someprovider", url);
 	}
-	
+
 	@Test
 	public void buildOAuthUrl_OAuth10_withApplicationUrlAndNonDefaultServletPath() throws Exception {
 		ConnectSupport support = new ConnectSupport();
@@ -110,52 +112,56 @@ public class ConnectSupportTest {
 		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10), request);
 		assertEquals("https://serviceprovider.com/oauth/authorize?oauth_callback=https://ec2.instance.com:8080/spring-social/showcase/connect/someprovider", url);
 	}
-	
+
 	@Test
 	public void buildOAuthUrl_OAuth10_useAuthenticateUrl() {
 		ConnectSupport support = new ConnectSupport();
 		support.setUseAuthenticateUrl(true);
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setRequestURI("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10), request);
-		assertEquals("https://serviceprovider.com/oauth/authenticate?oauth_callback=http://somesite.com/connect/someprovider", url);
+		assertEquals("https://serviceprovider.com/oauth/authenticate?oauth_callback=https://somesite.com/connect/someprovider", url);
 	}
-	
+
 	@Test
 	public void buildOAuthUrl_OAuth10_withAdditionalParameters() {
 		ConnectSupport support = new ConnectSupport();
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setRequestURI("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
 		additionalParameters.set("display", "popup");
 		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10), request, additionalParameters);
-		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup&oauth_callback=http://somesite.com/connect/someprovider", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup&oauth_callback=https://somesite.com/connect/someprovider", url);
 	}
 
 	@Test
 	public void buildOAuthUrl_OAuth10a() {
 		ConnectSupport support = new ConnectSupport();
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setRequestURI("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10_REVISION_A), request);
 		assertEquals("https://serviceprovider.com/oauth/authorize", url);
 	}
-	
+
 	@Test
 	public void buildOAuthUrl_OAuth10a_withApplicationUrl() throws Exception {
 		ConnectSupport support = new ConnectSupport();
 		support.setApplicationUrl("https://someothersite.com:1234");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setRequestURI("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
@@ -168,19 +174,21 @@ public class ConnectSupportTest {
 		ConnectSupport support = new ConnectSupport();
 		support.setUseAuthenticateUrl(true);
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setRequestURI("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10_REVISION_A), request);
 		assertEquals("https://serviceprovider.com/oauth/authenticate", url);
 	}
-	
+
 	@Test
 	public void buildOAuthUrl_OAuth10a_withAdditionalParameters() {
 		ConnectSupport support = new ConnectSupport();
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setRequestURI("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
@@ -189,12 +197,13 @@ public class ConnectSupportTest {
 		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10_REVISION_A), request, additionalParameters);
 		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup", url);
 	}
-	
+
 	@Test
 	public void buildOAuthUrl_OAuth10a_withAdditionalParametersFromRequest() {
 		ConnectSupport support = new ConnectSupport();
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setRequestURI("/connect/someprovider");
 		mockRequest.addParameter("condiment", "ketchup");
@@ -204,18 +213,19 @@ public class ConnectSupportTest {
 		String url = support.buildOAuthUrl(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10_REVISION_A), request, additionalParameters);
 		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup&condiment=ketchup", url);
 	}
-		
+
 
 	@Test
 	public void buildOAuthUrl_OAuth2() {
 		ConnectSupport support = new ConnectSupport();
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setRequestURI("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
-		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=http://somesite.com/connect/someprovider&state=STATE", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://somesite.com/connect/someprovider&state=STATE", url);
 	}
 
 	@Test
@@ -223,33 +233,36 @@ public class ConnectSupportTest {
 		ConnectSupport support = new ConnectSupport();
 		support.setApplicationUrl("https://someothersite.com:1234");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setServletPath("/appname/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
 		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://someothersite.com:1234/appname/connect/someprovider&state=STATE", url);
 	}
-	
+
 	@Test
 	public void buildOAuthUrl_OAuth2_withApplicationUrl() throws Exception {
 		ConnectSupport support = new ConnectSupport();
 		support.setApplicationUrl("https://someothersite.com:1234");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setServletPath("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
 		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://someothersite.com:1234/connect/someprovider&state=STATE", url);
 	}
-	
+
 	@Test
 	public void buildOAuthUrl_OAuth2_withApplicationUrlAndNonDefaultServletPath() throws Exception {
 		ConnectSupport support = new ConnectSupport();
 		support.setApplicationUrl("https://someothersite.com:1234/spring-social-showcase");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setServletPath("/foo");
 		mockRequest.setPathInfo("/connect/someprovider");
@@ -263,7 +276,8 @@ public class ConnectSupportTest {
 		ConnectSupport support = new ConnectSupport();
 		support.setApplicationUrl("https://ec2.instance.com:8080/spring-social/showcase");
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setServletPath("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
@@ -276,20 +290,22 @@ public class ConnectSupportTest {
 		ConnectSupport support = new ConnectSupport();
 		support.setUseAuthenticateUrl(true);
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setRequestURI("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		TestOAuth2ConnectionFactory connectionFactory = new TestOAuth2ConnectionFactory();
 		String url = support.buildOAuthUrl(connectionFactory, request);
-		assertEquals("https://serviceprovider.com/oauth/authenticate?redirect_uri=http://somesite.com/connect/someprovider&state=STATE", url);
+		assertEquals("https://serviceprovider.com/oauth/authenticate?redirect_uri=https://somesite.com/connect/someprovider&state=STATE", url);
 	}
 
 	@Test
 	public void buildOAuthUrl_OAuth2_withAdditionalParameters() throws Exception {
 		ConnectSupport support = new ConnectSupport();
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setRequestURI("/connect/someprovider");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
@@ -297,14 +313,15 @@ public class ConnectSupportTest {
 		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
 		additionalParameters.set("display", "popup");
 		String url = support.buildOAuthUrl(connectionFactory, request, additionalParameters);
-		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup&redirect_uri=http://somesite.com/connect/someprovider&state=STATE", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup&redirect_uri=https://somesite.com/connect/someprovider&state=STATE", url);
 	}
 
 	@Test
 	public void buildOAuthUrl_OAuth2_withAdditionalParametersFromRequest() throws Exception {
 		ConnectSupport support = new ConnectSupport();
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setRequestURI("/connect/someprovider");
 		mockRequest.addParameter("condiment", "ketchup");
@@ -313,7 +330,7 @@ public class ConnectSupportTest {
 		MultiValueMap<String, String> additionalParameters = new LinkedMultiValueMap<String, String>();
 		additionalParameters.set("display", "popup");
 		String url = support.buildOAuthUrl(connectionFactory, request, additionalParameters);
-		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup&condiment=ketchup&redirect_uri=http://somesite.com/connect/someprovider&state=STATE", url);
+		assertEquals("https://serviceprovider.com/oauth/authorize?display=popup&condiment=ketchup&redirect_uri=https://somesite.com/connect/someprovider&state=STATE", url);
 	}
 
 	private static class PortAwareMockHttpServletRequest extends MockHttpServletRequest {
@@ -325,12 +342,12 @@ public class ConnectSupportTest {
 			int port = getServerPort();
 			// only add the port if not 80 or 443.
 			// could consider scheme when deciding on the port, but this is fine for this test.
-			if (port != 80 && port != 443) { 
+			if (port != 80 && port != 443) {
 				url.append(':').append(port);
 			}
 			url.append(getRequestURI());
 			return url;
-		}		
+		}
 	}
 
 	@Test
@@ -345,8 +362,8 @@ public class ConnectSupportTest {
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		Connection<?> connection = support.completeConnection(new TestOAuth1ConnectionFactory(OAuth1Version.CORE_10_REVISION_A), request);
 		assertEquals("TestUser", connection.getDisplayName());
-		assertEquals("http://someprovider.com/?f", connection.getImageUrl());
-		assertEquals("http://someprovider.com/testuser", connection.getProfileUrl());
+		assertEquals("https://someprovider.com/?f", connection.getImageUrl());
+		assertEquals("https://someprovider.com/testuser", connection.getProfileUrl());
 	}
 
 	@Test
@@ -355,15 +372,16 @@ public class ConnectSupportTest {
 		MockHttpServletRequest mockRequest = new PortAwareMockHttpServletRequest();
 		mockRequest.addParameter("code", "authorization-grant");
 		mockRequest.addParameter("state", "STATE");
-		mockRequest.setScheme("http");
+		mockRequest.setScheme("https");
+		mockRequest.setServerPort(443);
 		mockRequest.setServerName("somesite.com");
 		mockRequest.setRequestURI("/connect/someprovider");
 		mockRequest.getSession().setAttribute("oauth2State", "STATE");
 		ServletWebRequest request = new ServletWebRequest(mockRequest);
 		Connection<?> connection = support.completeConnection(new TestOAuth2ConnectionFactory(), request);
 		assertEquals("TestUser", connection.getDisplayName());
-		assertEquals("http://someprovider.com/?f", connection.getImageUrl());
-		assertEquals("http://someprovider.com/testuser", connection.getProfileUrl());
+		assertEquals("https://someprovider.com/?f", connection.getImageUrl());
+		assertEquals("https://someprovider.com/testuser", connection.getProfileUrl());
 	}
 
 	@Test
@@ -392,7 +410,7 @@ public class ConnectSupportTest {
 		assertEquals("https://serviceprovider.com/oauth/authorize", url);
 	}
 
-	
+
 	@Test
 	public void buildOAuthUrl_OAuth2_withCallbackUrl() throws Exception {
 		ConnectSupport support = new ConnectSupport();
@@ -405,17 +423,17 @@ public class ConnectSupportTest {
 		String url = support.buildOAuthUrl(new TestOAuth2ConnectionFactory(), request);
 		assertEquals("https://serviceprovider.com/oauth/authorize?redirect_uri=https://overridingcallbackurl.com:4321&state=STATE", url);
 	}
-	
+
 	// private helpers
-	
+
 	private static class TestOAuth1ConnectionFactory extends OAuth1ConnectionFactory<TestApi> {
 
 		public TestOAuth1ConnectionFactory(OAuth1Version version) {
 			super("someprovider", new TestOAuth1ServiceProvider(version), new TestApiAdapter());
 		}
-		
+
 	}
-	
+
 	private static class TestOAuth1ServiceProvider implements OAuth1ServiceProvider<TestApi> {
 
 		private final OAuth1Version version;
@@ -423,7 +441,7 @@ public class ConnectSupportTest {
 		public TestOAuth1ServiceProvider(OAuth1Version version) {
 			this.version = version;
 		}
-		
+
 		public OAuth1Operations getOAuthOperations() {
 			return new OAuth1Operations() {
 				public OAuth1Version getVersion() {
@@ -449,10 +467,10 @@ public class ConnectSupportTest {
 					assertEquals("requestTokenSecret", requestToken.getSecret());
 					assertNull(additionalParameters);
 					return new OAuthToken("accessToken", "accessTokenSecret");
-				}								
+				}
 			};
 		}
-		
+
 		public TestApi getApi(String accessToken, String secret) {
 			return null;
 		}
@@ -467,24 +485,24 @@ public class ConnectSupportTest {
 		public TestOAuth2ConnectionFactory() {
 			super("someprovider", SERVICE_PROVIDER, API_ADAPTER);
 		}
-		
+
 //		@Override
 //		public boolean supportsStateParameter() {
 //			return false;
 //		}
-		
+
 		@Override
 		public Connection<TestApi> createConnection(AccessGrant accessGrant) {
 			return new OAuth2Connection<TestApi>("someprovider", "providerUserId", accessGrant.getAccessToken(),
-					accessGrant.getRefreshToken(), accessGrant.getExpireTime(), SERVICE_PROVIDER, API_ADAPTER);		
+					accessGrant.getRefreshToken(), accessGrant.getExpireTime(), SERVICE_PROVIDER, API_ADAPTER);
 		}
-		
+
 		@Override
 		public String generateState() {
 			return "STATE";
 		}
 	}
-	
+
 	private static class TestOAuth2ServiceProvider implements OAuth2ServiceProvider<TestApi> {
 
 		public OAuth2Operations getOAuthOperations() {
@@ -503,13 +521,13 @@ public class ConnectSupportTest {
 				}
 				public AccessGrant exchangeForAccess(String authorizationGrant, String redirectUri, MultiValueMap<String, String> additionalParameters) {
 					assertEquals("authorization-grant", authorizationGrant);
-					assertEquals("http://somesite.com/connect/someprovider", redirectUri);
+					assertEquals("https://somesite.com/connect/someprovider", redirectUri);
 					assertNull(additionalParameters);
 					return new AccessGrant("access-token");
 				}
 				public AccessGrant exchangeCredentialsForAccess(String username, String password, MultiValueMap<String, String> additionalParameters) {
 					return null;
-				}				
+				}
 				@Deprecated
 				public AccessGrant refreshAccess(String refreshToken, String scope, MultiValueMap<String, String> additionalParameters) {
 					return null;
@@ -529,12 +547,12 @@ public class ConnectSupportTest {
 		public TestApi getApi(final String accessToken) {
 			return null;
 		}
-		
+
 	}
-	
+
 	public interface TestApi {
 	}
-	
+
 	private static class TestApiAdapter implements ApiAdapter<TestApi> {
 
 		public boolean test(TestApi api) {
@@ -543,8 +561,8 @@ public class ConnectSupportTest {
 
 		public void setConnectionValues(TestApi api, ConnectionValues values) {
 			values.setDisplayName("TestUser");
-			values.setImageUrl("http://someprovider.com/?f");
-			values.setProfileUrl("http://someprovider.com/testuser");
+			values.setImageUrl("https://someprovider.com/?f");
+			values.setProfileUrl("https://someprovider.com/testuser");
 			values.setProviderUserId("testuser");
 		}
 
@@ -553,16 +571,16 @@ public class ConnectSupportTest {
 		}
 
 		public void updateStatus(TestApi api, String message) {
-			
+
 		}
-		
+
 	}
-	
+
 	private static String additionalParametersQuery(MultiValueMap<String, String> additionalParameters, boolean existingParameters) {
 		if(additionalParameters == null) {
 			return "";
 		}
-		
+
 		char delimiter = existingParameters ? '&' : '?';
 
 		StringBuffer buffer = new StringBuffer();

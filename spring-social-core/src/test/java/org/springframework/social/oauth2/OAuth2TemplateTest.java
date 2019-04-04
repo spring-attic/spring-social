@@ -34,9 +34,9 @@ import org.springframework.test.web.client.ResponseActions;
 
 public class OAuth2TemplateTest {
 
-	private static final String AUTHORIZE_URL = "http://www.someprovider.com/oauth/authorize";
+	private static final String AUTHORIZE_URL = "https://www.someprovider.com/oauth/authorize";
 
-	private static final String ACCESS_TOKEN_URL = "http://www.someprovider.com/oauth/accessToken";
+	private static final String ACCESS_TOKEN_URL = "https://www.someprovider.com/oauth/accessToken";
 
 	private OAuth2Template oAuth2Template;
 	private OAuth2Template oAuth2TemplateParamBased;
@@ -53,7 +53,7 @@ public class OAuth2TemplateTest {
 		OAuth2Parameters parameters = new OAuth2Parameters();
 		parameters.setRedirectUri("https://www.someclient.com/connect/foo");
 		parameters.setScope("read,write");
-		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=code&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&scope=read%2Cwrite";
+		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=code&redirect_uri=https%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&scope=read%2Cwrite";
 		String actual = oAuth2Template.buildAuthorizeUrl(parameters);
 		assertEquals(expected, actual);
 	}
@@ -63,7 +63,7 @@ public class OAuth2TemplateTest {
 		OAuth2Parameters parameters = new OAuth2Parameters();
 		parameters.setRedirectUri("https://www.someclient.com/connect/foo");
 		parameters.setScope("read,write");
-		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=token&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&scope=read%2Cwrite";
+		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=token&redirect_uri=https%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&scope=read%2Cwrite";
 		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, parameters);
 		assertEquals(expected, actual);
 	}
@@ -72,7 +72,7 @@ public class OAuth2TemplateTest {
 	public void buildAuthorizeUrl_noScopeInParameters() {
 		OAuth2Parameters parameters = new OAuth2Parameters();
 		parameters.setRedirectUri("https://www.someclient.com/connect/foo");
-		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=code&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo";
+		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=code&redirect_uri=https%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo";
 		String actual = oAuth2Template.buildAuthorizeUrl(parameters);
 		assertEquals(expected, actual);
 	}
@@ -85,7 +85,7 @@ public class OAuth2TemplateTest {
 		parameters.add("display", "touch");
 		parameters.add("anotherparam", "somevalue1");
 		parameters.add("anotherparam", "somevalue2");
-		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=token&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&scope=read%2Cwrite&display=touch&anotherparam=somevalue1&anotherparam=somevalue2";
+		String expected = AUTHORIZE_URL + "?client_id=client_id&response_type=token&redirect_uri=https%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo&scope=read%2Cwrite&display=touch&anotherparam=somevalue1&anotherparam=somevalue2";
 		String actual = oAuth2Template.buildAuthorizeUrl(GrantType.IMPLICIT_GRANT, parameters);
 		assertEquals(expected, actual);
 	}
@@ -102,7 +102,7 @@ public class OAuth2TemplateTest {
 		assertEquals("read", accessGrant.getScope());
 	}
 
-	
+
 	@Test
 	public void exchangeForAccess_paramBasedClientAuthentication_jsonResponse() {
 		AccessGrant accessGrant = getAccessGrant_paramBasedClientAuth("accessToken.json");
@@ -141,7 +141,7 @@ public class OAuth2TemplateTest {
 		assertNull(accessGrant.getExpireTime());
 		assertNull(accessGrant.getScope());
 	}
-	
+
 	@Test
 	public void exchangeForAccess_paramBasedClientAuthentication_jsonResponse_noExpiresInOrScope() {
 		AccessGrant accessGrant = getAccessGrant_paramBasedClientAuth("accessToken_noExpiresInOrScope.json");
@@ -204,7 +204,7 @@ public class OAuth2TemplateTest {
 		assertTrue(approximateExpirationTime - actualExpirationTime < 1000);
 		assertNull(accessGrant.getScope());
 	}
-	
+
 	@Test
 	public void exchangeCredentialsForAccess() {
 		AccessGrant accessGrant = passwordGrant("accessToken.json");
@@ -228,7 +228,7 @@ public class OAuth2TemplateTest {
 		assertTrue(approximateExpirationTime - actualExpirationTime < 1000);
 		assertEquals("read", accessGrant.getScope());
 	}
-	
+
 	@Test
 	public void refreshAccessToken_paramBasedClientAuthentication_jsonResponse() {
 		AccessGrant accessGrant = refreshToken_paramBasedClientAuth("refreshToken.json");
@@ -249,7 +249,7 @@ public class OAuth2TemplateTest {
 		assertNull(accessGrant.getExpireTime());
 		assertNull(accessGrant.getScope());
 	}
-	
+
 	@Test
 	public void refreshAccessToken_paramBasedClientAuthentication_jsonResponse_noExpiresIn() {
 		AccessGrant accessGrant = refreshToken_paramBasedClientAuth("refreshToken_noExpiresIn.json");
@@ -280,7 +280,7 @@ public class OAuth2TemplateTest {
 		assertTrue(approximateExpirationTime - actualExpirationTime < 1000);
 		assertEquals("read,write", accessGrant.getScope());
 	}
-	
+
 	// parameter assertion tests
 
 	@Test(expected = IllegalArgumentException.class)
@@ -302,7 +302,7 @@ public class OAuth2TemplateTest {
 	public void construct_nullAccessTokenUrl() {
 		new OAuth2Template("id", "secret", AUTHORIZE_URL, null);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void setRequestFactory_null() {
 		oAuth2Template.setRequestFactory(null);
@@ -319,19 +319,19 @@ public class OAuth2TemplateTest {
 	private AccessGrant getAccessGrant(String responseFile) {
 		return getAccessGrant(oAuth2Template, "", "Basic Y2xpZW50X2lkOmNsaWVudF9zZWNyZXQ=", responseFile);
 	}
-	
+
 	private AccessGrant getAccessGrant(OAuth2Template oauthTemplate, String expectedClientParams, String expectedAuthorizationHeader, String responseFile) {
 		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauthTemplate.getRestTemplate());
 		ResponseActions responseActions = mockServer.expect(requestTo(ACCESS_TOKEN_URL))
 				.andExpect(method(POST))
-				.andExpect(content().string(expectedClientParams + "code=code&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fcallback&grant_type=authorization_code"));
+				.andExpect(content().string(expectedClientParams + "code=code&redirect_uri=https%3A%2F%2Fwww.someclient.com%2Fcallback&grant_type=authorization_code"));
 		if (expectedAuthorizationHeader != null) {
 			responseActions.andExpect(header("Authorization", expectedAuthorizationHeader));
 		}
 		responseActions.andRespond(withSuccess(new ClassPathResource(responseFile, getClass()), MediaType.APPLICATION_JSON));
 		return oauthTemplate.exchangeForAccess("code", "https://www.someclient.com/callback", null);
 	}
-	
+
 	private AccessGrant passwordGrant_paramBasedClientAuth(String responseFile) {
 		return passwordGrant(oAuth2TemplateParamBased, "client_id=client_id&client_secret=client_secret&", null, responseFile);
 	}
@@ -339,7 +339,7 @@ public class OAuth2TemplateTest {
 	private AccessGrant passwordGrant(String responseFile) {
 		return passwordGrant(oAuth2Template, "", "Basic Y2xpZW50X2lkOmNsaWVudF9zZWNyZXQ=", responseFile);
 	}
-	
+
 	private AccessGrant passwordGrant(OAuth2Template oauthTemplate, String expectedClientParams, String expectedAuthorizationHeader, String responseFile) {
 		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauthTemplate.getRestTemplate());
 		ResponseActions responseActions = mockServer.expect(requestTo(ACCESS_TOKEN_URL))
@@ -383,7 +383,7 @@ public class OAuth2TemplateTest {
 	private AccessGrant refreshToken(String responseFile) {
 		return refreshToken(oAuth2Template, "", "Basic Y2xpZW50X2lkOmNsaWVudF9zZWNyZXQ=", responseFile);
 	}
-	
+
 	private AccessGrant refreshToken(OAuth2Template oauthTemplate, String expectedClientParams, String expectedAuthorizationHeader, String responseFile) {
 		MockRestServiceServer mockServer = MockRestServiceServer.createServer(oauthTemplate.getRestTemplate());
 		ResponseActions responseActions = mockServer.expect(requestTo(ACCESS_TOKEN_URL))

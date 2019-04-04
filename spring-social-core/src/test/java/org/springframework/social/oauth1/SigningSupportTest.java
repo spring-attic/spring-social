@@ -47,7 +47,7 @@ public class SigningSupportTest {
 		additionalParameters.add("c@", ""); // query parameter
 		additionalParameters.add("a2", "r b"); // query parameter
 		String authorizationHeader = signingUtils.buildAuthorizationHeaderValue(HttpMethod.POST, new URI("https://example.com/request"), oauthParameters, additionalParameters, "consumer_secret", "token_secret");
-		assertAuthorizationHeader(authorizationHeader, "qz6HT3AG1Z9J%2BP99O4HeMtClGeY%3D");
+		assertAuthorizationHeader(authorizationHeader, "5NwPB9xpUyKSBbr7%2FrycPZymPiY%3D");
 	}
 
 	@Test
@@ -59,7 +59,7 @@ public class SigningSupportTest {
 		HttpRequest request = new SimpleClientHttpRequestFactory().createRequest(uri, HttpMethod.POST);
 		request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		String authorizationHeader = signingUtils.buildAuthorizationHeaderValue(request, "c2&a3=2+q".getBytes(), new OAuth1Credentials("9djdj82h48djs9d2", "consumer_secret", "kkk9d7dh3k39sjv7", "token_secret"));
-		assertAuthorizationHeader(authorizationHeader, "qz6HT3AG1Z9J%2BP99O4HeMtClGeY%3D");
+		assertAuthorizationHeader(authorizationHeader, "5NwPB9xpUyKSBbr7%2FrycPZymPiY%3D");
 	}
 
 	@Test
@@ -71,7 +71,7 @@ public class SigningSupportTest {
 		HttpRequest request = new SimpleClientHttpRequestFactory().createRequest(uri, HttpMethod.POST);
 		request.getHeaders().setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 		String authorizationHeader = signingUtils.buildAuthorizationHeaderValue(request, "c2&a3=2+q".getBytes(), new OAuth1Credentials("9djdj82h48djs9d2", "con+sumer=secret", "kkk9d7dh3k39sjv7", "token+secret="));
-		assertAuthorizationHeader(authorizationHeader, "7VuTmiewi5yudNuXhlZvT1UI53w%3D");
+		assertAuthorizationHeader(authorizationHeader, "sAcfLeRUfuMfW7WGKfCRpiwIJ%2Fc%3D");
 	}
 
 	/*
@@ -93,12 +93,12 @@ public class SigningSupportTest {
 		collectedParameters.add("a3", "2 q");
 		collectedParameters.setAll(oauthParameters);
 		String baseString = signingUtils.buildBaseString(HttpMethod.POST, "https://example.com/request", collectedParameters);
-		
+
 		String[] baseStringParts = baseString.split("&");
 		assertEquals(3, baseStringParts.length);
 		assertEquals("POST", baseStringParts[0]);
-		assertEquals("http%3A%2F%2Fexample.com%2Frequest", baseStringParts[1]);
-			
+		assertEquals("https%3A%2F%2Fexample.com%2Frequest", baseStringParts[1]);
+
 		String[] parameterParts = baseStringParts[2].split("%26");
 		assertEquals(12, parameterParts.length);
 		assertEquals("a2%3Dr%2520b", parameterParts[0]);
@@ -114,7 +114,7 @@ public class SigningSupportTest {
 		assertEquals("oauth_token%3Dkkk9d7dh3k39sjv7", parameterParts[10]);
 		assertEquals("oauth_version%3D1.0", parameterParts[11]);
 	}
-	
+
 	/*
 	 * Tests the buildBaseString() method using the example given at https://dev.twitter.com/pages/auth#signing-requests
 	 * as the test data.
@@ -124,26 +124,26 @@ public class SigningSupportTest {
 		SigningSupport signingUtils = new SigningSupport();
 		signingUtils.setTimestampGenerator(new MockTimestampGenerator(2468013579L, 1357924680));
 		Map<String, String> oauthParameters = signingUtils.commonOAuthParameters("GDdmIQH6jhtmLUypg82g");
-		oauthParameters.put("oauth_callback", "http://localhost:3005/the_dance/process_callback?service_provider_id=11");
+		oauthParameters.put("oauth_callback", "https://localhost:3005/the_dance/process_callback?service_provider_id=11");
 		LinkedMultiValueMap<String, String> collectedParameters = new LinkedMultiValueMap<String, String>();
 		collectedParameters.setAll(oauthParameters);
 		String baseString = signingUtils.buildBaseString(HttpMethod.POST, "https://api.twitter.com/oauth/request_token", collectedParameters);
-		
+
 		String[] baseStringParts = baseString.split("&");
 		assertEquals(3, baseStringParts.length);
 		assertEquals("POST", baseStringParts[0]);
 		assertEquals("https%3A%2F%2Fapi.twitter.com%2Foauth%2Frequest_token", baseStringParts[1]);
-		
+
 		String[] parameterParts = baseStringParts[2].split("%26");
 		assertEquals(6, parameterParts.length);
-		assertEquals("oauth_callback%3Dhttp%253A%252F%252Flocalhost%253A3005%252Fthe_dance%252Fprocess_callback%253Fservice_provider_id%253D11", parameterParts[0]);
+		assertEquals("oauth_callback%3Dhttps%253A%252F%252Flocalhost%253A3005%252Fthe_dance%252Fprocess_callback%253Fservice_provider_id%253D11", parameterParts[0]);
 		assertEquals("oauth_consumer_key%3DGDdmIQH6jhtmLUypg82g", parameterParts[1]);
 		assertEquals("oauth_nonce%3D1357924680", parameterParts[2]);
 		assertEquals("oauth_signature_method%3DHMAC-SHA1", parameterParts[3]);
 		assertEquals("oauth_timestamp%3D2468013579", parameterParts[4]);
 		assertEquals("oauth_version%3D1.0", parameterParts[5]);
 	}
-	
+
 	private void assertAuthorizationHeader(String authorizationHeader, String expectedSignature) {
 		List<String> headerElements = normalizedHeaderElements(authorizationHeader);
 		assertEquals("OAuth", headerElements.get(0));

@@ -48,31 +48,33 @@ public class OAuth1AuthenticationServiceTest {
 		final OAuthToken oAuthToken = new OAuthToken("my_token", "my_secret");
 		final String verifier = "my_verifier";
 		final Connection<Object> connection = DummyConnection.dummy("provider", "user");
-		
+
 		final OAuth1AuthenticationService<Object> authSvc = new OAuth1AuthenticationService<Object>(factory);
 		authSvc.getReturnToUrlParameters().add("param");
 		authSvc.afterPropertiesSet();
-		
+
 		final MockServletContext context = new MockServletContext();
 		final MockHttpSession session = new MockHttpSession(context);
-		
+
 		// mock definitions
 		when(factory.getProviderId()).thenReturn(connection.getKey().getProviderId());
 		when(factory.getOAuthOperations()).thenReturn(operations);
 		when(factory.createConnection(ArgMatchers.oAuthToken(oAuthToken))).thenReturn(connection);
-		
+
 		when(operations.getVersion()).thenReturn(OAuth1Version.CORE_10_REVISION_A);
-		when(operations.fetchRequestToken("http://"+serverName+"/auth/foo?param=param_value", null)).thenReturn(oAuthToken);
+		when(operations.fetchRequestToken("https://"+serverName+"/auth/foo?param=param_value", null)).thenReturn(oAuthToken);
 		when(operations.exchangeForAccessToken(ArgMatchers.authorizedRequestToken(oAuthToken, verifier), ArgumentMatchers.same((MultiValueMap<String, String>) null))).thenReturn(oAuthToken);
 		when(operations.buildAuthenticateUrl(oAuthToken.getValue(), OAuth1Parameters.NONE)).thenReturn(serviceUrl + "?oauth_token=" + oAuthToken.getValue());
-		
+
 		// first phase
 		MockHttpServletRequest request = new MockHttpServletRequest(context, "GET", "/auth/foo");
+		request.setScheme("https");
+		request.setServerPort(443);
 		request.setServerName(serverName);
 		request.setSession(session);
 		request.addParameter("param", "param_value");
-		MockHttpServletResponse response = new MockHttpServletResponse(); 
-		
+		MockHttpServletResponse response = new MockHttpServletResponse();
+
 		try {
 			SocialAuthenticationToken token = authSvc.getAuthToken(request, response);
 			fail("redirect expected, was token " + token);
@@ -80,14 +82,14 @@ public class OAuth1AuthenticationServiceTest {
 			// expect redirect to service url including token
 			assertEquals(serviceUrl + "?oauth_token=" + oAuthToken.getValue(), e.getRedirectUrl());
 		}
-		
+
 		// second phase
 		request = new MockHttpServletRequest(context, "GET", "/auth/foo");
 		request.setServerName(serverName);
 		request.setSession(session);
 		request.addParameter("oauth_verifier", verifier);
-		response = new MockHttpServletResponse(); 
-		
+		response = new MockHttpServletResponse();
+
 		SocialAuthenticationToken token = authSvc.getAuthToken(request, response);
 		assertNotNull(token);
 		assertTrue(token.getConnection() instanceof Connection);

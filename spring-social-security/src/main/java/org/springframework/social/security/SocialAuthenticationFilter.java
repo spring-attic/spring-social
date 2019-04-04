@@ -50,7 +50,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 /**
  * Filter for handling the provider sign-in flow within the Spring Security filter chain.
  * Should be injected into the chain at or before the PRE_AUTH_FILTER location.
- * 
+ *
  * @author Stefan Fussenegger
  * @author Craig Walls
  * @author Yuan Ji
@@ -71,7 +71,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 
 	private UsersConnectionRepository usersConnectionRepository;
 
-	private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();	
+	private SessionStrategy sessionStrategy = new HttpSessionSessionStrategy();
 
 	private String filterProcessesUrl = DEFAULT_FILTER_PROCESSES_URL;
 
@@ -85,7 +85,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		this.authServiceLocator = authServiceLocator;
 		super.setAuthenticationFailureHandler(new SocialAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler(DEFAULT_FAILURE_URL)));
 	}
-	
+
 	/**
 	 * Sets the signup URL; the URL to redirect to if authentication fails so that the user can register with the application.
 	 * May be fully-qualified URL (e.g., "https://somehost/somepath/signup") or a path relative to application's servlet context path (e.g., "/signup").
@@ -94,7 +94,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	public void setSignupUrl(String signupUrl) {
 		this.signupUrl = signupUrl;
 	}
-	
+
 	public void setConnectionAddedRedirectUrl(String connectionAddedRedirectUrl) {
 		this.connectionAddedRedirectUrl = connectionAddedRedirectUrl;
 	}
@@ -151,7 +151,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 			throw new IllegalStateException("can't set postFailureUrl on unknown failureHandler, type is " + failureHandler.getClass().getName());
 		}
 	}
-	
+
 	/**
 	 * Sets a strategy to use when persisting information that is to survive past the boundaries of a request.
 	 * The default strategy is to set the data as attributes in the HTTP Session.
@@ -168,7 +168,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	public SocialAuthenticationServiceLocator getAuthServiceLocator() {
 		return authServiceLocator;
 	}
-	
+
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 		if (detectRejection(request)) {
 			if (logger.isDebugEnabled()) {
@@ -176,7 +176,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 			}
 			throw new SocialAuthenticationException("Authentication failed because user rejected authorization.");
 		}
-		
+
 		Set<String> authProviders = authServiceLocator.registeredAuthenticationProviderIds();
 		String authProviderId = getRequestedProviderId(request);
 
@@ -210,16 +210,16 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		if ((parameterKeys.size() == 1) && (parameterKeys.contains("state"))) {
 			return false;
 		}
-		return parameterKeys.size() > 0 
-				&& !parameterKeys.contains("oauth_token") 
-				&& !parameterKeys.contains("code") 
+		return parameterKeys.size() > 0
+				&& !parameterKeys.contains("oauth_token")
+				&& !parameterKeys.contains("code")
 				&& !parameterKeys.contains("scope");
 	}
 
 	/**
 	 * Indicates whether this filter should attempt to process a social network login request for the current invocation.
-	 * <p>Check if request URL matches filterProcessesUrl with valid providerId. 
-	 * The URL must be like {filterProcessesUrl}/{providerId}. 
+	 * <p>Check if request URL matches filterProcessesUrl with valid providerId.
+	 * The URL must be like {filterProcessesUrl}/{providerId}.
 	 * @return <code>true</code> if the filter should attempt authentication, <code>false</code> otherwise.
 	 */
 	@Deprecated
@@ -260,7 +260,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		repo.addConnection(connection);
 		return connection;
 	}
-	
+
 	@Override
 	public void setFilterProcessesUrl(String filterProcessesUrl) {
 		super.setFilterProcessesUrl(filterProcessesUrl);
@@ -290,9 +290,9 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 
 		final SocialAuthenticationToken token = authService.getAuthToken(request, response);
 		if (token == null) return null;
-		
+
 		Assert.notNull(token.getConnection(), "Token connection must not be null.");
-		
+
 		Authentication auth = getAuthentication();
 		// Check if not already authenticated or is already logged in anonymous.
 		if (auth == null || !auth.isAuthenticated() || authenticationTrustResolver.isAnonymous(auth)) {
@@ -300,9 +300,9 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		} else {
 			addConnection(authService, request, token, auth);
 			return auth;
-		}		
-	}	
-	
+		}
+	}
+
 	private String getRequestedProviderId(HttpServletRequest request) {
 		String uri = request.getRequestURI();
 		int pathParamIndex = uri.indexOf(';');
@@ -337,7 +337,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 			logger.warn("can't add connection without userId or connection");
 			return;
 		}
-		
+
 		connection = addConnection(authService, userId, connection.createData());
 		if(connection != null) {
 			String redirectUrl = authService.getConnectionAddedRedirectUrl(request, connection);
@@ -357,7 +357,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 			token.setDetails(authenticationDetailsSource.buildDetails(request));
 			Authentication success = getAuthenticationManager().authenticate(token);
 			Assert.isInstanceOf(SocialUserDetails.class, success.getPrincipal(), "unexpected principle type");
-			updateConnections(authService, token, success);			
+			updateConnections(authService, token, success);
 			return success;
 		} catch (BadCredentialsException e) {
 			// connection unknown, register new user?
@@ -377,6 +377,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		if (!signupUrl.startsWith("/")) {
 			return ServletUriComponentsBuilder.fromContextPath(request).path("/" + signupUrl).build().toUriString();
 		}
+
 		return ServletUriComponentsBuilder.fromContextPath(request).path(signupUrl).build().toUriString();
 	}
 
@@ -390,7 +391,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 	}
 
 	private static final String DEFAULT_FAILURE_URL = "/signin";
-	
+
 	private static final String DEFAULT_FILTER_PROCESSES_URL = "/auth";
 
 }

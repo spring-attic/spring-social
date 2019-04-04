@@ -63,6 +63,8 @@ public class OAuth2AuthenticationServiceTest {
 
 		// first phase
 		MockHttpServletRequest request = new MockHttpServletRequest(context, "GET", "/auth/foo");
+		request.setScheme("https");
+		request.setServerPort(443);
 		request.setServerName(serverName);
 		request.setSession(session);
 		request.addParameter("param", "param_value");
@@ -81,6 +83,8 @@ public class OAuth2AuthenticationServiceTest {
 
 		// second phase
 		request = new MockHttpServletRequest(context, "GET", "/auth/foo");
+		request.setScheme("https");
+		request.setServerPort(443);
 		request.setServerName(serverName);
 		request.setSession(session);
 		request.addParameter("code", code);
@@ -91,7 +95,7 @@ public class OAuth2AuthenticationServiceTest {
 		assertTrue(token.getConnection() instanceof Connection);
 		assertFalse(token.isAuthenticated());
 	}
-	
+
 	@Test
 	public void test_withProxyHeaders() throws Exception {
 		@SuppressWarnings("unchecked")
@@ -115,18 +119,20 @@ public class OAuth2AuthenticationServiceTest {
 		when(factory.createConnection(accessGrant)).thenReturn(connection);
 
 		when(
-				operations.buildAuthenticateUrl(oAuth2Parameters("http://x.com/auth/foo?param=param_value"))).thenReturn(
+				operations.buildAuthenticateUrl(oAuth2Parameters("https://x.com/auth/foo?param=param_value"))).thenReturn(
 				"https://facebook.com/auth");
 		when(operations.exchangeForAccess(code, "https://example.com/auth/foo", null)).thenReturn(accessGrant);
 
 		// first phase
 		MockHttpServletRequest request = new MockHttpServletRequest(context, "GET", "/auth/foo");
+		request.setScheme("https");
+		request.setServerPort(443);
 		request.setServerName(serverName);
 		request.setSession(session);
 		request.addParameter("param", "param_value");
 		request.addHeader("Host", "x.com");
-		request.addHeader("X-Forwarded-Proto", "http");
-		request.addHeader("X-Forwarded-Port", "80");
+		request.addHeader("X-Forwarded-Proto", "https");
+		request.addHeader("X-Forwarded-Port", "443");
 		MockHttpServletResponse response = new MockHttpServletResponse();
 
 		try {
@@ -143,6 +149,8 @@ public class OAuth2AuthenticationServiceTest {
 
 		// second phase
 		request = new MockHttpServletRequest(context, "GET", "/auth/foo");
+		request.setScheme("https");
+		request.setServerPort(443);
 		request.setServerName(serverName);
 		request.setSession(session);
 		request.addParameter("code", code);

@@ -25,26 +25,26 @@ public class URIBuilderTest {
 
 	@Test
 	public void addParameterWithNoExistingParameters() {
-		URI uri = URIBuilder.fromUri("http://someurl.com/foo/bar").queryParam("xyz", "987").build();
+		URI uri = URIBuilder.fromUri("https://someurl.com/foo/bar").queryParam("xyz", "987").build();
 		assertEquals("xyz=987", uri.getQuery());
 	}
 
 	@Test
 	public void addParameterToExistingParameters() {
-		URI uri = URIBuilder.fromUri("http://someurl.com/foo/bar?abc=123").queryParam("xyz", "987").build();
+		URI uri = URIBuilder.fromUri("https://someurl.com/foo/bar?abc=123").queryParam("xyz", "987").build();
 		assertEquals("abc=123&xyz=987", uri.getQuery());
 	}
-	
+
 	@Test
 	public void addParameterToExistingParameters_fromURI() throws Exception {
-		URI baseUri = new URI("http://someurl.com/foo/bar");
+		URI baseUri = new URI("https://someurl.com/foo/bar");
 		URI uri = URIBuilder.fromUri(baseUri).queryParam("xyz", "987").build();
 		assertEquals("xyz=987", uri.getQuery());
 	}
-	
+
 	@Test
 	public void addParameterWithNoExistingParameters_fromURI() throws Exception {
-		URI baseUri = new URI("http://someurl.com/foo/bar?abc=123");
+		URI baseUri = new URI("https://someurl.com/foo/bar?abc=123");
 		URI uri = URIBuilder.fromUri(baseUri).queryParam("xyz", "987").build();
 		assertEquals("abc=123&xyz=987", uri.getQuery());
 	}

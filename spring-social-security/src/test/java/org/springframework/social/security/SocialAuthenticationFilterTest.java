@@ -65,7 +65,7 @@ public class SocialAuthenticationFilterTest {
 		FilterTestEnv env = new FilterTestEnv("GET", "/auth", null);
 		env.filter.setFilterProcessesUrl(env.req.getRequestURI());
 		env.filter.setPostLoginUrl("/success");
-		
+
 		ConnectionFactory<Object> factory = mock(MockConnectionFactory.class);
 		when(factory.getProviderId()).thenReturn("mock");
 		env.req.setRequestURI(env.req.getRequestURI() + "/" + factory.getProviderId());
@@ -83,7 +83,7 @@ public class SocialAuthenticationFilterTest {
 		env.doFilter();
 
 		assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-		
+
 		assertEquals("/success", env.res.getRedirectedUrl());
 	}
 
@@ -101,7 +101,7 @@ public class SocialAuthenticationFilterTest {
 
 	@Test
 	public void testFailedAuth_fullyQualifiedUrlRegister() throws Exception {
-		FilterTestEnv env = new FilterTestEnv("GET", "/auth", "http://localhost/register");
+		FilterTestEnv env = new FilterTestEnv("GET", "/auth", "https://localhost/register");
 		testFailedAuth(env);
 	}
 
@@ -109,7 +109,7 @@ public class SocialAuthenticationFilterTest {
 	private void testFailedAuth(FilterTestEnv env) throws Exception {
 		env.filter.setFilterProcessesUrl(env.req.getRequestURI());
 		env.filter.setPostLoginUrl("/success");
-		
+
 		ConnectionFactory<Object> factory = mock(MockConnectionFactory.class);
 		when(factory.getProviderId()).thenReturn("mock");
 		env.req.setRequestURI(env.req.getRequestURI() + "/" + factory.getProviderId());
@@ -127,42 +127,42 @@ public class SocialAuthenticationFilterTest {
 		env.doFilter();
 
 		assertNull(SecurityContextHolder.getContext().getAuthentication());
-		
-		assertEquals("http://localhost/register", env.res.getRedirectedUrl());
+
+		assertEquals("https://localhost/register", env.res.getRedirectedUrl());
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void addConnection() {
 		UsersConnectionRepository usersConnectionRepository = mock(UsersConnectionRepository.class);
 		SocialAuthenticationFilter filter = new SocialAuthenticationFilter(null, null, usersConnectionRepository, null);
-		
+
 		SocialAuthenticationService<Object> authService = mock(SocialAuthenticationService.class);
 		ConnectionRepository connectionRepository = mock(ConnectionRepository.class);
 		ConnectionFactory<Object> connectionFactory = mock(MockConnectionFactory.class);
-		
+
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		ConnectionData data = new ConnectionData("dummyprovider", "1234", null, null, null, null, null, null, null);
 		String userId = "joe";
-		
+
 		DummyConnection<Object> connection = DummyConnection.dummy(data.getProviderId(), userId);
-		
+
 		when(usersConnectionRepository.findUserIdsConnectedTo(data.getProviderId(), set(data.getProviderUserId()))).thenReturn(empty(String.class));
 		when(usersConnectionRepository.createConnectionRepository(userId)).thenReturn(connectionRepository);
-		
+
 		when(authService.getConnectionCardinality()).thenReturn(ConnectionCardinality.ONE_TO_ONE);
 		when(authService.getConnectionFactory()).thenReturn(connectionFactory);
 		when(authService.getConnectionAddedRedirectUrl(request, connection)).thenReturn("/redirect");
-		
+
 		when(connectionFactory.createConnection(data)).thenReturn(connection);
-		
+
 		Connection<?> addedConnection = filter.addConnection(authService, userId, data);
 		assertNotNull(addedConnection);
 		assertSame(connection, addedConnection);
-		
+
 		verify(connectionRepository).addConnection(connection);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Test
 	public void addConnection_authenticated() throws Exception {
@@ -254,7 +254,7 @@ public class SocialAuthenticationFilterTest {
 	private static <T> Set<T> empty(Class<T> cls) {
 		return Collections.emptySet();
 	}
-	
+
 	private static Set<String> set(String ... o) {
 		return Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(o)));
 	}
@@ -276,6 +276,8 @@ public class SocialAuthenticationFilterTest {
 		private FilterTestEnv(String method, String requestURI, String signupUrl) {
 			context = new MockServletContext();
 			req = new MockHttpServletRequest(context, method, requestURI);
+			req.setScheme("https");
+			req.setServerPort(443);
 			res = new MockHttpServletResponse();
 			chain = new MockFilterChain();
 			authManager = mock(AuthenticationManager.class);
@@ -287,9 +289,9 @@ public class SocialAuthenticationFilterTest {
 			filter.setServletContext(context);
 			filter.setRememberMeServices(new NullRememberMeServices());
 			filter.setSignupUrl(signupUrl);
-			
+
 			when(filter.getUsersConnectionRepository().createConnectionRepository(Mockito.anyString())).thenReturn(connectionRepository);
-			
+
 			auth = new SocialAuthenticationToken(DummyConnection.dummy("provider", "user"), null);
 
 			Collection<? extends GrantedAuthority> authorities = Collections.emptyList();
@@ -300,7 +302,7 @@ public class SocialAuthenticationFilterTest {
 		private void addAuthService(SocialAuthenticationService<?> authenticationService) {
 			((SocialAuthenticationServiceRegistry)filter.getAuthServiceLocator()).addAuthenticationService(authenticationService);
 		}
-		
+
 		private void doFilter() throws Exception {
 
 			filter.init(config);
