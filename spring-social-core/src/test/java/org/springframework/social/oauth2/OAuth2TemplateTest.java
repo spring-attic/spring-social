@@ -36,16 +36,22 @@ public class OAuth2TemplateTest {
 
 	private static final String AUTHORIZE_URL = "http://www.someprovider.com/oauth/authorize";
 
+	private static final String AUTHORIZE_URL_WITH_QUERY = "http://www.someprovider.com/oauth/authorize?foo=bar";
+
+	private static final String AUTHENTICATE_URL_WITH_QUERY = "http://www.someprovider.com/oauth/authenticate?foo=bar";
+
 	private static final String ACCESS_TOKEN_URL = "http://www.someprovider.com/oauth/accessToken";
 
 	private OAuth2Template oAuth2Template;
 	private OAuth2Template oAuth2TemplateParamBased;
+	private OAuth2Template oAuth2TemplateWithQuery;
 
 	@Before
 	public void setup() {
 		oAuth2Template = new OAuth2Template("client_id", "client_secret", AUTHORIZE_URL, null, ACCESS_TOKEN_URL);
 		oAuth2TemplateParamBased = new OAuth2Template("client_id", "client_secret", AUTHORIZE_URL, null, ACCESS_TOKEN_URL);
 		oAuth2TemplateParamBased.setUseParametersForClientAuthentication(true);
+		oAuth2TemplateWithQuery = new OAuth2Template("client_id", "client_secret", AUTHORIZE_URL_WITH_QUERY, AUTHENTICATE_URL_WITH_QUERY, ACCESS_TOKEN_URL);
 	}
 
 	@Test
@@ -90,6 +96,24 @@ public class OAuth2TemplateTest {
 		assertEquals(expected, actual);
 	}
 
+	@Test
+	public void buildAuthorizeUrl_withQuery() {
+		OAuth2Parameters parameters = new OAuth2Parameters();
+		parameters.setRedirectUri("http://www.someclient.com/connect/foo");
+		String expected = AUTHORIZE_URL_WITH_QUERY + "&client_id=client_id&response_type=code&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo";
+		String actual = oAuth2TemplateWithQuery.buildAuthorizeUrl(parameters);
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void buildAuthenticateUrl_withQuery() {
+		OAuth2Parameters parameters = new OAuth2Parameters();
+		parameters.setRedirectUri("http://www.someclient.com/connect/foo");
+		String expected = AUTHENTICATE_URL_WITH_QUERY + "&client_id=client_id&response_type=code&redirect_uri=http%3A%2F%2Fwww.someclient.com%2Fconnect%2Ffoo";
+		String actual = oAuth2TemplateWithQuery.buildAuthenticateUrl(parameters);
+		assertEquals(expected, actual);
+	}
+	
 	@Test
 	public void exchangeForAccess_jsonResponse() {
 		AccessGrant accessGrant = getAccessGrant("accessToken.json");
