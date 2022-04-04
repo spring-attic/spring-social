@@ -1,3 +1,5 @@
+# spring-social is no longer actively maintained by VMware, Inc.
+
 # Spring Social
 
 [Spring Social] is an extension of the [Spring Framework] that helps you connect your applications with Software-as-a-Service (SaaS) providers such as Facebook and Twitter.
