@@ -15,10 +15,15 @@
  */
 package org.springframework.social.security.provider;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.social.connect.Connection;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * @author Stefan Fussennegger
@@ -29,6 +34,8 @@ public abstract class AbstractSocialAuthenticationService<S> implements SocialAu
 	private ConnectionCardinality connectionCardinality = ConnectionCardinality.ONE_TO_ONE;
 
 	private String connectionAddedRedirectUrl;
+
+	private Set<String> returnToUrlParameters;
 
 	public void afterPropertiesSet() throws Exception {
 	}
@@ -50,6 +57,61 @@ public abstract class AbstractSocialAuthenticationService<S> implements SocialAu
 
 	public void setConnectionAddedRedirectUrl(String connectionAddedRedirectUrl) {
 		this.connectionAddedRedirectUrl = connectionAddedRedirectUrl;
+	}
+
+	public void setReturnToUrlParameters(Set<String> returnToUrlParameters) {
+		Assert.notNull(returnToUrlParameters, "returnToUrlParameters cannot be null");
+		this.returnToUrlParameters = returnToUrlParameters;
+	}
+
+	public Set<String> getReturnToUrlParameters() {
+		if (returnToUrlParameters == null) {
+			returnToUrlParameters = new HashSet<String>();
+		}
+		return returnToUrlParameters;
+	}
+
+	protected String buildReturnToUrl(HttpServletRequest request) {
+		StringBuffer sb = getProxyHeaderAwareRequestURL(request);
+		sb.append("?");
+		for (String name : getReturnToUrlParameters()) {
+			// Assume for simplicity that there is only one value
+			String value = request.getParameter(name);
+
+			if (value == null) {
+				continue;
+			}
+			sb.append(name).append("=").append(value).append("&");
+		}
+		sb.setLength(sb.length() - 1); // strip trailing ? or &
+		return sb.toString();
+	}
+
+	protected StringBuffer getProxyHeaderAwareRequestURL(HttpServletRequest request) {
+		String host = request.getHeader("Host");
+		if (StringUtils.isEmpty(host)) {
+			return request.getRequestURL();
+		}
+		StringBuffer sb = new StringBuffer();
+		String schemeHeader = request.getHeader("X-Forwarded-Proto");
+		String portHeader = request.getHeader("X-Forwarded-Port");
+		String scheme = StringUtils.isEmpty(schemeHeader) ? request.getScheme()  : schemeHeader;
+		String port = StringUtils.isEmpty(portHeader) ? "" : portHeader;
+		if (scheme.equals("http") && port.equals("80")) {
+			port = "";
+		}
+		if (scheme.equals("https") && port.equals("443")) {
+			port = "";
+		}
+		sb.append(scheme);
+		sb.append("://");
+		sb.append(host);
+		if (StringUtils.hasLength(port)) {
+			sb.append(":");
+			sb.append(port);
+		}
+		sb.append(request.getRequestURI());
+		return sb;
 	}
 
 }

@@ -15,9 +15,6 @@
  */
 package org.springframework.social.security.provider;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -45,8 +42,6 @@ public class OAuth1AuthenticationService<S> extends AbstractSocialAuthentication
 	private final Log logger = LogFactory.getLog(getClass());
 	
 	private static final String OAUTH_TOKEN_ATTRIBUTE = "oauthToken";
-
-	private Set<String> returnToUrlParameters;
 	
 	private OAuth1ConnectionFactory<S> connectionFactory;
 
@@ -60,18 +55,6 @@ public class OAuth1AuthenticationService<S> extends AbstractSocialAuthentication
 
 	public void setConnectionFactory(OAuth1ConnectionFactory<S> connectionFactory) {
 		this.connectionFactory = connectionFactory;
-	}
-
-	public void setReturnToUrlParameters(Set<String> returnToUrlParameters) {
-		Assert.notNull(returnToUrlParameters, "returnToUrlParameters cannot be null");
-		this.returnToUrlParameters = returnToUrlParameters;
-	}
-
-	public Set<String> getReturnToUrlParameters() {
-		if (returnToUrlParameters == null) {
-			returnToUrlParameters = new HashSet<String>();
-		}
-		return returnToUrlParameters;
 	}
 
 	public void afterPropertiesSet() throws Exception {
@@ -112,26 +95,6 @@ public class OAuth1AuthenticationService<S> extends AbstractSocialAuthentication
             Connection<S> connection = getConnectionFactory().createConnection(accessToken);
             return new SocialAuthenticationToken(connection, null);
 		}
-	}
-
-	protected String buildReturnToUrl(HttpServletRequest request) {
-		StringBuffer sb = request.getRequestURL();
-		sb.append("?");
-
-		for (String name : getReturnToUrlParameters()) {
-			// Assume for simplicity that there is only one value
-			String value = request.getParameter(name);
-
-			if (value == null) {
-				continue;
-			}
-			sb.append(name).append("=").append(value).append("&");
-
-		}
-
-		sb.setLength(sb.length() - 1); // strip trailing ? or &
-
-		return sb.toString();
 	}
 
 	private OAuthToken extractCachedRequestToken(HttpServletRequest request) {

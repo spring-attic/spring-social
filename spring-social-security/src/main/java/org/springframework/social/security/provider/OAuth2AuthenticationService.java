@@ -15,9 +15,6 @@
  */
 package org.springframework.social.security.provider;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -42,8 +39,6 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 	protected final Log logger = LogFactory.getLog(getClass());
 	
 	private OAuth2ConnectionFactory<S> connectionFactory;
-
-	private Set<String> returnToUrlParameters;
 	
 	private String defaultScope = "";
 	
@@ -57,18 +52,6 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 
 	public void setConnectionFactory(OAuth2ConnectionFactory<S> connectionFactory) {
 		this.connectionFactory = connectionFactory;
-	}
-
-	public void setReturnToUrlParameters(Set<String> returnToUrlParameters) {
-		Assert.notNull(returnToUrlParameters, "returnToUrlParameters cannot be null");
-		this.returnToUrlParameters = returnToUrlParameters;
-	}
-
-	public Set<String> getReturnToUrlParameters() {
-		if (returnToUrlParameters == null) {
-			returnToUrlParameters = new HashSet<String>();
-		}
-		return returnToUrlParameters;
 	}
 
 	/**
@@ -113,48 +96,6 @@ public class OAuth2AuthenticationService<S> extends AbstractSocialAuthentication
 	    return (state != null) ? state : connectionFactory.generateState();
 	}
 
-	protected String buildReturnToUrl(HttpServletRequest request) {
-		StringBuffer sb = getProxyHeaderAwareRequestURL(request);
-		sb.append("?");
-		for (String name : getReturnToUrlParameters()) {
-			// Assume for simplicity that there is only one value
-			String value = request.getParameter(name);
-
-			if (value == null) {
-				continue;
-			}
-			sb.append(name).append("=").append(value).append("&");
-		}
-		sb.setLength(sb.length() - 1); // strip trailing ? or &
-		return sb.toString();
-	}
-
-	protected StringBuffer getProxyHeaderAwareRequestURL(HttpServletRequest request) {
-		String host = request.getHeader("Host");
-		if (StringUtils.isEmpty(host)) {
-			return request.getRequestURL();
-		}
-		StringBuffer sb = new StringBuffer();
-		String schemeHeader = request.getHeader("X-Forwarded-Proto");
-		String portHeader = request.getHeader("X-Forwarded-Port");
-		String scheme = StringUtils.isEmpty(schemeHeader) ? "http" : schemeHeader;
-		String port = StringUtils.isEmpty(portHeader) ? "80" : portHeader;
-		if (scheme.equals("http") && port.equals("80")){
-			port = "";
-		}
-		if (scheme.equals("https") && port.equals("443")){
-			port = "";
-		}
-		sb.append(scheme);
-		sb.append("://");
-		sb.append(host);
-		if (StringUtils.hasLength(port)){
-			sb.append(":");
-			sb.append(port);
-		}
-		sb.append(request.getRequestURI());
-		return sb;
-	}
 	private void setScope(HttpServletRequest request, OAuth2Parameters params) {
 		String requestedScope = request.getParameter("scope");
 		if (StringUtils.hasLength(requestedScope)) {
