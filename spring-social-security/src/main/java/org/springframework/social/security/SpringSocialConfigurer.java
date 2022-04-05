@@ -53,6 +53,8 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 
 	private String connectionAddedRedirectUrl;
 
+	private String filterProcessesUrl;
+
 	private boolean alwaysUsePostLoginUrl = false;
 
 	/**
@@ -97,7 +99,11 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 		if (connectionAddedRedirectUrl != null) {
 			filter.setConnectionAddedRedirectUrl(connectionAddedRedirectUrl);
 		}
-		
+
+		if (filterProcessesUrl != null) {
+			filter.setFilterProcessesUrl(filterProcessesUrl);
+		}
+
 		http.authenticationProvider(
 				new SocialAuthenticationProvider(usersConnectionRepository, socialUsersDetailsService))
 			.addFilterBefore(postProcess(filter), AbstractPreAuthenticatedProcessingFilter.class);
@@ -172,4 +178,13 @@ public class SpringSocialConfigurer extends SecurityConfigurerAdapter<DefaultSec
 		return this;
 	}
 
+	/**
+	 * Sets the URL that determines if social authentication is required.
+	 * @param filterProcessesUrl the URL that will initiate the social authentication process
+	 * @return this SpringSocialConfigurer for chained configuration
+	 */
+	public SpringSocialConfigurer filterProcessesUrl(String filterProcessesUrl) {
+		this.filterProcessesUrl = filterProcessesUrl;
+		return this;
+	}
 }
