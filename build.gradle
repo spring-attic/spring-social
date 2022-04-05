@@ -330,20 +330,22 @@ artifacts {
 
 }
 
-task updateRootDocs << {
-    copy {
-        from "src/dist"
-        into "${rootProject.projectDir}"
-        include "notice.txt"
-        expand(copyright: new Date().format("yyyy"), version: project.version)
-        rename { filename -> "NOTICE" }
-    }
-
-    copy {
-        from "src/dist"
-        into "${rootProject.projectDir}"
-        include "license.txt"
-        rename { filename -> "LICENSE" }
+task updateRootDocs {
+    doLast {
+        copy {
+            from "src/dist"
+            into "${rootProject.projectDir}"
+            include "notice.txt"
+            expand(copyright: new Date().format("yyyy"), version: project.version)
+            rename { filename -> "NOTICE" }
+        }
+    
+        copy {
+            from "src/dist"
+            into "${rootProject.projectDir}"
+            include "license.txt"
+            rename { filename -> "LICENSE" }
+        }
     }
 }
 

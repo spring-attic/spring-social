@@ -130,7 +130,7 @@ public class ClientHttpRequestFactorySelector {
 						return true;
 					}
 				};
-				return SSLContexts.custom().useProtocol("SSL").loadTrustMaterial(trustStore, allTrust).build();
+				return SSLContexts.custom().setProtocol("SSL").loadTrustMaterial(trustStore, allTrust).build();
 			} catch (KeyStoreException e) {
 				e.printStackTrace();
 			} catch (KeyManagementException e) {

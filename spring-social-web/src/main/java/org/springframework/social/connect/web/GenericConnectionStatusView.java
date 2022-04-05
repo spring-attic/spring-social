@@ -95,11 +95,8 @@ public class GenericConnectionStatusView extends AbstractView {
 			if (profile == null) {
 				builder.append("<h3>Connect to " + escProviderDisplayName + "</h3>");
 				builder.append("<form action=\"/connect/");
-				
-				try {
-					String escProviderId = UriUtils.encodePath(providerId, "UTF-8");
-					builder.append(escProviderId);
-				} catch (UnsupportedEncodingException e) { /* Default to UTF-8...should be fine.*/ }
+				String escProviderId = UriUtils.encodePath(providerId, "UTF-8");
+				builder.append(escProviderId);
 
 				builder.append("\" method=\"POST\">");
 				builder.append("<div class=\"formInfo\">");
