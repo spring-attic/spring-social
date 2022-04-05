@@ -66,7 +66,7 @@ import org.springframework.web.util.WebUtils;
  * @author Roy Clarkson
  */
 @Controller
-@RequestMapping("/connect")
+@RequestMapping("${spring.social.connect.url:/connect}")
 public class ConnectController implements InitializingBean {
 	
 	private final static Log logger = LogFactory.getLog(ConnectController.class);
