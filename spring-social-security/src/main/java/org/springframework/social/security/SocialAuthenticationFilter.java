@@ -296,7 +296,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		Authentication auth = getAuthentication();
 		// Check if not already authenticated or is already logged in anonymous.
 		if (auth == null || !auth.isAuthenticated() || authenticationTrustResolver.isAnonymous(auth)) {
-			return doAuthentication(authService, request, token);
+			return doAuthentication(authService, request, response, token);
 		} else {
 			addConnection(authService, request, token, auth);
 			return auth;
@@ -351,7 +351,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 		}
 	}
 
-	private Authentication doAuthentication(SocialAuthenticationService<?> authService, HttpServletRequest request, SocialAuthenticationToken token) {
+	private Authentication doAuthentication(SocialAuthenticationService<?> authService, HttpServletRequest request, HttpServletResponse response, SocialAuthenticationToken token) {
 		try {
 			if (!authService.getConnectionCardinality().isAuthenticatePossible()) return null;
 			token.setDetails(authenticationDetailsSource.buildDetails(request));
@@ -363,7 +363,7 @@ public class SocialAuthenticationFilter extends AbstractAuthenticationProcessing
 			// connection unknown, register new user?
 			if (signupUrl != null) {
 				// store ConnectionData in session and redirect to register page
-				sessionStrategy.setAttribute(new ServletWebRequest(request), ProviderSignInAttempt.SESSION_ATTRIBUTE, new ProviderSignInAttempt(token.getConnection()));
+				sessionStrategy.setAttribute(new ServletWebRequest(request, response), ProviderSignInAttempt.SESSION_ATTRIBUTE, new ProviderSignInAttempt(token.getConnection()));
 				throw new SocialAuthenticationRedirectException(buildSignupUrl(request));
 			}
 			throw e;
