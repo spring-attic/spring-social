@@ -348,3 +348,17 @@ task updateRootDocs << {
 }
 
 build.dependsOn("updateRootDocs")
+
+allprojects {
+    tasks.withType(Test).configureEach {
+        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+        if (!project.hasProperty("createReports")) {
+            reports.html.required = false
+            reports.junitXml.required = false
+        }
+        forkEvery = 100
+    }
+    tasks.withType(JavaCompile).configureEach {
+        options.incremental = true
+    }
+}
